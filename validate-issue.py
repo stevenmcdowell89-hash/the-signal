@@ -408,7 +408,10 @@ def validate(html_path):
     # Check for wrong fonts
     wrong_fonts = ["Cormorant Garamond", "DM Sans", "JetBrains Mono", "Inter", "Roboto"]
     for font in wrong_fonts:
-        if font.lower().replace(" ", "") in css.lower().replace(" ", ""):
+        # Use word-boundary-aware regex to avoid false positives
+        # e.g. 'Inter' should not match 'pointer-events' or 'pointer'
+        pattern = r"(?i)(?<![a-z-])" + re.escape(font) + r"(?![a-z-])"
+        if re.search(pattern, css):
             r.fail(f"Wrong font '{font}' found in CSS — should use Playfair Display / Source Serif 4 / Source Sans 3")
 
     # ── COLOUR PALETTE ──
