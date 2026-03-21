@@ -1,275 +1,236 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!--
-   ______                            __
-  / ____/___  ____ ___  ____  __  __/ /____  _____
- / /   / __ \/ __ `__ \/ __ \/ / / / __/ _ \/ ___/
-/ /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
-\____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
-                    /_/
-        Created with Perplexity Computer
-        https://www.perplexity.ai/computer
--->
-
-<!-- Perplexity Computer Attribution — SEO Meta Tags -->
-<meta name="generator" content="Perplexity Computer">
-<meta name="author" content="Perplexity Computer">
-<meta property="og:see_also" content="https://www.perplexity.ai/computer">
-<link rel="author" href="https://www.perplexity.ai/computer">
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Signal — Archive</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Sans+3:wght@300;400;600;700&family=Source+Serif+4:wght@300;400;600;700&display=swap" rel="stylesheet">
-
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,500&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 :root {
-  --primary-dark: #1A1A2E;
-  --mid-dark: #16213E;
-  --warm-accent: #E94560;
-  --secondary-accent: #FF6B35;
-  --cool-accent: #0F3460;
-  --off-white: #F7F7F8;
-  --surface: #F0F0F3;
-  --body-text: #2D2D3A;
-  --muted-text: #7F8C9B;
-  --font-display: 'Playfair Display', Georgia, serif;
-  --font-body: 'Source Serif 4', Georgia, serif;
-  --font-ui: 'Source Sans 3', -apple-system, sans-serif;
+  --ink: #111119;
+  --paper: #FAFAF8;
+  --warm: #F5F4F0;
+  --rose: #E8384F;
+  --ember: #FF6D3A;
+  --deep: #1B1B2F;
+  --slate: #64697B;
+  --ghost: #A4A8B6;
+  --rule: #E0DED8;
 }
 
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
 body {
-  font-family: var(--font-body);
-  color: var(--body-text);
-  background: var(--primary-dark);
-  line-height: 1.6;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  color: var(--ink);
+  background: #E8E6E1;
+  font-size: 18px;
+  line-height: 1.75;
   -webkit-font-smoothing: antialiased;
 }
 
-.archive-container {
+.archive {
   max-width: 720px;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  background: var(--paper);
+  min-height: 100vh;
+  box-shadow: 0 4px 120px rgba(0,0,0,.12);
 }
 
-/* Header */
-.archive-header {
-  text-align: center;
-  padding: 5rem 0 3rem;
-}
+.ui { font-family: 'DM Sans', sans-serif; }
+.mono { font-family: 'JetBrains Mono', monospace; }
 
-.masthead {
-  font-family: var(--font-display);
-  font-weight: 900;
-  font-size: 3.5rem;
+/* ═══════════ HEADER ═══════════ */
+.header {
+  background: linear-gradient(135deg, var(--deep) 0%, #2a1a3e 100%);
   color: #fff;
-  letter-spacing: -0.02em;
-  line-height: 1;
-  margin-bottom: 0.5rem;
+  padding: 80px 48px 64px;
+  text-align: center;
 }
 
-.masthead span {
-  color: var(--warm-accent);
+.header h1 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(48px, 8vw, 72px);
+  font-weight: 700;
+  line-height: 1.05;
+  margin-bottom: 12px;
 }
 
-.archive-subtitle {
-  font-family: var(--font-ui);
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--muted-text);
-  letter-spacing: 0.2em;
+.header h1 .dot {
+  color: var(--rose);
+}
+
+.header .tagline {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  letter-spacing: 3px;
   text-transform: uppercase;
-  margin-bottom: 1.5rem;
+  color: var(--ghost);
+  margin-top: 8px;
 }
 
-.archive-description {
-  font-family: var(--font-body);
-  font-size: 1.05rem;
-  color: rgba(255,255,255,0.55);
-  max-width: 500px;
-  margin: 0 auto;
-  line-height: 1.65;
+/* ═══════════ CONTENT ═══════════ */
+.content {
+  padding: 48px;
 }
 
-/* Divider */
-.divider {
-  height: 4px;
-  background: linear-gradient(90deg, var(--warm-accent), var(--secondary-accent), var(--cool-accent));
-  border-radius: 2px;
-  margin: 0 0 3rem;
+.section-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--rose);
+  margin-bottom: 32px;
 }
 
-/* Issues list */
-.issues-list {
-  padding-bottom: 4rem;
-}
-
+/* ═══════════ ISSUE CARDS ═══════════ */
 .issue-card {
   display: block;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 10px;
-  padding: 2rem;
-  margin-bottom: 1.25rem;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 32px;
+  margin-bottom: 24px;
   text-decoration: none;
-  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+  color: var(--ink);
+  transition: all 0.2s ease;
+  position: relative;
 }
 
 .issue-card:hover {
-  background: rgba(255,255,255,0.06);
-  border-color: rgba(233, 69, 96, 0.3);
+  border-color: var(--rose);
+  box-shadow: 0 4px 24px rgba(232,56,79,0.08);
+  text-decoration: none;
   transform: translateY(-2px);
 }
 
-.issue-card-header {
-  display: flex;
-  align-items: baseline;
-  gap: 1rem;
-  margin-bottom: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.issue-date {
-  font-family: var(--font-ui);
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--warm-accent);
-  letter-spacing: 0.05em;
-}
-
-.issue-type {
-  font-family: var(--font-ui);
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: var(--secondary-accent);
+.issue-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
   text-transform: uppercase;
-  letter-spacing: 0.15em;
-  background: rgba(255, 107, 53, 0.1);
-  padding: 0.15rem 0.6rem;
-  border-radius: 3px;
+  color: var(--ghost);
+  margin-bottom: 12px;
 }
 
 .issue-title {
-  font-family: var(--font-display);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 28px;
   font-weight: 700;
-  font-size: 1.4rem;
-  color: #fff;
-  line-height: 1.3;
-  margin-bottom: 0.6rem;
+  line-height: 1.25;
+  margin-bottom: 12px;
 }
 
-.issue-summary {
-  font-family: var(--font-body);
-  font-size: 0.95rem;
-  color: rgba(255,255,255,0.5);
-  line-height: 1.55;
-  margin-bottom: 1rem;
+.issue-desc {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--slate);
+  margin-bottom: 16px;
 }
 
-.issue-meta {
+.issue-tags {
   display: flex;
-  gap: 1.5rem;
   flex-wrap: wrap;
+  gap: 8px;
 }
 
-.issue-meta-item {
-  font-family: var(--font-ui);
-  font-size: 0.72rem;
-  color: var(--muted-text);
-  letter-spacing: 0.03em;
+.tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: var(--warm);
+  color: var(--slate);
 }
 
-.issue-meta-item strong {
-  color: rgba(255,255,255,0.6);
-  font-weight: 600;
+.pdf-link {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--rose);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+  width: 100%;
 }
 
-/* Footer */
-.archive-footer {
-  text-align: center;
-  padding: 2rem 0 3rem;
-  border-top: 1px solid rgba(255,255,255,0.06);
-}
-
-.archive-footer p {
-  font-family: var(--font-ui);
-  font-size: 0.75rem;
-  color: var(--muted-text);
-  line-height: 1.7;
-}
-
-.archive-footer a {
-  color: var(--muted-text);
+.pdf-link:hover {
   text-decoration: underline;
-  text-decoration-color: rgba(127,140,155,0.3);
-  transition: color 0.2s;
 }
 
-.archive-footer a:hover {
-  color: var(--warm-accent);
+.pdf-icon {
+  width: 16px;
+  height: 16px;
+  fill: var(--rose);
 }
 
+/* ═══════════ FOOTER ═══════════ */
+.footer {
+  padding: 32px 48px;
+  border-top: 1px solid var(--rule);
+  text-align: center;
+}
+
+.footer p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  color: var(--ghost);
+  letter-spacing: 1px;
+}
+
+/* ═══════════ RESPONSIVE ═══════════ */
 @media (max-width: 600px) {
-  .masthead { font-size: 2.5rem; }
-  .issue-title { font-size: 1.2rem; }
-  .archive-header { padding: 3rem 0 2rem; }
-  .issue-card { padding: 1.5rem; }
+  .header { padding: 48px 24px 40px; }
+  .content { padding: 32px 24px; }
+  .issue-card { padding: 24px; }
+  .footer { padding: 24px; }
 }
 </style>
 </head>
 <body>
-<div class="archive-container">
+<div class="archive">
 
-  <header class="archive-header">
-    <h1 class="masthead">The <span>Signal</span></h1>
-    <p class="archive-subtitle">Personal Sunday Magazine &mdash; Archive</p>
-    <p class="archive-description">A curated window onto the week. News, features, recommendations, and reference data &mdash; read with coffee on a Sunday morning.</p>
-  </header>
+  <div class="header">
+    <h1>The Signal<span class="dot">.</span></h1>
+    <p class="tagline">Sunday Morning Edition &mdash; Archive</p>
+  </div>
 
-  <div class="divider"></div>
+  <div class="content">
+    <p class="section-label">All Issues</p>
 
-  <div class="issues-list">
-
-    <a href="issues/2026-06-30-countdown-efteling.html" class="issue-card">
-      <div class="issue-card-header">
-        <span class="issue-date">21 March 2026</span>
-        <span class="issue-type" style="background: rgba(255,107,53,0.15); color: #FF6B35;">Countdown</span>
+    <a href="issues/issue-1.html" class="issue-card">
+      <div class="issue-meta">Issue #1 &middot; March 15&ndash;21, 2026</div>
+      <div class="issue-title">Every System Is Running at Capacity</div>
+      <div class="issue-desc">
+        Iran war week three, four central banks freeze in a single day, Pakistan&ndash;Afghanistan erupts,
+        Switch 2 pre-orders open, Champions League quarter-final draw, Project Hail Mary opens,
+        Star Wars Maul trailer drops, Carpenter Brut closes the Leather Trilogy, and the Ides of March &mdash; 2,080 years later.
       </div>
-      <h2 class="issue-title">Efteling Sonnet &mdash; 101 Days to Go</h2>
-      <p class="issue-summary">The complete pre-trip guide to Efteling and Beekse Bergen. Two nights at the Wonder Hotel, five nights at the Safari Hotel watching giraffes from your balcony. A ranked field guide to the rides, the story of Anton Pieck&rsquo;s fairy tale forest, the giraffe-tongue car wash, and everything that needs booking before the bags are packed.</p>
-      <div class="issue-meta">
-        <span class="issue-meta-item"><strong>~5,500</strong> words</span>
-        <span class="issue-meta-item"><strong>12</strong> sections</span>
-        <span class="issue-meta-item"><strong>30 June 2026</strong></span>
-      </div>
-    </a>
-
-    <a href="issues/2026-03-21-weekly.html" class="issue-card">
-      <div class="issue-card-header">
-        <span class="issue-date">21 March 2026</span>
-        <span class="issue-type">Weekly</span>
-      </div>
-      <h2 class="issue-title">Issue #1 &mdash; Week Four, No Exit</h2>
-      <p class="issue-summary">Iran&rsquo;s war enters week four: Natanz struck, Hormuz choked, 480,000 NI homes squeezed. The Champions League delivers its best quarter-final draw in a decade. Project Hail Mary opens to rapture. Switch 2&rsquo;s densest software month. LEGO puts Bluetooth in Darth Vader. Arsenal nine points clear. Juventus fight for top four. The Birmingham Six: 35 years free. Ladytron go warm. Kettlebells meet running science.</p>
-      <div class="issue-meta">
-        <span class="issue-meta-item"><strong>~7,500</strong> words</span>
-        <span class="issue-meta-item"><strong>11</strong> sections</span>
-        <span class="issue-meta-item"><strong>120+</strong> source links</span>
+      <div class="issue-tags">
+        <span class="tag">Iran War</span>
+        <span class="tag">Central Banks</span>
+        <span class="tag">Ukraine</span>
+        <span class="tag">Switch 2</span>
+        <span class="tag">Champions League</span>
+        <span class="tag">Project Hail Mary</span>
+        <span class="tag">Star Wars</span>
+        <span class="tag">Malazan</span>
+        <span class="tag">Carpenter Brut</span>
+        <span class="tag">Ides of March</span>
       </div>
     </a>
 
   </div>
 
-  <footer class="archive-footer">
-    <p>The Signal is a personal publication. Not for redistribution.<br>Built with care, read with coffee.</p>
-    <p style="margin-top: 0.75rem;"><a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a></p>
-  </footer>
+  <div class="footer">
+    <p>A personal magazine. Written for one reader. Published on Sundays.</p>
+  </div>
 
 </div>
 </body>
