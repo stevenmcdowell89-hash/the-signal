@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Signal — The Countdown: Efteling &amp; Beekse Bergen</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #2D2D3A;
+  --paper: #FAFAF8;
+  --warm: #F5F4F0;
+  --rose: #E94560;
+  --ember: #FF6B35;
+  --deep: #1A1A2E;
+  --slate: #64697B;
+  --ghost: #A4A8B6;
+  --rule: #E0DED8;
+  --pitch: #16213E;
+  --mid-dark: #16213E;
+  --turf: #1A7A4C;
+  --turf-lt: #2BD67B;
+  --screen-bg: #14121E;
+  --neon: #FF2D78;
+  --shelf-bg: #1C1410;
+  --shelf-accent: #D4A03C;
+  --session-bg: #F2F7F4;
+  --session-accent: #D4622B;
+  --hist-bg: #F0EBE0;
+  --hist-accent: #8B6914;
+  --safari-bg: #1A1A0F;
+  --safari-accent: #C9A84C;
+  --journey-bg: #0D1B2A;
+  --journey-accent: #48CAE4;
+  --food-bg: #2A1A0E;
+  --food-accent: #E8A838;
+  --prep-bg: #F2F7F4;
+  --prep-accent: #5B8C5A;
+}
+
+/* ═══════════ RESET & BASE ═══════════ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Source Serif 4', Georgia, serif;
+  color: var(--ink);
+  background: #E8E6E1;
+  font-size: 18px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+.mag { max-width: 880px; margin: 0 auto; background: var(--paper); box-shadow: 0 4px 120px rgba(0,0,0,.12); }
+img { max-width: 100%; height: auto; display: block; }
+a { color: var(--rose); text-decoration: none; }
+a:hover { text-decoration: underline; }
+p { margin-bottom: 16px; }
+p:last-child { margin-bottom: 0; }
+
+/* ═══════════ UTILITY CLASSES ═══════════ */
+.ui { font-family: 'Source Sans 3', sans-serif; }
+
+.section-label {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 3px; text-transform: uppercase;
+  margin-bottom: 12px; display: block;
+}
+.caption {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 12px; color: var(--ghost);
+  margin-top: 6px; line-height: 1.4;
+}
+.src {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 12px; color: var(--ghost); margin-top: 12px;
+}
+.src a { color: var(--rose); }
+
+/* ═══════════ COVER ═══════════ */
+.cover {
+  background: var(--deep);
+  background-image:
+    url('https://www.netherlands-tourism.com/wp-content/uploads/2013/11/Efteling-By-night-Lavenlaar.jpg');
+  background-size: cover;
+  background-position: center 40%;
+  padding: 80px 60px 60px;
+  position: relative;
+  min-height: 560px;
+  display: flex; flex-direction: column; justify-content: flex-end;
+}
+.cover::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 5px;
+  background: linear-gradient(90deg, var(--rose), var(--ember), var(--rose));
+}
+.cover::after {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(to bottom, rgba(26,26,46,.55) 0%, rgba(26,26,46,.85) 60%, rgba(26,26,46,.97) 100%);
+  z-index: 0;
+}
+.cover > * { position: relative; z-index: 1; }
+.cover-brand {
+  font-family: 'Playfair Display', serif;
+  font-size: 72px; font-weight: 700;
+  color: white; line-height: .95; letter-spacing: -2px; margin-bottom: 8px;
+}
+.cover-brand span { color: var(--rose); font-style: italic; }
+.cover-issue {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 11px; color: rgba(255,255,255,.4);
+  letter-spacing: 3px; text-transform: uppercase; margin-bottom: 32px;
+}
+.cover-headline {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px; font-weight: 600;
+  color: rgba(255,255,255,.9); line-height: 1.25; max-width: 720px;
+}
+.cover-sub {
+  font-family: 'Source Serif 4', serif;
+  font-size: 18px; color: rgba(255,255,255,.55);
+  margin-top: 8px; max-width: 600px; line-height: 1.5;
+}
+.cover-tags { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 8px; }
+.cover-tags .tag {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 3px;
+  background: rgba(255,255,255,.08); color: rgba(255,255,255,.6);
+  border: 1px solid rgba(255,255,255,.1);
+}
+
+/* ═══════════ NAVIGATOR ═══════════ */
+.nav-section { padding: 48px 60px; background: var(--paper); border-bottom: 1px solid var(--rule); }
+.nav-section h2 {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 24px;
+}
+.nav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+.nav-card {
+  background: var(--warm); border-radius: 8px; padding: 20px;
+  border-left: 4px solid var(--rule);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.nav-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.06); }
+.nav-card.efteling { border-left-color: var(--rose); }
+.nav-card.safari { border-left-color: var(--safari-accent); }
+.nav-card.journey { border-left-color: var(--journey-accent); }
+.nav-card.food { border-left-color: var(--food-accent); }
+.nav-card.prep { border-left-color: var(--prep-accent); }
+.nav-card.ember { border-left-color: var(--ember); }
+.nav-card.itinerary { border-left-color: var(--ember); }
+.nav-card-tag {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.nav-card.efteling .nav-card-tag { color: var(--rose); }
+.nav-card.safari .nav-card-tag { color: var(--safari-accent); }
+.nav-card.journey .nav-card-tag { color: var(--journey-accent); }
+.nav-card.food .nav-card-tag { color: var(--food-accent); }
+.nav-card.prep .nav-card-tag { color: var(--prep-accent); }
+.nav-card.ember .nav-card-tag { color: var(--ember); }
+.nav-card.itinerary .nav-card-tag { color: var(--ember); }
+.nav-card h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px; font-weight: 700; line-height: 1.25;
+  color: var(--ink); margin-bottom: 4px;
+}
+.nav-card p {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 13px; color: var(--slate); line-height: 1.4; margin: 0;
+}
+
+/* ═══════════ FOREWORD ═══════════ */
+.foreword { padding: 48px 60px; border-bottom: 1px solid var(--rule); }
+.foreword p { font-size: 21px; line-height: 1.7; max-width: 680px; }
+.foreword p::first-letter {
+  font-family: 'Playfair Display', serif;
+  font-size: 64px; font-weight: 700; float: left;
+  line-height: .78; margin: 8px 12px 0 0; color: var(--rose);
+}
+
+/* ═══════════ SECTION DIVIDERS ═══════════ */
+.divider { height: 8px; border: none; margin: 0; }
+.dv-efteling { background: linear-gradient(90deg, var(--rose), #c0392b); }
+.dv-safari { background: linear-gradient(90deg, var(--safari-accent), #A0722A); }
+.dv-journey { background: linear-gradient(90deg, var(--journey-accent), #0077B6); }
+.dv-food { background: linear-gradient(90deg, var(--food-accent), #C9790B); }
+.dv-prep { background: linear-gradient(90deg, var(--prep-accent), var(--turf)); }
+.dv-ember { background: linear-gradient(90deg, var(--ember), #e67e22); }
+.dv-other { background: linear-gradient(90deg, var(--slate), var(--ghost)); }
+
+/* ═══════════ GENERIC SECTION ═══════════ */
+.sec { padding: 48px 60px; }
+.sec h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 36px; font-weight: 700; line-height: 1.15; margin-bottom: 20px; max-width: 680px;
+}
+.sec h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px; font-weight: 700; line-height: 1.2; margin: 28px 0 10px;
+}
+.sec h4 {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--ghost); margin: 28px 0 10px;
+}
+
+/* ═══════════ STAT BAR ═══════════ */
+.stat-bar {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; margin: 24px 0;
+}
+.stat-bar .stat { padding: 18px 16px; text-align: center; border-right: 1px solid var(--rule); }
+.stat-bar .stat:last-child { border-right: none; }
+.stat-bar .stat-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px; font-weight: 700; line-height: 1;
+}
+.stat-bar .stat-label {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 10px; font-weight: 700; color: var(--ghost);
+  text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;
+}
+
+/* ═══════════ ANGLE BOX ═══════════ */
+.angle {
+  background: var(--warm); border-left: 5px solid var(--rose);
+  padding: 24px 28px; margin: 28px 0; border-radius: 0 6px 6px 0;
+}
+.angle-label {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 8px;
+}
+.angle p { font-size: 17px; line-height: 1.65; font-weight: 600; }
+
+/* ═══════════ DID YOU KNOW ═══════════ */
+.dyk {
+  background: linear-gradient(135deg, #FFF8E7, #FFF3D6);
+  border: 1px solid #E8D5A3; border-radius: 8px;
+  padding: 18px 22px; margin: 24px 0; position: relative;
+}
+.dyk::before {
+  content: '💡'; position: absolute; top: -10px; left: 16px;
+  font-size: 18px; background: var(--paper); padding: 0 4px;
+}
+.dyk-title {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: #B8860B; margin-bottom: 6px;
+}
+.dyk p { font-size: 15px; line-height: 1.55; margin: 0; color: #5C4A20; }
+
+/* Dark section DYK */
+.dark-section .dyk { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.08); }
+.dark-section .dyk::before { background: transparent; }
+.dark-section .dyk-title { color: var(--safari-accent); }
+.dark-section .dyk p { color: rgba(255,255,255,.7); }
+
+/* ═══════════ HERO IMAGE ═══════════ */
+.hero-img { width: 100%; aspect-ratio: 16/7; object-fit: cover; border-radius: 8px; margin: 24px 0; }
+.inline-img { border-radius: 6px; margin: 20px 0; }
+
+/* ═══════════ DUAL COLUMN ═══════════ */
+.dual-col { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 24px 0; }
+.col-card { border-left: 4px solid var(--rule); padding-left: 24px; }
+.col-card.accent-ember { border-left-color: var(--ember); }
+.col-card.accent-rose { border-left-color: var(--rose); }
+.col-card.accent-safari { border-left-color: var(--safari-accent); }
+.col-card h3 { font-size: 22px; font-weight: 700; line-height: 1.2; margin: 0 0 10px; }
+.col-card p { font-size: 16px; }
+
+/* ═══════════ ITINERARY ═══════════ */
+.itinerary-section { background: var(--warm); }
+.itinerary-section .section-label { color: var(--ember); }
+.timeline { margin: 24px 0; }
+.timeline-day {
+  display: grid; grid-template-columns: 80px 1fr; gap: 20px;
+  padding: 20px 0; border-bottom: 1px solid var(--rule);
+  position: relative;
+}
+.timeline-day:last-child { border-bottom: none; }
+.timeline-date {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--ember); padding-top: 4px;
+}
+.timeline-day-label {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px; font-weight: 700; color: var(--ink);
+  margin-bottom: 4px;
+}
+.timeline-detail {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 14px; color: var(--slate); line-height: 1.5;
+}
+.timeline-badge {
+  display: inline-block;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 3px; margin-top: 6px;
+}
+.badge-efteling { background: rgba(233,69,96,.12); color: var(--rose); }
+.badge-safari { background: rgba(201,168,76,.15); color: #8B6914; }
+.badge-travel { background: rgba(72,202,228,.12); color: #0077B6; }
+
+/* ═══════════ EFTELING SECTION (DARK) ═══════════ */
+.efteling-section { background: var(--pitch); color: rgba(255,255,255,.85); }
+.efteling-section .section-label { color: var(--rose); }
+.efteling-section h2 { color: white; }
+.efteling-section h3 {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--rose); margin: 28px 0 12px;
+}
+.efteling-section h3.feature-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px; text-transform: none; letter-spacing: 0; color: white; margin-bottom: 14px;
+}
+.efteling-section p { color: rgba(255,255,255,.7); }
+.efteling-section a { color: var(--rose); }
+.efteling-section .angle { background: rgba(255,255,255,.04); border-left-color: var(--rose); }
+.efteling-section .angle-label { color: var(--rose); }
+.efteling-section .angle p { color: rgba(255,255,255,.9); }
+.efteling-section .dyk { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.08); }
+.efteling-section .dyk::before { background: var(--pitch); }
+.efteling-section .dyk-title { color: var(--rose); }
+.efteling-section .dyk p { color: rgba(255,255,255,.7); }
+.efteling-section .stat-bar { border-color: rgba(255,255,255,.1); }
+.efteling-section .stat-bar .stat { border-right-color: rgba(255,255,255,.1); }
+.efteling-section .stat-bar .stat-num { color: var(--rose); }
+.efteling-section .stat-bar .stat-label { color: rgba(255,255,255,.4); }
+
+/* Ride card */
+.ride-card {
+  background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+  border-radius: 8px; padding: 18px 22px; margin: 12px 0;
+}
+.ride-card h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 19px; font-weight: 700; color: rgba(255,255,255,.95);
+  text-transform: none; letter-spacing: 0; margin: 0 0 4px;
+}
+.ride-card .ride-meta {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 12px; color: rgba(255,255,255,.4); margin-bottom: 6px;
+}
+.ride-card p { font-size: 14px; color: rgba(255,255,255,.6); margin: 0; }
+.ride-card .family-tag {
+  display: inline-block; font-family: 'Source Sans 3', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 3px; margin-top: 8px;
+  background: rgba(233,69,96,.15); color: var(--rose);
+}
+
+/* ═══════════ WONDER HOTEL SECTION ═══════════ */
+.hotel-section { background: var(--paper); }
+.hotel-section .section-label { color: var(--rose); }
+
+/* ═══════════ SAFARI SECTION (DARK) ═══════════ */
+.safari-section { background: var(--safari-bg); color: rgba(255,255,255,.85); }
+.safari-section .section-label { color: var(--safari-accent); }
+.safari-section h2 { color: white; }
+.safari-section h3 {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--safari-accent); margin: 28px 0 12px;
+}
+.safari-section h3.feature-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px; text-transform: none; letter-spacing: 0; color: white; margin-bottom: 14px;
+}
+.safari-section p { color: rgba(255,255,255,.7); }
+.safari-section a { color: var(--safari-accent); }
+.safari-section .dyk { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.08); }
+.safari-section .dyk::before { background: var(--safari-bg); }
+.safari-section .dyk-title { color: var(--safari-accent); }
+.safari-section .dyk p { color: rgba(255,255,255,.7); }
+.safari-section .stat-bar { border-color: rgba(255,255,255,.1); }
+.safari-section .stat-bar .stat { border-right-color: rgba(255,255,255,.1); }
+.safari-section .stat-bar .stat-num { color: var(--safari-accent); }
+.safari-section .stat-bar .stat-label { color: rgba(255,255,255,.4); }
+.safari-section .angle { background: rgba(255,255,255,.04); border-left-color: var(--safari-accent); }
+.safari-section .angle-label { color: var(--safari-accent); }
+.safari-section .angle p { color: rgba(255,255,255,.9); }
+
+/* Safari card */
+.safari-card {
+  background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+  border-radius: 8px; padding: 18px 22px; margin: 12px 0;
+}
+.safari-card h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 19px; font-weight: 700; color: rgba(255,255,255,.95);
+  text-transform: none; letter-spacing: 0; margin: 0 0 4px;
+}
+.safari-card .safari-meta {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 12px; color: rgba(255,255,255,.4); margin-bottom: 6px;
+}
+.safari-card p { font-size: 14px; color: rgba(255,255,255,.6); margin: 0; }
+
+/* ═══════════ SAFARI HOTEL SECTION ═══════════ */
+.safari-hotel-section { background: var(--warm); }
+.safari-hotel-section .section-label { color: var(--safari-accent); }
+
+/* ═══════════ JOURNEY SECTION (DARK) ═══════════ */
+.journey-section { background: var(--journey-bg); color: rgba(255,255,255,.85); }
+.journey-section .section-label { color: var(--journey-accent); }
+.journey-section h2 { color: white; }
+.journey-section h3 {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--journey-accent); margin: 28px 0 12px;
+}
+.journey-section h3.feature-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px; text-transform: none; letter-spacing: 0; color: white; margin-bottom: 14px;
+}
+.journey-section p { color: rgba(255,255,255,.7); }
+.journey-section a { color: var(--journey-accent); }
+.journey-section .dyk { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.08); }
+.journey-section .dyk::before { background: var(--journey-bg); }
+.journey-section .dyk-title { color: var(--journey-accent); }
+.journey-section .dyk p { color: rgba(255,255,255,.7); }
+
+/* Route card */
+.route-card {
+  background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.06);
+  border-radius: 8px; padding: 18px 22px; margin: 12px 0;
+}
+.route-card h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 19px; font-weight: 700; color: rgba(255,255,255,.95);
+  text-transform: none; letter-spacing: 0; margin: 0 0 4px;
+}
+.route-card .route-meta {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 12px; color: rgba(255,255,255,.4); margin-bottom: 6px;
+}
+.route-card p { font-size: 14px; color: rgba(255,255,255,.6); margin: 0; }
+
+/* ═══════════ FOOD SECTION (WARM DARK) ═══════════ */
+.food-section { background: var(--food-bg); color: rgba(255,255,255,.85); }
+.food-section .section-label { color: var(--food-accent); }
+.food-section h2 { color: white; }
+.food-section h3 {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--food-accent); margin: 28px 0 12px;
+}
+.food-section h3.feature-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px; text-transform: none; letter-spacing: 0; color: white; margin-bottom: 14px;
+}
+.food-section p { color: rgba(255,255,255,.7); }
+.food-section a { color: var(--food-accent); }
+.food-section .dyk { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.08); }
+.food-section .dyk::before { background: var(--food-bg); }
+.food-section .dyk-title { color: var(--food-accent); }
+.food-section .dyk p { color: rgba(255,255,255,.7); }
+
+/* Food card */
+.food-card {
+  background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+  border-radius: 8px; padding: 18px 22px; margin: 12px 0;
+}
+.food-card h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 19px; font-weight: 700; color: rgba(255,255,255,.95);
+  text-transform: none; letter-spacing: 0; margin: 0 0 4px;
+}
+.food-card .food-meta {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 12px; color: rgba(255,255,255,.4); margin-bottom: 6px;
+}
+.food-card p { font-size: 14px; color: rgba(255,255,255,.6); margin: 0; }
+
+/* ═══════════ PREP SECTION (LIGHT) ═══════════ */
+.prep-section { background: var(--prep-bg); }
+.prep-section .section-label { color: var(--prep-accent); }
+
+/* Prep card */
+.prep-card {
+  background: white; border: 1px solid var(--rule);
+  border-radius: 8px; padding: 18px 22px; margin: 12px 0;
+}
+.prep-card h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 19px; font-weight: 700; color: var(--ink);
+  text-transform: none; letter-spacing: 0; margin: 0 0 4px;
+}
+.prep-card .prep-meta {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 12px; color: var(--ghost); margin-bottom: 6px;
+}
+.prep-card p { font-size: 14px; color: var(--slate); margin: 0; }
+
+/* ═══════════ PACKING SECTION ═══════════ */
+.packing-section { background: var(--paper); }
+.packing-section .section-label { color: var(--ember); }
+.checklist { list-style: none; margin: 16px 0; }
+.checklist li {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 15px; line-height: 1.5; padding: 6px 0 6px 28px;
+  border-bottom: 1px solid rgba(0,0,0,.04);
+  position: relative;
+}
+.checklist li::before {
+  content: '☐'; position: absolute; left: 0; top: 6px;
+  font-size: 16px; color: var(--ghost);
+}
+.checklist li:last-child { border-bottom: none; }
+
+/* ═══════════ ON THE RADAR ═══════════ */
+.radar-section { background: var(--warm); }
+.radar-section .section-label { color: var(--ember); }
+.radar-grid { margin: 16px 0; }
+.radar-row {
+  display: grid; grid-template-columns: 100px 1fr; gap: 14px;
+  padding: 9px 0; border-bottom: 1px solid rgba(0,0,0,.06);
+  font-family: 'Source Sans 3', sans-serif; font-size: 14px;
+  color: var(--ink); line-height: 1.4;
+}
+.radar-row:last-child { border-bottom: none; }
+.radar-date {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 11px; font-weight: 700; color: var(--ember); padding-top: 2px;
+}
+.radar-row strong { color: var(--ink); }
+
+/* ═══════════ FOOTER ═══════════ */
+.footer {
+  background: var(--deep); padding: 40px 60px; text-align: center;
+}
+.footer-brand {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px; font-weight: 700; color: white;
+}
+.footer-brand span { color: var(--rose); font-style: italic; }
+.footer-sub {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 10px; color: rgba(255,255,255,.3);
+  letter-spacing: 2px; text-transform: uppercase; margin-top: 6px;
+}
+
+/* ═══════════ RESPONSIVE ═══════════ */
+@media (max-width: 700px) {
+  .cover, .nav-section, .foreword, .sec, .footer {
+    padding-left: 20px; padding-right: 20px;
+  }
+  .cover-brand { font-size: 48px; }
+  .cover-headline { font-size: 24px; }
+  .nav-grid { grid-template-columns: 1fr; }
+  .dual-col { grid-template-columns: 1fr; }
+  .stat-bar { grid-template-columns: repeat(2, 1fr); }
+  .stat-bar .stat:nth-child(2) { border-right: none; }
+  .sec h2 { font-size: 28px; }
+  .timeline-day { grid-template-columns: 70px 1fr; gap: 12px; }
+  .radar-row { grid-template-columns: 80px 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="mag">
+
+<!-- ══════════ COVER ══════════ -->
+<header class="cover">
+  <div class="cover-issue">100 Days Out · March 21, 2026 · The Countdown</div>
+  <div class="cover-brand">The Signal<span>.</span></div>
+  <div class="cover-headline">The Countdown — Efteling &amp; Beekse Bergen</div>
+  <div class="cover-sub">Seven nights in Noord-Brabant. A fairy-tale kingdom older than Disneyland. A safari park where giraffes lean into your car. One hundred days to go.</div>
+  <div class="cover-tags">
+    <span class="tag">Efteling</span>
+    <span class="tag">Beekse Bergen</span>
+    <span class="tag">Netherlands</span>
+    <span class="tag">Wonder Hotel</span>
+    <span class="tag">Safari</span>
+    <span class="tag">Family Travel</span>
+    <span class="tag">June 30 – July 7</span>
+    <span class="tag">Noord-Brabant</span>
+  </div>
+</header>
+
+<!-- ══════════ NAVIGATOR ══════════ -->
+<section class="nav-section">
+  <h2>What's Inside</h2>
+  <div class="nav-grid">
+    <div class="nav-card itinerary">
+      <div class="nav-card-tag">Itinerary</div>
+      <h3>The Seven-Night Plan</h3>
+      <p>Day-by-day breakdown from Belfast to Amsterdam to Brabant.</p>
+    </div>
+    <div class="nav-card efteling">
+      <div class="nav-card-tag">Efteling</div>
+      <h3>The Fairy-Tale Kingdom</h3>
+      <p>History, rides, design philosophy — and why it predates Disneyland.</p>
+    </div>
+    <div class="nav-card efteling">
+      <div class="nav-card-tag">Accommodation</div>
+      <h3>The Wonder Hotel</h3>
+      <p>Your fairy-tale castle base. Early entry, themed rooms, character breakfast.</p>
+    </div>
+    <div class="nav-card safari">
+      <div class="nav-card-tag">Safari</div>
+      <h3>Beekse Bergen: The Wild Side</h3>
+      <p>Four ways to safari. Cheetah cubs. Giraffes at your car window.</p>
+    </div>
+    <div class="nav-card safari">
+      <div class="nav-card-tag">Accommodation</div>
+      <h3>Safari Hotel &amp; Speelland</h3>
+      <p>Wake up to zebras. Water park included. Five nights of wild.</p>
+    </div>
+    <div class="nav-card journey">
+      <div class="nav-card-tag">Travel</div>
+      <h3>The Journey</h3>
+      <p>Schiphol to Efteling, Efteling to Beekse Bergen, and Dutch travel tips.</p>
+    </div>
+    <div class="nav-card food">
+      <div class="nav-card-tag">Food</div>
+      <h3>The Menu</h3>
+      <p>Stroopwafels, bitterballen, Bossche Bol, and Brabant's best tables.</p>
+    </div>
+    <div class="nav-card prep">
+      <div class="nav-card-tag">Entertainment</div>
+      <h3>The Preparation Kit</h3>
+      <p>Films, books, games, and YouTube to build excitement before departure.</p>
+    </div>
+    <div class="nav-card ember">
+      <div class="nav-card-tag">Practical</div>
+      <h3>The Packing List</h3>
+      <p>Everything you need — from binoculars to European adapters.</p>
+    </div>
+    <div class="nav-card ember">
+      <div class="nav-card-tag">Dates</div>
+      <h3>On the Radar</h3>
+      <p>Key dates, booking deadlines, and what opens before your arrival.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ FOREWORD ══════════ -->
+<section class="foreword">
+  <p>One hundred days from now, you'll be walking through a forest where Sleeping Beauty still sleeps and a paper-eating bin yells at you in Dutch. Two days after that, a giraffe will stick its head through your car window. Efteling opened three years before Disneyland. Beekse Bergen has the largest wildlife safari in the Benelux. This issue is your field guide to both.</p>
+</section>
+
+<!-- ══════════ THE ITINERARY ══════════ -->
+<hr class="divider dv-ember">
+<section class="sec itinerary-section">
+  <span class="section-label" style="color: var(--ember)">The Itinerary</span>
+  <h2>Seven Nights in Noord-Brabant</h2>
+  <p>Two parks. Two hotels. One province. Here's how the week breaks down.</p>
+
+  <div class="stat-bar">
+    <div class="stat"><div class="stat-num">7</div><div class="stat-label">Nights</div></div>
+    <div class="stat"><div class="stat-num">2</div><div class="stat-label">Parks</div></div>
+    <div class="stat"><div class="stat-num">20</div><div class="stat-label">km Between</div></div>
+    <div class="stat"><div class="stat-num">100</div><div class="stat-label">Days to Go</div></div>
+  </div>
+
+  <div class="timeline">
+    <div class="timeline-day">
+      <div class="timeline-date">Jun 30</div>
+      <div>
+        <div class="timeline-day-label">Day 1 — Belfast → Amsterdam → Efteling</div>
+        <div class="timeline-detail">Fly Belfast to Amsterdam Schiphol. Pick up rental car (recommended) or take the train to 's-Hertogenbosch + Bus 301. Arrive Efteling Wonder Hotel by afternoon. Check in, explore the park in the evening golden hours — the Fairytale Forest is magical at dusk.</div>
+        <span class="timeline-badge badge-travel">Travel Day</span>
+        <span class="timeline-badge badge-efteling">Efteling</span>
+      </div>
+    </div>
+    <div class="timeline-day">
+      <div class="timeline-date">Jul 1</div>
+      <div>
+        <div class="timeline-day-label">Day 2 — Full Day at Efteling</div>
+        <div class="timeline-detail">Use 30-minute early entry to hit Symbolica or Droomvlucht first. Work through the major rides: Baron 1898, De Vliegende Hollander, Joris en de Draak. Lunch at Polles Keuken (book ahead). Afternoon: Fairytale Forest, Fabula 4D, the new Hooghmoed drop tower. Evening: Aquanura water show.</div>
+        <span class="timeline-badge badge-efteling">Efteling</span>
+      </div>
+    </div>
+    <div class="timeline-day">
+      <div class="timeline-date">Jul 2</div>
+      <div>
+        <div class="timeline-day-label">Day 3 — Efteling Morning → Beekse Bergen</div>
+        <div class="timeline-detail">Final morning at Efteling — catch anything missed, revisit favourites. Check out of Wonder Hotel after lunch. Drive 23 minutes to Safari Hotel Beekse Bergen. Check in, unpack, explore the hotel. Evening walk to the Simbara lion viewpoint for feeding time.</div>
+        <span class="timeline-badge badge-efteling">Efteling</span>
+        <span class="timeline-badge badge-travel">Transfer</span>
+        <span class="timeline-badge badge-safari">Safari</span>
+      </div>
+    </div>
+    <div class="timeline-day">
+      <div class="timeline-date">Jul 3</div>
+      <div>
+        <div class="timeline-day-label">Day 4 — Car Safari &amp; Speelland</div>
+        <div class="timeline-detail">Morning: drive the car safari at opening (animals most active, lightest traffic). Stop at Kongo Restaurant halfway. Afternoon: Speelland water park — Waverider, Duo Water Slide, water guns, Lake Victoria beach. Evening: dinner at Amma buffet with savannah views.</div>
+        <span class="timeline-badge badge-safari">Safari</span>
+      </div>
+    </div>
+    <div class="timeline-day">
+      <div class="timeline-date">Jul 4</div>
+      <div>
+        <div class="timeline-day-label">Day 5 — Walking Safari &amp; Elephant Valley</div>
+        <div class="timeline-detail">Full day on foot at your own pace. Hit Elephant Valley (walk underneath the elephants), catch keeper talks, find the penguins and hyenas. Playground breaks built into the route for tired legs. Evening: Nommos à la carte dinner.</div>
+        <span class="timeline-badge badge-safari">Safari</span>
+      </div>
+    </div>
+    <div class="timeline-day">
+      <div class="timeline-date">Jul 5</div>
+      <div>
+        <div class="timeline-day-label">Day 6 — Bus Safari, Boat Safari &amp; Gamedrive</div>
+        <div class="timeline-detail">Morning bus safari with ranger commentary (props, bones, droppings — kids love it). Midday boat safari on the Livingstone. Afternoon: Gamedrive in an open-top Land Cruiser at close range with giraffes and wildebeest. Book via the app immediately on arrival.</div>
+        <span class="timeline-badge badge-safari">Safari</span>
+      </div>
+    </div>
+    <div class="timeline-day">
+      <div class="timeline-date">Jul 6</div>
+      <div>
+        <div class="timeline-day-label">Day 7 — Pool Day &amp; Day Trip</div>
+        <div class="timeline-detail">Lazy morning at the hotel pools and resort playgrounds. Optional day trip: drive 25 minutes to 's-Hertogenbosch for the Bossche Bol experience and medieval city centre. Or drive 15 minutes to Tilburg's Piushaven for lunch. Evening: bowling at Pamoja Lounge, drinks delivered by robot.</div>
+        <span class="timeline-badge badge-safari">Safari</span>
+      </div>
+    </div>
+    <div class="timeline-day">
+      <div class="timeline-date">Jul 7</div>
+      <div>
+        <div class="timeline-day-label">Day 8 — Beekse Bergen → Amsterdam → Belfast</div>
+        <div class="timeline-detail">Check out of Safari Hotel. Drive to Schiphol (~1h 15m). Return rental car. Fly home to Belfast. Unpack. Start planning the next one.</div>
+        <span class="timeline-badge badge-travel">Travel Day</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ EFTELING: THE FAIRY-TALE KINGDOM ══════════ -->
+<hr class="divider dv-efteling">
+<section class="sec efteling-section">
+  <span class="section-label">Efteling — The Fairy-Tale Kingdom</span>
+  <h2>Older Than Disneyland, and Twice the Size</h2>
+
+  <img class="hero-img" src="https://content.presspage.com/uploads/1877/0cb9e438-880b-49da-bc70-2a1b509b485c/1920_efteling-deprinsesopdeerwt-paviljoentje.jpg?10000" alt="The Princess and the Pea fairy tale scene in Efteling's enchanted Fairytale Forest">
+  <div class="caption">The Princess and the Pea pavilion in the Fairytale Forest — Efteling's 31st fairy tale, opened May 2025. <a href="https://www.efteling.com/en/press/how-fairy-tales-made-a-difference-to-efteling-theme-park-as-early-as-1952/">Efteling Press</a></div>
+
+  <p>The story of Efteling begins not with fairy tales but with football. In 1933, two clergymen in the small North Brabant town of Kaatsheuvel proposed building a sports park. By 1950, the Efteling Nature Park Foundation had been established with a more ambitious goal: attract tourists. The mayor's wife, Betty Perquin, proposed the idea that changed everything — a garden of real fairy tales, brought to life in the forest.</p>
+
+  <p>To make it happen, they recruited <strong>Anton Pieck</strong> — already one of the Netherlands' most celebrated illustrators, known for his atmospheric editions of the Brothers Grimm. Pieck created approximately <strong>1,500 sketches and drawings</strong> for the Fairytale Forest while filmmaker Peter Reijnders engineered the mechanical effects. Pieck's one non-negotiable rule: everything must look like it had been there for a hundred years. Stone walls, real roof tiles, no cheap plastic. That philosophy has defined the park ever since. (<a href="https://www.efteling.com/en/press/how-fairy-tales-made-a-difference-to-efteling-theme-park-as-early-as-1952/">Efteling</a>)</p>
+
+  <p>On <strong>31 May 1952</strong> — three years before Disneyland opened in California — the Fairytale Forest opened to the public. Entry cost 80 Dutch cents. The first year drew 222,941 visitors. Today, Efteling covers 180 acres (twice the original Disneyland), welcomes over 5 million visitors annually, and 94% of the Dutch population has been at least once. It is owned not by a corporation but by a <strong>non-profit foundation</strong>. (<a href="https://en.wikipedia.org/wiki/Efteling">Wikipedia</a>)</p>
+
+  <div class="stat-bar">
+    <div class="stat"><div class="stat-num">1952</div><div class="stat-label">Founded</div></div>
+    <div class="stat"><div class="stat-num">5M+</div><div class="stat-label">Annual Visitors</div></div>
+    <div class="stat"><div class="stat-num">31</div><div class="stat-label">Fairy Tales</div></div>
+    <div class="stat"><div class="stat-num">94%</div><div class="stat-label">Dutch Have Visited</div></div>
+  </div>
+
+  <div class="dyk">
+    <div class="dyk-title">Did You Know?</div>
+    <p>When Anton Pieck died in November 1987 at the age of 92, an unfinished drawing was still attached to his drawing board. He never stopped working. The park's colour palette today is still based on his original specifications. (<a href="https://www.efteling.com/en/about-efteling/fairytales/designers">Efteling Designers</a>)</p>
+  </div>
+
+  <h3>The Fairytale Forest</h3>
+  <h3 class="feature-title">Thirty-One Stories in Fifteen Acres of Woodland</h3>
+
+  <img class="inline-img" src="https://www.efteling.com/en/-/media/images/social-open-graph/1200x628-roodkapje-sprookjesbos-lente.jpg" alt="Little Red Riding Hood scene in Efteling's Fairytale Forest in springtime" style="width:100%; border-radius:8px;">
+  <div class="caption">Little Red Riding Hood in the Sprookjesbos. <a href="https://www.efteling.com/en">Efteling</a></div>
+
+  <p>The heart of Efteling is the <em>Sprookjesbos</em> — 15 acres of ancient woodland containing 31 fairy-tale dioramas. Every scene uses animatronics, sound design, and obsessive craftsmanship to bring the stories to life. Ten scenes are from the <strong>Brothers Grimm</strong> (Snow White, Sleeping Beauty, Rapunzel, Hansel and Gretel, Rumpelstiltskin, and more), five from <strong>Hans Christian Andersen</strong> (including The Little Mermaid and The Chinese Nightingale), and three from <strong>Charles Perrault</strong> (Little Red Riding Hood, Tom Thumb, Cinderella). (<a href="https://en.wikipedia.org/wiki/Fairytale_Forest">Wikipedia</a>)</p>
+
+  <p>Allow at least 90 minutes to explore properly. Look for hidden Easter eggs — secret squirrels, talking trees, and a hidden branch where the Chinese Nightingale once sat. The newest addition, <strong>The Princess and the Pea</strong>, opened in May 2025 as the 31st fairy tale.</p>
+
+  <h3>The Rides</h3>
+  <h3 class="feature-title">From Gentle Dark Rides to a 90 km/h Dive Coaster</h3>
+
+  <img class="inline-img" src="https://www.efteling.com/en/-/media/images/nieuw-park/park/attractions/symbolica/1024x576-symbolica-exterieur.jpg" alt="Symbolica: Palace of Fantasy exterior at Efteling" style="width:100%; border-radius:8px;">
+  <div class="caption">Symbolica — Efteling's €35 million trackless dark ride, widely considered one of the finest in the world. <a href="https://www.efteling.com/en">Efteling</a></div>
+
+  <p>A 10-year-old at typical height (135–140 cm) can access almost every ride listed here. Efteling's genius is that its best attractions aren't just thrill rides — they're stories you sit inside.</p>
+
+  <div class="ride-card">
+    <h4>Symbolica: Palace of Fantasy</h4>
+    <div class="ride-meta">2017 · €35 million · Trackless dark ride · No min. height with adult</div>
+    <p>Efteling's most expensive attraction ever. Three different routes through the magical palace of King Pardulf, each revealing different rooms and secrets. Use the virtual queue in the app or go first thing in the morning. Widely regarded as one of the finest dark rides on the planet.</p>
+    <span class="family-tag">✓ Ideal for 10-year-olds</span>
+  </div>
+
+  <div class="ride-card">
+    <h4>Droomvlucht (Dreamflight)</h4>
+    <div class="ride-meta">1993 · Suspended dark ride · No min. height · All ages</div>
+    <p>Gondolas float Peter Pan-style above fairy worlds filled with fairies, castles, and trolls. The original score by Ruud Bos has been making people cry since 1993. Walk to the back of the park first thing — near-zero queues in the first 45 minutes.</p>
+    <span class="family-tag">✓ Universally loved</span>
+  </div>
+
+  <div class="ride-card">
+    <h4>Danse Macabre</h4>
+    <div class="ride-meta">October 2024 · World's first Dynamic Motion Stage ride · Min. 120 cm</div>
+    <p>Brand new. Replaced the iconic Spookslot. A spinning, tilting, lifting ride synchronised to Saint-Saëns' <em>Danse Macabre</em> — themed around a ghostly orchestra and cursed conductor Joseph Charlatan. Won the 2025 Golden Ticket Award for Best New Family Attraction. Dark and intense, but brilliant. (<a href="https://www.efteling.com/en/park/attractions/danse-macabre">Efteling</a>)</p>
+    <span class="family-tag">✓ Ages 8+ — may be spooky for sensitive kids</span>
+  </div>
+
+  <div class="ride-card">
+    <h4>Baron 1898</h4>
+    <div class="ride-meta">2015 · B&amp;M dive coaster · Min. 132 cm · 90 km/h</div>
+    <p>Efteling's most intense ride. Near-vertical 37.5-metre drop into a mine shaft with an agonising hang over the edge before release. The preshow — featuring the ghostly Witte Wieven projection — is considered the best on any dive coaster in the world. Currently closed for maintenance until April 30, 2026, but will be fully operational for a late June visit.</p>
+    <span class="family-tag">Depends on height &amp; nerve</span>
+  </div>
+
+  <div class="ride-card">
+    <h4>De Vliegende Hollander (The Flying Dutchman)</h4>
+    <div class="ride-meta">2007 · Water coaster + dark ride · Min. 120 cm</div>
+    <p>Half dark ride, half water coaster. Sail through a 17th-century haunted port in atmospheric fog, then launch into an outdoor splash finale based on the Dutch legend of the cursed ghost ship. You will get somewhat wet. (<a href="https://www.coaster101.com/2025/08/06/eftelings-11-best-attractions/">Coaster101</a>)</p>
+    <span class="family-tag">✓ Ideal for 10-year-olds</span>
+  </div>
+
+  <div class="ride-card">
+    <h4>Hooghmoed — NEW for 2026</h4>
+    <div class="ride-meta">Opens May 1, 2026 · Drop tower · Min. 90 cm with adult</div>
+    <p>Brand-new junior drop tower built next to Baron 1898, sharing the same mining-smeltery theme. Three 12-metre towers, 6-metre free fall with spinning rotation, mist and smoke effects. Designed specifically for visitors who can't yet ride Baron 1898. Will be open well before your July visit. (<a href="https://www.efteling.com/en/press/new-drop-tower-attraction-hooghmoed-to-open-at-efteling-on-1-may-2026/">Efteling</a>)</p>
+    <span class="family-tag">✓ Perfect for 10-year-olds</span>
+  </div>
+
+  <div class="ride-card">
+    <h4>Joris en de Draak (George and the Dragon)</h4>
+    <div class="ride-meta">2010 · Double-track wooden racing coaster · Min. 110 cm with adult</div>
+    <p>Two simultaneous tracks — Fire and Water — race each other, with a photo-finish winner declared at the end. Choose your dragon. Single rider queue available. One of the most popular rides in the park.</p>
+    <span class="family-tag">✓ Ideal for 10-year-olds</span>
+  </div>
+
+  <p>Other family highlights include <strong>Fata Morgana</strong> (a boat ride through the world of 1001 Nights with 140 animatronics — often compared to Pirates of the Caribbean), <strong>Vogel Rok</strong> (fast indoor roller coaster in near-complete darkness), <strong>Villa Volta</strong> (a Madhouse illusion ride), <strong>Max &amp; Moritz</strong> (twin family coasters), and <strong>Piraña</strong> (river rapids — expect to get soaked). The <strong>Gondoletta</strong> is a peaceful 20-minute boat cruise around the park lake — the perfect break between adrenaline.</p>
+
+  <div class="dyk">
+    <div class="dyk-title">Did You Know?</div>
+    <p>The Gondoletta was never meant to be permanent. It was built as a prototype water transport system for a 1001 Nights dark ride that was never built. The prototype became one of the park's most beloved attractions — still running 40+ years later. (<a href="https://coasterpedia.net/wiki/Gondoletta_(Efteling)">Coasterpedia</a>)</p>
+  </div>
+
+  <h3>Shows &amp; Events</h3>
+  <h3 class="feature-title">What's On During Your Visit</h3>
+
+  <p><strong>Aquanura</strong> — the largest water show in Europe — runs multiple times daily. Hundreds of fountains choreographed to music, fire, and lights. Spectacular at dusk. Free to watch, no booking needed.</p>
+
+  <p><strong>Magicaluna</strong> — a brand-new 20-minute daytime illusion show debuting April 3, 2026 at the Efteling Theatre. Non-verbal, about a teenage girl whose dream builders transform her bedroom into a spectacle. Runs daily at 12:30, 13:30, and 14:30 through November 2026. (<a href="https://www.themeparkinsider.com/flume/202601/12277/">Theme Park Insider</a>)</p>
+
+  <p><strong>Summer Efteling</strong> (July and August) brings extended opening hours — until 8pm most nights, and until <strong>11pm on Fridays and Saturdays</strong>. Extra characters, entertainment, food, and a Summer Beach play area. (<a href="https://www.efteling.com/en/park/seasons/summer">Efteling Summer Season</a>)</p>
+
+  <p><strong>Note:</strong> The Raveleijn outdoor arena show is closed through 2026 for a complete overhaul (new show, new ride, new food court — reopening end of 2026). You won't see it this trip, but expect something spectacular next time. (<a href="https://magicbreaks.co.uk/efteling/general-information/news-events/">Magic Breaks</a>)</p>
+
+  <h3>The Design Philosophy</h3>
+  <h3 class="feature-title">Why Efteling Feels Different</h3>
+
+  <p>Visitors from Disney and Universal parks are often struck by something they can't quite articulate about Efteling. It comes down to five principles that have held since 1952:</p>
+
+  <p><strong>Handcrafted authenticity.</strong> Every building uses real stone, carved wood, painted murals, and hand-placed detail. The absence of corporate design efficiency is palpable. (<a href="https://vocal.media/journal/timeless-charm-the-enduring-design-legacy-of-efteling-fairytale-park">Vocal Media</a>)</p>
+
+  <p><strong>Nature integration.</strong> The park was built within existing woodland. Trees, ponds, moss, and natural growth are woven into every attraction. Efteling feels like a forest that happens to contain wonders.</p>
+
+  <p><strong>Storytelling primacy.</strong> Every space tells a story — from the grandest ride to the humblest bin. The famous <strong>Holle Bolle Gijs</strong> paper-eating bins have been crying <em>"Papier hier!"</em> since 1959. Even they have a backstory and original sound design.</p>
+
+  <p><strong>Non-corporate ownership.</strong> Because Efteling is a non-profit foundation, design decisions serve creative and cultural values, not shareholder returns. Attractions aren't bulldozed for being unprofitable — they're maintained and honoured.</p>
+
+  <div class="angle">
+    <div class="angle-label">The Take</div>
+    <p>Efteling is what happens when you build a theme park on artistic integrity instead of IP licensing. Anton Pieck and Ton van de Ven — the two visionaries who shaped the park across five decades — believed rides should be stories you inhabit, not brands you recognise. The result is a park that feels handmade in a way that no Disney park, however brilliant, can replicate.</p>
+  </div>
+
+  <div class="src"><a href="https://www.efteling.com/en/about-efteling/history">Efteling History</a> · <a href="https://en.wikipedia.org/wiki/Efteling">Wikipedia</a> · <a href="https://www.coaster101.com/2025/08/06/eftelings-11-best-attractions/">Coaster101</a> · <a href="https://www.efteling.com/en/about-efteling/fairytales/designers">Efteling Designers</a></div>
+</section>
+
+<!-- ══════════ THE WONDER HOTEL ══════════ -->
+<hr class="divider dv-efteling">
+<section class="sec hotel-section">
+  <span class="section-label" style="color: var(--rose)">Accommodation — Nights 1 &amp; 2</span>
+  <h2>The Wonder Hotel</h2>
+
+  <img class="hero-img" src="https://content.presspage.com/uploads/1877/08e8e886-8f92-4f0d-8eae-69752d3db155/1920_eftelingwonderhotelimpression.jpg?10000" alt="Efteling Wonder Hotel architectural impression showing the enchanting themed exterior">
+  <div class="caption">The Efteling Wonder Hotel — your fairy-tale castle base for two nights. <a href="https://www.efteling.com/en/wonder-hotel">Efteling</a></div>
+
+  <p>Originally opened in 1992 as the Efteling Hotel, fully renovated and relaunched as the <strong>Wonder Hotel</strong> in April 2025. Designed as a "castle in the clouds" with four distinctive towers, 124 rooms and suites, and subtle fairy-tale references hidden throughout — mice in the walls, Red Shoes in the cupboard, story Easter eggs in the room design. (<a href="https://www.efteling.com/en/press/efteling-wonder-hotel-reopens-following-renovations/">Efteling Press</a>)</p>
+
+  <h3>What's Included With Your Stay</h3>
+
+  <div class="dual-col">
+    <div class="col-card accent-rose">
+      <h3>30-Minute Early Entry</h3>
+      <p>Access the park 30 minutes before public opening via a private hotel entrance. This is the single most valuable perk — reach Symbolica or Droomvlucht with near-zero queues before the masses arrive.</p>
+    </div>
+    <div class="col-card accent-rose">
+      <h3>Unlimited Park Access</h3>
+      <p>Your park tickets cover all nights of stay, including arrival and departure days. With a June 30 check-in and July 2 check-out, that's three full days in Efteling.</p>
+    </div>
+  </div>
+
+  <p>Also included: <strong>breakfast buffet</strong> daily (7:30–10:30 am, with character visits from Efteling characters), <strong>free parking</strong>, and a <strong>private hotel entrance</strong> to the park — no queuing at the main gate. (<a href="https://www.efteling.com/en/wonder-hotel">Efteling Wonder Hotel</a>)</p>
+
+  <h3>Dining at the Hotel</h3>
+
+  <p><strong>Restaurant Saga</strong> is the hotel's main sit-down dinner restaurant — themed, highly rated, and worth booking in advance. <strong>De Gelagkamer</strong> hotel bar serves snacks and cocktails into the evening, with games available. The breakfast restaurant offers a themed buffet that, according to consistent guest feedback, is made particularly special for children by character visits. (<a href="https://www.tripadvisor.com/Hotel_Feature-g188584-d229189-zft1-Efteling_Wonder_Hotel.html">TripAdvisor</a>)</p>
+
+  <div class="dyk">
+    <div class="dyk-title">Did You Know?</div>
+    <p>Since August 2025, Efteling also has the <strong>Grand Hotel</strong> — the first hotel located <em>inside</em> the park itself, with views of the Aquanura water show and the Fairytale Forest. It set a Guinness World Record on opening day for the world's largest ribbon bow (16.74m × 17.15m). You're at the Wonder Hotel this trip — but note it for next time. (<a href="https://www.efteling.com/en/press/dutch-theme-park-efteling-breaks-world-record-to-celebrate-new-hotel-opening/">Efteling Press</a>)</p>
+  </div>
+
+  <div class="src"><a href="https://www.efteling.com/en/wonder-hotel">Efteling Wonder Hotel</a> · <a href="https://www.efteling.com/en/press/efteling-wonder-hotel-reopens-following-renovations/">Renovation Press Release</a></div>
+</section>
+
+<!-- ══════════ BEEKSE BERGEN: THE WILD SIDE ══════════ -->
+<hr class="divider dv-safari">
+<section class="sec safari-section">
+  <span class="section-label">Beekse Bergen — The Wild Side</span>
+  <h2>The Largest Wildlife Safari in the Benelux</h2>
+
+  <img class="hero-img" src="https://cdn.libemaweb.com/f/151320/2560x1708/8026d1e2cb/autosafari-giraf-auto-safaripark-beekse-bergen.jpg/m/3840x0/filters:fill(transparent):focal(1367x1245:1368x1246):quality(75)" alt="Giraffe approaching a car during the auto safari at Safaripark Beekse Bergen">
+  <div class="caption">The car safari at Beekse Bergen — where giraffes lean in to inspect your vehicle. <a href="https://www.beeksebergen.nl/en">Beekse Bergen</a></div>
+
+  <p>Twenty minutes from Efteling, in the Noord-Brabant countryside between Tilburg and Hilvarenbeek, sits a 120-hectare open savannah housing approximately <strong>1,250 animals from over 150 species</strong>. When Safaripark Beekse Bergen opened in 1968 as the "Lion Park," it was the first safari park in the Netherlands — a revolutionary concept where visitors could observe lions from their own car with no fence between them. (<a href="https://en.wikipedia.org/wiki/Safaripark_Beekse_Bergen">Wikipedia</a>)</p>
+
+  <p>In 2024, the park broke its all-time record with <strong>1.5 million visitors</strong>. Its parent company, Libéma, acquired Paignton Zoo in the UK in January 2026 and has announced a ten-year expansion plan. This is not a roadside petting zoo — it's one of Europe's most important conservation centres, coordinating the European Endangered Species Programme (EEP) for both <strong>Southern white rhinoceros</strong> and <strong>Southern African cheetah</strong>. (<a href="https://www.beeksebergen.nl/en/news/safaripark-beekse-bergen-breaks-record-with-one-and-a-half-million-visitors">Beekse Bergen</a>)</p>
+
+  <div class="stat-bar">
+    <div class="stat"><div class="stat-num">1,250</div><div class="stat-label">Animals</div></div>
+    <div class="stat"><div class="stat-num">150+</div><div class="stat-label">Species</div></div>
+    <div class="stat"><div class="stat-num">4</div><div class="stat-label">Safari Types</div></div>
+    <div class="stat"><div class="stat-num">1.5M</div><div class="stat-label">Visitors (2024)</div></div>
+  </div>
+
+  <h3>Four Ways to Safari</h3>
+  <h3 class="feature-title">All Included With One Ticket</h3>
+
+  <p>All four safari experiences are included in a single entrance ticket — no surcharges. (<a href="https://www.beeksebergen.nl/en/on-safari/safaripark/safari-options/bus-safari">Beekse Bergen</a>)</p>
+
+  <div class="safari-card">
+    <h4>🚗 Car Safari (Autosafari)</h4>
+    <div class="safari-meta">30–60 minutes · Drive your own vehicle · No fence between you and the animals</div>
+    <p>The signature experience. Lions, leopards, zebras, giraffes, Cape buffalo, cheetahs, rhinos, wildebeest — all on open savannah as you drive through. Download the Beekse Bergen app beforehand for audio commentary synced to your route. The car safari closes 30 minutes before the rest of the park — go first thing. A giraffe stretching its neck into your car window is a genuine possibility. (<a href="https://www.beeksebergen.nl/en/on-safari/safaripark/safari-options/car-safari">Beekse Bergen</a>)</p>
+  </div>
+
+  <div class="safari-card">
+    <h4>🚶 Walking Safari</h4>
+    <div class="safari-meta">Self-paced · Lions, hyenas, elephants, penguins, giraffes · Adventure routes for kids</div>
+    <p>Set your own pace across the park on foot. The route passes through Elephant Valley — where visitors walk beneath a corridor connecting two elephant plains — and includes playground breaks built into the route. Perfect for active 10-year-olds. Wear comfortable shoes. (<a href="https://www.beeksebergen.nl/en/on-safari/safaripark/safari-options/walking-safari">Beekse Bergen</a>)</p>
+  </div>
+
+  <div class="safari-card">
+    <h4>⛵ Boat Safari</h4>
+    <div class="safari-meta">30 minutes · Ranger-narrated · Rhinos, cheetahs, yaks</div>
+    <p>A scenic cruise aboard the Livingstone or Stanley, narrated by an experienced ranger. Spot animals you'd miss from the car — rhinos grazing on the banks, cheetahs hiding in undergrowth. The most relaxing safari — ideal after a busy morning on foot. Check departure times in the app. (<a href="https://www.beeksebergen.nl/en/on-safari/safaripark/safari-options/boat-safari">Beekse Bergen</a>)</p>
+  </div>
+
+  <div class="safari-card">
+    <h4>🚌 Bus Safari</h4>
+    <div class="safari-meta">45 minutes · Guided by ranger · Props, bones, and droppings</div>
+    <p>An educational guided tour in two legs with a ranger on board. The interactive format is brilliant for kids — rangers bring animal furs, bones, and yes, droppings, for a sensory experience. Route 1 covers zebras, camels, rhinos, cheetahs. Route 2: giraffes, Cape buffalo, lions. (<a href="https://www.beeksebergen.nl/en/on-safari/safaripark/safari-options/bus-safari">Beekse Bergen</a>)</p>
+  </div>
+
+  <h3>The Stars of the Show</h3>
+  <h3 class="feature-title">Who You'll Meet</h3>
+
+  <p><strong>Lions</strong> — visible on walking, car, and bus safaris. The Simbara lion viewpoint is a must-see, especially at feeding time (check schedule on arrival). From Safari Resort cabins, some guests watch lion feeding from their own window.</p>
+
+  <p><strong>Giraffes</strong> — the car safari's most iconic moment. In January 2025, four Nubian giraffe calves were born: males Bata, Kito, and Iggy, and female Milele — a remarkable breeding success for an IUCN-vulnerable species. By your July visit, they'll be 18 months old and visible on the open plains. (<a href="https://www.youtube.com/watch?v=KPnPDGznqKY">YouTube</a>)</p>
+
+  <p><strong>Cheetahs</strong> — Beekse Bergen coordinates the European cheetah breeding programme. In May 2025, five cheetah cubs were born — only the third litter born anywhere in Europe that year. Only around 7,000 cheetahs remain in the wild globally. (<a href="https://www.beeksebergen.nl/en/news/special-birth-five-cheetawelps-in-safaripark-beekse-bergs">Beekse Bergen</a>)</p>
+
+  <p><strong>African Elephants</strong> — Elephant Valley is an architectural highlight. Three baby elephants — Mosi, Ajabu, and Tendai — prompted a 2-hectare expansion in 2023. The valley features a walking corridor <em>underneath</em> the elephants. The park's star is <strong>Calimero</strong> — Europe's largest elephant at over 3 tonnes. (<a href="https://www.beeksebergen.nl/en/on-safari/safaripark/animals/elephant">Beekse Bergen</a>)</p>
+
+  <p><strong>White Rhinos</strong> — Beekse Bergen also coordinates the EEP for Southern white rhinos. The park's conservation chief, Lars Versteege, chairs the global Rhinoceros Taxon Advisory Group protecting all five rhino species worldwide.</p>
+
+  <p>Also look for: <strong>hippos</strong> (the feeding session is a visitor favourite), African penguins, spotted hyenas, leopards, African wild dogs, red pandas, Siberian tigers, okapis, and Przewalski's horses — a species once extinct in the wild, now being reintroduced with support from Beekse Bergen. (<a href="https://www.beeksebergen.nl/en/nature-conservation/our-contribution/species-conservation">Beekse Bergen Conservation</a>)</p>
+
+  <div class="dyk">
+    <div class="dyk-title">Did You Know?</div>
+    <p>Every giraffe's spot pattern is unique — just like a human fingerprint. Keepers at Beekse Bergen identify each giraffe by sight from their pattern alone. (<a href="https://www.beeksebergen.nl/en/on-safari/safaripark/safari-options/bus-safari">Beekse Bergen</a>)</p>
+  </div>
+
+  <h3>Conservation</h3>
+  <h3 class="feature-title">Not Just a Zoo — A Conservation Hub</h3>
+
+  <p>Beekse Bergen raised <strong>€60,000</strong> to build a wildlife corridor in Kenya — a strip of protected land connecting two nature reserves so elephants can roam safely without conflicting with farming communities. The Northern Corridor officially opened in August 2025, with Beekse Bergen's head elephant keeper and conservation director present at the ceremony. (<a href="https://www.beeksebergen.nl/en/northern-corridors-project">Northern Corridors Project</a>)</p>
+
+  <p>No animals at the park are taken from the wild. Every animal was either born here or arrived from another zoo through managed breeding programmes. The park participates in over a dozen European Endangered Species Programmes, with cheetah and white rhino as its flagships. (<a href="https://www.beeksebergen.nl/en/nature-conservation/our-contribution/species-conservation">Beekse Bergen Conservation</a>)</p>
+
+  <div class="angle">
+    <div class="angle-label">The Take</div>
+    <p>Beekse Bergen isn't behind glass. It's a park where you drive your own car through open savannah and a giraffe sticks its head through your window. The conservation work is genuine — this isn't theatre. The cheetah and rhino breeding programmes are among Europe's most important, and the Kenya wildlife corridor is real. Your visit directly funds that work.</p>
+  </div>
+
+  <div class="src"><a href="https://en.wikipedia.org/wiki/Safaripark_Beekse_Bergen">Wikipedia</a> · <a href="https://www.beeksebergen.nl/en">Beekse Bergen</a> · <a href="https://www.beeksebergen.nl/en/nature-conservation/our-contribution/species-conservation">Conservation</a></div>
+</section>
+
+<!-- ══════════ SAFARI HOTEL & SPEELLAND ══════════ -->
+<hr class="divider dv-safari">
+<section class="sec safari-hotel-section">
+  <span class="section-label" style="color: var(--safari-accent)">Accommodation — Nights 3–7</span>
+  <h2>Safari Hotel &amp; Speelland</h2>
+
+  <img class="hero-img" src="https://a.storyblok.com/f/151320/2560x1707/23eb286b7e/gezin-zomer-savanne-lodge-giraffe-safari-resort-beekse-bergen.jpg" alt="Family watching a giraffe from their lodge terrace at Safari Resort Beekse Bergen">
+  <div class="caption">Waking up to giraffes from your room at the Safari Hotel. <a href="https://www.beeksebergen.nl/en/stay-the-night/hotel-resorts/safari-hotel">Beekse Bergen</a></div>
+
+  <p>The <strong>Safari Hotel Beekse Bergen</strong> is an African lodge-style hotel set directly on the park's Wongo savannahs. From your room window, you watch zebras, giraffes, and rhinos move past at dawn. The aesthetic is warm earth tones, textured fabrics, and African-inspired artwork — "upmarket game lodge" rather than gimmick. The hotel carries a 9.8/10 rating on Expedia. (<a href="https://www.beeksebergen.nl/en/stay-the-night/hotel-resorts/safari-hotel">Beekse Bergen Safari Hotel</a>)</p>
+
+  <h3>What's Included</h3>
+
+  <div class="dual-col">
+    <div class="col-card accent-safari">
+      <h3>Unlimited Attractions Pass</h3>
+      <p>Unlimited access to Safaripark, Speelland water park, plus Eindhoven Zoo, ZooParc Overloon, and Aviodrome — brilliant for bad-weather days or variety.</p>
+    </div>
+    <div class="col-card accent-safari">
+      <h3>Exclusive Experiences</h3>
+      <p>Priority booking for the Gamedrive (open-top Land Cruiser, ranger-led, close-range encounters). Private Gamedrive option for your party only. Walk-with-a-ranger experience.</p>
+    </div>
+  </div>
+
+  <h3>Dining at the Safari Hotel</h3>
+
+  <p><strong>Amma</strong> — breakfast and dinner buffet with views directly over the savannah. Breakfast is included with your stay. <strong>Nommos</strong> — à la carte dinner for a culinary evening with wildlife views. <strong>Hogon Bar &amp; Lounge</strong> — casual all-day coffee, lunch, cocktails, and mocktails. At the nearby Safari Resort, <strong>Restaurant Moto</strong> serves grilled food with an African-inspired menu — and drinks at the bowling lane arrive by robot. (<a href="https://www.beeksebergen.nl/en/stay-the-night/practical-info/facilities-activities/food-drinks/restaurant-moto">Beekse Bergen</a>)</p>
+
+  <h3>Speelland — The Water Park &amp; Playground</h3>
+
+  <p><a href="https://www.beeksebergen.nl/en/on-safari/speelland">Speelland</a> is Beekse Bergen's dedicated fun zone — included in your Attractions Pass. The outdoor water park on Lake Victoria features the Waverider (speedboat carousel), Duo Water Slide, Aquashuttle, Adventure Island, flamingo-shaped pedal boats, water gun battles, and a sandy beach with swimming. At 10 years old and typical height, your son has access to nearly every attraction.</p>
+
+  <p>Speelland Indoor — an all-weather adventure island with climbing frames, slides, ball pools, and trampolines — is open year-round. A lifesaver for the inevitable rainy Netherlands afternoon. (<a href="https://www.beeksebergen.nl/en/on-safari/speelland">Speelland</a>)</p>
+
+  <div class="src"><a href="https://www.beeksebergen.nl/en/stay-the-night/hotel-resorts/safari-hotel">Safari Hotel</a> · <a href="https://www.beeksebergen.nl/en/on-safari/speelland">Speelland</a> · <a href="https://little-clogs-holidays.co.uk/blog/reviews/review-beekse-bergen-a-gem-of-a-place/">Little Clogs Holidays</a></div>
+</section>
+
+<!-- ══════════ THE JOURNEY ══════════ -->
+<hr class="divider dv-journey">
+<section class="sec journey-section">
+  <span class="section-label">The Journey</span>
+  <h2>Belfast to Brabant — and Getting Around</h2>
+
+  <img class="hero-img" src="https://images.unsplash.com/photo-1754835143820-bcf20e2e1a35?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxjb2xsZWN0aW9uLXBhZ2V8M3wyNTExNDQyfHxlbnwwfHx8fHw%3D" alt="Historic Dutch canal houses reflected in an Amsterdam canal">
+  <div class="caption">Amsterdam — your gateway to Noord-Brabant. <a href="https://unsplash.com">Unsplash</a></div>
+
+  <h3>Schiphol → Efteling</h3>
+  <h3 class="feature-title">Three Options, One Recommendation</h3>
+
+  <div class="route-card">
+    <h4>🚗 Rental Car (Recommended)</h4>
+    <div class="route-meta">~1h 15 min · €30–70/day · Maximum flexibility for the full trip</div>
+    <p>The strongest option for this trip. All major rental companies are at <a href="https://www.enterprise.com/en/car-rental-locations/nl/amsterdam-schiphol-airport-ln01.html">Schiphol Plaza</a>. Budget €350–500 for a 7-day rental with fuel. Gives total freedom for the Efteling-to-Beekse-Bergen transfer (23 minutes), day trips to Den Bosch and Tilburg, and stress-free luggage handling with a child. Book in advance for best rates.</p>
+  </div>
+
+  <div class="route-card">
+    <h4>🚆 Train + Bus</h4>
+    <div class="route-meta">~2h 15 min · €21–30 per person · Comfortable, frequent</div>
+    <p>Intercity train from Schiphol Airport Station to <strong>'s-Hertogenbosch (Den Bosch)</strong> (~68 min, 78 trains/day), then Bus 300 or 301 to Efteling (~20 min, every 20 min). The bus stops at the park entrance. Book via <a href="https://www.ns.nl/en">NS (Dutch Railways)</a> or just tap your contactless bank card on board. (<a href="https://www.ns.nl/en/routes/schiphol-airport-to-s-hertogenbosch">NS</a>)</p>
+  </div>
+
+  <div class="route-card">
+    <h4>🚌 FlixBus Direct</h4>
+    <div class="route-meta">~1h 50 min · €9–14 per person · Once daily only</div>
+    <p>Direct service from Amsterdam Bijlmer Arena (not Schiphol) to Efteling. Cheapest option, but only one departure per day (8:45am from Bijlmer), making it inflexible. Book at <a href="https://www.flixbus.com/bus-routes/bus-amsterdam-kaatsheuvel-efteling">flixbus.com</a>.</p>
+  </div>
+
+  <h3>Efteling → Beekse Bergen</h3>
+  <h3 class="feature-title">Twenty Minutes Apart</h3>
+
+  <p>The two parks are remarkably close — just <strong>22 km apart, a 23-minute drive</strong> via the N261 and N65. With a rental car, this is trivially easy. Without one, pre-book a local taxi (€70–85) or take Bus 301 to Tilburg then Bus 142/143 to Hilvarenbeek Safaripark (~1h 15 min). (<a href="https://www.rome2rio.com/s/De-Efteling/Safaripark-Beekse-Bergen">Rome2Rio</a>)</p>
+
+  <h3>Dutch Travel Essentials</h3>
+  <h3 class="feature-title">Apps, Payment, Plugs, Language</h3>
+
+  <p><strong>Payment:</strong> Contactless debit/credit card is accepted almost everywhere and is the default. Apple Pay and Google Pay work widely. Cash (euros) is accepted most places but some businesses are card-only. Avoid large notes (€100/€200). Your Irish bank card works via contactless. (<a href="https://www.holland.com/global/tourism/getting-around/information/tipping-and-cash">Holland.com</a>)</p>
+
+  <p><strong>Apps to download:</strong> <strong>9292</strong> (the definitive Dutch public transport planner), <strong>NS</strong> (train tickets), <strong>Google Maps</strong> (offline maps for Noord-Brabant), <strong>Efteling app</strong>, <strong>Beekse Bergen 2.0 app</strong>. (<a href="https://cellulardata.ubigi.com/blog/articles/10-essential-apps-for-your-trip-to-the-netherlands/">Ubigi</a>)</p>
+
+  <p><strong>Power plugs:</strong> The Netherlands uses <strong>Type C/F (round two-pin)</strong>. Irish/UK plugs will not fit without a European adapter. Buy one before departure. Voltage is 230V/50Hz — same as Ireland, so no converter needed. (<a href="https://www.electricalsafetyfirst.org.uk/guidance/advice-for-you/when-travelling/travel-adaptor-for-the-netherlands/">Electrical Safety First</a>)</p>
+
+  <p><strong>Language:</strong> English is widely spoken, especially in tourist areas and among younger people. Staff at both parks speak excellent English. That said, a few words of Dutch are always appreciated: <em>Dank je wel</em> (thank you), <em>Alsjeblieft</em> (please/here you go), and <em>Lekker!</em> (delicious). (<a href="https://expatexplore.com/blog/essential-dutch-phrases-holland-trip">Expat Explore</a>)</p>
+
+  <p><strong>Tap water:</strong> Among the best in Europe and completely safe to drink. Fill a reusable bottle throughout the trip. Not chlorinated. (<a href="https://wise.com/au/blog/tap-water-in-netherlands">Wise</a>)</p>
+
+  <p><strong>Tipping:</strong> Refreshingly relaxed. Service workers receive fair wages. 5–10% at restaurants for good service. Round up at bars. No guilt. (<a href="https://dutchreview.com/culture/a-guide-to-tipping-culture-in-the-netherlands/">DutchReview</a>)</p>
+
+  <div class="dyk">
+    <div class="dyk-title">Did You Know?</div>
+    <p>You can now tap any contactless bank card directly on Dutch buses, trains, and trams — no special transit card needed. The system is called OVpay and it means tourists no longer need to buy a separate OV-chipkaart. Your Irish Visa or Mastercard just works. (<a href="https://www.holland.com/global/tourism/getting-around/information/getting-around-in-the-netherlands/pay-in-public-transport">Holland.com</a>)</p>
+  </div>
+
+  <h3>Weather</h3>
+  <h3 class="feature-title">What to Expect in Late June / Early July</h3>
+
+  <p>Think unpredictable British summer but slightly warmer and sunnier. Average highs of <strong>19–23°C</strong>, lows of 12–15°C. June is the brightest month — sunrise around 5:15am, sunset after 9:45pm. Expect about 9 days of rain in June, typically short sharp showers rather than prolonged downpours. Pack for warm days with occasional showers and a couple of potentially hot days (28–30°C during a heat event). (<a href="https://weatherspark.com/m/52551/6/Average-Weather-in-June-in-Tilburg-Netherlands">WeatherSpark</a>)</p>
+
+  <div class="src"><a href="https://www.ns.nl/en/routes/schiphol-airport-to-s-hertogenbosch">NS Dutch Railways</a> · <a href="https://www.rome2rio.com/s/De-Efteling/Safaripark-Beekse-Bergen">Rome2Rio</a> · <a href="https://www.holland.com/global/tourism/getting-around/information/tipping-and-cash">Holland.com</a></div>
+</section>
+
+<!-- ══════════ THE MENU ══════════ -->
+<hr class="divider dv-food">
+<section class="sec food-section">
+  <span class="section-label">The Menu</span>
+  <h2>A Dutch Food Guide for the Trip</h2>
+
+  <img class="hero-img" src="https://food.fnr.sndimg.com/content/dam/images/food/fullset/2025/09/04/FNK_Dutch-Bitterballen_s4x3.jpg.rend.hgtvcom.616.462.suffix/1757013858357.webp" alt="Golden crispy Dutch bitterballen served with mustard">
+  <div class="caption">Bitterballen — crispy fried beef ragù balls with mustard. The pub classic. <a href="https://www.foodnetwork.com">Food Network</a></div>
+
+  <h3>The Essential Dutch Food List</h3>
+  <h3 class="feature-title">What to Eat and Where to Find It</h3>
+
+  <div class="food-card">
+    <h4>Stroopwafel</h4>
+    <div class="food-meta">Thin waffle sandwich with caramel syrup · Markets, bakeries, everywhere</div>
+    <p>The Netherlands' most famous export after bicycles and tulips. Buy them fresh from a market stall — the warm, gooey caramel version bears no resemblance to the packaged supermarket version you've tried at home.</p>
+  </div>
+
+  <div class="food-card">
+    <h4>Bitterballen</h4>
+    <div class="food-meta">Crispy fried beef ragù balls with mustard · Any Dutch café or bar</div>
+    <p>The universal Dutch pub snack. Crispy breadcrumbed exterior, molten beef ragù interior, served with sharp Dutch mustard. Order a portion at any bar or café. Your son will destroy them.</p>
+  </div>
+
+  <div class="food-card">
+    <h4>Bossche Bol</h4>
+    <div class="food-meta">Massive cream puff coated in dark chocolate · 's-Hertogenbosch</div>
+    <p>Noord-Brabant's signature treat. A cream puff the size of a small planet, entirely glazed in dark chocolate. Originates from Bakkerij Royal on Visstraat in Den Bosch — 25 minutes from Beekse Bergen. Non-negotiable day-trip food goal.</p>
+  </div>
+
+  <img class="inline-img" src="https://www.toineskitchen.com/wp-content/uploads/2024/05/IMG_3421-scaled.jpeg" alt="Bossche Bollen — giant chocolate-glazed cream puffs from 's-Hertogenbosch" style="width:100%; border-radius:8px;">
+  <div class="caption" style="color: rgba(255,255,255,.4);">Bossche Bollen — reason enough for a day trip to Den Bosch. <a href="https://www.toineskitchen.com">Toine's Kitchen</a></div>
+
+  <div class="food-card">
+    <h4>Kibbeling</h4>
+    <div class="food-meta">Battered fried cod pieces with tartar sauce · Market stalls</div>
+    <p>Dutch fish and chips, but better. Crispy battered cod nuggets served in a cone with creamy tartar sauce. Find them at any market stall or fishing harbour.</p>
+  </div>
+
+  <div class="food-card">
+    <h4>Poffertjes</h4>
+    <div class="food-meta">Tiny fluffy pancakes with butter and powdered sugar · Markets, cafés</div>
+    <p>Miniature Dutch pancakes dusted in powdered sugar and drowned in butter. Available at Efteling near the Steam Carousel at 't Poffertje, and at market stalls across Brabant.</p>
+  </div>
+
+  <div class="food-card">
+    <h4>Worstenbrood</h4>
+    <div class="food-meta">Brabant sausage roll · Every baker in the province</div>
+    <p>The Brabant version of a sausage roll — soft white bread wrapped around spiced minced meat. Unlike anything British. On UNESCO's intangible heritage list since 2016. Available from every baker year-round. (<a href="https://www.visitbrabant.com/en/tips/12-north-brabant-local-products-and-specialities">VisitBrabant</a>)</p>
+  </div>
+
+  <p>Also try: <strong>Dutch fries (friet)</strong> — thick-cut, twice-fried, served in a cone with mayo (or <em>patatje oorlog</em>: mayo + peanut sauce + onion). <strong>Hagelslag</strong> — chocolate sprinkles on buttered bread, yes, as a breakfast meal. <strong>Pannekoek</strong> — large thin Dutch pancakes. <strong>Appeltaart</strong> — deep Dutch apple cake. <strong>Kroket</strong> — breadcrumbed croquette from a FEBO vending machine. <strong>Drop</strong> — Dutch liquorice, an acquired taste.</p>
+
+  <h3>Where to Eat</h3>
+  <h3 class="feature-title">Near Both Parks</h3>
+
+  <p><strong>At Efteling:</strong> <strong>Polles Keuken</strong> — spectacular interior theming, famous Dutch pancakes (book weeks ahead). <strong>Het Witte Paard</strong> — excellent value self-service with healthy options. <strong>Bäckerei Krümel</strong> — sheet cake and bread pizzas near Max &amp; Moritz. The park specialty is the <strong>Kurkentrekker</strong> — a spiral pastry with fillings like chocolate mousse and caramel. (<a href="https://thetravelista.net/travel/the-ultimate-efteling-guide-top-tips-for-visiting-in-2025/">Travelista</a>)</p>
+
+  <p><strong>Near Efteling (Kaatsheuvel):</strong> <strong>De Molen</strong> (top-rated, French and seafood), <strong>Bij Anton</strong> (authentic Dutch eetcafé on Anton Pieckplein), <strong>De Roestelberg</strong> (hidden gem near the National Park). (<a href="https://www.tripadvisor.com/RestaurantsNear-g188584-d262610-Efteling-Kaatsheuvel_North_Brabant_Province.html">TripAdvisor</a>)</p>
+
+  <p><strong>Near Beekse Bergen (Hilvarenbeek):</strong> <strong>Roots</strong> (local produce, modern Dutch cooking). Worth a day trip: <strong>Tilburg</strong> (15 min) for Piushaven canalside dining. <strong>'s-Hertogenbosch</strong> (25 min) for the Bossche Bol and medieval city centre.</p>
+
+  <h3>Brabant Specialities</h3>
+  <h3 class="feature-title">Regional Treasures</h3>
+
+  <p><strong>Trappist beer:</strong> Noord-Brabant has two of the world's nine Authentic Trappist breweries — <strong>De Koningshoeven (La Trappe)</strong> in Berkel-Enschot (near Tilburg, well worth a visit) and De Kievit in Zundert. Monk-brewed excellence.</p>
+
+  <p><strong>Schrobbelèr:</strong> Local Tilburg herb liqueur made from 43 herbs and spices. Try it as a digestif at a local bar.</p>
+
+  <p><strong>Duingoed Kaas:</strong> Prize-winning cheese from the Loon and Drunen Dunes area, right next to Efteling. (<a href="https://www.visitbrabant.com/en/tips/12-north-brabant-local-products-and-specialities">VisitBrabant</a>)</p>
+
+  <img class="inline-img" src="https://tarasmulticulturaltable.com/wp-content/uploads/2017/02/Stroopwafels-Dutch-Syrup-Filled-Waffle-Cookies-4-of-6.jpg" alt="Freshly made Dutch stroopwafels" style="width:100%; border-radius:8px;">
+  <div class="caption" style="color: rgba(255,255,255,.4);">Stroopwafels — buy them fresh. The packaged version is a lie. <a href="https://tarasmulticulturaltable.com">Tara's Multicultural Table</a></div>
+
+  <div class="src"><a href="https://www.visitbrabant.com/en/tips/12-north-brabant-local-products-and-specialities">VisitBrabant</a> · <a href="https://www.tripadvisor.com/RestaurantsNear-g188584-d262610-Efteling-Kaatsheuvel_North_Brabant_Province.html">TripAdvisor</a> · <a href="https://thetravelista.net/travel/the-ultimate-efteling-guide-top-tips-for-visiting-in-2025/">Travelista</a></div>
+</section>
+
+<!-- ══════════ THE PREPARATION KIT ══════════ -->
+<hr class="divider dv-prep">
+<section class="sec prep-section">
+  <span class="section-label">The Preparation Kit</span>
+  <h2>What to Watch, Read, Play &amp; Listen To Before the Trip</h2>
+
+  <p>One hundred days is enough to build proper excitement. Here's the curated list — organised by category, with everything you need to turn anticipation into an art form.</p>
+
+  <h3>Films — Fairy Tales &amp; Safari</h3>
+
+  <p>These tales appear directly in Efteling's Fairytale Forest. Watch them before you walk through the real thing.</p>
+
+  <div class="prep-card">
+    <h4>Into the Woods (2014)</h4>
+    <div class="prep-meta">Disney+ · PG · Covers Little Red Riding Hood, Cinderella, Rapunzel, Jack and the Beanstalk</div>
+    <p>Meryl Streep and Emily Blunt in a musical that covers four Efteling fairy tales in one film. Darker and more Grimm in tone — closer to what you'll see in the Sprookjesbos than Disney's usual approach. (<a href="https://www.imdb.com/title/tt2180411/">IMDb</a>)</p>
+  </div>
+
+  <div class="prep-card">
+    <h4>Tangled (2010) / Sleeping Beauty (1959) / Snow White (1937)</h4>
+    <div class="prep-meta">Disney+ · All feature scenes in the Fairytale Forest</div>
+    <p>Rapunzel's tower, Sleeping Beauty's spinning wheel, Snow White's cottage — all are physically present in the Sprookjesbos. Efteling's versions are closer to the original Grimm tales than Disney's, which makes watching both interpretations beforehand surprisingly interesting.</p>
+  </div>
+
+  <div class="prep-card">
+    <h4>The Lion King (2019 + 1994)</h4>
+    <div class="prep-meta">Disney+ · All ages</div>
+    <p>Photorealistic African savannah. The best visual primer for Beekse Bergen's lions, elephants, and giraffes. Watch both versions and compare the animation — a surprisingly good conversation with a 10-year-old.</p>
+  </div>
+
+  <div class="prep-card">
+    <h4>Pirates of the Caribbean: Dead Man's Chest (2006)</h4>
+    <div class="prep-meta">Disney+ · Davy Jones and the Flying Dutchman ship appear</div>
+    <p>Context for Efteling's De Vliegende Hollander water coaster, which is based on the same Dutch legend of Captain van der Decken, cursed to sail the seas forever.</p>
+  </div>
+
+  <h3>TV &amp; Documentaries</h3>
+
+  <div class="prep-card">
+    <h4>Planet Earth II — Episode 5 (Grasslands)</h4>
+    <div class="prep-meta">Netflix / BBC iPlayer · Attenborough · Stunning 4K African savannah</div>
+    <p>The most accessible episode for Beekse Bergen prep. African savannah animals in their natural habitat — lions, wildebeest, and herds stretching to the horizon. Sets the tone perfectly.</p>
+  </div>
+
+  <div class="prep-card">
+    <h4>Dynasties — "Lion" Episode</h4>
+    <div class="prep-meta">Disney+ / BBC iPlayer · Each episode follows one animal family</div>
+    <p>A lion pride fighting for survival, told as drama. Gripping format that makes kids root for specific animals. Unmissable Beekse Bergen prep.</p>
+  </div>
+
+  <div class="prep-card">
+    <h4>The Imagineering Story (2019)</h4>
+    <div class="prep-meta">Disney+ · 6-part documentary</div>
+    <p>How Disney parks are designed and built. Excellent parallel viewing to Efteling content — sparks conversations about how stories become rides, and why Efteling does it differently.</p>
+  </div>
+
+  <div class="prep-card">
+    <h4>Efteling: Making of Symbolica (8 episodes)</h4>
+    <div class="prep-meta"><a href="https://www.youtube.com/watch?v=DdOhjRx_MOk">YouTube (free)</a> · Dutch with subtitles</div>
+    <p>Behind-the-scenes series showing the design, engineering, and music production of Symbolica. Perfect for a tech-curious kid — engineers, animatronics, set design.</p>
+  </div>
+
+  <h3>Books</h3>
+
+  <div class="prep-card">
+    <h4>Grimm's Complete Fairy Tales</h4>
+    <div class="prep-meta">Canterbury Classics or Penguin · All 200+ tales</div>
+    <p>Read the originals before the Fairytale Forest walk. They're darker and more atmospheric than the Disney versions, much closer to what you'll see at Efteling. Focus on the 10 Grimm tales in the Sprookjesbos: Snow White, Sleeping Beauty, Rapunzel, Hansel and Gretel, Rumpelstiltskin, The Frog King, Mother Holle, The Wolf and the Seven Kids, The Six Servants, and The Wishing-Table. (<a href="https://en.wikipedia.org/wiki/Fairytale_Forest">Wikipedia</a>)</p>
+  </div>
+
+  <div class="prep-card">
+    <h4>The Land of Stories: The Wishing Spell (Chris Colfer)</h4>
+    <div class="prep-meta">Ages 8–12 · Twins fall into a fairy-tale world where Grimm characters are real</div>
+    <p>A children's novel that treats fairy tales as real places you can visit — an ideal mindset to carry into Efteling. Brothers Grimm feature in later books in the series. (<a href="https://thelandofstories.com/books">Series Site</a>)</p>
+  </div>
+
+  <div class="prep-card">
+    <h4>National Geographic Kids Readers: Safari</h4>
+    <div class="prep-meta">Gail Tuchman · Photo-led · Age-perfect for 10</div>
+    <p>Lions, elephants, giraffes, zebras, hyenas — all the animals you'll see at Beekse Bergen, presented with the stunning photography National Geographic does best. (<a href="https://shop.scholastic.com/teachers-ecommerce/teacher/books/national-geographic-kids-readers-safari-9780545342667.html">Scholastic</a>)</p>
+  </div>
+
+  <h3>Games</h3>
+
+  <div class="prep-card">
+    <h4>Planet Coaster 2 (2024)</h4>
+    <div class="prep-meta">Steam Deck / PC / PS5 / Xbox · Includes a Fairytale Theme Pack</div>
+    <p>The most advanced theme park builder available. The dedicated Fairytale Theme Pack includes castle scenery, fairy-tale rides, and medieval elements — you can literally build an Efteling-style park before you visit. Runs well on Steam Deck. (<a href="https://store.steampowered.com/app/703080/Planet_Zoo/">Steam</a>)</p>
+  </div>
+
+  <div class="prep-card">
+    <h4>Planet Zoo + Africa Pack DLC</h4>
+    <div class="prep-meta">Steam Deck / PC · Build and manage a realistic zoo</div>
+    <p>From the same studio. The Africa Pack adds meerkats, white rhinos, African penguins, and fennec foxes. Build your own Beekse Bergen before seeing the real thing. (<a href="https://store.steampowered.com/app/1647620/Planet_Zoo_Africa_Pack/">Steam</a>)</p>
+  </div>
+
+  <div class="prep-card">
+    <h4>RollerCoaster Tycoon Classic (2024, Switch)</h4>
+    <div class="prep-meta">Nintendo Switch · Chris Sawyer's RCT1+RCT2 remastered</div>
+    <p>The original theme park builder, brought to Switch in December 2024. Challenge: build your best coaster before arriving at Efteling. (<a href="https://www.nintendo.com/us/store/products/rollercoaster-tycoon-classic-switch/">Nintendo Store</a>)</p>
+  </div>
+
+  <h3>YouTube — The Essential Pre-Trip Watchlist</h3>
+
+  <p><strong>Efteling:</strong> Start with the <a href="https://www.youtube.com/watch?v=yx3hBIJCk0I">76-minute history deep dive by The Miracle Detective Agency</a>, then watch POV ride videos on the <a href="https://www.youtube.com/efteling">official Efteling channel</a>. Key POVs: <a href="https://www.youtube.com/watch?v=xGGbwjWRPh8">Danse Macabre</a>, <a href="https://www.youtube.com/watch?v=cKqFux32-kw">Symbolica Treasure Tour</a>, <a href="https://www.youtube.com/watch?v=OO1v860Gi3Y">De Vliegende Hollander</a>. <a href="https://www.youtube.com/user/ThemeParkWorldwide">Theme Park Worldwide</a> has an <a href="https://www.youtube.com/watch?v=mlwJSEOETRM">Ultimate Guide to Efteling (March 2026)</a> that's excellent for planning.</p>
+
+  <p><strong>Beekse Bergen:</strong> <a href="https://www.youtube.com/watch?v=VCs-PZnFv_c">"The Closest Thing to a Real Safari"</a> (Jan 2026) covers all safari routes. <a href="https://www.youtube.com/watch?v=Z4S8Crh5_z4">"Giraffes Wash Our Car"</a> is exactly as good as it sounds. The <a href="https://www.youtube.com/watch?v=KPnPDGznqKY">four Nubian giraffe calves video</a> is irresistible at any age.</p>
+
+  <p><strong>Theme park engineering:</strong> <a href="https://www.youtube.com/channel/UCHGCKPtH71HZ8mQDu6FPUxQ">Theme Park Science</a> has a video on <a href="https://www.youtube.com/watch?v=jiA9wdxuDbA">how the Python was designed</a> in collaboration with Intamin Holland. <a href="https://www.youtube.com/defunctland">Defunctland</a> does brilliant documentary-style dives into theme park history.</p>
+
+  <h3>Podcasts — For the Flight</h3>
+
+  <div class="prep-card">
+    <h4>Park Rush — Episode 210: Efteling Trip Report</h4>
+    <div class="prep-meta"><a href="https://creators.spotify.com/pod/profile/parkrush/episodes/210-Efteling-Trip-Report-e1q1lpf">Spotify</a> · UK-based theme park podcast · Family-friendly tone</div>
+    <p>Hosted by Tom and Becky. Their Efteling trip report is accessible and enthusiastic — ideal listening for the Belfast-to-Amsterdam flight.</p>
+  </div>
+
+  <div class="prep-card">
+    <h4>Earth Rangers Podcast</h4>
+    <div class="prep-meta">Spotify / Apple Podcasts · Ages 6–12 · ~20 min episodes</div>
+    <p>Wild animal facts and conservation stories aimed squarely at your son's age group. Each episode is flight-length. Pair with Beekse Bergen prep.</p>
+  </div>
+
+  <div class="prep-card">
+    <h4>Brains On! — Animal Episodes</h4>
+    <div class="prep-meta">Spotify / Apple Podcasts · Award-winning kids' science podcast</div>
+    <p>Episodes on elephant communication, animal vision, and migration. Accessible, funny, not condescending.</p>
+  </div>
+
+  <h3>The Countdown Schedule</h3>
+
+  <p><strong>8 weeks out:</strong> Watch The Lion King (2019) and Planet Earth II Ep 5. Download Planet Coaster 2 or Planet Zoo.</p>
+  <p><strong>6 weeks out:</strong> Read Grimm's Fairy Tales together — focus on the 10 Sprookjesbos tales. Watch Into the Woods.</p>
+  <p><strong>4 weeks out:</strong> Watch the Efteling Full Tour video. Browse official POVs. Start The Land of Stories.</p>
+  <p><strong>2 weeks out:</strong> Watch Dynasties: Lion. Watch the Beekse Bergen car safari and giraffe videos. Download the Efteling app.</p>
+  <p><strong>1 week out:</strong> Watch the Making of Symbolica series. Listen to Park Rush Ep 210 on a family walk.</p>
+  <p><strong>Night before:</strong> Watch the Danse Macabre and Fabula POVs. Open the Efteling app and pick your Fairytale Forest favourites on the map.</p>
+
+  <div class="src"><a href="https://www.efteling.com/en">Efteling</a> · <a href="https://www.beeksebergen.nl/en">Beekse Bergen</a> · <a href="https://en.wikipedia.org/wiki/Fairytale_Forest">Fairytale Forest Wikipedia</a> · <a href="https://store.steampowered.com">Steam</a></div>
+</section>
+
+<!-- ══════════ THE PACKING LIST ══════════ -->
+<hr class="divider dv-ember">
+<section class="sec packing-section">
+  <span class="section-label" style="color: var(--ember)">The Packing List</span>
+  <h2>Everything You Need</h2>
+
+  <p>A theme park + wildlife safari trip with a 10-year-old in Dutch summer. Nothing optional marked as essential. Nothing essential left off.</p>
+
+  <h3>Clothing</h3>
+  <ul class="checklist">
+    <li>Light t-shirts (4–5) — mix short and long sleeve</li>
+    <li>Shorts (2–3)</li>
+    <li>Light trousers/jeans (1–2)</li>
+    <li>Light cardigan or sweatshirt (1–2)</li>
+    <li><strong>Waterproof/windproof packable rain jacket — ESSENTIAL, one each</strong></li>
+    <li>Comfortable walking shoes/trainers — the single most important item</li>
+    <li>Sandals or flip-flops for hotel and hot days</li>
+    <li>Swimwear (Speelland water park + hotel pools)</li>
+    <li>Sun hat (brim, not baseball — better UV coverage)</li>
+    <li>Sunglasses (for both of you)</li>
+    <li>Underwear and socks × 7+</li>
+  </ul>
+
+  <h3>Theme Park Essentials</h3>
+  <ul class="checklist">
+    <li>Small comfortable day backpack</li>
+    <li>Reusable water bottle — tap water is safe everywhere in NL</li>
+    <li>Compact folding umbrella or poncho</li>
+    <li>Portable phone charger / power bank</li>
+    <li>Spare clothes in a bag (water rides at Efteling, water park at Beekse Bergen)</li>
+    <li>Camera or phone with good camera; spare storage</li>
+    <li>Snacks from the supermarket — Dutch parks allow outside food</li>
+    <li>Dutch cash (€50–100) for market treats and small purchases</li>
+  </ul>
+
+  <h3>Safari Gear</h3>
+  <ul class="checklist">
+    <li><strong>Binoculars — essential for the Beekse Bergen car safari</strong></li>
+    <li>Camera with zoom capability for wildlife</li>
+    <li>Comfortable shoes that can get muddy (walking safari terrain)</li>
+    <li>Spare bag for wet/dirty clothes</li>
+    <li>Insect repellent — useful around the safari grounds</li>
+  </ul>
+
+  <h3>Health &amp; Sun</h3>
+  <ul class="checklist">
+    <li>High-SPF sunscreen (SPF 30 or 50) — Dutch summer sun is deceptive</li>
+    <li>Lip balm with SPF</li>
+    <li>Basic first aid: plasters, antiseptic wipes, antihistamine</li>
+    <li>Paracetamol / ibuprofen</li>
+    <li>Any prescription medications (plus copies of prescriptions)</li>
+  </ul>
+
+  <h3>Documents &amp; Tech</h3>
+  <ul class="checklist">
+    <li><strong>European travel adapter (Type C/F) — Irish/UK plugs won't fit</strong></li>
+    <li>Passports (valid past return date)</li>
+    <li>Travel insurance documents</li>
+    <li>Flight confirmation</li>
+    <li>Hotel booking confirmations (Efteling + Beekse Bergen)</li>
+    <li>Car rental confirmation</li>
+    <li>European Health Insurance Card (EHIC) or UK GHIC</li>
+    <li>Download before departure: 9292 app, NS app, Google Maps (offline maps for Noord-Brabant), Uber, Efteling app, Beekse Bergen 2.0 app</li>
+  </ul>
+
+  <div class="src">Compiled from <a href="https://weatherspark.com/m/52551/6/Average-Weather-in-June-in-Tilburg-Netherlands">WeatherSpark</a> · <a href="https://www.electricalsafetyfirst.org.uk/guidance/advice-for-you/when-travelling/travel-adaptor-for-the-netherlands/">Electrical Safety First</a> · <a href="https://www.beeksebergen.nl/en">Beekse Bergen</a></div>
+</section>
+
+<!-- ══════════ ON THE RADAR ══════════ -->
+<section class="sec radar-section">
+  <span class="section-label" style="color: var(--ember)">On the Radar — Key Dates</span>
+  <h2>Before You Go</h2>
+
+  <div class="radar-grid">
+    <div class="radar-row"><span class="radar-date">Mar 21</span><div><strong>Today — 100 days out.</strong> Start the Preparation Kit countdown schedule.</div></div>
+    <div class="radar-row"><span class="radar-date">Apr 3</span><div><strong>Magicaluna premieres</strong> — new daytime show at Efteling Theatre. Running daily through November.</div></div>
+    <div class="radar-row"><span class="radar-date">Apr 30</span><div><strong>Baron 1898 reopens</strong> — end of maintenance closure. Will be running for your visit.</div></div>
+    <div class="radar-row"><span class="radar-date">May 1</span><div><strong>Hooghmoed opens</strong> — new drop tower at Efteling. Operational well before your arrival.</div></div>
+    <div class="radar-row"><span class="radar-date">6 wks out</span><div><strong>Book Polles Keuken</strong> at Efteling via the app. Fills up weeks in advance.</div></div>
+    <div class="radar-row"><span class="radar-date">4 wks out</span><div><strong>Book Restaurant Saga</strong> at the Wonder Hotel for dinner. Book Restaurant Nommos at Safari Hotel.</div></div>
+    <div class="radar-row"><span class="radar-date">2 wks out</span><div><strong>Download all apps:</strong> Efteling, Beekse Bergen 2.0, 9292, NS, Google Maps (offline).</div></div>
+    <div class="radar-row"><span class="radar-date">1 wk out</span><div><strong>Buy European adapter.</strong> Charge power bank. Print backup park maps. Pack binoculars.</div></div>
+    <div class="radar-row"><span class="radar-date">Jun 30</span><div><strong>Day 1 — Belfast → Amsterdam → Efteling.</strong> The trip begins.</div></div>
+    <div class="radar-row"><span class="radar-date">Jul 2</span><div><strong>Transfer day — Efteling → Beekse Bergen.</strong> 23-minute drive. Check in Safari Hotel.</div></div>
+    <div class="radar-row"><span class="radar-date">Jul 7</span><div><strong>Day 8 — Beekse Bergen → Schiphol → Belfast.</strong> The trip ends. Start planning the next one.</div></div>
+  </div>
+
+  <div class="dyk">
+    <div class="dyk-title">Did You Know?</div>
+    <p>Kate Bush performed at Efteling in 1978 for a Dutch TV special — "De Efteling Special" — at the age of 19, fresh off the success of "Wuthering Heights." The performance was used to promote the park's new Haunted Castle. (<a href="https://en.wikipedia.org/wiki/Efteling">Wikipedia</a>)</p>
+  </div>
+</section>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer class="footer">
+  <div class="footer-brand">The Signal<span>.</span></div>
+  <div class="footer-sub">The Countdown — Efteling &amp; Beekse Bergen · 100 Days Out · March 21, 2026</div>
+</footer>
+
+</div>
+</body>
+</html>
