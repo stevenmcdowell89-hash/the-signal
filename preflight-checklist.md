@@ -106,55 +106,64 @@ These topics must have been searched during research. The validation script chec
 
 ---
 
-## EDITORIAL REVIEW — Human Judgment Required
+## EDITORIAL QUALITY — Enforced at Build Time
 
-These cannot be checked mechanically. Review after the machine checks pass.
+These rules are NOT a post-publish review for the reader. They are baked into the subagent prompts during Phase 3 (Build HTML). The editor is the AI. The reader never reviews.
 
-### Tone & Voice
+The following must be included in the build subagent's instructions:
 
-- [ ] Foreword finds one editorial thread — not a summary of the issue
-- [ ] Foreword does NOT use "meanwhile", "elsewhere", or "also this week"
-- [ ] Foreword does NOT restate the cover contents in prose form
-- [ ] Tone flexes by section (sharper for world news, enthusiastic for gaming, personality for football, practical for fitness)
-- [ ] Reads like a magazine, not a news digest or AI summary
-- [ ] Has opinions — at least one take the reader can agree or disagree with
-- [ ] Screen & Sound has editorial opinion, not just press-release summaries
+### Tone & Voice (instruct the builder)
+- Foreword finds one editorial thread — not a summary of the issue
+- Foreword does NOT use "meanwhile", "elsewhere", or "also this week"
+- Foreword does NOT restate the cover contents in prose form
+- Tone flexes by section (sharper for world news, enthusiastic for gaming, personality for football, practical for fitness)
+- Must read like a magazine, not a news digest or AI summary
+- Must include opinions — at least one take the reader can agree or disagree with
+- Screen & Sound has editorial opinion, not just press-release summaries
 
-### Content Quality
+### Content Quality (instruct the builder)
+- Stories framed through "what does this mean" / "the angle you didn't get from the headline"
+- No generic fitness advice written from training knowledge (must be sourced)
+- Football reads as narrative, not match reports
+- Tech reads as consumer impact, not press releases
+- Depth calibrated to significance (big stories get full treatment, minor stories get one-liners)
+- No work/enterprise content unless it clears the Monday-morning threshold
+- No UK party politics, celebrity gossip, crypto/Web3
 
-- [ ] Stories framed through "what does this mean" / "the angle you didn't get from the headline"
-- [ ] No generic fitness advice written from training knowledge (must be sourced)
-- [ ] Football reads as narrative, not match reports
-- [ ] Tech reads as consumer impact, not press releases
-- [ ] Depth calibrated to significance (big stories get full treatment, minor stories get one-liners)
-- [ ] No work/enterprise content unless it clears the Monday-morning threshold
-- [ ] No UK party politics, celebrity gossip, crypto/Web3
+### Wildcard Rule (instruct the research agents)
+- ≥ 2 items the reader did not ask for and would not have found themselves
+- At least 2 Long Shelf items are genuine surprises outside the reader's usual interests
+- The entire issue could NOT have been predicted from the reader's interest list alone
 
-### Wildcard Rule
+### Cross-Cluster Synthesis (instruct the builder)
+- At least one explicit connection made between stories in different sections
+- Local NI stories connected to wider context when relevant
 
-- [ ] ≥ 2 items the reader did not ask for and would not have found themselves
-- [ ] At least 2 Long Shelf items are genuine surprises outside the reader's usual interests
-- [ ] The entire issue could NOT have been predicted from the reader's interest list alone
+### The Reader's Son (instruct the research + builder agents)
+- At least one mention of family-friendly/co-op content when relevant games or shows are covered
 
-### Cross-Cluster Synthesis
-
-- [ ] At least one explicit connection made between stories in different sections
-- [ ] Local NI stories connected to wider context when relevant
-
-### The Reader's Son
-
-- [ ] At least one mention of family-friendly/co-op content when relevant games or shows are covered
-
-### Book Recommendations
-
-- [ ] At least one "If you liked X, try Y" recommendation (rotate across issues — not required every single week, but should appear most weeks)
+### Book Recommendations (instruct the shelf research agent)
+- At least one "If you liked X, try Y" recommendation most weeks
 
 ---
 
-## Post-Publish
+## MACHINE-VERIFIABLE EDITORIAL CHECKS
 
-- [ ] HTML renders correctly at 880px width
-- [ ] All links work (spot-check 5 random links)
+The following editorial rules CAN be partially automated and are added to `validate-issue.py`:
+
+- [ ] Foreword does not contain "meanwhile", "elsewhere", or "also this week"
+- [ ] No mentions of "enterprise", "CI/CD", "DevOps", "SaaS" (work content leak)
+- [ ] No mentions of "celebrity", "gossip" (exclusion zone)
+- [ ] No mentions of "crypto", "web3", "blockchain" (exclusion zone unless major crossover)
+- [ ] At least one "if you liked" or "try" recommendation in The Shelf section
+- [ ] Foreword does not begin with the same words as the cover headline
+
+---
+
+## Post-Publish (automated)
+
+- [ ] HTML renders correctly at 880px width (visual QA screenshots)
+- [ ] Spot-check 5 random links (automated)
 - [ ] PDF generated and attached
 - [ ] GitHub Pages updated and live
 - [ ] Archive index page updated with new issue

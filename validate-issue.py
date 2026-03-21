@@ -518,6 +518,71 @@ def validate(html_path):
     else:
         r.fail(f"Navigator cards: only {parser.nav_card_count} — should have 8+")
 
+    # ══════════════════════════════════════════════
+    # EDITORIAL QUALITY — Machine-Verifiable Subset
+    # ══════════════════════════════════════════════
+
+    # Foreword banned phrases
+    foreword_text_joined = " ".join(parser.foreword_text).lower()
+    banned_foreword = ["meanwhile", "elsewhere", "also this week"]
+    found_banned = [phrase for phrase in banned_foreword if phrase in foreword_text_joined]
+    if not found_banned:
+        r.ok("Foreword: no banned phrases (meanwhile/elsewhere/also this week)")
+    else:
+        r.fail(f"Foreword: contains banned phrase(s): {found_banned}")
+
+    # Foreword should not start with the same words as the cover headline
+    cover_start = full_text[:200]  # rough cover area
+    foreword_start = foreword_text_joined[:50] if foreword_text_joined else ""
+    # This is a heuristic — check if first 5 words match
+    if foreword_start:
+        fw_words = foreword_start.split()[:5]
+        if len(fw_words) >= 5:
+            fw_opening = " ".join(fw_words)
+            if fw_opening in cover_start:
+                r.fail(f"Foreword: opens with same words as cover headline — should be a distinct hook")
+            else:
+                r.ok("Foreword: distinct opening from cover headline")
+
+    # Exclusion zones — work content
+    work_terms = ["enterprise", "ci/cd", "devops", "saas", "microservices", "kubernetes", "terraform"]
+    found_work = [t for t in work_terms if t in full_text]
+    if not found_work:
+        r.ok("Exclusion: no work/enterprise content detected")
+    else:
+        r.fail(f"Exclusion: work/enterprise terms found: {found_work} — only allowed if Monday-morning threshold is met")
+
+    # Exclusion zones — celebrity/gossip
+    celeb_terms = ["celebrity", "gossip", "kardashian", "love island", "reality tv"]
+    found_celeb = [t for t in celeb_terms if t in full_text]
+    if not found_celeb:
+        r.ok("Exclusion: no celebrity/gossip content detected")
+    else:
+        r.fail(f"Exclusion: celebrity/gossip terms found: {found_celeb}")
+
+    # Exclusion zones — crypto/web3
+    crypto_terms = ["crypto", "web3", "blockchain", "nft ", " defi "]
+    found_crypto = [t for t in crypto_terms if t in full_text]
+    if not found_crypto:
+        r.ok("Exclusion: no crypto/web3 content detected")
+    else:
+        r.warn(f"Exclusion: crypto/web3 terms found: {found_crypto} — only acceptable if major crossover into mainstream")
+
+    # Book recommendation format — "if you liked" / "try"
+    shelf_text = ""
+    in_shelf = False
+    for i, section in enumerate(parser.sections_found):
+        if section == "shelf":
+            in_shelf = True
+    # Simpler approach: check if the phrases exist in the full text near book-related content
+    has_rec = ("if you liked" in full_text or "if you enjoyed" in full_text or
+               "if you finished" in full_text or "readers who enjoyed" in full_text or
+               "fans of" in full_text.lower())
+    if has_rec:
+        r.ok("Book recommendations: 'If you liked X' format detected")
+    else:
+        r.warn("Book recommendations: no 'If you liked X, try Y' format detected — should appear most weeks")
+
     return r
 
 

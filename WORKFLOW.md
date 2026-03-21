@@ -4,6 +4,8 @@ This document defines the end-to-end workflow for producing an issue of The Sign
 
 **Source of truth:** `The_Signal_Editorial_Brief_prompt.md` is the sole authority for all editorial, design, and structural decisions. No other template or reference file should override it.
 
+**The AI is the editor. The reader never reviews content or tone.** The reader triggers a run ("run an episode of The Signal") and receives a finished, published issue. All editorial judgment — tone, depth, wildcards, cross-cluster connections, opinion — is the AI's responsibility, enforced through subagent prompts and the preflight validation script. If the script passes and the screenshots look right, the issue ships.
+
 ---
 
 ## Phase Overview
@@ -16,7 +18,7 @@ This document defines the end-to-end workflow for producing an issue of The Sign
 | 3 | Build HTML | 1 subagent (extended context) | `issue-N.html` |
 | 4 | Preflight Validation | Script | Pass/fail report |
 | 5 | Fix Failures | Subagent (if needed) | Updated `issue-N.html` |
-| 6 | Visual QA | Screenshots | Human-verifiable renders |
+| 6 | Visual QA | Screenshots | AI-verified renders |
 | 7 | Generate PDF | Playwright | `issue-N.pdf` |
 | 8 | Publish | Git + GitHub Pages | Live URL |
 
