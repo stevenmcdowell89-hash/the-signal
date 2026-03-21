@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Signal — March 15–21, 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #2D2D3A;
+  --paper: #FAFAF8;
+  --warm: #F5F4F0;
+  --rose: #E94560;
+  --ember: #FF6B35;
+  --deep: #1A1A2E;
+  --slate: #64697B;
+  --ghost: #A4A8B6;
+  --rule: #E0DED8;
+  --pitch: #16213E;
+  --mid-dark: #16213E;
+  --turf: #1A7A4C;
+  --turf-lt: #2BD67B;
+  --screen-bg: #14121E;
+  --neon: #FF2D78;
+  --shelf-bg: #1C1410;
+  --shelf-accent: #D4A03C;
+  --session-bg: #F2F7F4;
+  --session-accent: #D4622B;
+  --hist-bg: #F0EBE0;
+  --hist-accent: #8B6914;
+}
+
+/* ═══════════ RESET & BASE ═══════════ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Source Serif 4', Georgia, serif;
+  color: var(--ink);
+  background: #E8E6E1;
+  font-size: 18px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+.mag { max-width: 880px; margin: 0 auto; background: var(--paper); box-shadow: 0 4px 120px rgba(0,0,0,.12); }
+img { max-width: 100%; height: auto; display: block; }
+a { color: var(--rose); text-decoration: none; }
+a:hover { text-decoration: underline; }
+p { margin-bottom: 16px; }
+p:last-child { margin-bottom: 0; }
+
+/* ═══════════ UTILITY CLASSES ═══════════ */
+.ui { font-family: 'Source Sans 3', sans-serif; }
+.mono { font-family: 'Source Sans 3', monospace; }
+
+.section-label {
+  font-family: 'Source Sans 3', monospace;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 3px; text-transform: uppercase;
+  margin-bottom: 12px; display: block;
+}
+.caption {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 12px; color: var(--ghost);
+  margin-top: 6px; line-height: 1.4;
+}
+.src {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 12px; color: var(--ghost); margin-top: 12px;
+}
+.src a { color: var(--rose); }
+
+/* ═══════════ COVER ═══════════ */
+.cover {
+  background: var(--deep);
+  background-image:
+    radial-gradient(ellipse at 80% 20%, rgba(232,56,79,.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 20% 80%, rgba(255,109,58,.08) 0%, transparent 50%);
+  padding: 80px 60px 60px;
+  position: relative;
+  min-height: 480px;
+  display: flex; flex-direction: column; justify-content: flex-end;
+}
+.cover::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 5px;
+  background: linear-gradient(90deg, var(--rose), var(--ember), var(--rose));
+}
+.cover-brand {
+  font-size: 72px; font-weight: 700;
+  color: white; line-height: .95; letter-spacing: -2px; margin-bottom: 8px;
+}
+.cover-brand span { color: var(--rose); font-style: italic; }
+.cover-issue {
+  font-family: 'Source Sans 3', monospace;
+  font-size: 11px; color: rgba(255,255,255,.4);
+  letter-spacing: 3px; text-transform: uppercase; margin-bottom: 32px;
+}
+.cover-headline {
+  font-size: 32px; font-weight: 600;
+  color: rgba(255,255,255,.9); line-height: 1.25; max-width: 720px;
+}
+.cover-tags { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 8px; }
+.cover-tags .tag {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 3px;
+  background: rgba(255,255,255,.08); color: rgba(255,255,255,.6);
+  border: 1px solid rgba(255,255,255,.1);
+}
+
+/* ═══════════ NAVIGATOR ═══════════ */
+.nav-section { padding: 48px 60px; background: var(--paper); border-bottom: 1px solid var(--rule); }
+.nav-section h2 {
+  font-family: 'Source Sans 3', monospace;
+  font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 24px;
+}
+.nav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+.nav-card {
+  background: var(--warm); border-radius: 8px; padding: 20px;
+  border-left: 4px solid var(--rule);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.nav-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.06); }
+.nav-card.world { border-left-color: var(--rose); }
+.nav-card.tech { border-left-color: var(--ember); }
+.nav-card.football { border-left-color: var(--turf); }
+.nav-card.screen { border-left-color: var(--neon); }
+.nav-card.shelf { border-left-color: var(--shelf-accent); }
+.nav-card.session { border-left-color: var(--session-accent); }
+.nav-card.history { border-left-color: var(--hist-accent); }
+.nav-card-tag {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.nav-card.world .nav-card-tag { color: var(--rose); }
+.nav-card.tech .nav-card-tag { color: var(--ember); }
+.nav-card.football .nav-card-tag { color: var(--turf); }
+.nav-card.screen .nav-card-tag { color: var(--neon); }
+.nav-card.shelf .nav-card-tag { color: var(--shelf-accent); }
+.nav-card.session .nav-card-tag { color: var(--session-accent); }
+.nav-card.history .nav-card-tag { color: var(--hist-accent); }
+.nav-card h3 {
+  font-size: 18px; font-weight: 700; line-height: 1.25;
+  color: var(--ink); margin-bottom: 4px;
+}
+.nav-card p {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 13px; color: var(--slate); line-height: 1.4; margin: 0;
+}
+
+/* ═══════════ FOREWORD ═══════════ */
+.foreword { padding: 48px 60px; border-bottom: 1px solid var(--rule); }
+.foreword p { font-size: 21px; line-height: 1.7; max-width: 680px; }
+.foreword p::first-letter {
+  font-size: 64px; font-weight: 700; float: left;
+  line-height: .78; margin: 8px 12px 0 0; color: var(--rose);
+}
+
+/* ═══════════ SECTION DIVIDERS ═══════════ */
+.divider { height: 8px; border: none; margin: 0; }
+.dv-world { background: linear-gradient(90deg, var(--rose), #c0392b); }
+.dv-tech { background: linear-gradient(90deg, var(--ember), #e67e22); }
+.dv-football { background: linear-gradient(90deg, var(--turf), var(--turf-lt)); }
+.dv-screen { background: linear-gradient(90deg, #9B59B6, var(--neon)); }
+.dv-shelf { background: linear-gradient(90deg, var(--shelf-accent), #A0722A); }
+.dv-session { background: linear-gradient(90deg, var(--session-accent), #E67E22); }
+.dv-history { background: linear-gradient(90deg, var(--hist-accent), #D4A03C); }
+.dv-other { background: linear-gradient(90deg, var(--slate), var(--ghost)); }
+
+/* ═══════════ GENERIC SECTION ═══════════ */
+.sec { padding: 48px 60px; }
+.sec h2 { font-size: 36px; font-weight: 700; line-height: 1.15; margin-bottom: 20px; max-width: 680px; }
+.sec h3 { font-size: 22px; font-weight: 700; line-height: 1.2; margin: 28px 0 10px; }
+.sec h4 {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--ghost); margin: 28px 0 10px;
+}
+
+/* ═══════════ STAT BAR ═══════════ */
+.stat-bar {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; margin: 24px 0;
+}
+.stat-bar .stat { padding: 18px 16px; text-align: center; border-right: 1px solid var(--rule); }
+.stat-bar .stat:last-child { border-right: none; }
+.stat-bar .stat-num { font-size: 32px; font-weight: 700; line-height: 1; }
+.stat-bar .stat-label {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 10px; font-weight: 700; color: var(--ghost);
+  text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;
+}
+
+/* ═══════════ ANGLE BOX ═══════════ */
+.angle {
+  background: var(--warm); border-left: 5px solid var(--rose);
+  padding: 24px 28px; margin: 28px 0; border-radius: 0 6px 6px 0;
+}
+.angle-label {
+  font-family: 'Source Sans 3', monospace;
+  font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 8px;
+}
+.angle p { font-size: 17px; line-height: 1.65; font-weight: 600; }
+
+/* ═══════════ DID YOU KNOW ═══════════ */
+.dyk {
+  background: linear-gradient(135deg, #FFF8E7, #FFF3D6);
+  border: 1px solid #E8D5A3; border-radius: 8px;
+  padding: 18px 22px; margin: 24px 0; position: relative;
+}
+.dyk::before {
+  content: '💡'; position: absolute; top: -10px; left: 16px;
+  font-size: 18px; background: var(--paper); padding: 0 4px;
+}
+.dyk-title {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: #B8860B; margin-bottom: 6px;
+}
+.dyk p { font-size: 15px; line-height: 1.55; margin: 0; color: #5C4A20; }
+
+/* ═══════════ ALSO THIS WEEK LIST ═══════════ */
+.also { margin-top: 32px; padding-top: 24px; border-top: 2px solid var(--rule); }
+.also-title {
+  font-family: 'Source Sans 3', monospace;
+  font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--ghost); margin-bottom: 12px;
+}
+.also-list { list-style: none; }
+.also-list li {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 14.5px; line-height: 1.5; padding: 8px 0;
+  border-bottom: 1px solid rgba(0,0,0,.04);
+}
+.also-list li:last-child { border-bottom: none; }
+
+/* ═══════════ DUAL COLUMN ═══════════ */
+.dual-col { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 24px 0; }
+.col-card { border-left: 4px solid var(--rule); padding-left: 24px; }
+.col-card.accent-ember { border-left-color: var(--ember); }
+.col-card.accent-deep { border-left-color: var(--deep); }
+.col-card h3 { font-size: 22px; font-weight: 700; line-height: 1.2; margin: 0 0 10px; }
+.col-card p { font-size: 16px; }
+
+/* ═══════════ HERO IMAGE ═══════════ */
+.hero-img { width: 100%; aspect-ratio: 16/7; object-fit: cover; border-radius: 8px; margin: 24px 0; }
+.inline-img { border-radius: 6px; margin: 20px 0; }
+
+/* ═══════════ THE WORLD THIS WEEK ═══════════ */
+.world-section { background: var(--paper); }
+.world-section .section-label { color: var(--rose); }
+
+/* ═══════════ PIXEL & BYTE ═══════════ */
+.tech-section { background: var(--warm); }
+.tech-section .section-label { color: var(--ember); }
+
+/* ═══════════ THE TOUCHLINE ═══════════ */
+.touchline-section { background: var(--pitch); color: rgba(255,255,255,.85); }
+.touchline-section .section-label { color: var(--turf-lt); }
+.touchline-section h2 { color: white; }
+.touchline-section h3 {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--turf-lt); margin: 28px 0 12px;
+}
+.touchline-section h3.narrative {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px; text-transform: none; letter-spacing: 0; color: white;
+}
+.touchline-section p { color: rgba(255,255,255,.7); }
+.touchline-section a { color: var(--turf-lt); }
+.touchline-section .angle { background: rgba(255,255,255,.04); border-left-color: var(--turf-lt); }
+.touchline-section .angle-label { color: var(--turf-lt); }
+.touchline-section .angle p { color: rgba(255,255,255,.9); }
+.touchline-section .also { border-top-color: rgba(255,255,255,.1); }
+.touchline-section .also-title { color: rgba(255,255,255,.3); }
+.touchline-section .also-list li { color: rgba(255,255,255,.6); border-bottom-color: rgba(255,255,255,.04); }
+.touchline-section .dyk { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.08); }
+.touchline-section .dyk::before { background: var(--pitch); }
+.touchline-section .dyk-title { color: var(--turf-lt); }
+.touchline-section .dyk p { color: rgba(255,255,255,.7); }
+
+/* League Table */
+.league-table {
+  width: 100%; border-collapse: collapse; margin: 16px 0 24px;
+  font-family: 'Source Sans 3', sans-serif; font-size: 14px;
+}
+.league-table th {
+  text-align: left; padding: 10px 12px;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: rgba(255,255,255,.3); border-bottom: 1px solid rgba(255,255,255,.1);
+}
+.league-table td { padding: 9px 12px; border-bottom: 1px solid rgba(255,255,255,.04); color: rgba(255,255,255,.6); }
+.league-table tr.highlight td { color: var(--turf-lt); font-weight: 700; }
+.league-table .pos { width: 30px; text-align: center; }
+
+/* Results Strip */
+.results-strip { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+.result-card {
+  background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.06);
+  border-radius: 6px; padding: 10px 14px;
+  font-family: 'Source Sans 3', sans-serif; font-size: 13px;
+  color: rgba(255,255,255,.65); line-height: 1.3; min-width: 180px;
+}
+.result-card strong { color: rgba(255,255,255,.9); font-weight: 700; }
+.result-card .score {
+  font-family: 'Source Sans 3', monospace;
+  font-size: 14px; font-weight: 700; color: var(--turf-lt);
+}
+
+/* ═══════════ SCREEN & SOUND ═══════════ */
+.screen-section { background: var(--screen-bg); color: rgba(255,255,255,.85); }
+.screen-section .section-label { color: var(--neon); }
+.screen-section h2 { color: white; }
+.screen-section h3 {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--neon); margin: 28px 0 12px;
+}
+.screen-section h3.feature-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px; text-transform: none; letter-spacing: 0; color: white; margin-bottom: 14px;
+}
+.screen-section p { color: rgba(255,255,255,.7); }
+.screen-section a { color: var(--neon); }
+.screen-section .also { border-top-color: rgba(255,255,255,.08); }
+.screen-section .also-title { color: rgba(255,255,255,.25); }
+.screen-section .also-list li { color: rgba(255,255,255,.55); border-bottom-color: rgba(255,255,255,.04); }
+
+/* Radar */
+.radar-grid { margin: 16px 0; }
+.radar-row {
+  display: grid; grid-template-columns: 80px 1fr; gap: 14px;
+  padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,.06);
+  font-family: 'Source Sans 3', sans-serif; font-size: 14px;
+  color: rgba(255,255,255,.7); line-height: 1.4;
+}
+.radar-row:last-child { border-bottom: none; }
+.radar-date {
+  font-family: 'Source Sans 3', monospace;
+  font-size: 11px; font-weight: 700; color: var(--neon); padding-top: 2px;
+}
+.radar-row strong { color: rgba(255,255,255,.95); }
+.radar-platform { font-size: 11px; color: rgba(255,255,255,.35); font-weight: 500; }
+
+/* ═══════════ THE SHELF ═══════════ */
+.shelf-section { background: var(--shelf-bg); color: rgba(255,255,255,.85); }
+.shelf-section .section-label { color: var(--shelf-accent); }
+.shelf-section h2 { color: white; }
+.shelf-section h3 {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--shelf-accent); margin: 28px 0 12px;
+}
+.shelf-section h3.feature-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px; text-transform: none; letter-spacing: 0; color: white; margin-bottom: 14px;
+}
+.shelf-section p { color: rgba(255,255,255,.7); }
+.shelf-section a { color: var(--shelf-accent); }
+.shelf-section .also { border-top-color: rgba(255,255,255,.08); }
+.shelf-section .also-title { color: rgba(255,255,255,.25); }
+.shelf-section .also-list li { color: rgba(255,255,255,.55); border-bottom-color: rgba(255,255,255,.04); }
+
+/* Book Recommendation Card */
+.book-card {
+  background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+  border-radius: 8px; padding: 18px 22px; margin: 12px 0;
+}
+.book-card h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 19px; font-weight: 700; color: rgba(255,255,255,.95);
+  text-transform: none; letter-spacing: 0; margin: 0 0 4px;
+}
+.book-card .author {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 12px; color: rgba(255,255,255,.4); margin-bottom: 6px;
+}
+.book-card p { font-size: 14px; color: rgba(255,255,255,.6); margin: 0; }
+
+/* ═══════════ THE SESSION ═══════════ */
+.session-section { background: var(--session-bg); }
+.session-section .section-label { color: var(--session-accent); }
+.session-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.session-section h3 { font-size: 22px; margin: 24px 0 10px; }
+
+/* ═══════════ THIS WEEK IN HISTORY ═══════════ */
+.history-section { background: var(--hist-bg); }
+.history-section .section-label { color: var(--hist-accent); }
+.history-section h2 { font-size: 30px; font-weight: 700; line-height: 1.2; margin-bottom: 16px; color: #3D2E0F; }
+
+/* ═══════════ OTHER SIGNALS ═══════════ */
+.other-section { background: var(--warm); }
+.other-section .section-label { color: var(--slate); }
+
+/* ═══════════ THE LONG SHELF ═══════════ */
+.longshelf-section { background: var(--paper); border-bottom: 1px solid var(--rule); }
+.longshelf-section .section-label { color: var(--rose); }
+.shelf-item { padding: 16px 0; border-bottom: 1px solid var(--rule); }
+.shelf-item:last-child { border-bottom: none; }
+.shelf-item .title { font-size: 19px; font-weight: 700; color: var(--ink); }
+.shelf-item .meta {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 12px; color: var(--ghost); margin-top: 2px;
+}
+.shelf-item .desc {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 14px; color: var(--slate); margin-top: 4px; line-height: 1.5;
+}
+
+/* ═══════════ ON THE RADAR ═══════════ */
+.radar-section { background: var(--warm); }
+.radar-section .section-label { color: var(--ember); }
+.radar-section .radar-row { border-bottom-color: rgba(0,0,0,.06); color: var(--ink); }
+.radar-section .radar-date { color: var(--ember); }
+.radar-section .radar-row strong { color: var(--ink); }
+
+/* ═══════════ FOOTER ═══════════ */
+.footer {
+  background: var(--deep); padding: 40px 60px; text-align: center;
+}
+.footer-brand { font-size: 28px; font-weight: 700; color: white; }
+.footer-brand span { color: var(--rose); font-style: italic; }
+.footer-sub {
+  font-family: 'Source Sans 3', monospace;
+  font-size: 10px; color: rgba(255,255,255,.3);
+  letter-spacing: 2px; text-transform: uppercase; margin-top: 6px;
+}
+
+/* ═══════════ RESPONSIVE ═══════════ */
+@media (max-width: 700px) {
+  .cover, .nav-section, .foreword, .sec, .touchline-section, .screen-section,
+  .shelf-section, .session-section, .history-section, .other-section,
+  .longshelf-section, .radar-section, .footer {
+    padding-left: 20px; padding-right: 20px;
+  }
+  .cover-brand { font-size: 48px; }
+  .cover-headline { font-size: 24px; }
+  .nav-grid { grid-template-columns: 1fr; }
+  .dual-col { grid-template-columns: 1fr; }
+  .stat-bar { grid-template-columns: repeat(2, 1fr); }
+  .stat-bar .stat:nth-child(2) { border-right: none; }
+  .results-strip { flex-direction: column; }
+  .sec h2, .touchline-section h2, .screen-section h2, .shelf-section h2 { font-size: 28px; }
+  .league-table { font-size: 11px; }
+  .league-table td, .league-table th { padding: 5px 6px; }
+}
+</style>
+</head>
+<body>
+<div class="mag">
+
+<!-- ══════════ COVER ══════════ -->
+<header class="cover">
+  <div class="cover-issue">March 15–21, 2026 · Issue #1 · Sunday Edition</div>
+  <div class="cover-brand">The Signal<span>.</span></div>
+  <div class="cover-headline">A 33-kilometre chokepoint is repricing the world — and the central bankers, footballers, and film-makers inside this issue are all adjusting to the new gravity.</div>
+  <div class="cover-tags">
+    <span class="tag">Iran / Strait of Hormuz</span>
+    <span class="tag">Central Banks Hold</span>
+    <span class="tag">NI Energy Crisis</span>
+    <span class="tag">Switch 2</span>
+    <span class="tag">Slay the Spire 2</span>
+    <span class="tag">Juve 5th</span>
+    <span class="tag">CL Quarter-Finals</span>
+    <span class="tag">Project Hail Mary</span>
+    <span class="tag">Star Wars: Maul</span>
+    <span class="tag">Carpenter Brut</span>
+  </div>
+</header>
+
+<!-- ══════════ NAVIGATOR ══════════ -->
+<section class="nav-section">
+  <h2>What's Inside</h2>
+  <div class="nav-grid">
+    <div class="nav-card world">
+      <div class="nav-card-tag">World</div>
+      <h3>The War That Globalised Itself</h3>
+      <p>Operation Epic Fury enters week three — and the Strait of Hormuz is repricing everything from crude to NI heating oil.</p>
+    </div>
+    <div class="nav-card world">
+      <div class="nav-card-tag">World</div>
+      <h3>Central Banks Play for Time</h3>
+      <p>The Fed, BoE, and ECB all held rates. When you don't know what's coming, you wait.</p>
+    </div>
+    <div class="nav-card tech">
+      <div class="nav-card-tag">Gaming</div>
+      <h3>Slay the Spire 2 Is Already One of the Best Games of 2026</h3>
+      <p>Co-op mode, five characters, and a deck-building engine that doesn't need to wait for 1.0.</p>
+    </div>
+    <div class="nav-card tech">
+      <div class="nav-card-tag">Tech & LEGO</div>
+      <h3>LEGO's SMART Play System</h3>
+      <p>Wave a lightsaber, hear it ignite. First-gen interactive LEGO, no app required.</p>
+    </div>
+    <div class="nav-card football">
+      <div class="nav-card-tag">Football</div>
+      <h3>Juve Win Three Straight</h3>
+      <p>Spalletti's side is quietly building something. The contract extension says as much.</p>
+    </div>
+    <div class="nav-card football">
+      <div class="nav-card-tag">Football</div>
+      <h3>Champions League Quarter-Final Draw</h3>
+      <p>PSG–Liverpool, Real Madrid–Bayern, Barcelona–Atlético, Sporting–Arsenal. First legs from April 7.</p>
+    </div>
+    <div class="nav-card screen">
+      <div class="nav-card-tag">Film</div>
+      <h3>Project Hail Mary Opens</h3>
+      <p>Gosling, deep space, a cute alien. $12M Thursday previews — the biggest of 2026.</p>
+    </div>
+    <div class="nav-card screen">
+      <div class="nav-card-tag">Star Wars</div>
+      <h3>Maul — Shadow Lord Trailer Drops</h3>
+      <p>Ten episodes of gritty criminal-underworld Star Wars. Sam Witwer returns. April 6 on Disney+.</p>
+    </div>
+    <div class="nav-card shelf">
+      <div class="nav-card-tag">Books</div>
+      <h3>Children of Strife — Tchaikovsky Returns</h3>
+      <p>The Children of Time saga's fourth instalment. Spiders, cephalopods, thousands of years.</p>
+    </div>
+    <div class="nav-card shelf">
+      <div class="nav-card-tag">Music</div>
+      <h3>Carpenter Brut — Leather Temple</h3>
+      <p>The Leather Trilogy concludes. Kerrang! 4/5. "Completely unshackled."</p>
+    </div>
+    <div class="nav-card session">
+      <div class="nav-card-tag">Fitness</div>
+      <h3>Step Loading Back to The Beast</h3>
+      <p>A StrongFirst instructor rebuilt his chin-up from zero to 48kg. The method is embarrassingly simple.</p>
+    </div>
+    <div class="nav-card history">
+      <div class="nav-card-tag">History</div>
+      <h3>The Ides of March</h3>
+      <p>Sixty senators, twenty-three stab wounds, one republic that never recovered.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ FOREWORD ══════════ -->
+<section class="foreword">
+  <p>Thirty-three kilometres of water between Iran and Oman are repricing the world this week — your heating oil, your interest rate, your central banker's sleep. The Strait of Hormuz isn't closed, not technically, but the insurance premiums on every tanker threading that gap are doing the closing for it. Everything in this issue, from Juve's transfer budget to the cost of filling a Switch 2 with games, exists downstream of a chokepoint most people couldn't find on a map.</p>
+</section>
+
+<!-- ══════════ THE LONG SHELF ══════════ -->
+<section class="sec longshelf-section">
+  <span class="section-label" style="color: var(--rose)">The Long Shelf — Worth Your Time</span>
+
+  <div class="shelf-item">
+    <div class="title"><a href="https://theamericanscholar.org/thinking-in-the-margins/">What Oliver Sacks Secretly Wrote in 500 Books</a></div>
+    <div class="meta">The American Scholar · Bill Hayes</div>
+    <div class="desc">Sacks's partner sorted the neurologist's 10,000-book library after his death — and found around 500 volumes annotated in coloured felt pens, a private inner life nobody knew existed. Quietly extraordinary.</div>
+  </div>
+
+  <div class="shelf-item">
+    <div class="title"><a href="https://longreads.com/2026/03/19/sync-music/">The Hidden Music Soundtrack to Everything You Watch</a></div>
+    <div class="meta">The New York Times Magazine via Longreads · Ryan Francis Bradley</div>
+    <div class="desc">Sync music — the invisible, uncredited library music behind every YouTube video, reality show, and training module — may be the most-listened-to music on Earth. A long-form deep dive into the composers nobody knows.</div>
+  </div>
+
+  <div class="shelf-item">
+    <div class="title"><a href="https://www.space.com/space-exploration/asteroid-comet-missions/nasas-dart-planetary-defense-mission-reveals-asteroids-hurling-cosmic-snowballs-at-each-other">Asteroids Are Throwing Snowballs at Each Other</a></div>
+    <div class="meta">Space.com · The Planetary Science Journal</div>
+    <div class="desc">DART's final images before it destroyed itself contained the first proof that one asteroid hurls boulders at another. They thought it was a camera glitch.</div>
+  </div>
+
+  <div class="shelf-item">
+    <div class="title"><a href="https://www.strongfirst.com/rebuilding-to-a-chin-up-with-the-beast/">Rebuilding to a Chin-up with 'The Beast'</a></div>
+    <div class="meta">StrongFirst · Tony Gracia</div>
+    <div class="desc">A StrongFirst instructor's shoulder injury took him from a 48kg weighted chin-up to zero. His step-loading comeback is a masterclass in patience over ego.</div>
+  </div>
+
+  <div class="shelf-item">
+    <div class="title"><a href="https://podcasts.apple.com/us/podcast/what-went-wrong/id1512847066">What Went Wrong: "Seven Samurai"</a></div>
+    <div class="meta">What Went Wrong Podcast · Chris Winterbauer & Lizzie Bassett</div>
+    <div class="desc">Kurosawa shot for two years in the mud, lost his actors to roundworm and tuberculosis, and produced a film that still defines cinema. Seventy minutes of gorgeous production disaster.</div>
+  </div>
+
+  <div class="shelf-item">
+    <div class="title"><a href="https://velo.outsideonline.com/road/road-training/the-science-of-the-modern-base-season-why-zone-2-isnt-enough-anymore/">Zone 2 Isn't Enough — and It Never Was</a></div>
+    <div class="meta">VeloNews / Outside Online · Zach Nehr</div>
+    <div class="desc">Your aerobic base is meaningless if you let the top end decay. One honest hard session a week keeps the ignition system alive.</div>
+  </div>
+
+  <div class="shelf-item">
+    <div class="title"><a href="https://www.reddit.com/r/Fantasy/comments/1re00ak/sff_books_coming_in_march_2026/">SFF Books Coming in March 2026 — r/Fantasy Thread</a></div>
+    <div class="meta">Reddit · r/Fantasy community</div>
+    <div class="desc">The living document of every fantasy and sci-fi release this month, crowd-sourced and actively debated. Tchaikovsky, Lawrence, Morgan, and a lively argument about output pace.</div>
+  </div>
+
+  <div class="shelf-item">
+    <div class="title"><a href="https://podcasts.apple.com/gb/podcast/back-the-future-what-is-europe-for-in-the-21st-century/id1496246490?i=1000755988727">The Bunker: "Back the Future? — What Is Europe For?"</a></div>
+    <div class="meta">The Bunker · Roderick Beaton & Alex von Tunzelmann</div>
+    <div class="desc">A historian of Europe joins a historian of empires to ask whether the EU needs to look backward to find its future. Thirty minutes, dense with ideas, eerily relevant to this week's NATO fractures.</div>
+  </div>
+</section>
+
+<!-- ══════════ THE WORLD THIS WEEK ══════════ -->
+<hr class="divider dv-world">
+<section class="sec world-section">
+  <span class="section-label" style="color: var(--rose)">The World This Week</span>
+  <h2>The War That Globalised Itself: Iran, Day 15–21</h2>
+
+  <img class="hero-img" src="https://d3i6fh83elv35t.cloudfront.net/static/2026/03/2026-03-18T123331Z_1241937115_RC2M5KAWR5QS_RTRMADP_3_IRAN-CRISIS-LPG-INDIA-1024x683.jpg" alt="LPG tanker crossing the Strait of Hormuz amid the Iran conflict, March 2026">
+  <div class="caption">LPG tankers continue to navigate the Strait of Hormuz as the US-Israeli campaign against Iran enters its third week. Reuters/PBS NewsHour</div>
+
+  <div class="stat-bar">
+    <div class="stat"><div class="stat-num">8,000+</div><div class="stat-label">Targets Struck</div></div>
+    <div class="stat"><div class="stat-num">$112</div><div class="stat-label">Brent $/bbl</div></div>
+    <div class="stat"><div class="stat-num">300+</div><div class="stat-label">Hrs Blackout</div></div>
+    <div class="stat"><div class="stat-num">17%</div><div class="stat-label">Qatar LNG ↓</div></div>
+  </div>
+
+  <p>Operation Epic Fury entered its third week — and so did the bill for everyone else. The US-Israeli campaign against Iran, which began on 28 February with the killing of Supreme Leader Ali Khamenei in the opening strikes, has moved from a targeted decapitation campaign to something approaching strategic siege. By Saturday 21 March, <a href="https://www.foxnews.com/video/6391326888112">US Central Command reported striking over 8,000 military targets</a> inside Iran. The US has deployed thousands more Marines to the region even as President Trump, in a characteristically contradictory Friday post, said the US was "close to reaching its goals" while simultaneously calling NATO allies "COWARDS" for not helping reopen the Strait of Hormuz. The allies, for their part, were not consulted before the war started — a detail Trump appears to find irrelevant.</p>
+
+  <p>The week's sharpest escalation came mid-week: Israel struck Iran's South Pars natural gas field — the world's largest single gas reservoir. Iran retaliated by hitting LNG infrastructure in Qatar, causing an estimated <a href="https://www.cbsnews.com/live-updates/iran-war-israel-strike-south-pars-gas-field-trump-threat-oil-gas-prices/">$20 billion in annual revenue loss for QatarEnergy</a> and reducing Qatar's LNG export capacity by 17%. Trump then publicly disowned the South Pars strike, promised it wouldn't happen again, and threatened to "massively blow up" the entirety of South Pars if Iran hit Qatar again. This is, in diplomatic terms, not a de-escalation ladder — it is a demolition derby.</p>
+
+  <p>On the Iranian side, the succession picture remains opaque. Mojtaba Khamenei was appointed Supreme Leader following his father's death but has not appeared publicly since; US officials believe he was injured in the same strikes. His Nowruz message on Friday declared Iran's enemies were experiencing "defeat" — <a href="https://www.aljazeera.com/news/2026/3/20/irans-khamenei-says-enemy-defeated-in-written-nowruz-message">delivered as a written statement read by a TV presenter</a>. Iran's internet blackout, now exceeding 300 hours, remains at approximately 1% of normal connectivity, according to <a href="https://www.ncr-iran.org/en/news/iran-news-in-brief-news/iran-news-in-brief-march-15-2026/">NetBlocks</a>.</p>
+
+  <img class="hero-img" src="https://media.cnn.com/api/v1/images/stellar/prod/2026-03-16t155650z-274899727-rc203ka6y6p2-rtrmadp-3-iran-crisis-gulf-supplies-20260318141415379.JPG?c=original&q=w_1041,c_fill" alt="Shipping in the Gulf region under threat from the Iran conflict, showing oil supply chain disruption">
+  <div class="caption">The Strait of Hormuz crisis threatens food and energy supplies for 100 million people beyond oil markets. Reuters/CNN</div>
+
+  <div class="angle">
+    <div class="angle-label">The Angle</div>
+    <p>The war's defining structural feature is not the military campaign — it's the Strait of Hormuz. Twenty per cent of the world's oil passes through that 33-kilometre chokepoint; Iran doesn't need to close it completely to cause maximum disruption, only to make transit hazardous enough that insurers balk and tanker operators reroute. Every day the Strait remains effectively closed is a day the world's inflation-fighting central banks face a problem they cannot solve with interest rates.</p>
+  </div>
+
+  <div class="dyk">
+    <div class="dyk-title">Did You Know?</div>
+    <p>The Strait of Hormuz is only 33 kilometres wide at its narrowest point, yet roughly 20% of the world's traded oil passes through it. Iran doesn't need to physically block it to cause economic disruption — merely making insurance and routing costs prohibitive achieves the same effect.</p>
+  </div>
+
+  <h3>Central Banks Play for Time</h3>
+
+  <p>On Wednesday, both the <a href="https://www.cbsnews.com/news/federal-reserve-fomc-march-18-interest-rate-decision/">US Federal Reserve and the Bank of England held rates unchanged</a>. The Fed kept its benchmark at 3.5–3.75%; the BoE voted unanimously to maintain Bank Rate at 3.75%. The ECB had already held at 2.15% the previous week. Three major central banks, same message: we have absolutely no idea what happens next, and we'd rather not guess.</p>
+
+  <p>This is not cowardice — it's the correct call. The problem facing every central banker is textbook stagflation risk: an oil price shock simultaneously raises inflation (so you'd normally raise rates) and suppresses growth (so you'd normally cut). <a href="https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/march-2026">The BoE's MPC minutes</a> are unusually candid: one member had been planning to vote for a cut before the war changed his calculus. Another openly flagged that a hike to "lean against inflation persistence" cannot be ruled out. The BoE now expects UK CPI to run at 3–3.5% through much of 2026, against a 2% target.</p>
+
+  <p>For a Polestar owner who heats with electricity, this matters less directly. For <a href="https://www.bbc.com/news/articles/cn0w2jk8ww9o">the 62.5% of NI households</a> heating with oil — the highest proportion in the UK — it matters rather a lot. UK heating oil was running at <a href="https://www.globalpetrolprices.com/United-Kingdom/heating_oil_prices/">£1.35 per litre on 16 March</a>, against a long-term average of £0.72. Heating oil is unregulated — there's no Ofgem-style price cap — meaning price spikes pass through to consumers without buffer.</p>
+
+  <div class="angle">
+    <div class="angle-label">The Angle</div>
+    <p>Jerome Powell is at his last meeting as Fed Chair in April, which removes any incentive to be bold before the door. His successor will inherit the war, the tariff chaos, and a softening labour market. Three of the world's four major central banks held rates this week because they face the same impossible problem: energy-driven inflation argues for higher rates, weakening growth argues for cuts. The last time they faced this was 2022; the resolution then depended on energy prices falling. They are not falling this time.</p>
+  </div>
+
+  <div class="src"><a href="https://www.foxnews.com/video/6391326888112">Fox News/CENTCOM</a> · <a href="https://tradingeconomics.com/commodity/brent-crude-oil">Trading Economics</a> · <a href="https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/march-2026">Bank of England</a> · <a href="https://www.cbsnews.com/news/federal-reserve-fomc-march-18-interest-rate-decision/">CBS News</a> · <a href="https://www.globalpetrolprices.com/United-Kingdom/heating_oil_prices/">GlobalPetrolPrices</a></div>
+
+  <div class="also">
+    <div class="also-title">Also This Week</div>
+    <ul class="also-list">
+      <li><strong>China's exports rose 21.8%</strong> in the first two months of 2026 — almost certainly front-loading before tariff escalation, which is a strategy, not a recovery. <a href="https://mackinderforum.org/geopolitical-newsletter/weekly-geopolitical-news-bulletin-march-7-14-2026">MackinderForum</a></li>
+      <li><strong>Japan deployed its first domestically developed long-range missiles</strong> — a significant pivot for a country whose post-war constitution was built around homeland-only defence. <a href="https://mackinderforum.org/geopolitical-newsletter/weekly-geopolitical-news-bulletin-march-7-14-2026">AP/MackinderForum</a></li>
+      <li><strong>S&P upgraded Ireland to AA+</strong>, citing strong economic fundamentals and assumed growth averaging 2.5% over 2026–2029. <a href="https://www.spglobal.com/ratings/en/regulatory/article/-/view/type/HTML/id/3534132">S&P Global</a></li>
+      <li><strong>Russia provided intelligence to Iran</strong> that could help Tehran target US assets — formally linking the Ukraine and Middle East conflicts into one strategic competition. <a href="https://mackinderforum.org/geopolitical-newsletter/weekly-geopolitical-news-bulletin-march-7-14-2026">Washington Post/MackinderForum</a></li>
+      <li><strong>US intelligence assessed China is NOT expected to invade Taiwan in 2027</strong>, preferring "unification without force" — though the NPC's language shifted from "oppose" to "crack down on" Taiwan independence. <a href="https://www.aljazeera.com/news/2026/3/19/us-intelligence-agencies-not-expecting-china-to-invade-taiwan-in-2027">Al Jazeera</a></li>
+      <li><strong>The Pentagon is requesting $200 billion in supplemental war funding</strong> — the Iran campaign's running tab. <a href="https://www.npr.org/2026/03/19/nx-s1-5753520/iran-israel-gas-field-attacks">NPR</a></li>
+      <li><strong>A new type of planet was discovered</strong> — L 98-59 d has magma oceans, a sulphur atmosphere, and doesn't fit any existing category. <a href="https://abcnews.com/International/astronomers-discover-new-type-planet-sulfurous-atmosphere/story?id=131117894">ABC News/Nature Astronomy</a></li>
+      <li><strong>NI's services exports have grown twice as fast as the wider economy</strong> over the past decade, driven by software and professional services. <a href="https://www.bbc.co.uk/news/articles/cgl57dj50pwo">BBC</a></li>
+      <li><strong>The vernal equinox arrived on 20 March</strong> alongside Venus and Saturn in close conjunction, and the Rubin Observatory launched its real-time sky-alert system. <a href="https://science.nasa.gov/solar-system/whats-up-march-2026-skywatching-tips-from-nasa/">NASA</a></li>
+      <li><strong>Morgan Stanley warned a transformative AI leap is imminent</strong> — GPT-5.4 scored 83% on the GDPVal benchmark, placing it at human-expert level on economically valuable tasks. <a href="https://fortune.com/2026/03/13/elon-musk-morgan-stanley-ai-leap-2026/">Fortune</a></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ══════════ PIXEL & BYTE ══════════ -->
+<hr class="divider dv-tech">
+<section class="sec tech-section">
+  <span class="section-label" style="color: var(--ember)">Pixel &amp; Byte</span>
+
+  <div class="dual-col">
+    <div class="col-card accent-ember">
+      <h3>Slay the Spire 2 Is Already One of the Best Games of 2026</h3>
+      <p>Launched in Early Access on March 5 and the consensus is unanimous: you don't need to wait. Five characters, full three-act runs, and a co-op mode where up to four players play their cards simultaneously. <a href="https://www.polygon.com/slay-the-spire-2-review-early-access/">Polygon</a> notes it feels 90% complete. <a href="https://arstechnica.com/gaming/2026/03/slay-the-spire-2-is-a-bit-too-familiar-for-its-own-good/">Ars Technica</a> raises the fair criticism that it feels familiar — but "too familiar to Slay the Spire" is a high baseline to complain from. Available on <a href="https://blogs.nvidia.com/blog/geforce-now-thursday-march-2026-games-list/">GeForce NOW</a>.</p>
+      <div class="src"><a href="https://store.steampowered.com/news/app/2868840/view/538879349212840702">Steam</a> · <a href="https://www.megacrit.com/news/2026-02-19-release-date-trailer/">MegaCrit</a></div>
+    </div>
+    <div class="col-card accent-deep">
+      <h3>Kena: Bridge of Spirits Arrives on Switch 2</h3>
+      <p>Ember Lab confirmed <a href="https://www.engadget.com/gaming/nintendo/kena-bridge-of-spirits-launches-for-switch-2-on-march-26-163540229.html">Kena launches on Switch 2 on March 26</a>. Winner of Best Independent Game and Best Debut Indie at The Game Awards 2021 — it looks like a Pixar film, plays like a character-action game with light soulslike difficulty, and has a soundtrack that sticks. Meanwhile <a href="https://www.nintendo.com/us/store/products/blue-prince-switch-2/">Blue Prince</a> sits at #2 on the <a href="https://www.reddit.com/r/totallyswitched/comments/1ru7tv5/nintendo_switch_2_eshop_charts_march_15_2026/">eShop indie chart</a>.</p>
+      <div class="src"><a href="https://www.engadget.com/gaming/nintendo/kena-bridge-of-spirits-launches-for-switch-2-on-march-26-163540229.html">Engadget</a></div>
+    </div>
+  </div>
+
+  <h3>Crimson Desert: 2 Million Sales, Divisive Reviews</h3>
+  <p>Pearl Abyss's open-world action-adventure <a href="https://en.wikipedia.org/wiki/Crimson_Desert">sold 2 million copies in 24 hours</a> — staggering. But critics are more measured. <a href="https://www.polygon.com/crimson-desert-review-round-up/">Polygon notes</a> "Skyrim is safe for now." The combat is flashy, the world enormous, but the execution doesn't match the years of hype. For Steam Deck users: it's already in the <a href="https://blogs.nvidia.com/blog/geforce-now-thursday-march-2026-games-list/">GeForce NOW library</a> and is RTX 5080-ready for Ultimate members. Worth sampling via cloud before committing a purchase — it has the "big world that lives on its own" energy of a Stellaris, at the cost of polish.</p>
+
+  <img class="hero-img" src="https://assets.nintendo.com/image/upload/f_auto/q_auto/dpr_1.5/c_scale,w_400/ncom/My%20Nintendo%20Store/EN-US/Nintendo%20Switch%202/Hardware/122179-nintendo-switch-2-hardware-with-mario-kart-world-full-game-download-package-front-angle-2000x2000" alt="Nintendo Switch 2 console with Mario Kart World bundle, official product image">
+  <div class="caption">The Nintendo Switch 2 eShop charts remain strong as Kena: Bridge of Spirits arrives March 26. Nintendo</div>
+
+  <h3>LEGO Star Wars SMART Play: Ambitious, Flawed, Kind of Wonderful</h3>
+  <p>The first wave of <a href="https://www.goodhousekeeping.com/childrens-products/toy-reviews/a70590495/lego-smart-play-star-wars-launch/">LEGO Star Wars SMART Play sets</a> has been in reviewers' hands all month. The system works through SMART Bricks (accelerometers, sound chips, sensors), SMART Tags (swappable sounds), and SMART Minifigures — wave Luke's lightsaber and it ignites, place Palpatine on his throne and The Imperial March plays. Eight launch sets from $39.99 to $159.99.</p>
+
+  <img src="https://cdn.mos.cms.futurecdn.net/XZGi7iXwxb82V4KELhM4Em.jpg" alt="Project Hail Mary LEGO Icons set" style="max-width: 250px; float: right; margin: 0 0 16px 20px; border-radius: 6px;">
+  <div class="caption" style="text-align: right; margin-bottom: 16px;">LEGO Icons — Project Hail Mary ($99.99). Space.com</div>
+
+  <p><a href="https://www.youtube.com/watch?v=VSMU8DOiUkg">Honest reviews</a> note the interactions are inconsistent — single SMART minifigures don't do much without other SMART elements nearby. But the Mos Eisley Cantina's "karaoke stage" and the Millennium Falcon's interior reveal are highlights. No app required. No Bluetooth pairing. This is a first-generation product worth watching — but maybe wait for wave two before going all-in.</p>
+
+  <p>Also this month: <strong>LEGO Zelda 77093 — Ocarina of Time: The Final Battle</strong> (<a href="https://www.lego.com/en-us/categories/adults-welcome/article/legend-of-zelda-set-2026">1,003 pieces, $129.99</a>) features the Ganondorf minifigure that was conspicuously absent from the Deku Tree set. And five new <a href="https://www.thebrickfan.com/lego-star-wars-april-2026-sets-officially-announced/">Mandalorian & Grogu sets</a> launch April 26, with the Razor Crest ($129.99) the one collectors are watching. Plan your May the 4th budget now.</p>
+  <div style="clear: both;"></div>
+
+  <h3>ChatGPT Gets a Simpler Model Picker; Claude Gets Charts</h3>
+  <p>OpenAI <a href="https://help.openai.com/en/articles/6825453-chatgpt-release-notes">simplified ChatGPT's model picker</a> to three tiers — Instant, Thinking, Pro — instead of cryptic model names. Legacy deep research mode retires March 26. A quiet GPT-5.3 update also fixed the model's tendency to respond in a teasy "if you want more..." style. Small edit, noticeable improvement.</p>
+
+  <p>Anthropic's Claude <a href="https://releasebot.io/updates/anthropic/claude">gained inline chart creation</a> and persistent agent threads. Google's <a href="https://ai.google.dev/gemini-api/docs/changelog">Gemini 3.1 Pro roughly doubled</a> its reasoning benchmark score and moved deeper into Workspace. For Pixel 9 owners, the <a href="https://blog.google/products-and-platforms/devices/pixel/march-2026-pixel-drop/">March Pixel Drop</a> brought Gemini AI Tasks — background agent actions across apps, including ordering groceries and booking rides. Meanwhile, <a href="https://www.mitsloanme.com/article/apple-pushes-siri-ai-launch-to-2026-amid-technical-challenges/">Apple's new Siri has slipped again</a> to iOS 26.5 or possibly iOS 27. The gap between Google's AI ecosystem and Apple's continues to widen.</p>
+
+  <div class="dyk">
+    <div class="dyk-title">Did You Know?</div>
+    <p>The same global RAM shortage driving AI data-centre demand is why the Steam Deck is out of stock in many regions and why Valve's Steam Machine has missed its Q1 window. When your next GPU or handheld gaming device is harder to find than expected, AI compute demand is the systemic reason. <a href="https://steamdeckhq.com/news/the-steam-deck-turns-4-years-old-today/">Steam Deck HQ</a></p>
+  </div>
+
+  <h3>Device Notes</h3>
+  <p>The <a href="https://www.indiatoday.in/technology/news/story/xiaomi-pad-8-launch-india-snapdragon-8s-gen-4-offers-accessories-2882776-2026-03-16">Xiaomi Pad 8 went on sale</a> this week — Snapdragon 8s Gen 4, 11-inch 3.2K display at 144Hz, 9,200mAh battery. A Nano Texture display variant reduces glare for reading. The <a href="https://www.pocket-lint.com/the-new-kindle-update-is-out-heres-whats-changing/">Kindle Scribe's firmware 5.19.2</a> added "Send to Alexa+" — beam notes to Alexa's AI for summaries and brainstorming. The Scribe has finally gone from standalone e-ink device to something connected. <a href="https://9to5google.com/2026/03/19/android-canary-2603-everything-new/">Android Canary 2603</a> introduced App Lock (long-press any icon to lock with biometrics) and the return of separate Wi-Fi and mobile data toggles. And <a href="https://android.gadgethacks.com/news/android-march-2026-129-fixes-zero-day-patch-now/">Android's March security update</a> patches 129 vulnerabilities including a zero-day — check Settings now.</p>
+
+  <div class="also">
+    <div class="also-title">Also in Tech &amp; Gaming</div>
+    <ul class="also-list">
+      <li><strong>Solasta II entered Early Access</strong> on March 12 — 10–15 hours of D&D 5e tactical RPG built on the updated ruleset. Crunchier than BG3, with genuine rules fidelity. <a href="https://www.solasta-game.com/news/223-dev-update-24-solasta-ii-is-now-available-in">Solasta-game.com</a></li>
+      <li><strong>GeForce NOW at GDC:</strong> VR streaming at 90 FPS for Ultimate members on Apple Vision Pro and Meta Quest. GOG account linking coming. In-app labels for Game Pass and Ubisoft+ titles. <a href="https://blogs.nvidia.com/blog/geforce-now-thursday-gdc-2026/">NVIDIA Blog</a></li>
+      <li><strong>Warcraft I and II Remastered</strong> launched March 11 and are immediately on GeForce NOW. <a href="https://blogs.nvidia.com/blog/geforce-now-thursday-gdc-2026/">NVIDIA Blog</a></li>
+      <li><strong>Death Stranding 2: On the Beach</strong> landed on PC via Steam/Epic on March 19 — uncapped framerates, ultrawide, DLSS/FSR/XeSS, and a free PS5 update with new difficulty mode. <a href="https://www.kojimaproductions.jp/en/deathstranding2_feb_announce">Kojima Productions</a></li>
+      <li><strong>The Polestar 3 upgrades to 800V architecture</strong> — 350kW charging, 10–80% in 22 minutes. NVIDIA DRIVE AGX Orin delivers a ~9× increase in onboard compute. Retrofit to 2025 models for free. <a href="https://www.caranddriver.com/news/a68156234/2026-polestar-3-updated-800-volt-system-faster-ev-charging/">Car and Driver</a></li>
+      <li><strong>Google Messages now shares your live location mid-chat</strong> via Find Hub — coordinate meetups without switching apps. <a href="https://blog.google/products-and-platforms/platforms/android/new-android-features-march-2026/">Google Blog</a></li>
+      <li><strong>Claude's memory feature is now free for all users</strong>, including the free tier — context persists across conversations. <a href="https://releasebot.io/updates/anthropic/claude">Claude Release Notes</a></li>
+      <li><strong>Slay the Spire 2's release date was so impactful</strong> that indie game Handmancers immediately delayed its own launch to avoid competing. <a href="https://www.reddit.com/r/Games/comments/1rbg1ps/slay_the_spire_2_release_date_announcement_forces/">Reddit/r/Games</a></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ══════════ THE TOUCHLINE ══════════ -->
+<hr class="divider dv-football">
+<section class="sec touchline-section">
+  <span class="section-label">The Touchline</span>
+
+  <!-- DATA FIRST -->
+  <h3>Champions League — Round of 16, Second Legs</h3>
+  <div class="results-strip">
+    <div class="result-card"><strong>Sporting CP</strong> 5–0 aet Bodø/Glimt<br><span class="score">Agg: 5–3 ✓</span></div>
+    <div class="result-card"><strong>Arsenal</strong> 2–0 Leverkusen<br><span class="score">Agg: 3–1 ✓</span></div>
+    <div class="result-card">Chelsea 0–<strong>PSG</strong> 3<br><span class="score">Agg: 2–8 ✓</span></div>
+    <div class="result-card">Man City 1–<strong>Real Madrid</strong> 2<br><span class="score">Agg: 1–5 ✓</span></div>
+    <div class="result-card"><strong>Barcelona</strong> 7–2 Newcastle<br><span class="score">Agg: 8–3 ✓</span></div>
+    <div class="result-card"><strong>Bayern</strong> 4–1 Atalanta<br><span class="score">Agg: 10–2 ✓</span></div>
+    <div class="result-card"><strong>Liverpool</strong> 4–0 Galatasaray<br><span class="score">Agg: 4–1 ✓</span></div>
+    <div class="result-card">Tottenham 3–<strong>Atlético</strong> 2<br><span class="score">Agg: 5–7 ✓</span></div>
+  </div>
+
+  <img class="hero-img" src="https://editorial.uefa.com/resources/02a3-202d9ac10d16-bbf0999e8ea9-1000/ucl_24x27_-_fixtures_x4_-_facebook.png" alt="UEFA Champions League 2025–26 quarter-final fixtures graphic">
+  <div class="caption" style="color: rgba(255,255,255,.4);">The UCL quarter-final draw: PSG–Liverpool, Real Madrid–Bayern Munich, Barcelona–Atlético, Sporting CP–Arsenal. First legs from April 7. UEFA</div>
+
+  <h3>Serie A — Top 8</h3>
+  <table class="league-table">
+    <tr><th class="pos">#</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>Pts</th></tr>
+    <tr><td class="pos">1</td><td>Inter Milan</td><td>29</td><td>22</td><td>2</td><td>5</td><td>68</td></tr>
+    <tr><td class="pos">2</td><td>Napoli</td><td>30</td><td>19</td><td>5</td><td>6</td><td>62</td></tr>
+    <tr><td class="pos">3</td><td>AC Milan</td><td>29</td><td>17</td><td>9</td><td>3</td><td>60</td></tr>
+    <tr><td class="pos">4</td><td>Como</td><td>29</td><td>15</td><td>9</td><td>5</td><td>54</td></tr>
+    <tr class="highlight"><td class="pos">5</td><td>Juventus</td><td>30</td><td>16</td><td>8</td><td>6</td><td>56</td></tr>
+    <tr><td class="pos">6</td><td>AS Roma</td><td>29</td><td>16</td><td>3</td><td>10</td><td>51</td></tr>
+    <tr><td class="pos">7</td><td>Atalanta</td><td>29</td><td>12</td><td>11</td><td>6</td><td>47</td></tr>
+    <tr><td class="pos">8</td><td>Bologna</td><td>29</td><td>12</td><td>6</td><td>11</td><td>42</td></tr>
+  </table>
+
+  <h3>Premier League — Top 8</h3>
+  <table class="league-table">
+    <tr><th class="pos">#</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>Pts</th></tr>
+    <tr><td class="pos">1</td><td>Arsenal</td><td>31</td><td>21</td><td>7</td><td>3</td><td>70</td></tr>
+    <tr><td class="pos">2</td><td>Manchester City</td><td>30</td><td>18</td><td>7</td><td>5</td><td>61</td></tr>
+    <tr><td class="pos">3</td><td>Manchester United</td><td>31</td><td>15</td><td>10</td><td>6</td><td>55</td></tr>
+    <tr><td class="pos">4</td><td>Aston Villa</td><td>30</td><td>15</td><td>6</td><td>9</td><td>51</td></tr>
+    <tr><td class="pos">5</td><td>Liverpool</td><td>30</td><td>14</td><td>7</td><td>9</td><td>49</td></tr>
+    <tr><td class="pos">6</td><td>Chelsea</td><td>30</td><td>13</td><td>9</td><td>8</td><td>48</td></tr>
+    <tr><td class="pos">7</td><td>Brentford</td><td>30</td><td>13</td><td>6</td><td>11</td><td>45</td></tr>
+    <tr><td class="pos">8</td><td>Everton</td><td>30</td><td>12</td><td>7</td><td>11</td><td>43</td></tr>
+  </table>
+
+  <h3>PL Results — Matchweek 30</h3>
+  <div class="results-strip">
+    <div class="result-card"><strong>Arsenal</strong> 2–0 Everton</div>
+    <div class="result-card">Chelsea 0–<strong>Newcastle</strong> 1</div>
+    <div class="result-card">West Ham 1–1 Man City</div>
+    <div class="result-card"><strong>Man Utd</strong> 3–1 Aston Villa</div>
+    <div class="result-card">Liverpool 1–1 Tottenham</div>
+    <div class="result-card">Sunderland 0–<strong>Brighton</strong> 1</div>
+    <div class="result-card">Burnley 0–0 Bournemouth</div>
+    <div class="result-card">Crystal Palace 0–0 Leeds</div>
+    <div class="result-card">Nottm Forest 0–0 Fulham</div>
+  </div>
+
+  <h3>Serie A — Matchday 30 (Saturday)</h3>
+  <div class="results-strip">
+    <div class="result-card">Cagliari 0–<strong>Napoli</strong> 1</div>
+    <div class="result-card">Genoa 0–<strong>Udinese</strong> 2</div>
+    <div class="result-card"><strong>Juventus</strong> 1–0 Sassuolo</div>
+  </div>
+
+  <!-- THEN NARRATIVE -->
+  <h3 class="narrative">Three Wins, Two Clean Sheets, and a Contract Worth Signing</h3>
+
+  <img class="hero-img" src="https://img.vavel.com/juventus-pisa-vavel-english-1772814782534.jpg" alt="Juventus players celebrating in Serie A action">
+  <div class="caption" style="color: rgba(255,255,255,.4);">Juventus in Serie A 2025–26 action. Three wins in a row, two clean sheets. VAVEL</div>
+
+  <p>Juventus beat Sassuolo 1–0 on Saturday night — their third consecutive league win, second successive clean sheet. Weston McKennie was central, <a href="https://www.foxsports.com/soccer/serie-a-juventus-vs-sassuolo-mar-21-2026-game-boxscore-625495">contributing two chances created and an interception</a>. The week before, Jérémie Boga scored at Udinese to extend his personal run to three consecutive games. Kenan Yildiz remains the creative fulcrum: with nine goals and six assists, <a href="https://en.legaseriea.it/serie-a/news/recap-29-giornata-serie-gol-collection">the Turkish teenager became the first Juventus player since the league expanded to 20 teams</a> to reach 15 goal contributions in a single Serie A season before turning 21.</p>
+
+  <p>The more significant story is off the pitch. Luciano Spalletti is close to signing a contract extension through June 2027 with an option for a further year. <a href="https://www.juvefc.com/spalletti-juventus-set-for-decisive-contract-meeting-figures-revealed/">The decisive meeting with Director of Football Strategy Giorgio Chiellini</a> could take place during the international break, with signatures expected before Easter. Spalletti has been characteristically candid, <a href="https://www.goal.com/en-gb/lists/juventus-spalletti-outlines-his-future-from-timing-to-confidence-his-comments-and-what-remains-to-be-done-before-the-deal-is-sealed/blt8c5991ac9e1573f6">telling reporters</a>: <em>"I feel awkward discussing next year without a signed contract... talking about future acquisitions while I still have a contract to sign feels a bit foolish."</em> He's demanded five new signings. Given the squad's state — strong in some areas, paper-thin in others — that is both realistic and arguably optimistic.</p>
+
+  <p>The title race is effectively settled: Inter's eight-point lead with nine games remaining is functionally insurmountable. <a href="https://www.goal.com/en-us/lists/can-napoli-get-back-into-the-scudetto-race-a-comparison-of-the-league-table-and-fixtures-with-inter-and-milan-and-what-happens-if-they-finish-level-on-points/bltd5010f50d7c3a042">Goal.com pointed out</a> that Napoli would need 86 points and Inter to lose three times. The real drama is 3rd–6th, where four points separate four clubs. Juve sit two points off Como — Cesc Fàbregas's newly promoted side, who won a fourth consecutive match on Matchday 29. A freshly promoted club in the Champions League places. Remarkable.</p>
+
+  <div class="dyk">
+    <div class="dyk-title">Did You Know?</div>
+    <p>Tasos Douvikas's tenth league goal for Como makes him the first Greek player to reach double figures in a single Serie A campaign. Fàbregas's squad sit fourth — two points ahead of Juventus — in the story of the season that nobody quite saw coming.</p>
+  </div>
+
+  <h3 class="narrative">Liverpool's Split Personality Season</h3>
+
+  <p>Liverpool's 4–0 demolition of Galatasaray at Anfield on Wednesday — overturning a 1–0 first-leg deficit — was the performance of the season from Arne Slot's side. Szoboszlai opened; Salah, after missing a panenka penalty, curled in a beauty. Yet in the league, <a href="https://www.sportinglife.com/football/fixtures-results/2026-03-21">they lost 2–1 at Brighton on Saturday</a>. Fifth in the table, one point below Chelsea. There is a version of this season where Liverpool win the Champions League and miss the top four. Slot's position is not yet secure.</p>
+
+  <p>Arsenal's nine-point lead looks increasingly decisive. <a href="https://www.premierleague.com/en/news/4572119/premier-league-title-race-how-it-stands-and-remaining-fixtures">City have a game in hand</a> and meet Arsenal at the Etihad in mid-April — but Arsenal's 14-game unbeaten run gives them a breadth that previous Arteta challengers lacked. Tomorrow's Carabao Cup final (Arsenal vs City, Wembley, 16:30) is <a href="https://sports.yahoo.com/articles/arsenal-vs-man-city-carabao-110500751.html">the first time the league's top two sides have met in a League Cup final since 1978</a>.</p>
+
+  <div class="angle">
+    <div class="angle-label">The Take</div>
+    <p>Spalletti is not just a caretaker and Juve fans should stop treating him like one. He rebuilt Inter, steadied Roma, won a Scudetto with Napoli. The club is 5th, on a four-match unbeaten run, with a 21-year-old who is arguably the most exciting young player in the league. If Chiellini funds the five signings Spalletti wants, Juventus could be genuinely interesting in 2026–27 rather than merely comfortable. That has not been true for a while.</p>
+  </div>
+
+  <div class="also">
+    <div class="also-title">Also on the Pitch</div>
+    <ul class="also-list">
+      <li><strong>Lamine Yamal, 16 years and 223 days</strong>, became the youngest player in CL knockout history as Barcelona thrashed Newcastle 7–2 (8–3 agg.). <a href="https://www.uefa.com/uefachampionsleague/news/02a3-202da26c4a07-321ee1fcd929-1000--champions-league-quarter-finalists-meet-the-teams/">UEFA</a></li>
+      <li><strong>Sporting CP's 5–0 comeback</strong> against Bodø/Glimt after trailing 3–0 on aggregate was the first such remontada in the CL since <a href="https://www.flashscore.com/news/uefa-champions-league-25-26-round-of-16-live-scores-and-updates/67lpTYfC/">Liverpool 4–0 Barcelona in 2019</a>. Fairytale football.</li>
+      <li><strong>Cameron Young won The Players Championship</strong> — his first win in 94 starts, ending seven runner-up finishes, with a <a href="https://www.espn.com/golf/story/_/id/48221258/cameron-young-rory-mcilroy-winners-losers-2026-players-championship">375-yard drive on 18</a> — the longest ever recorded on that hole. Augusta is five weeks away.</li>
+      <li><strong>Leo Østigård (Genoa)</strong> has five Serie A goals — the highest-scoring centre-back across Europe's top five leagues. <a href="https://en.legaseriea.it/serie-a/news/recap-29-giornata-serie-gol-collection">Lega Serie A</a></li>
+      <li><strong>Pep Guardiola's future</strong> is expected to be clarified after the Carabao Cup final tomorrow. Whether he stays or goes reshapes the entire 2026–27 landscape. <a href="https://sports.yahoo.com/articles/arsenal-vs-man-city-carabao-110500751.html">Yahoo Sports</a></li>
+      <li><strong>Bastoni (Inter → Barcelona)</strong> is the transfer rumour of the week: Inter are reportedly prepared to sell for €100m. If confirmed, it reshapes the 2026–27 Serie A power balance. <a href="https://www.goal.com/en-us/lists/Bastoni-inter-star-heart-set-barcelona-transfer-serie-a-side-plan-summer-sale-/blt9f98a582d8591783">Goal.com</a></li>
+      <li><strong>Greenwood (Marseille → Juve?)</strong>: Calciomercato reports Juventus are considering a summer move. The numbers at Marseille are strong; the PR dimension is the elephant in the room. <a href="https://sports.yahoo.com/articles/juventus-considering-summer-move-marseille-180000696.html">Yahoo Sports</a></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ══════════ SCREEN & SOUND ══════════ -->
+<hr class="divider dv-screen">
+<section class="sec screen-section">
+  <span class="section-label">Screen &amp; Sound</span>
+  <h2>Project Hail Mary: The Most Warmhearted Sci-Fi Film of 2026</h2>
+
+  <img class="hero-img" src="https://discussingfilm.net/wp-content/uploads/2026/03/Ryan-Gosling-Project-Hail-Mary.webp" alt="Ryan Gosling as Ryland Grace in Project Hail Mary (2026)">
+  <div class="caption" style="color: rgba(255,255,255,.4);">Ryan Gosling wakes up alone in deep space in Project Hail Mary. DiscussingFilm</div>
+
+  <p>Ryan Gosling plays a middle school science teacher who wakes up alone in deep space, tasked with saving humanity from slow extinction. Based on Andy Weir's 2021 novel, directed by Phil Lord and Chris Miller — the <em>Spider-Verse</em> and <em>LEGO Movie</em> team, who haven't directed a feature since 2014. It opened on March 20 and made <a href="https://variety.com/2026/tv/news/box-office-project-hail-mary-previews-1236694293/">$12 million in Thursday previews</a> — the biggest preview number of 2026.</p>
+
+  <p>The reviews are effusive. <a href="https://www.npr.org/2026/03/20/nx-s1-5738164/project-hail-mary-review-ryan-gosling">NPR</a> calls it "optimistic and timely." <a href="https://artsfuse.org/325954/film-review-project-hail-mary-the-sweet-smell-of-science-fiction-wonder/">Arts Fuse</a> says it's "an antidote to dystopias." Even the <a href="https://www.bfi.org.uk/sight-and-sound/reviews/project-hail-mary-ryan-gosling-befriends-alien-shameless-crowd-pleaser">BFI's Sight & Sound</a>, which calls it "cloying," concedes it's a shameless crowd-pleaser. The alien companion Rocky is apparently what everyone's talking about. Gosling improvised at least one of its best moments. If you liked <em>The Martian</em>, this is that but warmer and stranger. Not a thriller, but unambiguously worth your time.</p>
+
+  <h3>The Oscars</h3>
+  <p>The <a href="https://www.bbc.com/news/articles/c33jkvmzl4ko">98th Academy Awards</a>, hosted by Conan O'Brien: <strong>"One Battle After Another"</strong> (Paul Thomas Anderson) won Best Picture, Director, Supporting Actor (Sean Penn), and three more. <strong>"Sinners"</strong> (Ryan Coogler) took four including Best Actor (Michael B. Jordan) from a record-breaking 16 nominations. <strong>Jessie Buckley</strong> won Best Actress for <em>Hamnet</em>. Best Animated went to <em>KPop Demon Hunters</em>, beating <em>Zootopia 2</em>.</p>
+
+  <h3>Star Wars</h3>
+
+  <img src="https://www.laughingplace.com/uploads/media/2026/03/Star-Wars-Maul-Shadow-Lord-Episode-Titled-Revealed.jpg" alt="Star Wars: Maul – Shadow Lord promotional image" style="max-width: 250px; float: right; margin: 0 0 16px 20px; border-radius: 6px;">
+  <div class="caption" style="text-align: right; color: rgba(255,255,255,.4); margin-bottom: 16px;">Maul – Shadow Lord, April 6, Disney+. Laughing Place / Lucasfilm</div>
+
+  <p>The <a href="https://hypebeast.com/2026/3/lucasfilm-disney-plus-star-wars-maul-shadow-lord-official-trailer-release-info">Maul – Shadow Lord trailer</a> landed with considerable thud on March 16. The 10-episode animated series premieres April 6 on Disney+ with a two-episode event, finale on May 4. Set after <em>The Clone Wars</em>, a humbled Maul rebuilds his criminal empire on a neon-lit planet, crossing paths with Devon Izara — a disillusioned Jedi Padawan who survived Order 66. Sam Witwer returns to voice Maul. The tone looks genuinely dark and stylish — the spiritual heir to his best <em>Clone Wars</em> arcs. The padawan-temptation angle is the most interesting thing Star Wars has tried since <em>Andor</em>.</p>
+
+  <p>On the Mandalorian front: Lucasfilm <a href="https://insidethemagic.net/2026/03/disney-removes-violence-star-wars-mandalorian-and-grogu-trailer-th1/">quietly edited the theatrical trailer</a>, swapping violent sequences for softer footage in screenings ahead of <em>Hoppers</em>. The <em>Mandalorian & Grogu</em> film remains on track for May 22. At the <a href="https://mickeyvisit.com/disney-announcements-news-march-18-2026/">Disney shareholder meeting</a>, <strong>Star Wars: Starfighter</strong> was confirmed as a 2027 film. Kathleen Kennedy described the transition to Dave Filoni as CEO of Lucasfilm as "pretty seamless."</p>
+  <div style="clear: both;"></div>
+
+  <h3>Also on the Small Screen</h3>
+
+  <img src="https://thecosmiccircus.com/wp-content/uploads/2026/03/Invincible-banner.jpg" alt="Invincible Season 4 banner" style="max-width: 250px; float: right; margin: 0 0 16px 20px; border-radius: 6px;">
+  <div class="caption" style="text-align: right; color: rgba(255,255,255,.4); margin-bottom: 16px;">Invincible Season 4 dropped March 18. The Cosmic Circus / Prime Video</div>
+
+  <p><strong>Invincible Season 4</strong> dropped three episodes on March 18. Mark Grayson is back, bloodier than ever, the Viltrumite war being seeded. <a href="https://keithlovesmovies.com/2026/03/19/invincible-season-4-premiere-review/">Reviews are strong</a> — the animation remains unmatched in the adult superhero space. If you've watched three seasons, you're already watching. If you've never started: it's genuinely the best superhero TV going.</p>
+
+  <p><strong>Peaky Blinders: The Immortal Man</strong> arrived on Netflix on March 20 — Tommy Shelby in WWII, Barry Keoghan as Duke, and a <a href="https://www.reddit.com/r/movies/comments/1rliifq/peaky_blinders_the_immortal_man_review_thread/">92% on Rotten Tomatoes</a> that splits between devotees and sceptics. Murphy is exceptional, the blitz cinematography is stunning, and it's a worthy if imperfect close. <strong>One Piece Season 2</strong> hit 16.8 million views in four days on Netflix — <a href="https://editorial.rottentomatoes.com/article/one-piece-season-2-first-reviews/">reviews call it</a> the high-water mark for live-action anime.</p>
+  <div style="clear: both;"></div>
+
+  <h3>The Release Radar</h3>
+  <div class="radar-grid">
+    <h3 style="margin-top: 8px">Now Showing / Just Dropped</h3>
+    <div class="radar-row"><span class="radar-date">MAR 15</span><div><strong>98th Academy Awards</strong> — PTA's "One Battle After Another" wins Best Picture; Jordan wins Best Actor for "Sinners" <span class="radar-platform">Awards</span></div></div>
+    <div class="radar-row"><span class="radar-date">MAR 10</span><div><strong>One Piece Season 2</strong> — Live-action adaptation confirmed even better than S1; 16.8M views in 4 days <span class="radar-platform">Netflix</span></div></div>
+    <div class="radar-row"><span class="radar-date">MAR 18</span><div><strong>Invincible Season 4</strong> — Three-episode premiere; darker, bloodier, building toward the Viltrumite war <span class="radar-platform">Prime Video</span></div></div>
+    <div class="radar-row"><span class="radar-date">MAR 18</span><div><strong>Imperfect Women</strong> — Elisabeth Moss, Kerry Washington, Kate Mara in a psychological thriller <span class="radar-platform">Apple TV+</span></div></div>
+    <div class="radar-row"><span class="radar-date">MAR 19</span><div><strong>Steel Ball Run: JoJo's Bizarre Adventure</strong> — The most beloved JoJo arc, finally animated <span class="radar-platform">Netflix</span></div></div>
+    <div class="radar-row"><span class="radar-date">MAR 20</span><div><strong>Project Hail Mary</strong> — Gosling + alien + crowd-pleaser energy. $12M Thursday previews <span class="radar-platform">Cinemas</span></div></div>
+    <div class="radar-row"><span class="radar-date">MAR 20</span><div><strong>Peaky Blinders: The Immortal Man</strong> — Tommy Shelby vs. Nazis. The saga's final chapter <span class="radar-platform">Netflix</span></div></div>
+    <div class="radar-row"><span class="radar-date">MAR 20</span><div><strong>Jury Duty: Company Retreat</strong> — Mockumentary genius returns, now at a hot sauce company <span class="radar-platform">Prime Video</span></div></div>
+    <div class="radar-row"><span class="radar-date">MAR 20</span><div><strong>Ready or Not 2</strong> — Samara Weaving returns for more murderous hide-and-seek <span class="radar-platform">Cinemas</span></div></div>
+    <div class="radar-row"><span class="radar-date">MAR 19</span><div><strong>Crimson Desert</strong> — 2M copies in 24 hours; divisive reviews, enormous world <span class="radar-platform">PC / PS5 / Xbox / GFN</span></div></div>
+    <div class="radar-row"><span class="radar-date">MAR 5</span><div><strong>Slay the Spire 2 (Early Access)</strong> — 5 characters, co-op mode, feels 90% complete already <span class="radar-platform">Steam / GFN</span></div></div>
+
+    <h3>Coming Soon</h3>
+    <div class="radar-row"><span class="radar-date">MAR 24</span><div><strong>Daredevil: Born Again S2</strong> — Matt Murdock vs. Mayor Fisk; Jessica Jones and Karen Page return <span class="radar-platform">Disney+</span></div></div>
+    <div class="radar-row"><span class="radar-date">MAR 26</span><div><strong>For All Mankind Season 5</strong> — Apple's alt-history space drama is back <span class="radar-platform">Apple TV+</span></div></div>
+    <div class="radar-row"><span class="radar-date">MAR 26</span><div><strong>Kena: Bridge of Spirits</strong> — Pixar-meets-soulslike arrives on Switch 2 <span class="radar-platform">Switch 2</span></div></div>
+    <div class="radar-row"><span class="radar-date">APR 1</span><div><strong>The Super Mario Galaxy Movie</strong> — Taylor-Joy, Pratt, Black. The animated Mario universe expands <span class="radar-platform">Cinemas</span></div></div>
+    <div class="radar-row"><span class="radar-date">APR 3</span><div><strong>The Drama</strong> — Robert Pattinson and Zendaya in an A24 romantic drama <span class="radar-platform">Cinemas</span></div></div>
+    <div class="radar-row"><span class="radar-date">APR 6</span><div><strong>Star Wars: Maul – Shadow Lord</strong> — Two-episode premiere; gritty criminal-underworld Star Wars <span class="radar-platform">Disney+</span></div></div>
+    <div class="radar-row"><span class="radar-date">APR 16</span><div><strong>Fortnite Save the World</strong> — The original PvE mode goes free for all players <span class="radar-platform">All Platforms</span></div></div>
+    <div class="radar-row"><span class="radar-date">APR 26</span><div><strong>LEGO Mandalorian & Grogu sets</strong> — Five sets including The Razor Crest ($129.99) <span class="radar-platform">LEGO</span></div></div>
+    <div class="radar-row"><span class="radar-date">MAY 1</span><div><strong>Efteling: Hooghmoed</strong> — New free-fall family attraction next to Baron 1898 <span class="radar-platform">Efteling</span></div></div>
+    <div class="radar-row"><span class="radar-date">MAY 22</span><div><strong>The Mandalorian & Grogu</strong> — First Star Wars theatrical film since 2019 <span class="radar-platform">Cinemas</span></div></div>
+
+    <h3>Leaving Soon</h3>
+    <div class="radar-row"><span class="radar-date">MAR 31</span><div><strong>District 9</strong> — 90% RT. One of the most political sci-fi films of the century. Watch before it goes <span class="radar-platform">Netflix</span></div></div>
+    <div class="radar-row"><span class="radar-date">MAR 31</span><div><strong>The Hurt Locker</strong> — Best Picture winner. Kathryn Bigelow. Still devastating <span class="radar-platform">Netflix</span></div></div>
+    <div class="radar-row"><span class="radar-date">APR TBC</span><div><strong>Ford v Ferrari</strong> — Damon, Bale, genuine racing film greatness <span class="radar-platform">Netflix</span></div></div>
+    <div class="radar-row"><span class="radar-date">APR TBC</span><div><strong>Misery</strong> — Kathy Bates at her most terrifying. The gold standard of Stephen King adaptations <span class="radar-platform">Netflix</span></div></div>
+
+    <h3>Also Streaming This Month</h3>
+    <div class="radar-row"><span class="radar-date">Disney+</span><div><strong>Zootopia 2</strong> — Pixar sequel arrived after a massive theatrical run</div></div>
+    <div class="radar-row"><span class="radar-date">Netflix</span><div><strong>Downton Abbey: The Grand Finale</strong> — The beloved period drama comes to a close</div></div>
+    <div class="radar-row"><span class="radar-date">Starz</span><div><strong>Outlander Season 8</strong> — Final season of the time-travelling romance saga</div></div>
+    <div class="radar-row"><span class="radar-date">Prime</span><div><strong>Scarpetta</strong> — Nicole Kidman in a dual-timeline forensic thriller</div></div>
+    <div class="radar-row"><span class="radar-date">HBO</span><div><strong>The Comeback Season 3</strong> — Lisa Kudrow's cult comedy returns after a decade</div></div>
+    <div class="radar-row"><span class="radar-date">HBO Max</span><div><strong>Ballerina</strong> — Ana de Armas in the John Wick spinoff, from March 27</div></div>
+  </div>
+
+  <div class="also">
+    <div class="also-title">Also in Film &amp; TV</div>
+    <ul class="also-list">
+      <li><strong>Hoppers (Pixar)</strong> — $28.5M second weekend, now $164.7M worldwide. Best Pixar original opening since Coco. <a href="https://fortune.com/2026/03/16/disney-pixar-hoppers-movie-box-office-success/">Fortune</a></li>
+      <li><strong>Shōgun Season 2 confirmed in production</strong> at the Disney shareholder meeting — Season 1 holds the Emmy record with 18. <a href="https://thewaltdisneycompany.com/news/2026-annual-shareholders-meeting-remarks/">The Walt Disney Company</a></li>
+      <li><strong>The Bear ends after Season 5</strong> — FX confirmed it this week. A deliberate ending is better than a limping finale. <a href="https://www.tvguide.com/news/canceled-renewed-tv-shows-march-2026/">TV Guide</a></li>
+      <li><strong>Disney Adventure World (Disneyland Paris)</strong> officially opens March 29 — the renamed Walt Disney Studios Park, headlined by World of Frozen. <a href="https://mickeyvisit.com/disney-announcements-news-march-18-2026/">Mickey Visit</a></li>
+      <li><strong>God of War TV series</strong> filming in Vancouver — Ronald D. Moore showrunning, 10 episodes, second season already greenlit. <a href="https://www.gosugamers.net/entertainment/news/77272-amazon-s-god-of-war-tv-series-reportedly-starts-filming-in-march-2026">GosuGamers</a></li>
+      <li><strong>A24's Undertone opened at $9.3M</strong> — micro-budget horror compared to Hereditary-era A24. Worth tracking.</li>
+      <li><strong>Disney licensed 200+ characters to OpenAI's Sora</strong> for AI-generated content — a significant shift from a company historically protective of its IP. <a href="https://www.harbottle.com/behind-the-lens-of-march-2026-uk-film-and-tv-insights/">Harbottle & Lewis</a></li>
+      <li><strong>Rings of Power Season 3</strong> wrapped filming in December 2025 — earliest realistic window is mid-to-late 2027. Sauron forging the One Ring, the first Nazgûl. <a href="https://www.newsweek.com/entertainment/tv/the-rings-of-power-season-3-release-11468496">Newsweek</a></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ══════════ THE SHELF ══════════ -->
+<hr class="divider dv-shelf">
+<section class="sec shelf-section">
+  <span class="section-label">The Shelf</span>
+
+  <h3>Books</h3>
+  <h3 class="feature-title">Spiders, Grimdark, and the Short Fiction Collection You've Been Waiting For</h3>
+
+  <img src="https://fantasy-hive.co.uk/wp-content/uploads/2026/01/strifeFEAT.jpeg" alt="Children of Strife book cover — Adrian Tchaikovsky" style="max-width: 250px; float: right; margin: 0 0 16px 20px; border-radius: 6px;">
+  <div class="caption" style="text-align: right; color: rgba(255,255,255,.4); margin-bottom: 16px;">Children of Strife, Orbit/Tor UK, March 17. Fantasy Hive</div>
+
+  <p>Three new books this week deserve full attention — and a fourth deserves a quiet recommendation. The March wave for SFF is exceptional. The <a href="https://www.reddit.com/r/Fantasy/comments/1re00ak/sff_books_coming_in_march_2026/">r/Fantasy rolling release thread</a> is active and worth bookmarking.</p>
+  <div style="clear: both;"></div>
+
+  <div class="book-card">
+    <h4>Children of Strife</h4>
+    <div class="author">Adrian Tchaikovsky · Children of Time, Book 4 · Orbit / Tor UK · March 17, 2026</div>
+    <p>The Arthur C. Clarke Award-winning saga's fourth instalment. Early readers on <a href="https://www.reddit.com/r/AdrianTchaikovsky/comments/1rwjj96/children_of_strife_discussion_thread/">r/AdrianTchaikovsky</a> describe it as combining "the mindfuckery of <em>Memory</em> and the urgent danger pace of <em>Ruin</em>." Spans thousands of years. If you loved Malazan's multi-species civilisational scope — Tchaikovsky does for spiders and cephalopods what Erikson does for Imass and Jaghut.</p>
+  </div>
+
+  <div class="book-card">
+    <h4>Seasons of Glass and Iron: Stories</h4>
+    <div class="author">Amal El-Mohtar · Tordotcom · March 24, 2026</div>
+    <p>The first collected edition from the co-author of <em>This Is How You Lose the Time War</em>. If you want more Ted Chiang, more Jemisin, El-Mohtar is the answer. <a href="https://bookriot.com/new-sci-fi-and-fantasy-books-march-2026/">Book Riot</a> calls it "one of the most anticipated books of 2026." Her novella <em>The River Has Roots</em> is currently nominated for the <a href="https://nebulas.sfwa.org/9192-2/">2026 Nebula Award for Best Novella</a>.</p>
+  </div>
+
+  <div class="book-card">
+    <h4>Daughter of Crows</h4>
+    <div class="author">Mark Lawrence · The Kindness Academy, Book 1 · Tor · March 24, 2026</div>
+    <p>Mark Lawrence's return to grimdark. An academy that trains for something darker than the name suggests. <a href="https://www.andrewliptak.com/march-2026-sci-fi-fantasy-new-books-roundup/">Andrew Liptak</a> calls it "grimdark to the core." If you're between Malazan arcs and want something morally complex, this is the March pick.</p>
+  </div>
+
+  <div class="book-card">
+    <h4>Between Two Fires (Reissue)</h4>
+    <div class="author">Christopher Buehlman · Tor · March 3, 2026</div>
+    <p>A new edition of the debut from the author of <em>The Blacktongue Thief</em>. Set during the Black Death in 1348: a knight, a girl, angels and demons. If you loved <em>Blacktongue Thief</em>, this is the origin point — and it confirms Buehlman's consistency of vision.</p>
+  </div>
+
+  <p><strong>Malazan news:</strong> Steven Erikson's <em>Legacies of Betrayal</em> (Tales of Witness #3) is <a href="https://thewertzone.blogspot.com/2026/01/next-malazan-novel-legacies-of-betrayal.html">confirmed for October 2026</a>. <strong>Cosmere news:</strong> <em>The Fires of December</em> releases commercially December 2026; Sanderson reports <a href="https://www.brandonsanderson.com/blogs/blog/state-of-the-sanderson-2025">"several offers" for film/TV adaptations</a> of Mistborn and Stormlight. The Cosmere is in active Hollywood development. Catch up past Stormlight 2 before it's everywhere.</p>
+
+  <h3>Music</h3>
+
+  <img src="https://i.scdn.co/image/ab67616d0000b273a6ccdfba791a93ea3c4b15bc" alt="Carpenter Brut Leather Temple album cover" style="max-width: 250px; float: right; margin: 0 0 16px 20px; border-radius: 6px;">
+  <div class="caption" style="text-align: right; color: rgba(255,255,255,.4); margin-bottom: 16px;">Leather Temple — the concluding chapter of the Leather Trilogy. Carpenter Brut</div>
+
+  <h3 class="feature-title">Carpenter Brut — <em>Leather Temple</em></h3>
+
+  <p>The concluding chapter of the <em>Leather Trilogy</em>, released February 26 via No Quarter. Ten tracks, fully instrumental, no guest features — a deliberate callback to the solo synthwave aesthetic. The concept: cyborg resistance leader Bret Halford, resurrected in 2077, battles the tyrant Iron Tusk. Very <em>Terminator</em>, very <em>Akira</em>, very much a film score to a movie that doesn't exist.</p>
+
+  <p><a href="https://www.kerrang.com/album-review-carpenter-brut-leather-temple">Kerrang! gave it 4/5</a>: <em>"Leather Temple is easily the most challenging of the three parts, but also shows the greatest breadth of Carpenter Brut as an artist, completely unshackled."</em> <a href="https://therazorsedge.rocks/2026-02-album-review-carpenter-brut/">The Razor's Edge</a> calls it "nothing short of spectacular." Standout tracks: <em>Major Threat</em> (techno peak), <em>She Rules the Ruins</em> (post-punk through a robot), <em>Neon Requiem</em> (saxophone, <em>Terminator</em>'s Tech Noir), <em>Speed or Perish</em> (closing momentum). If you've been waiting for the trilogy conclusion since <em>Leather Terror</em>, this is it.</p>
+
+  <p>Also this week: <strong>FM-84</strong> confirmed new music arriving <a href="https://www.instagram.com/p/DU_LPsxiGFF/">April 25</a> — the <em>Atlas</em> vinyl repress drops first. <strong>Anna Calvi's <em>Is This All There Is?</em> EP</strong> features collaborations with Iggy Pop, Perfume Genius, Laurie Anderson, and Matt Berninger — <a href="https://www.avclub.com/best-new-albums-march-20-2026">AV Club</a> calls it fifteen minutes of zero wasted motion.</p>
+  <div style="clear: both;"></div>
+
+  <h3>Podcasts</h3>
+  <p><strong>Football Weekly:</strong> <a href="https://podcasts.apple.com/gb/podcast/football-weekly/id188674007">"Was That the Night Arsenal Won the Premier League?"</a> — Cowen, Glendenning, Brewin, and Liew cover City's dropped points, Arsenal's tenth 1–0 of the season, and the FA Cup fifth-round draw.</p>
+
+  <p><strong>The Bunker:</strong> <a href="https://podcasts.apple.com/gb/podcast/back-the-future-what-is-europe-for-in-the-21st-century/id1496246490?i=1000755988727">"Back the Future?"</a> — Roderick Beaton on whether Europe needs to look backwards to find its future. Thirty minutes, dense, eerily relevant to this week's NATO cracks.</p>
+
+  <p><strong>What Went Wrong:</strong> <a href="https://podcasts.apple.com/us/podcast/what-went-wrong/id1512847066">"Seven Samurai"</a> — Kurosawa's two-year shoot in the mud, Mifune's rescue of the film from seriousness, and how a request for ten days off led to a two-year house guest.</p>
+
+  <p><strong>New audio drama rec:</strong> <a href="https://goodpods.com/leaderboard/top-100-shows-by-category/fiction/sci-fi">Syntax</a> (Twin Strangers Productions) — a sci-fi horror audio drama now in Season 4. A linguist employed by biotech company VINCULA discovers unearthly artefacts. Full cast, adult themes, closer to the <em>Wolf 359</em> register than the cosy <em>Night Vale</em> end. Currently on Goodpods' top sci-fi chart.</p>
+
+  <div class="also">
+    <div class="also-title">Also on The Shelf</div>
+    <ul class="also-list">
+      <li><strong>No Man's Land by Richard K. Morgan (Mar 24)</strong> — The <em>Altered Carbon</em> author sets WWI with fae creatures. Tom Holland-esque narrative history with a fantasy skin. <a href="https://www.andrewliptak.com/march-2026-sci-fi-fantasy-new-books-roundup/">Andrew Liptak</a></li>
+      <li><strong>R.F. Kuang's <em>Katabasis</em></strong> is on the Nebula Best Novel ballot — if you read <em>Babel</em> and haven't caught up, this is the signal. <a href="https://nebulas.sfwa.org/9192-2/">SFWA</a></li>
+      <li><strong>Steel Gods by Richard Swan (Mar 31)</strong> — Second in the <em>Great Silence</em> trilogy. A <em>Kirkus</em>-starred review for a fantasy sequel is uncommon enough to notice.</li>
+      <li><strong>Esslemont comparison thread on r/Malazan</strong> — <a href="https://www.reddit.com/r/Malazan/comments/1rwij5w/compare_ian_c_esslemont_to_someone_other_than/">"Compare Ian C. Esslemont to someone other than Erikson"</a> — useful for calibrating the Path to Ascendancy novels.</li>
+      <li><strong>Hugo nominations close March 28</strong> at LAcon V. The Stormlight Archive is on the Series category long list. <a href="https://www.lacon.org/hugos/">LAcon V</a></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ══════════ THE SESSION ══════════ -->
+<hr class="divider dv-session">
+<section class="sec session-section">
+  <span class="section-label" style="color: var(--session-accent)">The Session</span>
+  <h2>Step Loading Back to The Beast: A StrongFirst Comeback</h2>
+
+  <img class="hero-img" src="https://hips.hearstapps.com/hmg-prod/images/kettlebell-swing-1586253630.jpg?resize=980:*" alt="Athlete performing a kettlebell swing">
+  <div class="caption">The kettlebell swing — the foundational movement in Tony Gracia's step-loading comeback. Men's Health</div>
+
+  <p>Tony Gracia had a problem. Before his shoulder injury — bad enough that some mornings he couldn't brush his teeth — he could do a chin-up with "The Beast": the 48kg kettlebell dangling from his waist. Then, for three months, he was barred from almost everything: no chin-ups, no get-ups, no swings or snatches, no jiu jitsu.</p>
+
+  <p>His path back is a near-perfect case study in what <a href="https://www.strongfirst.com/rebuilding-to-a-chin-up-with-the-beast/">StrongFirst calls "step loading"</a> — and it has something to teach anyone returning to training after a break, illness, injury, or even just a long winter of missed sessions.</p>
+
+  <h3>The Method</h3>
+  <p>Pick a load that is moderately challenging. Stay with it until it feels almost easy. Then — and only then — move up. Gracia's weighted chin-up comeback:</p>
+  <ul style="font-family: 'Source Sans 3', sans-serif; font-size: 15px; margin: 12px 0 16px 24px; line-height: 1.6;">
+    <li><strong>Month 1:</strong> 5 sets × 5 reps at 12kg, once weekly</li>
+    <li><strong>Month 2:</strong> 5 sets × 5 reps at 16kg, once weekly</li>
+    <li><strong>Month 3:</strong> Two sessions weekly — 5×5 at 16kg Mondays; 3×8 at 24kg Fridays</li>
+  </ul>
+  <p>Every session began with ten bodyweight chin-ups. Every set stopped well short of failure — "at least one, usually several, reps left in the tank." Not once did he lift heavier than 24kg in training. Then, the day before his 40th birthday, he tried The Beast again. Nailed it.</p>
+
+  <h3>The Lesson</h3>
+  <p>Volume and patience do the work that ego and intensity cannot. Gracia never went near his limit in practice. He let accumulated volume "grease the groove," and the strength showed up on test day. The parallel to Easy Strength, to Dan John's entire philosophy — "practice, not performance" — is obvious. You don't need to train at your ceiling every session. You need to train consistently below it for long enough that your ceiling quietly rises.</p>
+
+  <p>This week also brought the biggest fitness-science news in years: the <a href="https://www.medicalnewstoday.com/articles/new-resistance-training-guidelines-debunk-myths-stronger-muscles-strength-size">ACSM released its first major resistance training guidelines update in 17 years</a>, built on 137 systematic reviews covering more than 30,000 participants. The headline: you don't need to train to failure, equipment type doesn't matter (kettlebells, barbells, bands — all produce measurable gains), and beginners don't need different programmes than advanced trainees. <a href="https://www.sciencedaily.com/releases/2026/03/260319074552.htm">Stuart Phillips at McMaster</a> put it cleanly: <em>"Consistency and effort drive results."</em> Dan John has been saying this for twenty years. Science caught up.</p>
+
+  <div class="src"><a href="https://www.strongfirst.com/rebuilding-to-a-chin-up-with-the-beast/">StrongFirst</a> · <a href="https://www.medicalnewstoday.com/articles/new-resistance-training-guidelines-debunk-myths-stronger-muscles-strength-size">Medical News Today</a> · <a href="https://www.sciencedaily.com/releases/2026/03/260319074552.htm">ScienceDaily</a></div>
+
+  <div class="dyk">
+    <div class="dyk-title">Did You Know?</div>
+    <p>Zone 2 training (conversational pace) builds mitochondrial density — the tiny energy-producing organelles in your muscle cells. But those high-intensity "top end" qualities decay in as little as two weeks without stimulation. This is why elite endurance athletes never fully abandon hard intervals, even in base season. One honest hard session a week keeps the ignition system alive. <a href="https://velo.outsideonline.com/road/road-training/the-science-of-the-modern-base-season-why-zone-2-isnt-enough-anymore/">VeloNews/Outside</a></p>
+  </div>
+</section>
+
+<!-- ══════════ THIS WEEK IN HISTORY ══════════ -->
+<hr class="divider dv-history">
+<section class="sec history-section">
+  <span class="section-label" style="color: var(--hist-accent)">This Week in History</span>
+  <h2>The Ides of March: Sixty Senators, Twenty-Three Stab Wounds, One Republic That Never Recovered</h2>
+
+  <img class="hero-img" src="https://upload.wikimedia.org/wikipedia/commons/6/63/%E2%80%9CLa_muerte_de_Julio_C%C3%A9sar%E2%80%9D%2C_de_F._H._Fuger.jpg" alt="The Death of Julius Caesar by Friedrich Heinrich Füger, c. 1815">
+  <div class="caption">"The Death of Julius Caesar" by Friedrich Heinrich Füger (c. 1815). Public domain / Wikimedia Commons</div>
+
+  <p>On the morning of 15 March, 44 BC, Julius Caesar — <em>dictator perpetuo</em> of Rome, conqueror of Gaul, the most powerful man in the known world — was warned by a soothsayer as he walked toward the Senate meeting. "The Ides of March are come," Caesar called out. "Aye," replied the soothsayer, "but they are not yet gone."</p>
+
+  <p>What followed was both political catastrophe and masterpiece of planning. Sixty senators — not Caesar's enemies, but many of his own friends and appointees — had been meeting in secret since February. They called themselves "the Liberators." Their concern: that Caesar, who had accepted the title of dictator in perpetuity and allowed statues of himself to be raised in temples, was on the verge of becoming king. Rome had expelled its last king 465 years earlier. The republic was the city's defining myth.</p>
+
+  <p>Caesar was <a href="https://en.wikipedia.org/wiki/Assassination_of_Julius_Caesar">stabbed 23 times</a>. The Senate scattered. Mark Antony fled. The Liberators marched through the streets declaring Rome free. They were met with silence — the citizens had locked themselves indoors.</p>
+
+  <p>The assassination failed at almost every strategic objective. Caesar was deified within two years. The republic the conspirators claimed to defend collapsed within two decades. The civil wars that followed consumed the very senators who had held the daggers. Brutus and Cassius were dead by 42 BC, defeated at Philippi. By 27 BC, Caesar's adopted heir Octavian had become Augustus — Rome's first emperor, and the republic was finished.</p>
+
+  <p>The resonance is hard to ignore. Political acts done in the name of institutions — constitutions, republics, democracies — have a habit of destroying the very things they claim to protect. The Liberators killed a man to save a republic. They got an empire instead. Shakespeare immortalised the warning: <em>"Beware the Ides of March."</em> History's lesson is subtler: beware what you unleash when you strike.</p>
+
+  <div class="dyk">
+    <div class="dyk-title">Did You Know?</div>
+    <p>A physician's autopsy — one of the earliest recorded post-mortem examinations in history — concluded that only one of the 23 stab wounds was actually fatal: the second stab to Caesar's ribs. He was, in a sense, killed by one man in a crowd of sixty.</p>
+  </div>
+
+  <div class="also">
+    <div class="also-title">Also This Week in History</div>
+    <ul class="also-list">
+      <li><strong>March 15, 1917</strong> — Tsar Nicholas II abdicated the Russian throne at Pskov, signing the document on a train. Three hundred years of Romanov rule ended not in battle but with a pen in a railway carriage. <a href="https://en.wikipedia.org/wiki/Abdication_of_Nicholas_II">Wikipedia</a></li>
+      <li><strong>March 18, 1314</strong> — Jacques de Molay, the final Grand Master of the Knights Templar, was burned at the stake on an island in the Seine. As the flames rose, he cursed King Philip IV and Pope Clement V, prophesying both would die within a year. Both did. <a href="https://www.ancient-origins.net/history-famous-people/curse-jacques-de-molay-templars-005431">Ancient Origins</a></li>
+      <li><strong>March 20 (Vernal Equinox)</strong> — Mesopotamians celebrated this as New Year as early as 2000 BC. Julius Caesar reformed the calendar in 45 BC, pushing New Year to January. The spring equinox was the original fresh start long before January resolutions. <a href="https://www.britannica.com/science/vernal-equinox">Britannica</a></li>
+      <li><strong>March 21, 630 AD</strong> — Emperor Heraclius of Byzantium returned the True Cross to Jerusalem after a fifteen-year military campaign. He walked barefoot into the city carrying the relic himself. The Byzantine Empire would begin its long decline within a generation. <a href="https://en.wikipedia.org/wiki/March_21">Wikipedia</a></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ══════════ ON THE RADAR ══════════ -->
+<section class="sec radar-section">
+  <span class="section-label" style="color: var(--ember)">On the Radar — Coming Up</span>
+  <div class="radar-grid">
+    <div class="radar-row"><span class="radar-date">SUN 22</span><div><strong>Carabao Cup Final: Arsenal vs Manchester City</strong> — Wembley, 16:30 GMT. First time the league's top two meet in a League Cup final since 1978.</div></div>
+    <div class="radar-row"><span class="radar-date">MON 24</span><div><strong>Daredevil: Born Again Season 2</strong> — Eight episodes, Disney+. Jessica Jones is back.</div></div>
+    <div class="radar-row"><span class="radar-date">WED 26</span><div><strong>Kena: Bridge of Spirits</strong> — Arrives on Switch 2. Pre-orders open.</div></div>
+    <div class="radar-row"><span class="radar-date">WED 26</span><div><strong>For All Mankind Season 5</strong> — Apple TV+. The alt-history space saga continues.</div></div>
+    <div class="radar-row"><span class="radar-date">FRI 28</span><div><strong>Hugo Award nominations close</strong> — LAcon V (Los Angeles). Stormlight Archive on the Series longlist.</div></div>
+    <div class="radar-row"><span class="radar-date">SAT 29</span><div><strong>Disney Adventure World opens</strong> — Disneyland Paris. World of Frozen. The renamed Walt Disney Studios Park.</div></div>
+    <div class="radar-row"><span class="radar-date">APR 1</span><div><strong>The Super Mario Galaxy Movie</strong> — Cinemas worldwide.</div></div>
+    <div class="radar-row"><span class="radar-date">APR 3</span><div><strong>Efteling: Magicaluna show opens</strong> — Dreamlike illusion theatre, three times daily, included with admission.</div></div>
+    <div class="radar-row"><span class="radar-date">APR 5</span><div><strong>Easter Sunday</strong> — Spalletti's Juve contract expected to be signed by now.</div></div>
+    <div class="radar-row"><span class="radar-date">APR 6</span><div><strong>Star Wars: Maul – Shadow Lord premieres</strong> — Disney+. Two-episode launch event.</div></div>
+    <div class="radar-row"><span class="radar-date">APR 7–8</span><div><strong>Champions League Quarter-Finals, first legs</strong> — Sporting–Arsenal (7th), PSG–Liverpool (8th), Real Madrid–Bayern (7th), Barcelona–Atlético (8th).</div></div>
+    <div class="radar-row"><span class="radar-date">APR 25</span><div><strong>FM-84 — new music + Atlas vinyl repress</strong></div></div>
+  </div>
+</section>
+
+<!-- ══════════ AND FINALLY ══════════ -->
+<section class="sec" style="padding: 32px 60px; border-top: 1px solid var(--rule); text-align: center;">
+  <span class="section-label" style="color: var(--ghost)">And Finally...</span>
+  <p style="font-size: 17px; max-width: 600px; margin: 0 auto;">A Cambridge PhD student ran a control experiment that was supposed to fail. It didn't. The accidental result — a light-powered method using an LED lamp to make fundamental carbon-carbon bonds — may <a href="https://www.sciencedaily.com/releases/2026/03/260313062539.htm">cut months off the time it takes to develop new drugs</a> and replace toxic chemicals with a desk lamp. Science remains the best argument for doing the thing that shouldn't work.</p>
+</section>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer class="footer">
+  <div class="footer-brand">The Signal<span>.</span></div>
+  <div class="footer-sub">A Sunday morning magazine · Issue #1 · 21 March 2026</div>
+</footer>
+
+</div>
+</body>
+</html>
