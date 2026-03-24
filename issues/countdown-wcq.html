@@ -250,6 +250,83 @@ p:last-child { margin-bottom: 0; }
 }
 .dyk p { font-size: 15px; line-height: 1.55; margin: 0; color: #5C4A20; }
 
+/* ═══════════ SIDEBAR ═══════════ */
+.sidebar {
+  background: rgba(255,255,255,.04);
+  border-left: 4px solid var(--turf-lt);
+  border-radius: 0 6px 6px 0;
+  padding: 18px 22px;
+  margin: 24px 0;
+  font-family: 'Source Sans 3', sans-serif;
+}
+.sidebar-title {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--turf-lt); margin-bottom: 10px;
+}
+.sidebar ul { list-style: none; margin: 0; padding: 0; }
+.sidebar ul li {
+  font-size: 14px; color: rgba(255,255,255,.7);
+  padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,.06);
+  line-height: 1.45;
+}
+.sidebar ul li:last-child { border-bottom: none; }
+.sidebar ul li strong { color: rgba(255,255,255,.9); font-weight: 700; }
+.sidebar p { font-size: 14px; color: rgba(255,255,255,.6); margin: 0; line-height: 1.5; }
+.sidebar .sidebar-note {
+  font-size: 13px; color: rgba(255,255,255,.45);
+  font-style: italic; margin-top: 8px;
+}
+/* Sidebar on light backgrounds */
+.sec:not(.touchline-section) .sidebar {
+  background: var(--warm);
+  border-left-color: var(--turf);
+}
+.sec:not(.touchline-section) .sidebar-title { color: var(--turf); }
+.sec:not(.touchline-section) .sidebar ul li { color: var(--ink); border-bottom-color: rgba(0,0,0,.06); }
+.sec:not(.touchline-section) .sidebar ul li strong { color: var(--ink); }
+.sec:not(.touchline-section) .sidebar p { color: var(--slate); }
+.sec:not(.touchline-section) .sidebar .sidebar-note { color: var(--ghost); }
+/* Sidebar accent variants */
+.sidebar.accent-ember { border-left-color: var(--ember); }
+.sidebar.accent-ember .sidebar-title { color: var(--ember); }
+.sidebar.accent-rose { border-left-color: var(--rose); }
+.sidebar.accent-rose .sidebar-title { color: var(--rose); }
+
+/* ═══════════ CALLOUT ═══════════ */
+.callout {
+  background: rgba(255,109,53,.06);
+  border: 1px solid rgba(255,109,53,.15);
+  border-radius: 8px;
+  padding: 18px 22px;
+  margin: 24px 0;
+  font-family: 'Source Sans 3', sans-serif;
+}
+.callout-title {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--ember); margin-bottom: 8px;
+}
+.callout p { font-size: 15px; color: var(--ink); line-height: 1.55; margin: 0; }
+.callout ul { list-style: none; margin: 6px 0 0; padding: 0; }
+.callout ul li {
+  font-size: 14px; color: var(--ink); padding: 4px 0; line-height: 1.45;
+}
+.callout ul li strong { font-weight: 700; }
+/* Callout on dark backgrounds */
+.touchline-section .callout {
+  background: rgba(255,255,255,.04);
+  border-color: rgba(255,255,255,.08);
+}
+.touchline-section .callout p { color: rgba(255,255,255,.7); }
+.touchline-section .callout ul li { color: rgba(255,255,255,.7); }
+.viewing-section .callout {
+  background: rgba(255,255,255,.04);
+  border-color: rgba(255,255,255,.08);
+}
+.viewing-section .callout p { color: rgba(255,255,255,.7); }
+.viewing-section .callout ul li { color: rgba(255,255,255,.7); }
+
 /* ═══════════ HERO IMAGE ═══════════ */
 .hero-img { width: 100%; aspect-ratio: 16/7; object-fit: cover; border-radius: 8px; margin: 24px 0; }
 .inline-img { border-radius: 6px; margin: 20px 0; }
@@ -295,7 +372,7 @@ p:last-child { margin-bottom: 0; }
   font-size: 14px; font-weight: 700; color: var(--turf-lt);
 }
 
-/* Match Card (new for playoff matchups) */
+/* Match Card */
 .match-card {
   background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
   border-radius: 8px; padding: 16px 20px; margin: 8px 0;
@@ -341,18 +418,6 @@ p:last-child { margin-bottom: 0; }
 .league-table td { padding: 9px 12px; border-bottom: 1px solid rgba(255,255,255,.04); color: rgba(255,255,255,.6); }
 .league-table tr.highlight td { color: var(--turf-lt); font-weight: 700; }
 .league-table .pos { width: 30px; text-align: center; }
-
-/* Juve Watch Card */
-.juve-card {
-  background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08);
-  border-radius: 8px; padding: 14px 18px; margin: 8px 0;
-  display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center;
-  font-family: 'Source Sans 3', sans-serif;
-}
-.juve-card .player-name { font-size: 15px; font-weight: 700; color: rgba(255,255,255,.9); }
-.juve-card .player-detail { font-size: 12px; color: rgba(255,255,255,.5); }
-.juve-card .player-flag { font-size: 22px; }
-.juve-card .player-match { font-size: 12px; color: var(--turf-lt); text-align: right; }
 
 /* ═══════════ HISTORY SECTION ═══════════ */
 .history-section { background: var(--hist-bg); }
@@ -450,6 +515,12 @@ p:last-child { margin-bottom: 0; }
   font-size: 15px; color: rgba(255,255,255,.5);
   max-width: 600px; margin: 20px auto 0; line-height: 1.6;
 }
+.footer-pplx {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 11px; color: rgba(255,255,255,.25);
+  margin-top: 16px;
+}
+.footer-pplx a { color: rgba(255,255,255,.35); }
 
 /* ═══════════ RESPONSIVE ═══════════ */
 @media (max-width: 700px) {
@@ -487,9 +558,9 @@ p:last-child { margin-bottom: 0; }
     <span class="tag">Italy vs Northern Ireland</span>
     <span class="tag">Wales vs Bosnia</span>
     <span class="tag">Ukraine vs Sweden</span>
-    <span class="tag">Czechia vs Ireland</span>
+    <span class="tag">Poland vs Albania</span>
     <span class="tag">Turkey vs Romania</span>
-    <span class="tag">Juventus Watch</span>
+    <span class="tag">Czechia vs Ireland</span>
     <span class="tag">Lewandowski's Last Shot</span>
     <span class="tag">The History</span>
   </div>
@@ -502,7 +573,7 @@ p:last-child { margin-bottom: 0; }
     <div class="nav-card world">
       <div class="nav-card-tag">The Stakes</div>
       <h3>Four Spots. One Night.</h3>
-      <p>What's at stake, how the format works, and what it means for the summer ahead.</p>
+      <p>What's at stake, how the format works, and what the evening means for the summer ahead.</p>
     </div>
     <div class="nav-card football">
       <div class="nav-card-tag">The Draw</div>
@@ -528,11 +599,6 @@ p:last-child { margin-bottom: 0; }
       <div class="nav-card-tag">Path D</div>
       <h3>Czechia vs Republic of Ireland</h3>
       <p>Troy Parrott's hat-trick, a Prague semi-final, and a 24-year wait.</p>
-    </div>
-    <div class="nav-card tech">
-      <div class="nav-card-tag">Juve Watch</div>
-      <h3>Every Bianconero in the Playoffs</h3>
-      <p>Five Juventus players, three national teams, two paths.</p>
     </div>
     <div class="nav-card history">
       <div class="nav-card-tag">The History</div>
@@ -581,7 +647,7 @@ p:last-child { margin-bottom: 0; }
 
   <p>Twelve of the sixteen teams are group runners-up. The other four — <a href="https://www.uefa.com/uefanationsleague/news/028a-1a2c0ce0d29e-5335b6cf90ed-1000--nations-league-north-macedonia-northern-ireland-romania-and/">Northern Ireland, Sweden, Romania, and North Macedonia</a> — earned their place through the Nations League safety net, having failed to finish in the top two of their qualifying groups but winning their NL groups. Northern Ireland, who finished third in Group A behind Germany and Slovakia, are here because they won Nations League League C Group 3.</p>
 
-  <p>The seeding system gives the four highest-ranked runners-up (Italy, Denmark, Turkey, Ukraine) home advantage in their semi-finals against the four Nations League qualifiers. The mid-ranked runners-up (Poland, Wales, Czechia, Slovakia) host the lower-ranked runners-up. Every path winner has already been drawn into a <a href="https://www.espn.com/soccer/story/_/id/48223034/2026-world-cup-european-playoffs-explained-how-works-teams-schedule-how-watch-uk-tv-channel-italy-wales-northern-ireland-republic">specific World Cup group</a> — they just don't know which team will fill the slot yet.</p>
+  <p>The seeding system gives the four highest-ranked runners-up (Italy, Denmark, Turkey, Ukraine) home advantage in their semi-finals against the four Nations League qualifiers. The mid-ranked runners-up (Poland, Wales, Czechia, Slovakia) host the lower-ranked runners-up. Every path winner has already been drawn into a <a href="https://www.espn.com/soccer/story/_/id/48223034/2026-world-cup-european-playoffs-explained-how-works-teams-schedule-how-watch-uk-tv-channel-italy-wales-northern-ireland-republic">specific World Cup group</a> — the identity of the team filling the slot is all that remains unknown.</p>
 
   <p>The UK and Ireland have three teams involved. Wales host Bosnia in Cardiff. Northern Ireland travel to Bergamo to face Italy. The Republic of Ireland are in Prague to play Czechia. England and Scotland have already qualified directly — England with a perfect record, Scotland for the first time since France 1998 after a <a href="https://www.espn.com/soccer/story/_/id/47011300/scotland-vs-denmark-football-live-follow-world-cup-qualifier-winner-takes-all-hampden-park">dramatic 4-2 extra-time win over Denmark</a> on the final matchday at Hampden Park. The question for Thursday night is whether three more home nations can follow them to North America.</p>
 
@@ -660,6 +726,21 @@ p:last-child { margin-bottom: 0; }
     <div class="venue">Fortuna Arena, Prague · 19:45 GMT</div>
   </div>
 
+  <div class="sidebar accent-ember" style="margin-top: 28px;">
+    <div class="sidebar-title">Serie A Players Across the Playoffs</div>
+    <ul>
+      <li><strong>Italy:</strong> Barella, Bastoni, Dimarco, Frattesi (Inter), Buongiorno, Politano (Napoli), Scalvini, Raspadori (Atalanta), Cambiaso, Gatti, Locatelli (Juventus)</li>
+      <li><strong>Albania:</strong> Berat Djimsiti (Atalanta) — anchors the defence against Poland</li>
+      <li><strong>Turkey:</strong> Hakan Çalhanoğlu (Inter Milan) — captain and midfield general</li>
+      <li><strong>Slovakia:</strong> Stanislav Lobotka (Napoli) — deep-lying playmaker</li>
+      <li><strong>Kosovo:</strong> Edon Zhegrova (Juventus) — winger, called up despite muscle fatigue</li>
+      <li><strong>Bosnia:</strong> Sead Kolašinac (Atalanta) — ex-Arsenal, defensive stalwart</li>
+      <li><strong>Poland:</strong> Piotr Zieliński (Inter Milan) — creative engine</li>
+      <li><strong>Romania:</strong> Radu Drăgușin (Tottenham, ex-Juventus) — commanding centre-back</li>
+    </ul>
+    <p class="sidebar-note">Serie A's influence runs deeper than any other league in these playoffs. Thursday night is as much an Italian football event as a European one.</p>
+  </div>
+
   <div class="src"><a href="https://www.uefa.com/european-qualifiers/news/029f-1f3f7e79688e-94b56302816c-1000--world-cup-2026-european-play-off-draw/">UEFA draw results</a> · <a href="https://www.espn.com/soccer/story/_/id/48223034/2026-world-cup-european-playoffs-explained-how-works-teams-schedule-how-watch-uk-tv-channel-italy-wales-northern-ireland-republic">ESPN</a> · <a href="https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_qualification_%E2%80%93_UEFA_second_round">Wikipedia</a></div>
 </section>
 
@@ -667,14 +748,14 @@ p:last-child { margin-bottom: 0; }
 <hr class="divider dv-football">
 <section class="sec touchline-section">
   <span class="section-label">Path A — Italy, Northern Ireland, Wales, Bosnia</span>
-  <h2>Bergamo and Cardiff: Where It Gets Personal</h2>
+  <h2>Bergamo and Cardiff: The Road Through Path A</h2>
 
   <img class="hero-img" src="https://football-italia.net/wp-content/uploads/2025/11/Italy-Norway-XI.jpg" alt="Italy national football team line-up ahead of their 2026 World Cup play-off match, November 2025" style="aspect-ratio: 16/9;">
   <div class="caption" style="color: rgba(255,255,255,.4);">Italy's squad during the qualifying campaign. Photo: Football Italia</div>
 
   <h3 class="narrative">Italy vs Northern Ireland — Gewiss Stadium, Bergamo</h3>
 
-  <p>Let's begin with the elephant in the room. Italy — four-time World Cup winners, the most decorated European nation in the tournament's history — are in the playoffs. Again. This is their <strong>third consecutive qualifying cycle</strong> without automatic qualification. They failed to reach Russia 2018 entirely (beaten by Sweden over two legs), were eliminated from the Qatar 2022 playoffs by <a href="https://www.bbc.com/sport/football/60869125">North Macedonia's 92nd-minute goal in Palermo</a>, and now face the indignity of another playoff round just to get to a World Cup for the first time since 2014.</p>
+  <p>Italy — four-time World Cup winners, the most decorated European nation in the tournament's history — are in the playoffs. Again. This is their <strong>third consecutive qualifying cycle</strong> without automatic qualification. They failed to reach Russia 2018 entirely (beaten by Sweden over two legs), were eliminated from the Qatar 2022 playoffs by <a href="https://www.bbc.com/sport/football/60869125">North Macedonia's 92nd-minute goal in Palermo</a>, and now face the indignity of another playoff round just to get to a World Cup for the first time since 2014.</p>
 
   <p>An entire generation of Italian teenagers has grown up watching their national team absent from football's greatest stage. The pressure on Gennaro Gattuso's squad is not merely sporting — it's existential.</p>
 
@@ -684,16 +765,27 @@ p:last-child { margin-bottom: 0; }
 
   <p>Gattuso has called up a 28-man squad confirmed by <a href="https://football-italia.net/official-italy-squad-world-cup-play-off/">Football Italia</a> on 20 March. It reads like a Serie A and Champions League all-star selection: Donnarumma (Manchester City), Bastoni, Barella, Dimarco and Frattesi (Inter), Buongiorno and Politano (Napoli), Scalvini and Raspadori (Atalanta), Tonali (Newcastle), Cambiaso, Gatti and Locatelli (Juventus), and <a href="https://www.sportsmole.co.uk/football/italy/world-cup-2026/news/chiesa-vicario-calls-confirmed-as-italy-name-28-man-squad-for-crucial-world-cup-playoffs_594259.html">Federico Chiesa</a> returning for the first time in two years — though Chiesa has since been sent home with a physical issue and is unavailable. Locatelli is expected to start as the deep-lying regista alongside Barella and Tonali, and has been described as "the best midfielder in this area this season" at Juventus.</p>
 
+  <!-- SIDEBAR: Juventus Players — Path A -->
+  <div class="sidebar">
+    <div class="sidebar-title">Juventus Players — Path A</div>
+    <ul>
+      <li><strong>Andrea Cambiaso</strong> — Defender / Wing-back. Regular Italy starter. Has been one of Juve's most consistent performers this season.</li>
+      <li><strong>Federico Gatti</strong> — Centre-back. Strong aerial presence. Italy regular and likely to partner Bastoni at the back.</li>
+      <li><strong>Manuel Locatelli</strong> — Midfielder / Regista. Expected to start alongside Barella and Tonali in Italy's engine room. Described as the best deep-lying midfielder at Juventus this season.</li>
+    </ul>
+    <p class="sidebar-note">Sources: <a href="https://football-italia.net/official-italy-squad-world-cup-play-off/" style="color: var(--turf-lt);">Football Italia</a></p>
+  </div>
+
   <h4>Northern Ireland: The Longest Long Shot</h4>
 
   <img class="hero-img" src="https://www.irishfa.com/media/60153/nir-v-lux-main-1.jpg" alt="Northern Ireland players in action during their 2026 World Cup qualifying campaign" style="aspect-ratio: 16/9;">
   <div class="caption" style="color: rgba(255,255,255,.4);">Northern Ireland during the qualifying campaign. Photo: Irish FA</div>
 
-  <p>Northern Ireland are the lowest-ranked team in the entire playoff draw (FIFA 69th). Their squad is drawn almost entirely from the English Football League. <a href="https://www.espn.com/soccer/story/_/id/48221583/northern-ireland-squad-italy-dan-ballard-conor-bradley-missing-world-cup-playoff">Per ESPN</a>, no Northern Ireland player is at a Serie A or Champions League club. The highest-profile name is Shea Charles (Southampton), who is returning from injury. Liverpool teenager Kieran Morrison (19) earned his first senior call-up but has played just 71 minutes of senior club football. Conor Bradley, their best player, is absent through injury.</p>
+  <p>Northern Ireland are the lowest-ranked team in the entire playoff draw (FIFA 69th). The squad is drawn almost entirely from the English Football League. <a href="https://www.espn.com/soccer/story/_/id/48221583/northern-ireland-squad-italy-dan-ballard-conor-bradley-missing-world-cup-playoff">Per ESPN</a>, no Northern Ireland player is at a Serie A or Champions League club. The highest-profile name is Shea Charles (Southampton), who is returning from injury. Liverpool teenager Kieran Morrison (19) earned his first senior call-up but has played just 71 minutes of senior club football. Conor Bradley, the best player in the squad, is absent through injury.</p>
 
   <p>Michael O'Neill is managing the team for the second time — his first stint included the miracle of <a href="https://en.wikipedia.org/wiki/Northern_Ireland_at_the_FIFA_World_Cup">Euro 2016 qualification</a>, Northern Ireland's first major tournament in 30 years. He returned in December 2022 and has simultaneously taken on the <a href="https://www.bbc.com/sport/football/articles/clyz2lnd5j1o">Blackburn Rovers job</a> in the Championship — a dual role that has raised eyebrows. His former captain Steven Davis is on his backroom staff. O'Neill's NI finished third in Group A with 9 points, including a <a href="https://www.rte.ie/sport/soccer/2025/1010/1537983-northern-ireland-keep-pace-with-germany-in-group-a/">spirited 2-0 win over Slovakia in Belfast</a> that briefly kept direct qualification alive.</p>
 
-  <p>The quality gap is enormous. Italy have five Champions League regulars in their spine alone. The head-to-head record is brutal: Northern Ireland's only win over Italy came in January 1958. Italy have scored 8 goals and conceded 0 in the last five meetings, <a href="https://www.bbc.com/sport/football/articles/czxkx94qnqeo">per BBC Sport</a>. Their most recent meetings were in the 2022 World Cup qualifying group: Italy won 2-0 in Parma and drew 0-0 at Windsor Park.</p>
+  <p>The quality gap is enormous. Italy have five Champions League regulars in their spine alone. The head-to-head record is brutal: Northern Ireland's only win over Italy came in January 1958. Italy have scored 8 goals and conceded 0 in the last five meetings, <a href="https://www.bbc.com/sport/football/articles/czxkx94qnqeo">per BBC Sport</a>. The most recent meetings were in the 2022 World Cup qualifying group: Italy won 2-0 in Parma and drew 0-0 at Windsor Park.</p>
 
   <p>O'Neill will set up with a low block, compact and hard to break down. Bailey Peacock-Farrell (Blackpool) in goal, Ballard and Hume (both Sunderland) in defence, Charles in midfield trying to screen the Italian creativity, and Callum Marshall (Bochum, on loan from West Ham) as the focal point up top. Northern Ireland will press into their own half, attempt to frustrate, and hope for set-piece opportunities. It's a gameplan born of necessity, but O'Neill has made it work before.</p>
 
@@ -708,7 +800,7 @@ p:last-child { margin-bottom: 0; }
 
   <p>The other half of Path A is more evenly matched. Craig Bellamy's Wales host Bosnia in Cardiff, looking to reach consecutive World Cups after qualifying for Qatar 2022. The Gareth Bale generation is gone — Bale retired, Aaron Ramsey retired from internationals — and Bellamy is building a new chapter around Brennan Johnson (Tottenham), Harry Wilson (Fulham), and the next generation.</p>
 
-  <p>Wales finished second in Group J behind Belgium with a strong 16-point haul, including a <a href="https://www.bbc.com/sport/football/articles/clyxvry92yzo">7-1 demolition of North Macedonia</a> on the final matchday. Their home record at Cardiff is formidable — only one defeat in their last 12 home games. Key absences: Ben Davies (Tottenham, injury), Chris Mepham (injury), and Kieffer Moore (injury). Three significant gaps for Bellamy to fill.</p>
+  <p>Wales finished second in Group J behind Belgium with a strong 16-point haul, including a <a href="https://www.bbc.com/sport/football/articles/clyxvry92yzo">7-1 demolition of North Macedonia</a> on the final matchday. The home record at Cardiff is formidable — only one defeat in the last 12 home games. Key absences: Ben Davies (Tottenham, injury), Chris Mepham (injury), and Kieffer Moore (injury). Three significant gaps for Bellamy to fill.</p>
 
   <p>Bosnia arrive with their own compelling narrative. Edin Džeko, now nearly 40 and playing in Germany's second division at Schalke, leads the line — Bosnia's all-time top scorer with 67 international goals, the third-highest in all-time UEFA qualifying history. Ermedin Demirović (Stuttgart) is the present and future of their attack, in excellent Bundesliga form. Sead Kolašinac provides Atalanta-honed defensive quality on the left — meaning that if Bosnia advance to the Path A final and face Italy, Kolašinac could face his Atalanta teammates Scalvini, Raspadori, and Carnesecchi, all of whom are in Italy's squad. But here's the stat that haunts Bosnian football: <a href="https://www.bbc.com/sport/football/articles/clyxvry92yzo">they have never won a playoff tie</a>. Seven attempts across World Cup and European Championship campaigns — 3 draws, 4 losses. That mental block is as much an opponent as Wales.</p>
 
@@ -737,7 +829,7 @@ p:last-child { margin-bottom: 0; }
 
   <p>The most emotionally charged fixture in the draw. Ukraine play their "home" matches in Valencia, Spain, because their actual home is a country under attack. Every game is played in exile. Every qualifying campaign since 2022 has been conducted under the shadow of war — players whose families are in besieged cities, preparation disrupted, normality absent. Qualifying for the World Cup would be a moment of national significance that transcends sport entirely.</p>
 
-  <p>Serhiy Rebrov's squad is genuinely talented: Anatoliy Trubin (Benfica) in goal, the €104m-valued Illia Zabarnyi (PSG) at centre-back, Georgiy Sudakov (Shakhtar Donetsk) creating from midfield, Artem Dovbyk leading the line, and Oleksandr Zinchenko (Arsenal) providing Premier League quality on the left. Viktor Tsygankov (Girona) adds directness and goals from the right wing. Ukraine finished as runners-up in Group D behind France with 10 points — a creditable showing given the circumstances under which they play every match. The Mestalla in Valencia will be their "home" ground, continuing an arrangement that began during the 2022 qualifying cycle. There is something profoundly moving about a team that cannot go home still fighting to be at the biggest tournament on earth.</p>
+  <p>Serhiy Rebrov's squad is genuinely talented: Anatoliy Trubin (Benfica) in goal, the €104m-valued Illia Zabarnyi (PSG) at centre-back, Georgiy Sudakov (Shakhtar Donetsk) creating from midfield, Artem Dovbyk leading the line, and Oleksandr Zinchenko (Arsenal) providing Premier League quality on the left. Viktor Tsygankov (Girona) adds directness and goals from the right wing. Ukraine finished as runners-up in Group D behind France with 10 points — a creditable showing given the circumstances under which every match is played. The Mestalla in Valencia will be their "home" ground, continuing an arrangement that began during the 2022 qualifying cycle. There is something profoundly moving about a team that cannot go home still fighting to be at the biggest tournament on earth.</p>
 
   <p>Sweden's narrative is altogether different — one of embarrassment and squandered talent. Under Graham Potter, they finished <strong>bottom of Group B</strong> with just 2 points, failing to win a single competitive group match. This from a nation with Viktor Gyökeres (Arsenal, one of Europe's most prolific strikers who scored 40+ goals in all competitions in 2024-25), Alexander Isak (Newcastle), and Dejan Kulusevski (Tottenham). On paper, that's an attack that could trouble anyone. In practice, Potter's tactical ideas — the possession-based 4-3-3 with a high defensive line that worked at Brighton and Chelsea — have simply not translated to international football. Sweden failed to win a single group match. They're here via the Nations League, having won League C Group 1 (Gyökeres scored four in a 6-0 rout of Azerbaijan on the final NL matchday) despite their catastrophic qualifying form.</p>
 
@@ -755,6 +847,11 @@ p:last-child { margin-bottom: 0; }
   <p>Albania, under former Barcelona left-back Sylvinho, are rising. They beat Serbia away in qualifying — a massive result that secured second place in Group K above a Serbian side featuring Vlahović and Milinković-Savić. But injuries to Rey Manaj, Mirlind Daku, and Marash Kumbulla have gutted their attacking options. Berat Djimsiti (Atalanta) anchors the defence — and anyone who follows Serie A knows exactly how good he is when organised. It should be Poland's night, but Albania can absolutely cause an upset if Lewandowski's legs tire. The Serie A thread runs through this match too: Piotr Zieliński (Inter) lines up against Djimsiti (Atalanta) and the Albanian contingent from Italian football.</p>
 
   <p>The <a href="https://www.espn.com/soccer/story/_/id/48223034/2026-world-cup-european-playoffs-explained-how-works-teams-schedule-how-watch-uk-tv-channel-italy-wales-northern-ireland-republic">Path B winner joins World Cup Group F</a> alongside the Netherlands, Japan, and Tunisia — a formidable draw. Whichever team emerges from this path is heading into a group of death.</p>
+
+  <div class="callout">
+    <div class="callout-title">Tactical Note</div>
+    <p>Poland's Warsaw Stadion Narodowy is a retractable-roof arena. If the roof closes, the atmosphere intensifies — 58,000 fans under a sealed ceiling could be deafening. Lewandowski tends to feed off that energy in his final years. Albania's hope is to take the sting out of the crowd early: keep it 0-0 at half-time and let the anxiety do its work.</p>
+  </div>
 
   <div class="src"><a href="https://www.offshoresportsbooks.com/picks/soccer/2026/ukraine-vs-sweden-picks-odds-preview-mar-26/">Offshore Sportsbooks</a> · <a href="https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/articles/poland-robert-lewandowski-play-offs">FIFA</a> · <a href="https://www.gazetaexpress.com/en/shqiperia-e-publikon-listen-per-play-off-et-e-boterorit-i112771">Gazeta Express</a></div>
 </section>
@@ -783,6 +880,16 @@ p:last-child { margin-bottom: 0; }
   <p>Slovakia are a team of extremes. They <a href="https://nerdytips.com/blog/ai-betting-tips-slovakia-vs-kosovo-world-cup-qualifier/">beat Germany 2-0 at home</a> in September 2025, then lost to Germany 7-0 away. Milan Škriniar (Fenerbahçe, ex-Inter/PSG) captains the defence. Stanislav Lobotka (Napoli) — the best deep-lying midfielder in Serie A — dictates from the base of midfield.</p>
 
   <p>An intriguing subplot: if Turkey and Kosovo both win their semi-finals, Yıldız and Zhegrova — <strong>club teammates at Juventus — face each other</strong> in the Path C final on 31 March.</p>
+
+  <!-- SIDEBAR: Juventus Players — Path C -->
+  <div class="sidebar">
+    <div class="sidebar-title">Juventus Players — Path C</div>
+    <ul>
+      <li><strong>Kenan Yıldız</strong> (Turkey) — Attacker / No. 10. Contract extended to 2030. Three qualifying goals. The most exciting young talent in the draw.</li>
+      <li><strong>Edon Zhegrova</strong> (Kosovo) — Winger. Electric pace. Called up despite muscle fatigue concerns. Kosovo's creative talisman.</li>
+    </ul>
+    <p class="sidebar-note">If both Turkey and Kosovo advance, Yıldız and Zhegrova — Juventus teammates — face each other in the Path C final on 31 March. Sources: <a href="https://www.dailysabah.com/sports/football/tff-stands-firm-in-keeping-kenan-yildiz-after-juventus-recall" style="color: var(--turf-lt);">Daily Sabah</a>, <a href="https://www.goal.com/en-us/lists/juventus-squad-list-vlahovic-is-in-the-decision-on-zhegrova/blt542a3f7ca1edba80" style="color: var(--turf-lt);">Goal.com</a></p>
+  </div>
 
   <div class="dyk">
     <div class="dyk-title">Did You Know?</div>
@@ -824,66 +931,6 @@ p:last-child { margin-bottom: 0; }
   <div class="src"><a href="https://www.fifa.com/en/articles/rasmus-hojlund-denmark-napoli-feature">FIFA</a> · <a href="https://www.thejournal.ie/ireland-czechia-playoff-what-next-why-how-ahhhh-6990965-Mar2026/">TheJournal.ie</a> · <a href="https://www.rte.ie/sport/soccer/2025/1116/1544243-portugal-rebound-in-style-from-dublin-defeat-to-qualify/">RTÉ</a> · <a href="https://www.espn.com/soccer/story/_/id/48223038/2026-world-cup-european-playoffs-wales-northern-ireland-republic-ireland-qualify-route-difficulty-future-groups">ESPN</a></div>
 </section>
 
-<!-- ══════════ THE JUVE WATCH ══════════ -->
-<hr class="divider dv-session">
-<section class="sec touchline-section" style="background: #0D1117;">
-  <span class="section-label" style="color: var(--ember);">The Juve Watch</span>
-  <h2 style="color: white;">Every Bianconero in the Playoffs</h2>
-  <p>Five current Juventus players are involved across the playoff semi-finals. Three for Italy in Path A, two in Path C representing Turkey and Kosovo respectively. Here's the full picture.</p>
-
-  <div class="juve-card">
-    <div class="player-flag">🇮🇹</div>
-    <div>
-      <div class="player-name">Andrea Cambiaso</div>
-      <div class="player-detail">Defender · Wing-back/Full-back · Regular Italy starter</div>
-    </div>
-    <div class="player-match">Italy vs N. Ireland<br>Path A · Bergamo</div>
-  </div>
-
-  <div class="juve-card">
-    <div class="player-flag">🇮🇹</div>
-    <div>
-      <div class="player-name">Federico Gatti</div>
-      <div class="player-detail">Centre-back · Strong aerial presence · Italy regular</div>
-    </div>
-    <div class="player-match">Italy vs N. Ireland<br>Path A · Bergamo</div>
-  </div>
-
-  <div class="juve-card">
-    <div class="player-flag">🇮🇹</div>
-    <div>
-      <div class="player-name">Manuel Locatelli</div>
-      <div class="player-detail">Midfielder · Regista · Expected to start alongside Barella &amp; Tonali</div>
-    </div>
-    <div class="player-match">Italy vs N. Ireland<br>Path A · Bergamo</div>
-  </div>
-
-  <div class="juve-card">
-    <div class="player-flag">🇹🇷</div>
-    <div>
-      <div class="player-name">Kenan Yıldız</div>
-      <div class="player-detail">Attacker · No. 10 shirt · Contract to 2030 · 3 qualifying goals</div>
-    </div>
-    <div class="player-match">Turkey vs Romania<br>Path C · Istanbul</div>
-  </div>
-
-  <div class="juve-card">
-    <div class="player-flag">🇽🇰</div>
-    <div>
-      <div class="player-name">Edon Zhegrova</div>
-      <div class="player-detail">Winger · Electric pace · Called up despite muscle fatigue</div>
-    </div>
-    <div class="player-match">Slovakia vs Kosovo<br>Path C · Bratislava</div>
-  </div>
-
-  <div class="angle" style="border-left-color: var(--ember);">
-    <div class="angle-label" style="color: var(--ember);">The Scenario</div>
-    <p>If Turkey and Kosovo both win on Thursday, Yıldız and Zhegrova — Juventus teammates — face each other in the Path C final on 31 March. In Path A, three Juve defenders are trying to guide Italy past Northern Ireland. This is a Thursday evening where club loyalties and national allegiances collide across the continent.</p>
-  </div>
-
-  <div class="src"><a href="https://football-italia.net/official-italy-squad-world-cup-play-off/">Football Italia</a> · <a href="https://www.dailysabah.com/sports/football/tff-stands-firm-in-keeping-kenan-yildiz-after-juventus-recall">Daily Sabah</a> · <a href="https://www.goal.com/en-us/lists/juventus-squad-list-vlahovic-is-in-the-decision-on-zhegrova/blt542a3f7ca1edba80">Goal.com</a> · <a href="https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/articles/kenan-yildiz-interview-turkiye-juventus">FIFA</a></div>
-</section>
-
 <!-- ══════════ THE HISTORY ══════════ -->
 <hr class="divider dv-history">
 <section class="sec history-section">
@@ -922,7 +969,7 @@ p:last-child { margin-bottom: 0; }
     <p>Norman Whiteside had played just two competitive games for Manchester United at club level before being called up to the 1982 World Cup squad. He went on to score in the tournament at 17 years old. His record as the youngest World Cup player has stood since 1982 — predating the careers of Messi, Ronaldo, Mbappé and every other modern prodigy. Source: <a href="https://www.irishfa.com/news/2020/april/ni-hall-of-fame-norman-whiteside-teenage-kicks-at-the-82-world-cup">IFA</a>.</p>
   </div>
 
-  <h3>The Wider Pattern: Giants Fall More Than You Think</h3>
+  <h3>The Wider Pattern: Giants Fall More Than Expected</h3>
 
   <p>Italy are the poster children for qualifying failure, but they're hardly alone. The Netherlands — runners-up in 1974, 1978, and 2010 — missed World Cups in 1982, 1986, 2002, and <a href="https://sports.yahoo.com/20-biggest-world-cup-qualifying-failures-since-1950-010341669.html">2018</a>. France needed a point from two final home games for USA '94 and lost both — David Ginola's misplaced pass led to Bulgaria scoring in injury time, and France spent the next four years rebuilding before winning the 1998 World Cup at home. England, the 1966 world champions, couldn't qualify for 1974.</p>
 
@@ -983,11 +1030,25 @@ p:last-child { margin-bottom: 0; }
     Coverage from 19:00. Darragh Maloney, Didi Hamann and Shay Given presenting from Prague. Commentary by Des Curran and Ronnie Whelan. Extended Inside Sport programme on <a href="https://about.rte.ie/2026/03/23/czechia-v-republic-of-ireland-live-on-rte2-rte-player-and-rte-radio-1/">RTÉ Radio 1</a> from 18:00-22:00.
   </div>
 
-  <h3>Viewing Plan for the Evening</h3>
-  <p><strong>5pm:</strong> Turkey vs Romania on Amazon — the early kick-off and a chance to see Yıldız in action. <strong>7:45pm:</strong> All seven remaining matches kick off simultaneously. The BBC coverage of Italy vs NI and Wales vs Bosnia provides two free-to-air options. For Ireland fans, RTÉ has full coverage from Prague. Amazon PPV carries the remaining five matches. A phone for live text score updates on the second screen is essential — results will filter in during the second halves and each one shapes the final picture.</p>
+  <div class="callout">
+    <div class="callout-title">Viewing Plan for the Evening</div>
+    <ul>
+      <li><strong>5:00 pm GMT:</strong> Turkey vs Romania on Amazon — the early kick-off and a chance to see Yıldız and Güler in action before the main event.</li>
+      <li><strong>7:45 pm GMT:</strong> All seven remaining matches kick off simultaneously. BBC coverage of Italy vs NI and Wales vs Bosnia provides two free-to-air options.</li>
+      <li><strong>Second screen essential:</strong> A phone for live text score updates from the other six matches — results will filter in during the second halves and each one shapes the final picture.</li>
+      <li><strong>For Ireland coverage:</strong> RTÉ has full free coverage from Prague, accessible via the RTÉ Player app.</li>
+    </ul>
+  </div>
 
-  <h3>Podcasts to Listen To</h3>
-  <p><a href="https://podcasts.apple.com/us/podcast/id188674007">Guardian Football Weekly</a> will preview and react to all eight matches. <a href="https://www.secondcaptains.com">Second Captains</a> (Ireland's leading sports podcast) has published extensive Prague preview content. <a href="https://www.bbc.com/audio/brand/p02p9f7d">BBC Football Daily</a> will cover the NI and Wales angles. For the Italian perspective, the <strong>Italian Football Podcast</strong> on Spotify and Apple has been tracking Italy's qualifying struggles with candid analysis.</p>
+  <div class="callout">
+    <div class="callout-title">Podcasts to Follow</div>
+    <ul>
+      <li><strong><a href="https://podcasts.apple.com/us/podcast/id188674007">Guardian Football Weekly</a></strong> — will preview and react to all eight matches.</li>
+      <li><strong><a href="https://www.secondcaptains.com">Second Captains</a></strong> — Ireland's leading sports podcast, extensive Prague preview content.</li>
+      <li><strong><a href="https://www.bbc.com/audio/brand/p02p9f7d">BBC Football Daily</a></strong> — covering the NI and Wales angles.</li>
+      <li><strong>Italian Football Podcast</strong> (Spotify/Apple) — tracking Italy's qualifying struggles with candid analysis.</li>
+    </ul>
+  </div>
 
   <div class="src"><a href="https://www.espn.com/soccer/story/_/id/48223034/2026-world-cup-european-playoffs-explained-how-works-teams-schedule-how-watch-uk-tv-channel-italy-wales-northern-ireland-republic">ESPN (UK TV guide)</a> · <a href="https://www.live-footballontv.com/live-world-cup-football-on-tv.html">Live-FootballOnTV</a> · <a href="https://about.rte.ie/2026/03/23/czechia-v-republic-of-ireland-live-on-rte2-rte-player-and-rte-radio-1/">RTÉ</a> · <a href="https://www.uefa.com/european-qualifiers/news/0297-1d50aec36707-ef3eda9c5141-1000--where-to-watch-the-european-qualifiers-for-the-2026-fifa/">UEFA (broadcaster list)</a></div>
 </section>
@@ -1005,9 +1066,9 @@ p:last-child { margin-bottom: 0; }
 
   <h3 style="font-family: 'Playfair Display', serif; font-size: 20px; margin-top: 28px;">If They Qualify: What Awaits</h3>
 
-  <p><strong>Northern Ireland</strong> (if they win Path A): World Cup Group B with Canada, Qatar, and Switzerland. A manageable draw — Qatar and Switzerland are beatable, Canada are hosts but not world-beaters. Opening match would likely be in Toronto or Vancouver. The most winnable group available to any path winner.</p>
+  <p><strong>Northern Ireland</strong> (if Path A is won): World Cup Group B with Canada, Qatar, and Switzerland. A manageable draw — Qatar and Switzerland are beatable, Canada are hosts but not world-beaters. The opening match would likely be in Toronto or Vancouver. The most winnable group available to any path winner.</p>
 
-  <p><strong>Republic of Ireland</strong> (if they win Path D): World Cup Group A with Mexico, South Africa, and South Korea. The opening match of the entire tournament is in their group — Mexico vs South Africa on 11 June at the Azteca. Ireland would join a group with serious atmosphere but no overwhelming favourites.</p>
+  <p><strong>Republic of Ireland</strong> (if Path D is won): World Cup Group A with Mexico, South Africa, and South Korea. The opening match of the entire tournament is in this group — Mexico vs South Africa on 11 June at the Azteca. Ireland would join a group with serious atmosphere but no overwhelming favourites.</p>
 
   <p>The <a href="https://www.espn.com/soccer/story/_/id/47108758/2026-fifa-world-cup-format-tiebreakers-fixtures-schedule">full World Cup will be shown free to air</a> in the UK across BBC and ITV — all 104 matches. England are in Group L with Croatia, Ghana, and Panama. Scotland face Brazil, Morocco, and Haiti in Group C.</p>
 
@@ -1023,6 +1084,7 @@ p:last-child { margin-bottom: 0; }
 <footer class="footer">
   <div class="footer-brand">The Signal<span>.</span></div>
   <div class="footer-sub">The Countdown · World Cup Qualifiers · March 2026</div>
+  <div class="footer-pplx"><a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a></div>
 </footer>
 
 </div>
