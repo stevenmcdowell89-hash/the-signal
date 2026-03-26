@@ -349,51 +349,91 @@ A books/music/games-only deep issue. **Manual trigger: "Run a Shelf Special — 
 
 ## Layout Component Library
 
-Use these components to vary the visual rhythm. Rotate based on content needs. Not every component every week.
+Use these components to vary the visual rhythm. **Variation is mandatory** — no two consecutive sections should use the same layout pattern. Rotate based on content needs. Aim for 8–12 different component types per issue.
 
-**Core components:**
-- **Feature opener** — full-width dark gradient banner with headline. For the lead article only.
-- **Quick takes two-column** — two compact mini-articles side by side with coloured left borders (`.dual-col` > `.col-card`).
-- **The Angle box** — styled callout with the deeper point. Signature editorial element — every substantial story should have one.
-- **Pull quote** — left-bordered, serif italic text with attribution (`.pull-quote`). Use between sections or to break up long articles.
-- **Stats row** — horizontal stat callouts with large numbers.
-- **Section dividers** — full-width coloured bars (8px) with section labels. Use `.divider.inset` for centred dividers with breathing room when alternating from full-bleed.
-- **Sidebar boxes** — dedicated curated lists (`.sidebar`). Use for "Family Picks", "For the Kids", "Juve Players Involved", "Context" boxes. Adapts automatically to dark sections (Touchline, Screen & Sound, Shelf).
-- **Number-led feature block** — a single large number with explanation.
-- **Did You Know boxes** — section-aware: adapts background/colours for light sections (warm yellow), Touchline (turf-tinted), Screen & Sound (neon-tinted), and Shelf (gold-tinted). 3–5 scattered throughout.
+### Core Editorial Components
+- **The Angle box** (`.angle`) — styled callout with the deeper point. Signature editorial element — every substantial story should have one.
+- **Pull quote** (`.pull-quote`) — left-bordered, serif italic text with attribution. Use 3–4 per issue to break long prose runs. Variants: `.pull-quote.centered` (no border, decorative quotation mark above), `.pull-quote.wide` (breaks out of content column for emphasis).
+- **Stats row** (`.stat-bar`) — horizontal stat callouts with large numbers. Use `.count-up` on `.stat-num` for scroll-triggered counting animation.
+- **Did You Know boxes** (`.dyk`) — section-aware: adapts for light sections (warm yellow), Touchline (turf-tinted), Screen & Sound (neon-tinted), Shelf (gold-tinted). 3–5 scattered throughout.
+- **Sidebar boxes** (`.sidebar`) — dedicated curated lists. Use for "Family Picks", "Juve Players Involved", context boxes. Adapts to dark sections.
 
-**Section-specific components:**
-- **League tables** — data tables with alternating row opacity and highlighted rows. Wrapped in `.table-wrap` for horizontal scrolling on small screens.
-- **Results strip** — compact match result cards with larger score treatment (`.score` at 18px). Flexible width cards.
-- **Book cards** — dark background cards with title, author, and recommendation text. Support inline cover images via float. Use `.book-grid` for side-by-side layout with multiple recs.
-- **Workout cards** — structured data cards for The Session (`.workout-card`). Use for rep schemes, training protocols, programme summaries. Includes styled tables.
-- **Year badges** — monospace badges for history dates (`.year-badge`). Use in "Also This Week in History" items.
-- **Category dots** — coloured dots in the Release Radar and On the Radar (`.radar-cat.film`, `.radar-cat.game`, `.radar-cat.book` etc.) for visual scanning by category.
-- **Leaving Soon urgency** — `.radar-row.leaving` adds a red left border to time-sensitive radar items.
+### Layout Variation Components
+- **Split layouts** (`.split-60-40`, `.split-40-60`) — asymmetric two-column grids for text beside image/sidebar. Alternate direction for visual variety. Stacks on mobile.
+- **Quick takes two-column** (`.dual-col` > `.col-card`) — compact mini-articles side by side with coloured left borders.
+- **Compact takes** (`.compact-take`, `.compact-grid`) — card-format short news items with section accent border. Use for secondary stories that don't need full article treatment. `.compact-grid` places two side by side.
+- **Margin notes** (`.margin-note`) — Tufte-style side annotations that float to the right margin on desktop, becoming inline callouts on mobile. For asides, related stats, "see also" pointers without breaking the reader's flow.
 
-**Navigation & wayfinding:**
-- **Reading progress bar** — thin gradient bar at the top of the viewport showing scroll position. Automatic via JavaScript.
-- **Back to top button** — floating button (bottom-right) appears after scrolling past the cover. Links back to the navigator.
-- **Anchor links** — every navigator card links to its section via `href="#sectionId"`. Smooth scrolling enabled globally.
-- **Read time indicators** — optional per-card in the navigator (`.read-time`). Helps the reader decide what to read deeply.
-- **Lead nav cards** — top 1–2 navigator cards use `.nav-card.lead` to span two columns with an optional thumbnail image.
+### Visual Furniture (inline)
+- **Big number callouts** (`.big-number`) — a dramatic stat pulled out mid-article (72px+ number with label). Use for "146 people died in 18 minutes" or "$113 per barrel" moments. `.big-number-row` for 2–3 in a row.
+- **Display stats** (`.display-stat`) — standalone dramatic numbers within articles, accent-coloured.
+- **Mini data visualisations** — `.sparkline` (inline SVG line chart, ~200×40px), `.pos-change` (up/down arrow for league table movement), `.mini-bar` (tiny horizontal percentage bar).
+- **Rating dots** (`.rating`) — 5 filled/unfilled dots for review scores in Screen & Sound and The Shelf. 8px dots in section accent colour.
+- **Section dividers** — full-width gradient bars (8px). Use `.divider.inset` for centred variants with breathing room.
 
-**Image treatments:**
-- **Hero image** — standard rounded (`.hero-img`) for within-section images.
-- **Full-bleed hero** — bleeds to section edges (`.hero-bleed`). Use for section openers — the image sits above the section label for visual impact.
-- **Float image** — text wraps around the image (`.img-float-left`). Use for book covers, album art within paragraphs.
+### Section Openers & Transitions
+- **Section watermarks** (`.sec-watermark`) — oversized, semi-transparent section name rendered behind content as a visual anchor. Section accent colour at ~0.04 opacity, 120px+ font.
+- **Section openers** (`.sec-opener`) — variant section start with scaled-up label, larger headline, optional gradient overlay band.
+- **Read-next connectors** (`.read-next`) — teaser link at the bottom of each section: "Up next: The Touchline — [teaser]". Creates editorial flow between sections.
+- **Full-bleed hero transitions** — `.hero-bleed` images that serve as the visual boundary between sections.
 
-**Typography hierarchy:**
+### Scroll & Animation
+- **Reveal animations** (`.reveal`) — elements start invisible and animate in (fade + slide up) when scrolled into view via IntersectionObserver. Apply to: section headers, stat bars, big numbers, images, angle boxes, DYK boxes. Subtle: 0.5s ease-out.
+- **Count-up numbers** (`.count-up`) — stat-bar and big-number values count up from 0 when scrolled into view.
+- **Cover ambient animation** — slow drifting gradient on the cover background, faint animated grain texture, tags that fade in with stagger on page load.
+
+### Navigator & Wayfinding
+- **Enhanced nav cards** — tinted backgrounds matching section colour (low opacity), section icon/emoji, hover glow in section colour.
+- **Section icons** — inline SVG icons (24px) per section: globe (world), gamepad (tech), football (touchline), film (screen), book (shelf), dumbbell (session), hourglass (history). Used in nav cards and optionally in section headers.
+- **Lead nav cards** (`.nav-card.lead`) — span two columns with thumbnail image and read-time badge.
+- **Reading progress bar** — thin gradient bar at the top showing scroll position.
+- **Back to top button** — floating button (bottom-right), appears after scrolling past cover.
+
+### Image Treatments
+- **Hero image** (`.hero-img`) — standard rounded, within section.
+- **Full-bleed hero** (`.hero-bleed`) — bleeds to section edges for section openers.
+- **Float image** (`.img-float-left`) — text wraps around. For book covers, album art.
+- **Image montage** (`.img-montage`) — grid of 2–4 images in varied sizes. For CL match photos, game screenshots, comparison shots.
+- **Offset image** (`.img-offset`) — 60% width pushed to one side, text wrapping around for asymmetry.
+
+### Data & Comparison Components
+- **League tables** — data tables with alternating rows, highlighted rows, scrollable wrapper. Position-change indicators (`.pos-change`) for movement arrows.
+- **Results strip** — compact match result cards with large score treatment.
+- **Card stacks** (`.card-stack`) — horizontal scrollable row of review/comparison cards. Each `.stack-card` has image, title, verdict, optional rating dots, platform badge. Great for "What's Worth Watching" or book recs.
+- **Contextual timelines** (`.timeline` > `.timeline-node`) — vertical line with date badges and content nodes. Use for History "Also This Week" as alternative to bullets, or for event chronologies.
+
+### Expandable Content
+- **Collapsible sections** (`<details>` / `<summary>`) — styled accordion blocks for optional-depth content. Use for FPL strategy, full streaming lists, workout variations, detailed stats. Reader sees headline, taps to expand. Reduces scroll fatigue.
+
+### Section-Specific Components
+- **Book cards** (`.book-card`, `.book-grid`) — dark cards with title, author, recommendation text. Float cover images. Rating dots optional.
+- **Workout cards** (`.workout-card`) — structured data cards with rep scheme tables.
+- **Year badges** (`.year-badge`) — monospace badges for history dates.
+- **Category dots** (`.radar-cat`) — coloured dots in Release Radar and On the Radar.
+- **Leaving Soon urgency** (`.radar-row.leaving`) — red left border for time-sensitive items.
+
+### Also Lists
+- **Standard also list** (`.also-list`) — simple bold-title + description list.
+- **Also cards** (`.also-cards`) — redesigned 2-column grid of compact cards with subtle backgrounds. Use when there are 4+ items and you want more visual interest than a plain list.
+
+### Texture & Material
+- Subtle CSS grain/noise texture on the cover and dark sections for warmth.
+- Faint gradient shifts within long sections (transparent → 0.02 opacity of section colour).
+- History section: more pronounced parchment texture.
+
+### Typography Hierarchy
 - h2 (`.sec h2`) — section lead headlines, bold 700
-- h3 (`.sec h3`) — sub-story headlines, semi-bold 600 for clear separation from h2
-- h3.minor — lighter-weight italic variant for lower-priority sub-stories
-- `.sub-label` — DM Sans secondary label, distinct from JetBrains Mono section labels. Use for sub-headers within sections.
+- h3 (`.sec h3`) — sub-story headlines, semi-bold 600
+- h3.minor — lighter-weight italic for lower-priority sub-stories
+- `.sub-label` — DM Sans secondary label
+- `.display-stat` — large accent-coloured numbers for dramatic inline stats
+- `.cover-brand` — 80px, tight letter-spacing for display feel
 
-**Rotation guidance:**
-- Standard weekly: 3–5 components beyond the base layout
-- Deep dive: 5–7 components. Richer visual treatment.
-- Long read: minimal — mostly prose with pull quotes and occasional sidebars.
-- Special editions (Countdown, Season Review, Shelf Special): use sidebars, callout boxes, stat bars, DYK boxes generously.
+### Rotation Guidance
+- **Standard weekly: 8–12 component types per issue.** Every section should use at least one component beyond headline + prose. No two consecutive sections should use the same layout pattern.
+- **Deep dive: 10–14 components.** Richer visual treatment with timelines, card stacks, big numbers.
+- **Long read: 5–7 components.** Mostly prose but with pull quotes, margin notes, big numbers, reveal animations.
+- **Special editions: 10+ components.** Use sidebars, card stacks, timelines, stat bars, DYK boxes, collapsible sections generously.
 
 ---
 
@@ -476,6 +516,18 @@ Use these components to vary the visual rhythm. Rotate based on content needs. N
 - Section depth — let content drive it
 - Lead article placement — the lead doesn't have to be world news
 
+**Visual variation is mandatory.** Every issue must feel visually different from the last while maintaining the same design system. Rotate these actively:
+- Which sections use split layouts vs. full-width
+- Where pull quotes appear (not always in the same section)
+- Whether the history section uses a timeline or bullet list
+- Which also-lists use the card variant vs. the simple list
+- Where big-number callouts and margin notes appear
+- Which sections have section watermarks
+- Whether to use a card stack or prose layout for reviews
+- Which content gets a collapsible accordion
+
+**The scroll experience should vary in rhythm:** dense data → breathing room → visual moment → prose → interactive element. If you can scroll for 3+ screen heights without encountering a non-prose component, the layout is too flat.
+
 ---
 
 ## What The Signal Is Not
@@ -517,6 +569,14 @@ Use these components to vary the visual rhythm. Rotate based on content needs. N
 - Release Radar limited to film/TV only → must cover games, LEGO, tech, books, music too
 - Book recommendation reveals a plot twist or ending → never spoil anything, ever
 - On the Radar duplicates items already in Release Radar → no overlap between the two sections
+- Visual layout is flat → no more than 3 screen-heights of unbroken prose anywhere; use split layouts, big numbers, margin notes, pull quotes to break it up
+- Every section uses the same layout (headline → image → prose) → vary with split layouts, compact takes, card stacks, timelines
+- No scroll-triggered animations → add `.reveal` class to key elements (section headers, stat bars, big numbers)
+- Fewer than 3 pull quotes in the whole issue → add more to break prose rhythm
+- No collapsible sections → use `<details>` for optional-depth content (FPL, full lists, workout variations)
+- No big-number callouts → pull out at least 2–3 dramatic stats as visual moments
+- All also-lists use plain bullet format → use `.also-cards` for at least one section's list
+- Same component types as last issue → rotate actively; check the Rotation Guidance
 
 ---
 
@@ -541,6 +601,9 @@ A good issue:
 - Respects the Sunday morning mood — unhurried, curious, considered
 - Has at least one piece the reader would share or remember days later
 - Includes 2–3 things the reader didn't know they wanted to read about
+- **Feels visually varied** — scrolling through, you encounter split layouts, big numbers, pull quotes, card stacks, timelines, margin notes, collapsible sections — not just headline → image → prose on repeat
+- **Has visual moments** — at least 3–4 points where the reader pauses because something looks interesting (a big stat, a card stack, a timeline, a montage), not just because the text is good
+- **Animates subtly** — elements reveal on scroll, numbers count up, the cover gradient drifts — the page feels alive without being distracting
 
 A bad issue:
 - Reads like a list of headlines with extra words
@@ -553,3 +616,6 @@ A bad issue:
 - Feels like it was written in a hurry
 - Is entirely predictable from the interest list — no wildcards, no surprises
 - Frames articles around the reader's personal circumstances instead of writing editorially
+- **Visually monotonous** — every section uses the same headline → image → prose pattern
+- **No visual furniture** — long stretches of unbroken prose with nothing to pause on
+- **Static** — no reveal animations, no count-up numbers, no ambient cover animation

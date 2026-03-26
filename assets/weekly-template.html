@@ -1,0 +1,2301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Signal — [DATE RANGE]</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,500&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #111119;
+  --paper: #FAFAF8;
+  --warm: #F5F4F0;
+  --rose: #E8384F;
+  --ember: #FF6D3A;
+  --deep: #1B1B2F;
+  --slate: #64697B;
+  --ghost: #A4A8B6;
+  --rule: #E0DED8;
+  --pitch: #0A0E17;
+  --turf: #1A7A4C;
+  --turf-lt: #2BD67B;
+  --screen-bg: #14121E;
+  --neon: #FF2D78;
+  --shelf-bg: #1C1410;
+  --shelf-accent: #D4A03C;
+  --session-bg: #F2F7F4;
+  --session-accent: #D4622B;
+  --hist-bg: #F0EBE0;
+  --hist-accent: #8B6914;
+}
+
+/* ═══════════ RESET & BASE ═══════════ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  color: var(--ink);
+  background: #E8E6E1;
+  font-size: 18px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+.mag { max-width: 960px; margin: 0 auto; background: var(--paper); box-shadow: 0 4px 120px rgba(0,0,0,.12); position: relative; }
+img { max-width: 100%; height: auto; display: block; }
+a { color: var(--rose); text-decoration: none; }
+a:hover { text-decoration: underline; }
+p { margin-bottom: 16px; }
+p:last-child { margin-bottom: 0; }
+
+/* ═══════════ READING PROGRESS BAR ═══════════ */
+.progress-bar {
+  position: fixed; top: 0; left: 0; width: 0%;
+  height: 3px; z-index: 1000;
+  background: linear-gradient(90deg, var(--rose), var(--ember));
+  transition: width 100ms ease-out;
+}
+
+/* ═══════════ BACK TO TOP ═══════════ */
+.back-to-top {
+  position: fixed; bottom: 28px; right: 28px;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--deep); border: 1px solid rgba(255,255,255,.15);
+  color: white; font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transform: translateY(12px);
+  transition: opacity .25s ease, transform .25s ease;
+  z-index: 999; box-shadow: 0 4px 16px rgba(0,0,0,.2);
+}
+.back-to-top.visible { opacity: 1; transform: translateY(0); }
+.back-to-top:hover { background: var(--rose); }
+
+/* ═══════════ UTILITY CLASSES ═══════════ */
+.ui { font-family: 'DM Sans', sans-serif; }
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 3px; text-transform: uppercase;
+  margin-bottom: 12px; display: block;
+}
+/* Secondary labels use DM Sans — for sub-headers within sections */
+.sub-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--ghost); margin-bottom: 10px; display: block;
+}
+.caption {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; color: var(--ghost);
+  margin-top: 6px; line-height: 1.4;
+}
+.src {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; color: var(--ghost); margin-top: 12px;
+}
+.src a { color: var(--rose); }
+
+/* ═══════════ COVER ═══════════ */
+.cover {
+  background: var(--deep);
+  background-image:
+    radial-gradient(ellipse at 80% 20%, rgba(232,56,79,.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 20% 80%, rgba(255,109,58,.08) 0%, transparent 50%);
+  padding: 80px 60px 60px;
+  position: relative;
+  min-height: 480px;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  overflow: hidden;
+}
+.cover::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 5px;
+  background: linear-gradient(90deg, var(--rose), var(--ember), var(--rose));
+}
+
+/* Enhancement 18: Cover Ambient Animation — drifting gradients */
+.cover::after {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(ellipse at 80% 20%, rgba(232,56,79,.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 20% 80%, rgba(255,109,58,.08) 0%, transparent 50%);
+  animation: coverDrift 20s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes coverDrift {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-15px, 10px) scale(1.03); }
+  100% { transform: translate(10px, -8px) scale(1.01); }
+}
+
+/* Enhancement 18: Animated grain overlay */
+.cover-grain {
+  position: absolute; inset: 0;
+  background-image: repeating-conic-gradient(rgba(255,255,255,.015) 0% 25%, transparent 0% 50%);
+  background-size: 4px 4px;
+  animation: grainShift 0.8s steps(4) infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+@keyframes grainShift {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-2px, 2px); }
+  50% { transform: translate(2px, -1px); }
+  75% { transform: translate(-1px, -2px); }
+  100% { transform: translate(1px, 1px); }
+}
+
+/* Enhancement 9: Subtle noise texture on cover using base64 grain */
+.cover-noise {
+  position: absolute; inset: 0;
+  opacity: 0.035;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANWp0mAAAACHRSTlMzMzMzMzMzM85JBgUAAAA0SURBVDjLY2CgNmBWYBBgYFZgEGBkVmAQYGJWYBBgZlZgEGBhVmAQYGVWYBBgY6Y4AABxWAIRkPtLqAAAAABJRU5ErkJggg==");
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Enhancement 10: Cover brand — larger, tighter */
+.cover-brand {
+  font-size: 80px; font-weight: 700;
+  color: white; line-height: .95; letter-spacing: -3px; margin-bottom: 8px;
+  position: relative; z-index: 2;
+}
+.cover-brand span { color: var(--rose); font-style: italic; }
+.cover-issue {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: rgba(255,255,255,.4);
+  letter-spacing: 3px; text-transform: uppercase; margin-bottom: 32px;
+  position: relative; z-index: 2;
+}
+.cover-headline {
+  font-size: 32px; font-weight: 600;
+  color: rgba(255,255,255,.78); line-height: 1.25; max-width: 720px;
+  position: relative; z-index: 2;
+}
+.cover-tags { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 8px; position: relative; z-index: 2; }
+.cover-tags .tag {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 3px;
+  background: rgba(255,255,255,.06); color: rgba(255,255,255,.5);
+  border: 1px solid rgba(255,255,255,.08);
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  transition: background .15s ease, color .15s ease;
+  /* Enhancement 18: Staggered fade-in for tags */
+  opacity: 0;
+  animation: tagFadeIn 0.5s ease-out forwards;
+}
+.cover-tags .tag:nth-child(1) { animation-delay: 0.3s; }
+.cover-tags .tag:nth-child(2) { animation-delay: 0.4s; }
+.cover-tags .tag:nth-child(3) { animation-delay: 0.5s; }
+.cover-tags .tag:nth-child(4) { animation-delay: 0.6s; }
+.cover-tags .tag:nth-child(5) { animation-delay: 0.7s; }
+.cover-tags .tag:nth-child(6) { animation-delay: 0.8s; }
+.cover-tags .tag:nth-child(7) { animation-delay: 0.9s; }
+.cover-tags .tag:nth-child(8) { animation-delay: 1.0s; }
+.cover-tags .tag:nth-child(9) { animation-delay: 1.1s; }
+.cover-tags .tag:nth-child(10) { animation-delay: 1.2s; }
+@keyframes tagFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.cover-tags .tag:hover {
+  background: rgba(255,255,255,.12); color: rgba(255,255,255,.8);
+}
+
+/* ═══════════ NAVIGATOR ═══════════ */
+.nav-section { padding: 48px 60px; background: var(--paper); border-bottom: 1px solid var(--rule); }
+.nav-section h2 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 24px;
+}
+.nav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+/* Lead cards span two columns with optional thumbnail */
+.nav-card.lead {
+  grid-column: span 2;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+  padding: 0; overflow: hidden;
+}
+.nav-card.lead .nav-card-content { padding: 22px 24px; }
+.nav-card.lead .nav-card-thumb {
+  background-size: cover; background-position: center;
+  min-height: 140px;
+}
+.nav-card.lead h3 { font-size: 20px; }
+.nav-card {
+  background: var(--warm); border-radius: 8px; padding: 20px;
+  border-left: 4px solid var(--rule);
+  transition: transform .15s ease, box-shadow .15s ease;
+  text-decoration: none; display: block; cursor: pointer;
+}
+.nav-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.06); text-decoration: none; }
+.nav-card.world { border-left-color: var(--rose); }
+.nav-card.tech { border-left-color: var(--ember); }
+.nav-card.football { border-left-color: var(--turf); }
+.nav-card.screen { border-left-color: var(--neon); }
+.nav-card.shelf { border-left-color: var(--shelf-accent); }
+.nav-card.session { border-left-color: var(--session-accent); }
+.nav-card.history { border-left-color: var(--hist-accent); }
+
+/* Enhancement 6: Nav card tinted backgrounds & glow hovers */
+.nav-card.world { background: rgba(232,56,79,.06); }
+.nav-card.tech { background: rgba(255,109,58,.06); }
+.nav-card.football { background: rgba(26,122,76,.06); }
+.nav-card.screen { background: rgba(255,45,120,.06); }
+.nav-card.shelf { background: rgba(212,160,60,.06); }
+.nav-card.session { background: rgba(212,98,43,.06); }
+.nav-card.history { background: rgba(139,105,20,.06); }
+
+.nav-card.world:hover { box-shadow: 0 8px 24px rgba(232,56,79,.12); }
+.nav-card.tech:hover { box-shadow: 0 8px 24px rgba(255,109,58,.12); }
+.nav-card.football:hover { box-shadow: 0 8px 24px rgba(26,122,76,.12); }
+.nav-card.screen:hover { box-shadow: 0 8px 24px rgba(255,45,120,.12); }
+.nav-card.shelf:hover { box-shadow: 0 8px 24px rgba(212,160,60,.12); }
+.nav-card.session:hover { box-shadow: 0 8px 24px rgba(212,98,43,.12); }
+.nav-card.history:hover { box-shadow: 0 8px 24px rgba(139,105,20,.12); }
+
+.nav-card-tag {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: 6px;
+  display: flex; align-items: center; gap: 6px;
+}
+/* Enhancement 6 & 15: Nav card icon element */
+.nav-card-icon {
+  display: inline-flex; align-items: center;
+  width: 16px; height: 16px;
+  flex-shrink: 0;
+}
+.nav-card-icon svg { width: 16px; height: 16px; }
+.nav-card.world .nav-card-tag { color: var(--rose); }
+.nav-card.tech .nav-card-tag { color: var(--ember); }
+.nav-card.football .nav-card-tag { color: var(--turf); }
+.nav-card.screen .nav-card-tag { color: var(--neon); }
+.nav-card.shelf .nav-card-tag { color: var(--shelf-accent); }
+.nav-card.session .nav-card-tag { color: var(--session-accent); }
+.nav-card.history .nav-card-tag { color: var(--hist-accent); }
+.nav-card h3 {
+  font-size: 18px; font-weight: 700; line-height: 1.25;
+  color: var(--ink); margin-bottom: 4px;
+}
+.nav-card p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; color: var(--slate); line-height: 1.4; margin: 0;
+}
+.nav-card .read-time {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px; color: var(--ghost); margin-top: 8px;
+  letter-spacing: 0.5px; text-transform: uppercase;
+}
+
+/* ═══════════ FOREWORD ═══════════ */
+.foreword { padding: 48px 60px; border-bottom: 1px solid var(--rule); }
+.foreword p { font-size: 21px; line-height: 1.75; max-width: 680px; }
+.foreword p::first-letter {
+  font-size: 64px; font-weight: 700; float: left;
+  line-height: .78; margin: 8px 12px 0 0; color: var(--rose);
+}
+
+/* ═══════════ SECTION DIVIDERS ═══════════ */
+.divider { height: 8px; border: none; margin: 0; }
+.dv-world { background: linear-gradient(90deg, var(--rose), #c0392b); }
+.dv-tech { background: linear-gradient(90deg, var(--ember), #e67e22); }
+.dv-football { background: linear-gradient(90deg, var(--turf), var(--turf-lt)); }
+.dv-screen { background: linear-gradient(90deg, #9B59B6, var(--neon)); }
+.dv-shelf { background: linear-gradient(90deg, var(--shelf-accent), #A0722A); }
+.dv-session { background: linear-gradient(90deg, var(--session-accent), #E67E22); }
+.dv-history { background: linear-gradient(90deg, var(--hist-accent), #D4A03C); }
+.dv-other { background: linear-gradient(90deg, var(--slate), var(--ghost)); }
+/* Inset divider variant — centred with breathing room */
+.divider.inset { margin: 0 60px; border-radius: 4px; }
+
+/* ═══════════ GENERIC SECTION ═══════════ */
+.sec { padding: 48px 60px; position: relative; overflow: hidden; }
+.sec h2 { font-size: 36px; font-weight: 700; line-height: 1.15; margin-bottom: 20px; max-width: 680px; }
+/* Sub-story headings: lighter weight for visual hierarchy separation */
+.sec h3 { font-size: 22px; font-weight: 600; line-height: 1.2; margin: 28px 0 10px; }
+.sec h3.minor { font-weight: 400; font-style: italic; font-size: 20px; }
+.sec h4 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--ghost); margin: 28px 0 10px;
+}
+
+/* ═══════════ Enhancement 2: SECTION WATERMARK LABELS ═══════════ */
+.sec-watermark {
+  position: absolute;
+  top: 20px; left: -20px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 140px;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 0;
+  /* Default: use section accent at very low opacity */
+  color: currentColor;
+  opacity: 0.04;
+}
+
+/* Enhancement 2: Section opener variant */
+.sec-opener .section-label {
+  font-size: 14px;
+  letter-spacing: 4px;
+  margin-bottom: 16px;
+}
+.sec-opener h2 {
+  font-size: 42px;
+  max-width: 720px;
+}
+.sec-opener .opener-band {
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 120px;
+  background: linear-gradient(180deg, rgba(0,0,0,.03) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ═══════════ Enhancement 9: Section gradient overlay ═══════════ */
+.sec-gradient-overlay {
+  position: absolute;
+  bottom: 0; left: 0; right: 0; height: 200px;
+  pointer-events: none;
+  z-index: 0;
+}
+.world-section .sec-gradient-overlay { background: linear-gradient(180deg, transparent, rgba(232,56,79,.02)); }
+.tech-section .sec-gradient-overlay { background: linear-gradient(180deg, transparent, rgba(255,109,58,.02)); }
+.session-section .sec-gradient-overlay { background: linear-gradient(180deg, transparent, rgba(212,98,43,.02)); }
+
+/* ═══════════ STAT BAR ═══════════ */
+.stat-bar {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; margin: 24px 0;
+}
+.stat-bar .stat { padding: 18px 16px; text-align: center; border-right: 1px solid var(--rule); }
+.stat-bar .stat:last-child { border-right: none; }
+.stat-bar .stat-num { font-size: 32px; font-weight: 700; line-height: 1; }
+.stat-bar .stat-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px; font-weight: 700; color: var(--ghost);
+  text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;
+}
+
+/* ═══════════ Enhancement 3: BIG NUMBER CALLOUTS ═══════════ */
+.big-number {
+  text-align: center;
+  padding: 24px 0;
+  margin: 24px 0;
+}
+.big-number .num {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 80px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--rose);
+}
+.big-number .num-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ghost);
+  margin-top: 8px;
+}
+.big-number.float-left { float: left; margin: 0 32px 16px 0; text-align: left; }
+.big-number.float-right { float: right; margin: 0 0 16px 32px; text-align: right; }
+
+/* Big number row — 2-3 dramatic stats */
+.big-number-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin: 32px 0;
+  padding: 28px 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+.big-number-row .big-number {
+  margin: 0; padding: 0;
+}
+.big-number-row .big-number .num {
+  font-size: 64px;
+}
+
+/* Section-aware big numbers */
+.touchline-section .big-number .num { color: var(--turf-lt); }
+.touchline-section .big-number .num-label { color: rgba(255,255,255,.4); }
+.touchline-section .big-number-row { border-color: rgba(255,255,255,.1); }
+.screen-section .big-number .num { color: var(--neon); }
+.screen-section .big-number .num-label { color: rgba(255,255,255,.4); }
+.screen-section .big-number-row { border-color: rgba(255,255,255,.1); }
+.shelf-section .big-number .num { color: var(--shelf-accent); }
+.shelf-section .big-number .num-label { color: rgba(255,255,255,.4); }
+.shelf-section .big-number-row { border-color: rgba(255,255,255,.1); }
+.tech-section .big-number .num { color: var(--ember); }
+.session-section .big-number .num { color: var(--session-accent); }
+.history-section .big-number .num { color: var(--hist-accent); }
+
+/* Enhancement 10: Display stat — for inline dramatic numbers */
+.display-stat {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 72px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--rose);
+  display: inline;
+}
+
+/* ═══════════ ANGLE BOX ═══════════ */
+.angle {
+  background: var(--warm); border-left: 5px solid var(--rose);
+  padding: 24px 28px; margin: 28px 0; border-radius: 0 6px 6px 0;
+}
+.angle-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 8px;
+}
+.angle p { font-size: 17px; line-height: 1.65; font-weight: 600; }
+
+/* ═══════════ PULL QUOTE ═══════════ */
+.pull-quote {
+  border-left: 4px solid var(--rose); padding: 16px 28px; margin: 32px 0;
+}
+.pull-quote p {
+  font-size: 22px; font-style: italic; font-weight: 400;
+  line-height: 1.5; color: var(--ink); margin: 0;
+}
+.pull-quote cite {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-style: normal; color: var(--ghost);
+  display: block; margin-top: 8px;
+}
+
+/* Enhancement 7: Pull quote — centered variant */
+.pull-quote.centered {
+  border-left: none;
+  text-align: center;
+  padding: 32px 40px;
+  position: relative;
+}
+.pull-quote.centered::before {
+  content: '\201C';
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 80px;
+  font-weight: 700;
+  color: var(--rose);
+  opacity: 0.25;
+  display: block;
+  line-height: 0.5;
+  margin-bottom: 8px;
+}
+
+/* Enhancement 7: Pull quote — wide variant */
+.pull-quote.wide {
+  margin-left: -32px;
+  margin-right: -32px;
+  padding: 24px 40px;
+  border-left-width: 5px;
+}
+
+/* Section-aware centered quotes */
+.touchline-section .pull-quote.centered::before { color: var(--turf-lt); }
+.screen-section .pull-quote.centered::before { color: var(--neon); }
+.shelf-section .pull-quote.centered::before { color: var(--shelf-accent); }
+
+/* ═══════════ DID YOU KNOW ═══════════ */
+.dyk {
+  background: linear-gradient(135deg, #FFF8E7, #FFF3D6);
+  border: 1px solid #E8D5A3; border-radius: 8px;
+  padding: 18px 22px; margin: 24px 0; position: relative;
+}
+.dyk::before {
+  content: '💡'; position: absolute; top: -10px; left: 16px;
+  font-size: 18px; background: var(--paper); padding: 0 4px;
+}
+.dyk-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: #B8860B; margin-bottom: 6px;
+}
+.dyk p { font-size: 15px; line-height: 1.55; margin: 0; color: #5C4A20; }
+
+/* ═══════════ SIDEBAR / CALLOUT BOX ═══════════ */
+.sidebar {
+  background: var(--warm); border-radius: 8px; padding: 22px 26px; margin: 24px 0;
+  border: 1px solid var(--rule);
+}
+.sidebar-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 10px;
+}
+.sidebar ul { list-style: none; }
+.sidebar li {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; line-height: 1.5; padding: 5px 0;
+  border-bottom: 1px solid rgba(0,0,0,.04); color: var(--ink);
+}
+.sidebar li:last-child { border-bottom: none; }
+
+/* ═══════════ ALSO THIS WEEK LIST ═══════════ */
+.also { margin-top: 32px; padding-top: 24px; border-top: 2px solid var(--rule); }
+.also-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--ghost); margin-bottom: 12px;
+}
+.also-list { list-style: none; }
+.also-list li {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14.5px; line-height: 1.5; padding: 8px 0;
+  border-bottom: 1px solid rgba(0,0,0,.04);
+}
+.also-list li:last-child { border-bottom: none; }
+
+/* Enhancement 8: Also cards — compact card grid alternative */
+.also-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+.also-card {
+  background: var(--warm);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 14px 16px;
+}
+.also-card h4 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 700;
+  color: var(--ink);
+  letter-spacing: 0; text-transform: none;
+  margin: 0 0 4px;
+}
+.also-card p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12.5px; color: var(--slate);
+  line-height: 1.4; margin: 0;
+}
+.also-card .badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--ghost);
+  margin-top: 6px; display: inline-block;
+}
+
+/* Dark section also-cards */
+.touchline-section .also-cards .also-card { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.06); }
+.touchline-section .also-cards .also-card h4 { color: rgba(255,255,255,.9); }
+.touchline-section .also-cards .also-card p { color: rgba(255,255,255,.6); }
+.touchline-section .also-cards .also-card .badge { color: rgba(255,255,255,.3); }
+.screen-section .also-cards .also-card { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.06); }
+.screen-section .also-cards .also-card h4 { color: rgba(255,255,255,.9); }
+.screen-section .also-cards .also-card p { color: rgba(255,255,255,.6); }
+.shelf-section .also-cards .also-card { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.06); }
+.shelf-section .also-cards .also-card h4 { color: rgba(255,255,255,.9); }
+.shelf-section .also-cards .also-card p { color: rgba(255,255,255,.6); }
+
+/* ═══════════ DUAL COLUMN ═══════════ */
+.dual-col { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 24px 0; }
+.col-card { border-left: 4px solid var(--rule); padding-left: 24px; }
+.col-card.accent-ember { border-left-color: var(--ember); }
+.col-card.accent-deep { border-left-color: var(--deep); }
+.col-card h3 { font-size: 22px; font-weight: 700; line-height: 1.2; margin: 0 0 10px; }
+.col-card p { font-size: 16px; }
+
+/* ═══════════ Enhancement 1: VARIED COLUMN LAYOUTS ═══════════ */
+.split-60-40 {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 32px;
+  margin: 24px 0;
+  align-items: start;
+}
+.split-40-60 {
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+  gap: 32px;
+  margin: 24px 0;
+  align-items: start;
+}
+
+/* ═══════════ HERO IMAGE ═══════════ */
+.hero-img { width: 100%; aspect-ratio: 16/7; object-fit: cover; border-radius: 8px; margin: 24px 0; }
+/* Full-bleed hero — bleeds to section edges above content */
+.hero-bleed { width: calc(100% + 120px); margin-left: -60px; border-radius: 0; margin-top: -48px; margin-bottom: 28px; aspect-ratio: 16/7; object-fit: cover; }
+.inline-img { border-radius: 6px; margin: 20px 0; }
+/* Float image for text wrap (books, album art) */
+.img-float-left { float: left; margin: 4px 24px 12px 0; border-radius: 6px; }
+
+/* ═══════════ Enhancement 4: IMAGE MONTAGE GRID ═══════════ */
+.img-montage {
+  display: grid;
+  gap: 8px;
+  margin: 24px 0;
+}
+.img-montage.layout-1-2 {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+}
+.img-montage.layout-1-2 .montage-hero {
+  grid-column: 1 / -1;
+}
+.img-montage.layout-2x2 {
+  grid-template-columns: 1fr 1fr;
+}
+.img-montage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+}
+.img-montage .caption {
+  grid-column: 1 / -1;
+}
+
+/* Enhancement 4: Offset image — asymmetric text wrap */
+.img-offset {
+  float: right;
+  width: 60%;
+  margin: 0 0 16px 24px;
+  border-radius: 6px;
+}
+.img-offset.left {
+  float: left;
+  margin: 0 24px 16px 0;
+}
+
+/* ═══════════ THE WORLD THIS WEEK ═══════════ */
+.world-section { background: var(--paper); }
+.world-section .section-label { color: var(--rose); }
+.world-section .sec-watermark { color: var(--rose); }
+
+/* ═══════════ PIXEL & BYTE ═══════════ */
+.tech-section { background: var(--warm); }
+.tech-section .section-label { color: var(--ember); }
+.tech-section .sec-watermark { color: var(--ember); }
+
+/* ═══════════ THE TOUCHLINE ═══════════ */
+.touchline-section { background: var(--pitch); color: rgba(255,255,255,.85); }
+.touchline-section .section-label { color: var(--turf-lt); }
+.touchline-section h2 { color: white; }
+.touchline-section h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--turf-lt); margin: 28px 0 12px;
+}
+.touchline-section h3.narrative {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px; text-transform: none; letter-spacing: 0; color: white;
+}
+.touchline-section p { color: rgba(255,255,255,.8); }
+.touchline-section a { color: var(--turf-lt); }
+.touchline-section .angle { background: rgba(255,255,255,.04); border-left-color: var(--turf-lt); }
+.touchline-section .angle-label { color: var(--turf-lt); }
+.touchline-section .angle p { color: rgba(255,255,255,.9); }
+.touchline-section .also { border-top-color: rgba(255,255,255,.1); }
+.touchline-section .also-title { color: rgba(255,255,255,.3); }
+.touchline-section .also-list li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+.touchline-section .pull-quote { border-left-color: var(--turf-lt); }
+.touchline-section .pull-quote p { color: rgba(255,255,255,.9); }
+.touchline-section .pull-quote cite { color: rgba(255,255,255,.4); }
+.touchline-section .sec-watermark { color: var(--turf-lt); }
+
+/* Touchline DYK — section-aware dark variant */
+.touchline-section .dyk { background: rgba(26,122,76,.08); border-color: rgba(43,214,123,.12); }
+.touchline-section .dyk::before { background: var(--pitch); }
+.touchline-section .dyk-title { color: var(--turf-lt); }
+.touchline-section .dyk p { color: rgba(255,255,255,.7); }
+
+/* Touchline sidebar */
+.touchline-section .sidebar { background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.touchline-section .sidebar-title { color: var(--turf-lt); }
+.touchline-section .sidebar li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+
+/* League Table */
+.league-table {
+  width: 100%; border-collapse: collapse; margin: 16px 0 24px;
+  font-family: 'DM Sans', sans-serif; font-size: 14px;
+}
+.league-table th {
+  text-align: left; padding: 10px 12px;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: rgba(255,255,255,.3); border-bottom: 1px solid rgba(255,255,255,.1);
+}
+.league-table td { padding: 9px 12px; border-bottom: 1px solid rgba(255,255,255,.04); color: rgba(255,255,255,.6); }
+.league-table tr:nth-child(even) td { background: rgba(255,255,255,.015); }
+.league-table tr.highlight td { color: var(--turf-lt); font-weight: 700; }
+.league-table .pos { width: 30px; text-align: center; }
+/* Scrollable wrapper for small screens */
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 16px 0 24px; }
+.table-wrap .league-table { margin: 0; min-width: 520px; }
+
+/* Results Strip */
+.results-strip { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+.result-card {
+  background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.06);
+  border-radius: 6px; padding: 12px 16px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px;
+  color: rgba(255,255,255,.65); line-height: 1.4; min-width: 190px;
+  flex: 1 1 190px; max-width: 220px;
+}
+.result-card .teams { color: rgba(255,255,255,.6); }
+.result-card strong { color: rgba(255,255,255,.9); font-weight: 700; }
+.result-card .score {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 18px; font-weight: 700; color: var(--turf-lt);
+  display: block; margin: 2px 0;
+}
+
+/* ═══════════ Enhancement 11: SPARKLINE ═══════════ */
+.sparkline {
+  display: inline-block;
+  width: 200px;
+  height: 40px;
+  vertical-align: middle;
+}
+.sparkline svg {
+  width: 100%;
+  height: 100%;
+}
+.sparkline .spark-line {
+  fill: none;
+  stroke: var(--turf-lt);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.sparkline .spark-area {
+  fill: var(--turf-lt);
+  opacity: 0.1;
+}
+.sparkline .spark-dot {
+  fill: var(--turf-lt);
+}
+
+/* Enhancement 11: Position change indicators */
+.pos-change {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+}
+.pos-change.up { color: #2BD67B; }
+.pos-change.down { color: var(--rose); }
+.pos-change.same { color: var(--ghost); }
+
+/* Enhancement 11: Mini horizontal bar */
+.mini-bar {
+  display: inline-block;
+  height: 6px;
+  border-radius: 3px;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+.mini-bar-track {
+  display: inline-block;
+  width: 100px;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255,255,255,.1);
+  position: relative;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+.mini-bar-track .mini-bar-fill {
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--turf-lt);
+}
+
+/* ═══════════ SCREEN & SOUND ═══════════ */
+.screen-section { background: var(--screen-bg); color: rgba(255,255,255,.85); }
+.screen-section .section-label { color: var(--neon); }
+.screen-section h2 { color: white; }
+.screen-section h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--neon); margin: 28px 0 12px;
+}
+.screen-section h3.feature-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px; text-transform: none; letter-spacing: 0; color: white; margin-bottom: 14px;
+}
+.screen-section p { color: rgba(255,255,255,.8); }
+.screen-section a { color: var(--neon); }
+.screen-section .also { border-top-color: rgba(255,255,255,.08); }
+.screen-section .also-title { color: rgba(255,255,255,.3); }
+.screen-section .also-list li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+.screen-section .pull-quote { border-left-color: var(--neon); }
+.screen-section .pull-quote p { color: rgba(255,255,255,.9); }
+.screen-section .pull-quote cite { color: rgba(255,255,255,.4); }
+.screen-section .sec-watermark { color: var(--neon); }
+
+/* Screen & Sound DYK — section-aware dark variant */
+.screen-section .dyk { background: rgba(255,45,120,.06); border-color: rgba(255,45,120,.12); }
+.screen-section .dyk::before { background: var(--screen-bg); }
+.screen-section .dyk-title { color: var(--neon); }
+.screen-section .dyk p { color: rgba(255,255,255,.7); }
+
+/* Screen sidebar */
+.screen-section .sidebar { background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.screen-section .sidebar-title { color: var(--neon); }
+.screen-section .sidebar li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+
+/* Radar — Release Radar and On the Radar */
+.radar-grid { margin: 16px 0; }
+.radar-row {
+  display: grid; grid-template-columns: 80px 1fr; gap: 14px;
+  padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,.06);
+  font-family: 'DM Sans', sans-serif; font-size: 14px;
+  color: rgba(255,255,255,.7); line-height: 1.4;
+}
+.radar-row:last-child { border-bottom: none; }
+.radar-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700; color: var(--neon); padding-top: 2px;
+}
+.radar-row strong { color: rgba(255,255,255,.95); }
+.radar-platform { font-size: 11px; color: rgba(255,255,255,.35); font-weight: 500; }
+/* Category dot for radar items */
+.radar-cat {
+  display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+  margin-right: 6px; vertical-align: middle;
+}
+.radar-cat.film { background: var(--neon); }
+.radar-cat.tv { background: #9B59B6; }
+.radar-cat.game { background: var(--ember); }
+.radar-cat.book { background: var(--shelf-accent); }
+.radar-cat.music { background: var(--turf-lt); }
+.radar-cat.tech { background: var(--ghost); }
+.radar-cat.lego { background: #E8384F; }
+/* Leaving Soon — urgency styling */
+.radar-row.leaving { border-left: 3px solid var(--rose); padding-left: 12px; margin-left: -3px; }
+.radar-row.leaving .radar-date { color: var(--rose); }
+
+/* ═══════════ Enhancement 16: CARD STACK — Horizontal scroll ═══════════ */
+.card-stack {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 8px 0 16px;
+  margin: 16px 0;
+}
+.card-stack::-webkit-scrollbar { height: 4px; }
+.card-stack::-webkit-scrollbar-track { background: rgba(255,255,255,.05); border-radius: 2px; }
+.card-stack::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 2px; }
+
+.stack-card {
+  flex: 0 0 240px;
+  scroll-snap-align: start;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.stack-card-img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+}
+.stack-card-body {
+  padding: 14px 16px;
+}
+.stack-card-title {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 17px; font-weight: 700;
+  color: rgba(255,255,255,.95);
+  margin-bottom: 4px;
+}
+.stack-card-verdict {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12.5px; color: rgba(255,255,255,.6);
+  line-height: 1.4; margin-bottom: 8px;
+}
+.stack-card .platform-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: rgba(255,255,255,.35);
+  background: rgba(255,255,255,.06);
+  padding: 2px 8px; border-radius: 3px;
+  display: inline-block;
+}
+
+/* Light section card stacks */
+.tech-section .stack-card { background: white; border-color: var(--rule); }
+.tech-section .stack-card-title { color: var(--ink); }
+.tech-section .stack-card-verdict { color: var(--slate); }
+.tech-section .stack-card .platform-badge { color: var(--ghost); background: var(--warm); }
+.tech-section .card-stack::-webkit-scrollbar-track { background: var(--rule); }
+.tech-section .card-stack::-webkit-scrollbar-thumb { background: var(--ghost); }
+
+/* ═══════════ Enhancement 19: SCORE/RATING DOTS ═══════════ */
+.rating {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  margin: 4px 0;
+}
+.rating .dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,.25);
+  background: transparent;
+}
+.rating .dot.filled {
+  border-color: transparent;
+}
+/* Section-specific rating colours */
+.screen-section .rating .dot.filled { background: var(--neon); }
+.shelf-section .rating .dot.filled { background: var(--shelf-accent); }
+.tech-section .rating .dot { border-color: var(--rule); }
+.tech-section .rating .dot.filled { background: var(--ember); border-color: transparent; }
+/* Light section dots */
+.session-section .rating .dot { border-color: var(--rule); }
+.session-section .rating .dot.filled { background: var(--session-accent); border-color: transparent; }
+.world-section .rating .dot { border-color: var(--rule); }
+.world-section .rating .dot.filled { background: var(--rose); border-color: transparent; }
+
+/* ═══════════ THE SHELF ═══════════ */
+.shelf-section { background: var(--shelf-bg); color: rgba(255,255,255,.85); }
+.shelf-section .section-label { color: var(--shelf-accent); }
+.shelf-section h2 { color: white; }
+.shelf-section h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--shelf-accent); margin: 28px 0 12px;
+}
+.shelf-section h3.feature-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px; text-transform: none; letter-spacing: 0; color: white; margin-bottom: 14px;
+}
+.shelf-section p { color: rgba(255,255,255,.8); }
+.shelf-section a { color: var(--shelf-accent); }
+.shelf-section .also { border-top-color: rgba(255,255,255,.08); }
+.shelf-section .also-title { color: rgba(255,255,255,.3); }
+.shelf-section .also-list li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+.shelf-section .sec-watermark { color: var(--shelf-accent); }
+.shelf-section .pull-quote { border-left-color: var(--shelf-accent); }
+.shelf-section .pull-quote p { color: rgba(255,255,255,.9); }
+.shelf-section .pull-quote cite { color: rgba(255,255,255,.4); }
+
+/* Shelf DYK — section-aware dark variant */
+.shelf-section .dyk { background: rgba(212,160,60,.06); border-color: rgba(212,160,60,.12); }
+.shelf-section .dyk::before { background: var(--shelf-bg); }
+.shelf-section .dyk-title { color: var(--shelf-accent); }
+.shelf-section .dyk p { color: rgba(255,255,255,.7); }
+
+/* Shelf sidebar */
+.shelf-section .sidebar { background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.shelf-section .sidebar-title { color: var(--shelf-accent); }
+.shelf-section .sidebar li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+
+/* Book Recommendation Card — with image float support */
+.book-card {
+  background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+  border-radius: 8px; padding: 18px 22px; margin: 12px 0;
+  overflow: hidden;
+}
+.book-card h4 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 19px; font-weight: 700; color: rgba(255,255,255,.95);
+  text-transform: none; letter-spacing: 0; margin: 0 0 4px;
+}
+.book-card .author {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; color: rgba(255,255,255,.4); margin-bottom: 6px;
+}
+.book-card p { font-size: 14px; color: rgba(255,255,255,.6); margin: 0; }
+.book-card img { float: left; width: 80px; margin: 0 16px 8px 0; border-radius: 4px; }
+/* Side-by-side book cards */
+.book-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+
+/* ═══════════ THE SESSION ═══════════ */
+.session-section { background: var(--session-bg); }
+.session-section .section-label { color: var(--session-accent); }
+.session-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.session-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.session-section .sec-watermark { color: var(--session-accent); }
+
+/* Workout Card — for rep schemes, protocols, programmes */
+.workout-card {
+  background: white; border: 1px solid var(--rule); border-radius: 8px;
+  padding: 22px 26px; margin: 20px 0;
+  border-left: 4px solid var(--session-accent);
+}
+.workout-card-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--session-accent); margin-bottom: 12px;
+}
+.workout-card table {
+  width: 100%; border-collapse: collapse; font-family: 'DM Sans', sans-serif; font-size: 14px;
+}
+.workout-card th {
+  text-align: left; padding: 6px 10px;
+  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--ghost); border-bottom: 1px solid var(--rule);
+}
+.workout-card td { padding: 7px 10px; border-bottom: 1px solid rgba(0,0,0,.04); color: var(--ink); }
+.workout-card .highlight-row td { color: var(--session-accent); font-weight: 700; }
+
+/* Workout icon labels */
+.workout-type {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'DM Sans', sans-serif; font-size: 11px;
+  color: var(--session-accent); font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; margin-bottom: 8px;
+}
+
+/* ═══════════ THIS WEEK IN HISTORY ═══════════ */
+.history-section { background: var(--hist-bg); }
+.history-section .section-label { color: var(--hist-accent); }
+.history-section h2 { font-size: 30px; font-weight: 700; line-height: 1.2; margin-bottom: 16px; color: #3D2E0F; }
+.history-section .sec-watermark { color: var(--hist-accent); }
+/* Year badges for history items */
+.year-badge {
+  display: inline-block; font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700; color: var(--hist-accent);
+  background: rgba(139,105,20,.08); border-radius: 3px;
+  padding: 2px 8px; margin-right: 8px; vertical-align: middle;
+}
+.history-section .also-list li { display: flex; align-items: baseline; gap: 0; }
+
+/* Enhancement 9: History paper texture — more pronounced */
+.history-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.06;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANWp0mAAAACHRSTlMzMzMzMzMzM85JBgUAAAA0SURBVDjLY2CgNmBWYBBgYFZgEGBkVmAQYGJWYBBgZlZgEGBhVmAQYGVWYBBgY6Y4AABxWAIRkPtLqAAAAABJRU5ErkJggg==");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ═══════════ Enhancement 12: CONTEXTUAL TIMELINES ═══════════ */
+.timeline {
+  position: relative;
+  padding-left: 32px;
+  margin: 24px 0;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 8px; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--rule);
+}
+.timeline-node {
+  position: relative;
+  padding: 12px 0 24px 16px;
+}
+.timeline-node::before {
+  content: '';
+  position: absolute;
+  left: -28px; top: 18px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--rose);
+  border: 2px solid var(--paper);
+}
+.timeline-node .timeline-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--ghost);
+  margin-bottom: 4px;
+}
+.timeline-node .timeline-content {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14.5px; line-height: 1.5;
+}
+.timeline-node .timeline-content strong { color: var(--ink); }
+
+/* Timeline on dark backgrounds */
+.touchline-section .timeline::before { background: rgba(255,255,255,.1); }
+.touchline-section .timeline-node::before { background: var(--turf-lt); border-color: var(--pitch); }
+.touchline-section .timeline-node .timeline-date { color: var(--turf-lt); }
+.touchline-section .timeline-node .timeline-content { color: rgba(255,255,255,.7); }
+.touchline-section .timeline-node .timeline-content strong { color: rgba(255,255,255,.95); }
+
+.screen-section .timeline::before { background: rgba(255,255,255,.1); }
+.screen-section .timeline-node::before { background: var(--neon); border-color: var(--screen-bg); }
+.screen-section .timeline-node .timeline-date { color: var(--neon); }
+.screen-section .timeline-node .timeline-content { color: rgba(255,255,255,.7); }
+.screen-section .timeline-node .timeline-content strong { color: rgba(255,255,255,.95); }
+
+.shelf-section .timeline::before { background: rgba(255,255,255,.1); }
+.shelf-section .timeline-node::before { background: var(--shelf-accent); border-color: var(--shelf-bg); }
+.shelf-section .timeline-node .timeline-date { color: var(--shelf-accent); }
+.shelf-section .timeline-node .timeline-content { color: rgba(255,255,255,.7); }
+.shelf-section .timeline-node .timeline-content strong { color: rgba(255,255,255,.95); }
+
+/* History timeline */
+.history-section .timeline::before { background: rgba(139,105,20,.2); }
+.history-section .timeline-node::before { background: var(--hist-accent); border-color: var(--hist-bg); }
+.history-section .timeline-node .timeline-date { color: var(--hist-accent); }
+.history-section .timeline-node .timeline-content { color: #5C4A20; }
+
+/* ═══════════ Enhancement 13: COMPACT TAKES ═══════════ */
+.compact-take {
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--rose);
+  border-radius: 0 6px 6px 0;
+  padding: 16px 18px;
+  margin: 12px 0;
+}
+.compact-take h4 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 17px; font-weight: 700; color: var(--ink);
+  text-transform: none; letter-spacing: 0;
+  margin: 0 0 6px;
+}
+.compact-take p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13.5px; color: var(--slate);
+  line-height: 1.5; margin: 0 0 6px;
+}
+.compact-take .src { margin-top: 4px; }
+
+/* Compact take — section accents */
+.tech-section .compact-take { border-left-color: var(--ember); background: white; }
+.touchline-section .compact-take { border-left-color: var(--turf-lt); background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.touchline-section .compact-take h4 { color: rgba(255,255,255,.95); }
+.touchline-section .compact-take p { color: rgba(255,255,255,.6); }
+.screen-section .compact-take { border-left-color: var(--neon); background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.screen-section .compact-take h4 { color: rgba(255,255,255,.95); }
+.screen-section .compact-take p { color: rgba(255,255,255,.6); }
+
+/* Compact grid — 2 compact takes side by side */
+.compact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+/* ═══════════ Enhancement 14: MARGIN NOTES ═══════════ */
+.margin-note {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--slate);
+  background: var(--warm);
+  border-left: 3px solid var(--rose);
+  padding: 12px 14px;
+  border-radius: 0 4px 4px 0;
+}
+/* On desktop, float to right margin */
+@media (min-width: 821px) {
+  .margin-note {
+    float: right;
+    width: 220px;
+    margin: 0 -60px 16px 24px;
+    position: relative;
+    z-index: 1;
+  }
+}
+/* Section-aware margin notes */
+.tech-section .margin-note { border-left-color: var(--ember); }
+.touchline-section .margin-note { background: rgba(255,255,255,.04); border-left-color: var(--turf-lt); color: rgba(255,255,255,.6); }
+.screen-section .margin-note { background: rgba(255,255,255,.04); border-left-color: var(--neon); color: rgba(255,255,255,.6); }
+.shelf-section .margin-note { background: rgba(255,255,255,.04); border-left-color: var(--shelf-accent); color: rgba(255,255,255,.6); }
+.history-section .margin-note { border-left-color: var(--hist-accent); background: rgba(139,105,20,.06); color: #5C4A20; }
+
+/* ═══════════ Enhancement 15: SECTION ICONS (inline SVG) ═══════════ */
+/* Icons use currentColor so they inherit from parent. Defined as classes for documentation. */
+.sec-icon {
+  display: inline-block;
+  width: 24px; height: 24px;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+.sec-icon svg {
+  width: 24px; height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ═══════════ Enhancement 17: COLLAPSIBLE SECTIONS ═══════════ */
+.collapsible {
+  margin: 20px 0;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.collapsible summary {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 700;
+  padding: 14px 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  list-style: none;
+  background: var(--warm);
+  color: var(--ink);
+  transition: background .15s ease;
+}
+.collapsible summary::-webkit-details-marker { display: none; }
+.collapsible summary::after {
+  content: '';
+  width: 8px; height: 8px;
+  border-right: 2px solid var(--ghost);
+  border-bottom: 2px solid var(--ghost);
+  transform: rotate(45deg);
+  transition: transform .2s ease;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+.collapsible[open] summary::after {
+  transform: rotate(-135deg);
+}
+.collapsible summary:hover { background: var(--rule); }
+.collapsible-content {
+  padding: 16px 18px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--slate);
+}
+
+/* Dark section collapsibles */
+.touchline-section .collapsible { border-color: rgba(255,255,255,.08); }
+.touchline-section .collapsible summary { background: rgba(255,255,255,.04); color: rgba(255,255,255,.9); }
+.touchline-section .collapsible summary::after { border-color: rgba(255,255,255,.3); }
+.touchline-section .collapsible summary:hover { background: rgba(255,255,255,.08); }
+.touchline-section .collapsible-content { color: rgba(255,255,255,.7); }
+
+.screen-section .collapsible { border-color: rgba(255,255,255,.08); }
+.screen-section .collapsible summary { background: rgba(255,255,255,.04); color: rgba(255,255,255,.9); }
+.screen-section .collapsible summary::after { border-color: rgba(255,255,255,.3); }
+.screen-section .collapsible summary:hover { background: rgba(255,255,255,.08); }
+.screen-section .collapsible-content { color: rgba(255,255,255,.7); }
+
+.shelf-section .collapsible { border-color: rgba(255,255,255,.08); }
+.shelf-section .collapsible summary { background: rgba(255,255,255,.04); color: rgba(255,255,255,.9); }
+.shelf-section .collapsible summary::after { border-color: rgba(255,255,255,.3); }
+.shelf-section .collapsible summary:hover { background: rgba(255,255,255,.08); }
+.shelf-section .collapsible-content { color: rgba(255,255,255,.7); }
+
+/* ═══════════ Enhancement 20: READ-NEXT CONNECTORS ═══════════ */
+.read-next {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  text-align: right;
+  margin-top: 28px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+  color: var(--ghost);
+}
+.read-next a {
+  font-weight: 700;
+  text-decoration: none;
+}
+.read-next .arrow {
+  display: inline-block;
+  margin-left: 4px;
+  transition: transform .15s ease;
+}
+.read-next:hover .arrow {
+  transform: translateX(3px);
+}
+
+/* Section-specific read-next colours */
+.world-section .read-next a { color: var(--rose); }
+.tech-section .read-next a { color: var(--ember); }
+.touchline-section .read-next { border-top-color: rgba(255,255,255,.08); color: rgba(255,255,255,.3); }
+.touchline-section .read-next a { color: var(--turf-lt); }
+.screen-section .read-next { border-top-color: rgba(255,255,255,.08); color: rgba(255,255,255,.3); }
+.screen-section .read-next a { color: var(--neon); }
+.shelf-section .read-next { border-top-color: rgba(255,255,255,.08); color: rgba(255,255,255,.3); }
+.shelf-section .read-next a { color: var(--shelf-accent); }
+.session-section .read-next a { color: var(--session-accent); }
+.history-section .read-next a { color: var(--hist-accent); }
+
+/* ═══════════ Enhancement 5: SCROLL-TRIGGERED ANIMATIONS ═══════════ */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* Staggered children */
+.reveal-group .reveal:nth-child(1) { transition-delay: 0ms; }
+.reveal-group .reveal:nth-child(2) { transition-delay: 80ms; }
+.reveal-group .reveal:nth-child(3) { transition-delay: 160ms; }
+.reveal-group .reveal:nth-child(4) { transition-delay: 240ms; }
+.reveal-group .reveal:nth-child(5) { transition-delay: 320ms; }
+.reveal-group .reveal:nth-child(6) { transition-delay: 400ms; }
+
+/* ═══════════ THE LONG SHELF ═══════════ */
+.longshelf-section { background: var(--paper); border-bottom: 1px solid var(--rule); }
+.longshelf-section .section-label { color: var(--rose); }
+/* Two-column compact layout */
+.longshelf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 32px; }
+.shelf-item { padding: 16px 0; border-bottom: 1px solid var(--rule); }
+.shelf-item:last-child { border-bottom: none; }
+.shelf-item .title { font-size: 17px; font-weight: 700; color: var(--ink); line-height: 1.3; }
+.shelf-item .meta {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; color: var(--ghost); margin-top: 2px;
+}
+.shelf-item .desc {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; color: var(--slate); margin-top: 4px; line-height: 1.5;
+}
+
+/* ═══════════ ON THE RADAR ═══════════ */
+.radar-section { background: var(--warm); }
+.radar-section .section-label { color: var(--ember); }
+.radar-section .radar-row { border-bottom-color: rgba(0,0,0,.06); color: var(--ink); }
+.radar-section .radar-date { color: var(--ember); font-size: 12px; }
+.radar-section .radar-row strong { color: var(--ink); }
+.radar-section .radar-cat.football { background: var(--turf); }
+.radar-section .radar-cat.film { background: var(--neon); }
+.radar-section .radar-cat.game { background: var(--ember); }
+.radar-section .radar-cat.event { background: var(--rose); }
+.radar-section .radar-cat.release { background: var(--shelf-accent); }
+
+/* ═══════════ FOOTER ═══════════ */
+.footer {
+  background: var(--deep); padding: 40px 60px; text-align: center;
+}
+.footer-brand { font-size: 28px; font-weight: 700; color: white; }
+.footer-brand span { color: var(--rose); font-style: italic; }
+.footer-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: rgba(255,255,255,.3);
+  letter-spacing: 2px; text-transform: uppercase; margin-top: 6px;
+}
+
+/* ═══════════ RESPONSIVE ═══════════ */
+@media (max-width: 820px) {
+  .cover, .nav-section, .foreword, .sec, .touchline-section, .screen-section,
+  .shelf-section, .session-section, .history-section,
+  .longshelf-section, .radar-section, .footer {
+    padding-left: 24px; padding-right: 24px;
+  }
+  .hero-bleed { width: calc(100% + 48px); margin-left: -24px; }
+  .divider.inset { margin-left: 24px; margin-right: 24px; }
+  .cover-brand { font-size: 60px; }
+  .cover-headline { font-size: 26px; }
+  .nav-grid { grid-template-columns: 1fr 1fr; }
+  .nav-card.lead { grid-column: span 2; }
+  .longshelf-grid { grid-template-columns: 1fr; }
+  .book-grid { grid-template-columns: 1fr; }
+  /* Enhancement 1 */
+  .split-60-40, .split-40-60 { grid-template-columns: 1fr; }
+  /* Enhancement 4 */
+  .img-montage.layout-1-2, .img-montage.layout-2x2 { grid-template-columns: 1fr; }
+  .img-montage.layout-1-2 .montage-hero { grid-column: span 1; }
+  .img-offset { float: none; width: 100%; margin: 16px 0; }
+  /* Enhancement 2 */
+  .sec-watermark { font-size: 100px; }
+  /* Enhancement 7 */
+  .pull-quote.wide { margin-left: 0; margin-right: 0; }
+  /* Enhancement 8 */
+  .also-cards { grid-template-columns: 1fr; }
+  /* Enhancement 13 */
+  .compact-grid { grid-template-columns: 1fr; }
+  /* Enhancement 14: margin note goes inline */
+  .margin-note { float: none; width: 100%; margin: 16px 0; }
+}
+@media (max-width: 600px) {
+  .cover, .nav-section, .foreword, .sec, .touchline-section, .screen-section,
+  .shelf-section, .session-section, .history-section,
+  .longshelf-section, .radar-section, .footer {
+    padding-left: 20px; padding-right: 20px;
+  }
+  .hero-bleed { width: calc(100% + 40px); margin-left: -20px; }
+  .divider.inset { margin-left: 20px; margin-right: 20px; }
+  .cover-brand { font-size: 52px; }
+  .cover-headline { font-size: 22px; }
+  .nav-grid { grid-template-columns: 1fr; }
+  .nav-card.lead { grid-column: span 1; grid-template-columns: 1fr; }
+  .nav-card.lead .nav-card-thumb { min-height: 120px; }
+  .dual-col { grid-template-columns: 1fr; }
+  .stat-bar { grid-template-columns: repeat(2, 1fr); }
+  .stat-bar .stat:nth-child(2) { border-right: none; }
+  .results-strip { flex-direction: column; }
+  .result-card { max-width: 100%; }
+  .sec h2, .touchline-section h2, .screen-section h2, .shelf-section h2 { font-size: 28px; }
+  .longshelf-grid { grid-template-columns: 1fr; }
+  .book-grid { grid-template-columns: 1fr; }
+  .back-to-top { bottom: 16px; right: 16px; width: 40px; height: 40px; }
+  /* Enhancement 2: hide watermark on small screens */
+  .sec-watermark { display: none; }
+  /* Enhancement 3: scale down big numbers */
+  .big-number .num { font-size: 56px; }
+  .big-number-row { grid-template-columns: 1fr; gap: 16px; }
+  .big-number-row .big-number .num { font-size: 48px; }
+  /* Enhancement 10 */
+  .sec-opener h2 { font-size: 32px; }
+  .display-stat { font-size: 52px; }
+  /* Enhancement 16 */
+  .stack-card { flex: 0 0 200px; }
+  /* Enhancement 12 */
+  .timeline { padding-left: 24px; }
+}
+</style>
+</head>
+<body>
+<div class="progress-bar" id="progressBar"></div>
+<div class="mag">
+
+<!-- ══════════ COVER ══════════ -->
+<!-- Enhancement 18: Cover ambient animation — drifting gradients + grain overlay -->
+<header class="cover" id="top">
+  <!-- Enhancement 9 & 18: Noise texture + grain overlays -->
+  <div class="cover-noise"></div>
+  <div class="cover-grain"></div>
+  <div class="cover-issue" style="position:relative;z-index:2">[DATE RANGE] · Issue #[N] · Sunday Edition</div>
+  <!-- Enhancement 10: Brand at 80px with -3px letter-spacing -->
+  <div class="cover-brand">The Signal<span>.</span></div>
+  <div class="cover-headline">[One-sentence editorial hook summarising the week's key threads]</div>
+  <!-- Enhancement 18: Tags fade in with staggered animation -->
+  <div class="cover-tags">
+    <span class="tag">[Topic 1]</span>
+    <span class="tag">[Topic 2]</span>
+    <span class="tag">[Topic 3]</span>
+    <span class="tag">[Topic 4]</span>
+    <span class="tag">[Topic 5]</span>
+    <span class="tag">[Topic 6]</span>
+    <!-- 6-10 topic tags -->
+  </div>
+</header>
+
+<!-- ══════════ NAVIGATOR ══════════ -->
+<!-- Enhancement 6: Nav cards get tinted backgrounds, glow hovers, and icons -->
+<!-- Enhancement 15: Section icons appear before category tags -->
+<section class="nav-section" id="nav">
+  <h2>What's Inside</h2>
+  <div class="nav-grid">
+    <!-- Lead stories span 2 columns with optional thumbnail -->
+    <a href="#world" class="nav-card lead world" style="text-decoration:none">
+      <div class="nav-card-content">
+        <div class="nav-card-tag">
+          <!-- Enhancement 15: Globe icon for World -->
+          <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10 15 15 0 0 1-4-10A15 15 0 0 1 12 2z"/></svg></span>
+          World
+        </div>
+        <h3>[Lead headline]</h3>
+        <p>[One-sentence hook]</p>
+        <div class="read-time">8 min read</div>
+      </div>
+      <div class="nav-card-thumb" style="background-image:url('[IMAGE_URL]')"></div>
+    </a>
+    <!-- Standard cards link to their sections -->
+    <a href="#tech" class="nav-card tech" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <!-- Enhancement 15: Gamepad icon for Tech -->
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="4"/><line x1="6" y1="10" x2="6" y2="14"/><line x1="4" y1="12" x2="8" y2="12"/><circle cx="16" cy="10" r="0.8" fill="currentColor"/><circle cx="18" cy="12" r="0.8" fill="currentColor"/></svg></span>
+        Gaming
+      </div>
+      <h3>[Headline]</h3>
+      <p>[One-sentence hook]</p>
+      <div class="read-time">5 min read</div>
+    </a>
+    <a href="#football" class="nav-card football" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <!-- Enhancement 15: Football icon -->
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2l3 7h-6l3-7zM22 12l-7 3v-6l7 3zM12 22l-3-7h6l-3 7zM2 12l7-3v6l-7-3z"/></svg></span>
+        Football
+      </div>
+      <h3>[Headline]</h3>
+      <p>[One-sentence hook]</p>
+      <div class="read-time">6 min read</div>
+    </a>
+    <a href="#screen" class="nav-card screen" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <!-- Enhancement 15: Film icon -->
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 8h20M2 16h20M8 4v16M16 4v16"/></svg></span>
+        Film/TV
+      </div>
+      <h3>[Headline]</h3>
+      <p>[One-sentence hook]</p>
+      <div class="read-time">4 min read</div>
+    </a>
+    <a href="#shelf" class="nav-card shelf" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <!-- Enhancement 15: Book icon -->
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>
+        Books
+      </div>
+      <h3>[Headline]</h3>
+      <p>[One-sentence hook]</p>
+      <div class="read-time">3 min read</div>
+    </a>
+    <a href="#session" class="nav-card session" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <!-- Enhancement 15: Dumbbell icon -->
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6h-2v12h2M18 6h2v12h-2M6 12h12"/><rect x="3" y="8" width="3" height="8" rx="1"/><rect x="18" y="8" width="3" height="8" rx="1"/></svg></span>
+        Fitness
+      </div>
+      <h3>[Headline]</h3>
+      <p>[One-sentence hook]</p>
+      <div class="read-time">4 min read</div>
+    </a>
+    <a href="#history" class="nav-card history" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <!-- Enhancement 15: Hourglass icon -->
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12M6 22h12M7 2v4a5 5 0 0 0 5 5 5 5 0 0 0 5-5V2M7 22v-4a5 5 0 0 1 5-5 5 5 0 0 1 5 5v4"/></svg></span>
+        History
+      </div>
+      <h3>[Headline]</h3>
+      <p>[One-sentence hook]</p>
+      <div class="read-time">3 min read</div>
+    </a>
+    <!-- 10-14 cards total -->
+  </div>
+</section>
+
+<!-- ══════════ FOREWORD ══════════ -->
+<section class="foreword">
+  <p>[50-80 words. One editorial thread. A hook, not a summary. Drop-cap renders automatically.]</p>
+</section>
+
+<!-- ══════════ THE LONG SHELF ══════════ -->
+<section class="sec longshelf-section">
+  <span class="section-label" style="color: var(--rose)">The Long Shelf — Worth Your Time</span>
+  <div class="longshelf-grid">
+    <div class="shelf-item">
+      <div class="title"><a href="[URL]">[Article/podcast/video title]</a></div>
+      <div class="meta">[Source] · [Author if relevant]</div>
+      <div class="desc">[One sentence on why it's worth the reader's time]</div>
+    </div>
+    <!-- 6-8 items in two-column layout -->
+  </div>
+</section>
+
+<!-- ══════════ THE WORLD THIS WEEK ══════════ -->
+<hr class="divider dv-world">
+<section class="sec world-section sec-opener" id="world">
+  <!-- Enhancement 2: Watermark label behind content -->
+  <div class="sec-watermark">World</div>
+  <!-- Enhancement 2: Opener gradient band -->
+  <div class="opener-band"></div>
+  <!-- Enhancement 9: Gradient overlay for long section -->
+  <div class="sec-gradient-overlay"></div>
+
+  <!-- Enhancement 2: sec-opener uses larger label + headline -->
+  <span class="section-label" style="color: var(--rose)">The World This Week</span>
+  <h2>[Lead headline]</h2>
+
+  <!-- Optional hero image — can use hero-bleed for full-width -->
+  <img class="hero-img reveal" src="[URL]" alt="[description]">
+  <div class="caption">[Credit line]</div>
+
+  <!-- Enhancement 14: Margin note example — floats to right on desktop -->
+  <div class="margin-note reveal">
+    [Brief contextual aside, e.g. "This marks the third such event since 2020. See also: The Touchline for related FIFA coverage."]
+  </div>
+
+  <!-- Optional stat bar with count-up animation -->
+  <div class="stat-bar reveal">
+    <div class="stat"><div class="stat-num count-up" data-target="[N]">[N]</div><div class="stat-label">[Label]</div></div>
+    <div class="stat"><div class="stat-num count-up" data-target="[N]">[N]</div><div class="stat-label">[Label]</div></div>
+    <div class="stat"><div class="stat-num count-up" data-target="[N]">[N]</div><div class="stat-label">[Label]</div></div>
+    <div class="stat"><div class="stat-num count-up" data-target="[N]">[N]</div><div class="stat-label">[Label]</div></div>
+  </div>
+
+  <p>[Article body]</p>
+
+  <!-- Enhancement 3: Big number callout — dramatic inline stat -->
+  <div class="big-number reveal">
+    <div class="num count-up" data-target="[N]">[N]</div>
+    <div class="num-label">[What this number represents]</div>
+  </div>
+
+  <p>[Continuation of article body]</p>
+
+  <!-- Enhancement 3: Big number row — 2-3 stats dramatically rendered -->
+  <div class="big-number-row reveal-group">
+    <div class="big-number reveal">
+      <div class="num count-up" data-target="[N]">[N]</div>
+      <div class="num-label">[Label]</div>
+    </div>
+    <div class="big-number reveal">
+      <div class="num count-up" data-target="[N]">[N]</div>
+      <div class="num-label">[Label]</div>
+    </div>
+    <div class="big-number reveal">
+      <div class="num count-up" data-target="[N]">[N]</div>
+      <div class="num-label">[Label]</div>
+    </div>
+  </div>
+
+  <!-- Enhancement 1: 60/40 split layout with image -->
+  <div class="split-60-40">
+    <div>
+      <p>[Article body text filling the wider left column — allows for more breathing room alongside a supporting image or sidebar element.]</p>
+    </div>
+    <div>
+      <img class="inline-img reveal" src="[URL]" alt="[description]">
+      <div class="caption">[Photo credit]</div>
+    </div>
+  </div>
+
+  <!-- Optional Angle box — only for genuinely significant stories -->
+  <div class="angle reveal">
+    <div class="angle-label">The Angle</div>
+    <p>[The deeper point]</p>
+  </div>
+
+  <!-- Enhancement 7: Centered pull quote variant -->
+  <div class="pull-quote centered reveal">
+    <p>[A powerful quote that deserves centre-stage treatment]</p>
+    <cite>— [Attribution]</cite>
+  </div>
+
+  <!-- Enhancement 12: Timeline for ordered events -->
+  <div class="timeline reveal">
+    <div class="timeline-node">
+      <div class="timeline-date">[Date/Year]</div>
+      <div class="timeline-content"><strong>[Event headline]</strong> — [Brief description of event]</div>
+    </div>
+    <div class="timeline-node">
+      <div class="timeline-date">[Date/Year]</div>
+      <div class="timeline-content"><strong>[Event headline]</strong> — [Brief description of event]</div>
+    </div>
+    <div class="timeline-node">
+      <div class="timeline-date">[Date/Year]</div>
+      <div class="timeline-content"><strong>[Event headline]</strong> — [Brief description of event]</div>
+    </div>
+  </div>
+
+  <!-- Optional Did You Know -->
+  <div class="dyk reveal">
+    <div class="dyk-title">Did You Know?</div>
+    <p>[Interesting related fact]</p>
+  </div>
+  <div class="src"><a href="[URL]">[Source]</a> · <a href="[URL]">[Source]</a></div>
+  <!-- Also This Week -->
+  <div class="also">
+    <div class="also-title">Also This Week</div>
+    <ul class="also-list">
+      <li><strong>[Headline]</strong> — [One sentence]</li>
+      <!-- 6-10 items -->
+    </ul>
+  </div>
+  <!-- Enhancement 20: Read-next connector -->
+  <div class="read-next">
+    Up next: <a href="#tech">Pixel &amp; Byte <span class="arrow">→</span></a> — [teaser headline]
+  </div>
+</section>
+
+<!-- ══════════ PIXEL & BYTE ══════════ -->
+<hr class="divider dv-tech">
+<section class="sec tech-section" id="tech">
+  <!-- Enhancement 2: Watermark -->
+  <div class="sec-watermark">Pixel</div>
+  <div class="sec-gradient-overlay"></div>
+  <span class="section-label" style="color: var(--ember)">Pixel &amp; Byte</span>
+  <!-- Optional full-bleed hero image -->
+  <!-- <img class="hero-bleed" src="[URL]" alt="[description]"> -->
+
+  <!-- Enhancement 13: Compact grid — 2 short news items side by side -->
+  <div class="compact-grid">
+    <div class="compact-take">
+      <h4>[Short news headline]</h4>
+      <p>[2-3 sentences covering the story quickly.]</p>
+      <div class="src"><a href="[URL]">[Source]</a></div>
+    </div>
+    <div class="compact-take">
+      <h4>[Short news headline]</h4>
+      <p>[2-3 sentences covering the story quickly.]</p>
+      <div class="src"><a href="[URL]">[Source]</a></div>
+    </div>
+  </div>
+
+  <!-- Dual column for quick takes -->
+  <div class="dual-col">
+    <div class="col-card accent-ember">
+      <h3>[Headline]</h3>
+      <p>[Quick take body]</p>
+      <div class="src"><a href="[URL]">[Source]</a></div>
+    </div>
+    <div class="col-card accent-deep">
+      <h3>[Headline]</h3>
+      <p>[Quick take body]</p>
+      <div class="src"><a href="[URL]">[Source]</a></div>
+    </div>
+  </div>
+
+  <!-- Full articles -->
+  <h3>[Feature headline]</h3>
+  <p>[Article body]</p>
+
+  <!-- Enhancement 13: Standalone compact take -->
+  <div class="compact-take">
+    <h4>[Compact news item headline]</h4>
+    <p>[Brief 2-3 sentence summary of a smaller story.]</p>
+    <div class="src"><a href="[URL]">[Source]</a></div>
+  </div>
+
+  <!-- Optional sidebar for curated lists (e.g. "Family Picks", "Co-op Games for the Weekend") -->
+  <div class="sidebar">
+    <div class="sidebar-title">[Sidebar Title — e.g. "Family Picks"]</div>
+    <ul>
+      <li><strong>[Item]</strong> — [Detail]</li>
+    </ul>
+  </div>
+
+  <!-- Also in Tech & Gaming -->
+  <div class="also">
+    <div class="also-title">Also in Tech &amp; Gaming</div>
+    <!-- Enhancement 8: Also cards variant — compact card grid -->
+    <div class="also-cards">
+      <div class="also-card">
+        <h4>[Short headline]</h4>
+        <p>[One-line description]</p>
+        <span class="badge">[Source]</span>
+      </div>
+      <div class="also-card">
+        <h4>[Short headline]</h4>
+        <p>[One-line description]</p>
+        <span class="badge">[Source]</span>
+      </div>
+      <div class="also-card">
+        <h4>[Short headline]</h4>
+        <p>[One-line description]</p>
+        <span class="badge">[Source]</span>
+      </div>
+      <div class="also-card">
+        <h4>[Short headline]</h4>
+        <p>[One-line description]</p>
+        <span class="badge">[Source]</span>
+      </div>
+    </div>
+  </div>
+  <!-- Enhancement 20: Read-next connector -->
+  <div class="read-next">
+    Up next: <a href="#football">The Touchline <span class="arrow">→</span></a> — [teaser headline]
+  </div>
+</section>
+
+<!-- ══════════ THE TOUCHLINE ══════════ -->
+<hr class="divider dv-football">
+<section class="sec touchline-section" id="football">
+  <!-- Enhancement 2: Watermark -->
+  <div class="sec-watermark">Touchline</div>
+  <span class="section-label">The Touchline</span>
+  <!-- DATA FIRST -->
+  <h3>Champions League — [Round] Results</h3>
+  <div class="results-strip">
+    <div class="result-card reveal"><span class="teams"><strong>[Team]</strong> vs [Team]</span><span class="score">[X]–[X]</span></div>
+    <!-- Repeat for each match -->
+  </div>
+
+  <h3>Serie A — Top 6</h3>
+  <div class="table-wrap">
+    <table class="league-table">
+      <tr><th class="pos">#</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>Pts</th><th></th></tr>
+      <!-- Enhancement 11: pos-change indicators + sparkline in league tables -->
+      <tr class="highlight">
+        <td class="pos">5</td><td>Juventus</td><td></td><td></td><td></td><td></td><td></td>
+        <td><span class="pos-change up">▲ 2</span></td>
+      </tr>
+      <tr>
+        <td class="pos">1</td><td>[Team]</td><td></td><td></td><td></td><td></td><td></td>
+        <td><span class="pos-change same">•</span></td>
+      </tr>
+      <tr>
+        <td class="pos">2</td><td>[Team]</td><td></td><td></td><td></td><td></td><td></td>
+        <td><span class="pos-change down">▼ 1</span></td>
+      </tr>
+      <!-- Fill in -->
+    </table>
+  </div>
+
+  <!-- Enhancement 11: Sparkline example — form over last 6 matches -->
+  <h3>Form — Points Per Match (Last 6)</h3>
+  <div style="margin: 12px 0;">
+    <span style="font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(255,255,255,.5)">Juventus</span>
+    <span class="sparkline">
+      <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+        <!-- Enhancement 11: Sparkline markup pattern — data points come from content generation -->
+        <path class="spark-area" d="M0,35 L33,28 L66,15 L100,20 L133,10 L166,5 L200,12 L200,40 L0,40 Z"/>
+        <path class="spark-line" d="M0,35 L33,28 L66,15 L100,20 L133,10 L166,5 L200,12"/>
+        <circle class="spark-dot" cx="200" cy="12" r="3"/>
+      </svg>
+    </span>
+    <!-- Enhancement 11: Mini bar showing win percentage -->
+    <span class="mini-bar-track">
+      <span class="mini-bar-fill" style="width:72%"></span>
+    </span>
+    <span style="font-family:'DM Sans',sans-serif;font-size:11px;color:rgba(255,255,255,.4);margin-left:6px">72%</span>
+  </div>
+
+  <h3>Premier League — Top 6</h3>
+  <div class="table-wrap">
+    <table class="league-table">
+      <tr><th class="pos">#</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>Pts</th><th></th></tr>
+      <tr>
+        <td class="pos">1</td><td>[Team]</td><td></td><td></td><td></td><td></td><td></td>
+        <td><span class="pos-change same">•</span></td>
+      </tr>
+      <!-- Same format -->
+    </table>
+  </div>
+
+  <h3>PL Results — Matchday [N]</h3>
+  <div class="results-strip">
+    <!-- Result cards -->
+  </div>
+
+  <!-- Enhancement 4: Image montage — match photos -->
+  <div class="img-montage layout-1-2 reveal">
+    <img class="montage-hero" src="[MATCH_PHOTO_URL]" alt="[description]">
+    <img src="[MATCH_PHOTO_URL]" alt="[description]">
+    <img src="[MATCH_PHOTO_URL]" alt="[description]">
+    <div class="caption">[Credit line for all photos]</div>
+  </div>
+
+  <!-- THEN NARRATIVE -->
+  <h3 class="narrative">[CL narrative headline]</h3>
+  <p>[Article body]</p>
+
+  <!-- Enhancement 7: Wide pull quote variant -->
+  <div class="pull-quote wide reveal">
+    <p>[A bold quote from a manager or player]</p>
+    <cite>— [Attribution]</cite>
+  </div>
+
+  <!-- Optional sidebar for focused context (e.g. "Juve Players Involved") -->
+  <div class="sidebar">
+    <div class="sidebar-title">[Sidebar Title]</div>
+    <ul>
+      <li><strong>[Player]</strong> — [Context]</li>
+    </ul>
+  </div>
+  <h3 class="narrative">[Juve narrative headline]</h3>
+  <p>[Article body]</p>
+  <div class="angle reveal">
+    <div class="angle-label">The Take</div>
+    <p>[One strong opinion]</p>
+  </div>
+  <div class="also">
+    <div class="also-title">Also on the Pitch</div>
+    <ul class="also-list">
+      <li><strong>[Item]</strong> — [Detail]</li>
+    </ul>
+  </div>
+  <!-- Enhancement 20: Read-next connector -->
+  <div class="read-next">
+    Up next: <a href="#screen">Screen &amp; Sound <span class="arrow">→</span></a> — [teaser headline]
+  </div>
+</section>
+
+<!-- ══════════ SCREEN & SOUND ══════════ -->
+<hr class="divider dv-screen">
+<section class="sec screen-section" id="screen">
+  <!-- Enhancement 2: Watermark -->
+  <div class="sec-watermark">Screen</div>
+  <span class="section-label">Screen &amp; Sound</span>
+  <h2>[Lead feature headline]</h2>
+  <p>[Feature article with opinion]</p>
+
+  <!-- Enhancement 19: Rating dots example -->
+  <div style="margin: 12px 0;">
+    <span style="font-family:'DM Sans',sans-serif;font-size:12px;color:rgba(255,255,255,.5);margin-right:8px">[Film/Show Title]</span>
+    <span class="rating">
+      <span class="dot filled"></span>
+      <span class="dot filled"></span>
+      <span class="dot filled"></span>
+      <span class="dot filled"></span>
+      <span class="dot"></span>
+    </span>
+  </div>
+
+  <!-- Enhancement 16: Card stack — horizontal scrollable review cards -->
+  <h3>Quick Reviews</h3>
+  <div class="card-stack">
+    <div class="stack-card">
+      <img class="stack-card-img" src="[IMAGE_URL]" alt="[title]">
+      <div class="stack-card-body">
+        <div class="stack-card-title">[Title]</div>
+        <div class="stack-card-verdict">[One-line verdict]</div>
+        <span class="rating">
+          <span class="dot filled"></span>
+          <span class="dot filled"></span>
+          <span class="dot filled"></span>
+          <span class="dot filled"></span>
+          <span class="dot"></span>
+        </span>
+        <span class="platform-badge">[Platform]</span>
+      </div>
+    </div>
+    <div class="stack-card">
+      <img class="stack-card-img" src="[IMAGE_URL]" alt="[title]">
+      <div class="stack-card-body">
+        <div class="stack-card-title">[Title]</div>
+        <div class="stack-card-verdict">[One-line verdict]</div>
+        <span class="rating">
+          <span class="dot filled"></span>
+          <span class="dot filled"></span>
+          <span class="dot filled"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </span>
+        <span class="platform-badge">[Platform]</span>
+      </div>
+    </div>
+    <div class="stack-card">
+      <div class="stack-card-body">
+        <div class="stack-card-title">[Title]</div>
+        <div class="stack-card-verdict">[One-line verdict]</div>
+        <span class="rating">
+          <span class="dot filled"></span>
+          <span class="dot filled"></span>
+          <span class="dot filled"></span>
+          <span class="dot filled"></span>
+          <span class="dot filled"></span>
+        </span>
+        <span class="platform-badge">[Platform]</span>
+      </div>
+    </div>
+    <!-- Add more stack-cards as needed -->
+  </div>
+
+  <!-- Enhancement 17: Collapsible section — uses native <details> for no-JS support -->
+  <details class="collapsible">
+    <summary>[Spoiler Section / Extended Discussion Title]</summary>
+    <div class="collapsible-content">
+      <p>[Content that the reader can optionally expand — spoilers, extended analysis, bonus material.]</p>
+    </div>
+  </details>
+
+  <!-- Star Wars sub-section when relevant -->
+  <h3>Star Wars</h3>
+  <p>[Star Wars news/feature]</p>
+
+  <!-- THE RELEASE RADAR — covers ALL categories, 15-20+ items -->
+  <h3>The Release Radar</h3>
+  <div class="radar-grid">
+    <h3 style="margin-top: 8px">Now Showing / Just Dropped</h3>
+    <div class="radar-row"><span class="radar-date">[Date]</span><div><span class="radar-cat film"></span><strong>[Title]</strong> — [Hook] <span class="radar-platform">[Platform]</span></div></div>
+    <div class="radar-row"><span class="radar-date">[Date]</span><div><span class="radar-cat game"></span><strong>[Title]</strong> — [Hook] <span class="radar-platform">[Platform]</span></div></div>
+    <!-- 6-8 items with category dots -->
+    <h3>Coming Soon</h3>
+    <div class="radar-row"><span class="radar-date">[Date]</span><div><span class="radar-cat tv"></span><strong>[Title]</strong> — [Hook] <span class="radar-platform">[Platform]</span></div></div>
+    <!-- 6-8 items -->
+    <h3>Leaving Soon</h3>
+    <div class="radar-row leaving"><span class="radar-date">[Date]</span><div><span class="radar-cat film"></span><strong>[Title]</strong> — [Hook] <span class="radar-platform">[Platform]</span></div></div>
+    <!-- Items with .leaving class for urgency styling -->
+    <h3>Also Streaming This Month</h3>
+    <div class="radar-row"><span class="radar-date">[Platform]</span><div><strong>[Title]</strong> — [Hook]</div></div>
+  </div>
+  <!-- Optional sidebar (e.g. "Family Picks — What to Watch Together") -->
+  <div class="sidebar">
+    <div class="sidebar-title">[e.g. "For the Kids"]</div>
+    <ul>
+      <li><strong>[Title]</strong> — [Why it's good for the family]</li>
+    </ul>
+  </div>
+  <div class="also">
+    <div class="also-title">Also in Film &amp; TV</div>
+    <ul class="also-list">
+      <li><strong>[Show/Film]</strong> — [Detail]</li>
+    </ul>
+  </div>
+  <!-- Enhancement 20: Read-next connector -->
+  <div class="read-next">
+    Up next: <a href="#shelf">The Shelf <span class="arrow">→</span></a> — [teaser headline]
+  </div>
+</section>
+
+<!-- ══════════ THE SHELF ══════════ -->
+<hr class="divider dv-shelf">
+<section class="sec shelf-section" id="shelf">
+  <!-- Enhancement 2: Watermark -->
+  <div class="sec-watermark">Shelf</div>
+  <span class="section-label">The Shelf</span>
+  <!-- BOOKS -->
+  <h3>Books</h3>
+  <h3 class="feature-title">[Book feature headline — e.g. "You Finished Malazan. Now What?"]</h3>
+  <p>[Feature body]</p>
+
+  <!-- Enhancement 1: 40/60 split — book image left, text right -->
+  <div class="split-40-60">
+    <div>
+      <img class="inline-img reveal" src="[BOOK_COVER_URL]" alt="[book title] cover">
+    </div>
+    <div>
+      <p>[Extended review or recommendation text with the image alongside.]</p>
+    </div>
+  </div>
+
+  <!-- Book cards — use book-grid for side-by-side layout when multiple recs -->
+  <div class="book-grid">
+    <div class="book-card reveal">
+      <!-- Optional: <img src="[COVER_URL]" alt="[title] cover" width="80"> for float -->
+      <h4>[Book Title]</h4>
+      <div class="author">[Author] · [Series info]</div>
+      <p>[Why this recommendation fits]</p>
+      <!-- Enhancement 19: Rating dots on book cards -->
+      <div class="rating" style="margin-top: 8px;">
+        <span class="dot filled"></span>
+        <span class="dot filled"></span>
+        <span class="dot filled"></span>
+        <span class="dot filled"></span>
+        <span class="dot"></span>
+      </div>
+    </div>
+    <div class="book-card reveal">
+      <h4>[Book Title]</h4>
+      <div class="author">[Author] · [Series info]</div>
+      <p>[Why this recommendation fits]</p>
+      <div class="rating" style="margin-top: 8px;">
+        <span class="dot filled"></span>
+        <span class="dot filled"></span>
+        <span class="dot filled"></span>
+        <span class="dot filled"></span>
+        <span class="dot filled"></span>
+      </div>
+    </div>
+  </div>
+  <!-- Repeat book-card for each rec -->
+  <!-- MUSIC (when relevant — not every issue) -->
+  <h3>Music</h3>
+  <p>[Synthwave/music news or feature]</p>
+  <!-- PODCASTS -->
+  <h3>Podcasts</h3>
+  <p>[Episode cross-references, new recommendations]</p>
+  <div class="also">
+    <div class="also-title">Also on The Shelf</div>
+    <ul class="also-list">
+      <li><strong>[Item]</strong> — [Detail]</li>
+    </ul>
+  </div>
+  <!-- Enhancement 20: Read-next connector -->
+  <div class="read-next">
+    Up next: <a href="#session">The Session <span class="arrow">→</span></a> — [teaser headline]
+  </div>
+</section>
+
+<!-- ══════════ THE SESSION ══════════ -->
+<hr class="divider dv-session">
+<section class="sec session-section" id="session">
+  <!-- Enhancement 2: Watermark -->
+  <div class="sec-watermark">Session</div>
+  <span class="section-label" style="color: var(--session-accent)">The Session</span>
+  <h2>[Feature headline — e.g. "All Roads Lead to the Snatch Test"]</h2>
+  <p>[Sourced feature article]</p>
+
+  <!-- Enhancement 10: Display stat — dramatic inline number -->
+  <p>In the worst industrial disaster of its kind, <span class="display-stat" style="color:var(--session-accent)">[N]</span> workers were affected in the first hour alone.</p>
+
+  <!-- Workout card for rep schemes, protocols, or programmes -->
+  <div class="workout-card reveal">
+    <div class="workout-card-title">[Protocol Name — e.g. "Snatch Test Rep Schemes"]</div>
+    <table>
+      <tr><th>Scheme</th><th>Reps</th><th>Notes</th></tr>
+      <tr><td>[Name]</td><td>[Reps]</td><td>[Description]</td></tr>
+      <tr class="highlight-row"><td>[Name]</td><td>[Reps]</td><td>[Description]</td></tr>
+      <!-- Repeat rows -->
+    </table>
+  </div>
+  <div class="src"><a href="[URL]">[Source]</a></div>
+  <!-- Optional DYK -->
+  <div class="dyk reveal">
+    <div class="dyk-title">Did You Know?</div>
+    <p>[Fitness-related fact]</p>
+  </div>
+  <!-- Enhancement 20: Read-next connector -->
+  <div class="read-next">
+    Up next: <a href="#history">This Week in History <span class="arrow">→</span></a> — [teaser headline]
+  </div>
+</section>
+
+<!-- ══════════ THIS WEEK IN HISTORY ══════════ -->
+<hr class="divider dv-history">
+<section class="sec history-section sec-opener" id="history">
+  <!-- Enhancement 2: Watermark -->
+  <div class="sec-watermark">History</div>
+  <!-- Enhancement 9: Paper texture (applied via ::before pseudo-element in CSS) -->
+  <span class="section-label" style="color: var(--hist-accent)">This Week in History</span>
+  <h2>[Event title — e.g. "The Day the Factory Locked Its Doors"]</h2>
+  <p>[150-300 words. Pre-WW2 preferred (ancient/medieval/classical). Connect to current events when resonant.]</p>
+
+  <!-- Enhancement 4: Offset image — pushed to one side with text wrap -->
+  <img class="img-offset reveal" src="[HISTORICAL_IMAGE_URL]" alt="[description]">
+  <p>[Additional article text wrapping around the offset image, creating visual asymmetry and editorial interest.]</p>
+  <div style="clear:both"></div>
+
+  <!-- Enhancement 12: Timeline variant for "Also This Week in History" -->
+  <div class="also">
+    <div class="also-title">Also This Week in History</div>
+    <!-- Traditional list still works: -->
+    <!--
+    <ul class="also-list">
+      <li><span class="year-badge">[YEAR]</span> <strong>[Date]</strong> — [One-sentence historical event]</li>
+    </ul>
+    -->
+    <!-- Enhancement 12: Timeline alternative for history items -->
+    <div class="timeline">
+      <div class="timeline-node reveal">
+        <div class="timeline-date"><span class="year-badge">[YEAR]</span> [Date]</div>
+        <div class="timeline-content"><strong>[Historical event headline]</strong> — [One-sentence description]</div>
+      </div>
+      <div class="timeline-node reveal">
+        <div class="timeline-date"><span class="year-badge">[YEAR]</span> [Date]</div>
+        <div class="timeline-content"><strong>[Historical event headline]</strong> — [One-sentence description]</div>
+      </div>
+      <div class="timeline-node reveal">
+        <div class="timeline-date"><span class="year-badge">[YEAR]</span> [Date]</div>
+        <div class="timeline-content"><strong>[Historical event headline]</strong> — [One-sentence description]</div>
+      </div>
+      <!-- 3-4 items spanning different eras -->
+    </div>
+  </div>
+  <!-- Enhancement 20: Read-next connector -->
+  <div class="read-next">
+    Up next: <a href="#radar">On the Radar <span class="arrow">→</span></a> — [teaser]
+  </div>
+</section>
+
+<!-- ══════════ ON THE RADAR ══════════ -->
+<section class="sec radar-section" id="radar">
+  <span class="section-label" style="color: var(--ember)">On the Radar — Coming Up</span>
+  <div class="radar-grid">
+    <div class="radar-row reveal"><span class="radar-date">[Date]</span><div><span class="radar-cat football"></span><strong>[Event/release]</strong> — [Detail]</div></div>
+    <div class="radar-row reveal"><span class="radar-date">[Date]</span><div><span class="radar-cat film"></span><strong>[Event/release]</strong> — [Detail]</div></div>
+    <div class="radar-row reveal"><span class="radar-date">[Date]</span><div><span class="radar-cat game"></span><strong>[Event/release]</strong> — [Detail]</div></div>
+    <!-- 8-10 items: fixtures, releases, local events, parkruns, dates — with category dots -->
+  </div>
+</section>
+
+<!-- ══════════ AND FINALLY (optional) ══════════ -->
+<!--
+<section class="sec" style="padding: 32px 60px; border-top: 1px solid var(--rule); text-align: center;">
+  <span class="section-label" style="color: var(--ghost)">And Finally...</span>
+  <p style="font-size: 17px; max-width: 600px; margin: 0 auto;">[One fun closing item]</p>
+</section>
+-->
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer class="footer">
+  <div class="footer-brand">The Signal<span>.</span></div>
+  <div class="footer-sub">A Sunday morning magazine · Issue #[N] · [Date]</div>
+</footer>
+
+</div>
+
+<!-- Back to Top button -->
+<button class="back-to-top" id="backToTop" onclick="document.getElementById('nav').scrollIntoView({behavior:'smooth'})" aria-label="Back to navigator">↑</button>
+
+<!-- ══════════ SCRIPTS ══════════ -->
+<script>
+// Reading progress bar
+(function() {
+  const bar = document.getElementById('progressBar');
+  if (!bar) return;
+  window.addEventListener('scroll', function() {
+    const h = document.documentElement;
+    const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    bar.style.width = Math.min(pct, 100) + '%';
+  }, { passive: true });
+})();
+
+// Back to top button visibility
+(function() {
+  const btn = document.getElementById('backToTop');
+  if (!btn) return;
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 800) {
+      btn.classList.add('visible');
+    } else {
+      btn.classList.remove('visible');
+    }
+  }, { passive: true });
+})();
+
+// Enhancement 5: IntersectionObserver for .reveal elements
+(function() {
+  var els = document.querySelectorAll('.reveal');
+  if (!els.length || !('IntersectionObserver' in window)) {
+    // Fallback: make everything visible if IntersectionObserver not supported
+    els.forEach(function(el) { el.classList.add('visible'); });
+    return;
+  }
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  els.forEach(function(el) { observer.observe(el); });
+})();
+
+// Enhancement 5: Count-up animation for .count-up elements
+(function() {
+  var els = document.querySelectorAll('.count-up');
+  if (!els.length || !('IntersectionObserver' in window)) return;
+
+  function animateCount(el) {
+    var target = el.getAttribute('data-target');
+    if (!target) return;
+    // Parse number — handle percentages, commas, decimals
+    var raw = target.replace(/[^0-9.\-]/g, '');
+    var num = parseFloat(raw);
+    if (isNaN(num)) return;
+    var prefix = target.match(/^[^0-9.\-]*/)[0] || '';
+    var suffix = target.match(/[^0-9.\-]*$/)[0] || '';
+    var isInt = num === Math.floor(num);
+    var duration = 800;
+    var start = performance.now();
+
+    function step(now) {
+      var progress = Math.min((now - start) / duration, 1);
+      // Ease-out cubic
+      var ease = 1 - Math.pow(1 - progress, 3);
+      var current = num * ease;
+      el.textContent = prefix + (isInt ? Math.floor(current).toLocaleString() : current.toFixed(1)) + suffix;
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    el.textContent = prefix + '0' + suffix;
+    requestAnimationFrame(step);
+  }
+
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        animateCount(entry.target);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  els.forEach(function(el) { observer.observe(el); });
+})();
+</script>
+</body>
+</html>
