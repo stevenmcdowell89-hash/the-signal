@@ -130,7 +130,7 @@ Run ALL of these every issue. Group queries for efficiency:
 
 ## Component Quick Reference
 
-Use 8-12 different types per standard issue. No two consecutive sections should use the same layout pattern.
+Use 10-14 different types per standard issue. No two consecutive sections should use the same layout pattern.
 
 | Component | Class(es) | When to use |
 |---|---|---|
@@ -168,8 +168,20 @@ Use 8-12 different types per standard issue. No two consecutive sections should 
 | Results strip | `.results-strip` > `.result-card` | Match results with large scores |
 | Platform badge | `.platform-badge` | Streaming/platform labels |
 | Inset divider | `.divider.inset` | Centred divider with breathing room |
+| Entry: stat-first | `.entry-stat` + `.entry-stat-context` | Open article with a dramatic number. Section-aware colours. |
+| Entry: quote-first | `.entry-quote` | Open article with a punchy quote. Left-bordered, section-aware. |
+| Entry: bullets-first | `.entry-bullets` | Open article with 3 key facts. Left-bordered, section-aware. |
+| Entry: question-first | `.entry-question` | Open article with a provocative question. Italic serif. |
+| Breather band | `.breather` (+ `.dark`) | Breathing room between dense sections. Contains `.breather-stat`, `.breather-context`, `.breather-teaser`. Use `.dark` variant between dark sections. |
+| Also-list tiers | `.tier-hot`, `.tier-warm`, `.tier-note` on `<li>` | Visual weight hierarchy in Also lists. Hot = left accent border + tinted background, warm = subtle border, note = faded. Section-aware. |
+| Compare panel | `.compare-panel` > `.compare-side.left` / `.compare-side.right` | Side-by-side comparisons: tech specs, football stats, book recs. Stacks on mobile. Section-aware borders. |
+| Floated sidebar | `.sidebar-float` | Text wraps around naturally. More editorial than `.split-60-40`. Section-aware background/borders. Collapses to full-width on mobile. |
 
-**Rotation rule:** no 3+ screen-heights of unbroken prose anywhere. Vary which sections use split layouts, where pull quotes appear, whether history uses timeline or bullets, which also-lists use card variant.
+**Entry pattern rotation rule:** no two adjacent articles should open the same way. Rotate between `.entry-stat`, `.entry-quote`, `.entry-bullets`, `.entry-question`, and plain prose openings. This applies across articles within a section and across section leads.
+
+**Breather band usage:** place 1-2 breather bands per issue between particularly dense sections. Use light variant between light/warm backgrounds, dark variant between dark backgrounds (Touchline, Screen & Sound, Shelf). Don't overuse — they're breathing room, not filler.
+
+**Rotation rule:** no 3+ screen-heights of unbroken prose anywhere. Vary which sections use split layouts, where pull quotes appear, whether history uses timeline or bullets, which also-lists use card variant. Use entry patterns to vary article openings. Use sidebar-float as an alternative to split layouts. Use compare panels where a natural comparison exists.
 
 ---
 

@@ -136,16 +136,97 @@
     .also-list           — Simple bold+description list
     .also-cards          — 2-col card grid for 4+ items
     .read-next           — "Up next: [Section] →" connector
+    .sidebar-float       — Floated inset sidebar, text wraps around it
+    .compare-panel       — Side-by-side comparison (specs, stats, recs)
+    ENTRY PATTERNS       — .entry-stat, .entry-quote, .entry-bullets, .entry-question
+    BREATHER BANDS       — .breather (.breather-stat, .breather-context, .breather-teaser)
+    ALSO-LIST TIERS      — .tier-hot, .tier-warm, .tier-note on <li>
+  -->
+
+  <!-- ── ENTRY PATTERN EXAMPLES (rotate — no two adjacent articles open the same way) ── -->
+  <!--
+    Stat-first entry:
+    <div class="entry-stat">74%</div>
+    <div class="entry-stat-context">of global trade routes now pass through contested waters</div>
+    <p>[Article body continues here...]</p>
+
+    Quote-first entry:
+    <div class="entry-quote">
+      <p>"We are not prepared for what comes next."</p>
+      <cite>— [Attribution]</cite>
+    </div>
+    <p>[Article body continues here...]</p>
+
+    Bullets-first entry:
+    <ul class="entry-bullets">
+      <li>[Key fact one]</li>
+      <li>[Key fact two]</li>
+      <li>[Key fact three]</li>
+    </ul>
+    <p>[Article body continues here...]</p>
+
+    Question-first entry:
+    <div class="entry-question">What happens when a ceasefire holds for exactly one week?</div>
+    <p>[Article body continues here...]</p>
+  -->
+
+  <!-- ── SIDEBAR-FLOAT EXAMPLE (text wraps around naturally) ── -->
+  <!--
+    <div class="sidebar-float">
+      <div class="sidebar-title">[e.g. "Key Players"]</div>
+      <ul>
+        <li><strong>[Name]</strong> — [Detail]</li>
+        <li><strong>[Name]</strong> — [Detail]</li>
+      </ul>
+    </div>
+    <p>[Prose that wraps around the floated sidebar...]</p>
+  -->
+
+  <!-- ── COMPARE-PANEL EXAMPLE (side-by-side) ── -->
+  <!--
+    <div class="compare-panel">
+      <div class="compare-side left">
+        <h4>[Option A]</h4>
+        <ul><li>[Detail]</li><li>[Detail]</li></ul>
+      </div>
+      <div class="compare-side right">
+        <h4>[Option B]</h4>
+        <ul><li>[Detail]</li><li>[Detail]</li></ul>
+      </div>
+    </div>
   -->
 
   <p>[Article body]</p>
   <div class="angle reveal"><div class="angle-label">The Angle</div><p>[Deeper point]</p></div>
   <div class="src"><a href="[URL]">[Source]</a></div>
   <div class="also"><div class="also-title">Also This Week</div>
-    <ul class="also-list"><li><strong>[Headline]</strong> — [One sentence]</li></ul>
+    <!-- TIERED ALSO-LIST: add .tier-hot / .tier-warm / .tier-note to <li> for visual weight -->
+    <ul class="also-list">
+      <li class="tier-hot"><strong>[Major headline]</strong> — [One sentence]</li>
+      <li class="tier-warm"><strong>[Notable headline]</strong> — [One sentence]</li>
+      <li class="tier-note"><strong>[Brief note]</strong> — [One sentence]</li>
+      <li><strong>[Standard item]</strong> — [One sentence — no tier class = default]</li>
+    </ul>
   </div>
   <div class="read-next">Up next: <a href="#tech">Pixel &amp; Byte <span class="arrow">→</span></a> — [teaser]</div>
 </section>
+
+<!-- ── BREATHER BAND (place between dense sections for breathing room) ── -->
+<!--
+  Light breather (between light/warm sections):
+  <div class="breather">
+    <div class="breather-stat">[Stat or number]</div>
+    <div class="breather-context">[One-line context]</div>
+    <div class="breather-teaser">[Teaser for next section]</div>
+  </div>
+
+  Dark breather (between dark sections):
+  <div class="breather dark">
+    <div class="breather-stat">[Stat or number]</div>
+    <div class="breather-context">[One-line context]</div>
+    <div class="breather-teaser">[Teaser for next section]</div>
+  </div>
+-->
 
 <!-- ══════ PIXEL & BYTE ══════ -->
 <hr class="divider dv-tech">
@@ -154,9 +235,23 @@
   <div class="sec-gradient-overlay"></div>
   <span class="section-label" style="color:var(--ember)">Pixel &amp; Byte</span>
 
-  <!-- Use compact-grid, dual-col, compact-take, sidebar, also-cards etc. -->
+  <!-- Use compact-grid, dual-col, compact-take, sidebar, sidebar-float, compare-panel, also-cards etc. -->
+  <!-- Use entry patterns (.entry-stat, .entry-quote, .entry-bullets, .entry-question) to vary article openings -->
   <h3>[Feature headline]</h3>
   <p>[Article body]</p>
+
+  <!-- COMPARE PANEL: natural for tech specs, console comparisons, etc. -->
+  <div class="compare-panel">
+    <div class="compare-side left">
+      <h4>[Device/Option A]</h4>
+      <ul><li>[Spec]</li><li>[Spec]</li><li>[Price]</li></ul>
+    </div>
+    <div class="compare-side right">
+      <h4>[Device/Option B]</h4>
+      <ul><li>[Spec]</li><li>[Spec]</li><li>[Price]</li></ul>
+    </div>
+  </div>
+
   <div class="sidebar"><div class="sidebar-title">[e.g. "Family Picks"]</div>
     <ul><li><strong>[Item]</strong> — [Detail]</li></ul>
   </div>
@@ -233,7 +328,16 @@
   <div class="sec-watermark">Screen</div>
   <span class="section-label">Screen &amp; Sound</span>
   <h2>[Lead feature headline]</h2>
-  <p>[Feature article with opinion]</p>
+
+  <!-- SIDEBAR-FLOAT: text wraps around naturally, more editorial than .split-60-40 -->
+  <div class="sidebar-float">
+    <div class="sidebar-title">[e.g. "Quick Take"]</div>
+    <ul>
+      <li><strong>[Item]</strong> — [Detail]</li>
+      <li><strong>[Item]</strong> — [Detail]</li>
+    </ul>
+  </div>
+  <p>[Feature article with opinion — prose wraps around the floated sidebar...]</p>
 
   <!-- Rating dots: .dot.filled for filled, .dot for empty -->
   <div style="margin:12px 0">

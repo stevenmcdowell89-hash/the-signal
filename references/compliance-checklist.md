@@ -42,7 +42,7 @@ Run through every item before delivering. Fix any failures before sharing.
 - [ ] Writes like a magazine journalist, not a personal assistant
 
 ## Visual Variety
-- [ ] 8+ different component types used
+- [ ] 10+ different component types used
 - [ ] No two consecutive sections use the same layout pattern
 - [ ] No 3+ screen-heights of unbroken prose
 - [ ] At least 3 pull quotes across the issue
@@ -51,6 +51,11 @@ Run through every item before delivering. Fix any failures before sharing.
 - [ ] `.reveal` class on key elements (headers, stats, images, angles)
 - [ ] Read-next connectors between at least 3 major sections
 - [ ] At least one split layout, one card stack or also-cards, one image montage or offset
+- [ ] **Entry pattern rotation:** no two adjacent articles open the same way (rotate `.entry-stat`, `.entry-quote`, `.entry-bullets`, `.entry-question`, prose)
+- [ ] **At least 2 entry patterns used** across the issue (not all plain prose openings)
+- [ ] **1–2 breather bands** placed between dense sections (light or dark variant as appropriate)
+- [ ] **Also-list tiers** (`.tier-hot`/`.tier-warm`/`.tier-note`) used in at least one Also list
+- [ ] **At least 1 compare panel or sidebar-float** used somewhere in the issue
 
 ## Wildcards & Synthesis
 - [ ] 2–3 items the reader didn't ask for
