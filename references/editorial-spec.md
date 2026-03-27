@@ -48,9 +48,18 @@ Gaming, consumer tech, AI tools, LEGO, Steam Deck, e-readers. Warm background, e
 
 ### The Touchline
 **Data first, then narrative.** Dark background, green accents.
-- CL results (when played), Serie A top 6, PL top 6 league tables (always)
+
+**Tournament priority system:** The Touchline follows the biggest football stories of the week, not a fixed roster. Apply this hierarchy:
+
+1. **Active major tournament** (World Cup finals, Euros, Copa América) — this is the lead. Full group/knockout tables, results, narratives, talking points. Domestic leagues drop to one-liner updates or are omitted entirely.
+2. **Active qualifying campaign** (World Cup qualifiers, Euro qualifiers) — qualifier results, standings, and narratives lead the section. Domestic leagues are secondary — include only if something genuinely significant happened (a sacking, a title decided, a record broken), otherwise omit or reduce to "Also on the Pitch" one-liners.
+3. **CL/EL knockout stages** (quarter-finals onward) — these lead over domestic league coverage. Group stages share space with domestic.
+4. **Normal domestic weeks** — Serie A and PL share the section as usual.
+
+The principle: **cover what matters most this week.** A World Cup qualifier matchday is bigger than a mid-season Serie A round. Don't give equal space to routine domestic fixtures when the international calendar is running.
+
 - Sparklines for form, position-change indicators
-- **Serie A gets equal or greater coverage than PL.** Cover the whole league — title race, relegation, stories — not just Juve.
+- **Serie A gets equal or greater coverage than PL** during normal domestic weeks. Cover the whole league — title race, relegation, stories — not just Juve.
 - Golf majors and other major sporting events get proper coverage when in season
 - Football reads like editorial, not match reports — the reader already knows the scores
 - Image montage for match photos
@@ -103,7 +112,7 @@ Run ALL of these every issue. Group queries for efficiency:
 
 **Group 2 — Tech & Gaming:** Nintendo Switch 2, Steam Deck, GeForce Now, consumer AI tools, Pixel/Xiaomi/e-readers, LEGO news and releases, gaming news and releases
 
-**Group 3 — Football & Sport:** Juventus results + Serie A standings + title race + relegation, Premier League results + standings, Champions League (in season), golf majors/Ryder Cup (when in season)
+**Group 3 — Football & Sport:** First, check: are World Cup qualifiers, Euro qualifiers, World Cup finals, Euros, CL/EL knockout stages, or other major tournaments active this week? If yes, search for those first — they lead the section. Then search domestic (Juventus + Serie A, Premier League) only for significant news. If no tournament is active, search Serie A + Juventus, Premier League, CL/EL (in season), golf majors/Ryder Cup (when in season).
 
 **Group 4 — Culture & Entertainment:** new movies and TV releases, Star Wars news, synthwave/retrowave/electronic music, Disney Parks/Efteling (when trip upcoming)
 
@@ -197,7 +206,8 @@ All special editions use the same design system and component library. Use sideb
 - **Sources matter** — link to original reporting. Reddit is a legitimate source.
 - **Images mandatory** — this is a magazine, not a memo.
 - **No:** work/enterprise content (unless front-page-of-broadsheet significant), celebrity culture, Westminster politics (unless major NI impact), royal family, generic fitness advice, AI-generated images, fabricated links.
-- **Serie A ≥ Premier League** in coverage depth. Cover the whole league.
+- **Tournament priority in The Touchline** — major tournaments (WC, Euros, qualifiers, CL/EL knockouts) lead the section; domestic leagues become secondary or one-liners when the international calendar is active.
+- **Serie A ≥ Premier League** in coverage depth during normal domestic weeks. Cover the whole league.
 - **Music is not a fixed section** — cover when relevant, skip when not.
 - **History prefers ancient/medieval/classical** — post-WW2 is the last resort.
 - **On the Radar ≠ Release Radar** — they complement, never duplicate.

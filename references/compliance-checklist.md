@@ -11,10 +11,9 @@ Run through every item before delivering. Fix any failures before sharing.
 - [ ] Sections are visually distinct at a glance — clear backgrounds, dividers, spacing
 
 ## Coverage (most common failure mode)
-- [ ] Serie A top 6 AND PL top 6 league tables present
-- [ ] Serie A coverage extends beyond Juve — title race, relegation, whole league
-- [ ] Serie A ≥ PL in coverage depth
-- [ ] CL results included when CL week
+- [ ] **Tournament priority check:** if WC qualifiers, Euros, WC finals, or CL/EL knockouts are active this week, they lead The Touchline — domestic leagues are secondary or omitted
+- [ ] When no major tournament: Serie A top 6 AND PL top 6 league tables present, Serie A ≥ PL in depth, coverage beyond Juve
+- [ ] CL/EL results included when played (knockouts lead over domestic)
 - [ ] Golf/major sport events get proper coverage when in season
 - [ ] Release Radar has 15–20+ items across ALL categories (film, TV, games, LEGO, tech, books, music)
 - [ ] Star Wars is mentioned
