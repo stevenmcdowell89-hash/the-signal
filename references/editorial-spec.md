@@ -49,18 +49,22 @@ Gaming, consumer tech, AI tools, LEGO, Steam Deck, e-readers. Warm background, e
 ### The Touchline
 **Data first, then narrative.** Dark background, green accents.
 
-**Tournament priority system:** The Touchline follows the biggest football stories of the week, not a fixed roster. Apply this hierarchy:
+**The Touchline is a flexible sports section, not a fixed football roster.** Its content should adapt to whatever is most compelling in sport that week. Nothing has a guaranteed slot — everything earns its space.
 
-1. **Active major tournament** (World Cup finals, Euros, Copa América) — this is the lead. Full group/knockout tables, results, narratives, talking points. Domestic leagues drop to one-liner updates or are omitted entirely.
-2. **Active qualifying campaign** (World Cup qualifiers, Euro qualifiers) — qualifier results, standings, and narratives lead the section. Domestic leagues are secondary — include only if something genuinely significant happened (a sacking, a title decided, a record broken), otherwise omit or reduce to "Also on the Pitch" one-liners.
-3. **CL/EL knockout stages** (quarter-finals onward) — these lead over domestic league coverage. Group stages share space with domestic.
-4. **Normal domestic weeks** — Serie A and PL share the section as usual.
+**Priority hierarchy (what leads the section):**
+1. **Major tournament in progress** (World Cup finals, Euros, Copa América) — dominates the section. Domestic leagues drop to one-liners or are omitted.
+2. **Major non-football event** (Ryder Cup, golf major, Olympics, rugby World Cup, F1 title decider) — can take the lead and push football into a secondary role. Give it the space it deserves.
+3. **Active qualifying campaign** (WC qualifiers, Euro qualifiers) — leads over domestic leagues. Domestic only if genuinely significant (sacking, title decided, record).
+4. **CL/EL knockout stages** (QF onward) — lead over domestic. Group stages share space.
+5. **Normal domestic weeks** — Serie A and PL share the section.
 
-The principle: **cover what matters most this week.** A World Cup qualifier matchday is bigger than a mid-season Serie A round. Don't give equal space to routine domestic fixtures when the international calendar is running.
+**European football beyond Serie A/PL** (La Liga, Bundesliga, Ligue 1, etc.) — not included by default. Surface only when something is genuinely compelling: a thrilling title race, a historic result, a major sacking, a story with wider significance. Routine matchday results from other leagues don't make the cut.
+
+**Flexible space within the section:** Sub-topics expand and contract based on what happened. A Ryder Cup Sunday can take 70% of the section with football condensed to quick results. A quiet international break can mean a shorter Touchline overall. The section should never exceed ~30% of the total issue length, but content moves freely within it.
 
 - Sparklines for form, position-change indicators
-- **Serie A gets equal or greater coverage than PL** during normal domestic weeks. Cover the whole league — title race, relegation, stories — not just Juve.
-- Golf majors and other major sporting events get proper coverage when in season
+- **Serie A ≥ PL** in coverage depth during normal domestic weeks. Cover the whole league — title race, relegation, stories — not just Juve.
+- Golf majors and other major sporting events get proper coverage when in season — they can lead the section
 - Football reads like editorial, not match reports — the reader already knows the scores
 - Image montage for match photos
 
@@ -206,8 +210,8 @@ All special editions use the same design system and component library. Use sideb
 - **Sources matter** — link to original reporting. Reddit is a legitimate source.
 - **Images mandatory** — this is a magazine, not a memo.
 - **No:** work/enterprise content (unless front-page-of-broadsheet significant), celebrity culture, Westminster politics (unless major NI impact), royal family, generic fitness advice, AI-generated images, fabricated links.
-- **Tournament priority in The Touchline** — major tournaments (WC, Euros, qualifiers, CL/EL knockouts) lead the section; domestic leagues become secondary or one-liners when the international calendar is active.
-- **Serie A ≥ Premier League** in coverage depth during normal domestic weeks. Cover the whole league.
+- **The Touchline is flexible** — the most compelling sport leads. Tournaments, Ryder Cup, golf majors can all push football into a secondary role. European leagues beyond Serie A/PL only when genuinely compelling. Section never exceeds ~30% of issue.
+- **Serie A ≥ Premier League** during normal domestic weeks. Cover the whole league.
 - **Music is not a fixed section** — cover when relevant, skip when not.
 - **History prefers ancient/medieval/classical** — post-WW2 is the last resort.
 - **On the Radar ≠ Release Radar** — they complement, never duplicate.

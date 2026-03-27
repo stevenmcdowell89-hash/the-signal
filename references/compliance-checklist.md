@@ -11,10 +11,11 @@ Run through every item before delivering. Fix any failures before sharing.
 - [ ] Sections are visually distinct at a glance — clear backgrounds, dividers, spacing
 
 ## Coverage (most common failure mode)
-- [ ] **Tournament priority check:** if WC qualifiers, Euros, WC finals, or CL/EL knockouts are active this week, they lead The Touchline — domestic leagues are secondary or omitted
-- [ ] When no major tournament: Serie A top 6 AND PL top 6 league tables present, Serie A ≥ PL in depth, coverage beyond Juve
-- [ ] CL/EL results included when played (knockouts lead over domestic)
-- [ ] Golf/major sport events get proper coverage when in season
+- [ ] **Touchline priority check:** the lead story is the most compelling sport of the week (tournament > major event > qualifiers > CL/EL knockouts > domestic). Routine domestic fixtures don't lead when bigger sport is happening.
+- [ ] The Touchline doesn't exceed ~30% of total issue length
+- [ ] European leagues beyond Serie A/PL only appear for genuinely compelling stories
+- [ ] When normal domestic week: Serie A top 6 + PL top 6 tables present, Serie A ≥ PL, coverage beyond Juve
+- [ ] Golf/Ryder Cup/major sporting events get lead treatment when in season
 - [ ] Release Radar has 15–20+ items across ALL categories (film, TV, games, LEGO, tech, books, music)
 - [ ] Star Wars is mentioned
 - [ ] Books content present
