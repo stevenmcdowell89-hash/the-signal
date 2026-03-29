@@ -1,0 +1,2581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Signal — March 22–29, 2026 · Issue #2</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,500&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #111119;
+  --paper: #FAFAF8;
+  --warm: #F5F4F0;
+  --rose: #E8384F;
+  --ember: #FF6D3A;
+  --deep: #1B1B2F;
+  --slate: #64697B;
+  --ghost: #A4A8B6;
+  --rule: #E0DED8;
+  --pitch: #0A0E17;
+  --turf: #1A7A4C;
+  --turf-lt: #2BD67B;
+  --screen-bg: #14121E;
+  --neon: #FF2D78;
+  --shelf-bg: #1C1410;
+  --shelf-accent: #D4A03C;
+  --session-bg: #F2F7F4;
+  --session-accent: #D4622B;
+  --hist-bg: #F0EBE0;
+  --hist-accent: #8B6914;
+}
+
+/* ═══════════ RESET & BASE ═══════════ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  color: var(--ink);
+  background: #E8E6E1;
+  font-size: 18px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+.mag { max-width: 960px; margin: 0 auto; background: var(--paper); box-shadow: 0 4px 120px rgba(0,0,0,.12); position: relative; }
+img { max-width: 100%; height: auto; display: block; }
+a { color: var(--rose); text-decoration: none; }
+a:hover { text-decoration: underline; }
+p { margin-bottom: 16px; }
+p:last-child { margin-bottom: 0; }
+
+/* ═══════════ READING PROGRESS BAR ═══════════ */
+.progress-bar {
+  position: fixed; top: 0; left: 0; width: 0%;
+  height: 3px; z-index: 1000;
+  background: linear-gradient(90deg, var(--rose), var(--ember));
+  transition: width 100ms ease-out;
+}
+
+/* ═══════════ BACK TO TOP ═══════════ */
+.back-to-top {
+  position: fixed; bottom: 28px; right: 28px;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--deep); border: 1px solid rgba(255,255,255,.15);
+  color: white; font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transform: translateY(12px);
+  transition: opacity .25s ease, transform .25s ease;
+  z-index: 999; box-shadow: 0 4px 16px rgba(0,0,0,.2);
+}
+.back-to-top.visible { opacity: 1; transform: translateY(0); }
+.back-to-top:hover { background: var(--rose); }
+
+/* ═══════════ UTILITY CLASSES ═══════════ */
+.ui { font-family: 'DM Sans', sans-serif; }
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 3px; text-transform: uppercase;
+  margin-bottom: 12px; display: block;
+}
+/* Secondary labels use DM Sans — for sub-headers within sections */
+.sub-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--ghost); margin-bottom: 10px; display: block;
+}
+.caption {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; color: var(--ghost);
+  margin-top: 6px; line-height: 1.4;
+}
+.src {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; color: var(--ghost); margin-top: 12px;
+}
+.src a { color: var(--rose); }
+
+/* ═══════════ COVER ═══════════ */
+.cover {
+  background: var(--deep);
+  background-image:
+    radial-gradient(ellipse at 80% 20%, rgba(232,56,79,.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 20% 80%, rgba(255,109,58,.08) 0%, transparent 50%);
+  padding: 80px 60px 60px;
+  position: relative;
+  min-height: 480px;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  overflow: hidden;
+}
+.cover::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 5px;
+  background: linear-gradient(90deg, var(--rose), var(--ember), var(--rose));
+}
+
+/* Enhancement 18: Cover Ambient Animation — drifting gradients */
+.cover::after {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(ellipse at 80% 20%, rgba(232,56,79,.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 20% 80%, rgba(255,109,58,.08) 0%, transparent 50%);
+  animation: coverDrift 20s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes coverDrift {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-15px, 10px) scale(1.03); }
+  100% { transform: translate(10px, -8px) scale(1.01); }
+}
+
+/* Enhancement 18: Animated grain overlay */
+.cover-grain {
+  position: absolute; inset: 0;
+  background-image: repeating-conic-gradient(rgba(255,255,255,.015) 0% 25%, transparent 0% 50%);
+  background-size: 4px 4px;
+  animation: grainShift 0.8s steps(4) infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+@keyframes grainShift {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-2px, 2px); }
+  50% { transform: translate(2px, -1px); }
+  75% { transform: translate(-1px, -2px); }
+  100% { transform: translate(1px, 1px); }
+}
+
+/* Enhancement 9: Subtle noise texture on cover using base64 grain */
+.cover-noise {
+  position: absolute; inset: 0;
+  opacity: 0.035;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANWp0mAAAACHRSTlMzMzMzMzMzM85JBgUAAAA0SURBVDjLY2CgNmBWYBBgYFZgEGBkVmAQYGJWYBBgZlZgEGBhVmAQYGVWYBBgY6Y4AABxWAIRkPtLqAAAAABJRU5ErkJggg==");
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Enhancement 10: Cover brand — larger, tighter */
+.cover-brand {
+  font-size: 80px; font-weight: 700;
+  color: white; line-height: .95; letter-spacing: -3px; margin-bottom: 8px;
+  position: relative; z-index: 2;
+}
+.cover-brand span { color: var(--rose); font-style: italic; }
+.cover-issue {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: rgba(255,255,255,.4);
+  letter-spacing: 3px; text-transform: uppercase; margin-bottom: 32px;
+  position: relative; z-index: 2;
+}
+.cover-headline {
+  font-size: 32px; font-weight: 600;
+  color: rgba(255,255,255,.78); line-height: 1.25; max-width: 720px;
+  position: relative; z-index: 2;
+}
+.cover-tags { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 8px; position: relative; z-index: 2; }
+.cover-tags .tag {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 3px;
+  background: rgba(255,255,255,.06); color: rgba(255,255,255,.5);
+  border: 1px solid rgba(255,255,255,.08);
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  transition: background .15s ease, color .15s ease;
+  /* Enhancement 18: Staggered fade-in for tags */
+  opacity: 0;
+  animation: tagFadeIn 0.5s ease-out forwards;
+}
+.cover-tags .tag:nth-child(1) { animation-delay: 0.3s; }
+.cover-tags .tag:nth-child(2) { animation-delay: 0.4s; }
+.cover-tags .tag:nth-child(3) { animation-delay: 0.5s; }
+.cover-tags .tag:nth-child(4) { animation-delay: 0.6s; }
+.cover-tags .tag:nth-child(5) { animation-delay: 0.7s; }
+.cover-tags .tag:nth-child(6) { animation-delay: 0.8s; }
+.cover-tags .tag:nth-child(7) { animation-delay: 0.9s; }
+.cover-tags .tag:nth-child(8) { animation-delay: 1.0s; }
+.cover-tags .tag:nth-child(9) { animation-delay: 1.1s; }
+.cover-tags .tag:nth-child(10) { animation-delay: 1.2s; }
+@keyframes tagFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.cover-tags .tag:hover {
+  background: rgba(255,255,255,.12); color: rgba(255,255,255,.8);
+}
+
+/* ═══════════ NAVIGATOR ═══════════ */
+.nav-section { padding: 48px 60px; background: var(--paper); border-bottom: 1px solid var(--rule); }
+.nav-section h2 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 24px;
+}
+.nav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+/* Lead cards span two columns with optional thumbnail */
+.nav-card.lead {
+  grid-column: span 2;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+  padding: 0; overflow: hidden;
+}
+.nav-card.lead .nav-card-content { padding: 22px 24px; }
+.nav-card.lead .nav-card-thumb {
+  background-size: cover; background-position: center;
+  min-height: 140px;
+}
+.nav-card.lead h3 { font-size: 20px; }
+.nav-card {
+  background: var(--warm); border-radius: 8px; padding: 20px;
+  border-left: 4px solid var(--rule);
+  transition: transform .15s ease, box-shadow .15s ease;
+  text-decoration: none; display: block; cursor: pointer;
+}
+.nav-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.06); text-decoration: none; }
+.nav-card.world { border-left-color: var(--rose); }
+.nav-card.tech { border-left-color: var(--ember); }
+.nav-card.football { border-left-color: var(--turf); }
+.nav-card.screen { border-left-color: var(--neon); }
+.nav-card.shelf { border-left-color: var(--shelf-accent); }
+.nav-card.session { border-left-color: var(--session-accent); }
+.nav-card.history { border-left-color: var(--hist-accent); }
+
+/* Enhancement 6: Nav card tinted backgrounds & glow hovers */
+.nav-card.world { background: rgba(232,56,79,.06); }
+.nav-card.tech { background: rgba(255,109,58,.06); }
+.nav-card.football { background: rgba(26,122,76,.06); }
+.nav-card.screen { background: rgba(255,45,120,.06); }
+.nav-card.shelf { background: rgba(212,160,60,.06); }
+.nav-card.session { background: rgba(212,98,43,.06); }
+.nav-card.history { background: rgba(139,105,20,.06); }
+
+.nav-card.world:hover { box-shadow: 0 8px 24px rgba(232,56,79,.12); }
+.nav-card.tech:hover { box-shadow: 0 8px 24px rgba(255,109,58,.12); }
+.nav-card.football:hover { box-shadow: 0 8px 24px rgba(26,122,76,.12); }
+.nav-card.screen:hover { box-shadow: 0 8px 24px rgba(255,45,120,.12); }
+.nav-card.shelf:hover { box-shadow: 0 8px 24px rgba(212,160,60,.12); }
+.nav-card.session:hover { box-shadow: 0 8px 24px rgba(212,98,43,.12); }
+.nav-card.history:hover { box-shadow: 0 8px 24px rgba(139,105,20,.12); }
+
+.nav-card-tag {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: 6px;
+  display: flex; align-items: center; gap: 6px;
+}
+/* Enhancement 6 & 15: Nav card icon element */
+.nav-card-icon {
+  display: inline-flex; align-items: center;
+  width: 16px; height: 16px;
+  flex-shrink: 0;
+}
+.nav-card-icon svg { width: 16px; height: 16px; }
+.nav-card.world .nav-card-tag { color: var(--rose); }
+.nav-card.tech .nav-card-tag { color: var(--ember); }
+.nav-card.football .nav-card-tag { color: var(--turf); }
+.nav-card.screen .nav-card-tag { color: var(--neon); }
+.nav-card.shelf .nav-card-tag { color: var(--shelf-accent); }
+.nav-card.session .nav-card-tag { color: var(--session-accent); }
+.nav-card.history .nav-card-tag { color: var(--hist-accent); }
+.nav-card h3 {
+  font-size: 18px; font-weight: 700; line-height: 1.25;
+  color: var(--ink); margin-bottom: 4px;
+}
+.nav-card p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; color: var(--slate); line-height: 1.4; margin: 0;
+}
+.nav-card .read-time {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px; color: var(--ghost); margin-top: 8px;
+  letter-spacing: 0.5px; text-transform: uppercase;
+}
+
+/* ═══════════ FOREWORD ═══════════ */
+.foreword { padding: 48px 60px; border-bottom: 1px solid var(--rule); }
+.foreword p { font-size: 21px; line-height: 1.75; max-width: 680px; }
+.foreword p::first-letter {
+  font-size: 64px; font-weight: 700; float: left;
+  line-height: .78; margin: 8px 12px 0 0; color: var(--rose);
+}
+
+/* ═══════════ SECTION DIVIDERS ═══════════ */
+.divider { height: 8px; border: none; margin: 0; }
+.dv-world { background: linear-gradient(90deg, var(--rose), #c0392b); }
+.dv-tech { background: linear-gradient(90deg, var(--ember), #e67e22); }
+.dv-football { background: linear-gradient(90deg, var(--turf), var(--turf-lt)); }
+.dv-screen { background: linear-gradient(90deg, #9B59B6, var(--neon)); }
+.dv-shelf { background: linear-gradient(90deg, var(--shelf-accent), #A0722A); }
+.dv-session { background: linear-gradient(90deg, var(--session-accent), #E67E22); }
+.dv-history { background: linear-gradient(90deg, var(--hist-accent), #D4A03C); }
+.dv-other { background: linear-gradient(90deg, var(--slate), var(--ghost)); }
+/* Inset divider variant — centred with breathing room */
+.divider.inset { margin: 0 60px; border-radius: 4px; }
+
+/* ═══════════ GENERIC SECTION ═══════════ */
+.sec { padding: 48px 60px; position: relative; overflow: hidden; }
+.sec h2 { font-size: 36px; font-weight: 700; line-height: 1.15; margin-bottom: 20px; max-width: 680px; }
+/* Sub-story headings: lighter weight for visual hierarchy separation */
+.sec h3 { font-size: 22px; font-weight: 600; line-height: 1.2; margin: 28px 0 10px; }
+.sec h3.minor { font-weight: 400; font-style: italic; font-size: 20px; }
+.sec h4 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--ghost); margin: 28px 0 10px;
+}
+
+/* ═══════════ Enhancement 2: SECTION WATERMARK LABELS ═══════════ */
+.sec-watermark {
+  position: absolute;
+  top: 20px; left: -20px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 140px;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 0;
+  /* Default: use section accent at very low opacity */
+  color: currentColor;
+  opacity: 0.04;
+}
+
+/* Enhancement 2: Section opener variant */
+.sec-opener .section-label {
+  font-size: 14px;
+  letter-spacing: 4px;
+  margin-bottom: 16px;
+}
+.sec-opener h2 {
+  font-size: 42px;
+  max-width: 720px;
+}
+.sec-opener .opener-band {
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 120px;
+  background: linear-gradient(180deg, rgba(0,0,0,.03) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ═══════════ Enhancement 9: Section gradient overlay ═══════════ */
+.sec-gradient-overlay {
+  position: absolute;
+  bottom: 0; left: 0; right: 0; height: 200px;
+  pointer-events: none;
+  z-index: 0;
+}
+.world-section .sec-gradient-overlay { background: linear-gradient(180deg, transparent, rgba(232,56,79,.02)); }
+.tech-section .sec-gradient-overlay { background: linear-gradient(180deg, transparent, rgba(255,109,58,.02)); }
+.session-section .sec-gradient-overlay { background: linear-gradient(180deg, transparent, rgba(212,98,43,.02)); }
+
+/* ═══════════ STAT BAR ═══════════ */
+.stat-bar {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; margin: 24px 0;
+}
+.stat-bar .stat { padding: 18px 16px; text-align: center; border-right: 1px solid var(--rule); }
+.stat-bar .stat:last-child { border-right: none; }
+.stat-bar .stat-num { font-size: 32px; font-weight: 700; line-height: 1; }
+.stat-bar .stat-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px; font-weight: 700; color: var(--ghost);
+  text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;
+}
+
+/* ═══════════ Enhancement 3: BIG NUMBER CALLOUTS ═══════════ */
+.big-number {
+  text-align: center;
+  padding: 24px 0;
+  margin: 24px 0;
+}
+.big-number .num {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 80px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--rose);
+}
+.big-number .num-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ghost);
+  margin-top: 8px;
+}
+.big-number.float-left { float: left; margin: 0 32px 16px 0; text-align: left; }
+.big-number.float-right { float: right; margin: 0 0 16px 32px; text-align: right; }
+
+/* Big number row — 2-3 dramatic stats */
+.big-number-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin: 32px 0;
+  padding: 28px 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+.big-number-row .big-number {
+  margin: 0; padding: 0;
+}
+.big-number-row .big-number .num {
+  font-size: 64px;
+}
+
+/* Section-aware big numbers */
+.touchline-section .big-number .num { color: var(--turf-lt); }
+.touchline-section .big-number .num-label { color: rgba(255,255,255,.4); }
+.touchline-section .big-number-row { border-color: rgba(255,255,255,.1); }
+.screen-section .big-number .num { color: var(--neon); }
+.screen-section .big-number .num-label { color: rgba(255,255,255,.4); }
+.screen-section .big-number-row { border-color: rgba(255,255,255,.1); }
+.shelf-section .big-number .num { color: var(--shelf-accent); }
+.shelf-section .big-number .num-label { color: rgba(255,255,255,.4); }
+.shelf-section .big-number-row { border-color: rgba(255,255,255,.1); }
+.tech-section .big-number .num { color: var(--ember); }
+.session-section .big-number .num { color: var(--session-accent); }
+.history-section .big-number .num { color: var(--hist-accent); }
+
+/* Enhancement 10: Display stat — for inline dramatic numbers */
+.display-stat {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 72px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--rose);
+  display: inline;
+}
+
+/* ═══════════ ANGLE BOX ═══════════ */
+.angle {
+  background: var(--warm); border-left: 5px solid var(--rose);
+  padding: 24px 28px; margin: 28px 0; border-radius: 0 6px 6px 0;
+}
+.angle-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 8px;
+}
+.angle p { font-size: 17px; line-height: 1.65; font-weight: 600; }
+
+/* ═══════════ PULL QUOTE ═══════════ */
+.pull-quote {
+  border-left: 4px solid var(--rose); padding: 16px 28px; margin: 32px 0;
+}
+.pull-quote p {
+  font-size: 22px; font-style: italic; font-weight: 400;
+  line-height: 1.5; color: var(--ink); margin: 0;
+}
+.pull-quote cite {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-style: normal; color: var(--ghost);
+  display: block; margin-top: 8px;
+}
+
+/* Enhancement 7: Pull quote — centered variant */
+.pull-quote.centered {
+  border-left: none;
+  text-align: center;
+  padding: 32px 40px;
+  position: relative;
+}
+.pull-quote.centered::before {
+  content: '\201C';
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 80px;
+  font-weight: 700;
+  color: var(--rose);
+  opacity: 0.25;
+  display: block;
+  line-height: 0.5;
+  margin-bottom: 8px;
+}
+
+/* Enhancement 7: Pull quote — wide variant */
+.pull-quote.wide {
+  margin-left: -32px;
+  margin-right: -32px;
+  padding: 24px 40px;
+  border-left-width: 5px;
+}
+
+/* Section-aware centered quotes */
+.touchline-section .pull-quote.centered::before { color: var(--turf-lt); }
+.screen-section .pull-quote.centered::before { color: var(--neon); }
+.shelf-section .pull-quote.centered::before { color: var(--shelf-accent); }
+
+/* ═══════════ DID YOU KNOW ═══════════ */
+.dyk {
+  background: linear-gradient(135deg, #FFF8E7, #FFF3D6);
+  border: 1px solid #E8D5A3; border-radius: 8px;
+  padding: 18px 22px; margin: 24px 0; position: relative;
+}
+.dyk::before {
+  content: '💡'; position: absolute; top: -10px; left: 16px;
+  font-size: 18px; background: var(--paper); padding: 0 4px;
+}
+.dyk-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: #B8860B; margin-bottom: 6px;
+}
+.dyk p { font-size: 15px; line-height: 1.55; margin: 0; color: #5C4A20; }
+
+/* ═══════════ SIDEBAR / CALLOUT BOX ═══════════ */
+.sidebar {
+  background: var(--warm); border-radius: 8px; padding: 22px 26px; margin: 24px 0;
+  border: 1px solid var(--rule);
+}
+.sidebar-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 10px;
+}
+.sidebar ul { list-style: none; }
+.sidebar li {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; line-height: 1.5; padding: 5px 0;
+  border-bottom: 1px solid rgba(0,0,0,.04); color: var(--ink);
+}
+.sidebar li:last-child { border-bottom: none; }
+
+/* ═══════════ ALSO THIS WEEK LIST ═══════════ */
+.also { margin-top: 32px; padding-top: 24px; border-top: 2px solid var(--rule); }
+.also-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--ghost); margin-bottom: 12px;
+}
+.also-list { list-style: none; }
+.also-list li {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14.5px; line-height: 1.5; padding: 8px 0;
+  border-bottom: 1px solid rgba(0,0,0,.04);
+}
+.also-list li:last-child { border-bottom: none; }
+
+/* Enhancement 8: Also cards — compact card grid alternative */
+.also-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+.also-card {
+  background: var(--warm);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 14px 16px;
+}
+.also-card h4 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 700;
+  color: var(--ink);
+  letter-spacing: 0; text-transform: none;
+  margin: 0 0 4px;
+}
+.also-card p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12.5px; color: var(--slate);
+  line-height: 1.4; margin: 0;
+}
+.also-card .badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--ghost);
+  margin-top: 6px; display: inline-block;
+}
+
+/* Dark section also-cards */
+.touchline-section .also-cards .also-card { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.06); }
+.touchline-section .also-cards .also-card h4 { color: rgba(255,255,255,.9); }
+.touchline-section .also-cards .also-card p { color: rgba(255,255,255,.6); }
+.touchline-section .also-cards .also-card .badge { color: rgba(255,255,255,.3); }
+.screen-section .also-cards .also-card { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.06); }
+.screen-section .also-cards .also-card h4 { color: rgba(255,255,255,.9); }
+.screen-section .also-cards .also-card p { color: rgba(255,255,255,.6); }
+.shelf-section .also-cards .also-card { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.06); }
+.shelf-section .also-cards .also-card h4 { color: rgba(255,255,255,.9); }
+.shelf-section .also-cards .also-card p { color: rgba(255,255,255,.6); }
+
+/* ═══════════ DUAL COLUMN ═══════════ */
+.dual-col { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 24px 0; }
+.col-card { border-left: 4px solid var(--rule); padding-left: 24px; }
+.col-card.accent-ember { border-left-color: var(--ember); }
+.col-card.accent-deep { border-left-color: var(--deep); }
+.col-card h3 { font-size: 22px; font-weight: 700; line-height: 1.2; margin: 0 0 10px; }
+.col-card p { font-size: 16px; }
+
+/* ═══════════ Enhancement 1: VARIED COLUMN LAYOUTS ═══════════ */
+.split-60-40 {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 32px;
+  margin: 24px 0;
+  align-items: start;
+}
+.split-40-60 {
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+  gap: 32px;
+  margin: 24px 0;
+  align-items: start;
+}
+
+/* ═══════════ HERO IMAGE ═══════════ */
+.hero-img { width: 100%; aspect-ratio: 16/7; object-fit: cover; border-radius: 8px; margin: 24px 0; }
+/* Full-bleed hero — bleeds to section edges above content */
+.hero-bleed { width: calc(100% + 120px); margin-left: -60px; border-radius: 0; margin-top: -48px; margin-bottom: 28px; aspect-ratio: 16/7; object-fit: cover; }
+.inline-img { border-radius: 6px; margin: 20px 0; }
+/* Float image for text wrap (books, album art) */
+.img-float-left { float: left; margin: 4px 24px 12px 0; border-radius: 6px; }
+
+/* ═══════════ Enhancement 4: IMAGE MONTAGE GRID ═══════════ */
+.img-montage {
+  display: grid;
+  gap: 8px;
+  margin: 24px 0;
+}
+.img-montage.layout-1-2 {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+}
+.img-montage.layout-1-2 .montage-hero {
+  grid-column: 1 / -1;
+}
+.img-montage.layout-2x2 {
+  grid-template-columns: 1fr 1fr;
+}
+.img-montage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+}
+.img-montage .caption {
+  grid-column: 1 / -1;
+}
+
+/* Enhancement 4: Offset image — asymmetric text wrap */
+.img-offset {
+  float: right;
+  width: 60%;
+  margin: 0 0 16px 24px;
+  border-radius: 6px;
+}
+.img-offset.left {
+  float: left;
+  margin: 0 24px 16px 0;
+}
+
+/* ═══════════ THE WORLD THIS WEEK ═══════════ */
+.world-section { background: var(--paper); }
+.world-section .section-label { color: var(--rose); }
+.world-section .sec-watermark { color: var(--rose); }
+
+/* ═══════════ PIXEL & BYTE ═══════════ */
+.tech-section { background: var(--warm); }
+.tech-section .section-label { color: var(--ember); }
+.tech-section .sec-watermark { color: var(--ember); }
+
+/* ═══════════ THE TOUCHLINE ═══════════ */
+.touchline-section { background: var(--pitch); color: rgba(255,255,255,.85); }
+.touchline-section .section-label { color: var(--turf-lt); }
+.touchline-section h2 { color: white; }
+.touchline-section h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--turf-lt); margin: 28px 0 12px;
+}
+.touchline-section h3.narrative {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px; text-transform: none; letter-spacing: 0; color: white;
+}
+.touchline-section p { color: rgba(255,255,255,.8); }
+.touchline-section a { color: var(--turf-lt); }
+.touchline-section .angle { background: rgba(255,255,255,.04); border-left-color: var(--turf-lt); }
+.touchline-section .angle-label { color: var(--turf-lt); }
+.touchline-section .angle p { color: rgba(255,255,255,.9); }
+.touchline-section .also { border-top-color: rgba(255,255,255,.1); }
+.touchline-section .also-title { color: rgba(255,255,255,.3); }
+.touchline-section .also-list li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+.touchline-section .pull-quote { border-left-color: var(--turf-lt); }
+.touchline-section .pull-quote p { color: rgba(255,255,255,.9); }
+.touchline-section .pull-quote cite { color: rgba(255,255,255,.4); }
+.touchline-section .sec-watermark { color: var(--turf-lt); }
+
+/* Touchline DYK — section-aware dark variant */
+.touchline-section .dyk { background: rgba(26,122,76,.08); border-color: rgba(43,214,123,.12); }
+.touchline-section .dyk::before { background: var(--pitch); }
+.touchline-section .dyk-title { color: var(--turf-lt); }
+.touchline-section .dyk p { color: rgba(255,255,255,.7); }
+
+/* Touchline sidebar */
+.touchline-section .sidebar { background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.touchline-section .sidebar-title { color: var(--turf-lt); }
+.touchline-section .sidebar li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+
+/* League Table */
+.league-table {
+  width: 100%; border-collapse: collapse; margin: 16px 0 24px;
+  font-family: 'DM Sans', sans-serif; font-size: 14px;
+}
+.league-table th {
+  text-align: left; padding: 10px 12px;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: rgba(255,255,255,.3); border-bottom: 1px solid rgba(255,255,255,.1);
+}
+.league-table td { padding: 9px 12px; border-bottom: 1px solid rgba(255,255,255,.04); color: rgba(255,255,255,.6); }
+.league-table tr:nth-child(even) td { background: rgba(255,255,255,.015); }
+.league-table tr.highlight td { color: var(--turf-lt); font-weight: 700; }
+.league-table .pos { width: 30px; text-align: center; }
+/* Scrollable wrapper for small screens */
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 16px 0 24px; }
+.table-wrap .league-table { margin: 0; min-width: 520px; }
+
+/* Results Strip */
+.results-strip { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+.result-card {
+  background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.06);
+  border-radius: 6px; padding: 12px 16px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px;
+  color: rgba(255,255,255,.65); line-height: 1.4; min-width: 190px;
+  flex: 1 1 190px; max-width: 220px;
+}
+.result-card .teams { color: rgba(255,255,255,.6); }
+.result-card strong { color: rgba(255,255,255,.9); font-weight: 700; }
+.result-card .score {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 18px; font-weight: 700; color: var(--turf-lt);
+  display: block; margin: 2px 0;
+}
+
+/* ═══════════ Enhancement 11: SPARKLINE ═══════════ */
+.sparkline {
+  display: inline-block;
+  width: 200px;
+  height: 40px;
+  vertical-align: middle;
+}
+.sparkline svg {
+  width: 100%;
+  height: 100%;
+}
+.sparkline .spark-line {
+  fill: none;
+  stroke: var(--turf-lt);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.sparkline .spark-area {
+  fill: var(--turf-lt);
+  opacity: 0.1;
+}
+.sparkline .spark-dot {
+  fill: var(--turf-lt);
+}
+
+/* Enhancement 11: Position change indicators */
+.pos-change {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+}
+.pos-change.up { color: #2BD67B; }
+.pos-change.down { color: var(--rose); }
+.pos-change.same { color: var(--ghost); }
+
+/* Enhancement 11: Mini horizontal bar */
+.mini-bar {
+  display: inline-block;
+  height: 6px;
+  border-radius: 3px;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+.mini-bar-track {
+  display: inline-block;
+  width: 100px;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255,255,255,.1);
+  position: relative;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+.mini-bar-track .mini-bar-fill {
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--turf-lt);
+}
+
+/* ═══════════ SCREEN & SOUND ═══════════ */
+.screen-section { background: var(--screen-bg); color: rgba(255,255,255,.85); }
+.screen-section .section-label { color: var(--neon); }
+.screen-section h2 { color: white; }
+.screen-section h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--neon); margin: 28px 0 12px;
+}
+.screen-section h3.feature-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px; text-transform: none; letter-spacing: 0; color: white; margin-bottom: 14px;
+}
+.screen-section p { color: rgba(255,255,255,.8); }
+.screen-section a { color: var(--neon); }
+.screen-section .also { border-top-color: rgba(255,255,255,.08); }
+.screen-section .also-title { color: rgba(255,255,255,.3); }
+.screen-section .also-list li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+.screen-section .pull-quote { border-left-color: var(--neon); }
+.screen-section .pull-quote p { color: rgba(255,255,255,.9); }
+.screen-section .pull-quote cite { color: rgba(255,255,255,.4); }
+.screen-section .sec-watermark { color: var(--neon); }
+
+/* Screen & Sound DYK — section-aware dark variant */
+.screen-section .dyk { background: rgba(255,45,120,.06); border-color: rgba(255,45,120,.12); }
+.screen-section .dyk::before { background: var(--screen-bg); }
+.screen-section .dyk-title { color: var(--neon); }
+.screen-section .dyk p { color: rgba(255,255,255,.7); }
+
+/* Screen sidebar */
+.screen-section .sidebar { background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.screen-section .sidebar-title { color: var(--neon); }
+.screen-section .sidebar li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+
+/* Radar — Release Radar and On the Radar */
+.radar-grid { margin: 16px 0; }
+.radar-row {
+  display: grid; grid-template-columns: 80px 1fr; gap: 14px;
+  padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,.06);
+  font-family: 'DM Sans', sans-serif; font-size: 14px;
+  color: rgba(255,255,255,.7); line-height: 1.4;
+}
+.radar-row:last-child { border-bottom: none; }
+.radar-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700; color: var(--neon); padding-top: 2px;
+}
+.radar-row strong { color: rgba(255,255,255,.95); }
+.radar-platform { font-size: 11px; color: rgba(255,255,255,.35); font-weight: 500; }
+/* Category dot for radar items */
+.radar-cat {
+  display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+  margin-right: 6px; vertical-align: middle;
+}
+.radar-cat.film { background: var(--neon); }
+.radar-cat.tv { background: #9B59B6; }
+.radar-cat.game { background: var(--ember); }
+.radar-cat.book { background: var(--shelf-accent); }
+.radar-cat.music { background: var(--turf-lt); }
+.radar-cat.tech { background: var(--ghost); }
+.radar-cat.lego { background: #E8384F; }
+/* Leaving Soon — urgency styling */
+.radar-row.leaving { border-left: 3px solid var(--rose); padding-left: 12px; margin-left: -3px; }
+.radar-row.leaving .radar-date { color: var(--rose); }
+
+/* ═══════════ Enhancement 16: CARD STACK — Horizontal scroll ═══════════ */
+.card-stack {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 8px 0 16px;
+  margin: 16px 0;
+}
+.card-stack::-webkit-scrollbar { height: 4px; }
+.card-stack::-webkit-scrollbar-track { background: rgba(255,255,255,.05); border-radius: 2px; }
+.card-stack::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 2px; }
+
+.stack-card {
+  flex: 0 0 240px;
+  scroll-snap-align: start;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.stack-card-img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+}
+.stack-card-body {
+  padding: 14px 16px;
+}
+.stack-card-title {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 17px; font-weight: 700;
+  color: rgba(255,255,255,.95);
+  margin-bottom: 4px;
+}
+.stack-card-verdict {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12.5px; color: rgba(255,255,255,.6);
+  line-height: 1.4; margin-bottom: 8px;
+}
+.stack-card .platform-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: rgba(255,255,255,.35);
+  background: rgba(255,255,255,.06);
+  padding: 2px 8px; border-radius: 3px;
+  display: inline-block;
+}
+
+/* Light section card stacks */
+.tech-section .stack-card { background: white; border-color: var(--rule); }
+.tech-section .stack-card-title { color: var(--ink); }
+.tech-section .stack-card-verdict { color: var(--slate); }
+.tech-section .stack-card .platform-badge { color: var(--ghost); background: var(--warm); }
+.tech-section .card-stack::-webkit-scrollbar-track { background: var(--rule); }
+.tech-section .card-stack::-webkit-scrollbar-thumb { background: var(--ghost); }
+
+/* ═══════════ Enhancement 19: SCORE/RATING DOTS ═══════════ */
+.rating {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  margin: 4px 0;
+}
+.rating .dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,.25);
+  background: transparent;
+}
+.rating .dot.filled {
+  border-color: transparent;
+}
+/* Section-specific rating colours */
+.screen-section .rating .dot.filled { background: var(--neon); }
+.shelf-section .rating .dot.filled { background: var(--shelf-accent); }
+.tech-section .rating .dot { border-color: var(--rule); }
+.tech-section .rating .dot.filled { background: var(--ember); border-color: transparent; }
+/* Light section dots */
+.session-section .rating .dot { border-color: var(--rule); }
+.session-section .rating .dot.filled { background: var(--session-accent); border-color: transparent; }
+.world-section .rating .dot { border-color: var(--rule); }
+.world-section .rating .dot.filled { background: var(--rose); border-color: transparent; }
+
+/* ═══════════ THE SHELF ═══════════ */
+.shelf-section { background: var(--shelf-bg); color: rgba(255,255,255,.85); }
+.shelf-section .section-label { color: var(--shelf-accent); }
+.shelf-section h2 { color: white; }
+.shelf-section h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--shelf-accent); margin: 28px 0 12px;
+}
+.shelf-section h3.feature-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px; text-transform: none; letter-spacing: 0; color: white; margin-bottom: 14px;
+}
+.shelf-section p { color: rgba(255,255,255,.8); }
+.shelf-section a { color: var(--shelf-accent); }
+.shelf-section .also { border-top-color: rgba(255,255,255,.08); }
+.shelf-section .also-title { color: rgba(255,255,255,.3); }
+.shelf-section .also-list li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+.shelf-section .sec-watermark { color: var(--shelf-accent); }
+.shelf-section .pull-quote { border-left-color: var(--shelf-accent); }
+.shelf-section .pull-quote p { color: rgba(255,255,255,.9); }
+.shelf-section .pull-quote cite { color: rgba(255,255,255,.4); }
+
+/* Shelf DYK — section-aware dark variant */
+.shelf-section .dyk { background: rgba(212,160,60,.06); border-color: rgba(212,160,60,.12); }
+.shelf-section .dyk::before { background: var(--shelf-bg); }
+.shelf-section .dyk-title { color: var(--shelf-accent); }
+.shelf-section .dyk p { color: rgba(255,255,255,.7); }
+
+/* Shelf sidebar */
+.shelf-section .sidebar { background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.shelf-section .sidebar-title { color: var(--shelf-accent); }
+.shelf-section .sidebar li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+
+/* Book Recommendation Card — with image float support */
+.book-card {
+  background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+  border-radius: 8px; padding: 18px 22px; margin: 12px 0;
+  overflow: hidden;
+}
+.book-card h4 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 19px; font-weight: 700; color: rgba(255,255,255,.95);
+  text-transform: none; letter-spacing: 0; margin: 0 0 4px;
+}
+.book-card .author {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; color: rgba(255,255,255,.4); margin-bottom: 6px;
+}
+.book-card p { font-size: 14px; color: rgba(255,255,255,.6); margin: 0; }
+.book-card img { float: left; width: 80px; margin: 0 16px 8px 0; border-radius: 4px; }
+/* Side-by-side book cards */
+.book-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+
+/* ═══════════ THE SESSION ═══════════ */
+.session-section { background: var(--session-bg); }
+.session-section .section-label { color: var(--session-accent); }
+.session-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.session-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.session-section .sec-watermark { color: var(--session-accent); }
+
+/* Workout Card — for rep schemes, protocols, programmes */
+.workout-card {
+  background: white; border: 1px solid var(--rule); border-radius: 8px;
+  padding: 22px 26px; margin: 20px 0;
+  border-left: 4px solid var(--session-accent);
+}
+.workout-card-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--session-accent); margin-bottom: 12px;
+}
+.workout-card table {
+  width: 100%; border-collapse: collapse; font-family: 'DM Sans', sans-serif; font-size: 14px;
+}
+.workout-card th {
+  text-align: left; padding: 6px 10px;
+  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--ghost); border-bottom: 1px solid var(--rule);
+}
+.workout-card td { padding: 7px 10px; border-bottom: 1px solid rgba(0,0,0,.04); color: var(--ink); }
+.workout-card .highlight-row td { color: var(--session-accent); font-weight: 700; }
+
+/* Workout icon labels */
+.workout-type {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'DM Sans', sans-serif; font-size: 11px;
+  color: var(--session-accent); font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; margin-bottom: 8px;
+}
+
+/* ═══════════ THIS WEEK IN HISTORY ═══════════ */
+.history-section { background: var(--hist-bg); }
+.history-section .section-label { color: var(--hist-accent); }
+.history-section h2 { font-size: 30px; font-weight: 700; line-height: 1.2; margin-bottom: 16px; color: #3D2E0F; }
+.history-section .sec-watermark { color: var(--hist-accent); }
+/* Year badges for history items */
+.year-badge {
+  display: inline-block; font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700; color: var(--hist-accent);
+  background: rgba(139,105,20,.08); border-radius: 3px;
+  padding: 2px 8px; margin-right: 8px; vertical-align: middle;
+}
+.history-section .also-list li { display: flex; align-items: baseline; gap: 0; }
+
+/* Enhancement 9: History paper texture — more pronounced */
+.history-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.06;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANWp0mAAAACHRSTlMzMzMzMzMzM85JBgUAAAA0SURBVDjLY2CgNmBWYBBgYFZgEGBkVmAQYGJWYBBgZlZgEGBhVmAQYGVWYBBgY6Y4AABxWAIRkPtLqAAAAABJRU5ErkJggg==");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ═══════════ Enhancement 12: CONTEXTUAL TIMELINES ═══════════ */
+.timeline {
+  position: relative;
+  padding-left: 32px;
+  margin: 24px 0;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 8px; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--rule);
+}
+.timeline-node {
+  position: relative;
+  padding: 12px 0 24px 16px;
+}
+.timeline-node::before {
+  content: '';
+  position: absolute;
+  left: -28px; top: 18px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--rose);
+  border: 2px solid var(--paper);
+}
+.timeline-node .timeline-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--ghost);
+  margin-bottom: 4px;
+}
+.timeline-node .timeline-content {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14.5px; line-height: 1.5;
+}
+.timeline-node .timeline-content strong { color: var(--ink); }
+
+/* Timeline on dark backgrounds */
+.touchline-section .timeline::before { background: rgba(255,255,255,.1); }
+.touchline-section .timeline-node::before { background: var(--turf-lt); border-color: var(--pitch); }
+.touchline-section .timeline-node .timeline-date { color: var(--turf-lt); }
+.touchline-section .timeline-node .timeline-content { color: rgba(255,255,255,.7); }
+.touchline-section .timeline-node .timeline-content strong { color: rgba(255,255,255,.95); }
+
+.screen-section .timeline::before { background: rgba(255,255,255,.1); }
+.screen-section .timeline-node::before { background: var(--neon); border-color: var(--screen-bg); }
+.screen-section .timeline-node .timeline-date { color: var(--neon); }
+.screen-section .timeline-node .timeline-content { color: rgba(255,255,255,.7); }
+.screen-section .timeline-node .timeline-content strong { color: rgba(255,255,255,.95); }
+
+.shelf-section .timeline::before { background: rgba(255,255,255,.1); }
+.shelf-section .timeline-node::before { background: var(--shelf-accent); border-color: var(--shelf-bg); }
+.shelf-section .timeline-node .timeline-date { color: var(--shelf-accent); }
+.shelf-section .timeline-node .timeline-content { color: rgba(255,255,255,.7); }
+.shelf-section .timeline-node .timeline-content strong { color: rgba(255,255,255,.95); }
+
+/* History timeline */
+.history-section .timeline::before { background: rgba(139,105,20,.2); }
+.history-section .timeline-node::before { background: var(--hist-accent); border-color: var(--hist-bg); }
+.history-section .timeline-node .timeline-date { color: var(--hist-accent); }
+.history-section .timeline-node .timeline-content { color: #5C4A20; }
+
+/* ═══════════ Enhancement 13: COMPACT TAKES ═══════════ */
+.compact-take {
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--rose);
+  border-radius: 0 6px 6px 0;
+  padding: 16px 18px;
+  margin: 12px 0;
+}
+.compact-take h4 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 17px; font-weight: 700; color: var(--ink);
+  text-transform: none; letter-spacing: 0;
+  margin: 0 0 6px;
+}
+.compact-take p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13.5px; color: var(--slate);
+  line-height: 1.5; margin: 0 0 6px;
+}
+.compact-take .src { margin-top: 4px; }
+
+/* Compact take — section accents */
+.tech-section .compact-take { border-left-color: var(--ember); background: white; }
+.touchline-section .compact-take { border-left-color: var(--turf-lt); background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.touchline-section .compact-take h4 { color: rgba(255,255,255,.95); }
+.touchline-section .compact-take p { color: rgba(255,255,255,.6); }
+.screen-section .compact-take { border-left-color: var(--neon); background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.screen-section .compact-take h4 { color: rgba(255,255,255,.95); }
+.screen-section .compact-take p { color: rgba(255,255,255,.6); }
+
+/* Compact grid — 2 compact takes side by side */
+.compact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+/* ═══════════ Enhancement 14: MARGIN NOTES ═══════════ */
+.margin-note {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--slate);
+  background: var(--warm);
+  border-left: 3px solid var(--rose);
+  padding: 12px 14px;
+  border-radius: 0 4px 4px 0;
+}
+/* On desktop, float to right margin */
+@media (min-width: 821px) {
+  .margin-note {
+    float: right;
+    width: 220px;
+    margin: 0 -60px 16px 24px;
+    position: relative;
+    z-index: 1;
+  }
+}
+/* Section-aware margin notes */
+.tech-section .margin-note { border-left-color: var(--ember); }
+.touchline-section .margin-note { background: rgba(255,255,255,.04); border-left-color: var(--turf-lt); color: rgba(255,255,255,.6); }
+.screen-section .margin-note { background: rgba(255,255,255,.04); border-left-color: var(--neon); color: rgba(255,255,255,.6); }
+.shelf-section .margin-note { background: rgba(255,255,255,.04); border-left-color: var(--shelf-accent); color: rgba(255,255,255,.6); }
+.history-section .margin-note { border-left-color: var(--hist-accent); background: rgba(139,105,20,.06); color: #5C4A20; }
+
+/* ═══════════ Enhancement 15: SECTION ICONS (inline SVG) ═══════════ */
+/* Icons use currentColor so they inherit from parent. Defined as classes for documentation. */
+.sec-icon {
+  display: inline-block;
+  width: 24px; height: 24px;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+.sec-icon svg {
+  width: 24px; height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ═══════════ Enhancement 17: COLLAPSIBLE SECTIONS ═══════════ */
+.collapsible {
+  margin: 20px 0;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.collapsible summary {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 700;
+  padding: 14px 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  list-style: none;
+  background: var(--warm);
+  color: var(--ink);
+  transition: background .15s ease;
+}
+.collapsible summary::-webkit-details-marker { display: none; }
+.collapsible summary::after {
+  content: '';
+  width: 8px; height: 8px;
+  border-right: 2px solid var(--ghost);
+  border-bottom: 2px solid var(--ghost);
+  transform: rotate(45deg);
+  transition: transform .2s ease;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+.collapsible[open] summary::after {
+  transform: rotate(-135deg);
+}
+.collapsible summary:hover { background: var(--rule); }
+.collapsible-content {
+  padding: 16px 18px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--slate);
+}
+
+/* Dark section collapsibles */
+.touchline-section .collapsible { border-color: rgba(255,255,255,.08); }
+.touchline-section .collapsible summary { background: rgba(255,255,255,.04); color: rgba(255,255,255,.9); }
+.touchline-section .collapsible summary::after { border-color: rgba(255,255,255,.3); }
+.touchline-section .collapsible summary:hover { background: rgba(255,255,255,.08); }
+.touchline-section .collapsible-content { color: rgba(255,255,255,.7); }
+
+.screen-section .collapsible { border-color: rgba(255,255,255,.08); }
+.screen-section .collapsible summary { background: rgba(255,255,255,.04); color: rgba(255,255,255,.9); }
+.screen-section .collapsible summary::after { border-color: rgba(255,255,255,.3); }
+.screen-section .collapsible summary:hover { background: rgba(255,255,255,.08); }
+.screen-section .collapsible-content { color: rgba(255,255,255,.7); }
+
+.shelf-section .collapsible { border-color: rgba(255,255,255,.08); }
+.shelf-section .collapsible summary { background: rgba(255,255,255,.04); color: rgba(255,255,255,.9); }
+.shelf-section .collapsible summary::after { border-color: rgba(255,255,255,.3); }
+.shelf-section .collapsible summary:hover { background: rgba(255,255,255,.08); }
+.shelf-section .collapsible-content { color: rgba(255,255,255,.7); }
+
+/* ═══════════ Enhancement 20: READ-NEXT CONNECTORS ═══════════ */
+.read-next {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  text-align: right;
+  margin-top: 28px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+  color: var(--ghost);
+}
+.read-next a {
+  font-weight: 700;
+  text-decoration: none;
+}
+.read-next .arrow {
+  display: inline-block;
+  margin-left: 4px;
+  transition: transform .15s ease;
+}
+.read-next:hover .arrow {
+  transform: translateX(3px);
+}
+
+/* Section-specific read-next colours */
+.world-section .read-next a { color: var(--rose); }
+.tech-section .read-next a { color: var(--ember); }
+.touchline-section .read-next { border-top-color: rgba(255,255,255,.08); color: rgba(255,255,255,.3); }
+.touchline-section .read-next a { color: var(--turf-lt); }
+.screen-section .read-next { border-top-color: rgba(255,255,255,.08); color: rgba(255,255,255,.3); }
+.screen-section .read-next a { color: var(--neon); }
+.shelf-section .read-next { border-top-color: rgba(255,255,255,.08); color: rgba(255,255,255,.3); }
+.shelf-section .read-next a { color: var(--shelf-accent); }
+.session-section .read-next a { color: var(--session-accent); }
+.history-section .read-next a { color: var(--hist-accent); }
+
+/* ═══════════ Enhancement 5: SCROLL-TRIGGERED ANIMATIONS ═══════════ */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* Staggered children */
+.reveal-group .reveal:nth-child(1) { transition-delay: 0ms; }
+.reveal-group .reveal:nth-child(2) { transition-delay: 80ms; }
+.reveal-group .reveal:nth-child(3) { transition-delay: 160ms; }
+.reveal-group .reveal:nth-child(4) { transition-delay: 240ms; }
+.reveal-group .reveal:nth-child(5) { transition-delay: 320ms; }
+.reveal-group .reveal:nth-child(6) { transition-delay: 400ms; }
+
+/* ═══════════ THE LONG SHELF ═══════════ */
+.longshelf-section { background: var(--paper); border-bottom: 1px solid var(--rule); }
+.longshelf-section .section-label { color: var(--rose); }
+/* Two-column compact layout */
+.longshelf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 32px; }
+.shelf-item { padding: 16px 0; border-bottom: 1px solid var(--rule); }
+.shelf-item:last-child { border-bottom: none; }
+.shelf-item .title { font-size: 17px; font-weight: 700; color: var(--ink); line-height: 1.3; }
+.shelf-item .meta {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; color: var(--ghost); margin-top: 2px;
+}
+.shelf-item .desc {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; color: var(--slate); margin-top: 4px; line-height: 1.5;
+}
+
+/* ═══════════ ON THE RADAR ═══════════ */
+.radar-section { background: var(--warm); }
+.radar-section .section-label { color: var(--ember); }
+.radar-section .radar-row { border-bottom-color: rgba(0,0,0,.06); color: var(--ink); }
+.radar-section .radar-date { color: var(--ember); font-size: 12px; }
+.radar-section .radar-row strong { color: var(--ink); }
+.radar-section .radar-cat.football { background: var(--turf); }
+.radar-section .radar-cat.film { background: var(--neon); }
+.radar-section .radar-cat.game { background: var(--ember); }
+.radar-section .radar-cat.event { background: var(--rose); }
+.radar-section .radar-cat.release { background: var(--shelf-accent); }
+
+/* ═══════════ FOOTER ═══════════ */
+.footer {
+  background: var(--deep); padding: 40px 60px; text-align: center;
+}
+.footer-brand { font-size: 28px; font-weight: 700; color: white; }
+.footer-brand span { color: var(--rose); font-style: italic; }
+.footer-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: rgba(255,255,255,.3);
+  letter-spacing: 2px; text-transform: uppercase; margin-top: 6px;
+}
+
+/* ═══════════ ARTICLE ENTRY PATTERNS ═══════════ */
+/* Stat lead — bold number + context opens an article */
+.entry-stat {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 56px; font-weight: 700; line-height: 1.1;
+  margin-bottom: 4px;
+}
+.entry-stat-context {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; color: var(--slate);
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 20px;
+}
+/* Quote lead — pull quote as opener */
+.entry-quote {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 24px; font-style: italic; line-height: 1.4;
+  border-left: 4px solid var(--rose);
+  padding-left: 20px; margin-bottom: 20px;
+  color: var(--ink);
+}
+.entry-quote cite {
+  display: block; font-style: normal; font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--ghost); margin-top: 8px;
+}
+/* Summary bullets lead — 3 key points upfront */
+.entry-bullets {
+  list-style: none; padding: 0; margin: 0 0 20px 0;
+  border-left: 4px solid var(--rose);
+  padding-left: 16px;
+}
+.entry-bullets li {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 500;
+  line-height: 1.5; padding: 4px 0;
+  color: var(--ink);
+}
+/* Question hook lead */
+.entry-question {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 28px; font-weight: 600; font-style: italic;
+  line-height: 1.3; margin-bottom: 16px;
+  color: var(--ink);
+}
+/* Dark section entry variants */
+.touchline-section .entry-stat,
+.screen-section .entry-stat,
+.shelf-section .entry-stat { color: rgba(255,255,255,.9); }
+.touchline-section .entry-stat-context,
+.screen-section .entry-stat-context,
+.shelf-section .entry-stat-context { color: rgba(255,255,255,.4); }
+.touchline-section .entry-quote,
+.screen-section .entry-quote,
+.shelf-section .entry-quote { color: rgba(255,255,255,.85); }
+.touchline-section .entry-bullets li,
+.screen-section .entry-bullets li,
+.shelf-section .entry-bullets li { color: rgba(255,255,255,.8); }
+.touchline-section .entry-question,
+.screen-section .entry-question,
+.shelf-section .entry-question { color: rgba(255,255,255,.85); }
+.touchline-section .entry-quote { border-color: var(--turf-lt); }
+.touchline-section .entry-bullets { border-color: var(--turf-lt); }
+.screen-section .entry-quote { border-color: var(--neon); }
+.screen-section .entry-bullets { border-color: var(--neon); }
+.shelf-section .entry-quote { border-color: var(--shelf-accent); }
+.shelf-section .entry-bullets { border-color: var(--shelf-accent); }
+
+/* ═══════════ SECTION BREATHER BANDS ═══════════ */
+.breather {
+  text-align: center;
+  padding: 28px 40px;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  margin: 0;
+}
+.breather-stat {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 42px; font-weight: 700;
+  color: var(--rose); line-height: 1.1;
+}
+.breather-context {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; color: var(--slate);
+  margin-top: 4px;
+}
+.breather-teaser {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 18px; font-style: italic;
+  color: var(--slate); line-height: 1.4;
+}
+/* Dark breather (between dark sections) */
+.breather.dark {
+  background: var(--deep);
+  border-color: rgba(255,255,255,.08);
+}
+.breather.dark .breather-stat { color: var(--turf-lt); }
+.breather.dark .breather-context,
+.breather.dark .breather-teaser { color: rgba(255,255,255,.45); }
+
+/* ═══════════ ALSO-LIST PRIORITY TIERS ═══════════ */
+.also-list li.tier-hot {
+  border-left: 3px solid var(--rose);
+  padding-left: 10px;
+  background: rgba(232,56,79,.04);
+  margin-bottom: 10px; padding-top: 4px; padding-bottom: 4px;
+}
+.also-list li.tier-warm {
+  border-left: 3px solid var(--ember);
+  padding-left: 10px;
+  margin-bottom: 10px; padding-top: 4px; padding-bottom: 4px;
+}
+.also-list li.tier-note {
+  border-left: 3px solid var(--rule);
+  padding-left: 10px;
+  margin-bottom: 10px; padding-top: 4px; padding-bottom: 4px;
+}
+/* Dark section tiers */
+.touchline-section .also-list li.tier-hot { border-color: var(--turf-lt); background: rgba(43,214,123,.06); }
+.touchline-section .also-list li.tier-warm { border-color: rgba(255,255,255,.25); }
+.touchline-section .also-list li.tier-note { border-color: rgba(255,255,255,.1); }
+.screen-section .also-list li.tier-hot { border-color: var(--neon); background: rgba(255,45,120,.06); }
+.screen-section .also-list li.tier-warm { border-color: rgba(255,255,255,.25); }
+.screen-section .also-list li.tier-note { border-color: rgba(255,255,255,.1); }
+.shelf-section .also-list li.tier-hot { border-color: var(--shelf-accent); background: rgba(212,160,60,.06); }
+.shelf-section .also-list li.tier-warm { border-color: rgba(255,255,255,.25); }
+.shelf-section .also-list li.tier-note { border-color: rgba(255,255,255,.1); }
+
+/* ═══════════ COMPARISON PANELS ═══════════ */
+.compare-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 20px 0;
+}
+.compare-side {
+  padding: 20px 24px;
+}
+.compare-side.left {
+  background: rgba(232,56,79,.04);
+  border-right: 1px solid var(--rule);
+}
+.compare-side.right {
+  background: rgba(26,122,76,.04);
+}
+.compare-side .compare-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.compare-side.left .compare-label { color: var(--rose); }
+.compare-side.right .compare-label { color: var(--turf); }
+.compare-side h4 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 20px; font-weight: 700;
+  margin-bottom: 8px;
+}
+.compare-side p {
+  font-size: 15px; line-height: 1.55;
+  margin-bottom: 8px;
+}
+.compare-side .compare-stat {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 36px; font-weight: 700;
+  line-height: 1.1; margin-bottom: 4px;
+}
+.compare-side.left .compare-stat { color: var(--rose); }
+.compare-side.right .compare-stat { color: var(--turf); }
+/* Dark section compare panels */
+.touchline-section .compare-side.left { background: rgba(43,214,123,.06); border-color: rgba(255,255,255,.08); }
+.touchline-section .compare-side.right { background: rgba(0,180,216,.06); }
+.touchline-section .compare-side p,
+.touchline-section .compare-side h4 { color: rgba(255,255,255,.85); }
+.touchline-section .compare-side.left .compare-label,
+.touchline-section .compare-side.left .compare-stat { color: var(--turf-lt); }
+.touchline-section .compare-side.right .compare-label,
+.touchline-section .compare-side.right .compare-stat { color: #00B4D8; }
+.screen-section .compare-side.left { background: rgba(255,45,120,.06); border-color: rgba(255,255,255,.08); }
+.screen-section .compare-side.right { background: rgba(0,180,216,.06); }
+.screen-section .compare-side p,
+.screen-section .compare-side h4 { color: rgba(255,255,255,.85); }
+.shelf-section .compare-side.left { background: rgba(212,160,60,.06); border-color: rgba(255,255,255,.08); }
+.shelf-section .compare-side.right { background: rgba(0,180,216,.06); }
+.shelf-section .compare-side p,
+.shelf-section .compare-side h4 { color: rgba(255,255,255,.85); }
+
+/* ═══════════ FLOATED INSET SIDEBAR ═══════════ */
+.sidebar-float {
+  float: right;
+  width: 260px;
+  margin: 0 0 16px 24px;
+  padding: 16px 18px;
+  background: var(--warm);
+  border-left: 3px solid var(--rose);
+  border-radius: 0 4px 4px 0;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; line-height: 1.5;
+}
+.sidebar-float .sidebar-title {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 8px;
+}
+.sidebar-float ul { list-style: none; padding: 0; margin: 0; }
+.sidebar-float li { padding: 4px 0; }
+/* Dark section float sidebars */
+.touchline-section .sidebar-float {
+  background: rgba(255,255,255,.05);
+  border-color: var(--turf-lt);
+  color: rgba(255,255,255,.8);
+}
+.touchline-section .sidebar-float .sidebar-title { color: var(--turf-lt); }
+.screen-section .sidebar-float {
+  background: rgba(255,255,255,.05);
+  border-color: var(--neon);
+  color: rgba(255,255,255,.8);
+}
+.screen-section .sidebar-float .sidebar-title { color: var(--neon); }
+.shelf-section .sidebar-float {
+  background: rgba(255,255,255,.05);
+  border-color: var(--shelf-accent);
+  color: rgba(255,255,255,.8);
+}
+.shelf-section .sidebar-float .sidebar-title { color: var(--shelf-accent); }
+
+/* ═══════════ RESPONSIVE ═══════════ */
+@media (max-width: 820px) {
+  .cover, .nav-section, .foreword, .sec, .touchline-section, .screen-section,
+  .shelf-section, .session-section, .history-section,
+  .longshelf-section, .radar-section, .footer {
+    padding-left: 24px; padding-right: 24px;
+  }
+  .hero-bleed { width: calc(100% + 48px); margin-left: -24px; }
+  .divider.inset { margin-left: 24px; margin-right: 24px; }
+  .cover-brand { font-size: 60px; }
+  .cover-headline { font-size: 26px; }
+  .nav-grid { grid-template-columns: 1fr 1fr; }
+  .nav-card.lead { grid-column: span 2; }
+  .longshelf-grid { grid-template-columns: 1fr; }
+  .book-grid { grid-template-columns: 1fr; }
+  /* Enhancement 1 */
+  .split-60-40, .split-40-60 { grid-template-columns: 1fr; }
+  /* Enhancement 4 */
+  .img-montage.layout-1-2, .img-montage.layout-2x2 { grid-template-columns: 1fr; }
+  .img-montage.layout-1-2 .montage-hero { grid-column: span 1; }
+  .img-offset { float: none; width: 100%; margin: 16px 0; }
+  /* Enhancement 2 */
+  .sec-watermark { font-size: 100px; }
+  /* Enhancement 7 */
+  .pull-quote.wide { margin-left: 0; margin-right: 0; }
+  /* Enhancement 8 */
+  .also-cards { grid-template-columns: 1fr; }
+  /* Enhancement 13 */
+  .compact-grid { grid-template-columns: 1fr; }
+  /* Enhancement 14: margin note goes inline */
+  .margin-note { float: none; width: 100%; margin: 16px 0; }
+  /* New components responsive */
+  .sidebar-float { float: none; width: 100%; margin: 16px 0; }
+  .compare-panel { grid-template-columns: 1fr; }
+  .compare-side.left { border-right: none; border-bottom: 1px solid var(--rule); }
+  .entry-stat { font-size: 44px; }
+  .entry-question { font-size: 24px; }
+}
+@media (max-width: 600px) {
+  .cover, .nav-section, .foreword, .sec, .touchline-section, .screen-section,
+  .shelf-section, .session-section, .history-section,
+  .longshelf-section, .radar-section, .footer {
+    padding-left: 20px; padding-right: 20px;
+  }
+  .hero-bleed { width: calc(100% + 40px); margin-left: -20px; }
+  .divider.inset { margin-left: 20px; margin-right: 20px; }
+  .cover-brand { font-size: 52px; }
+  .cover-headline { font-size: 22px; }
+  .nav-grid { grid-template-columns: 1fr; }
+  .nav-card.lead { grid-column: span 1; grid-template-columns: 1fr; }
+  .nav-card.lead .nav-card-thumb { min-height: 120px; }
+  .dual-col { grid-template-columns: 1fr; }
+  .stat-bar { grid-template-columns: repeat(2, 1fr); }
+  .stat-bar .stat:nth-child(2) { border-right: none; }
+  .results-strip { flex-direction: column; }
+  .result-card { max-width: 100%; }
+  .sec h2, .touchline-section h2, .screen-section h2, .shelf-section h2 { font-size: 28px; }
+  .longshelf-grid { grid-template-columns: 1fr; }
+  .book-grid { grid-template-columns: 1fr; }
+  .back-to-top { bottom: 16px; right: 16px; width: 40px; height: 40px; }
+  /* Enhancement 2: hide watermark on small screens */
+  .sec-watermark { display: none; }
+  /* Enhancement 3: scale down big numbers */
+  .big-number .num { font-size: 56px; }
+  .big-number-row { grid-template-columns: 1fr; gap: 16px; }
+  .big-number-row .big-number .num { font-size: 48px; }
+  /* Enhancement 10 */
+  .sec-opener h2 { font-size: 32px; }
+  .display-stat { font-size: 52px; }
+  /* Enhancement 16 */
+  .stack-card { flex: 0 0 200px; }
+  /* Enhancement 12 */
+  .timeline { padding-left: 24px; }
+}
+
+</style>
+</head>
+<body>
+<div class="progress-bar" id="progressBar"></div>
+<div class="mag">
+
+<!-- ══════ COVER ══════ -->
+<header class="cover" id="top">
+  <div class="cover-noise"></div>
+  <div class="cover-grain"></div>
+  <div class="cover-issue" style="position:relative;z-index:2">March 22–29, 2026 · Issue #2 · Sunday Edition</div>
+  <div class="cover-brand">The Signal<span>.</span></div>
+  <div class="cover-headline">The Strait of Hormuz is the most important 25 miles on the planet — and nobody agrees what to do about it.</div>
+  <div class="cover-tags">
+    <span class="tag">Iran War</span>
+    <span class="tag">World Cup Playoffs</span>
+    <span class="tag">Switch 2 Cuts</span>
+    <span class="tag">NI &amp; Italy</span>
+    <span class="tag">Maul Returns</span>
+    <span class="tag">Vikings in Paris</span>
+    <span class="tag">Malazan News</span>
+    <span class="tag">Run Strong</span>
+    <span class="tag">Tariff Wars</span>
+    <span class="tag">Cosmere 2026</span>
+  </div>
+</header>
+
+<!-- ══════ NAVIGATOR ══════ -->
+<section class="nav-section" id="nav">
+  <h2>What's Inside</h2>
+  <div class="nav-grid">
+    <a href="#world" class="nav-card lead world" style="text-decoration:none">
+      <div class="nav-card-content">
+        <div class="nav-card-tag">
+          <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10 15 15 0 0 1-4-10A15 15 0 0 1 12 2z"/></svg></span>
+          World
+        </div>
+        <h3>One Month In: The War Nobody Planned For</h3>
+        <p>US–Israel vs Iran enters its fifth week. The Strait of Hormuz is partially blocked, Europe is fractured, and Ukraine peace talks are dead in the water.</p>
+        <div class="read-time">9 min read</div>
+      </div>
+      <div class="nav-card-thumb" style="background-image:url('https://media.cnn.com/api/v1/images/stellar/prod/c-2026-03-24t180754z-1426962173-rc2vakah4ifr-rtrmadp-3-iran-crisis-pause.jpg?c=original&q=w_1041,c_fill')"></div>
+    </a>
+    <a href="#tech" class="nav-card tech" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="4"/><line x1="6" y1="10" x2="6" y2="14"/><line x1="4" y1="12" x2="8" y2="12"/><circle cx="16" cy="10" r="0.8" fill="currentColor"/><circle cx="18" cy="12" r="0.8" fill="currentColor"/></svg></span>
+        Gaming &amp; Tech
+      </div>
+      <h3>Nintendo Blinks</h3>
+      <p>Switch 2 production slashed 30% amid weak US sales. Steam Machine hints drop. Warframe lands on Switch 2.</p>
+      <div class="read-time">6 min</div>
+    </a>
+    <a href="#football" class="nav-card football" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2l3 7h-6l3-7zM22 12l-7 3v-6l7 3zM12 22l-3-7h6l-3 7zM2 12l7-3v6l-7-3z"/></svg></span>
+        The Touchline
+      </div>
+      <h3>Italy Beat Northern Ireland. NI Heads Home Proud.</h3>
+      <p>World Cup playoffs dominate. Tonali returns from exile. Serie A table shifts. CL quarters drawn.</p>
+      <div class="read-time">7 min</div>
+    </a>
+    <a href="#screen" class="nav-card screen" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 8h20M2 16h20M8 4v16M16 4v16"/></svg></span>
+        Screen &amp; Sound
+      </div>
+      <h3>Maul Is Coming — And He Looks Furious</h3>
+      <p>Shadow Lord premieres April 6. One Piece Season 2 drops. The Release Radar is stacked.</p>
+      <div class="read-time">5 min</div>
+    </a>
+    <a href="#shelf" class="nav-card shelf" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>
+        The Shelf
+      </div>
+      <h3>Malazan, Cosmere &amp; the Month's Best SFF</h3>
+      <p>Erikson's Legacies of Betrayal dated. Tchaikovsky returns. Children of Strife lands.</p>
+      <div class="read-time">4 min</div>
+    </a>
+    <a href="#session" class="nav-card session" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6h-2v12h2M18 6h2v12h-2M6 12h12"/><rect x="3" y="8" width="3" height="8" rx="1"/><rect x="18" y="8" width="3" height="8" rx="1"/></svg></span>
+        The Session
+      </div>
+      <h3>Run Stronger: What ACSM's New Guidelines Actually Mean</h3>
+      <p>The most evidence-backed resistance training guidance in 17 years — applied to runners.</p>
+      <div class="read-time">5 min</div>
+    </a>
+    <a href="#history" class="nav-card history" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12M6 22h12M7 2v4a5 5 0 0 0 5 5 5 5 0 0 0 5-5V2M7 22v-4a5 5 0 0 1 5-5 5 5 0 0 1 5 5v4"/></svg></span>
+        History
+      </div>
+      <h3>Easter Sunday, 845 AD: The Day Vikings Sacked Paris</h3>
+      <p>Ragnar's fleet arrived on the holiest day of the calendar. Charles the Bald paid 2,570kg of silver to make them leave.</p>
+      <div class="read-time">4 min</div>
+    </a>
+    <a href="#longshelf" class="nav-card" style="text-decoration:none; border-left-color: var(--rose);">
+      <div class="nav-card-tag" style="color:var(--rose);">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span>
+        Long Shelf
+      </div>
+      <h3>Worth Your Time</h3>
+      <p>8 reads and listens for a Sunday afternoon — two wildcards included.</p>
+      <div class="read-time">2 min</div>
+    </a>
+    <a href="#radar" class="nav-card" style="text-decoration:none; border-left-color: var(--ghost);">
+      <div class="nav-card-tag" style="color:var(--ghost);">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49M7.76 16.24a6 6 0 0 1 0-8.49M20.07 3.93a10 10 0 0 1 0 16.14M3.93 20.07a10 10 0 0 1 0-16.14"/></svg></span>
+        On the Radar
+      </div>
+      <h3>What's Coming Up</h3>
+      <p>WC playoff finals, Masters at Augusta, upcoming fixtures, dates to know.</p>
+      <div class="read-time">2 min</div>
+    </a>
+  </div>
+</section>
+
+<!-- ══════ FOREWORD ══════ -->
+<section class="foreword">
+  <p>Four weeks ago the word "Hormuz" meant little beyond a geography textbook. Today it's the fulcrum on which the global economy balances — with the US and Israel pressing one side and Iran pressing the other. Meanwhile, Northern Ireland played some excellent football in Bergamo and lost to a Sandro Tonali who looks like he's been waiting four years to play a game that mattered. He has. This week, everything converges.</p>
+</section>
+
+<!-- ══════ THE LONG SHELF ══════ -->
+<section class="sec longshelf-section" id="longshelf">
+  <span class="section-label" style="color:var(--rose)">The Long Shelf — Worth Your Time</span>
+  <div class="longshelf-grid">
+    <div class="shelf-item">
+      <div class="title"><a href="https://www.reuters.com/world/middle-east/one-month-into-iran-war-only-hard-choices-trump-2026-03-28/">One Month In: Hard Choices for Trump</a></div>
+      <div class="meta">Reuters · March 28, 2026</div>
+      <div class="desc">The best single-piece read on why the Iran conflict has no clean exit — covering military, economic, and alliance dimensions without spin.</div>
+    </div>
+    <div class="shelf-item">
+      <div class="title"><a href="https://www.a16z.news/p/top-100-gen-ai-consumer-apps-march">Top 100 Gen AI Consumer Apps: March 2026</a></div>
+      <div class="meta">a16z · Olivia Moore · March 2026</div>
+      <div class="desc">ChatGPT now has 900 million weekly active users. This bi-annual deep dive is the best map of where consumer AI is actually going.</div>
+    </div>
+    <div class="shelf-item">
+      <div class="title"><a href="https://www.runnersworld.com/uk/training/cross-training/a70198855/strength-training-running-economy-study/">The Strength Training All Endurance Runners Need</a></div>
+      <div class="meta">Runner's World · Feb 2026</div>
+      <div class="desc">Meta-analysis of 31 studies settling the debate: what kind of strength work actually improves your running economy — and why it depends on your speed.</div>
+    </div>
+    <div class="shelf-item">
+      <div class="title"><a href="https://en.wikipedia.org/wiki/Siege_of_Paris_(845)">The Siege of Paris, 845</a></div>
+      <div class="meta">Wikipedia — surprisingly gripping</div>
+      <div class="desc">120 Viking ships, 5,000 warriors, Easter Sunday, and a king who paid a ransom in silver rather than fight. The whole saga is on one page and it reads like a thriller.</div>
+    </div>
+    <div class="shelf-item">
+      <div class="title"><a href="https://www.bloomberglaw.com/news/articles/2026-03-24/nintendo-cuts-switch-2-output-by-over-30-on-weak-holiday-sales">Nintendo Cuts Switch 2 Output by 30%</a></div>
+      <div class="meta">Bloomberg · March 24, 2026</div>
+      <div class="desc">The console that sold out everywhere on launch is now being overproduced relative to demand. A nuanced picture of what tariffs and a $450 price point are doing to the market.</div>
+    </div>
+    <div class="shelf-item">
+      <div class="title"><a href="https://mackinderforum.org/geopolitical-newsletter/weekly-geopolitical-news-bulletin-march-14-20-2026">Weekly Geopolitical News Bulletin: March 14–20</a></div>
+      <div class="meta">Mackinder Forum · March 20, 2026</div>
+      <div class="desc">The best briefing on the gap between what Washington wants from its allies and what those allies are actually prepared to do around Hormuz. Indispensable context.</div>
+    </div>
+    <div class="shelf-item">
+      <div class="title"><a href="https://winteriscoming.net/16-new-fantasy-science-fiction-books-march-2026">20 New Fantasy &amp; Sci-Fi Books for March 2026</a></div>
+      <div class="meta">Winter Is Coming · March 2026</div>
+      <div class="desc"><strong>Wildcard.</strong> A comprehensive round-up including Adrian Tchaikovsky's <em>Children of Strife</em> and several overlooked gems. Good rabbit hole for the TBR pile.</div>
+    </div>
+    <div class="shelf-item">
+      <div class="title"><a href="https://www.sciencedaily.com/releases/2026/03/260319074552.htm">The Best Strength Training Plan Might Be Simpler Than You Think</a></div>
+      <div class="meta">ScienceDaily / McMaster University · March 2026</div>
+      <div class="desc"><strong>Wildcard.</strong> ACSM's first major resistance training guidelines update in 17 years distilled to its essentials. The headline finding: consistency beats perfection. Surprisingly reassuring.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ THE WORLD THIS WEEK ══════ -->
+<hr class="divider dv-world">
+<section class="sec world-section sec-opener" id="world">
+  <div class="sec-watermark">World</div>
+  <div class="opener-band"></div>
+  <div class="sec-gradient-overlay"></div>
+  <span class="section-label" style="color:var(--rose)">The World This Week</span>
+  <h2>One Month of War: The Strait of Hormuz and the Fracture No One Planned</h2>
+  <img class="hero-img reveal" src="https://media.cnn.com/api/v1/images/stellar/prod/c-2026-03-24t180754z-1426962173-rc2vakah4ifr-rtrmadp-3-iran-crisis-pause.jpg?c=original&q=w_1041,c_fill" alt="US-Israel-Iran conflict, March 2026">
+  <div class="caption">The conflict in its fourth week. US Marines have deployed to the Gulf region. — CNN / Reuters</div>
+
+  <div class="entry-stat">Day 29</div>
+  <div class="entry-stat-context">of the US–Israel military campaign against Iran — the most significant armed conflict involving American forces since 2003</div>
+
+  <p>Thirty days in, and the most honest thing anyone in Washington can say about the war with Iran is that nobody planned for it to last this long, cost this much, or involve this much damage to global trade. <a href="https://www.reuters.com/world/middle-east/one-month-into-iran-war-only-hard-choices-trump-2026-03-28/">Reuters' comprehensive assessment this week</a> put it plainly: only hard choices remain.</p>
+
+  <div class="sidebar-float">
+    <div class="sidebar-title">Key Players</div>
+    <ul>
+      <li><strong>Mojtaba Khamenei</strong> — Iran's new Supreme Leader, hardline, has threatened to block Hormuz indefinitely</li>
+      <li><strong>Donald Trump</strong> — extended the pause on Iran energy strikes until April 6, signalling willingness to negotiate</li>
+      <li><strong>Israel Katz</strong> — Israeli Defence Minister warned strikes will "move up a level" this week</li>
+      <li><strong>Viktor Gyökeres</strong> — scored a hat-trick for Sweden. Nothing to do with Iran, but somebody has to have a good week.</li>
+    </ul>
+  </div>
+
+  <p>The Strait of Hormuz, 25 miles wide at its narrowest, carries roughly 20% of global oil supply through a body of water Iran has been mining, threatening, and intermittently blockading since the conflict began in late February. Iran's military leadership — specifically, the IRGC — has been targeting shipping across the Gulf, and the new Supreme Leader Mojtaba Khamenei has publicly committed to maintaining the blockade for as long as strikes on Iranian soil continue. That is not a negotiating posture. That is a war aim.</p>
+
+  <p>Trump's response this week was characteristically sprawling. In Miami on Friday he described Iran as "begging to make a deal" while simultaneously calling the Strait of Hormuz the "Strait of Trump" — briefly, before correcting himself. He extended a pause on strikes against Iran's energy sector until April 6, signalling some residual diplomatic intent. But his Defence establishment was simultaneously weighing a surge of up to 10,000 additional troops into the region. Those two things don't fit comfortably together.</p>
+
+  <div class="stat-bar">
+    <div class="stat"><div class="stat-num count-up" data-target="120">0</div><div class="stat-label">Days Hormuz could remain disrupted, analysts warn</div></div>
+    <div class="stat"><div class="stat-num count-up" data-target="20">0</div><div class="stat-label">% of global oil supply through Hormuz</div></div>
+    <div class="stat"><div class="stat-num count-up" data-target="10000">0</div><div class="stat-label">Additional US troops being considered</div></div>
+    <div class="stat"><div class="stat-num" style="font-size:22px">Apr 6</div><div class="stat-label">Deadline on Iran energy strike pause</div></div>
+  </div>
+
+  <p>Europe is fractured — and <a href="https://mackinderforum.org/geopolitical-newsletter/weekly-geopolitical-news-bulletin-march-14-20-2026">not quietly so</a>. France has explicitly said it will never participate in military operations to unblock Hormuz during active hostilities. Britain has approved US use of RAF Fairford and Diego Garcia for strikes on Iranian missile sites — a meaningful escalation — but stopped well short of direct naval participation in any Hormuz coalition. Japan cited constitutional constraints and said no. The pattern is consistent: allies support stabilisation in principle, but won't join the war itself. That gap between rhetoric and commitment is likely to define the next phase of the conflict more than any battlefield development.</p>
+
+  <div class="angle reveal">
+    <div class="angle-label">The Angle</div>
+    <p>The most underreported story of the week isn't the strikes on Tehran — it's Ukraine exporting drone-defence expertise to five Gulf states. Kyiv has deployed hundreds of specialists to the UAE, Saudi Arabia, Qatar, Kuwait, and Jordan to advise on interception of Iranian Shahed-type drones. Ukraine, which is fighting for its life, is simultaneously acting as a global military consultancy. That's an extraordinary thing to be happening. It's also a reminder that the war in Ukraine didn't end — it was just displaced from the front pages by an even bigger fire.</p>
+  </div>
+
+  <div class="pull-quote wide reveal">
+    <p>"We're closer than ever to the rise of the Middle East that is finally free at last from Iranian terror."</p>
+    <cite>— Donald Trump, Miami, March 28, 2026</cite>
+  </div>
+
+  <p>The Pakistan–Turkey–Egypt–Saudi quartet meeting in Islamabad on Sunday to discuss de-escalation is the most significant diplomatic development of the week. None of those countries want a wider regional war. All of them have economic exposure to Hormuz. Whether they have sufficient leverage over either Washington or Tehran is a different question — and the answer, on current evidence, is probably no.</p>
+
+  <div class="src"><a href="https://www.reuters.com/world/middle-east/one-month-into-iran-war-only-hard-choices-trump-2026-03-28/">Reuters</a> · <a href="https://mackinderforum.org/geopolitical-newsletter/weekly-geopolitical-news-bulletin-march-14-20-2026">Mackinder Forum</a> · <a href="https://www.aljazeera.com/news/liveblog/2026/3/29/iran-war-live-houthis-attack-israel-anti-war-protesters-rally-in-tel-aviv">Al Jazeera</a></div>
+
+  <div class="also">
+    <div class="also-title">Also This Week</div>
+    <ul class="also-list">
+      <li class="tier-hot"><strong>Russia launches ~1,000 drones and missiles at Ukraine</strong> — March 23–24 barrage as Moscow presses advantage while US attention is on the Gulf; peace talks remain suspended with no scheduled meetings before the March 31 deadline the Polymarket crowd considered all but certain to lapse.</li>
+      <li class="tier-hot"><strong>Trump announces 25% car tariffs</strong> — effective April 3; Canada immediately announced retaliatory 25% tariffs on US vehicles. The Supreme Court knocked out many of Trump's earlier tariff measures in February; these are framed under different legal authority.</li>
+      <li class="tier-warm"><strong>US–China trade talks in Paris</strong> — foundational discussions ahead of a possible Trump–Xi summit. Trade war continues even as diplomatic channels stay marginally open, which is how these things tend to go.</li>
+      <li class="tier-warm"><strong>Houthis attack Israel twice in 24 hours</strong> — ballistic missiles and drones, both intercepted. The Houthis have now formally aligned with Iran's stated war aims, threatening to "widen the war" if the Red Sea is used for operations against Iran.</li>
+      <li class="tier-note"><strong>US Supreme Court's February ruling</strong> — struck down many of Trump's 2025 tariffs under IEEPA; March has seen new Section 301 investigations opened against China, Vietnam, Taiwan, Mexico, Japan, and the EU. The legal tools are being reshuffled, not abandoned.</li>
+      <li><strong>Northern Ireland played Italy</strong> — more on that in The Touchline, but it's worth noting here that the match was politically loaded for a small nation that had an excellent qualifying campaign and deserved a better send-off than this.</li>
+    </ul>
+  </div>
+
+  <div class="read-next">Up next: <a href="#tech">Pixel &amp; Byte <span class="arrow">→</span></a> — Nintendo production cuts, Steam Machine hints, and the AI app race</div>
+</section>
+
+<!-- BREATHER BAND -->
+<div class="breather">
+  <div class="breather-stat">900M</div>
+  <div class="breather-context">weekly active users on ChatGPT — over 10% of the global population</div>
+  <div class="breather-teaser">How the AI consumer landscape reshaped itself in the past year →</div>
+</div>
+
+<!-- ══════ PIXEL & BYTE ══════ -->
+<hr class="divider dv-tech">
+<section class="sec tech-section" id="tech">
+  <div class="sec-watermark">Pixel</div>
+  <div class="sec-gradient-overlay"></div>
+  <span class="section-label" style="color:var(--ember)">Pixel &amp; Byte</span>
+
+  <h2>Nintendo Blinks — and the Switch 2 Story Gets Complicated</h2>
+
+  <div class="entry-bullets">
+    <li>Nintendo cutting Switch 2 production by 30%+ — from 6M to 4M units this quarter</li>
+    <li>US sales have significantly underperformed expectations since the holiday season</li>
+    <li>The $450 price point and tariff uncertainty are the prime suspects</li>
+  </div>
+
+  <img class="inline-img reveal" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Nintendo_Switch_2_20250605_HOF4954_RAW-Export.png/500px-Nintendo_Switch_2_20250605_HOF4954_RAW-Export.png" alt="Nintendo Switch 2" style="border-radius:8px; margin:20px 0; max-height:280px; object-fit:contain;">
+  <div class="caption">The Nintendo Switch 2 — the console that sold out on launch but is now being overproduced relative to actual demand. — Wikipedia Commons</div>
+
+  <p>Let's be precise about what <a href="https://www.bloomberg.com/news/articles/2026-03-24/nintendo-cuts-switch-2-output-by-over-30-on-weak-holiday-sales">Bloomberg's reporting</a> actually says, because this story has been slightly misrepresented in some quarters: Nintendo is cutting production because demand in the US specifically underperformed holiday-season projections. It is not a global flop. It is not a repeat of the Wii U. But the $450 price tag — a full $150 more than the original Switch launched at — is clearly proving sticky in a market where tariff uncertainty and inflation are making discretionary spending more cautious.</p>
+
+  <div class="compare-panel">
+    <div class="compare-side left">
+      <h4>Nintendo Switch 2</h4>
+      <ul>
+        <li>$449.99 (US)</li>
+        <li>8" LCD display, 1080p docked</li>
+        <li>Backwards compatible with most Switch games</li>
+        <li>New Joy-Con 2 with mouse functionality</li>
+        <li>Production: Cut to ~4M units/quarter</li>
+        <li>Exclusive highlight: Super Mario Bros. Wonder NS2 Edition (Mar 26)</li>
+      </ul>
+    </div>
+    <div class="compare-side right">
+      <h4>Steam Deck / Steam Machine</h4>
+      <ul>
+        <li>Steam Deck OLED: $549 (LCD from $399)</li>
+        <li>SteamOS 3.8.0 Preview: "Second Clutch" dropped this week</li>
+        <li>Initial Steam Machine hardware support added to latest preview</li>
+        <li>Full Steam Machine launch still TBC in 2026 after memory/storage delay</li>
+        <li>Runs full PC games — the Switch 2 doesn't even try to compete here</li>
+      </ul>
+    </div>
+  </div>
+
+  <p>The <a href="https://www.pockettactics.com/steam-deck/update-march-2026">Steam Machine development</a> is quietly becoming one of the more interesting tech stories of the year. Valve's new SteamOS 3.8.0 preview — dubbed "Second Clutch" — added initial support for upcoming Steam Machine hardware this week, while also delivering battery life improvements for current Deck owners. The Steam Machine has been delayed from its original timeline due to memory and storage cost pressures, but a 2026 launch is still the plan. It won't threaten the Switch in living rooms where kids live — but in the 25–40 demographic, the overlap is real.</p>
+
+  <div class="dyk">
+    <div class="dyk-title">Did You Know?</div>
+    <p>Warframe launched on Switch 2 this week with improved visuals, resolution, and framerate — and is free to play. If you want to understand why Switch 2 adoption matters to mid-tier developers, free-to-play ports like this one are a significant part of the revenue model.</p>
+  </div>
+
+  <h3>This Week in Gaming: Switch 2 eShop Drops</h3>
+  <p>The March 26 Nintendo eShop update was substantial: <strong>Super Mario Bros. Wonder – Nintendo Switch 2 Edition</strong> arrived with the new "Meetup in Bellabel Park" multiplayer feature, alongside <a href="https://www.nintendolife.com/news/2026/03/dragon-quest-builders-switch-patch-available-now-switch-2-compatibility-update-also-released">Dragon Quest Builders receiving Switch 2 compatibility</a>, Kena: Bridge of Spirits, and Virtua Fighter 5 R.E.V.O. World Stage. <a href="https://www.gamereactor.eu/crimson-desert-has-started-work-on-a-nintendo-switch-2-port-1698273/">Crimson Desert — currently dominating sales charts with 3M+ copies sold — has begun R&D on a Switch 2 port</a>, though the developer acknowledged the hardware gap is "challenging." Translation: possible, but expect compromises.</p>
+
+  <h3>AI Tools: The Consumer Landscape in March 2026</h3>
+  <p>The <a href="https://www.a16z.news/p/top-100-gen-ai-consumer-apps-march">a16z Top 100 Consumer AI Apps report</a> landed this week and it's essential reading. ChatGPT is 2.7x larger than Gemini by web traffic. It now has 900 million weekly active users — more than 10% of the global population. But the race for the "default AI" is tightening: Google has deepened Gemini's integration across all Workspace products and launched Personal Intelligence connecting it to Gmail, Photos, YouTube, and Search simultaneously. Claude has quietly built a professional-grade ecosystem while ChatGPT has pursued 85+ consumer integrations across Travel, Shopping, and Entertainment. These are two fundamentally different bets on where value in AI accumulates.</p>
+
+  <div class="sidebar">
+    <div class="sidebar-title">Family Picks</div>
+    <ul>
+      <li><strong>Super Mario Bros. Wonder NS2 Edition</strong> — Still the best 2D Mario in a decade, and the new Bellabel Park co-op additions make this an even better pick for playing together. Rated E for Everyone.</li>
+      <li><strong>Kena: Bridge of Spirits (Switch 2)</strong> — Gorgeous action-adventure with a gentle difficulty curve. The art style will instantly appeal to anyone who enjoyed animated films like Moana. Aged 10 and up comfortably.</li>
+      <li><strong>Warframe (Switch 2)</strong> — Free to play, deep co-op shooter. Fine for 10+ with parental oversight of in-game purchases. The Switch 2 version is the best-looking version to date.</li>
+    </ul>
+  </div>
+
+  <div class="also">
+    <div class="also-title">Also in Tech &amp; Gaming</div>
+    <div class="also-cards">
+      <div class="also-card">
+        <h4>LEGO Star Wars: The Skywalker Saga Update</h4>
+        <p>The base game continues to receive minor patch updates ahead of anticipated DLC content. No major new LEGO sets announced this week specifically, but the May LEGO calendar is shaping up — watch for reveals in coming weeks.</p>
+        <span class="badge">LEGO</span>
+      </div>
+      <div class="also-card">
+        <h4>GeForce Now — RTX 4080 Tier</h4>
+        <p>NVIDIA's cloud gaming tier continues to expand its catalogue with Switch 2 releases also becoming available via cloud. If you're not playing demanding PC titles, the free tier remains impressive value.</p>
+        <span class="badge">Cloud Gaming</span>
+      </div>
+      <div class="also-card">
+        <h4>Meta AI Monthly Usage: 39%</h4>
+        <p>Via Instagram, Facebook, and WhatsApp. The route to AI adoption for a huge segment of the population isn't ChatGPT — it's the app they already have open. Meta's quiet dominance of this vector is underappreciated.</p>
+        <span class="badge">AI Tools</span>
+      </div>
+      <div class="also-card">
+        <h4>Xiaomi Pad 8 — Software Update</h4>
+        <p>No major hardware news this cycle, but HyperOS continues its rollout. The tablet remains the best-value large-display Android tablet on the market for media consumption and light productivity.</p>
+        <span class="badge">Mobile Tech</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="read-next">Up next: <a href="#football">The Touchline <span class="arrow">→</span></a> — WC playoffs, NI's Bergamo night, and the full Serie A picture</div>
+</section>
+
+<!-- ══════ THE TOUCHLINE ══════ -->
+<hr class="divider dv-football">
+<section class="sec touchline-section" id="football">
+  <div class="sec-watermark">Touchline</div>
+  <span class="section-label">The Touchline</span>
+
+  <h2 style="color:white">The Qualifier Week That Ends In Bergamo — And Begins in Belfast</h2>
+
+  <h3>World Cup 2026 European Play-Off Semi-Finals — March 26</h3>
+  <div class="results-strip">
+    <div class="result-card reveal"><span class="teams"><strong>Italy</strong> vs Northern Ireland</span><span class="score">2–0</span></div>
+    <div class="result-card reveal"><span class="teams"><strong>Bosnia-Herzegovina</strong> vs Wales</span><span class="score">1–1 aet (BOS 4-2 pens)</span></div>
+    <div class="result-card reveal"><span class="teams"><strong>Sweden</strong> vs Ukraine</span><span class="score">3–1</span></div>
+    <div class="result-card reveal"><span class="teams"><strong>Poland</strong> vs Albania</span><span class="score">2–1</span></div>
+    <div class="result-card reveal"><span class="teams"><strong>Kosovo</strong> vs Slovakia</span><span class="score">4–3</span></div>
+    <div class="result-card reveal"><span class="teams"><strong>Turkey</strong> vs Romania</span><span class="score">1–0</span></div>
+    <div class="result-card reveal"><span class="teams"><strong>Denmark</strong> vs North Macedonia</span><span class="score">4–0</span></div>
+    <div class="result-card reveal"><span class="teams"><strong>Czechia</strong> vs Republic of Ireland</span><span class="score">2–2 aet (CZE 4-3 pens)</span></div>
+  </div>
+
+  <p style="color:rgba(255,255,255,.6); font-family:'DM Sans',sans-serif; font-size:13px; margin-bottom:20px;">Finals: Bosnia vs Italy, Sweden vs Poland, Kosovo vs Turkey, Czechia vs Denmark — all Tuesday 31 March</p>
+
+  <div class="big-number-row">
+    <div class="big-number">
+      <div class="num count-up" data-target="12">0</div>
+      <div class="num-label">Years since Italy's last World Cup</div>
+    </div>
+    <div class="big-number">
+      <div class="num count-up" data-target="8">0</div>
+      <div class="num-label">Finals decided this Tuesday</div>
+    </div>
+    <div class="big-number">
+      <div class="num">1st</div>
+      <div class="num-label">Ever World Cup for Kosovo if they beat Turkey</div>
+    </div>
+  </div>
+
+  <h3 class="narrative">Italy–Northern Ireland: The Night Tonali Came Home</h3>
+
+  <img class="img-offset reveal" src="https://s.yimg.com/os/en/football_italia_articles_132/83734f1f4d4b5f2713994400af57df23" alt="Italy vs Northern Ireland World Cup qualifier">
+
+  <p><a href="https://www.espn.com/soccer/story/_/id/48290586/2026-world-cup-european-playoffs-live-updates-highlights-reaction">Italy won 2–0</a> and it wasn't as comfortable as the scoreline suggests. Northern Ireland, set up in a compact 5-4-1 by their coaching staff, gave the Azzurri genuine problems through the first half. For long stretches it looked like Italy — a team under existential pressure to end a 12-year World Cup absence — might be heading for another catastrophe.</p>
+
+  <p>Then Sandro Tonali happened. This was his night, and there's no point pretending otherwise. Tonali served an 18-month ban for illegal gambling that kept him out of international football until earlier this season. He has spent the intervening period training ferociously at Newcastle, visibly reconstructing himself. In Bergamo, with the pressure at its most acute, he scored and assisted Moise Kean's late clincher. The relief on his face at full time was something different from celebration — it was closer to release.</p>
+
+  <div class="angle reveal">
+    <div class="angle-label">The Take</div>
+    <p>Northern Ireland shouldn't be ashamed of Thursday. They competed with a team four times their FIFA ranking for 75 minutes, played disciplined tactical football, and gave Italy serious problems at a ground the Azzurri were supposed to control. This was a good Northern Ireland team playing at its ceiling. Italy are just — barely — above it. Tuesday's final against Bosnia-Herzegovina will be uncomfortably tight.</p>
+  </div>
+
+  <div class="pull-quote wide reveal">
+    <p>"Internally, we've all been waiting for this. You play 18 months for a night like this."</p>
+    <cite>— Sandro Tonali, post-match (paraphrased from multiple reports)</cite>
+  </div>
+
+  <h3>Serie A — Top 6 (After Matchday 30)</h3>
+  <div class="table-wrap"><table class="league-table">
+    <tr><th class="pos">#</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>Pts</th><th></th></tr>
+    <tr><td class="pos">1</td><td>Inter Milan</td><td>30</td><td>22</td><td>3</td><td>5</td><td>69</td><td><span class="pos-change same">•</span></td></tr>
+    <tr><td class="pos">2</td><td>AC Milan</td><td>30</td><td>18</td><td>9</td><td>3</td><td>63</td><td><span class="pos-change up">▲ 1</span></td></tr>
+    <tr><td class="pos">3</td><td>Napoli</td><td>30</td><td>19</td><td>5</td><td>6</td><td>62</td><td><span class="pos-change same">•</span></td></tr>
+    <tr><td class="pos">4</td><td>Como</td><td>30</td><td>16</td><td>9</td><td>5</td><td>57</td><td><span class="pos-change up">▲ 2</span></td></tr>
+    <tr class="highlight"><td class="pos">5</td><td>Juventus</td><td>30</td><td>—</td><td>—</td><td>—</td><td>—</td><td><span class="pos-change same">•</span></td></tr>
+    <tr><td class="pos">6</td><td>Roma</td><td>30</td><td>—</td><td>—</td><td>—</td><td>—</td><td><span class="pos-change same">•</span></td></tr>
+  </table></div>
+
+  <p style="font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(255,255,255,.4);">Full standings from <a href="https://www.espn.com/soccer/standings/_/league/ita.1">ESPN</a>. Matchday 31 fixtures pending at time of issue.</p>
+
+  <h3>Matchday 30 Highlights</h3>
+  <div class="results-strip">
+    <div class="result-card"><span class="teams">Cagliari vs <strong>Napoli</strong></span><span class="score">0–1</span></div>
+    <div class="result-card"><span class="teams">Parma vs <strong>Cremonese</strong></span><span class="score">0–2</span></div>
+    <div class="result-card"><span class="teams"><strong>AC Milan</strong> vs Torino</span><span class="score">3–2</span></div>
+    <div class="result-card"><span class="teams">Juventus vs <strong>Sassuolo</strong></span><span class="score">1–1</span></div>
+    <div class="result-card"><span class="teams"><strong>Como</strong> vs Pisa</span><span class="score">5–0</span></div>
+    <div class="result-card"><span class="teams">Bologna vs <strong>Lazio</strong></span><span class="score">0–2</span></div>
+    <div class="result-card"><span class="teams"><strong>Atalanta</strong> vs Verona</span><span class="score">1–0</span></div>
+    <div class="result-card"><span class="teams"><strong>Roma</strong> vs Lecce</span><span class="score">1–0</span></div>
+    <div class="result-card"><span class="teams">Fiorentina vs <strong>Inter</strong></span><span class="score">1–1</span></div>
+  </div>
+
+  <p>Juventus dropped two points at home to Sassuolo — a draw that didn't do their European ambitions any good and was, frankly, a bit embarrassing against a team fighting for survival. Kenan Yildiz opened the scoring with something special, then watched Pinamonti equalise for Sassuolo in the second half. The 1-1 is symptomatic of a Juve side that creates enough to win but doesn't finish consistently. Meanwhile, Como's 5-0 demolition of Pisa was the result of the round — Nico Paz and Martin Baturina were outstanding — and Lazio's 2-0 at Bologna (both from Kenneth Taylor) keeps them firmly in the European picture.</p>
+
+  <div class="dyk">
+    <div class="dyk-title">Did You Know?</div>
+    <p>AC Milan's Pavlović, Rabiot, and Fofana all scored in the 3-2 win over Torino — a statistically rare occurrence where three defensive or defensive-midfield players all found the net in the same match. The collective market value of that trio? Just north of €100 million.</p>
+  </div>
+
+  <h3>Form — Points Per Match (Last 6)</h3>
+  <div style="margin:12px 0">
+    <span style="font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(255,255,255,.5);display:inline-block;width:100px">Inter Milan</span>
+    <span class="sparkline"><svg viewBox="0 0 200 40" preserveAspectRatio="none">
+      <path class="spark-area" d="M0,5 L33,12 L66,5 L100,8 L133,5 L166,12 L200,5 L200,40 L0,40 Z"/>
+      <path class="spark-line" d="M0,5 L33,12 L66,5 L100,8 L133,5 L166,12 L200,5"/>
+      <circle class="spark-dot" cx="200" cy="5" r="3"/>
+    </svg></span>
+    <span class="mini-bar-track"><span class="mini-bar-fill" style="width:88%"></span></span>
+    <span style="font-family:'DM Sans',sans-serif;font-size:11px;color:rgba(255,255,255,.4);margin-left:6px">88%</span>
+  </div>
+  <div style="margin:12px 0">
+    <span style="font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(255,255,255,.5);display:inline-block;width:100px">Napoli</span>
+    <span class="sparkline"><svg viewBox="0 0 200 40" preserveAspectRatio="none">
+      <path class="spark-area" d="M0,8 L33,5 L66,18 L100,5 L133,8 L166,5 L200,8 L200,40 L0,40 Z"/>
+      <path class="spark-line" d="M0,8 L33,5 L66,18 L100,5 L133,8 L166,5 L200,8"/>
+      <circle class="spark-dot" cx="200" cy="8" r="3"/>
+    </svg></span>
+    <span class="mini-bar-track"><span class="mini-bar-fill" style="width:78%"></span></span>
+    <span style="font-family:'DM Sans',sans-serif;font-size:11px;color:rgba(255,255,255,.4);margin-left:6px">78%</span>
+  </div>
+  <div style="margin:12px 0">
+    <span style="font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(255,255,255,.5);display:inline-block;width:100px">Juventus</span>
+    <span class="sparkline"><svg viewBox="0 0 200 40" preserveAspectRatio="none">
+      <path class="spark-area" d="M0,15 L33,8 L66,20 L100,25 L133,15 L166,20 L200,22 L200,40 L0,40 Z"/>
+      <path class="spark-line" d="M0,15 L33,8 L66,20 L100,25 L133,15 L166,20 L200,22"/>
+      <circle class="spark-dot" cx="200" cy="22" r="3"/>
+    </svg></span>
+    <span class="mini-bar-track"><span class="mini-bar-fill" style="width:58%"></span></span>
+    <span style="font-family:'DM Sans',sans-serif;font-size:11px;color:rgba(255,255,255,.4);margin-left:6px">58%</span>
+  </div>
+  <div style="margin:12px 0">
+    <span style="font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(255,255,255,.5);display:inline-block;width:100px">Como</span>
+    <span class="sparkline"><svg viewBox="0 0 200 40" preserveAspectRatio="none">
+      <path class="spark-area" d="M0,25 L33,20 L66,15 L100,10 L133,8 L166,5 L200,5 L200,40 L0,40 Z"/>
+      <path class="spark-line" d="M0,25 L33,20 L66,15 L100,10 L133,8 L166,5 L200,5"/>
+      <circle class="spark-dot" cx="200" cy="5" r="3"/>
+    </svg></span>
+    <span class="mini-bar-track"><span class="mini-bar-fill" style="width:75%"></span></span>
+    <span style="font-family:'DM Sans',sans-serif;font-size:11px;color:rgba(255,255,255,.4);margin-left:6px">75%</span>
+  </div>
+
+  <h3>Premier League — Recent Results (Week of Mar 22)</h3>
+  <div class="results-strip">
+    <div class="result-card"><span class="teams">Tottenham vs <strong>Nott'm Forest</strong></span><span class="score">0–3</span></div>
+    <div class="result-card"><span class="teams"><strong>Aston Villa</strong> vs West Ham</span><span class="score">2–0</span></div>
+    <div class="result-card"><span class="teams"><strong>Newcastle</strong> vs Sunderland</span><span class="score">1–2</span></div>
+    <div class="result-card"><span class="teams"><strong>Everton</strong> vs Chelsea</span><span class="score">3–0</span></div>
+    <div class="result-card"><span class="teams"><strong>Brighton</strong> vs Liverpool</span><span class="score">2–1</span></div>
+    <div class="result-card"><span class="teams"><strong>Fulham</strong> vs Burnley</span><span class="score">3–1</span></div>
+  </div>
+
+  <p>Liverpool losing 2-1 at Brighton is the headline result — a defeat that will have knocked confidence in the title race. Nottingham Forest's 3-0 at Tottenham was emphatic and underscores what a remarkable season this is for a club that were yo-yo'ing between divisions only recently. Sunderland beating Newcastle 2-1 in the north-east derby will sting. The Premier League international break week was thin for blockbuster results, but Forest, Brighton and Sunderland all took points off nominally bigger sides.</p>
+
+  <h3>Champions League Quarters — Confirmed Draw</h3>
+  <div class="sidebar">
+    <div class="sidebar-title">Quarter-Final Draw (First Legs: April 7-8)</div>
+    <ul>
+      <li><strong>Real Madrid vs Bayern München</strong> — The fixture football demands. Both legs will be unmissable.</li>
+      <li><strong>Sporting CP vs Arsenal</strong> — Arsenal's reward for a tremendous R16. Sporting at home first leg.</li>
+      <li><strong>Barcelona vs Atlético Madrid</strong> — La Liga civil war in Europe. Tension guaranteed.</li>
+      <li><strong>PSG vs Liverpool</strong> — Repeat of last season's R16. PSG won on pens; Liverpool will want revenge.</li>
+    </ul>
+  </div>
+
+  <div class="also">
+    <div class="also-title">Also on the Pitch</div>
+    <ul class="also-list">
+      <li class="tier-hot"><strong>Viktor Gyökeres hat-trick</strong> — Sweden 3-1 Ukraine. The Sporting striker is already Europe's form centre-forward and he chose the biggest stage to remind everyone. His price tag was already astronomical; it's now stratospheric.</li>
+      <li class="tier-warm"><strong>Kosovo into the WC playoff final</strong> — 4-3 against Slovakia in an extraordinary match. Kosovo have never been to a World Cup. They face Turkey on Tuesday and if they get through, the story writes itself.</li>
+      <li class="tier-warm"><strong>Masters Golf — Augusta, April 9-12</strong> — Not this week, but the shadow of Augusta is already falling. Covered in On the Radar. The world's best golfers are teeing off in warmup events.</li>
+      <li class="tier-note"><strong>Juventus were knocked out of the Champions League</strong> — by Galatasaray, aggregate 7-5 in the Round of 16 (second leg 3-2 after extra time was not enough). A painful exit that Juve's hierarchy will be reviewing carefully this summer.</li>
+    </ul>
+  </div>
+
+  <div class="read-next">Up next: <a href="#screen">Screen &amp; Sound <span class="arrow">→</span></a> — Maul returns, One Piece drops, and the full Release Radar</div>
+</section>
+
+<!-- DARK BREATHER -->
+<div class="breather dark">
+  <div class="breather-stat">April 6</div>
+  <div class="breather-context">The day Maul: Shadow Lord premieres on Disney+ — and Trump's strike pause on Iran expires</div>
+  <div class="breather-teaser">What's worth your screen time this week →</div>
+</div>
+
+<!-- ══════ SCREEN & SOUND ══════ -->
+<hr class="divider dv-screen">
+<section class="sec screen-section" id="screen">
+  <div class="sec-watermark">Screen</div>
+  <span class="section-label">Screen &amp; Sound</span>
+  <h2>Eight Days Until Maul</h2>
+
+  <div class="sidebar-float">
+    <div class="sidebar-title">Quick Takes</div>
+    <ul>
+      <li><strong>One Piece S2</strong> — All 8 eps on Netflix Mar 10. Consensus: stronger than S1.</li>
+      <li><strong>Dangerous Animals</strong> — Hulu, Mar 28. Thriller. Worth a look.</li>
+      <li><strong>The Bad Batch</strong> — Last season wrapping up. Clone Force 99's swan song.</li>
+    </ul>
+  </div>
+
+  <p>The Star Wars machine doesn't stop and doesn't slow — which, depending on your relationship with that franchise, is either reassuring or exhausting. But even the most jaded observer should pay attention to <em>Maul: Shadow Lord</em>, which arrives April 6 as a two-episode event on Disney+. The premise is strong: set after <em>The Clone Wars</em>, Maul is rebuilding his criminal empire on a planet outside Imperial reach, and encounters a disillusioned young Jedi Padawan who might become the apprentice he wants. Sam Witwer returns to voice him, the trailer is genuinely menacing, and the show is directly connected to the ongoing <em>Shadow of Maul</em> comic prequel series. This isn't filler content — it's a focused character study of one of Star Wars' most narratively interesting figures.</p>
+
+  <div class="entry-question" style="color:rgba(255,255,255,.85)">Could <em>Maul: Shadow Lord</em> be the Star Wars show that wins back viewers who gave up after <em>The Book of Boba Fett</em>?</div>
+
+  <p>The evidence suggests yes — tentatively. The creative team has explicitly learned from recent misfires: tight episode count, single narrative focus, high production values, and a protagonist with genuine menace. The two-episode premiere format is unusual but smart — it functions as a feature-length story that can be watched in one sitting. If you've been meaning to re-engage with Star Wars animation, this is the entry point. The official trailer — <a href="https://www.imdb.com/title/tt36594331/">now on Disney+</a> — is worth the 2 minutes.</p>
+
+  <img class="inline-img reveal" src="https://lumiere-a.akamaihd.net/v1/images/star-wars-maul-shadow-lord-swcj-hero-container-mobile_81561452.jpeg?region=0,50,1600,800" alt="Star Wars: Maul – Shadow Lord" style="border-radius:8px;">
+  <div class="caption">Star Wars: Maul – Shadow Lord. Premieres April 6, Disney+. — StarWars.com / Lucasfilm</div>
+
+  <p>This week also saw a flurry of March Star Wars comic releases: <em>The High Republic Adventures – Pathfinders 1</em>, <em>Hyperspace Stories: Codebreaker</em> (trade paperback), and the second volume of <em>Legacy of Vader: The Reign of Kylo Ren</em> drops on March 31. The Star Wars publishing machine is in full swing building narrative bridges between animated shows and comics in a way that actually rewards the attentive reader.</p>
+
+  <h3>Quick Reviews</h3>
+  <div class="card-stack">
+    <div class="stack-card">
+      <img class="stack-card-img" src="https://i.ytimg.com/vi/DkVepshZhGc/maxresdefault.jpg" alt="Maul: Shadow Lord">
+      <div class="stack-card-body">
+        <div class="stack-card-title">Maul: Shadow Lord (Preview)</div>
+        <div class="stack-card-verdict">Every sign points to the tightest, most focused Star Wars content since Andor. Don't miss the two-episode premiere.</div>
+        <span class="rating"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span></span>
+        <span class="platform-badge">Disney+ · Apr 6</span>
+      </div>
+    </div>
+    <div class="stack-card">
+      <div class="stack-card-body" style="padding:20px;">
+        <div class="stack-card-title">One Piece — Season 2 (Netflix)</div>
+        <div class="stack-card-verdict">Drops March 10, all 8 episodes. The consensus from early viewers is that Season 2 is stronger than the already-impressive first run. The Baratie arc is doing heavy lifting.</div>
+        <span class="rating"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span></span>
+        <span class="platform-badge">Netflix</span>
+      </div>
+    </div>
+    <div class="stack-card">
+      <div class="stack-card-body" style="padding:20px;">
+        <div class="stack-card-title">Dangerous Animals (Hulu)</div>
+        <div class="stack-card-verdict">"Exhilarating, twisted, and cleverly crafted" per Mashable. Premiered March 28. The thriller genre needed this jolt of energy.</div>
+        <span class="rating"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span></span>
+        <span class="platform-badge">Hulu · Mar 28</span>
+      </div>
+    </div>
+  </div>
+
+  <h3>The Release Radar</h3>
+  <div class="radar-grid">
+    <h3 style="margin-top:8px">Now Showing / Just Dropped</h3>
+    <div class="radar-row"><span class="radar-date">Mar 10</span><div><span class="radar-cat tv"></span><strong>One Piece Season 2</strong> — All episodes, Netflix. The Baratie arc is everything. <span class="radar-platform">Netflix</span></div></div>
+    <div class="radar-row"><span class="radar-date">Mar 26</span><div><span class="radar-cat game"></span><strong>Super Mario Bros. Wonder – NS2 Edition</strong> — New Bellabel Park co-op mode. <span class="radar-platform">Switch 2</span></div></div>
+    <div class="radar-row"><span class="radar-date">Mar 26</span><div><span class="radar-cat game"></span><strong>Warframe (Switch 2)</strong> — Free to play, enhanced for NS2 hardware. <span class="radar-platform">Switch 2</span></div></div>
+    <div class="radar-row"><span class="radar-date">Mar 26</span><div><span class="radar-cat game"></span><strong>Kena: Bridge of Spirits (Switch 2)</strong> — Beautiful, accessible action-adventure. <span class="radar-platform">Switch 2</span></div></div>
+    <div class="radar-row"><span class="radar-date">Mar 26</span><div><span class="radar-cat game"></span><strong>Virtua Fighter 5 R.E.V.O. World Stage</strong> — SEGA brings it to Switch 2. <span class="radar-platform">Switch 2</span></div></div>
+    <div class="radar-row"><span class="radar-date">Mar 28</span><div><span class="radar-cat film"></span><strong>Dangerous Animals</strong> — Twisted thriller, already getting strong word of mouth. <span class="radar-platform">Hulu</span></div></div>
+    <div class="radar-row"><span class="radar-date">Mar 24</span><div><span class="radar-cat book"></span><strong>Hyperspace Stories: Codebreaker</strong> — Poe Dameron miniseries collected. <span class="radar-platform">Star Wars Comics</span></div></div>
+    <div class="radar-row"><span class="radar-date">Mar 4</span><div><span class="radar-cat book"></span><strong>Shadow of Maul #1</strong> — Prequel comic to Shadow Lord animated series. <span class="radar-platform">Marvel Comics</span></div></div>
+    <div class="radar-row"><span class="radar-date">Mar 3</span><div><span class="radar-cat book"></span><strong>Children of Strife (Tchaikovsky)</strong> — Next entry in Children of Time series. <span class="radar-platform">Tor Books</span></div></div>
+    <div class="radar-row"><span class="radar-date">Mar 3</span><div><span class="radar-cat book"></span><strong>Between Two Fires (Buehlman reissue)</strong> — Dark medieval fantasy, re-released from Tor. <span class="radar-platform">Tor Books</span></div></div>
+
+    <h3>Coming Soon</h3>
+    <div class="radar-row"><span class="radar-date">Apr 6</span><div><span class="radar-cat tv"></span><strong>Maul: Shadow Lord</strong> — Two-episode premiere event. Sam Witwer. Post-Clone Wars. <span class="radar-platform">Disney+</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 7-8</span><div><span class="radar-cat game"></span><strong>CL Quarter-Finals (First Legs)</strong> — Real Madrid vs Bayern, PSG vs Liverpool, Arsenal vs Sporting, Barça vs Atlético. <span class="radar-platform">UEFA</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 9-12</span><div><span class="radar-cat game"></span><strong>The Masters — Augusta National</strong> — First men's major of 2026. <span class="radar-platform">Golf</span></div></div>
+    <div class="radar-row"><span class="radar-date">Mar 31</span><div><span class="radar-cat book"></span><strong>Legacy of Vader: Reign of Kylo Ren Vol. 2</strong> — Trade paperback collection. <span class="radar-platform">Marvel Comics</span></div></div>
+    <div class="radar-row"><span class="radar-date">Mar 31</span><div><span class="radar-cat tv"></span><strong>WC Playoff Finals</strong> — Italy vs Bosnia, Sweden vs Poland, Kosovo vs Turkey, Denmark vs Czechia. <span class="radar-platform">TV</span></div></div>
+    <div class="radar-row"><span class="radar-date">Oct 1</span><div><span class="radar-cat book"></span><strong>Legacies of Betrayal (Erikson / Malazan)</strong> — Witness #3, confirmed Oct 2026. <span class="radar-platform">Books</span></div></div>
+
+    <h3>Also Streaming / Available Now</h3>
+    <div class="radar-row"><span class="radar-date">Netflix</span><div><strong>The Midnight Walk</strong> — Dark fantasy handcrafted from real clay. Nintendo Switch 2 and now streaming.</div></div>
+    <div class="radar-row"><span class="radar-date">Various</span><div><strong>March SFF releases</strong> — Green &amp; Deadly Things (Lyons), River of Bones (Roanhorse), Children of Strife (Tchaikovsky) all available now.</div></div>
+    <div class="radar-row"><span class="radar-date">Mar 25</span><div><span class="radar-cat book"></span><strong>The High Republic Adventures – Pathfinders 1</strong> — New comic series, ongoing. <span class="radar-platform">Marvel</span></div></div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-title">For the Kids</div>
+    <ul>
+      <li><strong>One Piece Season 2 (Netflix)</strong> — Appropriate for 10+ who've seen or read One Piece. This is the gold standard for live-action anime adaptation right now. Watch together.</li>
+      <li><strong>Maul: Shadow Lord (Disney+)</strong> — The Clone Wars generation will know why this matters. Rated for families comfortable with animated Star Wars action.</li>
+      <li><strong>Kena: Bridge of Spirits (Switch 2)</strong> — Genuinely one of the most visually beautiful games available right now. Manageable for confident 10-year-olds, great to watch even if not playing.</li>
+    </ul>
+  </div>
+
+  <div class="also">
+    <div class="also-title">Also in Film &amp; TV</div>
+    <ul class="also-list">
+      <li><strong>The Bad Batch Season 4</strong> — Ongoing on Disney+. Clone Force 99's final arc is landing with real emotional weight for fans of the series.</li>
+      <li><strong>FATAL FRAME II: Crimson Butterfly Remake</strong> — Available Switch 2 from March 12. For horror fans; genuinely unsettling Japanese survival horror. Not for 10-year-olds.</li>
+      <li><strong>Scott Pilgrim EX</strong> — Available now for Switch 2 and original Switch. The surprise hit continues to expand.</li>
+    </ul>
+  </div>
+
+  <div class="read-next">Up next: <a href="#shelf">The Shelf <span class="arrow">→</span></a> — Malazan news, Cosmere 2026, podcasts</div>
+</section>
+
+<!-- ══════ THE SHELF ══════ -->
+<hr class="divider dv-shelf">
+<section class="sec shelf-section" id="shelf">
+  <div class="sec-watermark">Shelf</div>
+  <span class="section-label">The Shelf</span>
+
+  <h3>Books</h3>
+  <h3 class="feature-title">The Malazan Calendar Just Got More Interesting</h3>
+
+  <div class="entry-quote" style="border-left-color:var(--shelf-accent)">
+    <p>"Walk in Shadow is very close to hitting the publisher's desk. It's going to be a large book."</p>
+    <cite>— Steven Erikson, speaking at Munro's Books, Victoria, February 2026</cite>
+  </div>
+
+  <p>Two pieces of significant Malazan news broke in the past few weeks. First: <a href="https://www.reddit.com/r/Malazan/comments/1qgmq18/legacies_of_betrayal_slated_for_release_on_1/"><em>Legacies of Betrayal</em> — the third Witness book</a> — has received a confirmed publication date of October 1, 2026. This is the second half of <em>No Life Forsaken</em>, which was split into two volumes, and focuses primarily on marine squads. (No further details — no spoilers here.) Second: <em>Walk in Shadow</em>, the third and final book in the Kharkanas Trilogy, is at an advanced stage. Erikson confirmed at a bookshop event that Karsa Orlong will appear in the final Witness book, the fourth and last of the series. And there may be a standalone Kallor book somewhere on the horizon, which, if you know who Kallor is, you will understand is an extremely interesting proposition.</p>
+
+  <div class="book-grid">
+    <div class="book-card reveal">
+      <h4>Children of Strife</h4>
+      <div class="author">Adrian Tchaikovsky · Children of Time #4</div>
+      <p>The newest entry in Tchaikovsky's landmark hard SF series is out now. It reportedly shifts setting and perspective significantly from earlier volumes, which is both an exciting artistic choice and a reason to read the first three if you haven't. The premise involves a new crew of humans and their spider allies navigating the universe the series has built. No spoilers on what that means, but the series has a track record of surprising its readers in the best possible way.</p>
+      <div class="rating" style="margin-top:8px"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span></div>
+    </div>
+    <div class="book-card reveal">
+      <h4>Green &amp; Deadly Things</h4>
+      <div class="author">Jenn Lyons · March 3, 2026</div>
+      <p>Lyons is best known for the Chorus of Dragons epic fantasy series, but this new novel is something different — described as grimdark with teeth and unexpected structural cleverness. It's been one of the most anticipated releases of early 2026 among SFF readers, and early reviews are strong. The kind of book that earns a reputation through word of mouth rather than marketing.</p>
+      <div class="rating" style="margin-top:8px"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span></div>
+    </div>
+    <div class="book-card reveal">
+      <h4>Between Two Fires (Reissue)</h4>
+      <div class="author">Christopher Buehlman · Tor Books</div>
+      <p>Buehlman's debut is getting the reissue treatment this month. Set in plague-ravaged medieval France, it's dark historical fiction with supernatural elements done with real seriousness and craft. If you enjoyed anything by Joe Abercrombie or Paul Tremblay, this belongs on the radar. The author's <em>Blacktongue Thief</em> series has been acclaimed, but many consider this his best work.</p>
+      <div class="rating" style="margin-top:8px"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span></div>
+    </div>
+  </div>
+
+  <div class="dyk">
+    <div class="dyk-title">Did You Know?</div>
+    <p>After finishing <em>The Crippled God</em> in 2011 — all ten books of the Malazan Book of the Fallen — Steven Erikson took exactly one week off writing, read the complete works of Shakespeare, and then began <em>Forge of Darkness</em>. That is genuinely unhinged, and also probably explains a lot about the ambition of the Kharkanas Trilogy.</p>
+  </div>
+
+  <h3>Podcasts This Week</h3>
+  <p>Football Weekly's World Cup qualifier special is essential this week — Guardian's coverage of the UEFA playoffs was strong, and the pod has been tracking Italy's torturous qualification journey with appropriate exasperation. The Bunker should be covering the geopolitical implications of the week's news with their usual mixture of dark wit and genuine expertise. If you're not already listening to <em>History of Rome</em> and <em>Revolutions</em> by Mike Duncan, this week's history feature below is a reminder why both are in the permanent rotation.</p>
+
+  <div class="also">
+    <div class="also-title">Also on The Shelf</div>
+    <ul class="also-list">
+      <li><strong>Cosmere Reading Order 2026</strong> — With Wind and Truth (Stormlight 5) now in the timeline and the Mistborn Wax &amp; Wayne series completed, the Cosmere reading order community has produced excellent updated guides. The one posted to r/brandonsanderson this January is particularly thorough. Good if you're planning where to go next.</li>
+      <li><strong>River of Bones &amp; Other Stories — Rebecca Roanhorse</strong> — A new short story collection from the author of <em>Black Sun</em>. Out March 3. If you've read the Between Earth and Sky trilogy, this is essential. If you haven't — start there first.</li>
+      <li><strong>Ian Esslemont's 5th Path to Ascendancy book</strong> — "Very nearly ready for publication" per the Erikson event report. No date yet, but watch this space.</li>
+    </ul>
+  </div>
+
+  <div class="read-next">Up next: <a href="#session">The Session <span class="arrow">→</span></a> — strength science for runners</div>
+</section>
+
+<!-- ══════ THE SESSION ══════ -->
+<hr class="divider dv-session">
+<section class="sec session-section" id="session">
+  <div class="sec-watermark">Session</div>
+  <span class="section-label" style="color:var(--session-accent)">The Session</span>
+  <h2>Run Stronger: The Science Is Simpler Than You Think — and More Specific Than You'd Hope</h2>
+
+  <img class="img-offset left reveal" src="https://cdn-ildgdeb.nitrocdn.com/VTvNvKKSPCHpAxHKuEawGXtMFimQISYT/assets/images/optimized/rev-67fe821/bodytonicclinic.co.uk/wp-content/uploads/2025/04/Runners-Strength-Training-1024x576.jpg" alt="Strength training for runners" style="border-radius:8px; width:45%; max-width:320px;">
+
+  <p>Two significant pieces of strength-training research landed in March and they point in the same direction: the science of resistance training for runners is better understood than it's ever been, and the conclusions are both more encouraging and more specific than most generic fitness content acknowledges.</p>
+
+  <p>First, the ACSM — the American College of Sports Medicine — published <a href="https://www.sciencedaily.com/releases/2026/03/260319074552.htm">its first major update to resistance training guidelines in 17 years</a>. The headline finding: even small amounts of resistance training improve strength, muscle size, and physical function. The key is consistency, not perfection. Strict adherence to the "ideal" training protocol is no longer supported by the evidence. Personal preference, enjoyment, and sustainability matter more.</p>
+
+  <p>Second, a <a href="https://www.runnersworld.com/uk/training/cross-training/a70198855/strength-training-running-economy-study/">meta-analysis of 31 studies published in Runner's World</a> has settled what kind of strength training actually improves running economy — and the answer depends heavily on what kind of runner you are:</p>
+
+  <div class="workout-card reveal">
+    <div class="workout-card-title">Strength Training for Runners — Method by Goal</div>
+    <table>
+      <tr><th>Method</th><th>Best For</th><th>Mechanism</th></tr>
+      <tr><td>Heavy loads, low reps (3-5 sets of 3-5)</td><td>High-level runners, faster paces</td><td>Neuromuscular adaptations; improved rate of force development in short ground-contact time</td></tr>
+      <tr class="highlight-row"><td>Plyometric training</td><td>Lower-speed endurance runners</td><td>Increases tendon elongation; improves energy storage for longer efforts</td></tr>
+      <tr><td>Combined methods</td><td>Recreational runners (most of us)</td><td>Best of both — safer entry point, produces meaningful economy gains</td></tr>
+      <tr><td>Sub-maximal load (light weight, high rep)</td><td>Not recommended alone</td><td>Insufficient for economy changes; combine with heavy or plyo work</td></tr>
+      <tr><td>Isometric training</td><td>Specific conditions only</td><td>Short-period contractions simulating running biomechanics; limited standalone benefit</td></tr>
+    </table>
+  </div>
+
+  <p>The practical takeaway for a recreational runner with gym access: <span class="display-stat" style="color:var(--session-accent)">2</span> sessions of resistance training per week, anchored around heavy compound lower-body work (Romanian deadlifts, Bulgarian split squats, trap bar deadlifts) plus <strong>plyometric work</strong> (box jumps, broad jumps, single-leg hops), is the evidence-backed combination. Sub-maximal, high-rep work alone — the "do some squats" advice — doesn't generate running economy improvements on its own.</p>
+
+  <div class="angle" style="background:rgba(212,98,43,.08); border-left-color:var(--session-accent);">
+    <div class="angle-label" style="color:var(--session-accent);">The Take</div>
+    <p>The most interesting finding from the ACSM guidelines is actually the permission it gives. The old model — do this exact programme, this many sets, this many days — is gone. What the evidence actually supports is "do <em>something</em>, do it consistently, and choose methods you can maintain." That's not an excuse to phone it in; it's an invitation to build a training habit around what works in your life rather than an idealised prescription that fails after six weeks.</p>
+  </div>
+
+  <div class="dyk">
+    <div class="dyk-title">Did You Know?</div>
+    <p>Plyometric training was found to be the most effective strength method for slower-speed, lower-level runners — a genuinely surprising result, since most beginners are steered away from explosive training. The proposed mechanism is tendon elongation and energy storage improvement, which disproportionately benefits those running at lower intensities for longer periods.</p>
+  </div>
+
+  <div class="src"><a href="https://www.sciencedaily.com/releases/2026/03/260319074552.htm">ScienceDaily / ACSM Position Stand</a> · <a href="https://www.runnersworld.com/uk/training/cross-training/a70198855/strength-training-running-economy-study/">Runner's World meta-analysis</a></div>
+  <div class="read-next">Up next: <a href="#history">This Week in History <span class="arrow">→</span></a> — Easter Sunday, 845 AD</div>
+</section>
+
+<!-- ══════ THIS WEEK IN HISTORY ══════ -->
+<hr class="divider dv-history">
+<section class="sec history-section sec-opener" id="history">
+  <div class="sec-watermark">History</div>
+  <span class="section-label" style="color:var(--hist-accent)">This Week in History</span>
+  <h2>Easter Sunday, 845 AD: When Ragnar Sailed 120 Ships Up the Seine and Took Paris for Silver</h2>
+
+  <img class="img-offset reveal" src="https://upload.wikimedia.org/wikipedia/commons/c/c2/Viking_Siege_of_Paris.jpg" alt="Viking Siege of Paris 845 AD" style="border-radius:8px; width:50%; max-width:340px;">
+
+  <p>On this day in 845 AD — Easter Sunday — a fleet of 120 Viking longships carrying more than 5,000 warriors reached the city of Paris. They entered. They plundered it. And then, when Frankish King Charles the Bald offered them 2,570 kilograms of gold and silver to leave, they left.</p>
+
+  <p>The Norse chieftain leading the raid was known as Reginherus to Frankish chroniclers — and has been tentatively identified, by later tradition, as the legendary Ragnar Lodbrok. Whether or not that identification is accurate, the feat was extraordinary: a fleet sailed up the Seine from the coast, defeated a Frankish army division that was foolishly split between both banks of the river, and arrived at the most important city in Western Europe on its most symbolically significant day.</p>
+
+  <p>Charles the Bald, grandson of Charlemagne, faced a problem with no clean solution. His army had been defeated — partly through a tactical blunder of his own making, dividing his forces on either bank of the Seine when the Vikings could attack each half separately. With no relief army available, he paid. Seven thousand French livres in gold and silver — roughly 2,570 kilograms — in what became the first of thirteen such ransom payments the Franks made to Viking raiders. The French term for it, <em>danegeld</em>, became the word for tribute-under-duress across medieval Europe.</p>
+
+  <div class="angle" style="background:rgba(139,105,20,.06); border-left-color:var(--hist-accent);">
+    <div class="angle-label" style="color:var(--hist-accent);">The Angle</div>
+    <p>The choice of Easter Sunday was almost certainly deliberate. Arriving on the holiest day in the Christian calendar, when the city would be most crowded and the symbolic humiliation most acute, was a Viking statement of intent. Charles the Bald paying the ransom rather than fighting was also a statement — of political realism, if not military courage. The precedent it set, however, was catastrophic: Paris would be attacked repeatedly across the next four decades, culminating in the far more famous siege of 885-886. The lesson "pay the Danes and they'll go away" was correct in the short term and wrong across the century.</p>
+  </div>
+
+  <p>The episode sits in an interesting historical moment: it precedes the settlement of Normandy (911 AD) by only 66 years. The Northmen who sacked Paris in 845 were the forebears — culturally and often literally — of the Normans who would transform France and then England. The Vikings didn't just raid Europe. They became it.</p>
+
+  <div class="also">
+    <div class="also-title">Also This Week in History</div>
+    <div class="timeline">
+      <div class="timeline-node reveal">
+        <div class="timeline-date"><span class="year-badge">1139</span> March 29</div>
+        <div class="timeline-content"><strong>Pope Innocent II endorses the Knights Templar</strong> — The bull <em>Omne datum optimum</em> granted the Templars remarkable privileges: exemption from taxes, freedom from local church authority, and the right to build their own churches. Within a century, the Templars were the most powerful military order in Christendom and a de facto international banking network.</div>
+      </div>
+      <div class="timeline-node reveal">
+        <div class="timeline-date"><span class="year-badge">1430</span> March 29</div>
+        <div class="timeline-content"><strong>Ottoman forces capture Thessalonica from Venice</strong> — Murad II's capture of the city after a seven-year Venetian occupation was a key step in the Ottoman consolidation of the Balkans. A city that had been a great centre of Byzantine culture for over a millennium passed into Ottoman hands. It would remain there until 1912.</div>
+      </div>
+      <div class="timeline-node reveal">
+        <div class="timeline-date"><span class="year-badge">1461</span> March 29</div>
+        <div class="timeline-content"><strong>Battle of Towton — England's bloodiest medieval battle</strong> — Edward of York defeated the Lancastrian forces of Henry VI in a snowstorm near York, becoming King Edward IV. Between 20,000 and 28,000 men were killed in a single day — more than any other battle on English soil. The Wars of the Roses would continue, but Towton was the pivot.</div>
+      </div>
+      <div class="timeline-node reveal">
+        <div class="timeline-date"><span class="year-badge">1632</span> March 29</div>
+        <div class="timeline-content"><strong>Treaty of Saint-Germain returns Quebec to France</strong> — England had seized Quebec in 1629; this treaty returned it to French control. The French empire in North America would expand dramatically over the following century before the Seven Years' War ended it.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="src"><a href="https://en.wikipedia.org/wiki/Siege_of_Paris_(845)">Wikipedia: Siege of Paris (845)</a> · <a href="https://historymedieval.com/the-siege-of-paris-city-under-fire/">Medieval History</a></div>
+  <div class="read-next">Up next: <a href="#radar">On the Radar <span class="arrow">→</span></a> — what's coming this week</div>
+</section>
+
+<!-- ══════ ON THE RADAR ══════ -->
+<section class="sec radar-section" id="radar" style="background:var(--paper)">
+  <span class="section-label" style="color:var(--rose)">On the Radar — Coming Up</span>
+  <div class="radar-grid">
+    <div class="radar-row"><span class="radar-date">Mar 31</span><div><span class="radar-cat game"></span><strong>WC Playoff Finals</strong> — Italy vs Bosnia-Herzegovina, Sweden vs Poland, Kosovo vs Turkey, Czechia vs Denmark. The last six World Cup spots decided. High stakes, live on major broadcasters.</div></div>
+    <div class="radar-row"><span class="radar-date">Apr 6</span><div><span class="radar-cat tv"></span><strong>Star Wars: Maul – Shadow Lord premieres</strong> — Two-episode event on Disney+. Clear your evening.</div></div>
+    <div class="radar-row"><span class="radar-date">Apr 6</span><div><span class="radar-cat"></span><strong>Trump's Iran energy strike pause expires</strong> — The 10-day hold on strikes against Iran's energy sector runs out April 6. This is an internationally significant date; watch the news that morning.</div></div>
+    <div class="radar-row"><span class="radar-date">Apr 7–8</span><div><span class="radar-cat game"></span><strong>Champions League Quarter-Finals (First Legs)</strong> — Real Madrid vs Bayern, PSG vs Liverpool, Arsenal vs Sporting, Barcelona vs Atlético. The pick of European football.</div></div>
+    <div class="radar-row"><span class="radar-date">Apr 9–12</span><div><span class="radar-cat game"></span><strong>The Masters — Augusta National</strong> — First major of the golf year. World No. 1s and contenders converge. Sunday finish April 12 is the one to watch.</div></div>
+    <div class="radar-row"><span class="radar-date">Apr 3</span><div><span class="radar-cat"</span><strong>US car tariffs take effect</strong> — 25% on all imported cars and car parts. Watch for market reaction and further Canadian retaliation.</div></div>
+    <div class="radar-row"><span class="radar-date">Mar 29</span><div><span class="radar-cat"></span><strong>Parkrun Saturday (weekly)</strong> — Your local parkrun is the single best value-for-effort thing in recreational running. If you're not signed up, this is the nudge.</div></div>
+    <div class="radar-row"><span class="radar-date">Apr 14-15</span><div><span class="radar-cat game"></span><strong>Champions League Quarter-Finals (Second Legs)</strong> — Return fixtures. Expect drama.</div></div>
+    <div class="radar-row"><span class="radar-date">Apr 28-29</span><div><span class="radar-cat game"></span><strong>Champions League Semi-Finals draw</strong> — The four quarter-final winners advance. Semi-first legs late April.</div></div>
+    <div class="radar-row"><span class="radar-date">Oct 1</span><div><span class="radar-cat book"></span><strong>Legacies of Betrayal — Steven Erikson</strong> — Witness #3 confirmed for October. Set a reminder. This is the one Malazan readers have been waiting for.</div></div>
+  </div>
+</section>
+
+<!-- ══════ FOOTER ══════ -->
+<footer class="footer">
+  <div class="footer-brand">The Signal<span>.</span></div>
+  <div class="footer-issue">A Sunday Morning Magazine · Issue #2 · March 29, 2026</div>
+</footer>
+
+</div><!-- .mag -->
+
+<button class="back-to-top" id="backToTop" title="Back to top">↑</button>
+
+<script>
+// Reading progress bar
+(function() {
+  const bar = document.getElementById('progressBar');
+  if (!bar) return;
+  window.addEventListener('scroll', function() {
+    const h = document.documentElement;
+    const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    bar.style.width = Math.min(pct, 100) + '%';
+  }, { passive: true });
+})();
+
+// Back to top button visibility
+(function() {
+  const btn = document.getElementById('backToTop');
+  if (!btn) return;
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 800) {
+      btn.classList.add('visible');
+    } else {
+      btn.classList.remove('visible');
+    }
+  }, { passive: true });
+})();
+
+// Enhancement 5: IntersectionObserver for .reveal elements
+(function() {
+  var els = document.querySelectorAll('.reveal');
+  if (!els.length || !('IntersectionObserver' in window)) {
+    // Fallback: make everything visible if IntersectionObserver not supported
+    els.forEach(function(el) { el.classList.add('visible'); });
+    return;
+  }
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  els.forEach(function(el) { observer.observe(el); });
+})();
+
+// Enhancement 5: Count-up animation for .count-up elements
+(function() {
+  var els = document.querySelectorAll('.count-up');
+  if (!els.length || !('IntersectionObserver' in window)) return;
+
+  function animateCount(el) {
+    var target = el.getAttribute('data-target');
+    if (!target) return;
+    // Parse number — handle percentages, commas, decimals
+    var raw = target.replace(/[^0-9.\-]/g, '');
+    var num = parseFloat(raw);
+    if (isNaN(num)) return;
+    var prefix = target.match(/^[^0-9.\-]*/)[0] || '';
+    var suffix = target.match(/[^0-9.\-]*$/)[0] || '';
+    var isInt = num === Math.floor(num);
+    var duration = 800;
+    var start = performance.now();
+
+    function step(now) {
+      var progress = Math.min((now - start) / duration, 1);
+      // Ease-out cubic
+      var ease = 1 - Math.pow(1 - progress, 3);
+      var current = num * ease;
+      el.textContent = prefix + (isInt ? Math.floor(current).toLocaleString() : current.toFixed(1)) + suffix;
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    el.textContent = prefix + '0' + suffix;
+    requestAnimationFrame(step);
+  }
+
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        animateCount(entry.target);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  els.forEach(function(el) { observer.observe(el); });
+})();
+
+</script>
+</body>
+</html>
