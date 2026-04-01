@@ -1,0 +1,2651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Signal — Versus: The Lyss Method vs Ibex Training</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,500&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #111119;
+  --paper: #FAFAF8;
+  --warm: #F5F4F0;
+  --rose: #E8384F;
+  --ember: #FF6D3A;
+  --deep: #1B1B2F;
+  --slate: #64697B;
+  --ghost: #A4A8B6;
+  --rule: #E0DED8;
+  --pitch: #0A0E17;
+  --turf: #1A7A4C;
+  --turf-lt: #2BD67B;
+  --screen-bg: #14121E;
+  --neon: #FF2D78;
+  --shelf-bg: #1C1410;
+  --shelf-accent: #D4A03C;
+  --session-bg: #F2F7F4;
+  --session-accent: #D4622B;
+  --hist-bg: #F0EBE0;
+  --hist-accent: #8B6914;
+
+  /* ── Rotating section palettes ── */
+  --pantry-bg: #FAF5F0;
+  --pantry-accent: #C65D3A;
+  --workshop-bg: #F0F1F3;
+  --workshop-accent: #5A6378;
+  --toolkit-bg: #EFF3F6;
+  --toolkit-accent: #1A9AAF;
+  --ledger-bg: #FAF8F2;
+  --ledger-accent: #C48B2C;
+  --longgame-bg: #F0F1F4;
+  --longgame-accent: #2A3A5C;
+  --wallet-bg: #FAFBFC;
+  --wallet-accent: #1A8A7A;
+  --itinerary-bg: #FAF6F0;
+  --itinerary-accent: #D4634B;
+}
+
+/* ═══════════ RESET & BASE ═══════════ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  color: var(--ink);
+  background: #E8E6E1;
+  font-size: 18px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+.mag { max-width: 960px; margin: 0 auto; background: var(--paper); box-shadow: 0 4px 120px rgba(0,0,0,.12); position: relative; }
+img { max-width: 100%; height: auto; display: block; }
+a { color: var(--rose); text-decoration: none; }
+a:hover { text-decoration: underline; }
+p { margin-bottom: 16px; }
+p:last-child { margin-bottom: 0; }
+
+/* ═══════════ READING PROGRESS BAR ═══════════ */
+.progress-bar {
+  position: fixed; top: 0; left: 0; width: 0%;
+  height: 3px; z-index: 1000;
+  background: linear-gradient(90deg, var(--rose), var(--ember));
+  transition: width 100ms ease-out;
+}
+
+/* ═══════════ BACK TO TOP ═══════════ */
+.back-to-top {
+  position: fixed; bottom: 28px; right: 28px;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--deep); border: 1px solid rgba(255,255,255,.15);
+  color: white; font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transform: translateY(12px);
+  transition: opacity .25s ease, transform .25s ease;
+  z-index: 999; box-shadow: 0 4px 16px rgba(0,0,0,.2);
+}
+.back-to-top.visible { opacity: 1; transform: translateY(0); }
+.back-to-top:hover { background: var(--rose); }
+
+/* ═══════════ UTILITY CLASSES ═══════════ */
+.ui { font-family: 'DM Sans', sans-serif; }
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 3px; text-transform: uppercase;
+  margin-bottom: 12px; display: block;
+}
+/* Secondary labels use DM Sans — for sub-headers within sections */
+.sub-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--ghost); margin-bottom: 10px; display: block;
+}
+.caption {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; color: var(--ghost);
+  margin-top: 6px; line-height: 1.4;
+}
+.src {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; color: var(--ghost); margin-top: 12px;
+}
+.src a { color: var(--rose); }
+
+/* ═══════════ COVER ═══════════ */
+.cover {
+  background: var(--deep);
+  background-image:
+    radial-gradient(ellipse at 80% 20%, rgba(232,56,79,.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 20% 80%, rgba(255,109,58,.08) 0%, transparent 50%);
+  padding: 80px 60px 60px;
+  position: relative;
+  min-height: 480px;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  overflow: hidden;
+}
+.cover::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 5px;
+  background: linear-gradient(90deg, var(--rose), var(--ember), var(--rose));
+}
+
+/* Enhancement 18: Cover Ambient Animation — drifting gradients */
+.cover::after {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(ellipse at 80% 20%, rgba(232,56,79,.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 20% 80%, rgba(255,109,58,.08) 0%, transparent 50%);
+  animation: coverDrift 20s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes coverDrift {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-15px, 10px) scale(1.03); }
+  100% { transform: translate(10px, -8px) scale(1.01); }
+}
+
+/* Enhancement 18: Animated grain overlay */
+.cover-grain {
+  position: absolute; inset: 0;
+  background-image: repeating-conic-gradient(rgba(255,255,255,.015) 0% 25%, transparent 0% 50%);
+  background-size: 4px 4px;
+  animation: grainShift 0.8s steps(4) infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+@keyframes grainShift {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-2px, 2px); }
+  50% { transform: translate(2px, -1px); }
+  75% { transform: translate(-1px, -2px); }
+  100% { transform: translate(1px, 1px); }
+}
+
+/* Enhancement 9: Subtle noise texture on cover using base64 grain */
+.cover-noise {
+  position: absolute; inset: 0;
+  opacity: 0.035;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANWp0mAAAACHRSTlMzMzMzMzMzM85JBgUAAAA0SURBVDjLY2CgNmBWYBBgYFZgEGBkVmAQYGJWYBBgZlZgEGBhVmAQYGVWYBBgY6Y4AABxWAIRkPtLqAAAAABJRU5ErkJggg==");
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Enhancement 10: Cover brand — larger, tighter */
+.cover-brand {
+  font-size: 80px; font-weight: 700;
+  color: white; line-height: .95; letter-spacing: -3px; margin-bottom: 8px;
+  position: relative; z-index: 2;
+}
+.cover-brand span { color: var(--rose); font-style: italic; }
+.cover-issue {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: rgba(255,255,255,.4);
+  letter-spacing: 3px; text-transform: uppercase; margin-bottom: 32px;
+  position: relative; z-index: 2;
+}
+.cover-headline {
+  font-size: 32px; font-weight: 600;
+  color: rgba(255,255,255,.78); line-height: 1.25; max-width: 720px;
+  position: relative; z-index: 2;
+}
+.cover-tags { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 8px; position: relative; z-index: 2; }
+.cover-tags .tag {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 3px;
+  background: rgba(255,255,255,.06); color: rgba(255,255,255,.5);
+  border: 1px solid rgba(255,255,255,.08);
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  transition: background .15s ease, color .15s ease;
+  /* Enhancement 18: Staggered fade-in for tags */
+  opacity: 0;
+  animation: tagFadeIn 0.5s ease-out forwards;
+}
+.cover-tags .tag:nth-child(1) { animation-delay: 0.3s; }
+.cover-tags .tag:nth-child(2) { animation-delay: 0.4s; }
+.cover-tags .tag:nth-child(3) { animation-delay: 0.5s; }
+.cover-tags .tag:nth-child(4) { animation-delay: 0.6s; }
+.cover-tags .tag:nth-child(5) { animation-delay: 0.7s; }
+.cover-tags .tag:nth-child(6) { animation-delay: 0.8s; }
+.cover-tags .tag:nth-child(7) { animation-delay: 0.9s; }
+.cover-tags .tag:nth-child(8) { animation-delay: 1.0s; }
+.cover-tags .tag:nth-child(9) { animation-delay: 1.1s; }
+.cover-tags .tag:nth-child(10) { animation-delay: 1.2s; }
+@keyframes tagFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.cover-tags .tag:hover {
+  background: rgba(255,255,255,.12); color: rgba(255,255,255,.8);
+}
+
+/* ═══════════ NAVIGATOR ═══════════ */
+.nav-section { padding: 48px 60px; background: var(--paper); border-bottom: 1px solid var(--rule); }
+.nav-section h2 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 24px;
+}
+.nav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+/* Lead cards span two columns with optional thumbnail */
+.nav-card.lead {
+  grid-column: span 2;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+  padding: 0; overflow: hidden;
+}
+.nav-card.lead .nav-card-content { padding: 22px 24px; }
+.nav-card.lead .nav-card-thumb {
+  background-size: cover; background-position: center;
+  min-height: 140px;
+}
+.nav-card.lead h3 { font-size: 20px; }
+.nav-card {
+  background: var(--warm); border-radius: 8px; padding: 20px;
+  border-left: 4px solid var(--rule);
+  transition: transform .15s ease, box-shadow .15s ease;
+  text-decoration: none; display: block; cursor: pointer;
+}
+.nav-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.06); text-decoration: none; }
+.nav-card.world { border-left-color: var(--rose); }
+.nav-card.tech { border-left-color: var(--ember); }
+.nav-card.football { border-left-color: var(--turf); }
+.nav-card.screen { border-left-color: var(--neon); }
+.nav-card.shelf { border-left-color: var(--shelf-accent); }
+.nav-card.session { border-left-color: var(--session-accent); }
+.nav-card.history { border-left-color: var(--hist-accent); }
+
+/* Enhancement 6: Nav card tinted backgrounds & glow hovers */
+.nav-card.world { background: rgba(232,56,79,.06); }
+.nav-card.tech { background: rgba(255,109,58,.06); }
+.nav-card.football { background: rgba(26,122,76,.06); }
+.nav-card.screen { background: rgba(255,45,120,.06); }
+.nav-card.shelf { background: rgba(212,160,60,.06); }
+.nav-card.session { background: rgba(212,98,43,.06); }
+.nav-card.history { background: rgba(139,105,20,.06); }
+
+.nav-card.world:hover { box-shadow: 0 8px 24px rgba(232,56,79,.12); }
+.nav-card.tech:hover { box-shadow: 0 8px 24px rgba(255,109,58,.12); }
+.nav-card.football:hover { box-shadow: 0 8px 24px rgba(26,122,76,.12); }
+.nav-card.screen:hover { box-shadow: 0 8px 24px rgba(255,45,120,.12); }
+.nav-card.shelf:hover { box-shadow: 0 8px 24px rgba(212,160,60,.12); }
+.nav-card.session:hover { box-shadow: 0 8px 24px rgba(212,98,43,.12); }
+.nav-card.history:hover { box-shadow: 0 8px 24px rgba(139,105,20,.12); }
+
+.nav-card-tag {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: 6px;
+  display: flex; align-items: center; gap: 6px;
+}
+/* Enhancement 6 & 15: Nav card icon element */
+.nav-card-icon {
+  display: inline-flex; align-items: center;
+  width: 16px; height: 16px;
+  flex-shrink: 0;
+}
+.nav-card-icon svg { width: 16px; height: 16px; }
+.nav-card.world .nav-card-tag { color: var(--rose); }
+.nav-card.tech .nav-card-tag { color: var(--ember); }
+.nav-card.football .nav-card-tag { color: var(--turf); }
+.nav-card.screen .nav-card-tag { color: var(--neon); }
+.nav-card.shelf .nav-card-tag { color: var(--shelf-accent); }
+.nav-card.session .nav-card-tag { color: var(--session-accent); }
+.nav-card.history .nav-card-tag { color: var(--hist-accent); }
+.nav-card h3 {
+  font-size: 18px; font-weight: 700; line-height: 1.25;
+  color: var(--ink); margin-bottom: 4px;
+}
+.nav-card p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; color: var(--slate); line-height: 1.4; margin: 0;
+}
+.nav-card .read-time {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px; color: var(--ghost); margin-top: 8px;
+  letter-spacing: 0.5px; text-transform: uppercase;
+}
+
+/* ═══════════ FOREWORD ═══════════ */
+.foreword { padding: 48px 60px; border-bottom: 1px solid var(--rule); }
+.foreword p { font-size: 21px; line-height: 1.75; max-width: 680px; }
+.foreword p::first-letter {
+  font-size: 64px; font-weight: 700; float: left;
+  line-height: .78; margin: 8px 12px 0 0; color: var(--rose);
+}
+
+/* ═══════════ SECTION DIVIDERS ═══════════ */
+.divider { height: 8px; border: none; margin: 0; }
+.dv-world { background: linear-gradient(90deg, var(--rose), #c0392b); }
+.dv-tech { background: linear-gradient(90deg, var(--ember), #e67e22); }
+.dv-football { background: linear-gradient(90deg, var(--turf), var(--turf-lt)); }
+.dv-screen { background: linear-gradient(90deg, #9B59B6, var(--neon)); }
+.dv-shelf { background: linear-gradient(90deg, var(--shelf-accent), #A0722A); }
+.dv-session { background: linear-gradient(90deg, var(--session-accent), #E67E22); }
+.dv-history { background: linear-gradient(90deg, var(--hist-accent), #D4A03C); }
+.dv-other { background: linear-gradient(90deg, var(--slate), var(--ghost)); }
+/* Inset divider variant — centred with breathing room */
+.divider.inset { margin: 0 60px; border-radius: 4px; }
+
+/* ═══════════ GENERIC SECTION ═══════════ */
+.sec { padding: 48px 60px; position: relative; overflow: hidden; }
+.sec h2 { font-size: 36px; font-weight: 700; line-height: 1.15; margin-bottom: 20px; max-width: 680px; }
+/* Sub-story headings: lighter weight for visual hierarchy separation */
+.sec h3 { font-size: 22px; font-weight: 600; line-height: 1.2; margin: 28px 0 10px; }
+.sec h3.minor { font-weight: 400; font-style: italic; font-size: 20px; }
+.sec h4 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--ghost); margin: 28px 0 10px;
+}
+
+/* ═══════════ Enhancement 2: SECTION WATERMARK LABELS ═══════════ */
+.sec-watermark {
+  position: absolute;
+  top: 20px; left: -20px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 140px;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 0;
+  /* Default: use section accent at very low opacity */
+  color: currentColor;
+  opacity: 0.04;
+}
+
+/* Enhancement 2: Section opener variant */
+.sec-opener .section-label {
+  font-size: 14px;
+  letter-spacing: 4px;
+  margin-bottom: 16px;
+}
+.sec-opener h2 {
+  font-size: 42px;
+  max-width: 720px;
+}
+.sec-opener .opener-band {
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 120px;
+  background: linear-gradient(180deg, rgba(0,0,0,.03) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ═══════════ Enhancement 9: Section gradient overlay ═══════════ */
+.sec-gradient-overlay {
+  position: absolute;
+  bottom: 0; left: 0; right: 0; height: 200px;
+  pointer-events: none;
+  z-index: 0;
+}
+.world-section .sec-gradient-overlay { background: linear-gradient(180deg, transparent, rgba(232,56,79,.02)); }
+.tech-section .sec-gradient-overlay { background: linear-gradient(180deg, transparent, rgba(255,109,58,.02)); }
+.session-section .sec-gradient-overlay { background: linear-gradient(180deg, transparent, rgba(212,98,43,.02)); }
+
+/* ═══════════ STAT BAR ═══════════ */
+.stat-bar {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; margin: 24px 0;
+}
+.stat-bar .stat { padding: 18px 16px; text-align: center; border-right: 1px solid var(--rule); }
+.stat-bar .stat:last-child { border-right: none; }
+.stat-bar .stat-num { font-size: 32px; font-weight: 700; line-height: 1; }
+.stat-bar .stat-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px; font-weight: 700; color: var(--ghost);
+  text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;
+}
+
+/* ═══════════ Enhancement 3: BIG NUMBER CALLOUTS ═══════════ */
+.big-number {
+  text-align: center;
+  padding: 24px 0;
+  margin: 24px 0;
+}
+.big-number .num {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 80px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--rose);
+}
+.big-number .num-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ghost);
+  margin-top: 8px;
+}
+.big-number.float-left { float: left; margin: 0 32px 16px 0; text-align: left; }
+.big-number.float-right { float: right; margin: 0 0 16px 32px; text-align: right; }
+
+/* Big number row — 2-3 dramatic stats */
+.big-number-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin: 32px 0;
+  padding: 28px 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+.big-number-row .big-number {
+  margin: 0; padding: 0;
+}
+.big-number-row .big-number .num {
+  font-size: 64px;
+}
+
+/* Section-aware big numbers */
+.touchline-section .big-number .num { color: var(--turf-lt); }
+.touchline-section .big-number .num-label { color: rgba(255,255,255,.4); }
+.touchline-section .big-number-row { border-color: rgba(255,255,255,.1); }
+.screen-section .big-number .num { color: var(--neon); }
+.screen-section .big-number .num-label { color: rgba(255,255,255,.4); }
+.screen-section .big-number-row { border-color: rgba(255,255,255,.1); }
+.shelf-section .big-number .num { color: var(--shelf-accent); }
+.shelf-section .big-number .num-label { color: rgba(255,255,255,.4); }
+.shelf-section .big-number-row { border-color: rgba(255,255,255,.1); }
+.tech-section .big-number .num { color: var(--ember); }
+.session-section .big-number .num { color: var(--session-accent); }
+.history-section .big-number .num { color: var(--hist-accent); }
+
+/* Enhancement 10: Display stat — for inline dramatic numbers */
+.display-stat {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 72px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--rose);
+  display: inline;
+}
+
+/* ═══════════ ANGLE BOX ═══════════ */
+.angle {
+  background: var(--warm); border-left: 5px solid var(--rose);
+  padding: 24px 28px; margin: 28px 0; border-radius: 0 6px 6px 0;
+}
+.angle-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 8px;
+}
+.angle p { font-size: 17px; line-height: 1.65; font-weight: 600; }
+
+/* ═══════════ PULL QUOTE ═══════════ */
+.pull-quote {
+  border-left: 4px solid var(--rose); padding: 16px 28px; margin: 32px 0;
+}
+.pull-quote p {
+  font-size: 22px; font-style: italic; font-weight: 400;
+  line-height: 1.5; color: var(--ink); margin: 0;
+}
+.pull-quote cite {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-style: normal; color: var(--ghost);
+  display: block; margin-top: 8px;
+}
+
+/* Enhancement 7: Pull quote — centered variant */
+.pull-quote.centered {
+  border-left: none;
+  text-align: center;
+  padding: 32px 40px;
+  position: relative;
+}
+.pull-quote.centered::before {
+  content: '\201C';
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 80px;
+  font-weight: 700;
+  color: var(--rose);
+  opacity: 0.25;
+  display: block;
+  line-height: 0.5;
+  margin-bottom: 8px;
+}
+
+/* Enhancement 7: Pull quote — wide variant */
+.pull-quote.wide {
+  margin-left: -32px;
+  margin-right: -32px;
+  padding: 24px 40px;
+  border-left-width: 5px;
+}
+
+/* Section-aware centered quotes */
+.touchline-section .pull-quote.centered::before { color: var(--turf-lt); }
+.screen-section .pull-quote.centered::before { color: var(--neon); }
+.shelf-section .pull-quote.centered::before { color: var(--shelf-accent); }
+
+/* ═══════════ DID YOU KNOW ═══════════ */
+.dyk {
+  background: linear-gradient(135deg, #FFF8E7, #FFF3D6);
+  border: 1px solid #E8D5A3; border-radius: 8px;
+  padding: 18px 22px; margin: 24px 0; position: relative;
+}
+.dyk::before {
+  content: '💡'; position: absolute; top: -10px; left: 16px;
+  font-size: 18px; background: var(--paper); padding: 0 4px;
+}
+.dyk-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: #B8860B; margin-bottom: 6px;
+}
+.dyk p { font-size: 15px; line-height: 1.55; margin: 0; color: #5C4A20; }
+
+/* ═══════════ SIDEBAR / CALLOUT BOX ═══════════ */
+.sidebar {
+  background: var(--warm); border-radius: 8px; padding: 22px 26px; margin: 24px 0;
+  border: 1px solid var(--rule);
+}
+.sidebar-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 10px;
+}
+.sidebar ul { list-style: none; }
+.sidebar li {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; line-height: 1.5; padding: 5px 0;
+  border-bottom: 1px solid rgba(0,0,0,.04); color: var(--ink);
+}
+.sidebar li:last-child { border-bottom: none; }
+
+/* ═══════════ ALSO THIS WEEK LIST ═══════════ */
+.also { margin-top: 32px; padding-top: 24px; border-top: 2px solid var(--rule); }
+.also-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--ghost); margin-bottom: 12px;
+}
+.also-list { list-style: none; }
+.also-list li {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14.5px; line-height: 1.5; padding: 8px 0;
+  border-bottom: 1px solid rgba(0,0,0,.04);
+}
+.also-list li:last-child { border-bottom: none; }
+
+/* Enhancement 8: Also cards — compact card grid alternative */
+.also-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+.also-card {
+  background: var(--warm);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 14px 16px;
+}
+.also-card h4 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 700;
+  color: var(--ink);
+  letter-spacing: 0; text-transform: none;
+  margin: 0 0 4px;
+}
+.also-card p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12.5px; color: var(--slate);
+  line-height: 1.4; margin: 0;
+}
+.also-card .badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--ghost);
+  margin-top: 6px; display: inline-block;
+}
+
+/* Dark section also-cards */
+.touchline-section .also-cards .also-card { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.06); }
+.touchline-section .also-cards .also-card h4 { color: rgba(255,255,255,.9); }
+.touchline-section .also-cards .also-card p { color: rgba(255,255,255,.6); }
+.touchline-section .also-cards .also-card .badge { color: rgba(255,255,255,.3); }
+.screen-section .also-cards .also-card { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.06); }
+.screen-section .also-cards .also-card h4 { color: rgba(255,255,255,.9); }
+.screen-section .also-cards .also-card p { color: rgba(255,255,255,.6); }
+.shelf-section .also-cards .also-card { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.06); }
+.shelf-section .also-cards .also-card h4 { color: rgba(255,255,255,.9); }
+.shelf-section .also-cards .also-card p { color: rgba(255,255,255,.6); }
+
+/* ═══════════ DUAL COLUMN ═══════════ */
+.dual-col { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 24px 0; }
+.col-card { border-left: 4px solid var(--rule); padding-left: 24px; }
+.col-card.accent-ember { border-left-color: var(--ember); }
+.col-card.accent-deep { border-left-color: var(--deep); }
+.col-card h3 { font-size: 22px; font-weight: 700; line-height: 1.2; margin: 0 0 10px; }
+.col-card p { font-size: 16px; }
+
+/* ═══════════ Enhancement 1: VARIED COLUMN LAYOUTS ═══════════ */
+.split-60-40 {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 32px;
+  margin: 24px 0;
+  align-items: start;
+}
+.split-40-60 {
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+  gap: 32px;
+  margin: 24px 0;
+  align-items: start;
+}
+
+/* ═══════════ HERO IMAGE ═══════════ */
+.hero-img { width: 100%; aspect-ratio: 16/7; object-fit: cover; border-radius: 8px; margin: 24px 0; }
+/* Full-bleed hero — bleeds to section edges above content */
+.hero-bleed { width: calc(100% + 120px); margin-left: -60px; border-radius: 0; margin-top: -48px; margin-bottom: 28px; aspect-ratio: 16/7; object-fit: cover; }
+.inline-img { border-radius: 6px; margin: 20px 0; }
+/* Float image for text wrap (books, album art) */
+.img-float-left { float: left; margin: 4px 24px 12px 0; border-radius: 6px; }
+
+/* ═══════════ Enhancement 4: IMAGE MONTAGE GRID ═══════════ */
+.img-montage {
+  display: grid;
+  gap: 8px;
+  margin: 24px 0;
+}
+.img-montage.layout-1-2 {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+}
+.img-montage.layout-1-2 .montage-hero {
+  grid-column: 1 / -1;
+}
+.img-montage.layout-2x2 {
+  grid-template-columns: 1fr 1fr;
+}
+.img-montage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+}
+.img-montage .caption {
+  grid-column: 1 / -1;
+}
+
+/* Enhancement 4: Offset image — asymmetric text wrap */
+.img-offset {
+  float: right;
+  width: 60%;
+  margin: 0 0 16px 24px;
+  border-radius: 6px;
+}
+.img-offset.left {
+  float: left;
+  margin: 0 24px 16px 0;
+}
+
+/* ═══════════ THE WORLD THIS WEEK ═══════════ */
+.world-section { background: var(--paper); }
+.world-section .section-label { color: var(--rose); }
+.world-section .sec-watermark { color: var(--rose); }
+
+/* ═══════════ PIXEL & BYTE ═══════════ */
+.tech-section { background: var(--warm); }
+.tech-section .section-label { color: var(--ember); }
+.tech-section .sec-watermark { color: var(--ember); }
+
+/* ═══════════ THE TOUCHLINE ═══════════ */
+.touchline-section { background: var(--pitch); color: rgba(255,255,255,.85); }
+.touchline-section .section-label { color: var(--turf-lt); }
+.touchline-section h2 { color: white; }
+.touchline-section h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--turf-lt); margin: 28px 0 12px;
+}
+.touchline-section h3.narrative {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px; text-transform: none; letter-spacing: 0; color: white;
+}
+.touchline-section p { color: rgba(255,255,255,.8); }
+.touchline-section a { color: var(--turf-lt); }
+.touchline-section .angle { background: rgba(255,255,255,.04); border-left-color: var(--turf-lt); }
+.touchline-section .angle-label { color: var(--turf-lt); }
+.touchline-section .angle p { color: rgba(255,255,255,.9); }
+.touchline-section .also { border-top-color: rgba(255,255,255,.1); }
+.touchline-section .also-title { color: rgba(255,255,255,.3); }
+.touchline-section .also-list li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+.touchline-section .pull-quote { border-left-color: var(--turf-lt); }
+.touchline-section .pull-quote p { color: rgba(255,255,255,.9); }
+.touchline-section .pull-quote cite { color: rgba(255,255,255,.4); }
+.touchline-section .sec-watermark { color: var(--turf-lt); }
+
+/* Touchline DYK — section-aware dark variant */
+.touchline-section .dyk { background: rgba(26,122,76,.08); border-color: rgba(43,214,123,.12); }
+.touchline-section .dyk::before { background: var(--pitch); }
+.touchline-section .dyk-title { color: var(--turf-lt); }
+.touchline-section .dyk p { color: rgba(255,255,255,.7); }
+
+/* Touchline sidebar */
+.touchline-section .sidebar { background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.touchline-section .sidebar-title { color: var(--turf-lt); }
+.touchline-section .sidebar li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+
+/* League Table */
+.league-table {
+  width: 100%; border-collapse: collapse; margin: 16px 0 24px;
+  font-family: 'DM Sans', sans-serif; font-size: 14px;
+}
+.league-table th {
+  text-align: left; padding: 10px 12px;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: rgba(255,255,255,.3); border-bottom: 1px solid rgba(255,255,255,.1);
+}
+.league-table td { padding: 9px 12px; border-bottom: 1px solid rgba(255,255,255,.04); color: rgba(255,255,255,.6); }
+.league-table tr:nth-child(even) td { background: rgba(255,255,255,.015); }
+.league-table tr.highlight td { color: var(--turf-lt); font-weight: 700; }
+.league-table .pos { width: 30px; text-align: center; }
+/* Scrollable wrapper for small screens */
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 16px 0 24px; }
+.table-wrap .league-table { margin: 0; min-width: 520px; }
+
+/* Results Strip */
+.results-strip { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+.result-card {
+  background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.06);
+  border-radius: 6px; padding: 12px 16px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px;
+  color: rgba(255,255,255,.65); line-height: 1.4; min-width: 190px;
+  flex: 1 1 190px; max-width: 220px;
+}
+.result-card .teams { color: rgba(255,255,255,.6); }
+.result-card strong { color: rgba(255,255,255,.9); font-weight: 700; }
+.result-card .score {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 18px; font-weight: 700; color: var(--turf-lt);
+  display: block; margin: 2px 0;
+}
+
+/* ═══════════ Enhancement 11: SPARKLINE ═══════════ */
+.sparkline {
+  display: inline-block;
+  width: 200px;
+  height: 40px;
+  vertical-align: middle;
+}
+.sparkline svg {
+  width: 100%;
+  height: 100%;
+}
+.sparkline .spark-line {
+  fill: none;
+  stroke: var(--turf-lt);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.sparkline .spark-area {
+  fill: var(--turf-lt);
+  opacity: 0.1;
+}
+.sparkline .spark-dot {
+  fill: var(--turf-lt);
+}
+
+/* Enhancement 11: Position change indicators */
+.pos-change {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+}
+.pos-change.up { color: #2BD67B; }
+.pos-change.down { color: var(--rose); }
+.pos-change.same { color: var(--ghost); }
+
+/* Enhancement 11: Mini horizontal bar */
+.mini-bar {
+  display: inline-block;
+  height: 6px;
+  border-radius: 3px;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+.mini-bar-track {
+  display: inline-block;
+  width: 100px;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255,255,255,.1);
+  position: relative;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+.mini-bar-track .mini-bar-fill {
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--turf-lt);
+}
+
+/* ═══════════ SCREEN & SOUND ═══════════ */
+.screen-section { background: var(--screen-bg); color: rgba(255,255,255,.85); }
+.screen-section .section-label { color: var(--neon); }
+.screen-section h2 { color: white; }
+.screen-section h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--neon); margin: 28px 0 12px;
+}
+.screen-section h3.feature-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px; text-transform: none; letter-spacing: 0; color: white; margin-bottom: 14px;
+}
+.screen-section p { color: rgba(255,255,255,.8); }
+.screen-section a { color: var(--neon); }
+.screen-section .also { border-top-color: rgba(255,255,255,.08); }
+.screen-section .also-title { color: rgba(255,255,255,.3); }
+.screen-section .also-list li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+.screen-section .pull-quote { border-left-color: var(--neon); }
+.screen-section .pull-quote p { color: rgba(255,255,255,.9); }
+.screen-section .pull-quote cite { color: rgba(255,255,255,.4); }
+.screen-section .sec-watermark { color: var(--neon); }
+
+/* Screen & Sound DYK — section-aware dark variant */
+.screen-section .dyk { background: rgba(255,45,120,.06); border-color: rgba(255,45,120,.12); }
+.screen-section .dyk::before { background: var(--screen-bg); }
+.screen-section .dyk-title { color: var(--neon); }
+.screen-section .dyk p { color: rgba(255,255,255,.7); }
+
+/* Screen sidebar */
+.screen-section .sidebar { background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.screen-section .sidebar-title { color: var(--neon); }
+.screen-section .sidebar li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+
+/* Radar — Release Radar and On the Radar */
+.radar-grid { margin: 16px 0; }
+.radar-row {
+  display: grid; grid-template-columns: 80px 1fr; gap: 14px;
+  padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,.06);
+  font-family: 'DM Sans', sans-serif; font-size: 14px;
+  color: rgba(255,255,255,.7); line-height: 1.4;
+}
+.radar-row:last-child { border-bottom: none; }
+.radar-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700; color: var(--neon); padding-top: 2px;
+}
+.radar-row strong { color: rgba(255,255,255,.95); }
+.radar-platform { font-size: 11px; color: rgba(255,255,255,.35); font-weight: 500; }
+/* Category dot for radar items */
+.radar-cat {
+  display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+  margin-right: 6px; vertical-align: middle;
+}
+.radar-cat.film { background: var(--neon); }
+.radar-cat.tv { background: #9B59B6; }
+.radar-cat.game { background: var(--ember); }
+.radar-cat.book { background: var(--shelf-accent); }
+.radar-cat.music { background: var(--turf-lt); }
+.radar-cat.tech { background: var(--ghost); }
+.radar-cat.lego { background: #E8384F; }
+/* Leaving Soon — urgency styling */
+.radar-row.leaving { border-left: 3px solid var(--rose); padding-left: 12px; margin-left: -3px; }
+.radar-row.leaving .radar-date { color: var(--rose); }
+
+/* ═══════════ Enhancement 16: CARD STACK — Horizontal scroll ═══════════ */
+.card-stack {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 8px 0 16px;
+  margin: 16px 0;
+}
+.card-stack::-webkit-scrollbar { height: 4px; }
+.card-stack::-webkit-scrollbar-track { background: rgba(255,255,255,.05); border-radius: 2px; }
+.card-stack::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 2px; }
+
+.stack-card {
+  flex: 0 0 240px;
+  scroll-snap-align: start;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.stack-card-img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+}
+.stack-card-body {
+  padding: 14px 16px;
+}
+.stack-card-title {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 17px; font-weight: 700;
+  color: rgba(255,255,255,.95);
+  margin-bottom: 4px;
+}
+.stack-card-verdict {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12.5px; color: rgba(255,255,255,.6);
+  line-height: 1.4; margin-bottom: 8px;
+}
+.stack-card .platform-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: rgba(255,255,255,.35);
+  background: rgba(255,255,255,.06);
+  padding: 2px 8px; border-radius: 3px;
+  display: inline-block;
+}
+
+/* Light section card stacks */
+.tech-section .stack-card { background: white; border-color: var(--rule); }
+.tech-section .stack-card-title { color: var(--ink); }
+.tech-section .stack-card-verdict { color: var(--slate); }
+.tech-section .stack-card .platform-badge { color: var(--ghost); background: var(--warm); }
+.tech-section .card-stack::-webkit-scrollbar-track { background: var(--rule); }
+.tech-section .card-stack::-webkit-scrollbar-thumb { background: var(--ghost); }
+
+/* ═══════════ Enhancement 19: SCORE/RATING DOTS ═══════════ */
+.rating {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  margin: 4px 0;
+}
+.rating .dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,.25);
+  background: transparent;
+}
+.rating .dot.filled {
+  border-color: transparent;
+}
+/* Section-specific rating colours */
+.screen-section .rating .dot.filled { background: var(--neon); }
+.shelf-section .rating .dot.filled { background: var(--shelf-accent); }
+.tech-section .rating .dot { border-color: var(--rule); }
+.tech-section .rating .dot.filled { background: var(--ember); border-color: transparent; }
+/* Light section dots */
+.session-section .rating .dot { border-color: var(--rule); }
+.session-section .rating .dot.filled { background: var(--session-accent); border-color: transparent; }
+.world-section .rating .dot { border-color: var(--rule); }
+.world-section .rating .dot.filled { background: var(--rose); border-color: transparent; }
+
+/* ═══════════ THE SHELF ═══════════ */
+.shelf-section { background: var(--shelf-bg); color: rgba(255,255,255,.85); }
+.shelf-section .section-label { color: var(--shelf-accent); }
+.shelf-section h2 { color: white; }
+.shelf-section h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--shelf-accent); margin: 28px 0 12px;
+}
+.shelf-section h3.feature-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px; text-transform: none; letter-spacing: 0; color: white; margin-bottom: 14px;
+}
+.shelf-section p { color: rgba(255,255,255,.8); }
+.shelf-section a { color: var(--shelf-accent); }
+.shelf-section .also { border-top-color: rgba(255,255,255,.08); }
+.shelf-section .also-title { color: rgba(255,255,255,.3); }
+.shelf-section .also-list li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+.shelf-section .sec-watermark { color: var(--shelf-accent); }
+.shelf-section .pull-quote { border-left-color: var(--shelf-accent); }
+.shelf-section .pull-quote p { color: rgba(255,255,255,.9); }
+.shelf-section .pull-quote cite { color: rgba(255,255,255,.4); }
+
+/* Shelf DYK — section-aware dark variant */
+.shelf-section .dyk { background: rgba(212,160,60,.06); border-color: rgba(212,160,60,.12); }
+.shelf-section .dyk::before { background: var(--shelf-bg); }
+.shelf-section .dyk-title { color: var(--shelf-accent); }
+.shelf-section .dyk p { color: rgba(255,255,255,.7); }
+
+/* Shelf sidebar */
+.shelf-section .sidebar { background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.shelf-section .sidebar-title { color: var(--shelf-accent); }
+.shelf-section .sidebar li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+
+/* Book Recommendation Card — with image float support */
+.book-card {
+  background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+  border-radius: 8px; padding: 18px 22px; margin: 12px 0;
+  overflow: hidden;
+}
+.book-card h4 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 19px; font-weight: 700; color: rgba(255,255,255,.95);
+  text-transform: none; letter-spacing: 0; margin: 0 0 4px;
+}
+.book-card .author {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; color: rgba(255,255,255,.4); margin-bottom: 6px;
+}
+.book-card p { font-size: 14px; color: rgba(255,255,255,.6); margin: 0; }
+.book-card img { float: left; width: 80px; margin: 0 16px 8px 0; border-radius: 4px; }
+/* Side-by-side book cards */
+.book-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+
+/* ═══════════ THE SESSION ═══════════ */
+.session-section { background: var(--session-bg); }
+.session-section .section-label { color: var(--session-accent); }
+.session-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.session-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.session-section .sec-watermark { color: var(--session-accent); }
+
+/* Workout Card — for rep schemes, protocols, programmes */
+.workout-card {
+  background: white; border: 1px solid var(--rule); border-radius: 8px;
+  padding: 22px 26px; margin: 20px 0;
+  border-left: 4px solid var(--session-accent);
+}
+.workout-card-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--session-accent); margin-bottom: 12px;
+}
+.workout-card table {
+  width: 100%; border-collapse: collapse; font-family: 'DM Sans', sans-serif; font-size: 14px;
+}
+.workout-card th {
+  text-align: left; padding: 6px 10px;
+  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--ghost); border-bottom: 1px solid var(--rule);
+}
+.workout-card td { padding: 7px 10px; border-bottom: 1px solid rgba(0,0,0,.04); color: var(--ink); }
+.workout-card .highlight-row td { color: var(--session-accent); font-weight: 700; }
+
+/* Workout icon labels */
+.workout-type {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'DM Sans', sans-serif; font-size: 11px;
+  color: var(--session-accent); font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; margin-bottom: 8px;
+}
+
+/* ═══════════ THIS WEEK IN HISTORY ═══════════ */
+.history-section { background: var(--hist-bg); }
+.history-section .section-label { color: var(--hist-accent); }
+.history-section h2 { font-size: 30px; font-weight: 700; line-height: 1.2; margin-bottom: 16px; color: #3D2E0F; }
+.history-section .sec-watermark { color: var(--hist-accent); }
+/* Year badges for history items */
+.year-badge {
+  display: inline-block; font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700; color: var(--hist-accent);
+  background: rgba(139,105,20,.08); border-radius: 3px;
+  padding: 2px 8px; margin-right: 8px; vertical-align: middle;
+}
+.history-section .also-list li { display: flex; align-items: baseline; gap: 0; }
+
+/* Enhancement 9: History paper texture — more pronounced */
+.history-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.06;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANWp0mAAAACHRSTlMzMzMzMzMzM85JBgUAAAA0SURBVDjLY2CgNmBWYBBgYFZgEGBkVmAQYGJWYBBgZlZgEGBhVmAQYGVWYBBgY6Y4AABxWAIRkPtLqAAAAABJRU5ErkJggg==");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ═══════════ ROTATING SECTION STYLES ═══════════ */
+/* Each rotating section gets a background, accent colour, and section-aware overrides */
+
+.pantry-section { background: var(--pantry-bg); }
+.pantry-section .section-label { color: var(--pantry-accent); }
+.pantry-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.pantry-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.pantry-section .sec-watermark { color: var(--pantry-accent); }
+.pantry-section .workout-card { border-left-color: var(--pantry-accent); } /* reuse workout-card for recipe cards */
+.pantry-section .workout-card-title { color: var(--pantry-accent); }
+.pantry-section .big-number .num { color: var(--pantry-accent); }
+.pantry-section .pull-quote { border-left-color: var(--pantry-accent); }
+.pantry-section .dyk { background: rgba(198,93,58,.06); border-color: rgba(198,93,58,.12); }
+.pantry-section .dyk-title { color: var(--pantry-accent); }
+.pantry-section .read-next a { color: var(--pantry-accent); }
+.pantry-section .sidebar { border-left-color: var(--pantry-accent); }
+.pantry-section .sidebar-title { color: var(--pantry-accent); }
+
+.workshop-section { background: var(--workshop-bg); }
+.workshop-section .section-label { color: var(--workshop-accent); }
+.workshop-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.workshop-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.workshop-section .sec-watermark { color: var(--workshop-accent); }
+.workshop-section .compare-panel .compare-side { border-color: rgba(90,99,120,.2); }
+.workshop-section .big-number .num { color: var(--workshop-accent); }
+.workshop-section .pull-quote { border-left-color: var(--workshop-accent); }
+.workshop-section .dyk { background: rgba(90,99,120,.06); border-color: rgba(90,99,120,.12); }
+.workshop-section .dyk-title { color: var(--workshop-accent); }
+.workshop-section .read-next a { color: var(--workshop-accent); }
+.workshop-section .sidebar { border-left-color: var(--workshop-accent); }
+.workshop-section .sidebar-title { color: var(--workshop-accent); }
+
+.toolkit-section { background: var(--toolkit-bg); }
+.toolkit-section .section-label { color: var(--toolkit-accent); }
+.toolkit-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.toolkit-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.toolkit-section .sec-watermark { color: var(--toolkit-accent); }
+.toolkit-section .big-number .num { color: var(--toolkit-accent); }
+.toolkit-section .pull-quote { border-left-color: var(--toolkit-accent); }
+.toolkit-section .dyk { background: rgba(26,154,175,.06); border-color: rgba(26,154,175,.12); }
+.toolkit-section .dyk-title { color: var(--toolkit-accent); }
+.toolkit-section .read-next a { color: var(--toolkit-accent); }
+.toolkit-section .also-cards .also-card { border-color: rgba(26,154,175,.12); }
+.toolkit-section .sidebar { border-left-color: var(--toolkit-accent); }
+.toolkit-section .sidebar-title { color: var(--toolkit-accent); }
+
+.ledger-section { background: var(--ledger-bg); }
+.ledger-section .section-label { color: var(--ledger-accent); }
+.ledger-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.ledger-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.ledger-section .sec-watermark { color: var(--ledger-accent); }
+.ledger-section .big-number .num { color: var(--ledger-accent); }
+.ledger-section .pull-quote { border-left-color: var(--ledger-accent); }
+.ledger-section .dyk { background: rgba(196,139,44,.06); border-color: rgba(196,139,44,.12); }
+.ledger-section .dyk-title { color: var(--ledger-accent); }
+.ledger-section .read-next a { color: var(--ledger-accent); }
+.ledger-section .stat-bar .stat-num { color: var(--ledger-accent); }
+.ledger-section .sidebar { border-left-color: var(--ledger-accent); }
+.ledger-section .sidebar-title { color: var(--ledger-accent); }
+
+.longgame-section { background: var(--longgame-bg); }
+.longgame-section .section-label { color: var(--longgame-accent); }
+.longgame-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.longgame-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.longgame-section .sec-watermark { color: var(--longgame-accent); }
+.longgame-section .big-number .num { color: var(--longgame-accent); }
+.longgame-section .pull-quote { border-left-color: var(--longgame-accent); }
+.longgame-section .dyk { background: rgba(42,58,92,.06); border-color: rgba(42,58,92,.12); }
+.longgame-section .dyk-title { color: var(--longgame-accent); }
+.longgame-section .read-next a { color: var(--longgame-accent); }
+.longgame-section .stat-bar .stat-num { color: var(--longgame-accent); }
+.longgame-section .sidebar { border-left-color: var(--longgame-accent); }
+.longgame-section .sidebar-title { color: var(--longgame-accent); }
+
+.wallet-section { background: var(--wallet-bg); }
+.wallet-section .section-label { color: var(--wallet-accent); }
+.wallet-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.wallet-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.wallet-section .sec-watermark { color: var(--wallet-accent); }
+.wallet-section .big-number .num { color: var(--wallet-accent); }
+.wallet-section .pull-quote { border-left-color: var(--wallet-accent); }
+.wallet-section .dyk { background: rgba(26,138,122,.06); border-color: rgba(26,138,122,.12); }
+.wallet-section .dyk-title { color: var(--wallet-accent); }
+.wallet-section .read-next a { color: var(--wallet-accent); }
+.wallet-section .compare-panel .compare-side { border-color: rgba(26,138,122,.2); }
+.wallet-section .sidebar { border-left-color: var(--wallet-accent); }
+.wallet-section .sidebar-title { color: var(--wallet-accent); }
+
+.itinerary-section { background: var(--itinerary-bg); }
+.itinerary-section .section-label { color: var(--itinerary-accent); }
+.itinerary-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.itinerary-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.itinerary-section .sec-watermark { color: var(--itinerary-accent); }
+.itinerary-section .big-number .num { color: var(--itinerary-accent); }
+.itinerary-section .pull-quote { border-left-color: var(--itinerary-accent); }
+.itinerary-section .dyk { background: rgba(212,99,75,.06); border-color: rgba(212,99,75,.12); }
+.itinerary-section .dyk-title { color: var(--itinerary-accent); }
+.itinerary-section .read-next a { color: var(--itinerary-accent); }
+.itinerary-section .sidebar { border-left-color: var(--itinerary-accent); }
+.itinerary-section .sidebar-title { color: var(--itinerary-accent); }
+
+/* Nav card styles for rotating sections */
+.nav-card.pantry { border-left-color: var(--pantry-accent); background: rgba(198,93,58,.06); }
+.nav-card.pantry:hover { box-shadow: 0 8px 24px rgba(198,93,58,.12); }
+.nav-card.pantry .nav-card-tag { color: var(--pantry-accent); }
+.nav-card.workshop { border-left-color: var(--workshop-accent); background: rgba(90,99,120,.06); }
+.nav-card.workshop:hover { box-shadow: 0 8px 24px rgba(90,99,120,.12); }
+.nav-card.workshop .nav-card-tag { color: var(--workshop-accent); }
+.nav-card.toolkit { border-left-color: var(--toolkit-accent); background: rgba(26,154,175,.06); }
+.nav-card.toolkit:hover { box-shadow: 0 8px 24px rgba(26,154,175,.12); }
+.nav-card.toolkit .nav-card-tag { color: var(--toolkit-accent); }
+.nav-card.ledger { border-left-color: var(--ledger-accent); background: rgba(196,139,44,.06); }
+.nav-card.ledger:hover { box-shadow: 0 8px 24px rgba(196,139,44,.12); }
+.nav-card.ledger .nav-card-tag { color: var(--ledger-accent); }
+.nav-card.longgame { border-left-color: var(--longgame-accent); background: rgba(42,58,92,.06); }
+.nav-card.longgame:hover { box-shadow: 0 8px 24px rgba(42,58,92,.12); }
+.nav-card.longgame .nav-card-tag { color: var(--longgame-accent); }
+.nav-card.wallet { border-left-color: var(--wallet-accent); background: rgba(26,138,122,.06); }
+.nav-card.wallet:hover { box-shadow: 0 8px 24px rgba(26,138,122,.12); }
+.nav-card.wallet .nav-card-tag { color: var(--wallet-accent); }
+.nav-card.itinerary { border-left-color: var(--itinerary-accent); background: rgba(212,99,75,.06); }
+.nav-card.itinerary:hover { box-shadow: 0 8px 24px rgba(212,99,75,.12); }
+.nav-card.itinerary .nav-card-tag { color: var(--itinerary-accent); }
+
+/* Dividers for rotating sections */
+.dv-pantry { background: linear-gradient(90deg, var(--pantry-accent), #E8845A); }
+.dv-workshop { background: linear-gradient(90deg, var(--workshop-accent), #7A839A); }
+.dv-toolkit { background: linear-gradient(90deg, var(--toolkit-accent), #2AB8CE); }
+.dv-ledger { background: linear-gradient(90deg, var(--ledger-accent), #D4A03C); }
+.dv-longgame { background: linear-gradient(90deg, var(--longgame-accent), #4A5A8C); }
+.dv-wallet { background: linear-gradient(90deg, var(--wallet-accent), #2AB8A8); }
+.dv-itinerary { background: linear-gradient(90deg, var(--itinerary-accent), #E8845A); }
+
+/* ═══════════ Enhancement 12: CONTEXTUAL TIMELINES ═══════════ */
+.timeline {
+  position: relative;
+  padding-left: 32px;
+  margin: 24px 0;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 8px; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--rule);
+}
+.timeline-node {
+  position: relative;
+  padding: 12px 0 24px 16px;
+}
+.timeline-node::before {
+  content: '';
+  position: absolute;
+  left: -28px; top: 18px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--rose);
+  border: 2px solid var(--paper);
+}
+.timeline-node .timeline-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--ghost);
+  margin-bottom: 4px;
+}
+.timeline-node .timeline-content {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14.5px; line-height: 1.5;
+}
+.timeline-node .timeline-content strong { color: var(--ink); }
+
+/* Timeline on dark backgrounds */
+.touchline-section .timeline::before { background: rgba(255,255,255,.1); }
+.touchline-section .timeline-node::before { background: var(--turf-lt); border-color: var(--pitch); }
+.touchline-section .timeline-node .timeline-date { color: var(--turf-lt); }
+.touchline-section .timeline-node .timeline-content { color: rgba(255,255,255,.7); }
+.touchline-section .timeline-node .timeline-content strong { color: rgba(255,255,255,.95); }
+
+.screen-section .timeline::before { background: rgba(255,255,255,.1); }
+.screen-section .timeline-node::before { background: var(--neon); border-color: var(--screen-bg); }
+.screen-section .timeline-node .timeline-date { color: var(--neon); }
+.screen-section .timeline-node .timeline-content { color: rgba(255,255,255,.7); }
+.screen-section .timeline-node .timeline-content strong { color: rgba(255,255,255,.95); }
+
+.shelf-section .timeline::before { background: rgba(255,255,255,.1); }
+.shelf-section .timeline-node::before { background: var(--shelf-accent); border-color: var(--shelf-bg); }
+.shelf-section .timeline-node .timeline-date { color: var(--shelf-accent); }
+.shelf-section .timeline-node .timeline-content { color: rgba(255,255,255,.7); }
+.shelf-section .timeline-node .timeline-content strong { color: rgba(255,255,255,.95); }
+
+/* History timeline */
+.history-section .timeline::before { background: rgba(139,105,20,.2); }
+.history-section .timeline-node::before { background: var(--hist-accent); border-color: var(--hist-bg); }
+.history-section .timeline-node .timeline-date { color: var(--hist-accent); }
+.history-section .timeline-node .timeline-content { color: #5C4A20; }
+
+/* ═══════════ Enhancement 13: COMPACT TAKES ═══════════ */
+.compact-take {
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--rose);
+  border-radius: 0 6px 6px 0;
+  padding: 16px 18px;
+  margin: 12px 0;
+}
+.compact-take h4 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 17px; font-weight: 700; color: var(--ink);
+  text-transform: none; letter-spacing: 0;
+  margin: 0 0 6px;
+}
+.compact-take p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13.5px; color: var(--slate);
+  line-height: 1.5; margin: 0 0 6px;
+}
+.compact-take .src { margin-top: 4px; }
+
+/* Compact take — section accents */
+.tech-section .compact-take { border-left-color: var(--ember); background: white; }
+.touchline-section .compact-take { border-left-color: var(--turf-lt); background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.touchline-section .compact-take h4 { color: rgba(255,255,255,.95); }
+.touchline-section .compact-take p { color: rgba(255,255,255,.6); }
+.screen-section .compact-take { border-left-color: var(--neon); background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.screen-section .compact-take h4 { color: rgba(255,255,255,.95); }
+.screen-section .compact-take p { color: rgba(255,255,255,.6); }
+
+/* Compact grid — 2 compact takes side by side */
+.compact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+/* ═══════════ Enhancement 14: MARGIN NOTES ═══════════ */
+.margin-note {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--slate);
+  background: var(--warm);
+  border-left: 3px solid var(--rose);
+  padding: 12px 14px;
+  border-radius: 0 4px 4px 0;
+}
+/* On desktop, float to right margin */
+@media (min-width: 821px) {
+  .margin-note {
+    float: right;
+    width: 220px;
+    margin: 0 -60px 16px 24px;
+    position: relative;
+    z-index: 1;
+  }
+}
+/* Section-aware margin notes */
+.tech-section .margin-note { border-left-color: var(--ember); }
+.touchline-section .margin-note { background: rgba(255,255,255,.04); border-left-color: var(--turf-lt); color: rgba(255,255,255,.6); }
+.screen-section .margin-note { background: rgba(255,255,255,.04); border-left-color: var(--neon); color: rgba(255,255,255,.6); }
+.shelf-section .margin-note { background: rgba(255,255,255,.04); border-left-color: var(--shelf-accent); color: rgba(255,255,255,.6); }
+.history-section .margin-note { border-left-color: var(--hist-accent); background: rgba(139,105,20,.06); color: #5C4A20; }
+
+/* ═══════════ Enhancement 15: SECTION ICONS (inline SVG) ═══════════ */
+/* Icons use currentColor so they inherit from parent. Defined as classes for documentation. */
+.sec-icon {
+  display: inline-block;
+  width: 24px; height: 24px;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+.sec-icon svg {
+  width: 24px; height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ═══════════ Enhancement 17: COLLAPSIBLE SECTIONS ═══════════ */
+.collapsible {
+  margin: 20px 0;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.collapsible summary {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 700;
+  padding: 14px 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  list-style: none;
+  background: var(--warm);
+  color: var(--ink);
+  transition: background .15s ease;
+}
+.collapsible summary::-webkit-details-marker { display: none; }
+.collapsible summary::after {
+  content: '';
+  width: 8px; height: 8px;
+  border-right: 2px solid var(--ghost);
+  border-bottom: 2px solid var(--ghost);
+  transform: rotate(45deg);
+  transition: transform .2s ease;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+.collapsible[open] summary::after {
+  transform: rotate(-135deg);
+}
+.collapsible summary:hover { background: var(--rule); }
+.collapsible-content {
+  padding: 16px 18px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--slate);
+}
+
+/* Dark section collapsibles */
+.touchline-section .collapsible { border-color: rgba(255,255,255,.08); }
+.touchline-section .collapsible summary { background: rgba(255,255,255,.04); color: rgba(255,255,255,.9); }
+.touchline-section .collapsible summary::after { border-color: rgba(255,255,255,.3); }
+.touchline-section .collapsible summary:hover { background: rgba(255,255,255,.08); }
+.touchline-section .collapsible-content { color: rgba(255,255,255,.7); }
+
+.screen-section .collapsible { border-color: rgba(255,255,255,.08); }
+.screen-section .collapsible summary { background: rgba(255,255,255,.04); color: rgba(255,255,255,.9); }
+.screen-section .collapsible summary::after { border-color: rgba(255,255,255,.3); }
+.screen-section .collapsible summary:hover { background: rgba(255,255,255,.08); }
+.screen-section .collapsible-content { color: rgba(255,255,255,.7); }
+
+.shelf-section .collapsible { border-color: rgba(255,255,255,.08); }
+.shelf-section .collapsible summary { background: rgba(255,255,255,.04); color: rgba(255,255,255,.9); }
+.shelf-section .collapsible summary::after { border-color: rgba(255,255,255,.3); }
+.shelf-section .collapsible summary:hover { background: rgba(255,255,255,.08); }
+.shelf-section .collapsible-content { color: rgba(255,255,255,.7); }
+
+/* ═══════════ Enhancement 20: READ-NEXT CONNECTORS ═══════════ */
+.read-next {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  text-align: right;
+  margin-top: 28px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+  color: var(--ghost);
+}
+.read-next a {
+  font-weight: 700;
+  text-decoration: none;
+}
+.read-next .arrow {
+  display: inline-block;
+  margin-left: 4px;
+  transition: transform .15s ease;
+}
+.read-next:hover .arrow {
+  transform: translateX(3px);
+}
+
+/* Section-specific read-next colours */
+.world-section .read-next a { color: var(--rose); }
+.tech-section .read-next a { color: var(--ember); }
+.touchline-section .read-next { border-top-color: rgba(255,255,255,.08); color: rgba(255,255,255,.3); }
+.touchline-section .read-next a { color: var(--turf-lt); }
+.screen-section .read-next { border-top-color: rgba(255,255,255,.08); color: rgba(255,255,255,.3); }
+.screen-section .read-next a { color: var(--neon); }
+.shelf-section .read-next { border-top-color: rgba(255,255,255,.08); color: rgba(255,255,255,.3); }
+.shelf-section .read-next a { color: var(--shelf-accent); }
+.session-section .read-next a { color: var(--session-accent); }
+.history-section .read-next a { color: var(--hist-accent); }
+
+/* ═══════════ Enhancement 5: SCROLL-TRIGGERED ANIMATIONS ═══════════ */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* Staggered children */
+.reveal-group .reveal:nth-child(1) { transition-delay: 0ms; }
+.reveal-group .reveal:nth-child(2) { transition-delay: 80ms; }
+.reveal-group .reveal:nth-child(3) { transition-delay: 160ms; }
+.reveal-group .reveal:nth-child(4) { transition-delay: 240ms; }
+.reveal-group .reveal:nth-child(5) { transition-delay: 320ms; }
+.reveal-group .reveal:nth-child(6) { transition-delay: 400ms; }
+
+/* ═══════════ THE LONG SHELF ═══════════ */
+.longshelf-section { background: var(--paper); border-bottom: 1px solid var(--rule); }
+.longshelf-section .section-label { color: var(--rose); }
+/* Two-column compact layout */
+.longshelf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 32px; }
+.shelf-item { padding: 16px 0; border-bottom: 1px solid var(--rule); }
+.shelf-item:last-child { border-bottom: none; }
+.shelf-item .title { font-size: 17px; font-weight: 700; color: var(--ink); line-height: 1.3; }
+.shelf-item .meta {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; color: var(--ghost); margin-top: 2px;
+}
+.shelf-item .desc {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; color: var(--slate); margin-top: 4px; line-height: 1.5;
+}
+
+/* ═══════════ ON THE RADAR ═══════════ */
+.radar-section { background: var(--warm); }
+.radar-section .section-label { color: var(--ember); }
+.radar-section .radar-row { border-bottom-color: rgba(0,0,0,.06); color: var(--ink); }
+.radar-section .radar-date { color: var(--ember); font-size: 12px; }
+.radar-section .radar-row strong { color: var(--ink); }
+.radar-section .radar-cat.football { background: var(--turf); }
+.radar-section .radar-cat.film { background: var(--neon); }
+.radar-section .radar-cat.game { background: var(--ember); }
+.radar-section .radar-cat.event { background: var(--rose); }
+.radar-section .radar-cat.release { background: var(--shelf-accent); }
+
+/* ═══════════ FOOTER ═══════════ */
+.footer {
+  background: var(--deep); padding: 40px 60px; text-align: center;
+}
+.footer-brand { font-size: 28px; font-weight: 700; color: white; }
+.footer-brand span { color: var(--rose); font-style: italic; }
+.footer-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: rgba(255,255,255,.3);
+  letter-spacing: 2px; text-transform: uppercase; margin-top: 6px;
+}
+
+/* ═══════════ ARTICLE ENTRY PATTERNS ═══════════ */
+/* Stat lead — bold number + context opens an article */
+.entry-stat {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 56px; font-weight: 700; line-height: 1.1;
+  margin-bottom: 4px;
+}
+.entry-stat-context {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; color: var(--slate);
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 20px;
+}
+/* Quote lead — pull quote as opener */
+.entry-quote {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 24px; font-style: italic; line-height: 1.4;
+  border-left: 4px solid var(--rose);
+  padding-left: 20px; margin-bottom: 20px;
+  color: var(--ink);
+}
+.entry-quote cite {
+  display: block; font-style: normal; font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--ghost); margin-top: 8px;
+}
+/* Summary bullets lead — 3 key points upfront */
+.entry-bullets {
+  list-style: none; padding: 0; margin: 0 0 20px 0;
+  border-left: 4px solid var(--rose);
+  padding-left: 16px;
+}
+.entry-bullets li {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 500;
+  line-height: 1.5; padding: 4px 0;
+  color: var(--ink);
+}
+/* Question hook lead */
+.entry-question {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 28px; font-weight: 600; font-style: italic;
+  line-height: 1.3; margin-bottom: 16px;
+  color: var(--ink);
+}
+/* Dark section entry variants */
+.touchline-section .entry-stat,
+.screen-section .entry-stat,
+.shelf-section .entry-stat { color: rgba(255,255,255,.9); }
+.touchline-section .entry-stat-context,
+.screen-section .entry-stat-context,
+.shelf-section .entry-stat-context { color: rgba(255,255,255,.4); }
+.touchline-section .entry-quote,
+.screen-section .entry-quote,
+.shelf-section .entry-quote { color: rgba(255,255,255,.85); }
+.touchline-section .entry-bullets li,
+.screen-section .entry-bullets li,
+.shelf-section .entry-bullets li { color: rgba(255,255,255,.8); }
+.touchline-section .entry-question,
+.screen-section .entry-question,
+.shelf-section .entry-question { color: rgba(255,255,255,.85); }
+.touchline-section .entry-quote { border-color: var(--turf-lt); }
+.touchline-section .entry-bullets { border-color: var(--turf-lt); }
+.screen-section .entry-quote { border-color: var(--neon); }
+.screen-section .entry-bullets { border-color: var(--neon); }
+.shelf-section .entry-quote { border-color: var(--shelf-accent); }
+.shelf-section .entry-bullets { border-color: var(--shelf-accent); }
+
+/* ═══════════ SECTION BREATHER BANDS ═══════════ */
+.breather {
+  text-align: center;
+  padding: 28px 40px;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  margin: 0;
+}
+.breather-stat {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 42px; font-weight: 700;
+  color: var(--rose); line-height: 1.1;
+}
+.breather-context {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; color: var(--slate);
+  margin-top: 4px;
+}
+.breather-teaser {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 18px; font-style: italic;
+  color: var(--slate); line-height: 1.4;
+}
+/* Dark breather (between dark sections) */
+.breather.dark {
+  background: var(--deep);
+  border-color: rgba(255,255,255,.08);
+}
+.breather.dark .breather-stat { color: var(--turf-lt); }
+.breather.dark .breather-context,
+.breather.dark .breather-teaser { color: rgba(255,255,255,.45); }
+
+/* ═══════════ ALSO-LIST PRIORITY TIERS ═══════════ */
+.also-list li.tier-hot {
+  border-left: 3px solid var(--rose);
+  padding-left: 10px;
+  background: rgba(232,56,79,.04);
+  margin-bottom: 10px; padding-top: 4px; padding-bottom: 4px;
+}
+.also-list li.tier-warm {
+  border-left: 3px solid var(--ember);
+  padding-left: 10px;
+  margin-bottom: 10px; padding-top: 4px; padding-bottom: 4px;
+}
+.also-list li.tier-note {
+  border-left: 3px solid var(--rule);
+  padding-left: 10px;
+  margin-bottom: 10px; padding-top: 4px; padding-bottom: 4px;
+}
+/* Dark section tiers */
+.touchline-section .also-list li.tier-hot { border-color: var(--turf-lt); background: rgba(43,214,123,.06); }
+.touchline-section .also-list li.tier-warm { border-color: rgba(255,255,255,.25); }
+.touchline-section .also-list li.tier-note { border-color: rgba(255,255,255,.1); }
+.screen-section .also-list li.tier-hot { border-color: var(--neon); background: rgba(255,45,120,.06); }
+.screen-section .also-list li.tier-warm { border-color: rgba(255,255,255,.25); }
+.screen-section .also-list li.tier-note { border-color: rgba(255,255,255,.1); }
+.shelf-section .also-list li.tier-hot { border-color: var(--shelf-accent); background: rgba(212,160,60,.06); }
+.shelf-section .also-list li.tier-warm { border-color: rgba(255,255,255,.25); }
+.shelf-section .also-list li.tier-note { border-color: rgba(255,255,255,.1); }
+
+/* ═══════════ COMPARISON PANELS ═══════════ */
+.compare-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 20px 0;
+}
+.compare-side {
+  padding: 20px 24px;
+}
+.compare-side.left {
+  background: rgba(232,56,79,.04);
+  border-right: 1px solid var(--rule);
+}
+.compare-side.right {
+  background: rgba(26,122,76,.04);
+}
+.compare-side .compare-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.compare-side.left .compare-label { color: var(--rose); }
+.compare-side.right .compare-label { color: var(--turf); }
+.compare-side h4 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 20px; font-weight: 700;
+  margin-bottom: 8px;
+}
+.compare-side p {
+  font-size: 15px; line-height: 1.55;
+  margin-bottom: 8px;
+}
+.compare-side .compare-stat {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 36px; font-weight: 700;
+  line-height: 1.1; margin-bottom: 4px;
+}
+.compare-side.left .compare-stat { color: var(--rose); }
+.compare-side.right .compare-stat { color: var(--turf); }
+/* Dark section compare panels */
+.touchline-section .compare-side.left { background: rgba(43,214,123,.06); border-color: rgba(255,255,255,.08); }
+.touchline-section .compare-side.right { background: rgba(0,180,216,.06); }
+.touchline-section .compare-side p,
+.touchline-section .compare-side h4 { color: rgba(255,255,255,.85); }
+.touchline-section .compare-side.left .compare-label,
+.touchline-section .compare-side.left .compare-stat { color: var(--turf-lt); }
+.touchline-section .compare-side.right .compare-label,
+.touchline-section .compare-side.right .compare-stat { color: #00B4D8; }
+.screen-section .compare-side.left { background: rgba(255,45,120,.06); border-color: rgba(255,255,255,.08); }
+.screen-section .compare-side.right { background: rgba(0,180,216,.06); }
+.screen-section .compare-side p,
+.screen-section .compare-side h4 { color: rgba(255,255,255,.85); }
+.shelf-section .compare-side.left { background: rgba(212,160,60,.06); border-color: rgba(255,255,255,.08); }
+.shelf-section .compare-side.right { background: rgba(0,180,216,.06); }
+.shelf-section .compare-side p,
+.shelf-section .compare-side h4 { color: rgba(255,255,255,.85); }
+
+/* ═══════════ FLOATED INSET SIDEBAR ═══════════ */
+.sidebar-float {
+  float: right;
+  width: 260px;
+  margin: 0 0 16px 24px;
+  padding: 16px 18px;
+  background: var(--warm);
+  border-left: 3px solid var(--rose);
+  border-radius: 0 4px 4px 0;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; line-height: 1.5;
+}
+.sidebar-float .sidebar-title {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 8px;
+}
+.sidebar-float ul { list-style: none; padding: 0; margin: 0; }
+.sidebar-float li { padding: 4px 0; }
+/* Dark section float sidebars */
+.touchline-section .sidebar-float {
+  background: rgba(255,255,255,.05);
+  border-color: var(--turf-lt);
+  color: rgba(255,255,255,.8);
+}
+.touchline-section .sidebar-float .sidebar-title { color: var(--turf-lt); }
+.screen-section .sidebar-float {
+  background: rgba(255,255,255,.05);
+  border-color: var(--neon);
+  color: rgba(255,255,255,.8);
+}
+.screen-section .sidebar-float .sidebar-title { color: var(--neon); }
+.shelf-section .sidebar-float {
+  background: rgba(255,255,255,.05);
+  border-color: var(--shelf-accent);
+  color: rgba(255,255,255,.8);
+}
+.shelf-section .sidebar-float .sidebar-title { color: var(--shelf-accent); }
+
+/* ═══════════ RESPONSIVE ═══════════ */
+@media (max-width: 820px) {
+  .cover, .nav-section, .foreword, .sec, .touchline-section, .screen-section,
+  .shelf-section, .session-section, .history-section,
+  .longshelf-section, .radar-section, .footer {
+    padding-left: 24px; padding-right: 24px;
+  }
+  .hero-bleed { width: calc(100% + 48px); margin-left: -24px; }
+  .divider.inset { margin-left: 24px; margin-right: 24px; }
+  .cover-brand { font-size: 60px; }
+  .cover-headline { font-size: 26px; }
+  .nav-grid { grid-template-columns: 1fr 1fr; }
+  .nav-card.lead { grid-column: span 2; }
+  .longshelf-grid { grid-template-columns: 1fr; }
+  .book-grid { grid-template-columns: 1fr; }
+  /* Enhancement 1 */
+  .split-60-40, .split-40-60 { grid-template-columns: 1fr; }
+  /* Enhancement 4 */
+  .img-montage.layout-1-2, .img-montage.layout-2x2 { grid-template-columns: 1fr; }
+  .img-montage.layout-1-2 .montage-hero { grid-column: span 1; }
+  .img-offset { float: none; width: 100%; margin: 16px 0; }
+  /* Enhancement 2 */
+  .sec-watermark { font-size: 100px; }
+  /* Enhancement 7 */
+  .pull-quote.wide { margin-left: 0; margin-right: 0; }
+  /* Enhancement 8 */
+  .also-cards { grid-template-columns: 1fr; }
+  /* Enhancement 13 */
+  .compact-grid { grid-template-columns: 1fr; }
+  /* Enhancement 14: margin note goes inline */
+  .margin-note { float: none; width: 100%; margin: 16px 0; }
+  /* New components responsive */
+  .sidebar-float { float: none; width: 100%; margin: 16px 0; }
+  .compare-panel { grid-template-columns: 1fr; }
+  .compare-side.left { border-right: none; border-bottom: 1px solid var(--rule); }
+  .entry-stat { font-size: 44px; }
+  .entry-question { font-size: 24px; }
+}
+@media (max-width: 600px) {
+  .cover, .nav-section, .foreword, .sec, .touchline-section, .screen-section,
+  .shelf-section, .session-section, .history-section,
+  .longshelf-section, .radar-section, .footer {
+    padding-left: 20px; padding-right: 20px;
+  }
+  .hero-bleed { width: calc(100% + 40px); margin-left: -20px; }
+  .divider.inset { margin-left: 20px; margin-right: 20px; }
+  .cover-brand { font-size: 52px; }
+  .cover-headline { font-size: 22px; }
+  .nav-grid { grid-template-columns: 1fr; }
+  .nav-card.lead { grid-column: span 1; grid-template-columns: 1fr; }
+  .nav-card.lead .nav-card-thumb { min-height: 120px; }
+  .dual-col { grid-template-columns: 1fr; }
+  .stat-bar { grid-template-columns: repeat(2, 1fr); }
+  .stat-bar .stat:nth-child(2) { border-right: none; }
+  .results-strip { flex-direction: column; }
+  .result-card { max-width: 100%; }
+  .sec h2, .touchline-section h2, .screen-section h2, .shelf-section h2 { font-size: 28px; }
+  .longshelf-grid { grid-template-columns: 1fr; }
+  .book-grid { grid-template-columns: 1fr; }
+  .back-to-top { bottom: 16px; right: 16px; width: 40px; height: 40px; }
+  /* Enhancement 2: hide watermark on small screens */
+  .sec-watermark { display: none; }
+  /* Enhancement 3: scale down big numbers */
+  .big-number .num { font-size: 56px; }
+  .big-number-row { grid-template-columns: 1fr; gap: 16px; }
+  .big-number-row .big-number .num { font-size: 48px; }
+  /* Enhancement 10 */
+  .sec-opener h2 { font-size: 32px; }
+  .display-stat { font-size: 52px; }
+  /* Enhancement 16 */
+  .stack-card { flex: 0 0 200px; }
+  /* Enhancement 12 */
+  .timeline { padding-left: 24px; }
+}
+
+
+/* ── Versus-specific overrides ── */
+.versus-section {
+  background: var(--session-bg, #f4f7f2);
+  --section-accent: var(--session-accent, #e06b1f);
+}
+.versus-dark {
+  background: var(--pitch, #0d1117);
+  color: rgba(255,255,255,.85);
+}
+.verdict-section {
+  background: linear-gradient(135deg, #0d1117 0%, #1a1f2b 100%);
+  color: rgba(255,255,255,.9);
+}
+.tape-section {
+  background: var(--warm, #fdf6ec);
+}
+.score-ring {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:48px; height:48px; border-radius:50%;
+  font-family:'JetBrains Mono',monospace; font-size:18px; font-weight:700;
+  border:3px solid currentColor;
+}
+.score-ring.tlm { color:#e06b1f; border-color:#e06b1f; }
+.score-ring.ibex { color:#3b82f6; border-color:#3b82f6; }
+.vs-divider { text-align:center; font-size:48px; font-weight:700; color:rgba(0,0,0,.1); margin:24px 0; font-family:'Cormorant Garamond',serif; }
+.programme-badge {
+  display:inline-block; padding:4px 12px; border-radius:20px;
+  font-family:'DM Sans',sans-serif; font-size:11px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.08em;
+}
+.badge-tlm { background:#e06b1f; color:#fff; }
+.badge-ibex { background:#3b82f6; color:#fff; }
+.scoring-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin:24px 0; }
+.scoring-cell { text-align:center; padding:16px 8px; background:rgba(0,0,0,.04); border-radius:8px; }
+.scoring-cell .label { font-family:'DM Sans',sans-serif; font-size:11px; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; color:#666; }
+.winner-banner {
+  text-align:center; padding:32px 24px; margin:24px 0;
+  background:linear-gradient(135deg, #e06b1f, #c0490b);
+  color:#fff; border-radius:12px;
+}
+.winner-banner h2 { margin:0 0 8px; font-size:2.4em; }
+.winner-banner p { margin:0; opacity:.85; }
+.contextual-win { background:linear-gradient(135deg, #1a2740, #0f1a30); border:1px solid rgba(255,255,255,.1); }
+</style>
+</head>
+<body>
+<div class="progress-bar" id="progressBar"></div>
+<div class="mag">
+
+<!-- ══════ COVER ══════ -->
+<header class="cover" id="top">
+  <div class="cover-noise"></div>
+  <div class="cover-grain"></div>
+  <div class="cover-issue" style="position:relative;z-index:2">30 March — 5 April 2026 · Issue #3 · Sunday Edition · <em>Versus Special</em></div>
+  <div class="cover-brand">The Signal<span>.</span></div>
+  <div class="cover-headline">Two programmes. One hybrid goal. No both-sides journalism.</div>
+  <div class="cover-tags">
+    <span class="tag">The Lyss Method</span><span class="tag">Ibex Training</span><span class="tag">Hybrid Fitness</span>
+    <span class="tag">Lift + Run</span><span class="tag">Perform</span><span class="tag">10K Prep</span>
+    <span class="tag">Hypertrophy</span><span class="tag">Versus</span>
+  </div>
+</header>
+
+<!-- ══════ NAVIGATOR ══════ -->
+<section class="nav-section" id="nav">
+  <h2>What's Inside</h2>
+  <div class="nav-grid">
+    <a href="#tape" class="nav-card lead session" style="text-decoration:none">
+      <div class="nav-card-content">
+        <div class="nav-card-tag">
+          <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></span>
+          Tale of the Tape</div>
+        <h3>By the numbers: who wins the stat war before a single rep is lifted?</h3>
+        <p>Price, access, structure, and ecosystem — the cold data before the editorial kicks in.</p>
+        <div class="read-time">4 min read</div>
+      </div>
+      <div class="nav-card-thumb" style="background-image:url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80')"></div>
+    </a>
+    <a href="#case-tlm" class="nav-card session" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></span>
+        The Lyss Method</div>
+      <h3>The Case for The Lyss Method</h3>
+      <p>Why periodisation, PhD credibility, and running integration make TLM the scientist's choice.</p>
+      <div class="read-time">6 min</div>
+    </a>
+    <a href="#case-ibex" class="nav-card session" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></span>
+        Ibex Training</div>
+      <h3>The Case for Ibex Training</h3>
+      <p>Why practicality, programme depth, and a £26/month price point make Ibex hard to beat.</p>
+      <div class="read-time">6 min</div>
+    </a>
+    <a href="#verdict" class="nav-card world" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></span>
+        The Verdict</div>
+      <h3>And the winner is...</h3>
+      <p>A contextual call, a clear recommendation, and the one scenario that flips everything.</p>
+      <div class="read-time">4 min</div>
+    </a>
+    <a href="#meanwhile" class="nav-card screen" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span>
+        Meanwhile</div>
+      <h3>Meanwhile...</h3>
+      <p>The week's best stories in brief — The Boys finale incoming, The Masters tees off, and more.</p>
+      <div class="read-time">3 min</div>
+    </a>
+  </div>
+</section>
+
+<!-- ══════ FOREWORD ══════ -->
+<section class="foreword">
+  <p>This issue started as a simple question: given you're already on Ibex, is there any reason to look at The Lyss Method? The answer is more nuanced than either camp's marketing suggests. Dr. Alyssa Olenick is one of the most credible voices in hybrid training. Ryan Fischer built something that works. The Signal is here to figure out which one actually fits a specific goal — a 10K in May, a holiday in June, a squat that keeps going up.</p>
+</section>
+
+<!-- ══════ TALE OF THE TAPE ══════ -->
+<hr class="divider dv-session">
+<section class="sec tape-section" id="tape" style="background:var(--warm,#fdf6ec)">
+  <div class="sec-watermark">Tape</div>
+  <span class="section-label" style="color:var(--session-accent,#e06b1f)">Tale of the Tape</span>
+  <h2 class="reveal">Before a single rep is lifted.</h2>
+
+  <img class="hero-img reveal" src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=1200&q=80" alt="Barbell on a rack in a commercial gym" style="border-radius:8px">
+  <div class="caption">The arena. Photo: <a href="https://unsplash.com">Unsplash</a></div>
+
+  <p>Every programme makes promises. The good ones keep them for the right person. The Lyss Method (TLM) and Ibex Training both target the hybrid athlete — someone who lifts and runs and refuses to fully sacrifice one for the other. But they come from different philosophies, different price points, and different ideas of what a hybrid programme actually looks like.</p>
+  <p>Let's get the data out of the way first.</p>
+
+  <div class="stat-bar reveal" style="margin:32px 0">
+    <div class="stat">
+      <div class="stat-num count-up" data-target="89">89</div>
+      <div class="stat-label">TLM / month (USD)</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num count-up" data-target="33">33</div>
+      <div class="stat-label">Ibex / month (USD)</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num count-up" data-target="22">22</div>
+      <div class="stat-label">TLM programmes</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num count-up" data-target="22">22+</div>
+      <div class="stat-label">Ibex programmes</div>
+    </div>
+  </div>
+
+  <div class="compare-panel reveal">
+    <div class="compare-side left">
+      <h4><span class="programme-badge badge-tlm">TLM</span> The Lyss Method — Perform</h4>
+      <ul>
+        <li><strong>Creator:</strong> Dr. Alyssa Olenick, PhD Exercise Physiology, 17× ultrarunner</li>
+        <li><strong>Price:</strong> $89/month full access; $49 running only; $70 student</li>
+        <li><strong>App:</strong> Built on Everfit platform</li>
+        <li><strong>Sessions/week:</strong> 3 (Perform track), ~60 mins each</li>
+        <li><strong>Philosophy:</strong> Seasons approach — periodised oscillation between strength, endurance, and hybrid phases</li>
+        <li><strong>Running included?</strong> Yes — 5K to 50K plans at no extra cost</li>
+        <li><strong>Equipment:</strong> Full gym, but offers swaps for anything</li>
+        <li><strong>Coaching access:</strong> In-app messaging, video feedback groups, resource library</li>
+        <li><strong>Tracks available:</strong> Perform, Build, Foundations, Lifestyle, Race</li>
+      </ul>
+    </div>
+    <div class="compare-side right">
+      <h4><span class="programme-badge badge-ibex">IBEX</span> Ibex Training — Lift/Run</h4>
+      <ul>
+        <li><strong>Creators:</strong> Ryan Fischer and team, CrossFit/functional fitness background</li>
+        <li><strong>Price:</strong> $33/month; ~$237/year with discounts; frequent 30–40% sales</li>
+        <li><strong>App:</strong> Custom iOS/Android app</li>
+        <li><strong>Sessions/week:</strong> 3 lift + 3 run per week (flexible to 3–5 days)</li>
+        <li><strong>Philosophy:</strong> Practical no-nonsense hybrid — CrossFit heritage, evolved into broader programming</li>
+        <li><strong>Running included?</strong> Yes — structured into the programme week</li>
+        <li><strong>Equipment:</strong> Full gym recommended; home gym adaptable</li>
+        <li><strong>Coaching access:</strong> Facebook community; no direct coaching</li>
+        <li><strong>Tracks available:</strong> Lift/Run, Performance Aesthetics, IBEX60, Pure Strength, and 20+ more</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>The Stat Bar That Matters Most</h3>
+  <p>Price is the sharpest differentiator. At $89/month, TLM costs 2.7× what Ibex costs. Over a year, that's a £480+ gap at current exchange rates. That's not trivial — it's a pair of quality lifting shoes, a Garmin accessory, or six months of Ibex pre-paid. TLM offers something real for that premium, but the question is whether it's real enough.</p>
+
+  <div class="big-number-row reveal" style="margin:32px 0">
+    <div class="big-number">
+      <div class="num count-up" data-target="89" style="color:var(--session-accent)">89</div>
+      <div class="num-label">USD/month — TLM Full Access</div>
+    </div>
+    <div class="big-number">
+      <div class="num" style="color:#3b82f6; font-family:'Cormorant Garamond',serif; font-weight:700; font-size:clamp(48px,8vw,96px)">2.7×</div>
+      <div class="num-label">Cost premium over Ibex</div>
+    </div>
+    <div class="big-number">
+      <div class="num count-up" data-target="33" style="color:#3b82f6">33</div>
+      <div class="num-label">USD/month — Ibex Training</div>
+    </div>
+  </div>
+
+  <h3>Ecosystem Depth: More Than Just the Flagship</h3>
+  <p>Both programmes are subscription ecosystems, not individual plans. That matters because your needs change — a 10K build in April looks different from a post-race hypertrophy block in June. The breadth of what you can pivot to within the same subscription is a legitimate consideration.</p>
+
+  <div class="compare-panel">
+    <div class="compare-side left">
+      <h4><span class="programme-badge badge-tlm">TLM</span> Ecosystem</h4>
+      <ul>
+        <li><strong>PERFORM</strong> — 3-day hybrid lifting + running integration</li>
+        <li><strong>BUILD</strong> — 3–4 day powerbuilding focus, 75–90 min, off-season</li>
+        <li><strong>RACE</strong> — 18-week race-specific, tapers lifting as mileage climbs</li>
+        <li><strong>FOUNDATIONS</strong> — 2–3 day beginner, dumbbell to barbell progression</li>
+        <li><strong>LIFESTYLE</strong> — 2-day for time-limited athletes</li>
+        <li><strong>Running plans:</strong> 5K → 50K, included in subscription</li>
+        <li><strong>Coaching:</strong> Messaging + video feedback included</li>
+      </ul>
+    </div>
+    <div class="compare-side right">
+      <h4><span class="programme-badge badge-ibex">IBEX</span> Ecosystem</h4>
+      <ul>
+        <li><strong>LIFT/RUN</strong> — 3 lift + 3 run hybrid, flexible scheduling</li>
+        <li><strong>PERFORMANCE AESTHETICS</strong> — 6-day PPL + conditioning, bodybuilding-focused</li>
+        <li><strong>IBEX60</strong> — CrossFit S&amp;C, under 60 mins</li>
+        <li><strong>PURE STRENGTH</strong> — heavy compound focus</li>
+        <li><strong>HYROX</strong> — 8-week race prep</li>
+        <li><strong>OLY LIFTING</strong> — snatch/clean &amp; jerk progressions</li>
+        <li><strong>Running:</strong> Couch to 5K, 10K int/adv, half-marathon, marathon</li>
+        <li><strong>Extras:</strong> Flow Mobility, Murph Prep, Strict Pull-Up, and more</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="dyk reveal" style="background:rgba(224,107,31,.08); border-color:var(--session-accent,#e06b1f)">
+    <div class="dyk-title">Did You Know?</div>
+    <p>Dr. Alyssa Olenick completed 17 ultramarathons while developing The Lyss Method's programming philosophy. Her research background specifically focuses on concurrent training — the interference effect between strength and endurance — which is exactly what a hybrid programme needs to navigate correctly. <a href="https://www.doclyssfitness.com/" target="_blank">doclyssfitness.com</a></p>
+  </div>
+
+  <h3>App Experience: The Unglamorous Factor</h3>
+  <p>No one buys a fitness programme for the app. But they do quit because of it. Ibex runs a custom app with built-in tracking and video demos that users consistently describe as clean and intuitive. TLM runs on Everfit — a third-party platform — and feedback is mixed. The recurring complaint: the app is rigid about day assignment. Miss a scheduled run and it logs as "missed run 1" even if you're intentionally rescheduling. You can't feed in watch metrics from a Garmin. For someone who tracks everything on a Garmin Venu X1, that's friction every single week.</p>
+
+  <div class="also" style="margin-top:24px">
+    <div class="also-title">Quick Spec: App Features</div>
+    <ul class="also-list">
+      <li class="tier-hot"><strong>Ibex App</strong> — Custom iOS/Android, built-in exercise tracking, video demos, movement swaps. Users report straightforward UX.</li>
+      <li class="tier-warm"><strong>TLM (Everfit)</strong> — Third-party platform; coaching messaging, resource library, video feedback groups. Day-locking is the main reported frustration.</li>
+      <li class="tier-note"><strong>Garmin integration</strong> — Neither integrates natively with Garmin Connect. Ibex slightly better for manual flexibility.</li>
+    </ul>
+  </div>
+
+  <div class="read-next">Up next: <a href="#case-tlm">The Case for TLM <span class="arrow">→</span></a> — Science, seasons, and why $89/month might be worth it</div>
+</section>
+
+<!-- BREATHER -->
+<div class="breather">
+  <div class="breather-stat">$672/yr</div>
+  <div class="breather-context">The annual cost gap between TLM full access and Ibex at its cheapest annual rate</div>
+  <div class="breather-teaser">The question isn't just what you get — it's what that premium actually buys you</div>
+</div>
+
+<!-- ══════ THE CASE FOR TLM ══════ -->
+<hr class="divider dv-session">
+<section class="sec session-section" id="case-tlm" style="background:var(--session-bg,#f4f7f2)">
+  <div class="sec-watermark">TLM</div>
+  <span class="section-label" style="color:var(--session-accent,#e06b1f)">The Case for The Lyss Method</span>
+  <h2 class="reveal">The scientist in the room.</h2>
+
+  <img class="hero-img reveal" src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=1200&q=80" alt="Runner on a track doing interval training" style="border-radius:8px">
+  <div class="caption">Interval work — TLM's running integration is built into the periodisation architecture, not bolted on. Photo: <a href="https://unsplash.com">Unsplash</a></div>
+
+  <ul class="entry-bullets">
+    <li>PhD-level exercise physiology underpins every programming decision</li>
+    <li>Seasons model prevents the most common hybrid athlete error: trying to peak for strength and running simultaneously</li>
+    <li>RACE track is specifically designed for athletes with an imminent event — lifting tapers intelligently as mileage climbs</li>
+    <li>Direct coaching access via messaging and video groups; the community is described as unusually accessible</li>
+  </ul>
+
+  <h3>The Seasons Philosophy: Why It's Different</h3>
+  <p>Most hybrid programmes ask you to do everything at once, every week, indefinitely. The Lyss Method explicitly rejects this. The "seasons approach" periodises between phases: a strength-focused block, an endurance-focused block, a true hybrid block. The logic is grounded in research on concurrent training — specifically the interference effect, which shows that high volumes of strength and endurance training compete for adaptive resources at the cellular level.</p>
+  <p>This matters for someone targeting a 10K on May 3rd. You cannot simultaneously maximise squat strength and 10K race fitness. One of them leads; the other supports. TLM is designed around that truth. Right now, you're in pre-race territory — which means you'd be on PERFORM (or potentially RACE if you switch). Post-race in mid-May through June, you'd be in an ideal window for a strength-focused phase before the Netherlands holiday. TLM is built for this cycle.</p>
+
+  <div class="pull-quote reveal">
+    <p>"The goal of PERFORM is not to be the best lifting programme or the best running programme. It's to be the programme that keeps both going without either one imploding."</p>
+    <cite>— The Lyss Method programming philosophy, <a href="https://www.doclyssfitness.com/" target="_blank">doclyssfitness.com</a></cite>
+  </div>
+
+  <h3>PERFORM: What the Sessions Actually Look Like</h3>
+  <p>PERFORM is the flagship hybrid track. Three sessions per week, approximately 60 minutes each. The movement patterns are orthodox — squats, deadlifts, presses, rows as the main lifts, with single-leg work, core, and athletic movements in the accessory slots. Progressive overload is applied to main movements across 8–12 weeks; accessories rotate every 4–6 weeks to manage fatigue and maintain stimulus.</p>
+  <p>The RPE/RIR prescription system is worth highlighting. Every working set has an effort target — "4×6 @ RPE 7-8" tells you not just what to do but how hard to work. For someone wearing a Garmin and already thinking about training readiness, this is a natural fit. You adjust based on how you feel that day, and the programme gives you the framework to do that intelligently.</p>
+
+  <div class="workout-card reveal" style="margin:24px 0">
+    <div class="workout-card-title">TLM PERFORM — Example Upper Body Session</div>
+    <table>
+      <tr><th>Block</th><th>Exercise</th><th>Sets × Reps</th><th>Effort / Rest</th></tr>
+      <tr class="highlight-row"><td>A1</td><td>Barbell Bench Press</td><td>4×6</td><td>RPE 7–8 / 3 min</td></tr>
+      <tr class="highlight-row"><td>A2</td><td>Barbell Bent-Over Row</td><td>4×8</td><td>RPE 7 / 2 min</td></tr>
+      <tr><td>B1</td><td>DB Lateral Raise</td><td>3×12</td><td rowspan="2">Superset / 90s</td></tr>
+      <tr><td>B2</td><td>Face Pulls</td><td>3×15</td></tr>
+      <tr><td>C1</td><td>Incline DB Curl</td><td>3×10</td><td rowspan="2">Superset / 90s</td></tr>
+      <tr><td>C2</td><td>Overhead Tricep Extension</td><td>3×12</td></tr>
+      <tr><td>D</td><td>Plank Variations</td><td>3×30–45s</td><td>60s</td></tr>
+    </table>
+    <p style="margin:12px 0 0; font-family:'DM Sans',sans-serif; font-size:12px; color:#666">Total: ~55–60 mins · RPE-based loading · Swaps provided for every exercise · <a href="https://www.doclyssfitness.com/programmes" target="_blank">doclyssfitness.com</a></p>
+  </div>
+
+  <h3>The RACE Track: The Ace Card</h3>
+  <p>No programme in this comparison has an equivalent to TLM's RACE track. It's an 18-week race-specific programme that deliberately tapers lifting volume as running volume climbs. The architecture is designed for athletes who want to arrive at a race without having sacrificed 12 weeks of gym progress to get there. The lifting doesn't disappear — it steps back into a maintenance role while running takes the wheel.</p>
+  <p>For a 10K target on May 3rd, you're currently inside that race window. PERFORM keeps both fires burning at moderate intensity. If you were starting fresh with a TLM subscription, you might also consider triggering RACE now and using the intelligent taper to hit May 3rd in better running shape, knowing the lifting picks back up in earnest in mid-May.</p>
+
+  <div class="compare-panel reveal" style="margin:24px 0">
+    <div class="compare-side left">
+      <h4><span class="programme-badge badge-tlm">PERFORM</span> — Hybrid Maintenance Phase</h4>
+      <ul>
+        <li>3 sessions/week, ~60 mins</li>
+        <li>Main lifts: consistent 8–12 weeks</li>
+        <li>Accessories: rotate 4–6 weeks</li>
+        <li>Running paired at no extra cost</li>
+        <li>Best for: year-round base building with running integration</li>
+      </ul>
+    </div>
+    <div class="compare-side right">
+      <h4><span class="programme-badge badge-tlm">RACE</span> — Pre-Race Taper Mode</h4>
+      <ul>
+        <li>18-week race-specific programme</li>
+        <li>3 lifting sessions (1 optional as mileage climbs)</li>
+        <li>Lifting tapers intelligently with race build</li>
+        <li>Designed for 5K → marathon range</li>
+        <li>Best for: athletes with a specific race date and a gym habit to protect</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>The Evidence Base</h3>
+  <p>The Lyss Method isn't just citing exercise science for credibility — it's built by someone who researches concurrent training specifically. Dr. Olenick's academic background gives the programme something most alternatives can't claim: a theoretical framework that maps onto what the research actually says about lifting and running together. That doesn't guarantee it produces better results in practice, but it does mean the decisions (why this loading scheme, why this rep range, why this sequence) have defensible answers.</p>
+
+  <div class="dyk reveal" style="background:rgba(224,107,31,.08); border-color:var(--session-accent,#e06b1f)">
+    <div class="dyk-title">Did You Know?</div>
+    <p>The "interference effect" in concurrent training is most pronounced when high-volume endurance work precedes strength training in the same session. TLM's PERFORM structure separates sessions entirely to minimise this — your running days and lifting days don't compete for the same recovery window. <a href="https://www.strongerbyscience.com/concurrent-training/" target="_blank">Stronger By Science on concurrent training</a></p>
+  </div>
+
+  <h3>Where TLM Falls Short</h3>
+  <p>The price is real. At $89/month — roughly £70 — TLM is a premium product. There's no annual discount that brings it meaningfully closer to Ibex. The Everfit app experience is a legitimate friction point for organised, data-driven athletes. If you're tracking every session in Garmin Connect and want to cross-reference, the inability to feed in watch metrics is a daily annoyance.</p>
+  <p>There's also a community concern surfaced in Reddit reports: at least one user's friend trained for a marathon with TLM and walked the last 8+ miles — reportedly due to insufficient running volume in the plan. That's a single anecdote, but it echoes a broader tension: TLM is brilliant at protecting lifting during run builds. There's less evidence it's built for athletes whose primary goal is race performance over gym performance.</p>
+
+  <div class="pull-quote centered reveal">
+    <p>"At $89/month, TLM is asking you to pay for a worldview as much as a programme. The worldview is sound. Whether it's yours to pay for depends on what you're optimising for."</p>
+    <cite>— The Signal</cite>
+  </div>
+
+  <h3>Scoring: Athleticism, Hypertrophy, Running Support</h3>
+  <p>Against the three criteria that matter most for this comparison — athleticism, hypertrophy, and running support — here's where PERFORM lands:</p>
+
+  <div class="scoring-grid reveal">
+    <div class="scoring-cell">
+      <div class="label">Athleticism</div>
+      <span class="rating"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span></span>
+      <p style="font-size:12px;font-family:'DM Sans',sans-serif;color:#555;margin-top:8px">Strong athletic movement selection; RPE-based loading adapts to daily readiness; seasons model prevents overreach</p>
+    </div>
+    <div class="scoring-cell">
+      <div class="label">Hypertrophy</div>
+      <span class="rating"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span><span class="dot"></span></span>
+      <p style="font-size:12px;font-family:'DM Sans',sans-serif;color:#555;margin-top:8px">Respectable volume with solid progressive overload; BUILD track is the superior hypertrophy option within TLM ecosystem</p>
+    </div>
+    <div class="scoring-cell">
+      <div class="label">Running Support</div>
+      <span class="rating"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span></span>
+      <p style="font-size:12px;font-family:'DM Sans',sans-serif;color:#555;margin-top:8px">The strongest category — RACE track, integrated run plans, and PhD-level concurrent training science</p>
+    </div>
+  </div>
+
+  <div class="also" style="margin-top:32px">
+    <div class="also-title">TLM Strengths at a Glance</div>
+    <ul class="also-list">
+      <li class="tier-hot"><strong>RACE track</strong> — Unmatched intelligent taper for upcoming events; no equivalent in Ibex</li>
+      <li class="tier-hot"><strong>Evidence base</strong> — PhD-level concurrent training research underpins every programming decision</li>
+      <li class="tier-warm"><strong>Seasons periodisation</strong> — Designed for the reality that you can't peak for lifting and running simultaneously</li>
+      <li class="tier-warm"><strong>Coaching access</strong> — Direct messaging and video feedback groups included; Ibex has a Facebook community, not coaching</li>
+      <li class="tier-note"><strong>Running plans included</strong> — 5K to 50K at no extra cost; full ecosystem within one subscription</li>
+    </ul>
+  </div>
+
+  <div class="read-next">Up next: <a href="#case-ibex">The Case for Ibex <span class="arrow">→</span></a> — Where the programme you already know excels</div>
+</section>
+
+<!-- BREATHER DARK -->
+<div class="breather dark">
+  <div class="breather-stat">17×</div>
+  <div class="breather-context">Dr. Alyssa Olenick's ultramarathon completions while developing TLM's concurrent training philosophy</div>
+  <div class="breather-teaser">Now for the programme already in the gym bag</div>
+</div>
+
+<!-- ══════ THE CASE FOR IBEX ══════ -->
+<hr class="divider dv-session">
+<section class="sec session-section" id="case-ibex" style="background:#f0f4f8">
+  <div class="sec-watermark">Ibex</div>
+  <span class="section-label" style="color:#3b82f6">Ibex Training</span>
+  <h2 class="reveal">The programme that just works.</h2>
+
+  <img class="hero-img reveal" src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=1200&q=80" alt="Athletes performing barbell squats in a gym" style="border-radius:8px">
+  <div class="caption">Full-body compound work — Ibex Lift/Run's structural foundation. Photo: <a href="https://unsplash.com">Unsplash</a></div>
+
+  <div class="entry-stat" style="color:#3b82f6">$33</div>
+  <div class="entry-stat-context">per month. Every programme included. No upsells.</div>
+
+  <p>Ibex Training arrived from CrossFit culture but evolved into something more useful: a structured hybrid programme with the metabolic conditioning of functional fitness and the progressive overload logic of powerbuilding. Lift/Run is the flagship hybrid track, and for three-days-a-week gym athletes who also run, it's exceptionally well-designed.</p>
+
+  <h3>Lift/Run: What It Actually Is</h3>
+  <p>Where TLM PERFORM gives you three lifting-centric sessions with running plans alongside them, Ibex Lift/Run integrates both explicitly. The typical week is three full-body strength days plus three run days — but crucially, the structure is flexible. You can compress it to three days or extend to five. The full-body approach on lifting days is a deliberate choice: by spreading leg volume across three sessions rather than hammering it once per week, the programme keeps the legs fresher for running. That's not accidental — it's the same concurrent training logic TLM uses, but implemented structurally rather than through seasons periodisation.</p>
+
+  <div class="sidebar-float" style="background:rgba(59,130,246,.06); border-left:3px solid #3b82f6">
+    <div class="sidebar-title" style="color:#3b82f6">Typical Lift/Run Week</div>
+    <ul>
+      <li><strong>Monday</strong> — Lift + optional easy run</li>
+      <li><strong>Tuesday</strong> — Interval run</li>
+      <li><strong>Wednesday</strong> — Lift + optional conditioning</li>
+      <li><strong>Thursday</strong> — Easy run</li>
+      <li><strong>Friday</strong> — Lift + optional aerobic machine</li>
+      <li><strong>Saturday</strong> — Long run <em>or</em> Hyrox gym day</li>
+      <li><strong>Sunday</strong> — Rest</li>
+    </ul>
+  </div>
+
+  <p>The running component has three difficulty levels to choose from — so whether you're managing 30km weeks or just keeping the aerobic base ticking over during a heavy lifting block, there's a lane for you. Threshold intervals are built in, influenced by Hyrox-style conditioning. The result is a programme that genuinely improves running performance, not just lifter-who-jogs performance.</p>
+  <p>The 4-week block structure with rotating exercises is a practical solution to a real problem: programme monotony. Accessory work changes every four weeks, which keeps adaptation stimulus fresh without requiring the athlete to constantly design their own variation. The compounds — bench, squat, deadlift — progress in linear fashion with percentage-based or rep-max loading. The structure is transparent and simple enough that you understand what's happening week to week.</p>
+
+  <div class="workout-card reveal" style="margin:24px 0; --session-bg:#3b82f6">
+    <div class="workout-card-title" style="background:#3b82f6">Ibex LIFT/RUN — Example Full Body Lift Day</div>
+    <table>
+      <tr><th>Block</th><th>Exercise</th><th>Sets × Reps</th><th>Notes</th></tr>
+      <tr class="highlight-row"><td>Warm-up</td><td>Coach-written activation circuit</td><td>—</td><td>5–8 mins</td></tr>
+      <tr><td>Strength A</td><td>Back Squat</td><td>5×5</td><td>Progressive overload from previous week</td></tr>
+      <tr><td>B1</td><td>Single-Leg RDL</td><td>3×10 each</td><td rowspan="3">Accessory circuit</td></tr>
+      <tr><td>B2</td><td>DB Push Press</td><td>3×8</td></tr>
+      <tr><td>B3</td><td>Banded Pallof Press</td><td>3×12 each</td></tr>
+      <tr><td>Core</td><td>GHD Sit-ups</td><td>3×15</td><td rowspan="3">Core finisher circuit</td></tr>
+      <tr><td></td><td>Russian Twists</td><td>3×20</td></tr>
+      <tr><td></td><td>Hollow Hold</td><td>3×30s</td></tr>
+      <tr><td>Optional</td><td>Metcon (AMRAP style)</td><td>8–10 min</td><td>Conditioning add-on</td></tr>
+    </table>
+    <p style="margin:12px 0 0; font-family:'DM Sans',sans-serif; font-size:12px; color:#666">Total: ~45–55 mins (without metcon) / ~55–65 mins with · <a href="https://www.ibextraining.com/" target="_blank">ibextraining.com</a></p>
+  </div>
+
+  <h3>Performance Aesthetics: The Overlooked Track</h3>
+  <p>The conversation about Ibex tends to centre on Lift/Run, but Performance Aesthetics is a serious programme worth understanding, especially for someone who wants to prioritise hypertrophy during the summer (post-10K, post-holiday). Six days per week, 45–60 minutes — a push/pull/leg split with conditioning day, full-body heavy day, and full-body density day. Users report significant strength PRs on back squat, deadlift, and strict press. The four built-in core circuits and optional metcon pieces mean conditioning never fully disappears.</p>
+  <p>The ability to pivot from Lift/Run to Performance Aesthetics within the same subscription is a significant practical advantage. After the 10K in May and ahead of the Netherlands holiday in June, a five-to-six-week block of PFA — leaning into body composition — becomes an obvious move. TLM's equivalent would be switching to BUILD, but you're paying $89/month either way. With Ibex, this pivot costs nothing.</p>
+
+  <div class="dyk reveal" style="background:rgba(59,130,246,.08); border-color:#3b82f6; border-left-color:#3b82f6">
+    <div class="dyk-title">Did You Know?</div>
+    <p>Ibex Training's Hyrox prep programme is 8 weeks and is included in the standard subscription. Hyrox's influence on Lift/Run's threshold intervals is visible — the programme is designed to produce functional fitness athletes, not just gym bodies. <a href="https://www.ibextraining.com/" target="_blank">ibextraining.com</a></p>
+  </div>
+
+  <h3>The Value Equation</h3>
+  <p>$33/month with frequent sales — the annual option can drop to around $237/year, which works out to under $20/month. That's not a budget compromise. Ibex at full price is a good deal; Ibex on sale is an embarrassingly good deal. The programme depth at that price point has no serious competition: 22+ distinct programmes, a custom app, video demos, and a Facebook community.</p>
+  <p>The absence of direct coaching is the trade-off. Ibex has a community, not coaches. If you want someone with credentials to review your form, adjust your loading, or answer programme questions with a PhD-level response, Ibex doesn't offer that. For an experienced gym-goer who knows the lifts and understands progressive overload, this rarely matters. For someone earlier in their training journey, it's a meaningful gap.</p>
+
+  <div class="compare-panel reveal">
+    <div class="compare-side left">
+      <h4><span class="programme-badge badge-ibex">LIFT/RUN</span> vs PFA — When to Use Each</h4>
+      <ul>
+        <li><strong>Lift/Run now (April):</strong> 10K on May 3 — running volume is the priority. Full-body lifting preserves strength without burying the legs before race day.</li>
+        <li><strong>PFA post-race (May–June):</strong> 10K is done, Netherlands trip is 8 weeks out. Hypertrophy window — PFA's 6-day structure hits body composition hard.</li>
+      </ul>
+    </div>
+    <div class="compare-side right">
+      <h4><span class="programme-badge badge-ibex">IBEX60</span> — The Efficiency Track</h4>
+      <ul>
+        <li>CrossFit-style S&amp;C, under 60 minutes per session</li>
+        <li>When travel, work, or life reduces gym availability</li>
+        <li>Bridges the gap without losing the training habit</li>
+        <li>Available in the same subscription — no extra cost</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>The Community Factor</h3>
+  <p>Reddit sentiment on Ibex skews positive in a specific way: users talk about it working. Not inspiring — working. "Best shape in years." "Strength + metcon in under 60 minutes." "Solid for working out alone or in a home gym." That's the Ibex brand in user language: competent, no-nonsense, results-visible. It doesn't promise to revolutionise your relationship with movement science. It delivers progressive overload, conditioning, and enough variety to stay motivated.</p>
+
+  <h3>Scoring: Athleticism, Hypertrophy, Running Support</h3>
+
+  <div class="scoring-grid reveal">
+    <div class="scoring-cell">
+      <div class="label">Athleticism</div>
+      <span class="rating"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span></span>
+      <p style="font-size:12px;font-family:'DM Sans',sans-serif;color:#555;margin-top:8px">Full-body structure, plyometrics, threshold intervals, Hyrox-influenced conditioning; athletic capacity is a core design goal</p>
+    </div>
+    <div class="scoring-cell">
+      <div class="label">Hypertrophy</div>
+      <span class="rating"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span></span>
+      <p style="font-size:12px;font-family:'DM Sans',sans-serif;color:#555;margin-top:8px">Lift/Run is solid; Performance Aesthetics is a genuine hypertrophy programme — together they cover far more ground than TLM's equivalent tracks</p>
+    </div>
+    <div class="scoring-cell">
+      <div class="label">Running Support</div>
+      <span class="rating"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span></span>
+      <p style="font-size:12px;font-family:'DM Sans',sans-serif;color:#555;margin-top:8px">Integrated run days, three difficulty levels, threshold work, long runs — built into the programme structure rather than alongside it</p>
+    </div>
+  </div>
+
+  <div class="also" style="margin-top:32px">
+    <div class="also-title">Ibex Strengths at a Glance</div>
+    <ul class="also-list">
+      <li class="tier-hot"><strong>Price</strong> — $33/month full access, 22+ programmes, no upsells. Nothing in this category competes at this value level.</li>
+      <li class="tier-hot"><strong>Programme breadth</strong> — Lift/Run + Performance Aesthetics + IBEX60 + run programmes within one subscription enables intelligent pivoting year-round</li>
+      <li class="tier-warm"><strong>Custom app</strong> — Built-in tracking, video demos, movement swaps. Described as straightforward and unfrustrating.</li>
+      <li class="tier-warm"><strong>Full-body structure</strong> — Intentional design for concurrent athletes; spreads leg volume to keep running legs fresher</li>
+      <li class="tier-note"><strong>Flexibility</strong> — 3, 4, or 5-day scheduling; adapts to life without app-logging "missed sessions"</li>
+    </ul>
+  </div>
+
+  <div class="read-next">Up next: <a href="#verdict">The Verdict <span class="arrow">→</span></a> — The call, the context, and when it flips</div>
+</section>
+
+<!-- ══════ THE VERDICT ══════ -->
+<hr class="divider dv-session">
+<section class="sec verdict-section" id="verdict" style="background:linear-gradient(135deg, #0d1117 0%, #1a1f2b 100%); color:rgba(255,255,255,.9)">
+  <div class="sec-watermark" style="color:rgba(255,255,255,.04)">Verdict</div>
+  <span class="section-label" style="color:var(--session-accent,#e06b1f)">The Verdict</span>
+  <h2 class="reveal" style="color:#fff">Ibex wins. TLM earns its price for one specific thing.</h2>
+
+  <img class="hero-img reveal" src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1200&q=80" alt="Athlete celebrating finish of a race" style="border-radius:8px">
+  <div class="caption">The finish line is the context that changes everything. Photo: <a href="https://unsplash.com">Unsplash</a></div>
+
+  <div class="entry-question" style="color:rgba(255,255,255,.7); border-color:var(--session-accent,#e06b1f)">What does it actually take for a $89/month programme to beat a $33/month one that already works?</div>
+
+  <p>This comparison has a clear winner and a clear asterisk. The asterisk matters.</p>
+
+  <div class="winner-banner contextual-win reveal">
+    <h2 style="color:#fff">Ibex Training</h2>
+    <p style="color:rgba(255,255,255,.8)">For the current context — 10K prep, post-race hypertrophy, full gym access, existing familiarity — Ibex is the right call. The price gap alone would need to be substantially overcome by TLM to justify the switch. It isn't, in this case.</p>
+  </div>
+
+  <h3 style="color:#fff; margin-top:32px">Why Ibex Wins Here</h3>
+  <p>The current situation is straightforward: you have a 10K on May 3rd, a holiday on June 30th, and you're already on Ibex. Lift/Run is structurally sound for concurrent training. The running component is integrated and competent. The full-body approach protects running legs. Performance Aesthetics is waiting in the wings for the post-race body composition push. None of this requires $89/month to execute.</p>
+  <p>The programme breadth advantage matters too. In the next 12 weeks alone, the plan is: 10K prep → race → 4-6 weeks of body composition work → holiday. Ibex handles that entire arc within one subscription: Lift/Run now, Performance Aesthetics from mid-May, IBEX60 or a holiday maintenance block in June. TLM does the same — PERFORM or RACE now, BUILD from May — but at 2.7× the cost, for a user who already knows the Ibex system and has no learning curve to overcome.</p>
+
+  <div class="compare-panel reveal" style="border-color:rgba(255,255,255,.1)">
+    <div class="compare-side left" style="background:rgba(59,130,246,.12); border-color:rgba(59,130,246,.3)">
+      <h4 style="color:#60a5fa">Ibex — Stay Here If:</h4>
+      <ul style="color:rgba(255,255,255,.8)">
+        <li>You have a race within 12 weeks and want structured but not over-complicated prep</li>
+        <li>Hypertrophy is an equal or greater goal to running performance</li>
+        <li>Programme switching (Lift/Run → PFA → IBEX60) is appealing</li>
+        <li>You track on Garmin and want app flexibility, not day-locking</li>
+        <li>The price gap is a real factor in what you're willing to spend</li>
+      </ul>
+    </div>
+    <div class="compare-side right" style="background:rgba(224,107,31,.12); border-color:rgba(224,107,31,.3)">
+      <h4 style="color:#fb923c">TLM — Switch If:</h4>
+      <ul style="color:rgba(255,255,255,.8)">
+        <li>Running performance becomes the primary goal — half-marathon, marathon, or ultra aspirations</li>
+        <li>You want coaching access, not just community</li>
+        <li>The seasons periodisation model is what your training has been missing</li>
+        <li>You want structured concurrent training designed by someone who specifically researches it</li>
+        <li>Price is not a deciding factor and you want the premium product</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 style="color:#fff">The Asterisk: When TLM Wins</h3>
+  <p>If the 10K becomes a half-marathon, the half becomes a marathon, and the running goal starts to meaningfully lead — TLM RACE becomes the most defensible race-prep infrastructure available at any price in this category. The seasons model and the intelligent lift-taper are genuinely superior to anything Ibex offers for serious run prioritisation. The PhD-level concurrent training design also matters more as distances increase, where the interference effect becomes more aggressive and more consequential.</p>
+  <p>TLM also wins on coaching. If your squat form is breaking down, your running gait is concerning you, or you have a specific problem you want answered by someone with a doctorate in exercise physiology, Ibex's Facebook community is a structural limitation. TLM's direct coaching access is a real premium service for a specific kind of athlete.</p>
+
+  <div class="pull-quote wide reveal">
+    <p>"Ibex is the right answer for right now. TLM is the right answer for a different version of this goal — one where the running distance doubles and the finish line matters more than the squat rack."</p>
+    <cite>— The Signal Verdict</cite>
+  </div>
+
+  <h3 style="color:#fff">Final Scores</h3>
+  <p style="color:rgba(255,255,255,.7)">Across the three scoring dimensions:</p>
+
+  <div class="compare-panel reveal" style="border-color:rgba(255,255,255,.1); margin-bottom:24px">
+    <div class="compare-side left" style="background:rgba(224,107,31,.08); border-color:rgba(224,107,31,.2)">
+      <h4 style="color:#fb923c">The Lyss Method — PERFORM</h4>
+      <div style="margin:8px 0">
+        <span style="font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(255,255,255,.6);display:block;margin-bottom:4px">Athleticism</span>
+        <span class="rating"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span></span>
+      </div>
+      <div style="margin:8px 0">
+        <span style="font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(255,255,255,.6);display:block;margin-bottom:4px">Hypertrophy</span>
+        <span class="rating"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span><span class="dot"></span></span>
+      </div>
+      <div style="margin:8px 0">
+        <span style="font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(255,255,255,.6);display:block;margin-bottom:4px">Running Support</span>
+        <span class="rating"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span></span>
+      </div>
+      <div style="margin-top:16px; font-family:'JetBrains Mono',monospace; color:#fb923c; font-size:20px; font-weight:700">12/15</div>
+    </div>
+    <div class="compare-side right" style="background:rgba(59,130,246,.08); border-color:rgba(59,130,246,.2)">
+      <h4 style="color:#60a5fa">Ibex Training — Lift/Run</h4>
+      <div style="margin:8px 0">
+        <span style="font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(255,255,255,.6);display:block;margin-bottom:4px">Athleticism</span>
+        <span class="rating"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span></span>
+      </div>
+      <div style="margin:8px 0">
+        <span style="font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(255,255,255,.6);display:block;margin-bottom:4px">Hypertrophy</span>
+        <span class="rating"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span></span>
+      </div>
+      <div style="margin:8px 0">
+        <span style="font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(255,255,255,.6);display:block;margin-bottom:4px">Running Support</span>
+        <span class="rating"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span></span>
+      </div>
+      <div style="margin-top:16px; font-family:'JetBrains Mono',monospace; color:#60a5fa; font-size:20px; font-weight:700">13/15</div>
+    </div>
+  </div>
+
+  <div class="dyk reveal" style="background:rgba(255,255,255,.05); border-color:rgba(255,255,255,.15)">
+    <div class="dyk-title" style="color:var(--session-accent,#e06b1f)">Did You Know?</div>
+    <p style="color:rgba(255,255,255,.75)">The "seasons" model in TLM is directly analogous to periodisation in elite sport — the concept of oscillating between different training emphases to avoid accommodation and manage fatigue. The research backing for this approach is robust: <a href="https://www.strongerbyscience.com/periodization/" target="_blank" style="color:var(--session-accent,#e06b1f)">Stronger By Science on periodisation</a>.</p>
+  </div>
+
+  <h3 style="color:#fff">Related Reading</h3>
+  <div class="longshelf-grid" style="margin-top:16px">
+    <div class="shelf-item" style="background:rgba(255,255,255,.05); border-radius:8px; padding:16px">
+      <div class="title"><a href="https://www.doclyssfitness.com/blog" target="_blank" style="color:#fb923c">The Lyss Method Blog</a></div>
+      <div class="meta" style="color:rgba(255,255,255,.5)">doclyssfitness.com · Dr. Alyssa Olenick</div>
+      <div class="desc" style="color:rgba(255,255,255,.7)">The editorial side of TLM — programming philosophy, hybrid athlete science, seasonal training breakdowns.</div>
+    </div>
+    <div class="shelf-item" style="background:rgba(255,255,255,.05); border-radius:8px; padding:16px">
+      <div class="title"><a href="https://www.strongerbyscience.com/concurrent-training/" target="_blank" style="color:#fb923c">Concurrent Training — Stronger by Science</a></div>
+      <div class="meta" style="color:rgba(255,255,255,.5)">strongerbyscience.com · Greg Nuckols</div>
+      <div class="desc" style="color:rgba(255,255,255,.7)">The research behind why lifting and running interfere with each other — and what actually minimises the cost.</div>
+    </div>
+    <div class="shelf-item" style="background:rgba(255,255,255,.05); border-radius:8px; padding:16px">
+      <div class="title"><a href="https://www.ibextraining.com/" target="_blank" style="color:#60a5fa">Ibex Training</a></div>
+      <div class="meta" style="color:rgba(255,255,255,.5)">ibextraining.com · Ryan Fischer</div>
+      <div class="desc" style="color:rgba(255,255,255,.7)">Full programme library, app links, and the 7-day free trial entry point.</div>
+    </div>
+    <div class="shelf-item" style="background:rgba(255,255,255,.05); border-radius:8px; padding:16px">
+      <div class="title"><a href="https://www.youtube.com/@doclyssfitness" target="_blank" style="color:#fb923c">Dr. Lyss on YouTube</a></div>
+      <div class="meta" style="color:rgba(255,255,255,.5)">YouTube · Dr. Alyssa Olenick</div>
+      <div class="desc" style="color:rgba(255,255,255,.7)">Accessible breakdown of hybrid training science, periodisation concepts, and programme walkthroughs.</div>
+    </div>
+    <div class="shelf-item" style="background:rgba(255,255,255,.05); border-radius:8px; padding:16px">
+      <div class="title"><a href="https://www.reddit.com/r/fitness/comments/hybrid_training/" target="_blank" style="color:#60a5fa">r/fitness hybrid training threads</a></div>
+      <div class="meta" style="color:rgba(255,255,255,.5)">Reddit · r/fitness</div>
+      <div class="desc" style="color:rgba(255,255,255,.7)">Community experience reports across both programmes — the candid assessments that marketing won't give you.</div>
+    </div>
+    <div class="shelf-item" style="background:rgba(255,255,255,.05); border-radius:8px; padding:16px">
+      <div class="title"><a href="https://www.runnersworld.com/training/a20851400/concurrent-training/" target="_blank" style="color:#fb923c">Concurrent Training for Runners — Runner's World</a></div>
+      <div class="meta" style="color:rgba(255,255,255,.5)">runnersworld.com</div>
+      <div class="desc" style="color:rgba(255,255,255,.7)">How to structure lifting without destroying your running legs — practical complement to the research.</div>
+    </div>
+  </div>
+
+  <div class="read-next" style="color:rgba(255,255,255,.6)">Up next: <a href="#meanwhile" style="color:var(--session-accent,#e06b1f)">Meanwhile... <span class="arrow">→</span></a> — The week's news, while you were lifting</div>
+</section>
+
+<!-- ══════ MEANWHILE ══════ -->
+<hr class="divider dv-screen">
+<section class="sec screen-section" id="meanwhile" style="background:var(--screen-bg, #0e0c1e)">
+  <div class="sec-watermark" style="color:rgba(255,255,255,.03)">Meanwhile</div>
+  <span class="section-label">Meanwhile...</span>
+  <h2 class="reveal" style="color:#fff">The week in brief.</h2>
+  <p style="color:rgba(255,255,255,.6); font-family:'DM Sans',sans-serif; font-size:14px">While this issue was focused on barbells and running splits, the world kept moving. Here's the signal from the noise.</p>
+
+  <div class="also">
+    <ul class="also-list">
+
+      <li class="tier-hot"><strong>The Boys Season 5 — April 8, Prime Video</strong> — The final season of Amazon's superhero satire arrives this week. No spoilers on where it's going, but "final season" energy means the writers had permission to go all the way. <a href="https://www.primevideo.com/detail/the-boys/" target="_blank">Prime Video</a></li>
+
+      <li class="tier-hot"><strong>The Masters — Starting April 8, Augusta</strong> — The first golf major of 2026 tees off at Augusta National. World No. 1 contenders and a stacked field make this appointment television. <a href="https://www.masters.com/" target="_blank">masters.com</a></li>
+
+      <li class="tier-hot"><strong>Super Mario Galaxy Movie — In Cinemas Now</strong> — Nintendo's theatrical animation push continues. Galaxy was always the most cinematic of the Mario games — curious whether the film captures that. <a href="https://www.nintendo.com/" target="_blank">Nintendo</a></li>
+
+      <li class="tier-warm"><strong>Star Wars: Maul — Shadow Lord — April 6, Disney+</strong> — Animated sequel to The Clone Wars focusing on Maul's rise. The Clone Wars remains the best Star Wars storytelling of the past decade; Shadow Lord needs to earn that legacy. <a href="https://www.disneyplus.com/" target="_blank">Disney+</a></li>
+
+      <li class="tier-warm"><strong>Pragmata (Capcom) — April 17, PS5/Xbox/PC/Switch 2</strong> — One of gaming's longest-running "where did this game go?" mysteries finally gets resolved. Capcom's sci-fi action adventure after years of delays. <a href="https://www.capcom.com/pragmata/" target="_blank">Capcom</a></li>
+
+      <li class="tier-warm"><strong>Stranger Things: Tales From '85 — April 23, Netflix</strong> — Anthology spin-off set in the Stranger Things universe. The main show ended; this tests whether the world has legs without the core cast. <a href="https://www.netflix.com/title/stranger-things" target="_blank">Netflix</a></li>
+
+      <li class="tier-warm"><strong>Diablo IV: Lord of Hatred — April 28</strong> — Major expansion for Blizzard's ARPG. Brings Mephisto into the story properly after a generation of build-up. <a href="https://diablo4.blizzard.com/" target="_blank">Blizzard</a></li>
+
+      <li class="tier-warm"><strong>Saros (Housemarque) — April 30</strong> — The Returnal developers' new sci-fi roguelike shooter. Housemarque doesn't make bad games. This is worth watching. <a href="https://www.playstation.com/games/saros/" target="_blank">PlayStation</a></li>
+
+      <li class="tier-warm"><strong>Tyson Fury vs Arslanbek Makhmudov — April 11, Paramount+</strong> — Fury's return to the ring against the unbeaten Makhmudov. Significant enough to note even without a world title on the line. <a href="https://www.paramountplus.com/" target="_blank">Paramount+</a></li>
+
+      <li class="tier-warm"><strong>Premier League MD33 — April 11</strong> — Chelsea vs Man City and Liverpool vs Fulham headline the round. Chelsea and City both need the three points in different ways. <a href="https://www.premierleague.com/" target="_blank">Premier League</a></li>
+
+      <li class="tier-warm"><strong>Juventus vs Genoa — Serie A, Monday April 6</strong> — Juve back in league action. Atalanta vs Juventus follows on April 11 — the more significant fixture in the context of European places. <a href="https://www.legaseriea.it/" target="_blank">Serie A</a></li>
+
+      <li class="tier-note"><strong>Xenoblade Chronicles X: Definitive Edition — Physical Release April 16, Switch 2</strong> — The physical version arrives for collectors. Digital has been available; this is for the shelf. <a href="https://www.nintendo.com/games/xenoblade-chronicles-x-definitive-edition/" target="_blank">Nintendo</a></li>
+
+      <li class="tier-note"><strong>Zelda: Ocarina of Time Remake — Holiday 2026, Switch 2 (rumoured)</strong> — Reports suggest a full remake is targeting the holiday window. Ocarina is the canonical best game of its generation; this either vindicates or devastates a legacy. <a href="https://www.nintendo.com/" target="_blank">Nintendo</a></li>
+
+      <li class="tier-note"><strong>New Star Fox — Coming to Switch 2 This Summer (rumoured)</strong> — Fox McCloud potentially returning after years of absence. The IP has been dormant since Star Fox Zero in 2016. <a href="https://www.nintendo.com/" target="_blank">Nintendo</a></li>
+
+      <li class="tier-note"><strong>Criminal Record Season 2 — April 22, Apple TV+</strong> — The Peter Capaldi and Cush Jumbo crime drama returns. Season 1 was quietly excellent and underseen. <a href="https://tv.apple.com/" target="_blank">Apple TV+</a></li>
+
+      <li class="tier-note"><strong>Starfield Coming to PS5</strong> — With the Terran Armada expansion, Bethesda's space RPG finally lands on PlayStation. <a href="https://bethesda.net/game/starfield" target="_blank">Bethesda</a></li>
+
+      <li class="tier-note"><strong>Beef Season 2 — Coming to Netflix in April</strong> — Ali Wong and Steven Yeun's dark comedy returns. Season 1 was one of the best shows of 2023. <a href="https://www.netflix.com/title/beef" target="_blank">Netflix</a></li>
+
+      <li class="tier-note"><strong>Supreme Court casts doubt on Trump's birthright citizenship bid</strong> — The legal challenge to birthright citizenship for children of undocumented immigrants faces significant judicial pushback. The constitutional stakes are significant. <a href="https://www.bbc.com/news/world-us-canada" target="_blank">BBC News</a></li>
+
+    </ul>
+  </div>
+
+  <div class="dyk reveal" style="background:rgba(255,255,255,.05); border-color:rgba(255,255,255,.15); margin-top:32px">
+    <div class="dyk-title" style="color:#a78bfa">Did You Know?</div>
+    <p style="color:rgba(255,255,255,.75)">Augusta National's Masters Tournament has been held at the same course since 1934. Every detail — from the Amen Corner framing to the pimento cheese sandwiches — is deliberately preserved as part of the institution's identity. The green jacket dates to 1949. <a href="https://en.wikipedia.org/wiki/Masters_Tournament" target="_blank" style="color:#a78bfa">Wikipedia</a></p>
+  </div>
+</section>
+
+<!-- ══════ FOOTER ══════ -->
+<footer class="footer">
+  <div class="footer-brand">The Signal<span>.</span></div>
+  <div class="footer-issue">A Sunday Morning Magazine · Issue #3 · 30 March — 5 April 2026 · Versus Special Edition</div>
+</footer>
+
+</div><!-- .mag -->
+
+<button class="back-to-top" id="backToTop" title="Back to top">↑</button>
+
+<script>
+// Reading progress bar
+(function() {
+  const bar = document.getElementById('progressBar');
+  if (!bar) return;
+  window.addEventListener('scroll', function() {
+    const h = document.documentElement;
+    const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    bar.style.width = Math.min(pct, 100) + '%';
+  }, { passive: true });
+})();
+
+// Back to top button visibility + click handler
+(function() {
+  const btn = document.getElementById('backToTop') || document.getElementById('btt');
+  if (!btn) return;
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 800) {
+      btn.classList.add('visible');
+    } else {
+      btn.classList.remove('visible');
+    }
+  }, { passive: true });
+  btn.addEventListener('click', function(e) {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+
+// Enhancement 5: IntersectionObserver for .reveal elements
+(function() {
+  var els = document.querySelectorAll('.reveal');
+  if (!els.length || !('IntersectionObserver' in window)) {
+    // Fallback: make everything visible if IntersectionObserver not supported
+    els.forEach(function(el) { el.classList.add('visible'); });
+    return;
+  }
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  els.forEach(function(el) { observer.observe(el); });
+})();
+
+// Enhancement 5: Count-up animation for .count-up elements
+(function() {
+  var els = document.querySelectorAll('.count-up');
+  if (!els.length || !('IntersectionObserver' in window)) return;
+
+  function animateCount(el) {
+    var target = el.getAttribute('data-target');
+    if (!target) return;
+    // Parse number — handle percentages, commas, decimals
+    var raw = target.replace(/[^0-9.\-]/g, '');
+    var num = parseFloat(raw);
+    if (isNaN(num)) return;
+    var prefix = target.match(/^[^0-9.\-]*/)[0] || '';
+    var suffix = target.match(/[^0-9.\-]*$/)[0] || '';
+    var isInt = num === Math.floor(num);
+    var duration = 800;
+    var start = performance.now();
+
+    function step(now) {
+      var progress = Math.min((now - start) / duration, 1);
+      // Ease-out cubic
+      var ease = 1 - Math.pow(1 - progress, 3);
+      var current = num * ease;
+      el.textContent = prefix + (isInt ? Math.floor(current).toLocaleString() : current.toFixed(1)) + suffix;
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    el.textContent = prefix + '0' + suffix;
+    requestAnimationFrame(step);
+  }
+
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        animateCount(entry.target);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  els.forEach(function(el) { observer.observe(el); });
+})();
+
+</script>
+</body>
+</html>
