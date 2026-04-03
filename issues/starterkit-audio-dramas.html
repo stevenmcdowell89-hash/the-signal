@@ -1,0 +1,2679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Signal — Starter Kit: Your First Audio Drama Podcasts · Issue #4</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,500&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #111119;
+  --paper: #FAFAF8;
+  --warm: #F5F4F0;
+  --rose: #E8384F;
+  --ember: #FF6D3A;
+  --deep: #1B1B2F;
+  --slate: #64697B;
+  --ghost: #A4A8B6;
+  --rule: #E0DED8;
+  --pitch: #0A0E17;
+  --turf: #1A7A4C;
+  --turf-lt: #2BD67B;
+  --screen-bg: #14121E;
+  --neon: #FF2D78;
+  --shelf-bg: #1C1410;
+  --shelf-accent: #D4A03C;
+  --session-bg: #F2F7F4;
+  --session-accent: #D4622B;
+  --hist-bg: #F0EBE0;
+  --hist-accent: #8B6914;
+
+  /* ── Rotating section palettes ── */
+  --pantry-bg: #FAF5F0;
+  --pantry-accent: #C65D3A;
+  --workshop-bg: #F0F1F3;
+  --workshop-accent: #5A6378;
+  --toolkit-bg: #EFF3F6;
+  --toolkit-accent: #1A9AAF;
+  --ledger-bg: #FAF8F2;
+  --ledger-accent: #C48B2C;
+  --longgame-bg: #F0F1F4;
+  --longgame-accent: #2A3A5C;
+  --wallet-bg: #FAFBFC;
+  --wallet-accent: #1A8A7A;
+  --itinerary-bg: #FAF6F0;
+  --itinerary-accent: #D4634B;
+}
+
+/* ═══════════ RESET & BASE ═══════════ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  color: var(--ink);
+  background: #E8E6E1;
+  font-size: 18px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+.mag { max-width: 960px; margin: 0 auto; background: var(--paper); box-shadow: 0 4px 120px rgba(0,0,0,.12); position: relative; }
+img { max-width: 100%; height: auto; display: block; }
+a { color: var(--rose); text-decoration: none; }
+a:hover { text-decoration: underline; }
+p { margin-bottom: 16px; }
+p:last-child { margin-bottom: 0; }
+
+/* ═══════════ READING PROGRESS BAR ═══════════ */
+.progress-bar {
+  position: fixed; top: 0; left: 0; width: 0%;
+  height: 3px; z-index: 1000;
+  background: linear-gradient(90deg, var(--rose), var(--ember));
+  transition: width 100ms ease-out;
+}
+
+/* ═══════════ BACK TO TOP ═══════════ */
+.back-to-top {
+  position: fixed; bottom: 28px; right: 28px;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--deep); border: 1px solid rgba(255,255,255,.15);
+  color: white; font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transform: translateY(12px);
+  transition: opacity .25s ease, transform .25s ease;
+  z-index: 999; box-shadow: 0 4px 16px rgba(0,0,0,.2);
+}
+.back-to-top.visible { opacity: 1; transform: translateY(0); }
+.back-to-top:hover { background: var(--rose); }
+
+/* ═══════════ UTILITY CLASSES ═══════════ */
+.ui { font-family: 'DM Sans', sans-serif; }
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 3px; text-transform: uppercase;
+  margin-bottom: 12px; display: block;
+}
+/* Secondary labels use DM Sans — for sub-headers within sections */
+.sub-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--ghost); margin-bottom: 10px; display: block;
+}
+.caption {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; color: var(--ghost);
+  margin-top: 6px; line-height: 1.4;
+}
+.src {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; color: var(--ghost); margin-top: 12px;
+}
+.src a { color: var(--rose); }
+
+/* ═══════════ COVER ═══════════ */
+.cover {
+  background: var(--deep);
+  background-image:
+    radial-gradient(ellipse at 80% 20%, rgba(232,56,79,.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 20% 80%, rgba(255,109,58,.08) 0%, transparent 50%);
+  padding: 80px 60px 60px;
+  position: relative;
+  min-height: 480px;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  overflow: hidden;
+}
+.cover::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 5px;
+  background: linear-gradient(90deg, var(--rose), var(--ember), var(--rose));
+}
+
+/* Enhancement 18: Cover Ambient Animation — drifting gradients */
+.cover::after {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(ellipse at 80% 20%, rgba(232,56,79,.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 20% 80%, rgba(255,109,58,.08) 0%, transparent 50%);
+  animation: coverDrift 20s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes coverDrift {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-15px, 10px) scale(1.03); }
+  100% { transform: translate(10px, -8px) scale(1.01); }
+}
+
+/* Enhancement 18: Animated grain overlay */
+.cover-grain {
+  position: absolute; inset: 0;
+  background-image: repeating-conic-gradient(rgba(255,255,255,.015) 0% 25%, transparent 0% 50%);
+  background-size: 4px 4px;
+  animation: grainShift 0.8s steps(4) infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+@keyframes grainShift {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-2px, 2px); }
+  50% { transform: translate(2px, -1px); }
+  75% { transform: translate(-1px, -2px); }
+  100% { transform: translate(1px, 1px); }
+}
+
+/* Enhancement 9: Subtle noise texture on cover using base64 grain */
+.cover-noise {
+  position: absolute; inset: 0;
+  opacity: 0.035;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANWp0mAAAACHRSTlMzMzMzMzMzM85JBgUAAAA0SURBVDjLY2CgNmBWYBBgYFZgEGBkVmAQYGJWYBBgZlZgEGBhVmAQYGVWYBBgY6Y4AABxWAIRkPtLqAAAAABJRU5ErkJggg==");
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Enhancement 10: Cover brand — larger, tighter */
+.cover-brand {
+  font-size: 80px; font-weight: 700;
+  color: white; line-height: .95; letter-spacing: -3px; margin-bottom: 8px;
+  position: relative; z-index: 2;
+}
+.cover-brand span { color: var(--rose); font-style: italic; }
+.cover-issue {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: rgba(255,255,255,.4);
+  letter-spacing: 3px; text-transform: uppercase; margin-bottom: 32px;
+  position: relative; z-index: 2;
+}
+.cover-headline {
+  font-size: 32px; font-weight: 600;
+  color: rgba(255,255,255,.78); line-height: 1.25; max-width: 720px;
+  position: relative; z-index: 2;
+}
+.cover-tags { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 8px; position: relative; z-index: 2; }
+.cover-tags .tag {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 3px;
+  background: rgba(255,255,255,.06); color: rgba(255,255,255,.5);
+  border: 1px solid rgba(255,255,255,.08);
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  transition: background .15s ease, color .15s ease;
+  /* Enhancement 18: Staggered fade-in for tags */
+  opacity: 0;
+  animation: tagFadeIn 0.5s ease-out forwards;
+}
+.cover-tags .tag:nth-child(1) { animation-delay: 0.3s; }
+.cover-tags .tag:nth-child(2) { animation-delay: 0.4s; }
+.cover-tags .tag:nth-child(3) { animation-delay: 0.5s; }
+.cover-tags .tag:nth-child(4) { animation-delay: 0.6s; }
+.cover-tags .tag:nth-child(5) { animation-delay: 0.7s; }
+.cover-tags .tag:nth-child(6) { animation-delay: 0.8s; }
+.cover-tags .tag:nth-child(7) { animation-delay: 0.9s; }
+.cover-tags .tag:nth-child(8) { animation-delay: 1.0s; }
+.cover-tags .tag:nth-child(9) { animation-delay: 1.1s; }
+.cover-tags .tag:nth-child(10) { animation-delay: 1.2s; }
+@keyframes tagFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.cover-tags .tag:hover {
+  background: rgba(255,255,255,.12); color: rgba(255,255,255,.8);
+}
+
+/* ═══════════ NAVIGATOR ═══════════ */
+.nav-section { padding: 48px 60px; background: var(--paper); border-bottom: 1px solid var(--rule); }
+.nav-section h2 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 24px;
+}
+.nav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+/* Lead cards span two columns with optional thumbnail */
+.nav-card.lead {
+  grid-column: span 2;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+  padding: 0; overflow: hidden;
+}
+.nav-card.lead .nav-card-content { padding: 22px 24px; }
+.nav-card.lead .nav-card-thumb {
+  background-size: cover; background-position: center;
+  min-height: 140px;
+}
+.nav-card.lead h3 { font-size: 20px; }
+.nav-card {
+  background: var(--warm); border-radius: 8px; padding: 20px;
+  border-left: 4px solid var(--rule);
+  transition: transform .15s ease, box-shadow .15s ease;
+  text-decoration: none; display: block; cursor: pointer;
+}
+.nav-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.06); text-decoration: none; }
+.nav-card.world { border-left-color: var(--rose); }
+.nav-card.tech { border-left-color: var(--ember); }
+.nav-card.football { border-left-color: var(--turf); }
+.nav-card.screen { border-left-color: var(--neon); }
+.nav-card.shelf { border-left-color: var(--shelf-accent); }
+.nav-card.session { border-left-color: var(--session-accent); }
+.nav-card.history { border-left-color: var(--hist-accent); }
+
+/* Enhancement 6: Nav card tinted backgrounds & glow hovers */
+.nav-card.world { background: rgba(232,56,79,.06); }
+.nav-card.tech { background: rgba(255,109,58,.06); }
+.nav-card.football { background: rgba(26,122,76,.06); }
+.nav-card.screen { background: rgba(255,45,120,.06); }
+.nav-card.shelf { background: rgba(212,160,60,.06); }
+.nav-card.session { background: rgba(212,98,43,.06); }
+.nav-card.history { background: rgba(139,105,20,.06); }
+
+.nav-card.world:hover { box-shadow: 0 8px 24px rgba(232,56,79,.12); }
+.nav-card.tech:hover { box-shadow: 0 8px 24px rgba(255,109,58,.12); }
+.nav-card.football:hover { box-shadow: 0 8px 24px rgba(26,122,76,.12); }
+.nav-card.screen:hover { box-shadow: 0 8px 24px rgba(255,45,120,.12); }
+.nav-card.shelf:hover { box-shadow: 0 8px 24px rgba(212,160,60,.12); }
+.nav-card.session:hover { box-shadow: 0 8px 24px rgba(212,98,43,.12); }
+.nav-card.history:hover { box-shadow: 0 8px 24px rgba(139,105,20,.12); }
+
+.nav-card-tag {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: 6px;
+  display: flex; align-items: center; gap: 6px;
+}
+/* Enhancement 6 & 15: Nav card icon element */
+.nav-card-icon {
+  display: inline-flex; align-items: center;
+  width: 16px; height: 16px;
+  flex-shrink: 0;
+}
+.nav-card-icon svg { width: 16px; height: 16px; }
+.nav-card.world .nav-card-tag { color: var(--rose); }
+.nav-card.tech .nav-card-tag { color: var(--ember); }
+.nav-card.football .nav-card-tag { color: var(--turf); }
+.nav-card.screen .nav-card-tag { color: var(--neon); }
+.nav-card.shelf .nav-card-tag { color: var(--shelf-accent); }
+.nav-card.session .nav-card-tag { color: var(--session-accent); }
+.nav-card.history .nav-card-tag { color: var(--hist-accent); }
+.nav-card h3 {
+  font-size: 18px; font-weight: 700; line-height: 1.25;
+  color: var(--ink); margin-bottom: 4px;
+}
+.nav-card p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; color: var(--slate); line-height: 1.4; margin: 0;
+}
+.nav-card .read-time {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px; color: var(--ghost); margin-top: 8px;
+  letter-spacing: 0.5px; text-transform: uppercase;
+}
+
+/* ═══════════ FOREWORD ═══════════ */
+.foreword { padding: 48px 60px; border-bottom: 1px solid var(--rule); }
+.foreword p { font-size: 21px; line-height: 1.75; max-width: 680px; }
+.foreword p::first-letter {
+  font-size: 64px; font-weight: 700; float: left;
+  line-height: .78; margin: 8px 12px 0 0; color: var(--rose);
+}
+
+/* ═══════════ SECTION DIVIDERS ═══════════ */
+.divider { height: 8px; border: none; margin: 0; }
+.dv-world { background: linear-gradient(90deg, var(--rose), #c0392b); }
+.dv-tech { background: linear-gradient(90deg, var(--ember), #e67e22); }
+.dv-football { background: linear-gradient(90deg, var(--turf), var(--turf-lt)); }
+.dv-screen { background: linear-gradient(90deg, #9B59B6, var(--neon)); }
+.dv-shelf { background: linear-gradient(90deg, var(--shelf-accent), #A0722A); }
+.dv-session { background: linear-gradient(90deg, var(--session-accent), #E67E22); }
+.dv-history { background: linear-gradient(90deg, var(--hist-accent), #D4A03C); }
+.dv-other { background: linear-gradient(90deg, var(--slate), var(--ghost)); }
+/* Inset divider variant — centred with breathing room */
+.divider.inset { margin: 0 60px; border-radius: 4px; }
+
+/* ═══════════ GENERIC SECTION ═══════════ */
+.sec { padding: 48px 60px; position: relative; overflow: hidden; }
+.sec h2 { font-size: 36px; font-weight: 700; line-height: 1.15; margin-bottom: 20px; max-width: 680px; }
+/* Sub-story headings: lighter weight for visual hierarchy separation */
+.sec h3 { font-size: 22px; font-weight: 600; line-height: 1.2; margin: 28px 0 10px; }
+.sec h3.minor { font-weight: 400; font-style: italic; font-size: 20px; }
+.sec h4 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--ghost); margin: 28px 0 10px;
+}
+
+/* ═══════════ Enhancement 2: SECTION WATERMARK LABELS ═══════════ */
+.sec-watermark {
+  position: absolute;
+  top: 20px; left: -20px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 140px;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 0;
+  /* Default: use section accent at very low opacity */
+  color: currentColor;
+  opacity: 0.04;
+}
+
+/* Enhancement 2: Section opener variant */
+.sec-opener .section-label {
+  font-size: 14px;
+  letter-spacing: 4px;
+  margin-bottom: 16px;
+}
+.sec-opener h2 {
+  font-size: 42px;
+  max-width: 720px;
+}
+.sec-opener .opener-band {
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 120px;
+  background: linear-gradient(180deg, rgba(0,0,0,.03) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ═══════════ Enhancement 9: Section gradient overlay ═══════════ */
+.sec-gradient-overlay {
+  position: absolute;
+  bottom: 0; left: 0; right: 0; height: 200px;
+  pointer-events: none;
+  z-index: 0;
+}
+.world-section .sec-gradient-overlay { background: linear-gradient(180deg, transparent, rgba(232,56,79,.02)); }
+.tech-section .sec-gradient-overlay { background: linear-gradient(180deg, transparent, rgba(255,109,58,.02)); }
+.session-section .sec-gradient-overlay { background: linear-gradient(180deg, transparent, rgba(212,98,43,.02)); }
+
+/* ═══════════ STAT BAR ═══════════ */
+.stat-bar {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; margin: 24px 0;
+}
+.stat-bar .stat { padding: 18px 16px; text-align: center; border-right: 1px solid var(--rule); }
+.stat-bar .stat:last-child { border-right: none; }
+.stat-bar .stat-num { font-size: 32px; font-weight: 700; line-height: 1; }
+.stat-bar .stat-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px; font-weight: 700; color: var(--ghost);
+  text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;
+}
+
+/* ═══════════ Enhancement 3: BIG NUMBER CALLOUTS ═══════════ */
+.big-number {
+  text-align: center;
+  padding: 24px 0;
+  margin: 24px 0;
+}
+.big-number .num {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 80px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--rose);
+}
+.big-number .num-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ghost);
+  margin-top: 8px;
+}
+.big-number.float-left { float: left; margin: 0 32px 16px 0; text-align: left; }
+.big-number.float-right { float: right; margin: 0 0 16px 32px; text-align: right; }
+
+/* Big number row — 2-3 dramatic stats */
+.big-number-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin: 32px 0;
+  padding: 28px 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+.big-number-row .big-number {
+  margin: 0; padding: 0;
+}
+.big-number-row .big-number .num {
+  font-size: 64px;
+}
+
+/* Section-aware big numbers */
+.touchline-section .big-number .num { color: var(--turf-lt); }
+.touchline-section .big-number .num-label { color: rgba(255,255,255,.4); }
+.touchline-section .big-number-row { border-color: rgba(255,255,255,.1); }
+.screen-section .big-number .num { color: var(--neon); }
+.screen-section .big-number .num-label { color: rgba(255,255,255,.4); }
+.screen-section .big-number-row { border-color: rgba(255,255,255,.1); }
+.shelf-section .big-number .num { color: var(--shelf-accent); }
+.shelf-section .big-number .num-label { color: rgba(255,255,255,.4); }
+.shelf-section .big-number-row { border-color: rgba(255,255,255,.1); }
+.tech-section .big-number .num { color: var(--ember); }
+.session-section .big-number .num { color: var(--session-accent); }
+.history-section .big-number .num { color: var(--hist-accent); }
+
+/* Enhancement 10: Display stat — for inline dramatic numbers */
+.display-stat {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 72px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--rose);
+  display: inline;
+}
+
+/* ═══════════ ANGLE BOX ═══════════ */
+.angle {
+  background: var(--warm); border-left: 5px solid var(--rose);
+  padding: 24px 28px; margin: 28px 0; border-radius: 0 6px 6px 0;
+}
+.angle-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 8px;
+}
+.angle p { font-size: 17px; line-height: 1.65; font-weight: 600; }
+
+/* ═══════════ PULL QUOTE ═══════════ */
+.pull-quote {
+  border-left: 4px solid var(--rose); padding: 16px 28px; margin: 32px 0;
+}
+.pull-quote p {
+  font-size: 22px; font-style: italic; font-weight: 400;
+  line-height: 1.5; color: var(--ink); margin: 0;
+}
+.pull-quote cite {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-style: normal; color: var(--ghost);
+  display: block; margin-top: 8px;
+}
+
+/* Enhancement 7: Pull quote — centered variant */
+.pull-quote.centered {
+  border-left: none;
+  text-align: center;
+  padding: 32px 40px;
+  position: relative;
+}
+.pull-quote.centered::before {
+  content: '\201C';
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 80px;
+  font-weight: 700;
+  color: var(--rose);
+  opacity: 0.25;
+  display: block;
+  line-height: 0.5;
+  margin-bottom: 8px;
+}
+
+/* Enhancement 7: Pull quote — wide variant */
+.pull-quote.wide {
+  margin-left: -32px;
+  margin-right: -32px;
+  padding: 24px 40px;
+  border-left-width: 5px;
+}
+
+/* Section-aware centered quotes */
+.touchline-section .pull-quote.centered::before { color: var(--turf-lt); }
+.screen-section .pull-quote.centered::before { color: var(--neon); }
+.shelf-section .pull-quote.centered::before { color: var(--shelf-accent); }
+
+/* ═══════════ DID YOU KNOW ═══════════ */
+.dyk {
+  background: linear-gradient(135deg, #FFF8E7, #FFF3D6);
+  border: 1px solid #E8D5A3; border-radius: 8px;
+  padding: 18px 22px; margin: 24px 0; position: relative;
+}
+.dyk::before {
+  content: '💡'; position: absolute; top: -10px; left: 16px;
+  font-size: 18px; background: var(--paper); padding: 0 4px;
+}
+.dyk-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: #B8860B; margin-bottom: 6px;
+}
+.dyk p { font-size: 15px; line-height: 1.55; margin: 0; color: #5C4A20; }
+
+/* ═══════════ SIDEBAR / CALLOUT BOX ═══════════ */
+.sidebar {
+  background: var(--warm); border-radius: 8px; padding: 22px 26px; margin: 24px 0;
+  border: 1px solid var(--rule);
+}
+.sidebar-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 10px;
+}
+.sidebar ul { list-style: none; }
+.sidebar li {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; line-height: 1.5; padding: 5px 0;
+  border-bottom: 1px solid rgba(0,0,0,.04); color: var(--ink);
+}
+.sidebar li:last-child { border-bottom: none; }
+
+/* ═══════════ ALSO THIS WEEK LIST ═══════════ */
+.also { margin-top: 32px; padding-top: 24px; border-top: 2px solid var(--rule); }
+.also-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--ghost); margin-bottom: 12px;
+}
+.also-list { list-style: none; }
+.also-list li {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14.5px; line-height: 1.5; padding: 8px 0;
+  border-bottom: 1px solid rgba(0,0,0,.04);
+}
+.also-list li:last-child { border-bottom: none; }
+
+/* Enhancement 8: Also cards — compact card grid alternative */
+.also-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+.also-card {
+  background: var(--warm);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 14px 16px;
+}
+.also-card h4 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 700;
+  color: var(--ink);
+  letter-spacing: 0; text-transform: none;
+  margin: 0 0 4px;
+}
+.also-card p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12.5px; color: var(--slate);
+  line-height: 1.4; margin: 0;
+}
+.also-card .badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--ghost);
+  margin-top: 6px; display: inline-block;
+}
+
+/* Dark section also-cards */
+.touchline-section .also-cards .also-card { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.06); }
+.touchline-section .also-cards .also-card h4 { color: rgba(255,255,255,.9); }
+.touchline-section .also-cards .also-card p { color: rgba(255,255,255,.6); }
+.touchline-section .also-cards .also-card .badge { color: rgba(255,255,255,.3); }
+.screen-section .also-cards .also-card { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.06); }
+.screen-section .also-cards .also-card h4 { color: rgba(255,255,255,.9); }
+.screen-section .also-cards .also-card p { color: rgba(255,255,255,.6); }
+.shelf-section .also-cards .also-card { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.06); }
+.shelf-section .also-cards .also-card h4 { color: rgba(255,255,255,.9); }
+.shelf-section .also-cards .also-card p { color: rgba(255,255,255,.6); }
+
+/* ═══════════ DUAL COLUMN ═══════════ */
+.dual-col { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 24px 0; }
+.col-card { border-left: 4px solid var(--rule); padding-left: 24px; }
+.col-card.accent-ember { border-left-color: var(--ember); }
+.col-card.accent-deep { border-left-color: var(--deep); }
+.col-card h3 { font-size: 22px; font-weight: 700; line-height: 1.2; margin: 0 0 10px; }
+.col-card p { font-size: 16px; }
+
+/* ═══════════ Enhancement 1: VARIED COLUMN LAYOUTS ═══════════ */
+.split-60-40 {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 32px;
+  margin: 24px 0;
+  align-items: start;
+}
+.split-40-60 {
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+  gap: 32px;
+  margin: 24px 0;
+  align-items: start;
+}
+
+/* ═══════════ HERO IMAGE ═══════════ */
+.hero-img { width: 100%; aspect-ratio: 16/7; object-fit: cover; border-radius: 8px; margin: 24px 0; }
+/* Full-bleed hero — bleeds to section edges above content */
+.hero-bleed { width: calc(100% + 120px); margin-left: -60px; border-radius: 0; margin-top: -48px; margin-bottom: 28px; aspect-ratio: 16/7; object-fit: cover; }
+.inline-img { border-radius: 6px; margin: 20px 0; }
+/* Float image for text wrap (books, album art) */
+.img-float-left { float: left; margin: 4px 24px 12px 0; border-radius: 6px; }
+
+/* ═══════════ Enhancement 4: IMAGE MONTAGE GRID ═══════════ */
+.img-montage {
+  display: grid;
+  gap: 8px;
+  margin: 24px 0;
+}
+.img-montage.layout-1-2 {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+}
+.img-montage.layout-1-2 .montage-hero {
+  grid-column: 1 / -1;
+}
+.img-montage.layout-2x2 {
+  grid-template-columns: 1fr 1fr;
+}
+.img-montage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+}
+.img-montage .caption {
+  grid-column: 1 / -1;
+}
+
+/* Enhancement 4: Offset image — asymmetric text wrap */
+.img-offset {
+  float: right;
+  width: 60%;
+  margin: 0 0 16px 24px;
+  border-radius: 6px;
+}
+.img-offset.left {
+  float: left;
+  margin: 0 24px 16px 0;
+}
+
+/* ═══════════ THE WORLD THIS WEEK ═══════════ */
+.world-section { background: var(--paper); }
+.world-section .section-label { color: var(--rose); }
+.world-section .sec-watermark { color: var(--rose); }
+
+/* ═══════════ PIXEL & BYTE ═══════════ */
+.tech-section { background: var(--warm); }
+.tech-section .section-label { color: var(--ember); }
+.tech-section .sec-watermark { color: var(--ember); }
+
+/* ═══════════ THE TOUCHLINE ═══════════ */
+.touchline-section { background: var(--pitch); color: rgba(255,255,255,.85); }
+.touchline-section .section-label { color: var(--turf-lt); }
+.touchline-section h2 { color: white; }
+.touchline-section h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--turf-lt); margin: 28px 0 12px;
+}
+.touchline-section h3.narrative {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px; text-transform: none; letter-spacing: 0; color: white;
+}
+.touchline-section p { color: rgba(255,255,255,.8); }
+.touchline-section a { color: var(--turf-lt); }
+.touchline-section .angle { background: rgba(255,255,255,.04); border-left-color: var(--turf-lt); }
+.touchline-section .angle-label { color: var(--turf-lt); }
+.touchline-section .angle p { color: rgba(255,255,255,.9); }
+.touchline-section .also { border-top-color: rgba(255,255,255,.1); }
+.touchline-section .also-title { color: rgba(255,255,255,.3); }
+.touchline-section .also-list li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+.touchline-section .pull-quote { border-left-color: var(--turf-lt); }
+.touchline-section .pull-quote p { color: rgba(255,255,255,.9); }
+.touchline-section .pull-quote cite { color: rgba(255,255,255,.4); }
+.touchline-section .sec-watermark { color: var(--turf-lt); }
+
+/* Touchline DYK — section-aware dark variant */
+.touchline-section .dyk { background: rgba(26,122,76,.08); border-color: rgba(43,214,123,.12); }
+.touchline-section .dyk::before { background: var(--pitch); }
+.touchline-section .dyk-title { color: var(--turf-lt); }
+.touchline-section .dyk p { color: rgba(255,255,255,.7); }
+
+/* Touchline sidebar */
+.touchline-section .sidebar { background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.touchline-section .sidebar-title { color: var(--turf-lt); }
+.touchline-section .sidebar li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+
+/* League Table */
+.league-table {
+  width: 100%; border-collapse: collapse; margin: 16px 0 24px;
+  font-family: 'DM Sans', sans-serif; font-size: 14px;
+}
+.league-table th {
+  text-align: left; padding: 10px 12px;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: rgba(255,255,255,.3); border-bottom: 1px solid rgba(255,255,255,.1);
+}
+.league-table td { padding: 9px 12px; border-bottom: 1px solid rgba(255,255,255,.04); color: rgba(255,255,255,.6); }
+.league-table tr:nth-child(even) td { background: rgba(255,255,255,.015); }
+.league-table tr.highlight td { color: var(--turf-lt); font-weight: 700; }
+.league-table .pos { width: 30px; text-align: center; }
+/* Scrollable wrapper for small screens */
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 16px 0 24px; }
+.table-wrap .league-table { margin: 0; min-width: 520px; }
+
+/* Results Strip */
+.results-strip { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+.result-card {
+  background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.06);
+  border-radius: 6px; padding: 12px 16px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px;
+  color: rgba(255,255,255,.65); line-height: 1.4; min-width: 190px;
+  flex: 1 1 190px; max-width: 220px;
+}
+.result-card .teams { color: rgba(255,255,255,.6); }
+.result-card strong { color: rgba(255,255,255,.9); font-weight: 700; }
+.result-card .score {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 18px; font-weight: 700; color: var(--turf-lt);
+  display: block; margin: 2px 0;
+}
+
+/* ═══════════ Enhancement 11: SPARKLINE ═══════════ */
+.sparkline {
+  display: inline-block;
+  width: 200px;
+  height: 40px;
+  vertical-align: middle;
+}
+.sparkline svg {
+  width: 100%;
+  height: 100%;
+}
+.sparkline .spark-line {
+  fill: none;
+  stroke: var(--turf-lt);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.sparkline .spark-area {
+  fill: var(--turf-lt);
+  opacity: 0.1;
+}
+.sparkline .spark-dot {
+  fill: var(--turf-lt);
+}
+
+/* Enhancement 11: Position change indicators */
+.pos-change {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+}
+.pos-change.up { color: #2BD67B; }
+.pos-change.down { color: var(--rose); }
+.pos-change.same { color: var(--ghost); }
+
+/* Enhancement 11: Mini horizontal bar */
+.mini-bar {
+  display: inline-block;
+  height: 6px;
+  border-radius: 3px;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+.mini-bar-track {
+  display: inline-block;
+  width: 100px;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255,255,255,.1);
+  position: relative;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+.mini-bar-track .mini-bar-fill {
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--turf-lt);
+}
+
+/* ═══════════ SCREEN & SOUND ═══════════ */
+.screen-section { background: var(--screen-bg); color: rgba(255,255,255,.85); }
+.screen-section .section-label { color: var(--neon); }
+.screen-section h2 { color: white; }
+.screen-section h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--neon); margin: 28px 0 12px;
+}
+.screen-section h3.feature-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px; text-transform: none; letter-spacing: 0; color: white; margin-bottom: 14px;
+}
+.screen-section p { color: rgba(255,255,255,.8); }
+.screen-section a { color: var(--neon); }
+.screen-section .also { border-top-color: rgba(255,255,255,.08); }
+.screen-section .also-title { color: rgba(255,255,255,.3); }
+.screen-section .also-list li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+.screen-section .pull-quote { border-left-color: var(--neon); }
+.screen-section .pull-quote p { color: rgba(255,255,255,.9); }
+.screen-section .pull-quote cite { color: rgba(255,255,255,.4); }
+.screen-section .sec-watermark { color: var(--neon); }
+
+/* Screen & Sound DYK — section-aware dark variant */
+.screen-section .dyk { background: rgba(255,45,120,.06); border-color: rgba(255,45,120,.12); }
+.screen-section .dyk::before { background: var(--screen-bg); }
+.screen-section .dyk-title { color: var(--neon); }
+.screen-section .dyk p { color: rgba(255,255,255,.7); }
+
+/* Screen sidebar */
+.screen-section .sidebar { background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.screen-section .sidebar-title { color: var(--neon); }
+.screen-section .sidebar li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+
+/* Radar — Release Radar and On the Radar */
+.radar-grid { margin: 16px 0; }
+.radar-row {
+  display: grid; grid-template-columns: 80px 1fr; gap: 14px;
+  padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,.06);
+  font-family: 'DM Sans', sans-serif; font-size: 14px;
+  color: rgba(255,255,255,.7); line-height: 1.4;
+}
+.radar-row:last-child { border-bottom: none; }
+.radar-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700; color: var(--neon); padding-top: 2px;
+}
+.radar-row strong { color: rgba(255,255,255,.95); }
+.radar-platform { font-size: 11px; color: rgba(255,255,255,.35); font-weight: 500; }
+/* Category dot for radar items */
+.radar-cat {
+  display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+  margin-right: 6px; vertical-align: middle;
+}
+.radar-cat.film { background: var(--neon); }
+.radar-cat.tv { background: #9B59B6; }
+.radar-cat.game { background: var(--ember); }
+.radar-cat.book { background: var(--shelf-accent); }
+.radar-cat.music { background: var(--turf-lt); }
+.radar-cat.tech { background: var(--ghost); }
+.radar-cat.lego { background: #E8384F; }
+/* Leaving Soon — urgency styling */
+.radar-row.leaving { border-left: 3px solid var(--rose); padding-left: 12px; margin-left: -3px; }
+.radar-row.leaving .radar-date { color: var(--rose); }
+
+/* ═══════════ Enhancement 16: CARD STACK — Horizontal scroll ═══════════ */
+.card-stack {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 8px 0 16px;
+  margin: 16px 0;
+}
+.card-stack::-webkit-scrollbar { height: 4px; }
+.card-stack::-webkit-scrollbar-track { background: rgba(255,255,255,.05); border-radius: 2px; }
+.card-stack::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 2px; }
+
+.stack-card {
+  flex: 0 0 240px;
+  scroll-snap-align: start;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.stack-card-img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+}
+.stack-card-body {
+  padding: 14px 16px;
+}
+.stack-card-title {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 17px; font-weight: 700;
+  color: rgba(255,255,255,.95);
+  margin-bottom: 4px;
+}
+.stack-card-verdict {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12.5px; color: rgba(255,255,255,.6);
+  line-height: 1.4; margin-bottom: 8px;
+}
+.stack-card .platform-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: rgba(255,255,255,.35);
+  background: rgba(255,255,255,.06);
+  padding: 2px 8px; border-radius: 3px;
+  display: inline-block;
+}
+
+/* Light section card stacks */
+.tech-section .stack-card { background: white; border-color: var(--rule); }
+.tech-section .stack-card-title { color: var(--ink); }
+.tech-section .stack-card-verdict { color: var(--slate); }
+.tech-section .stack-card .platform-badge { color: var(--ghost); background: var(--warm); }
+.tech-section .card-stack::-webkit-scrollbar-track { background: var(--rule); }
+.tech-section .card-stack::-webkit-scrollbar-thumb { background: var(--ghost); }
+
+/* ═══════════ Enhancement 19: SCORE/RATING DOTS ═══════════ */
+.rating {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  margin: 4px 0;
+}
+.rating .dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,.25);
+  background: transparent;
+}
+.rating .dot.filled {
+  border-color: transparent;
+}
+/* Section-specific rating colours */
+.screen-section .rating .dot.filled { background: var(--neon); }
+.shelf-section .rating .dot.filled { background: var(--shelf-accent); }
+.tech-section .rating .dot { border-color: var(--rule); }
+.tech-section .rating .dot.filled { background: var(--ember); border-color: transparent; }
+/* Light section dots */
+.session-section .rating .dot { border-color: var(--rule); }
+.session-section .rating .dot.filled { background: var(--session-accent); border-color: transparent; }
+.world-section .rating .dot { border-color: var(--rule); }
+.world-section .rating .dot.filled { background: var(--rose); border-color: transparent; }
+
+/* ═══════════ THE SHELF ═══════════ */
+.shelf-section { background: var(--shelf-bg); color: rgba(255,255,255,.85); }
+.shelf-section .section-label { color: var(--shelf-accent); }
+.shelf-section h2 { color: white; }
+.shelf-section h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--shelf-accent); margin: 28px 0 12px;
+}
+.shelf-section h3.feature-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px; text-transform: none; letter-spacing: 0; color: white; margin-bottom: 14px;
+}
+.shelf-section p { color: rgba(255,255,255,.8); }
+.shelf-section a { color: var(--shelf-accent); }
+.shelf-section .also { border-top-color: rgba(255,255,255,.08); }
+.shelf-section .also-title { color: rgba(255,255,255,.3); }
+.shelf-section .also-list li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+.shelf-section .sec-watermark { color: var(--shelf-accent); }
+.shelf-section .pull-quote { border-left-color: var(--shelf-accent); }
+.shelf-section .pull-quote p { color: rgba(255,255,255,.9); }
+.shelf-section .pull-quote cite { color: rgba(255,255,255,.4); }
+
+/* Shelf DYK — section-aware dark variant */
+.shelf-section .dyk { background: rgba(212,160,60,.06); border-color: rgba(212,160,60,.12); }
+.shelf-section .dyk::before { background: var(--shelf-bg); }
+.shelf-section .dyk-title { color: var(--shelf-accent); }
+.shelf-section .dyk p { color: rgba(255,255,255,.7); }
+
+/* Shelf sidebar */
+.shelf-section .sidebar { background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.shelf-section .sidebar-title { color: var(--shelf-accent); }
+.shelf-section .sidebar li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+
+/* Book Recommendation Card — with image float support */
+.book-card {
+  background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+  border-radius: 8px; padding: 18px 22px; margin: 12px 0;
+  overflow: hidden;
+}
+.book-card h4 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 19px; font-weight: 700; color: rgba(255,255,255,.95);
+  text-transform: none; letter-spacing: 0; margin: 0 0 4px;
+}
+.book-card .author {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; color: rgba(255,255,255,.4); margin-bottom: 6px;
+}
+.book-card p { font-size: 14px; color: rgba(255,255,255,.6); margin: 0; }
+.book-card img { float: left; width: 80px; margin: 0 16px 8px 0; border-radius: 4px; }
+/* Side-by-side book cards */
+.book-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+
+/* ═══════════ THE SESSION ═══════════ */
+.session-section { background: var(--session-bg); }
+.session-section .section-label { color: var(--session-accent); }
+.session-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.session-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.session-section .sec-watermark { color: var(--session-accent); }
+
+/* Workout Card — for rep schemes, protocols, programmes */
+.workout-card {
+  background: white; border: 1px solid var(--rule); border-radius: 8px;
+  padding: 22px 26px; margin: 20px 0;
+  border-left: 4px solid var(--session-accent);
+}
+.workout-card-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--session-accent); margin-bottom: 12px;
+}
+.workout-card table {
+  width: 100%; border-collapse: collapse; font-family: 'DM Sans', sans-serif; font-size: 14px;
+}
+.workout-card th {
+  text-align: left; padding: 6px 10px;
+  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--ghost); border-bottom: 1px solid var(--rule);
+}
+.workout-card td { padding: 7px 10px; border-bottom: 1px solid rgba(0,0,0,.04); color: var(--ink); }
+.workout-card .highlight-row td { color: var(--session-accent); font-weight: 700; }
+
+/* Workout icon labels */
+.workout-type {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'DM Sans', sans-serif; font-size: 11px;
+  color: var(--session-accent); font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; margin-bottom: 8px;
+}
+
+/* ═══════════ THIS WEEK IN HISTORY ═══════════ */
+.history-section { background: var(--hist-bg); }
+.history-section .section-label { color: var(--hist-accent); }
+.history-section h2 { font-size: 30px; font-weight: 700; line-height: 1.2; margin-bottom: 16px; color: #3D2E0F; }
+.history-section .sec-watermark { color: var(--hist-accent); }
+/* Year badges for history items */
+.year-badge {
+  display: inline-block; font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700; color: var(--hist-accent);
+  background: rgba(139,105,20,.08); border-radius: 3px;
+  padding: 2px 8px; margin-right: 8px; vertical-align: middle;
+}
+.history-section .also-list li { display: flex; align-items: baseline; gap: 0; }
+
+/* Enhancement 9: History paper texture — more pronounced */
+.history-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.06;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANWp0mAAAACHRSTlMzMzMzMzMzM85JBgUAAAA0SURBVDjLY2CgNmBWYBBgYFZgEGBkVmAQYGJWYBBgZlZgEGBhVmAQYGVWYBBgY6Y4AABxWAIRkPtLqAAAAABJRU5ErkJggg==");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ═══════════ ROTATING SECTION STYLES ═══════════ */
+/* Each rotating section gets a background, accent colour, and section-aware overrides */
+
+.pantry-section { background: var(--pantry-bg); }
+.pantry-section .section-label { color: var(--pantry-accent); }
+.pantry-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.pantry-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.pantry-section .sec-watermark { color: var(--pantry-accent); }
+.pantry-section .workout-card { border-left-color: var(--pantry-accent); } /* reuse workout-card for recipe cards */
+.pantry-section .workout-card-title { color: var(--pantry-accent); }
+.pantry-section .big-number .num { color: var(--pantry-accent); }
+.pantry-section .pull-quote { border-left-color: var(--pantry-accent); }
+.pantry-section .dyk { background: rgba(198,93,58,.06); border-color: rgba(198,93,58,.12); }
+.pantry-section .dyk-title { color: var(--pantry-accent); }
+.pantry-section .read-next a { color: var(--pantry-accent); }
+.pantry-section .sidebar { border-left-color: var(--pantry-accent); }
+.pantry-section .sidebar-title { color: var(--pantry-accent); }
+
+.workshop-section { background: var(--workshop-bg); }
+.workshop-section .section-label { color: var(--workshop-accent); }
+.workshop-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.workshop-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.workshop-section .sec-watermark { color: var(--workshop-accent); }
+.workshop-section .compare-panel .compare-side { border-color: rgba(90,99,120,.2); }
+.workshop-section .big-number .num { color: var(--workshop-accent); }
+.workshop-section .pull-quote { border-left-color: var(--workshop-accent); }
+.workshop-section .dyk { background: rgba(90,99,120,.06); border-color: rgba(90,99,120,.12); }
+.workshop-section .dyk-title { color: var(--workshop-accent); }
+.workshop-section .read-next a { color: var(--workshop-accent); }
+.workshop-section .sidebar { border-left-color: var(--workshop-accent); }
+.workshop-section .sidebar-title { color: var(--workshop-accent); }
+
+.toolkit-section { background: var(--toolkit-bg); }
+.toolkit-section .section-label { color: var(--toolkit-accent); }
+.toolkit-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.toolkit-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.toolkit-section .sec-watermark { color: var(--toolkit-accent); }
+.toolkit-section .big-number .num { color: var(--toolkit-accent); }
+.toolkit-section .pull-quote { border-left-color: var(--toolkit-accent); }
+.toolkit-section .dyk { background: rgba(26,154,175,.06); border-color: rgba(26,154,175,.12); }
+.toolkit-section .dyk-title { color: var(--toolkit-accent); }
+.toolkit-section .read-next a { color: var(--toolkit-accent); }
+.toolkit-section .also-cards .also-card { border-color: rgba(26,154,175,.12); }
+.toolkit-section .sidebar { border-left-color: var(--toolkit-accent); }
+.toolkit-section .sidebar-title { color: var(--toolkit-accent); }
+
+.ledger-section { background: var(--ledger-bg); }
+.ledger-section .section-label { color: var(--ledger-accent); }
+.ledger-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.ledger-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.ledger-section .sec-watermark { color: var(--ledger-accent); }
+.ledger-section .big-number .num { color: var(--ledger-accent); }
+.ledger-section .pull-quote { border-left-color: var(--ledger-accent); }
+.ledger-section .dyk { background: rgba(196,139,44,.06); border-color: rgba(196,139,44,.12); }
+.ledger-section .dyk-title { color: var(--ledger-accent); }
+.ledger-section .read-next a { color: var(--ledger-accent); }
+.ledger-section .stat-bar .stat-num { color: var(--ledger-accent); }
+.ledger-section .sidebar { border-left-color: var(--ledger-accent); }
+.ledger-section .sidebar-title { color: var(--ledger-accent); }
+
+.longgame-section { background: var(--longgame-bg); }
+.longgame-section .section-label { color: var(--longgame-accent); }
+.longgame-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.longgame-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.longgame-section .sec-watermark { color: var(--longgame-accent); }
+.longgame-section .big-number .num { color: var(--longgame-accent); }
+.longgame-section .pull-quote { border-left-color: var(--longgame-accent); }
+.longgame-section .dyk { background: rgba(42,58,92,.06); border-color: rgba(42,58,92,.12); }
+.longgame-section .dyk-title { color: var(--longgame-accent); }
+.longgame-section .read-next a { color: var(--longgame-accent); }
+.longgame-section .stat-bar .stat-num { color: var(--longgame-accent); }
+.longgame-section .sidebar { border-left-color: var(--longgame-accent); }
+.longgame-section .sidebar-title { color: var(--longgame-accent); }
+
+.wallet-section { background: var(--wallet-bg); }
+.wallet-section .section-label { color: var(--wallet-accent); }
+.wallet-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.wallet-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.wallet-section .sec-watermark { color: var(--wallet-accent); }
+.wallet-section .big-number .num { color: var(--wallet-accent); }
+.wallet-section .pull-quote { border-left-color: var(--wallet-accent); }
+.wallet-section .dyk { background: rgba(26,138,122,.06); border-color: rgba(26,138,122,.12); }
+.wallet-section .dyk-title { color: var(--wallet-accent); }
+.wallet-section .read-next a { color: var(--wallet-accent); }
+.wallet-section .compare-panel .compare-side { border-color: rgba(26,138,122,.2); }
+.wallet-section .sidebar { border-left-color: var(--wallet-accent); }
+.wallet-section .sidebar-title { color: var(--wallet-accent); }
+
+.itinerary-section { background: var(--itinerary-bg); }
+.itinerary-section .section-label { color: var(--itinerary-accent); }
+.itinerary-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.itinerary-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.itinerary-section .sec-watermark { color: var(--itinerary-accent); }
+.itinerary-section .big-number .num { color: var(--itinerary-accent); }
+.itinerary-section .pull-quote { border-left-color: var(--itinerary-accent); }
+.itinerary-section .dyk { background: rgba(212,99,75,.06); border-color: rgba(212,99,75,.12); }
+.itinerary-section .dyk-title { color: var(--itinerary-accent); }
+.itinerary-section .read-next a { color: var(--itinerary-accent); }
+.itinerary-section .sidebar { border-left-color: var(--itinerary-accent); }
+.itinerary-section .sidebar-title { color: var(--itinerary-accent); }
+
+/* Nav card styles for rotating sections */
+.nav-card.pantry { border-left-color: var(--pantry-accent); background: rgba(198,93,58,.06); }
+.nav-card.pantry:hover { box-shadow: 0 8px 24px rgba(198,93,58,.12); }
+.nav-card.pantry .nav-card-tag { color: var(--pantry-accent); }
+.nav-card.workshop { border-left-color: var(--workshop-accent); background: rgba(90,99,120,.06); }
+.nav-card.workshop:hover { box-shadow: 0 8px 24px rgba(90,99,120,.12); }
+.nav-card.workshop .nav-card-tag { color: var(--workshop-accent); }
+.nav-card.toolkit { border-left-color: var(--toolkit-accent); background: rgba(26,154,175,.06); }
+.nav-card.toolkit:hover { box-shadow: 0 8px 24px rgba(26,154,175,.12); }
+.nav-card.toolkit .nav-card-tag { color: var(--toolkit-accent); }
+.nav-card.ledger { border-left-color: var(--ledger-accent); background: rgba(196,139,44,.06); }
+.nav-card.ledger:hover { box-shadow: 0 8px 24px rgba(196,139,44,.12); }
+.nav-card.ledger .nav-card-tag { color: var(--ledger-accent); }
+.nav-card.longgame { border-left-color: var(--longgame-accent); background: rgba(42,58,92,.06); }
+.nav-card.longgame:hover { box-shadow: 0 8px 24px rgba(42,58,92,.12); }
+.nav-card.longgame .nav-card-tag { color: var(--longgame-accent); }
+.nav-card.wallet { border-left-color: var(--wallet-accent); background: rgba(26,138,122,.06); }
+.nav-card.wallet:hover { box-shadow: 0 8px 24px rgba(26,138,122,.12); }
+.nav-card.wallet .nav-card-tag { color: var(--wallet-accent); }
+.nav-card.itinerary { border-left-color: var(--itinerary-accent); background: rgba(212,99,75,.06); }
+.nav-card.itinerary:hover { box-shadow: 0 8px 24px rgba(212,99,75,.12); }
+.nav-card.itinerary .nav-card-tag { color: var(--itinerary-accent); }
+
+/* Dividers for rotating sections */
+.dv-pantry { background: linear-gradient(90deg, var(--pantry-accent), #E8845A); }
+.dv-workshop { background: linear-gradient(90deg, var(--workshop-accent), #7A839A); }
+.dv-toolkit { background: linear-gradient(90deg, var(--toolkit-accent), #2AB8CE); }
+.dv-ledger { background: linear-gradient(90deg, var(--ledger-accent), #D4A03C); }
+.dv-longgame { background: linear-gradient(90deg, var(--longgame-accent), #4A5A8C); }
+.dv-wallet { background: linear-gradient(90deg, var(--wallet-accent), #2AB8A8); }
+.dv-itinerary { background: linear-gradient(90deg, var(--itinerary-accent), #E8845A); }
+
+/* ═══════════ Enhancement 12: CONTEXTUAL TIMELINES ═══════════ */
+.timeline {
+  position: relative;
+  padding-left: 32px;
+  margin: 24px 0;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 8px; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--rule);
+}
+.timeline-node {
+  position: relative;
+  padding: 12px 0 24px 16px;
+}
+.timeline-node::before {
+  content: '';
+  position: absolute;
+  left: -28px; top: 18px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--rose);
+  border: 2px solid var(--paper);
+}
+.timeline-node .timeline-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--ghost);
+  margin-bottom: 4px;
+}
+.timeline-node .timeline-content {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14.5px; line-height: 1.5;
+}
+.timeline-node .timeline-content strong { color: var(--ink); }
+
+/* Timeline on dark backgrounds */
+.touchline-section .timeline::before { background: rgba(255,255,255,.1); }
+.touchline-section .timeline-node::before { background: var(--turf-lt); border-color: var(--pitch); }
+.touchline-section .timeline-node .timeline-date { color: var(--turf-lt); }
+.touchline-section .timeline-node .timeline-content { color: rgba(255,255,255,.7); }
+.touchline-section .timeline-node .timeline-content strong { color: rgba(255,255,255,.95); }
+
+.screen-section .timeline::before { background: rgba(255,255,255,.1); }
+.screen-section .timeline-node::before { background: var(--neon); border-color: var(--screen-bg); }
+.screen-section .timeline-node .timeline-date { color: var(--neon); }
+.screen-section .timeline-node .timeline-content { color: rgba(255,255,255,.7); }
+.screen-section .timeline-node .timeline-content strong { color: rgba(255,255,255,.95); }
+
+.shelf-section .timeline::before { background: rgba(255,255,255,.1); }
+.shelf-section .timeline-node::before { background: var(--shelf-accent); border-color: var(--shelf-bg); }
+.shelf-section .timeline-node .timeline-date { color: var(--shelf-accent); }
+.shelf-section .timeline-node .timeline-content { color: rgba(255,255,255,.7); }
+.shelf-section .timeline-node .timeline-content strong { color: rgba(255,255,255,.95); }
+
+/* History timeline */
+.history-section .timeline::before { background: rgba(139,105,20,.2); }
+.history-section .timeline-node::before { background: var(--hist-accent); border-color: var(--hist-bg); }
+.history-section .timeline-node .timeline-date { color: var(--hist-accent); }
+.history-section .timeline-node .timeline-content { color: #5C4A20; }
+
+/* ═══════════ Enhancement 13: COMPACT TAKES ═══════════ */
+.compact-take {
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--rose);
+  border-radius: 0 6px 6px 0;
+  padding: 16px 18px;
+  margin: 12px 0;
+}
+.compact-take h4 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 17px; font-weight: 700; color: var(--ink);
+  text-transform: none; letter-spacing: 0;
+  margin: 0 0 6px;
+}
+.compact-take p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13.5px; color: var(--slate);
+  line-height: 1.5; margin: 0 0 6px;
+}
+.compact-take .src { margin-top: 4px; }
+
+/* Compact take — section accents */
+.tech-section .compact-take { border-left-color: var(--ember); background: white; }
+.touchline-section .compact-take { border-left-color: var(--turf-lt); background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.touchline-section .compact-take h4 { color: rgba(255,255,255,.95); }
+.touchline-section .compact-take p { color: rgba(255,255,255,.6); }
+.screen-section .compact-take { border-left-color: var(--neon); background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.screen-section .compact-take h4 { color: rgba(255,255,255,.95); }
+.screen-section .compact-take p { color: rgba(255,255,255,.6); }
+
+/* Compact grid — 2 compact takes side by side */
+.compact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+/* ═══════════ Enhancement 14: MARGIN NOTES ═══════════ */
+.margin-note {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--slate);
+  background: var(--warm);
+  border-left: 3px solid var(--rose);
+  padding: 12px 14px;
+  border-radius: 0 4px 4px 0;
+}
+/* On desktop, float to right margin */
+@media (min-width: 821px) {
+  .margin-note {
+    float: right;
+    width: 220px;
+    margin: 0 -60px 16px 24px;
+    position: relative;
+    z-index: 1;
+  }
+}
+/* Section-aware margin notes */
+.tech-section .margin-note { border-left-color: var(--ember); }
+.touchline-section .margin-note { background: rgba(255,255,255,.04); border-left-color: var(--turf-lt); color: rgba(255,255,255,.6); }
+.screen-section .margin-note { background: rgba(255,255,255,.04); border-left-color: var(--neon); color: rgba(255,255,255,.6); }
+.shelf-section .margin-note { background: rgba(255,255,255,.04); border-left-color: var(--shelf-accent); color: rgba(255,255,255,.6); }
+.history-section .margin-note { border-left-color: var(--hist-accent); background: rgba(139,105,20,.06); color: #5C4A20; }
+
+/* ═══════════ Enhancement 15: SECTION ICONS (inline SVG) ═══════════ */
+/* Icons use currentColor so they inherit from parent. Defined as classes for documentation. */
+.sec-icon {
+  display: inline-block;
+  width: 24px; height: 24px;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+.sec-icon svg {
+  width: 24px; height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ═══════════ Enhancement 17: COLLAPSIBLE SECTIONS ═══════════ */
+.collapsible {
+  margin: 20px 0;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.collapsible summary {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 700;
+  padding: 14px 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  list-style: none;
+  background: var(--warm);
+  color: var(--ink);
+  transition: background .15s ease;
+}
+.collapsible summary::-webkit-details-marker { display: none; }
+.collapsible summary::after {
+  content: '';
+  width: 8px; height: 8px;
+  border-right: 2px solid var(--ghost);
+  border-bottom: 2px solid var(--ghost);
+  transform: rotate(45deg);
+  transition: transform .2s ease;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+.collapsible[open] summary::after {
+  transform: rotate(-135deg);
+}
+.collapsible summary:hover { background: var(--rule); }
+.collapsible-content {
+  padding: 16px 18px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--slate);
+}
+
+/* Dark section collapsibles */
+.touchline-section .collapsible { border-color: rgba(255,255,255,.08); }
+.touchline-section .collapsible summary { background: rgba(255,255,255,.04); color: rgba(255,255,255,.9); }
+.touchline-section .collapsible summary::after { border-color: rgba(255,255,255,.3); }
+.touchline-section .collapsible summary:hover { background: rgba(255,255,255,.08); }
+.touchline-section .collapsible-content { color: rgba(255,255,255,.7); }
+
+.screen-section .collapsible { border-color: rgba(255,255,255,.08); }
+.screen-section .collapsible summary { background: rgba(255,255,255,.04); color: rgba(255,255,255,.9); }
+.screen-section .collapsible summary::after { border-color: rgba(255,255,255,.3); }
+.screen-section .collapsible summary:hover { background: rgba(255,255,255,.08); }
+.screen-section .collapsible-content { color: rgba(255,255,255,.7); }
+
+.shelf-section .collapsible { border-color: rgba(255,255,255,.08); }
+.shelf-section .collapsible summary { background: rgba(255,255,255,.04); color: rgba(255,255,255,.9); }
+.shelf-section .collapsible summary::after { border-color: rgba(255,255,255,.3); }
+.shelf-section .collapsible summary:hover { background: rgba(255,255,255,.08); }
+.shelf-section .collapsible-content { color: rgba(255,255,255,.7); }
+
+/* ═══════════ Enhancement 20: READ-NEXT CONNECTORS ═══════════ */
+.read-next {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  text-align: right;
+  margin-top: 28px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+  color: var(--ghost);
+}
+.read-next a {
+  font-weight: 700;
+  text-decoration: none;
+}
+.read-next .arrow {
+  display: inline-block;
+  margin-left: 4px;
+  transition: transform .15s ease;
+}
+.read-next:hover .arrow {
+  transform: translateX(3px);
+}
+
+/* Section-specific read-next colours */
+.world-section .read-next a { color: var(--rose); }
+.tech-section .read-next a { color: var(--ember); }
+.touchline-section .read-next { border-top-color: rgba(255,255,255,.08); color: rgba(255,255,255,.3); }
+.touchline-section .read-next a { color: var(--turf-lt); }
+.screen-section .read-next { border-top-color: rgba(255,255,255,.08); color: rgba(255,255,255,.3); }
+.screen-section .read-next a { color: var(--neon); }
+.shelf-section .read-next { border-top-color: rgba(255,255,255,.08); color: rgba(255,255,255,.3); }
+.shelf-section .read-next a { color: var(--shelf-accent); }
+.session-section .read-next a { color: var(--session-accent); }
+.history-section .read-next a { color: var(--hist-accent); }
+
+/* ═══════════ Enhancement 5: SCROLL-TRIGGERED ANIMATIONS ═══════════ */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* Staggered children */
+.reveal-group .reveal:nth-child(1) { transition-delay: 0ms; }
+.reveal-group .reveal:nth-child(2) { transition-delay: 80ms; }
+.reveal-group .reveal:nth-child(3) { transition-delay: 160ms; }
+.reveal-group .reveal:nth-child(4) { transition-delay: 240ms; }
+.reveal-group .reveal:nth-child(5) { transition-delay: 320ms; }
+.reveal-group .reveal:nth-child(6) { transition-delay: 400ms; }
+
+/* ═══════════ THE LONG SHELF ═══════════ */
+.longshelf-section { background: var(--paper); border-bottom: 1px solid var(--rule); }
+.longshelf-section .section-label { color: var(--rose); }
+/* Two-column compact layout */
+.longshelf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 32px; }
+.shelf-item { padding: 16px 0; border-bottom: 1px solid var(--rule); }
+.shelf-item:last-child { border-bottom: none; }
+.shelf-item .title { font-size: 17px; font-weight: 700; color: var(--ink); line-height: 1.3; }
+.shelf-item .meta {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; color: var(--ghost); margin-top: 2px;
+}
+.shelf-item .desc {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; color: var(--slate); margin-top: 4px; line-height: 1.5;
+}
+
+/* ═══════════ ON THE RADAR ═══════════ */
+.radar-section { background: var(--warm); }
+.radar-section .section-label { color: var(--ember); }
+.radar-section .radar-row { border-bottom-color: rgba(0,0,0,.06); color: var(--ink); }
+.radar-section .radar-date { color: var(--ember); font-size: 12px; }
+.radar-section .radar-row strong { color: var(--ink); }
+.radar-section .radar-cat.football { background: var(--turf); }
+.radar-section .radar-cat.film { background: var(--neon); }
+.radar-section .radar-cat.game { background: var(--ember); }
+.radar-section .radar-cat.event { background: var(--rose); }
+.radar-section .radar-cat.release { background: var(--shelf-accent); }
+
+/* ═══════════ FOOTER ═══════════ */
+.footer {
+  background: var(--deep); padding: 40px 60px; text-align: center;
+}
+.footer-brand { font-size: 28px; font-weight: 700; color: white; }
+.footer-brand span { color: var(--rose); font-style: italic; }
+.footer-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: rgba(255,255,255,.3);
+  letter-spacing: 2px; text-transform: uppercase; margin-top: 6px;
+}
+
+/* ═══════════ ARTICLE ENTRY PATTERNS ═══════════ */
+/* Stat lead — bold number + context opens an article */
+.entry-stat {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 56px; font-weight: 700; line-height: 1.1;
+  margin-bottom: 4px;
+}
+.entry-stat-context {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; color: var(--slate);
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 20px;
+}
+/* Quote lead — pull quote as opener */
+.entry-quote {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 24px; font-style: italic; line-height: 1.4;
+  border-left: 4px solid var(--rose);
+  padding-left: 20px; margin-bottom: 20px;
+  color: var(--ink);
+}
+.entry-quote cite {
+  display: block; font-style: normal; font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--ghost); margin-top: 8px;
+}
+/* Summary bullets lead — 3 key points upfront */
+.entry-bullets {
+  list-style: none; padding: 0; margin: 0 0 20px 0;
+  border-left: 4px solid var(--rose);
+  padding-left: 16px;
+}
+.entry-bullets li {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 500;
+  line-height: 1.5; padding: 4px 0;
+  color: var(--ink);
+}
+/* Question hook lead */
+.entry-question {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 28px; font-weight: 600; font-style: italic;
+  line-height: 1.3; margin-bottom: 16px;
+  color: var(--ink);
+}
+/* Dark section entry variants */
+.touchline-section .entry-stat,
+.screen-section .entry-stat,
+.shelf-section .entry-stat { color: rgba(255,255,255,.9); }
+.touchline-section .entry-stat-context,
+.screen-section .entry-stat-context,
+.shelf-section .entry-stat-context { color: rgba(255,255,255,.4); }
+.touchline-section .entry-quote,
+.screen-section .entry-quote,
+.shelf-section .entry-quote { color: rgba(255,255,255,.85); }
+.touchline-section .entry-bullets li,
+.screen-section .entry-bullets li,
+.shelf-section .entry-bullets li { color: rgba(255,255,255,.8); }
+.touchline-section .entry-question,
+.screen-section .entry-question,
+.shelf-section .entry-question { color: rgba(255,255,255,.85); }
+.touchline-section .entry-quote { border-color: var(--turf-lt); }
+.touchline-section .entry-bullets { border-color: var(--turf-lt); }
+.screen-section .entry-quote { border-color: var(--neon); }
+.screen-section .entry-bullets { border-color: var(--neon); }
+.shelf-section .entry-quote { border-color: var(--shelf-accent); }
+.shelf-section .entry-bullets { border-color: var(--shelf-accent); }
+
+/* ═══════════ SECTION BREATHER BANDS ═══════════ */
+.breather {
+  text-align: center;
+  padding: 28px 40px;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  margin: 0;
+}
+.breather-stat {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 42px; font-weight: 700;
+  color: var(--rose); line-height: 1.1;
+}
+.breather-context {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; color: var(--slate);
+  margin-top: 4px;
+}
+.breather-teaser {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 18px; font-style: italic;
+  color: var(--slate); line-height: 1.4;
+}
+/* Dark breather (between dark sections) */
+.breather.dark {
+  background: var(--deep);
+  border-color: rgba(255,255,255,.08);
+}
+.breather.dark .breather-stat { color: var(--turf-lt); }
+.breather.dark .breather-context,
+.breather.dark .breather-teaser { color: rgba(255,255,255,.45); }
+
+/* ═══════════ ALSO-LIST PRIORITY TIERS ═══════════ */
+.also-list li.tier-hot {
+  border-left: 3px solid var(--rose);
+  padding-left: 10px;
+  background: rgba(232,56,79,.04);
+  margin-bottom: 10px; padding-top: 4px; padding-bottom: 4px;
+}
+.also-list li.tier-warm {
+  border-left: 3px solid var(--ember);
+  padding-left: 10px;
+  margin-bottom: 10px; padding-top: 4px; padding-bottom: 4px;
+}
+.also-list li.tier-note {
+  border-left: 3px solid var(--rule);
+  padding-left: 10px;
+  margin-bottom: 10px; padding-top: 4px; padding-bottom: 4px;
+}
+/* Dark section tiers */
+.touchline-section .also-list li.tier-hot { border-color: var(--turf-lt); background: rgba(43,214,123,.06); }
+.touchline-section .also-list li.tier-warm { border-color: rgba(255,255,255,.25); }
+.touchline-section .also-list li.tier-note { border-color: rgba(255,255,255,.1); }
+.screen-section .also-list li.tier-hot { border-color: var(--neon); background: rgba(255,45,120,.06); }
+.screen-section .also-list li.tier-warm { border-color: rgba(255,255,255,.25); }
+.screen-section .also-list li.tier-note { border-color: rgba(255,255,255,.1); }
+.shelf-section .also-list li.tier-hot { border-color: var(--shelf-accent); background: rgba(212,160,60,.06); }
+.shelf-section .also-list li.tier-warm { border-color: rgba(255,255,255,.25); }
+.shelf-section .also-list li.tier-note { border-color: rgba(255,255,255,.1); }
+
+/* ═══════════ COMPARISON PANELS ═══════════ */
+.compare-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 20px 0;
+}
+.compare-side {
+  padding: 20px 24px;
+}
+.compare-side.left {
+  background: rgba(232,56,79,.04);
+  border-right: 1px solid var(--rule);
+}
+.compare-side.right {
+  background: rgba(26,122,76,.04);
+}
+.compare-side .compare-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.compare-side.left .compare-label { color: var(--rose); }
+.compare-side.right .compare-label { color: var(--turf); }
+.compare-side h4 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 20px; font-weight: 700;
+  margin-bottom: 8px;
+}
+.compare-side p {
+  font-size: 15px; line-height: 1.55;
+  margin-bottom: 8px;
+}
+.compare-side .compare-stat {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 36px; font-weight: 700;
+  line-height: 1.1; margin-bottom: 4px;
+}
+.compare-side.left .compare-stat { color: var(--rose); }
+.compare-side.right .compare-stat { color: var(--turf); }
+/* Dark section compare panels */
+.touchline-section .compare-side.left { background: rgba(43,214,123,.06); border-color: rgba(255,255,255,.08); }
+.touchline-section .compare-side.right { background: rgba(0,180,216,.06); }
+.touchline-section .compare-side p,
+.touchline-section .compare-side h4 { color: rgba(255,255,255,.85); }
+.touchline-section .compare-side.left .compare-label,
+.touchline-section .compare-side.left .compare-stat { color: var(--turf-lt); }
+.touchline-section .compare-side.right .compare-label,
+.touchline-section .compare-side.right .compare-stat { color: #00B4D8; }
+.screen-section .compare-side.left { background: rgba(255,45,120,.06); border-color: rgba(255,255,255,.08); }
+.screen-section .compare-side.right { background: rgba(0,180,216,.06); }
+.screen-section .compare-side p,
+.screen-section .compare-side h4 { color: rgba(255,255,255,.85); }
+.shelf-section .compare-side.left { background: rgba(212,160,60,.06); border-color: rgba(255,255,255,.08); }
+.shelf-section .compare-side.right { background: rgba(0,180,216,.06); }
+.shelf-section .compare-side p,
+.shelf-section .compare-side h4 { color: rgba(255,255,255,.85); }
+
+/* ═══════════ FLOATED INSET SIDEBAR ═══════════ */
+.sidebar-float {
+  float: right;
+  width: 260px;
+  margin: 0 0 16px 24px;
+  padding: 16px 18px;
+  background: var(--warm);
+  border-left: 3px solid var(--rose);
+  border-radius: 0 4px 4px 0;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; line-height: 1.5;
+}
+.sidebar-float .sidebar-title {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 8px;
+}
+.sidebar-float ul { list-style: none; padding: 0; margin: 0; }
+.sidebar-float li { padding: 4px 0; }
+/* Dark section float sidebars */
+.touchline-section .sidebar-float {
+  background: rgba(255,255,255,.05);
+  border-color: var(--turf-lt);
+  color: rgba(255,255,255,.8);
+}
+.touchline-section .sidebar-float .sidebar-title { color: var(--turf-lt); }
+.screen-section .sidebar-float {
+  background: rgba(255,255,255,.05);
+  border-color: var(--neon);
+  color: rgba(255,255,255,.8);
+}
+.screen-section .sidebar-float .sidebar-title { color: var(--neon); }
+.shelf-section .sidebar-float {
+  background: rgba(255,255,255,.05);
+  border-color: var(--shelf-accent);
+  color: rgba(255,255,255,.8);
+}
+.shelf-section .sidebar-float .sidebar-title { color: var(--shelf-accent); }
+
+/* ═══════════ RESPONSIVE ═══════════ */
+@media (max-width: 820px) {
+  .cover, .nav-section, .foreword, .sec, .touchline-section, .screen-section,
+  .shelf-section, .session-section, .history-section,
+  .longshelf-section, .radar-section, .footer {
+    padding-left: 24px; padding-right: 24px;
+  }
+  .hero-bleed { width: calc(100% + 48px); margin-left: -24px; }
+  .divider.inset { margin-left: 24px; margin-right: 24px; }
+  .cover-brand { font-size: 60px; }
+  .cover-headline { font-size: 26px; }
+  .nav-grid { grid-template-columns: 1fr 1fr; }
+  .nav-card.lead { grid-column: span 2; }
+  .longshelf-grid { grid-template-columns: 1fr; }
+  .book-grid { grid-template-columns: 1fr; }
+  /* Enhancement 1 */
+  .split-60-40, .split-40-60 { grid-template-columns: 1fr; }
+  /* Enhancement 4 */
+  .img-montage.layout-1-2, .img-montage.layout-2x2 { grid-template-columns: 1fr; }
+  .img-montage.layout-1-2 .montage-hero { grid-column: span 1; }
+  .img-offset { float: none; width: 100%; margin: 16px 0; }
+  /* Enhancement 2 */
+  .sec-watermark { font-size: 100px; }
+  /* Enhancement 7 */
+  .pull-quote.wide { margin-left: 0; margin-right: 0; }
+  /* Enhancement 8 */
+  .also-cards { grid-template-columns: 1fr; }
+  /* Enhancement 13 */
+  .compact-grid { grid-template-columns: 1fr; }
+  /* Enhancement 14: margin note goes inline */
+  .margin-note { float: none; width: 100%; margin: 16px 0; }
+  /* New components responsive */
+  .sidebar-float { float: none; width: 100%; margin: 16px 0; }
+  .compare-panel { grid-template-columns: 1fr; }
+  .compare-side.left { border-right: none; border-bottom: 1px solid var(--rule); }
+  .entry-stat { font-size: 44px; }
+  .entry-question { font-size: 24px; }
+}
+@media (max-width: 600px) {
+  .cover, .nav-section, .foreword, .sec, .touchline-section, .screen-section,
+  .shelf-section, .session-section, .history-section,
+  .longshelf-section, .radar-section, .footer {
+    padding-left: 20px; padding-right: 20px;
+  }
+  .hero-bleed { width: calc(100% + 40px); margin-left: -20px; }
+  .divider.inset { margin-left: 20px; margin-right: 20px; }
+  .cover-brand { font-size: 52px; }
+  .cover-headline { font-size: 22px; }
+  .nav-grid { grid-template-columns: 1fr; }
+  .nav-card.lead { grid-column: span 1; grid-template-columns: 1fr; }
+  .nav-card.lead .nav-card-thumb { min-height: 120px; }
+  .dual-col { grid-template-columns: 1fr; }
+  .stat-bar { grid-template-columns: repeat(2, 1fr); }
+  .stat-bar .stat:nth-child(2) { border-right: none; }
+  .results-strip { flex-direction: column; }
+  .result-card { max-width: 100%; }
+  .sec h2, .touchline-section h2, .screen-section h2, .shelf-section h2 { font-size: 28px; }
+  .longshelf-grid { grid-template-columns: 1fr; }
+  .book-grid { grid-template-columns: 1fr; }
+  .back-to-top { bottom: 16px; right: 16px; width: 40px; height: 40px; }
+  /* Enhancement 2: hide watermark on small screens */
+  .sec-watermark { display: none; }
+  /* Enhancement 3: scale down big numbers */
+  .big-number .num { font-size: 56px; }
+  .big-number-row { grid-template-columns: 1fr; gap: 16px; }
+  .big-number-row .big-number .num { font-size: 48px; }
+  /* Enhancement 10 */
+  .sec-opener h2 { font-size: 32px; }
+  .display-stat { font-size: 52px; }
+  /* Enhancement 16 */
+  .stack-card { flex: 0 0 200px; }
+  /* Enhancement 12 */
+  .timeline { padding-left: 24px; }
+}
+</style>
+</head>
+<body>
+<div class="progress-bar" id="progressBar"></div>
+<div class="mag">
+
+<!-- ══════ COVER ══════ -->
+<header class="cover" id="top">
+  <div class="cover-noise"></div>
+  <div class="cover-grain"></div>
+  <div class="cover-issue" style="position:relative;z-index:2">30 March — 5 April 2026 · Issue #4 · Sunday Edition · Starter Kit Special</div>
+  <div class="cover-brand" style="position:relative;z-index:2">The Signal<span>.</span></div>
+  <div class="cover-headline" style="position:relative;z-index:2">Press play. Close your eyes.<br>The stories do the rest.</div>
+  <div style="font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(255,255,255,.35);margin-top:12px;position:relative;z-index:2;letter-spacing:1px;">Your First Audio Drama Podcasts — A Complete Starter Kit</div>
+  <div class="cover-tags">
+    <span class="tag">Audio Drama</span>
+    <span class="tag">Podcasts</span>
+    <span class="tag">Sci-Fi</span>
+    <span class="tag">Comedy</span>
+    <span class="tag">Starter Kit</span>
+    <span class="tag">Fiction</span>
+    <span class="tag">Wolf 359</span>
+    <span class="tag">Midnight Burger</span>
+  </div>
+</header>
+
+<!-- ══════ NAVIGATOR ══════ -->
+<section class="nav-section" id="nav">
+  <h2>What's Inside</h2>
+  <div class="nav-grid">
+    <a href="#foreword" class="nav-card screen" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 1 0 20A10 10 0 0 1 12 2z"/><path d="M12 8v4l3 3"/></svg></span>
+        Foreword
+      </div>
+      <h3>Why Audio Drama Right Now</h3>
+      <p>It's not audiobooks. It's not radio plays. It's something new entirely — and it's free.</p>
+      <div class="read-time">1 min</div>
+    </a>
+    <a href="#why" class="nav-card world" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.4h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l1.27-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
+        Why It Matters
+      </div>
+      <h3>The Medium Has Exploded</h3>
+      <p>Production values rival TV. The community is thriving. And you already know Wolf 359 is good.</p>
+      <div class="read-time">3 min</div>
+    </a>
+    <a href="#essentials" class="nav-card shelf" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span>
+        The Essentials
+      </div>
+      <h3>Six Shows, No Filler</h3>
+      <p>Midst. Victoriocity. Malevolent. We Fix Space Junk. Ars Paradoxica. Cry Havoc.</p>
+      <div class="read-time">15 min</div>
+    </a>
+    <a href="#mistakes" class="nav-card tech" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
+        Common Mistakes
+      </div>
+      <h3>Don't Do What Everyone Does</h3>
+      <p>Six traps that kill new listeners — starting with "I'll begin with Wolf 359's 61-episode run."</p>
+      <div class="read-time">3 min</div>
+    </a>
+    <a href="#plan" class="nav-card session" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+        One-Week Plan
+      </div>
+      <h3>Monday to Sunday</h3>
+      <p>A specific episode, a specific show, each day. By Sunday you'll know which one owns you.</p>
+      <div class="read-time">2 min</div>
+    </a>
+    <a href="#deeper" class="nav-card history" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+        Go Deeper
+      </div>
+      <h3>Beyond the Top Six</h3>
+      <p>Five shows just outside the list, plus the communities and tools to find your next obsession.</p>
+      <div class="read-time">4 min</div>
+    </a>
+    <a href="#meanwhile" class="nav-card world" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span>
+        Meanwhile
+      </div>
+      <h3>What Else Happened</h3>
+      <p>World, gaming, entertainment, and sport from the week ending 5 April 2026.</p>
+      <div class="read-time">3 min</div>
+    </a>
+  </div>
+</section>
+
+<!-- ══════ FOREWORD ══════ -->
+<section class="foreword" id="foreword">
+  <p>Audio drama is the most underrated corner of podcasting. Not audiobooks — no single narrator reading prose. Not old radio plays — something newer, sharper, built for earbuds. Full casts, original scores, sound design that puts you inside a room on a space station or a Victorian London ten times the size of the real thing. You've already found Wolf 359. You enjoyed Incoming. Midnight Burger ran out of road after season three. This guide cuts through 500+ shows to the six that will actually stick — built for your tastes, your patience, and your commute.</p>
+</section>
+
+<!-- ══════ WHY THIS MATTERS ══════ -->
+<hr class="divider dv-world">
+<section class="sec world-section sec-opener" id="why">
+  <div class="sec-watermark">Drama</div>
+  <div class="opener-band"></div>
+  <div class="sec-gradient-overlay"></div>
+  <span class="section-label" style="color:var(--rose)">Why This Matters</span>
+
+  <div class="entry-question">What if a Malazan-quality world was waiting for you in your earphones, and it was completely free?</div>
+
+  <img class="hero-img reveal" src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=900&q=80" alt="Headphones on a dark surface">
+  <div class="caption">The medium has exploded — and it's all available in your existing podcast app.</div>
+
+  <p>Here's the honest situation: you already know audio drama works. Wolf 359 — the story of the crew of the USS Hephaestus orbiting a red dwarf — is widely regarded as one of the finest achievements in the genre. You've listened to it on and off. It's good. But at 61 episodes with dense serialisation, it's also a commitment. Midnight Burger hooked you through three seasons of diner-based sci-fi comedy and then stretched itself thin. You dropped off season four. That's not a personal failure — that's the shows doing what shows do when they lose editorial discipline.</p>
+
+  <div class="sidebar-float">
+    <div class="sidebar-title">The Key Distinction</div>
+    <ul>
+      <li><strong>Audiobook</strong> — One narrator reading prose</li>
+      <li><strong>Old radio play</strong> — Staged drama, often mannered</li>
+      <li><strong>Audio drama podcast</strong> — Full cast, original score, cinematic sound design, built for earbuds</li>
+      <li><strong>Price</strong> — Free, in your existing podcast app</li>
+    </ul>
+  </div>
+
+  <p>What's changed in the last five years is production quality. Shows like Midst and Victoriocity have sound design that genuinely rivals prestige TV drama. Malevolent's atmospheric Lovecraftian horror puts you inside a 1920s New England office in a way no visual medium can. The community at r/audiodrama now has over 100,000 subscribers and curated lists that rival any literary recommendation engine. Rusty Quill — the network behind Magnus Archives — is producing shows with budgets and ambition that would have seemed impossible for the format a decade ago.</p>
+
+  <p>The other thing that's changed: there are now enough <em>complete</em> shows with clear quality signals that you don't have to gamble on something unfinished. Ars Paradoxica is done. All three seasons of Midst are done. You can binge, evaluate, and move on — or, if the sequel UNEND has you hooked, slot into a weekly listening rhythm for something actively releasing. The medium has matured enough to fit around a life rather than demand you schedule your week around it.</p>
+
+  <div class="dyk">
+    <div class="dyk-title">Did You Know</div>
+    <p>Rusty Quill — the network behind Malevolent: Threshold, Cry Havoc!, and Stellar Firma — has produced over 1,000 hours of audio drama. Magnus Archives alone ran 200 episodes and concluded with one of the most discussed series finales in podcast history.</p>
+  </div>
+
+  <div class="angle reveal">
+    <div class="angle-label">The Signal's Take</div>
+    <p>The secret to not burning out is matching show format to your mood and schedule. Episodic shows (We Fix Space Junk) when you want closure each session. Dense serialisation (Midst) when you want the Malazan brain. History-adjacent (Ars Paradoxica, Cry Havoc) when your History of Rome itch needs scratching. The next section is ordered by that logic.</p>
+  </div>
+</section>
+
+<!-- ══════ BREATHER ══════ -->
+<div class="breather">
+  <div class="breather-stat">6</div>
+  <div class="breather-context">Carefully selected shows — from 500+ in the genre</div>
+  <div class="breather-teaser">Each one matched to your existing tastes and listening habits</div>
+</div>
+
+<!-- ══════ THE ESSENTIALS ══════ -->
+<hr class="divider dv-shelf">
+<section class="sec shelf-section sec-opener" id="essentials">
+  <div class="sec-watermark">Listen</div>
+  <div class="opener-band"></div>
+  <span class="section-label" style="color:var(--shelf-accent)">The Essentials — Six Picks, No Hedging</span>
+  <h2>Your Audio Drama Starter Stack</h2>
+  <p style="color:rgba(255,255,255,.7);font-size:17px;max-width:680px;">These aren't the six most popular shows in the genre. They're the six that fit your specific tastes: someone who loves Malazan-depth worldbuilding, irreverent genre comedy, history that comes alive, and episodes that don't outstay their welcome.</p>
+
+  <!-- Quick overview grid -->
+  <div class="also-cards reveal-group" style="margin-bottom:48px;">
+    <div class="also-card reveal">
+      <h4>Midst + UNEND</h4>
+      <p>Space western. Three unreliable narrators. Malazan-level worldbuilding. The best in class.</p>
+      <span class="badge">Complete + Active · 15-40 min</span>
+    </div>
+    <div class="also-card reveal">
+      <h4>Victoriocity</h4>
+      <p>Detective comedy in alternate steampunk London. Terry Pratchett meets BBC Radio 4.</p>
+      <span class="badge">Complete · 45-65 min · ★ 4.9</span>
+    </div>
+    <div class="also-card reveal">
+      <h4>Malevolent</h4>
+      <p>Lovecraftian horror. Series 2 just launched. Atmospheric, not jump-scary.</p>
+      <span class="badge">S1 Complete, S2 Active · 30-75 min · ★ 4.9</span>
+    </div>
+    <div class="also-card reveal">
+      <h4>We Fix Space Junk</h4>
+      <p>Hitchhiker's Guide energy. British comedy. Episodic. Perfect for short commutes.</p>
+      <span class="badge">Active · 25-30 min · ★ 4.8</span>
+    </div>
+    <div class="also-card reveal">
+      <h4>Ars Paradoxica</h4>
+      <p>Time travel + Cold War history. Peak audio drama craft. History of Rome in fiction form.</p>
+      <span class="badge">Complete · 30-55 min · ★ 4.7</span>
+    </div>
+    <div class="also-card reveal">
+      <h4>Cry Havoc! Ask Questions Later</h4>
+      <p>Ancient Rome political comedy. History of Rome: The Sitcom. Produced by Rusty Quill.</p>
+      <span class="badge">Active · 30-40 min · ★ 4.9 · IMDb 8.7</span>
+    </div>
+  </div>
+
+  <!-- ── SHOW 1: MIDST ── -->
+  <h3 style="color:white;font-size:28px;font-weight:700;margin-bottom:4px;">01. Midst <span style="color:var(--shelf-accent);font-size:16px;font-weight:400;font-family:'DM Sans',sans-serif;vertical-align:middle;margin-left:8px;">★ Top Pick</span></h3>
+  <div style="font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(255,255,255,.4);margin-bottom:20px;">Space Western · Sci-Fi · Complete + Active Sequel · Acquired by Critical Role's Metapigeon</div>
+
+  <div class="split-60-40">
+    <div>
+      <div class="entry-quote" style="border-color:var(--shelf-accent);color:rgba(255,255,255,.9);">
+        "Undoubtedly the finest example of this genre."
+        <cite>— r/audiodrama community consensus</cite>
+      </div>
+      <p>If Malazan Book of the Fallen and Firefly had a podcast baby narrated by three unreliable storytellers, it would be Midst. Set on a desert planet on the border between two halves of the cosmos — where unsolved murders, cult brainwashing, and supernatural darkness converge — this is audio drama operating at the absolute ceiling of the form.</p>
+      <p>Three narrators weave interlocking stories. The structure is initially disorienting — much like opening Gardens of the Moon and meeting the Malazan army mid-siege without context. Push through. By episode four the world clicks into place and you'll understand why Reddit consistently calls it the finest in the genre. The worldbuilding density — a complex system of factions, cults, and cosmic forces that you piece together from fragments — is exactly the experience of reading Steven Erikson. It rewards attention and patience enormously.</p>
+      <p>The main Midst story is complete: three seasons, 57 episodes. The sequel UNEND has two complete seasons and Season 3 began 8 April 2026 — so you can binge the entirety of Midst and then slot into a weekly Wednesday listening rhythm for UNEND. That's the ideal entry point right now.</p>
+    </div>
+    <div>
+      <img class="reveal" src="https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=500&q=80" alt="Space desert landscape" style="border-radius:6px;width:100%;margin-bottom:16px;">
+      <div class="sidebar" style="margin-top:0;">
+        <div class="sidebar-title">Stats at a Glance</div>
+        <ul>
+          <li><strong>Episodes</strong> — Midst: 57 complete. UNEND S1+2 complete, S3 ongoing</li>
+          <li><strong>Length</strong> — 15–40 min (perfect for commutes)</li>
+          <li><strong>Status</strong> — Binge-ready + weekly active</li>
+          <li><strong>Start here</strong> — Episode 1, Season 1. Let it be strange.</li>
+          <li><strong>Listen on</strong> — All platforms + <a href="https://critrole.com/shows/midst/" style="color:var(--shelf-accent)">Critical Role YouTube</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="stat-bar reveal">
+    <div class="stat">
+      <div class="stat-num" style="color:var(--shelf-accent)">57</div>
+      <div class="stat-label">Midst Episodes</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" style="color:var(--shelf-accent)">3</div>
+      <div class="stat-label">Narrators</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" style="color:var(--shelf-accent)">15–40</div>
+      <div class="stat-label">Min Per Ep</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" style="color:var(--shelf-accent)">2023</div>
+      <div class="stat-label">Critical Role Acquired</div>
+    </div>
+  </div>
+
+  <div class="dyk" style="background:rgba(212,160,60,.06);border-color:rgba(212,160,60,.2);">
+    <div class="dyk-title" style="color:var(--shelf-accent);">The CK3 Connection</div>
+    <p style="color:rgba(255,255,255,.75);">Midst has the same appeal as Crusader Kings III: you're dropped into a world with complex factions, deep lore, and no hand-holding. The three narrators function like different great house perspectives — each partial, each unreliable, each essential. If you've spent 80 hours figuring out Crusader Kings' systems, you have exactly the right patience for Midst's first three episodes.</p>
+  </div>
+
+  <div class="src"><a href="https://en.wikipedia.org/wiki/Midst" style="color:var(--shelf-accent)">Wikipedia: Midst</a> · <a href="https://critrole.com/shows/midst/" style="color:var(--shelf-accent)">Critical Role — Midst</a> · <a href="https://critrole.com/unend-season3/" style="color:var(--shelf-accent)">UNEND Season 3</a></div>
+
+  <hr class="divider inset" style="background:rgba(255,255,255,.08);margin:40px 0;">
+
+  <!-- ── SHOW 2: VICTORIOCITY ── -->
+  <h3 style="color:white;font-size:28px;font-weight:700;margin-bottom:4px;">02. Victoriocity <span style="color:#A4A8B6;font-size:16px;font-weight:400;font-family:'DM Sans',sans-serif;vertical-align:middle;margin-left:8px;">The History Crossover</span></h3>
+  <div style="font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(255,255,255,.4);margin-bottom:20px;">Detective Comedy · Steampunk Victorian · 3 Seasons Complete · Apple 4.9★ (610 ratings)</div>
+
+  <div class="entry-bullets" style="border-color:var(--shelf-accent);">
+    <li>Dan Jones + Tom Holland + Terry Pratchett + BBC Radio 4 detective serial = Victoriocity</li>
+    <li>Set in "Even Greater London" — a Victorian city that's somehow the size of a continent</li>
+    <li>35 episodes, all complete, all quality. Unlike Midnight Burger, it <em>never</em> loses the plot.</li>
+  </div>
+
+  <p>For someone who reads Dan Jones on medieval power politics for fun, then watches Peacemaker for irreverent genre comedy — Victoriocity is the exact intersection you didn't know existed. Inspector Archibald Fleet and journalist Clara Entwhistle navigate a series of increasingly absurd murders in an alternate 1887 London where the city has somehow expanded to cover most of a continent, steam technology has gone baroque, and the conspiracies are of genuinely impossible proportions.</p>
+
+  <div class="sidebar-float" style="border-color:var(--shelf-accent);">
+    <div class="sidebar-title" style="color:var(--shelf-accent)">Why Unlike Midnight Burger</div>
+    <ul>
+      <li>Episodes are long (45-65 min) but <strong>disciplined</strong> — every minute earns its place</li>
+      <li>The mystery plotting is watertight. No season feels like filler.</li>
+      <li>3 seasons, all complete. Quality consistent throughout.</li>
+      <li>Ended on its own terms in Oct 2024.</li>
+    </ul>
+  </div>
+
+  <p>The writing, voice acting, and production quality are uniformly outstanding — the Reddit consensus places it consistently alongside Wolf 359 as a benchmark of what the medium can do. Where Wolf 359 is earnest sci-fi with growing emotional depth, Victoriocity is knowing and witty without ever losing its heart. Chris and Jen Sugden have built a world with genuine internal logic and extraordinary charm.</p>
+
+  <p>The main risk: at 45-65 minutes per episode, you're not doing this on a five-minute walk. But if you're the kind of person who reads 800-page fantasy novels for fun — which you are — a 65-minute episode with a compelling mystery is not a hardship.</p>
+
+  <div class="pull-quote reveal" style="border-color:var(--shelf-accent);">
+    <p>"The writing, voice acting, production, worldbuilding — the show never disappoints."</p>
+    <cite>— r/audiodrama, frequently cited in Victoriocity recommendation threads</cite>
+  </div>
+
+  <div style="margin:16px 0;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+    <span style="font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(255,255,255,.5);">Quality Rating</span>
+    <span class="rating"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span></span>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,.3);">5/5 — Don't Skip</span>
+  </div>
+
+  <div class="src"><a href="https://podcasts.apple.com/us/podcast/victoriocity/id1293184351" style="color:var(--shelf-accent)">Apple Podcasts: Victoriocity</a></div>
+
+  <hr class="divider inset" style="background:rgba(255,255,255,.08);margin:40px 0;">
+
+  <!-- ── SHOW 3: MALEVOLENT ── -->
+  <h3 style="color:white;font-size:28px;font-weight:700;margin-bottom:4px;">03. Malevolent <span style="color:#A4A8B6;font-size:16px;font-weight:400;font-family:'DM Sans',sans-serif;vertical-align:middle;margin-left:8px;">The Dark Horse</span></h3>
+  <div style="font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(255,255,255,.4);margin-bottom:20px;">Lovecraftian Horror · Mystery · Series 2 Launched April 1, 2026 · Apple 4.9★ (1,900 ratings)</div>
+
+  <img class="hero-img reveal" src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=900&q=80" alt="Dark atmospheric corridor — Lovecraftian horror mood" style="aspect-ratio:16/6;object-fit:cover;">
+
+  <div class="entry-stat" style="color:var(--shelf-accent);">1,900+</div>
+  <div class="entry-stat-context" style="color:rgba(255,255,255,.4);">Apple Podcast ratings — one of the genre's most loved shows</div>
+
+  <p>Arkham private investigator Arthur Lester wakes to find he has no memory — and an eerie voice inside his head that only he can hear. Together (unwillingly) they navigate Lovecraftian horrors across 1920s New England. Harlan Guthrie plays both Arthur and the entity in what amounts to a two-hander acted entirely by one performer — and the vocal range is extraordinary.</p>
+
+  <p>The choose-your-own-adventure element (Patreon listeners vote on key decisions) adds a genuinely collaborative quality you can feel in the narrative — choices have real weight, and the show doesn't pretend otherwise. For a Malazan reader: the lore builds slowly across six seasons of Series 1 into something enormous, and the cosmic horror has the same quality as the Crippled God arc — vast forces operating beyond human comprehension, with human characters caught in the machinery. For a Cosmere reader: the magic system has strict internal logic that rewards close attention.</p>
+
+  <div class="compare-panel reveal">
+    <div class="compare-side left">
+      <div class="compare-label">If Midnight Burger burned you out...</div>
+      <h4>We Fix Space Junk</h4>
+      <p>Episodic. British. 25-minute episodes. Each story wraps. No commitment to a 60+ episode serialised arc. Comedy that doesn't overstay its welcome.</p>
+      <div class="compare-stat">25 min</div>
+    </div>
+    <div class="compare-side right">
+      <div class="compare-label">If you want the deep serialised experience...</div>
+      <h4>Malevolent</h4>
+      <p>Six seasons of dense lore payoff. Series 2 just launched — you can binge Series 1 then listen weekly. The depth of Wolf 359 with a tighter scope.</p>
+      <div class="compare-stat" style="color:var(--turf);">60+ eps</div>
+    </div>
+  </div>
+
+  <p><strong>Important timing note:</strong> Malevolent: Threshold — Series 2 — launched on April 1, 2026. You can binge all of Series 1 (six seasons, 60+ episodes) right now, and then join the weekly release rhythm for Series 2. This is the ideal window.</p>
+
+  <details class="collapsible" style="border-color:rgba(255,255,255,.12);">
+    <summary>What does a typical Malevolent episode look like?</summary>
+    <div class="collapsible-content" style="color:rgba(255,255,255,.7);">
+      <p>Most episodes run 30-60 minutes. They open with Arthur navigating a new situation — often a location with clear Lovecraftian significance (an estate, a hospital, a cursed archive). The entity provides commentary, context, and occasionally warnings Arthur doesn't listen to. Dialogue between the two carries most of the character work. Sound design is excellent — ambient dread rather than jump scares. Each episode moves the mystery forward while adding lore. The Patreon choice announcement at the episode's end (for Series 1) creates a sense of communal tension that persists even when listening to back-catalogue.</p>
+    </div>
+  </details>
+
+  <div style="margin:16px 0;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+    <span style="font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(255,255,255,.5);">Horror Intensity</span>
+    <span class="rating"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span></span>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,.3);">Atmospheric, not gratuitous</span>
+  </div>
+
+  <div class="src"><a href="https://www.malevolent.ca/episodes/" style="color:var(--shelf-accent)">Malevolent official site</a> · <a href="https://rustyquill.com/show/malevolent/" style="color:var(--shelf-accent)">Rusty Quill</a></div>
+
+  <hr class="divider inset" style="background:rgba(255,255,255,.08);margin:40px 0;">
+
+  <!-- ── SHOW 4: WE FIX SPACE JUNK ── -->
+  <h3 style="color:white;font-size:28px;font-weight:700;margin-bottom:4px;">04. We Fix Space Junk <span style="color:#A4A8B6;font-size:16px;font-weight:400;font-family:'DM Sans',sans-serif;vertical-align:middle;margin-left:8px;">Hitchhiker's Successor</span></h3>
+  <div style="font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(255,255,255,.4);margin-bottom:20px;">Sci-Fi Comedy · British · 73 Episodes · Apple 4.8★ (645 ratings) · Battle Bird Productions</div>
+
+  <p>Kilner is a seasoned smuggler. Samantha is a reluctant fugitive. Together they travel the galaxy doing odd jobs while dodging Automnicon — a dystopian megacorp that makes the Star Wars Empire look like a moderately unreasonable landlord. Each episode is a new planet, a new client, a new problem: bodybuilder planets, prison planets, sentient popcorn people. Twenty-five minutes. Done. On to the next.</p>
+
+  <p>Explicitly described as following in the footsteps of Douglas Adams' Hitchhiker's Guide to the Galaxy — and the DNA is obvious, from the absurdist worldbuilding to the very British deadpan delivery. It has the same irreverent-but-with-substance energy as Peacemaker or Creature Commandos. Silly on the surface. Real teeth underneath — the corporate dystopia satire is sharper than most serious sci-fi manages. Beth Crane's writing respects the audience's intelligence while keeping the tone light enough that you can listen with a 10-year-old.</p>
+
+  <div class="sidebar-float" style="border-color:var(--shelf-accent);">
+    <div class="sidebar-title" style="color:var(--shelf-accent)">The RimWorld Test</div>
+    <ul>
+      <li>RimWorld generates emergent stories: a colonist with bad social skills accidentally starts a riot over a meal</li>
+      <li>We Fix Space Junk does the same thing narratively: situations spiral from sensible premises into wonderful chaos</li>
+      <li>The overarching Automnicon plot = your colony's slow-burn megathread</li>
+    </ul>
+  </div>
+
+  <p>The overarching plot develops slowly — more slowly than a dense serialisation fan might want. But that's the point. If Midnight Burger burned you out on committing to a single sprawling narrative, We Fix Space Junk is the reset. Each episode is complete. You can listen to five in a row or one per week. The format is forgiving in ways that Wolf 359 and Malevolent aren't.</p>
+
+  <div class="pull-quote" style="border-color:var(--shelf-accent);">
+    <p>"The kind of space comedy I've been craving."</p>
+    <cite>— r/audiodrama recommendation thread, cited multiple times</cite>
+  </div>
+
+  <div style="margin:16px 0;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+    <span style="font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(255,255,255,.5);">Accessibility for New Listeners</span>
+    <span class="rating"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span></span>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,.3);">Highest in the list</span>
+  </div>
+
+  <div class="src"><a href="https://podcasts.apple.com/us/podcast/we-fix-space-junk/id1360406263" style="color:var(--shelf-accent)">Apple Podcasts: We Fix Space Junk</a></div>
+
+  <hr class="divider inset" style="background:rgba(255,255,255,.08);margin:40px 0;">
+
+  <!-- ── SHOW 5: ARS PARADOXICA ── -->
+  <h3 style="color:white;font-size:28px;font-weight:700;margin-bottom:4px;">05. Ars Paradoxica <span style="color:#A4A8B6;font-size:16px;font-weight:400;font-family:'DM Sans',sans-serif;vertical-align:middle;margin-left:8px;">The Time-Travel History Show</span></h3>
+  <div style="font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(255,255,255,.4);margin-bottom:20px;">Time-Travel Sci-Fi · Historical Drama · Complete · 36 Episodes + 13 Bonus · Apple 4.7★ (1,300 ratings)</div>
+
+  <div class="entry-quote" style="border-color:var(--shelf-accent);color:rgba(255,255,255,.9);">
+    "I have listened to all of Ars Paradoxica 8 times. Since my first time hearing it, I'd struggled to find another audio-drama with the same level of quality and craftsmanship. Every aspect blows every podcast you'll ever listen to out of the water."
+    <cite>— r/audiodrama listener, in a recommendation thread</cite>
+  </div>
+
+  <p>Dr Sally Grissom accidentally invents time travel and lands on the USS Eldridge in 1943 — the Philadelphia Experiment, rendered as fiction. She gets absorbed into a clandestine government agency that spends the next three decades (and three seasons) trying to manage the consequences. Cold War espionage. Manhattan Project fallout. The butterfly effects of small decisions reverberating across decades of American history.</p>
+
+  <p>For someone who binged History of Rome and Revolutions — this lives in the exact same intellectual space. The way Ars Paradoxica treats historical cause-and-effect as a narrative mechanism will feel immediately familiar. Real events (the Cuban Missile Crisis, the space race) acquire new shadows when you know there's a time-travel agency operating in the background. Mike Duncan's Revolutions examined how revolutionary conditions build over decades; Ars Paradoxica asks what happens when you can't change the conditions because the act of trying changes them differently. The DNA is the same.</p>
+
+  <img class="inline-img reveal" src="https://images.unsplash.com/photo-1454789548928-9efd52dc4031?w=900&q=80" alt="Vintage machinery — time travel aesthetic" style="width:100%;aspect-ratio:16/6;object-fit:cover;">
+  <div class="caption">The Philadelphia Experiment, the Cold War, and a physicist from the future who keeps making everything worse.</div>
+
+  <p>Created by Mischa Stanton and Daniel Manning — who share production DNA with the Wolf 359 network — the craft shows. The audio quality, the performance quality, the writing quality: all peak audio drama. It's the show you point someone to when they ask "but can podcasts actually be as good as TV?" The answer is yes, and here's 49 episodes of evidence.</p>
+
+  <details class="collapsible" style="border-color:rgba(255,255,255,.12);">
+    <summary>Start here: S1E1 "Hypothesis"</summary>
+    <div class="collapsible-content" style="color:rgba(255,255,255,.7);">
+      <p>The first episode is titled "Hypothesis" and drops you into Sally Grissom's disorientation immediately — she's on a US Navy vessel in 1943 and has absolutely no idea how she got there. No lengthy prologue. No worldbuilding dump. Within 30 minutes you understand the premise, you understand Sally, and you understand that things are going to get significantly more complicated. The Philadelphia Experiment backdrop is deployed cleverly — familiar enough to be intriguing, fictional enough to take liberties. If you love History of Rome, you'll recognise the pleasure of historical texture used as story fuel.</p>
+    </div>
+  </details>
+
+  <div class="src"><a href="https://en.wikipedia.org/wiki/Ars_Paradoxica" style="color:var(--shelf-accent)">Wikipedia: Ars Paradoxica</a> · <a href="https://podcasts.apple.com/us/podcast/ars-paradoxica/id1006173000" style="color:var(--shelf-accent)">Apple Podcasts</a></div>
+
+  <hr class="divider inset" style="background:rgba(255,255,255,.08);margin:40px 0;">
+
+  <!-- ── SHOW 6: CRY HAVOC ── -->
+  <h3 style="color:white;font-size:28px;font-weight:700;margin-bottom:4px;">06. Cry Havoc! Ask Questions Later <span style="color:#A4A8B6;font-size:16px;font-weight:400;font-family:'DM Sans',sans-serif;vertical-align:middle;margin-left:8px;">The Wildcard</span></h3>
+  <div style="font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(255,255,255,.4);margin-bottom:20px;">Ancient Roman Comedy · Drama · 20 Episodes · Apple 4.9★ · IMDb 8.7/10 · Rusty Quill Production</div>
+
+  <div class="entry-question" style="color:rgba(255,255,255,.85);">What if Tom Holland's <em>Rubicon</em> was a sitcom?</div>
+
+  <p>David K. Barnes' dramatic comedy picks up two years after Caesar's assassination. Cleopatra is visiting Rome. Octavian and Antony cannot stand each other. Everyone is scheming, nobody trusts anyone, and everything is perpetually on the brink of collapse. It's basically History of Rome: The Sitcom — which is the highest possible recommendation for someone who has listened to Mike Duncan's series and wished it had more jokes.</p>
+
+  <p>Produced by Rusty Quill — the network behind Magnus Archives and Stellar Firma — which is a quality guarantee. Rusty Quill does not put out bad work. The production values match anything in the network's catalogue. The political scheming will feel immediately familiar to anyone who plays Crusader Kings III: the alliances, the factions, the moments when two incompatible people are forced into the same room and you watch them navigate it. Clean rating makes it family-appropriate, which is an unusual bonus for the genre.</p>
+
+  <img class="inline-img reveal" src="https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=900&q=80" alt="Ancient Roman architecture — Colosseum" style="width:100%;aspect-ratio:16/6;object-fit:cover;">
+
+  <div class="dyk" style="background:rgba(212,160,60,.06);border-color:rgba(212,160,60,.2);">
+    <div class="dyk-title" style="color:var(--shelf-accent);">The Rubicon Connection</div>
+    <p style="color:rgba(255,255,255,.75);">Tom Holland's Rubicon covers the collapse of the Roman Republic through the power struggle between Caesar, Pompey, and Crassus. Cry Havoc picks up exactly where Rubicon ends — two years after Caesar's assassination, with Octavian and Antony fighting over the inheritance. If you've read the book, you'll recognise every character and political dynamic. If you haven't, the show is fully self-contained and deeply funny regardless.</p>
+  </div>
+
+  <div class="src"><a href="https://podcasts.apple.com/us/podcast/cry-havoc-ask-questions-later/id1689790776" style="color:var(--shelf-accent)">Apple Podcasts: Cry Havoc! Ask Questions Later</a></div>
+
+</section>
+
+<!-- ══════ BREATHER ══════ -->
+<div class="breather">
+  <div class="breather-stat">6 mistakes</div>
+  <div class="breather-context">That most new audio drama listeners make</div>
+  <div class="breather-teaser">Some are obvious. Some will surprise you.</div>
+</div>
+
+<!-- ══════ COMMON MISTAKES ══════ -->
+<hr class="divider dv-world">
+<section class="sec world-section" id="mistakes">
+  <div class="sec-watermark">Mistakes</div>
+  <div class="sec-gradient-overlay"></div>
+  <span class="section-label" style="color:var(--rose)">Common Mistakes — Don't Do These</span>
+  <h2>Six Things That Kill New Listeners</h2>
+
+  <img class="hero-img reveal" src="https://images.unsplash.com/photo-1484704849700-f032a568e944?w=900&q=80" alt="Overwhelmed listener with headphones" style="aspect-ratio:16/5;object-fit:cover;">
+
+  <div class="timeline">
+    <div class="timeline-node reveal">
+      <div class="timeline-date">Mistake 01</div>
+      <div class="timeline-content">
+        <strong>Starting with the biggest shows and burning out</strong>
+        <p style="font-family:'DM Sans',sans-serif;font-size:14px;color:var(--slate);margin-top:6px;">Don't open with Wolf 359's 61-episode run. You've already seen how serialised audio drama can stretch — Midnight Burger after S3 is your reference point. Start with something complete and focused (Ars Paradoxica: 36 episodes, done, exceptional) or something episodic (We Fix Space Junk) so each session ends with a sense of closure.</p>
+      </div>
+    </div>
+    <div class="timeline-node reveal">
+      <div class="timeline-date">Mistake 02</div>
+      <div class="timeline-content">
+        <strong>Judging a show by episode one</strong>
+        <p style="font-family:'DM Sans',sans-serif;font-size:14px;color:var(--slate);margin-top:6px;">Audio dramas need 3-4 episodes to establish their world, their characters, and their tonal register. Midst sounds genuinely strange at first — three narrators, a world that doesn't explain itself, a structure that seems scattered. Malevolent's opening feels slow. Give every show on this list at minimum four episodes before deciding. The payoff is consistently enormous if you push through.</p>
+      </div>
+    </div>
+    <div class="timeline-node reveal">
+      <div class="timeline-date">Mistake 03</div>
+      <div class="timeline-content">
+        <strong>Listening at 1.5x or 2x speed</strong>
+        <p style="font-family:'DM Sans',sans-serif;font-size:14px;color:var(--slate);margin-top:6px;">This isn't a history lecture. The sound design, the music, the deliberate pacing — these ARE the experience. Speeding up Malevolent destroys the atmospheric dread that makes it work. Speeding up Victoriocity loses the comic timing that makes the jokes land. 1x speed only. If you find yourself wanting to rush it, you're probably in the wrong mood for audio drama that session — switch to a news podcast and come back later.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="pull-quote centered reveal" style="margin:32px 0;">
+    <p>"The best audio dramas aren't trying to replace TV. They're doing something TV literally cannot — putting you inside a character's head with nothing but sound."</p>
+    <cite>— r/audiodrama, on why the medium works</cite>
+  </div>
+
+  <div class="timeline">
+    <div class="timeline-node reveal">
+      <div class="timeline-date">Mistake 04</div>
+      <div class="timeline-content">
+        <strong>Binge-racing through active shows</strong>
+        <p style="font-family:'DM Sans',sans-serif;font-size:14px;color:var(--slate);margin-top:6px;">UNEND Season 3 started April 8, 2026. Malevolent: Threshold launched April 1. Resist the urge to catch up in a single weekend. The anticipation between weekly episodes — the community speculation, the fan theories, the 24-hour period after an episode drops when everyone is processing — is part of the experience. Binge the back-catalogue. Then slow down.</p>
+      </div>
+    </div>
+    <div class="timeline-node reveal">
+      <div class="timeline-date">Mistake 05</div>
+      <div class="timeline-content">
+        <strong>Skipping bonus episodes without checking them first</strong>
+        <p style="font-family:'DM Sans',sans-serif;font-size:14px;color:var(--slate);margin-top:6px;">Midnight Burger's bonus and side content felt thin — noted. But don't generalise that experience. Ars Paradoxica's 13 bonus episodes contain some of its finest character work and worldbuilding. Check the community (r/audiodrama) for a show's listening order guide before assuming anything marked "bonus" is skippable.</p>
+      </div>
+    </div>
+    <div class="timeline-node reveal">
+      <div class="timeline-date">Mistake 06</div>
+      <div class="timeline-content">
+        <strong>Only listening to sci-fi because that's what you started with</strong>
+        <p style="font-family:'DM Sans',sans-serif;font-size:14px;color:var(--slate);margin-top:6px;">Your favourite non-fiction podcasts are History of Rome and Revolutions. You read Tom Holland and Dan Jones for pleasure. Victoriocity and Cry Havoc exist. Do not ignore them because they're not Wolf 359 derivatives. The history-adjacent picks in this list are just as good — and Cry Havoc is funnier than anything in the sci-fi column.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ BREATHER ══════ -->
+<div class="breather">
+  <div class="breather-stat">7 days</div>
+  <div class="breather-context">One show, one episode, one day at a time</div>
+  <div class="breather-teaser">The Signal's structured entry plan — no overwhelm, no commitment</div>
+</div>
+
+<!-- ══════ ONE-WEEK PLAN ══════ -->
+<hr class="divider dv-session">
+<section class="sec session-section" id="plan">
+  <div class="sec-watermark">Week</div>
+  <span class="section-label" style="color:var(--session-accent)">One-Week Plan — A Structured Entry</span>
+  <h2>Your First Seven Listening Sessions</h2>
+  <p>You don't need to binge everything. Here's a structured week that introduces each tonal register without commitment. By Sunday you'll know which one owns you.</p>
+
+  <img class="inline-img reveal" src="https://images.unsplash.com/photo-1526256262350-7da7584cf5eb?w=900&q=80" alt="Calendar and planning" style="width:100%;aspect-ratio:16/5;object-fit:cover;border-radius:6px;margin-bottom:24px;">
+
+  <div class="timeline">
+    <div class="timeline-node reveal">
+      <div class="timeline-date">Monday</div>
+      <div class="timeline-content">
+        <strong>Midst — Episodes 1–3</strong>
+        <p style="font-family:'DM Sans',sans-serif;font-size:14px;color:var(--slate);margin-top:6px;">Download Midst. Listen to episodes 1, 2, and 3. The three-narrator format will feel unusual — possibly frustrating. That's normal. The world doesn't explain itself. Keep going. The fragments are assembling into something coherent even when it doesn't feel like it.</p>
+      </div>
+    </div>
+    <div class="timeline-node reveal">
+      <div class="timeline-date">Tuesday</div>
+      <div class="timeline-content">
+        <strong>Midst — Episodes 4–6</strong>
+        <p style="font-family:'DM Sans',sans-serif;font-size:14px;color:var(--slate);margin-top:6px;">By episode four the world clicks. You'll know by the end of episode five whether you want to binge the rest or pace yourself. If you're hooked, continue at your own pace. If it's not working, that's fine — you've given it a genuine chance. Move to Wednesday.</p>
+      </div>
+    </div>
+    <div class="timeline-node reveal">
+      <div class="timeline-date">Wednesday</div>
+      <div class="timeline-content">
+        <strong>Victoriocity — S1E1</strong>
+        <p style="font-family:'DM Sans',sans-serif;font-size:14px;color:var(--slate);margin-top:6px;">Completely different tone. Comedy detective fiction. Victorian steampunk. Fleet and Entwhistle. The British humour is immediate — you'll know within 20 minutes whether the register suits you. A longer episode (45-65 min) so give it a proper sitting: commute, gym, evening.</p>
+      </div>
+    </div>
+    <div class="timeline-node reveal">
+      <div class="timeline-date">Thursday</div>
+      <div class="timeline-content">
+        <strong>We Fix Space Junk — S1E1</strong>
+        <p style="font-family:'DM Sans',sans-serif;font-size:14px;color:var(--slate);margin-top:6px;">The most accessible show on the list. 25 minutes. You will know within 15 minutes if it's for you. Either it clicks immediately (the British deadpan, the Adams-esque absurdism, Kilner's weary competence) or it doesn't. There is no middle ground. No shame in either outcome.</p>
+      </div>
+    </div>
+    <div class="timeline-node reveal">
+      <div class="timeline-date">Friday</div>
+      <div class="timeline-content">
+        <strong>Ars Paradoxica — S1E1 "Hypothesis"</strong>
+        <p style="font-family:'DM Sans',sans-serif;font-size:14px;color:var(--slate);margin-top:6px;">The History of Rome test. 1943. The USS Eldridge. A physicist who accidentally invented time travel. If you love Mike Duncan's podcast, this will feel like home within minutes. Listen on a commute. Pay attention to what the show does with its historical texture.</p>
+      </div>
+    </div>
+    <div class="timeline-node reveal">
+      <div class="timeline-date">Saturday</div>
+      <div class="timeline-content">
+        <strong>Malevolent — Part 1 (with proper setup)</strong>
+        <p style="font-family:'DM Sans',sans-serif;font-size:14px;color:var(--slate);margin-top:6px;">Put headphones on. Turn the lights off. Don't do this on the train — do it at home, evening, with nothing competing for attention. Give it the atmosphere it deserves. The horror is not gratuitous. It is atmospheric. Let it be.</p>
+      </div>
+    </div>
+    <div class="timeline-node reveal">
+      <div class="timeline-date">Sunday</div>
+      <div class="timeline-content">
+        <strong>Pick your winner. Commit to a first season.</strong>
+        <p style="font-family:'DM Sans',sans-serif;font-size:14px;color:var(--slate);margin-top:6px;">By now you know which tone suits your current mood. Pick the show that's been pulling at you all week and commit to finishing its first season. You've tested five different registers. You know what you want. Bonus: if Ancient Rome is calling, add Cry Havoc! S1E1 to this session — it's only 30 minutes and it's immediately accessible.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ WHERE TO GO DEEPER ══════ -->
+<hr class="divider dv-history">
+<section class="sec history-section sec-opener" id="deeper">
+  <div class="sec-watermark">Deeper</div>
+  <div class="opener-band"></div>
+  <span class="section-label" style="color:var(--hist-accent)">Where to Go Deeper</span>
+  <h2>Shows Just Outside the Top Six</h2>
+  <p style="color:#5C4A20;">These five shows didn't make the top list for specific reasons — but each is outstanding in its lane and directly relevant to your tastes.</p>
+
+  <div class="also-cards reveal-group">
+    <div class="also-card reveal">
+      <h4>Stellar Firma</h4>
+      <p>Rusty Quill sci-fi comedy. Planetary designer Trexel Geistman and his clone assistant Hartwick design bespoke planets for clients. Semi-improvised. 76+ episodes. If you loved the absurdist worldbuilding of We Fix Space Junk and want more. Apple 4.9★ (735 ratings).</p>
+      <span class="badge">Active · Rusty Quill</span>
+    </div>
+    <div class="also-card reveal">
+      <h4>The White Vault</h4>
+      <p>Found-footage horror. Repair team sent to a remote Svalbard outpost. 5 seasons + Goshawk spinoff. Concluded March 2026. 4.7★ (4,500 ratings). If you want Malevolent-style atmosphere without the Lovecraftian lore overhead. Pure dread from episode one.</p>
+      <span class="badge">Complete · 4.7★</span>
+    </div>
+    <div class="also-card reveal">
+      <h4>Mission to Zyxx</h4>
+      <p>Fully improvised sci-fi comedy. Ambassadors dispatched to the "ass end of space." 5 seasons, complete. Apple 4.9★ (3,800 ratings). If you want Star Wars parody energy and love improv. Closest thing to a prestige improvised comedy podcast that exists.</p>
+      <span class="badge">Complete · 4.9★</span>
+    </div>
+    <div class="also-card reveal">
+      <h4>The Bright Sessions</h4>
+      <p>Therapy sessions for people with superpowers. 56 episodes + spinoffs. 4 seasons complete. First three seasons exceptional; S4 divisive. 20-40 min episodes — the shortest on this extended list. Good if you want something more intimate and character-driven without genre spectacle.</p>
+      <span class="badge">Complete · Character Drama</span>
+    </div>
+    <div class="also-card reveal">
+      <h4>The Amelia Project</h4>
+      <p>Black comedy. A secret agency that fakes clients' deaths. Episodic with emerging larger narrative. Apple 4.8★ (1,700 ratings). If Victoriocity clicked for the irreverent-but-smart comedy register — Amelia Project has similar energy in a more modern setting. Standalone-friendly.</p>
+      <span class="badge">Active · 4.8★</span>
+    </div>
+    <div class="also-card reveal">
+      <h4>Magnus Archives</h4>
+      <p>The flagship Rusty Quill show. 200 episodes. Horror anthology that becomes something far larger. Not on the main list because the commitment is massive and the horror is genuinely intense — but if Malevolent lands and you want the full Rusty Quill experience, this is it.</p>
+      <span class="badge">Complete · Rusty Quill Flagship</span>
+    </div>
+  </div>
+
+  <div class="big-number-row reveal" style="margin:32px 0;">
+    <div class="big-number">
+      <div class="num" style="color:var(--hist-accent);">100k+</div>
+      <div class="num-label" style="color:#5C4A20;">r/audiodrama subscribers</div>
+    </div>
+    <div class="big-number">
+      <div class="num" style="color:var(--hist-accent);">500+</div>
+      <div class="num-label" style="color:#5C4A20;">Active audio drama shows in 2026</div>
+    </div>
+  </div>
+
+  <h3>Resources — Finding Your Next Show</h3>
+
+  <div class="sidebar reveal">
+    <div class="sidebar-title" style="color:var(--hist-accent)">Where the Community Lives</div>
+    <ul>
+      <li><strong><a href="https://reddit.com/r/audiodrama" style="color:var(--hist-accent)">r/audiodrama</a></strong> — The best recommendation community. Active, opinionated, curated lists. Post "just finished Wolf 359, what next?" and you'll have 40 responses in an hour.</li>
+      <li><strong><a href="https://audiofiction.uk" style="color:var(--hist-accent)">audiofiction.uk</a></strong> — Filterable database of audio dramas by genre, completion status, episode length, content warnings. The IMDB of the medium.</li>
+      <li><strong>Audio Fiction Podcast</strong> — Meta-podcast that reviews and showcases new audio dramas. Good for staying current without having to trawl release feeds.</li>
+      <li><strong>Radio Drama Revival</strong> — Longer-form reviews and creator interviews. More academic but excellent for discovering shows outside the Reddit algorithm.</li>
+      <li><strong>Apple Podcasts Fiction Charts</strong> — Browse by subgenre: sci-fi, mystery, horror, comedy. Quality-filters by rating and listen count. Imperfect but useful.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ══════ BREATHER ══════ -->
+<div class="breather">
+  <div class="breather-stat">Meanwhile...</div>
+  <div class="breather-context">The week's news, briefly — World, Gaming, Entertainment, Sport</div>
+  <div class="breather-teaser">Also: UNEND S3 is here. Malevolent: Threshold launched. It's a good week to be an audio drama fan.</div>
+</div>
+
+<!-- ══════ MEANWHILE... ══════ -->
+<hr class="divider dv-other">
+<section class="sec world-section" id="meanwhile">
+  <div class="sec-watermark">Meanwhile</div>
+  <div class="sec-gradient-overlay"></div>
+  <span class="section-label" style="color:var(--rose)">Meanwhile... — The Week's News</span>
+  <h2>What Else Happened</h2>
+  <p>The essential news from the week ending 5 April 2026 — curated to your interests. Audio drama news up top, then the world.</p>
+
+  <div class="also" style="border-top:none;margin-top:0;padding-top:0;">
+    <div class="also-title">Audio Drama</div>
+    <ul class="also-list">
+      <li class="tier-hot">
+        <strong>Malevolent: Threshold (Series 2) launches</strong> — The sequel to the acclaimed Lovecraftian horror audio drama began on April 1, 2026. If you haven't started Series 1 yet, now is the perfect moment to binge and catch up. <a href="https://rustyquill.com/show/malevolent/" style="color:var(--rose)">Rusty Quill</a>
+      </li>
+      <li class="tier-hot">
+        <strong>UNEND Season 3 premieres April 8</strong> — The Midst universe sequel returns on Critical Role's Metapigeon, with weekly Wednesday episodes. Binge Midst and UNEND S1+2 now, then tune in live. <a href="https://critrole.com/unend-season3/" style="color:var(--rose)">Critical Role</a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="also">
+    <div class="also-title">World</div>
+    <ul class="also-list">
+      <li class="tier-hot">
+        <strong>US escalates Iran operations</strong> — Trump vowed to continue strikes for 2-3 weeks in a primetime address. Oil prices soared, the Strait of Hormuz effectively shut down, and multiple European nations refused basing rights. <a href="https://www.democracynow.org/2026/4/1/headlines" style="color:var(--rose)">Democracy Now</a>
+      </li>
+      <li class="tier-hot">
+        <strong>Iran retaliates against Gulf states</strong> — Drone attacks on Kuwait airport, intercepted drones over Saudi Arabia, fire at a Bahrain facility, and a tanker attacked off Qatar. The Gulf is genuinely unstable. <a href="https://www.democracynow.org/2026/4/1/headlines" style="color:var(--rose)">Democracy Now</a>
+      </li>
+      <li class="tier-warm">
+        <strong>Trump threatens NATO withdrawal</strong> — Rubio publicly questioned whether the alliance still serves US interests after European nations denied overflight and basing access for Iran operations. The subtext was not subtle. <a href="https://www.democracynow.org/2026/4/1/headlines" style="color:var(--rose)">Democracy Now</a>
+      </li>
+      <li class="tier-warm">
+        <strong>Trump fires AG Pam Bondi</strong> — Second major cabinet shakeup in weeks. Reported reasons include failed political prosecutions and handling of the Epstein files. The administration is not stable. <a href="https://www.youtube.com/watch?v=oQvME_5ePI8" style="color:var(--rose)">ABC News</a>
+      </li>
+      <li class="tier-note">
+        <strong>Artemis II orbits Earth</strong> — The crew completed a full day orbiting Earth, a critical milestone on the path to the lunar mission. A reminder that actual human space exploration is happening while we're all watching it via podcast. <a href="https://www.youtube.com/watch?v=oQvME_5ePI8" style="color:var(--rose)">ABC News</a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="also">
+    <div class="also-title">Gaming &amp; Tech</div>
+    <ul class="also-list">
+      <li class="tier-hot">
+        <strong>Starfield hits PS5 April 7</strong> — Bethesda's space RPG finally arrives on PlayStation with DualSense features and PS5 Pro enhancements. If you haven't played it, the PS5 version is the best place to start. <a href="https://tech.yahoo.com/gaming/articles/biggest-game-releases-april-2026-190000433.html" style="color:var(--rose)">GameSpot via Yahoo</a>
+      </li>
+      <li class="tier-hot">
+        <strong>Pokémon Champions launches April 8</strong> — Battle-focused Pokémon game for Switch and Switch 2 with no exploration grind. Designed specifically around competitive play. Relevant if there's a 10-year-old in the house. <a href="https://www.pokemon.com/us/pokemon-news/pokemon-champions-releases-on-nintendo-switch-and-nintendo-switch-2-on-april-8-2026" style="color:var(--rose)">Pokemon.com</a>
+      </li>
+      <li class="tier-warm">
+        <strong>Hades II comes to PS5/Xbox April 14</strong> — Supergiant's acclaimed roguelike finally leaves PC exclusivity. If you want the RimWorld "one more run" compulsion in a tighter package, this is it. <a href="https://www.gamingbible.com/news/april-2026-video-game-releases-927705-20260331" style="color:var(--rose)">GamingBible</a>
+      </li>
+      <li class="tier-warm">
+        <strong>Star Fox returns for Switch 2</strong> — Insider NateTheHate says a classic-style Star Fox game is coming summer 2026, with an announcement expected this month. The Star Wars/space shooter crossover audience will want this. <a href="https://artthreat.net/15633-76013-star-fox-returns-this-summer-nintendo-set-to-announce-classic-style-switch-2-gam/" style="color:var(--rose)">Art Threat</a>
+      </li>
+      <li class="tier-note">
+        <strong>The Witcher 4 tech demo at GDC</strong> — CDPR and NVIDIA showed RTX Mega Geometry running at 80fps/4K on an RTX 5090, with full path tracing. Filed under: games that will require a hardware upgrade. <a href="https://www.dsogaming.com/videotrailer-news/take-a-look-at-the-witcher-4-gdc-2026-rtx-mega-geometry-foliage-tech-demo-running-on-an-nvidia-rtx-5090/" style="color:var(--rose)">DSOGaming</a>
+      </li>
+      <li class="tier-note">
+        <strong>Pragmata finally arrives April 17</strong> — Capcom's long-delayed sci-fi adventure gets its release date after years of delays. Cautious optimism. <a href="https://www.gamingbible.com/news/april-2026-video-game-releases-927705-20260331" style="color:var(--rose)">GamingBible</a>
+      </li>
+      <li class="tier-note">
+        <strong>Saros (Housemarque) launches April 30</strong> — From the Returnal studio, a new bullet-hell roguelike for PS5. If Returnal's combat loop worked for you, this is the obvious next move. <a href="https://tech.yahoo.com/gaming/articles/biggest-game-releases-april-2026-190000433.html" style="color:var(--rose)">GameSpot via Yahoo</a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="also">
+    <div class="also-title">Entertainment</div>
+    <ul class="also-list">
+      <li class="tier-hot">
+        <strong>Star Wars: Maul — Shadow Lord premieres April 6</strong> — New Disney+ Star Wars series. Canon placement TBC but the character is a draw. The Signal will have full coverage next issue. <a href="https://www.boston.com/culture/streaming/2026/04/01/new-movies-tv-streaming-april-2026/" style="color:var(--rose)">Boston.com</a>
+      </li>
+      <li class="tier-warm">
+        <strong>Beef Season 2 on Netflix April 16</strong> — Steven Yeun and Ali Wong's anthology series returns. Season 1 was exceptional. Managing expectations accordingly. <a href="https://www.boston.com/culture/streaming/2026/04/01/new-movies-tv-streaming-april-2026/" style="color:var(--rose)">Boston.com</a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="also">
+    <div class="also-title">Sport</div>
+    <ul class="also-list">
+      <li class="tier-warm">
+        <strong>Serie A Matchday 31 — this Saturday</strong> — Juventus vs Genoa, Napoli vs AC Milan, Inter vs Roma among the weekend fixtures. The title race remains open with Napoli and Inter in contention. <a href="https://www.footballwebpages.co.uk/italian-serie-a/fixtures-results/april" style="color:var(--rose)">Football Web Pages</a>
+      </li>
+      <li class="tier-note">
+        <strong>The Masters begins April 10</strong> — Augusta National. Golf's most prestigious major. Not your primary sport but worth noting for the cultural saturation that follows.
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ══════ FOOTER ══════ -->
+<footer class="footer">
+  <div class="footer-brand">The Signal<span>.</span></div>
+  <div class="footer-sub">Starter Kit Special · Issue #4 · 30 March — 5 April 2026</div>
+  <div style="font-family:'DM Sans',sans-serif;font-size:12px;color:rgba(255,255,255,.2);margin-top:16px;line-height:1.6;">
+    A Sunday morning magazine for the curious.<br>
+    Audio drama picks: <a href="https://en.wikipedia.org/wiki/Midst" style="color:rgba(255,255,255,.25)">Midst</a> · <a href="https://podcasts.apple.com/us/podcast/victoriocity/id1293184351" style="color:rgba(255,255,255,.25)">Victoriocity</a> · <a href="https://rustyquill.com/show/malevolent/" style="color:rgba(255,255,255,.25)">Malevolent</a> · <a href="https://podcasts.apple.com/us/podcast/we-fix-space-junk/id1360406263" style="color:rgba(255,255,255,.25)">We Fix Space Junk</a> · <a href="https://podcasts.apple.com/us/podcast/ars-paradoxica/id1006173000" style="color:rgba(255,255,255,.25)">Ars Paradoxica</a> · <a href="https://podcasts.apple.com/us/podcast/cry-havoc-ask-questions-later/id1689790776" style="color:rgba(255,255,255,.25)">Cry Havoc!</a>
+  </div>
+</footer>
+
+</div><!-- .mag -->
+
+<button class="back-to-top" id="backToTop" title="Back to top">↑</button>
+
+<script>
+// Reading progress bar
+(function() {
+  const bar = document.getElementById('progressBar');
+  if (!bar) return;
+  window.addEventListener('scroll', function() {
+    const h = document.documentElement;
+    const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    bar.style.width = Math.min(pct, 100) + '%';
+  }, { passive: true });
+})();
+
+// Back to top button visibility + click handler
+(function() {
+  const btn = document.getElementById('backToTop') || document.getElementById('btt');
+  if (!btn) return;
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 800) {
+      btn.classList.add('visible');
+    } else {
+      btn.classList.remove('visible');
+    }
+  }, { passive: true });
+  btn.addEventListener('click', function(e) {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+
+// IntersectionObserver for .reveal elements
+(function() {
+  var els = document.querySelectorAll('.reveal');
+  if (!els.length || !('IntersectionObserver' in window)) {
+    els.forEach(function(el) { el.classList.add('visible'); });
+    return;
+  }
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  els.forEach(function(el) { observer.observe(el); });
+})();
+
+// Count-up animation for .count-up elements
+(function() {
+  var els = document.querySelectorAll('.count-up');
+  if (!els.length || !('IntersectionObserver' in window)) return;
+
+  function animateCount(el) {
+    var target = el.getAttribute('data-target');
+    if (!target) return;
+    var raw = target.replace(/[^0-9.\-]/g, '');
+    var num = parseFloat(raw);
+    if (isNaN(num)) return;
+    var prefix = target.match(/^[^0-9.\-]*/)[0] || '';
+    var suffix = target.match(/[^0-9.\-]*$/)[0] || '';
+    var isInt = num === Math.floor(num);
+    var duration = 800;
+    var start = performance.now();
+
+    function step(now) {
+      var progress = Math.min((now - start) / duration, 1);
+      var ease = 1 - Math.pow(1 - progress, 3);
+      var current = num * ease;
+      el.textContent = prefix + (isInt ? Math.floor(current).toLocaleString() : current.toFixed(1)) + suffix;
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    el.textContent = prefix + '0' + suffix;
+    requestAnimationFrame(step);
+  }
+
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        animateCount(entry.target);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  els.forEach(function(el) { observer.observe(el); });
+})();
+</script>
+</body>
+</html>
