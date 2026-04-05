@@ -1,0 +1,2833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Signal — Issue #1 · 5 April 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,500&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #111119;
+  --paper: #FAFAF8;
+  --warm: #F5F4F0;
+  --rose: #E8384F;
+  --ember: #FF6D3A;
+  --deep: #1B1B2F;
+  --slate: #64697B;
+  --ghost: #A4A8B6;
+  --rule: #E0DED8;
+  --pitch: #0A0E17;
+  --turf: #1A7A4C;
+  --turf-lt: #2BD67B;
+  --screen-bg: #14121E;
+  --neon: #FF2D78;
+  --shelf-bg: #1C1410;
+  --shelf-accent: #D4A03C;
+  --session-bg: #F2F7F4;
+  --session-accent: #D4622B;
+  --hist-bg: #F0EBE0;
+  --hist-accent: #8B6914;
+
+  /* ── Rotating section palettes ── */
+  --pantry-bg: #FAF5F0;
+  --pantry-accent: #C65D3A;
+  --workshop-bg: #F0F1F3;
+  --workshop-accent: #5A6378;
+  --toolkit-bg: #EFF3F6;
+  --toolkit-accent: #1A9AAF;
+  --ledger-bg: #FAF8F2;
+  --ledger-accent: #C48B2C;
+  --longgame-bg: #F0F1F4;
+  --longgame-accent: #2A3A5C;
+  --wallet-bg: #FAFBFC;
+  --wallet-accent: #1A8A7A;
+  --itinerary-bg: #FAF6F0;
+  --itinerary-accent: #D4634B;
+}
+
+/* ═══════════ RESET & BASE ═══════════ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  color: var(--ink);
+  background: #E8E6E1;
+  font-size: 18px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+.mag { max-width: 960px; margin: 0 auto; background: var(--paper); box-shadow: 0 4px 120px rgba(0,0,0,.12); position: relative; }
+img { max-width: 100%; height: auto; display: block; }
+a { color: var(--rose); text-decoration: none; }
+a:hover { text-decoration: underline; }
+p { margin-bottom: 16px; }
+p:last-child { margin-bottom: 0; }
+
+/* ═══════════ READING PROGRESS BAR ═══════════ */
+.progress-bar {
+  position: fixed; top: 0; left: 0; width: 0%;
+  height: 3px; z-index: 1000;
+  background: linear-gradient(90deg, var(--rose), var(--ember));
+  transition: width 100ms ease-out;
+}
+
+/* ═══════════ BACK TO TOP ═══════════ */
+.back-to-top {
+  position: fixed; bottom: 28px; right: 28px;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--deep); border: 1px solid rgba(255,255,255,.15);
+  color: white; font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transform: translateY(12px);
+  transition: opacity .25s ease, transform .25s ease;
+  z-index: 999; box-shadow: 0 4px 16px rgba(0,0,0,.2);
+}
+.back-to-top.visible { opacity: 1; transform: translateY(0); }
+.back-to-top:hover { background: var(--rose); }
+
+/* ═══════════ UTILITY CLASSES ═══════════ */
+.ui { font-family: 'DM Sans', sans-serif; }
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 3px; text-transform: uppercase;
+  margin-bottom: 12px; display: block;
+}
+/* Secondary labels use DM Sans — for sub-headers within sections */
+.sub-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--ghost); margin-bottom: 10px; display: block;
+}
+.caption {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; color: var(--ghost);
+  margin-top: 6px; line-height: 1.4;
+}
+.src {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; color: var(--ghost); margin-top: 12px;
+}
+.src a { color: var(--rose); }
+
+/* ═══════════ COVER ═══════════ */
+.cover {
+  background: var(--deep);
+  background-image:
+    radial-gradient(ellipse at 80% 20%, rgba(232,56,79,.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 20% 80%, rgba(255,109,58,.08) 0%, transparent 50%);
+  padding: 80px 60px 60px;
+  position: relative;
+  min-height: 480px;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  overflow: hidden;
+}
+.cover::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 5px;
+  background: linear-gradient(90deg, var(--rose), var(--ember), var(--rose));
+}
+
+/* Enhancement 18: Cover Ambient Animation — drifting gradients */
+.cover::after {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(ellipse at 80% 20%, rgba(232,56,79,.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 20% 80%, rgba(255,109,58,.08) 0%, transparent 50%);
+  animation: coverDrift 20s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes coverDrift {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-15px, 10px) scale(1.03); }
+  100% { transform: translate(10px, -8px) scale(1.01); }
+}
+
+/* Enhancement 18: Animated grain overlay */
+.cover-grain {
+  position: absolute; inset: 0;
+  background-image: repeating-conic-gradient(rgba(255,255,255,.015) 0% 25%, transparent 0% 50%);
+  background-size: 4px 4px;
+  animation: grainShift 0.8s steps(4) infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+@keyframes grainShift {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-2px, 2px); }
+  50% { transform: translate(2px, -1px); }
+  75% { transform: translate(-1px, -2px); }
+  100% { transform: translate(1px, 1px); }
+}
+
+/* Enhancement 9: Subtle noise texture on cover using base64 grain */
+.cover-noise {
+  position: absolute; inset: 0;
+  opacity: 0.035;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANWp0mAAAACHRSTlMzMzMzMzMzM85JBgUAAAA0SURBVDjLY2CgNmBWYBBgYFZgEGBkVmAQYGJWYBBgZlZgEGBhVmAQYGVWYBBgY6Y4AABxWAIRkPtLqAAAAABJRU5ErkJggg==");
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Enhancement 10: Cover brand — larger, tighter */
+.cover-brand {
+  font-size: 80px; font-weight: 700;
+  color: white; line-height: .95; letter-spacing: -3px; margin-bottom: 8px;
+  position: relative; z-index: 2;
+}
+.cover-brand span { color: var(--rose); font-style: italic; }
+.cover-issue {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: rgba(255,255,255,.4);
+  letter-spacing: 3px; text-transform: uppercase; margin-bottom: 32px;
+  position: relative; z-index: 2;
+}
+.cover-headline {
+  font-size: 32px; font-weight: 600;
+  color: rgba(255,255,255,.78); line-height: 1.25; max-width: 720px;
+  position: relative; z-index: 2;
+}
+.cover-tags { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 8px; position: relative; z-index: 2; }
+.cover-tags .tag {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 3px;
+  background: rgba(255,255,255,.06); color: rgba(255,255,255,.5);
+  border: 1px solid rgba(255,255,255,.08);
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  transition: background .15s ease, color .15s ease;
+  /* Enhancement 18: Staggered fade-in for tags */
+  opacity: 0;
+  animation: tagFadeIn 0.5s ease-out forwards;
+}
+.cover-tags .tag:nth-child(1) { animation-delay: 0.3s; }
+.cover-tags .tag:nth-child(2) { animation-delay: 0.4s; }
+.cover-tags .tag:nth-child(3) { animation-delay: 0.5s; }
+.cover-tags .tag:nth-child(4) { animation-delay: 0.6s; }
+.cover-tags .tag:nth-child(5) { animation-delay: 0.7s; }
+.cover-tags .tag:nth-child(6) { animation-delay: 0.8s; }
+.cover-tags .tag:nth-child(7) { animation-delay: 0.9s; }
+.cover-tags .tag:nth-child(8) { animation-delay: 1.0s; }
+.cover-tags .tag:nth-child(9) { animation-delay: 1.1s; }
+.cover-tags .tag:nth-child(10) { animation-delay: 1.2s; }
+@keyframes tagFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.cover-tags .tag:hover {
+  background: rgba(255,255,255,.12); color: rgba(255,255,255,.8);
+}
+
+/* ═══════════ NAVIGATOR ═══════════ */
+.nav-section { padding: 48px 60px; background: var(--paper); border-bottom: 1px solid var(--rule); }
+.nav-section h2 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 24px;
+}
+.nav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+/* Lead cards span two columns with optional thumbnail */
+.nav-card.lead {
+  grid-column: span 2;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+  padding: 0; overflow: hidden;
+}
+.nav-card.lead .nav-card-content { padding: 22px 24px; }
+.nav-card.lead .nav-card-thumb {
+  background-size: cover; background-position: center;
+  min-height: 140px;
+}
+.nav-card.lead h3 { font-size: 20px; }
+.nav-card {
+  background: var(--warm); border-radius: 8px; padding: 20px;
+  border-left: 4px solid var(--rule);
+  transition: transform .15s ease, box-shadow .15s ease;
+  text-decoration: none; display: block; cursor: pointer;
+}
+.nav-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.06); text-decoration: none; }
+.nav-card.world { border-left-color: var(--rose); }
+.nav-card.tech { border-left-color: var(--ember); }
+.nav-card.football { border-left-color: var(--turf); }
+.nav-card.screen { border-left-color: var(--neon); }
+.nav-card.shelf { border-left-color: var(--shelf-accent); }
+.nav-card.session { border-left-color: var(--session-accent); }
+.nav-card.history { border-left-color: var(--hist-accent); }
+
+/* Enhancement 6: Nav card tinted backgrounds & glow hovers */
+.nav-card.world { background: rgba(232,56,79,.06); }
+.nav-card.tech { background: rgba(255,109,58,.06); }
+.nav-card.football { background: rgba(26,122,76,.06); }
+.nav-card.screen { background: rgba(255,45,120,.06); }
+.nav-card.shelf { background: rgba(212,160,60,.06); }
+.nav-card.session { background: rgba(212,98,43,.06); }
+.nav-card.history { background: rgba(139,105,20,.06); }
+
+.nav-card.world:hover { box-shadow: 0 8px 24px rgba(232,56,79,.12); }
+.nav-card.tech:hover { box-shadow: 0 8px 24px rgba(255,109,58,.12); }
+.nav-card.football:hover { box-shadow: 0 8px 24px rgba(26,122,76,.12); }
+.nav-card.screen:hover { box-shadow: 0 8px 24px rgba(255,45,120,.12); }
+.nav-card.shelf:hover { box-shadow: 0 8px 24px rgba(212,160,60,.12); }
+.nav-card.session:hover { box-shadow: 0 8px 24px rgba(212,98,43,.12); }
+.nav-card.history:hover { box-shadow: 0 8px 24px rgba(139,105,20,.12); }
+
+.nav-card-tag {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: 6px;
+  display: flex; align-items: center; gap: 6px;
+}
+/* Enhancement 6 & 15: Nav card icon element */
+.nav-card-icon {
+  display: inline-flex; align-items: center;
+  width: 16px; height: 16px;
+  flex-shrink: 0;
+}
+.nav-card-icon svg { width: 16px; height: 16px; }
+.nav-card.world .nav-card-tag { color: var(--rose); }
+.nav-card.tech .nav-card-tag { color: var(--ember); }
+.nav-card.football .nav-card-tag { color: var(--turf); }
+.nav-card.screen .nav-card-tag { color: var(--neon); }
+.nav-card.shelf .nav-card-tag { color: var(--shelf-accent); }
+.nav-card.session .nav-card-tag { color: var(--session-accent); }
+.nav-card.history .nav-card-tag { color: var(--hist-accent); }
+.nav-card h3 {
+  font-size: 18px; font-weight: 700; line-height: 1.25;
+  color: var(--ink); margin-bottom: 4px;
+}
+.nav-card p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; color: var(--slate); line-height: 1.4; margin: 0;
+}
+.nav-card .read-time {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px; color: var(--ghost); margin-top: 8px;
+  letter-spacing: 0.5px; text-transform: uppercase;
+}
+
+/* ═══════════ FOREWORD ═══════════ */
+.foreword { padding: 48px 60px; border-bottom: 1px solid var(--rule); }
+.foreword p { font-size: 21px; line-height: 1.75; max-width: 680px; }
+.foreword p::first-letter {
+  font-size: 64px; font-weight: 700; float: left;
+  line-height: .78; margin: 8px 12px 0 0; color: var(--rose);
+}
+
+/* ═══════════ SECTION DIVIDERS ═══════════ */
+.divider { height: 8px; border: none; margin: 0; }
+.dv-world { background: linear-gradient(90deg, var(--rose), #c0392b); }
+.dv-tech { background: linear-gradient(90deg, var(--ember), #e67e22); }
+.dv-football { background: linear-gradient(90deg, var(--turf), var(--turf-lt)); }
+.dv-screen { background: linear-gradient(90deg, #9B59B6, var(--neon)); }
+.dv-shelf { background: linear-gradient(90deg, var(--shelf-accent), #A0722A); }
+.dv-session { background: linear-gradient(90deg, var(--session-accent), #E67E22); }
+.dv-history { background: linear-gradient(90deg, var(--hist-accent), #D4A03C); }
+.dv-other { background: linear-gradient(90deg, var(--slate), var(--ghost)); }
+/* Inset divider variant — centred with breathing room */
+.divider.inset { margin: 0 60px; border-radius: 4px; }
+
+/* ═══════════ GENERIC SECTION ═══════════ */
+.sec { padding: 48px 60px; position: relative; overflow: hidden; }
+.sec h2 { font-size: 36px; font-weight: 700; line-height: 1.15; margin-bottom: 20px; max-width: 680px; }
+/* Sub-story headings: lighter weight for visual hierarchy separation */
+.sec h3 { font-size: 22px; font-weight: 600; line-height: 1.2; margin: 28px 0 10px; }
+.sec h3.minor { font-weight: 400; font-style: italic; font-size: 20px; }
+.sec h4 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--ghost); margin: 28px 0 10px;
+}
+
+/* ═══════════ Enhancement 2: SECTION WATERMARK LABELS ═══════════ */
+.sec-watermark {
+  position: absolute;
+  top: 20px; left: -20px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 140px;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 0;
+  /* Default: use section accent at very low opacity */
+  color: currentColor;
+  opacity: 0.04;
+}
+
+/* Enhancement 2: Section opener variant */
+.sec-opener .section-label {
+  font-size: 14px;
+  letter-spacing: 4px;
+  margin-bottom: 16px;
+}
+.sec-opener h2 {
+  font-size: 42px;
+  max-width: 720px;
+}
+.sec-opener .opener-band {
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 120px;
+  background: linear-gradient(180deg, rgba(0,0,0,.03) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ═══════════ Enhancement 9: Section gradient overlay ═══════════ */
+.sec-gradient-overlay {
+  position: absolute;
+  bottom: 0; left: 0; right: 0; height: 200px;
+  pointer-events: none;
+  z-index: 0;
+}
+.world-section .sec-gradient-overlay { background: linear-gradient(180deg, transparent, rgba(232,56,79,.02)); }
+.tech-section .sec-gradient-overlay { background: linear-gradient(180deg, transparent, rgba(255,109,58,.02)); }
+.session-section .sec-gradient-overlay { background: linear-gradient(180deg, transparent, rgba(212,98,43,.02)); }
+
+/* ═══════════ STAT BAR ═══════════ */
+.stat-bar {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; margin: 24px 0;
+}
+.stat-bar .stat { padding: 18px 16px; text-align: center; border-right: 1px solid var(--rule); }
+.stat-bar .stat:last-child { border-right: none; }
+.stat-bar .stat-num { font-size: 32px; font-weight: 700; line-height: 1; }
+.stat-bar .stat-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px; font-weight: 700; color: var(--ghost);
+  text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;
+}
+
+/* ═══════════ Enhancement 3: BIG NUMBER CALLOUTS ═══════════ */
+.big-number {
+  text-align: center;
+  padding: 24px 0;
+  margin: 24px 0;
+}
+.big-number .num {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 80px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--rose);
+}
+.big-number .num-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ghost);
+  margin-top: 8px;
+}
+.big-number.float-left { float: left; margin: 0 32px 16px 0; text-align: left; }
+.big-number.float-right { float: right; margin: 0 0 16px 32px; text-align: right; }
+
+/* Big number row — 2-3 dramatic stats */
+.big-number-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin: 32px 0;
+  padding: 28px 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+.big-number-row .big-number {
+  margin: 0; padding: 0;
+}
+.big-number-row .big-number .num {
+  font-size: 64px;
+}
+
+/* Section-aware big numbers */
+.touchline-section .big-number .num { color: var(--turf-lt); }
+.touchline-section .big-number .num-label { color: rgba(255,255,255,.4); }
+.touchline-section .big-number-row { border-color: rgba(255,255,255,.1); }
+.screen-section .big-number .num { color: var(--neon); }
+.screen-section .big-number .num-label { color: rgba(255,255,255,.4); }
+.screen-section .big-number-row { border-color: rgba(255,255,255,.1); }
+.shelf-section .big-number .num { color: var(--shelf-accent); }
+.shelf-section .big-number .num-label { color: rgba(255,255,255,.4); }
+.shelf-section .big-number-row { border-color: rgba(255,255,255,.1); }
+.tech-section .big-number .num { color: var(--ember); }
+.session-section .big-number .num { color: var(--session-accent); }
+.history-section .big-number .num { color: var(--hist-accent); }
+
+/* Enhancement 10: Display stat — for inline dramatic numbers */
+.display-stat {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 72px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--rose);
+  display: inline;
+}
+
+/* ═══════════ ANGLE BOX ═══════════ */
+.angle {
+  background: var(--warm); border-left: 5px solid var(--rose);
+  padding: 24px 28px; margin: 28px 0; border-radius: 0 6px 6px 0;
+}
+.angle-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 8px;
+}
+.angle p { font-size: 17px; line-height: 1.65; font-weight: 600; }
+
+/* ═══════════ PULL QUOTE ═══════════ */
+.pull-quote {
+  border-left: 4px solid var(--rose); padding: 16px 28px; margin: 32px 0;
+}
+.pull-quote p {
+  font-size: 22px; font-style: italic; font-weight: 400;
+  line-height: 1.5; color: var(--ink); margin: 0;
+}
+.pull-quote cite {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-style: normal; color: var(--ghost);
+  display: block; margin-top: 8px;
+}
+
+/* Enhancement 7: Pull quote — centered variant */
+.pull-quote.centered {
+  border-left: none;
+  text-align: center;
+  padding: 32px 40px;
+  position: relative;
+}
+.pull-quote.centered::before {
+  content: '\201C';
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 80px;
+  font-weight: 700;
+  color: var(--rose);
+  opacity: 0.25;
+  display: block;
+  line-height: 0.5;
+  margin-bottom: 8px;
+}
+
+/* Enhancement 7: Pull quote — wide variant */
+.pull-quote.wide {
+  margin-left: -32px;
+  margin-right: -32px;
+  padding: 24px 40px;
+  border-left-width: 5px;
+}
+
+/* Section-aware centered quotes */
+.touchline-section .pull-quote.centered::before { color: var(--turf-lt); }
+.screen-section .pull-quote.centered::before { color: var(--neon); }
+.shelf-section .pull-quote.centered::before { color: var(--shelf-accent); }
+
+/* ═══════════ DID YOU KNOW ═══════════ */
+.dyk {
+  background: linear-gradient(135deg, #FFF8E7, #FFF3D6);
+  border: 1px solid #E8D5A3; border-radius: 8px;
+  padding: 18px 22px; margin: 24px 0; position: relative;
+}
+.dyk::before {
+  content: '💡'; position: absolute; top: -10px; left: 16px;
+  font-size: 18px; background: var(--paper); padding: 0 4px;
+}
+.dyk-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: #B8860B; margin-bottom: 6px;
+}
+.dyk p { font-size: 15px; line-height: 1.55; margin: 0; color: #5C4A20; }
+
+/* ═══════════ SIDEBAR / CALLOUT BOX ═══════════ */
+.sidebar {
+  background: var(--warm); border-radius: 8px; padding: 22px 26px; margin: 24px 0;
+  border: 1px solid var(--rule);
+}
+.sidebar-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 10px;
+}
+.sidebar ul { list-style: none; }
+.sidebar li {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; line-height: 1.5; padding: 5px 0;
+  border-bottom: 1px solid rgba(0,0,0,.04); color: var(--ink);
+}
+.sidebar li:last-child { border-bottom: none; }
+
+/* ═══════════ ALSO THIS WEEK LIST ═══════════ */
+.also { margin-top: 32px; padding-top: 24px; border-top: 2px solid var(--rule); }
+.also-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--ghost); margin-bottom: 12px;
+}
+.also-list { list-style: none; }
+.also-list li {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14.5px; line-height: 1.5; padding: 8px 0;
+  border-bottom: 1px solid rgba(0,0,0,.04);
+}
+.also-list li:last-child { border-bottom: none; }
+
+/* Enhancement 8: Also cards — compact card grid alternative */
+.also-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+.also-card {
+  background: var(--warm);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 14px 16px;
+}
+.also-card h4 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 700;
+  color: var(--ink);
+  letter-spacing: 0; text-transform: none;
+  margin: 0 0 4px;
+}
+.also-card p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12.5px; color: var(--slate);
+  line-height: 1.4; margin: 0;
+}
+.also-card .badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--ghost);
+  margin-top: 6px; display: inline-block;
+}
+
+/* Dark section also-cards */
+.touchline-section .also-cards .also-card { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.06); }
+.touchline-section .also-cards .also-card h4 { color: rgba(255,255,255,.9); }
+.touchline-section .also-cards .also-card p { color: rgba(255,255,255,.6); }
+.touchline-section .also-cards .also-card .badge { color: rgba(255,255,255,.3); }
+.screen-section .also-cards .also-card { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.06); }
+.screen-section .also-cards .also-card h4 { color: rgba(255,255,255,.9); }
+.screen-section .also-cards .also-card p { color: rgba(255,255,255,.6); }
+.shelf-section .also-cards .also-card { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.06); }
+.shelf-section .also-cards .also-card h4 { color: rgba(255,255,255,.9); }
+.shelf-section .also-cards .also-card p { color: rgba(255,255,255,.6); }
+
+/* ═══════════ DUAL COLUMN ═══════════ */
+.dual-col { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 24px 0; }
+.col-card { border-left: 4px solid var(--rule); padding-left: 24px; }
+.col-card.accent-ember { border-left-color: var(--ember); }
+.col-card.accent-deep { border-left-color: var(--deep); }
+.col-card h3 { font-size: 22px; font-weight: 700; line-height: 1.2; margin: 0 0 10px; }
+.col-card p { font-size: 16px; }
+
+/* ═══════════ Enhancement 1: VARIED COLUMN LAYOUTS ═══════════ */
+.split-60-40 {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 32px;
+  margin: 24px 0;
+  align-items: start;
+}
+.split-40-60 {
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+  gap: 32px;
+  margin: 24px 0;
+  align-items: start;
+}
+
+/* ═══════════ HERO IMAGE ═══════════ */
+.hero-img { width: 100%; aspect-ratio: 16/7; object-fit: cover; border-radius: 8px; margin: 24px 0; }
+/* Full-bleed hero — bleeds to section edges above content */
+.hero-bleed { width: calc(100% + 120px); margin-left: -60px; border-radius: 0; margin-top: -48px; margin-bottom: 28px; aspect-ratio: 16/7; object-fit: cover; }
+.inline-img { border-radius: 6px; margin: 20px 0; }
+/* Float image for text wrap (books, album art) */
+.img-float-left { float: left; margin: 4px 24px 12px 0; border-radius: 6px; }
+
+/* ═══════════ Enhancement 4: IMAGE MONTAGE GRID ═══════════ */
+.img-montage {
+  display: grid;
+  gap: 8px;
+  margin: 24px 0;
+}
+.img-montage.layout-1-2 {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+}
+.img-montage.layout-1-2 .montage-hero {
+  grid-column: 1 / -1;
+}
+.img-montage.layout-2x2 {
+  grid-template-columns: 1fr 1fr;
+}
+.img-montage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+}
+.img-montage .caption {
+  grid-column: 1 / -1;
+}
+
+/* Enhancement 4: Offset image — asymmetric text wrap */
+.img-offset {
+  float: right;
+  width: 60%;
+  margin: 0 0 16px 24px;
+  border-radius: 6px;
+}
+.img-offset.left {
+  float: left;
+  margin: 0 24px 16px 0;
+}
+
+/* ═══════════ THE WORLD THIS WEEK ═══════════ */
+.world-section { background: var(--paper); }
+.world-section .section-label { color: var(--rose); }
+.world-section .sec-watermark { color: var(--rose); }
+
+/* ═══════════ PIXEL & BYTE ═══════════ */
+.tech-section { background: var(--warm); }
+.tech-section .section-label { color: var(--ember); }
+.tech-section .sec-watermark { color: var(--ember); }
+
+/* ═══════════ THE TOUCHLINE ═══════════ */
+.touchline-section { background: var(--pitch); color: rgba(255,255,255,.85); }
+.touchline-section .section-label { color: var(--turf-lt); }
+.touchline-section h2 { color: white; }
+.touchline-section h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--turf-lt); margin: 28px 0 12px;
+}
+.touchline-section h3.narrative {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px; text-transform: none; letter-spacing: 0; color: white;
+}
+.touchline-section p { color: rgba(255,255,255,.8); }
+.touchline-section a { color: var(--turf-lt); }
+.touchline-section .angle { background: rgba(255,255,255,.04); border-left-color: var(--turf-lt); }
+.touchline-section .angle-label { color: var(--turf-lt); }
+.touchline-section .angle p { color: rgba(255,255,255,.9); }
+.touchline-section .also { border-top-color: rgba(255,255,255,.1); }
+.touchline-section .also-title { color: rgba(255,255,255,.3); }
+.touchline-section .also-list li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+.touchline-section .pull-quote { border-left-color: var(--turf-lt); }
+.touchline-section .pull-quote p { color: rgba(255,255,255,.9); }
+.touchline-section .pull-quote cite { color: rgba(255,255,255,.4); }
+.touchline-section .sec-watermark { color: var(--turf-lt); }
+
+/* Touchline DYK — section-aware dark variant */
+.touchline-section .dyk { background: rgba(26,122,76,.08); border-color: rgba(43,214,123,.12); }
+.touchline-section .dyk::before { background: var(--pitch); }
+.touchline-section .dyk-title { color: var(--turf-lt); }
+.touchline-section .dyk p { color: rgba(255,255,255,.7); }
+
+/* Touchline sidebar */
+.touchline-section .sidebar { background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.touchline-section .sidebar-title { color: var(--turf-lt); }
+.touchline-section .sidebar li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+
+/* League Table */
+.league-table {
+  width: 100%; border-collapse: collapse; margin: 16px 0 24px;
+  font-family: 'DM Sans', sans-serif; font-size: 14px;
+}
+.league-table th {
+  text-align: left; padding: 10px 12px;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: rgba(255,255,255,.3); border-bottom: 1px solid rgba(255,255,255,.1);
+}
+.league-table td { padding: 9px 12px; border-bottom: 1px solid rgba(255,255,255,.04); color: rgba(255,255,255,.6); }
+.league-table tr:nth-child(even) td { background: rgba(255,255,255,.015); }
+.league-table tr.highlight td { color: var(--turf-lt); font-weight: 700; }
+.league-table .pos { width: 30px; text-align: center; }
+/* Scrollable wrapper for small screens */
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 16px 0 24px; }
+.table-wrap .league-table { margin: 0; min-width: 520px; }
+
+/* Results Strip */
+.results-strip { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+.result-card {
+  background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.06);
+  border-radius: 6px; padding: 12px 16px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px;
+  color: rgba(255,255,255,.65); line-height: 1.4; min-width: 190px;
+  flex: 1 1 190px; max-width: 220px;
+}
+.result-card .teams { color: rgba(255,255,255,.6); }
+.result-card strong { color: rgba(255,255,255,.9); font-weight: 700; }
+.result-card .score {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 18px; font-weight: 700; color: var(--turf-lt);
+  display: block; margin: 2px 0;
+}
+
+/* ═══════════ Enhancement 11: SPARKLINE ═══════════ */
+.sparkline {
+  display: inline-block;
+  width: 200px;
+  height: 40px;
+  vertical-align: middle;
+}
+.sparkline svg {
+  width: 100%;
+  height: 100%;
+}
+.sparkline .spark-line {
+  fill: none;
+  stroke: var(--turf-lt);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.sparkline .spark-area {
+  fill: var(--turf-lt);
+  opacity: 0.1;
+}
+.sparkline .spark-dot {
+  fill: var(--turf-lt);
+}
+
+/* Enhancement 11: Position change indicators */
+.pos-change {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+}
+.pos-change.up { color: #2BD67B; }
+.pos-change.down { color: var(--rose); }
+.pos-change.same { color: var(--ghost); }
+
+/* Enhancement 11: Mini horizontal bar */
+.mini-bar {
+  display: inline-block;
+  height: 6px;
+  border-radius: 3px;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+.mini-bar-track {
+  display: inline-block;
+  width: 100px;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255,255,255,.1);
+  position: relative;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+.mini-bar-track .mini-bar-fill {
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--turf-lt);
+}
+
+/* ═══════════ SCREEN & SOUND ═══════════ */
+.screen-section { background: var(--screen-bg); color: rgba(255,255,255,.85); }
+.screen-section .section-label { color: var(--neon); }
+.screen-section h2 { color: white; }
+.screen-section h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--neon); margin: 28px 0 12px;
+}
+.screen-section h3.feature-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px; text-transform: none; letter-spacing: 0; color: white; margin-bottom: 14px;
+}
+.screen-section p { color: rgba(255,255,255,.8); }
+.screen-section a { color: var(--neon); }
+.screen-section .also { border-top-color: rgba(255,255,255,.08); }
+.screen-section .also-title { color: rgba(255,255,255,.3); }
+.screen-section .also-list li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+.screen-section .pull-quote { border-left-color: var(--neon); }
+.screen-section .pull-quote p { color: rgba(255,255,255,.9); }
+.screen-section .pull-quote cite { color: rgba(255,255,255,.4); }
+.screen-section .sec-watermark { color: var(--neon); }
+
+/* Screen & Sound DYK — section-aware dark variant */
+.screen-section .dyk { background: rgba(255,45,120,.06); border-color: rgba(255,45,120,.12); }
+.screen-section .dyk::before { background: var(--screen-bg); }
+.screen-section .dyk-title { color: var(--neon); }
+.screen-section .dyk p { color: rgba(255,255,255,.7); }
+
+/* Screen sidebar */
+.screen-section .sidebar { background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.screen-section .sidebar-title { color: var(--neon); }
+.screen-section .sidebar li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+
+/* Radar — Release Radar and On the Radar */
+.radar-grid { margin: 16px 0; }
+.radar-row {
+  display: grid; grid-template-columns: 80px 1fr; gap: 14px;
+  padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,.06);
+  font-family: 'DM Sans', sans-serif; font-size: 14px;
+  color: rgba(255,255,255,.7); line-height: 1.4;
+}
+.radar-row:last-child { border-bottom: none; }
+.radar-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700; color: var(--neon); padding-top: 2px;
+}
+.radar-row strong { color: rgba(255,255,255,.95); }
+.radar-platform { font-size: 11px; color: rgba(255,255,255,.35); font-weight: 500; }
+/* Category dot for radar items */
+.radar-cat {
+  display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+  margin-right: 6px; vertical-align: middle;
+}
+.radar-cat.film { background: var(--neon); }
+.radar-cat.tv { background: #9B59B6; }
+.radar-cat.game { background: var(--ember); }
+.radar-cat.book { background: var(--shelf-accent); }
+.radar-cat.music { background: var(--turf-lt); }
+.radar-cat.tech { background: var(--ghost); }
+.radar-cat.lego { background: #E8384F; }
+/* Leaving Soon — urgency styling */
+.radar-row.leaving { border-left: 3px solid var(--rose); padding-left: 12px; margin-left: -3px; }
+.radar-row.leaving .radar-date { color: var(--rose); }
+
+/* ═══════════ Enhancement 16: CARD STACK — Horizontal scroll ═══════════ */
+.card-stack {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 8px 0 16px;
+  margin: 16px 0;
+}
+.card-stack::-webkit-scrollbar { height: 4px; }
+.card-stack::-webkit-scrollbar-track { background: rgba(255,255,255,.05); border-radius: 2px; }
+.card-stack::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 2px; }
+
+.stack-card {
+  flex: 0 0 240px;
+  scroll-snap-align: start;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.stack-card-img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+}
+.stack-card-body {
+  padding: 14px 16px;
+}
+.stack-card-title {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 17px; font-weight: 700;
+  color: rgba(255,255,255,.95);
+  margin-bottom: 4px;
+}
+.stack-card-verdict {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12.5px; color: rgba(255,255,255,.6);
+  line-height: 1.4; margin-bottom: 8px;
+}
+.stack-card .platform-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: rgba(255,255,255,.35);
+  background: rgba(255,255,255,.06);
+  padding: 2px 8px; border-radius: 3px;
+  display: inline-block;
+}
+
+/* Light section card stacks */
+.tech-section .stack-card { background: white; border-color: var(--rule); }
+.tech-section .stack-card-title { color: var(--ink); }
+.tech-section .stack-card-verdict { color: var(--slate); }
+.tech-section .stack-card .platform-badge { color: var(--ghost); background: var(--warm); }
+.tech-section .card-stack::-webkit-scrollbar-track { background: var(--rule); }
+.tech-section .card-stack::-webkit-scrollbar-thumb { background: var(--ghost); }
+
+/* ═══════════ Enhancement 19: SCORE/RATING DOTS ═══════════ */
+.rating {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  margin: 4px 0;
+}
+.rating .dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,.25);
+  background: transparent;
+}
+.rating .dot.filled {
+  border-color: transparent;
+}
+/* Section-specific rating colours */
+.screen-section .rating .dot.filled { background: var(--neon); }
+.shelf-section .rating .dot.filled { background: var(--shelf-accent); }
+.tech-section .rating .dot { border-color: var(--rule); }
+.tech-section .rating .dot.filled { background: var(--ember); border-color: transparent; }
+/* Light section dots */
+.session-section .rating .dot { border-color: var(--rule); }
+.session-section .rating .dot.filled { background: var(--session-accent); border-color: transparent; }
+.world-section .rating .dot { border-color: var(--rule); }
+.world-section .rating .dot.filled { background: var(--rose); border-color: transparent; }
+
+/* ═══════════ THE SHELF ═══════════ */
+.shelf-section { background: var(--shelf-bg); color: rgba(255,255,255,.85); }
+.shelf-section .section-label { color: var(--shelf-accent); }
+.shelf-section h2 { color: white; }
+.shelf-section h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--shelf-accent); margin: 28px 0 12px;
+}
+.shelf-section h3.feature-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px; text-transform: none; letter-spacing: 0; color: white; margin-bottom: 14px;
+}
+.shelf-section p { color: rgba(255,255,255,.8); }
+.shelf-section a { color: var(--shelf-accent); }
+.shelf-section .also { border-top-color: rgba(255,255,255,.08); }
+.shelf-section .also-title { color: rgba(255,255,255,.3); }
+.shelf-section .also-list li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+.shelf-section .sec-watermark { color: var(--shelf-accent); }
+.shelf-section .pull-quote { border-left-color: var(--shelf-accent); }
+.shelf-section .pull-quote p { color: rgba(255,255,255,.9); }
+.shelf-section .pull-quote cite { color: rgba(255,255,255,.4); }
+
+/* Shelf DYK — section-aware dark variant */
+.shelf-section .dyk { background: rgba(212,160,60,.06); border-color: rgba(212,160,60,.12); }
+.shelf-section .dyk::before { background: var(--shelf-bg); }
+.shelf-section .dyk-title { color: var(--shelf-accent); }
+.shelf-section .dyk p { color: rgba(255,255,255,.7); }
+
+/* Shelf sidebar */
+.shelf-section .sidebar { background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.shelf-section .sidebar-title { color: var(--shelf-accent); }
+.shelf-section .sidebar li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+
+/* Book Recommendation Card — with image float support */
+.book-card {
+  background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+  border-radius: 8px; padding: 18px 22px; margin: 12px 0;
+  overflow: hidden;
+}
+.book-card h4 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 19px; font-weight: 700; color: rgba(255,255,255,.95);
+  text-transform: none; letter-spacing: 0; margin: 0 0 4px;
+}
+.book-card .author {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; color: rgba(255,255,255,.4); margin-bottom: 6px;
+}
+.book-card p { font-size: 14px; color: rgba(255,255,255,.6); margin: 0; }
+.book-card img { float: left; width: 80px; margin: 0 16px 8px 0; border-radius: 4px; }
+/* Side-by-side book cards */
+.book-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+
+/* ═══════════ THE SESSION ═══════════ */
+.session-section { background: var(--session-bg); }
+.session-section .section-label { color: var(--session-accent); }
+.session-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.session-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.session-section .sec-watermark { color: var(--session-accent); }
+
+/* Workout Card — for rep schemes, protocols, programmes */
+.workout-card {
+  background: white; border: 1px solid var(--rule); border-radius: 8px;
+  padding: 22px 26px; margin: 20px 0;
+  border-left: 4px solid var(--session-accent);
+}
+.workout-card-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--session-accent); margin-bottom: 12px;
+}
+.workout-card table {
+  width: 100%; border-collapse: collapse; font-family: 'DM Sans', sans-serif; font-size: 14px;
+}
+.workout-card th {
+  text-align: left; padding: 6px 10px;
+  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--ghost); border-bottom: 1px solid var(--rule);
+}
+.workout-card td { padding: 7px 10px; border-bottom: 1px solid rgba(0,0,0,.04); color: var(--ink); }
+.workout-card .highlight-row td { color: var(--session-accent); font-weight: 700; }
+
+/* Workout icon labels */
+.workout-type {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'DM Sans', sans-serif; font-size: 11px;
+  color: var(--session-accent); font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; margin-bottom: 8px;
+}
+
+/* ═══════════ THIS WEEK IN HISTORY ═══════════ */
+.history-section { background: var(--hist-bg); }
+.history-section .section-label { color: var(--hist-accent); }
+.history-section h2 { font-size: 30px; font-weight: 700; line-height: 1.2; margin-bottom: 16px; color: #3D2E0F; }
+.history-section .sec-watermark { color: var(--hist-accent); }
+/* Year badges for history items */
+.year-badge {
+  display: inline-block; font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700; color: var(--hist-accent);
+  background: rgba(139,105,20,.08); border-radius: 3px;
+  padding: 2px 8px; margin-right: 8px; vertical-align: middle;
+}
+.history-section .also-list li { display: flex; align-items: baseline; gap: 0; }
+
+/* Enhancement 9: History paper texture — more pronounced */
+.history-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.06;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANWp0mAAAACHRSTlMzMzMzMzMzM85JBgUAAAA0SURBVDjLY2CgNmBWYBBgYFZgEGBkVmAQYGJWYBBgZlZgEGBhVmAQYGVWYBBgY6Y4AABxWAIRkPtLqAAAAABJRU5ErkJggg==");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ═══════════ ROTATING SECTION STYLES ═══════════ */
+/* Each rotating section gets a background, accent colour, and section-aware overrides */
+
+.pantry-section { background: var(--pantry-bg); }
+.pantry-section .section-label { color: var(--pantry-accent); }
+.pantry-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.pantry-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.pantry-section .sec-watermark { color: var(--pantry-accent); }
+.pantry-section .workout-card { border-left-color: var(--pantry-accent); } /* reuse workout-card for recipe cards */
+.pantry-section .workout-card-title { color: var(--pantry-accent); }
+.pantry-section .big-number .num { color: var(--pantry-accent); }
+.pantry-section .pull-quote { border-left-color: var(--pantry-accent); }
+.pantry-section .dyk { background: rgba(198,93,58,.06); border-color: rgba(198,93,58,.12); }
+.pantry-section .dyk-title { color: var(--pantry-accent); }
+.pantry-section .read-next a { color: var(--pantry-accent); }
+.pantry-section .sidebar { border-left-color: var(--pantry-accent); }
+.pantry-section .sidebar-title { color: var(--pantry-accent); }
+
+.workshop-section { background: var(--workshop-bg); }
+.workshop-section .section-label { color: var(--workshop-accent); }
+.workshop-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.workshop-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.workshop-section .sec-watermark { color: var(--workshop-accent); }
+.workshop-section .compare-panel .compare-side { border-color: rgba(90,99,120,.2); }
+.workshop-section .big-number .num { color: var(--workshop-accent); }
+.workshop-section .pull-quote { border-left-color: var(--workshop-accent); }
+.workshop-section .dyk { background: rgba(90,99,120,.06); border-color: rgba(90,99,120,.12); }
+.workshop-section .dyk-title { color: var(--workshop-accent); }
+.workshop-section .read-next a { color: var(--workshop-accent); }
+.workshop-section .sidebar { border-left-color: var(--workshop-accent); }
+.workshop-section .sidebar-title { color: var(--workshop-accent); }
+
+.toolkit-section { background: var(--toolkit-bg); }
+.toolkit-section .section-label { color: var(--toolkit-accent); }
+.toolkit-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.toolkit-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.toolkit-section .sec-watermark { color: var(--toolkit-accent); }
+.toolkit-section .big-number .num { color: var(--toolkit-accent); }
+.toolkit-section .pull-quote { border-left-color: var(--toolkit-accent); }
+.toolkit-section .dyk { background: rgba(26,154,175,.06); border-color: rgba(26,154,175,.12); }
+.toolkit-section .dyk-title { color: var(--toolkit-accent); }
+.toolkit-section .read-next a { color: var(--toolkit-accent); }
+.toolkit-section .also-cards .also-card { border-color: rgba(26,154,175,.12); }
+.toolkit-section .sidebar { border-left-color: var(--toolkit-accent); }
+.toolkit-section .sidebar-title { color: var(--toolkit-accent); }
+
+.ledger-section { background: var(--ledger-bg); }
+.ledger-section .section-label { color: var(--ledger-accent); }
+.ledger-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.ledger-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.ledger-section .sec-watermark { color: var(--ledger-accent); }
+.ledger-section .big-number .num { color: var(--ledger-accent); }
+.ledger-section .pull-quote { border-left-color: var(--ledger-accent); }
+.ledger-section .dyk { background: rgba(196,139,44,.06); border-color: rgba(196,139,44,.12); }
+.ledger-section .dyk-title { color: var(--ledger-accent); }
+.ledger-section .read-next a { color: var(--ledger-accent); }
+.ledger-section .stat-bar .stat-num { color: var(--ledger-accent); }
+.ledger-section .sidebar { border-left-color: var(--ledger-accent); }
+.ledger-section .sidebar-title { color: var(--ledger-accent); }
+
+.longgame-section { background: var(--longgame-bg); }
+.longgame-section .section-label { color: var(--longgame-accent); }
+.longgame-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.longgame-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.longgame-section .sec-watermark { color: var(--longgame-accent); }
+.longgame-section .big-number .num { color: var(--longgame-accent); }
+.longgame-section .pull-quote { border-left-color: var(--longgame-accent); }
+.longgame-section .dyk { background: rgba(42,58,92,.06); border-color: rgba(42,58,92,.12); }
+.longgame-section .dyk-title { color: var(--longgame-accent); }
+.longgame-section .read-next a { color: var(--longgame-accent); }
+.longgame-section .stat-bar .stat-num { color: var(--longgame-accent); }
+.longgame-section .sidebar { border-left-color: var(--longgame-accent); }
+.longgame-section .sidebar-title { color: var(--longgame-accent); }
+
+.wallet-section { background: var(--wallet-bg); }
+.wallet-section .section-label { color: var(--wallet-accent); }
+.wallet-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.wallet-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.wallet-section .sec-watermark { color: var(--wallet-accent); }
+.wallet-section .big-number .num { color: var(--wallet-accent); }
+.wallet-section .pull-quote { border-left-color: var(--wallet-accent); }
+.wallet-section .dyk { background: rgba(26,138,122,.06); border-color: rgba(26,138,122,.12); }
+.wallet-section .dyk-title { color: var(--wallet-accent); }
+.wallet-section .read-next a { color: var(--wallet-accent); }
+.wallet-section .compare-panel .compare-side { border-color: rgba(26,138,122,.2); }
+.wallet-section .sidebar { border-left-color: var(--wallet-accent); }
+.wallet-section .sidebar-title { color: var(--wallet-accent); }
+
+.itinerary-section { background: var(--itinerary-bg); }
+.itinerary-section .section-label { color: var(--itinerary-accent); }
+.itinerary-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.itinerary-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.itinerary-section .sec-watermark { color: var(--itinerary-accent); }
+.itinerary-section .big-number .num { color: var(--itinerary-accent); }
+.itinerary-section .pull-quote { border-left-color: var(--itinerary-accent); }
+.itinerary-section .dyk { background: rgba(212,99,75,.06); border-color: rgba(212,99,75,.12); }
+.itinerary-section .dyk-title { color: var(--itinerary-accent); }
+.itinerary-section .read-next a { color: var(--itinerary-accent); }
+.itinerary-section .sidebar { border-left-color: var(--itinerary-accent); }
+.itinerary-section .sidebar-title { color: var(--itinerary-accent); }
+
+/* Nav card styles for rotating sections */
+.nav-card.pantry { border-left-color: var(--pantry-accent); background: rgba(198,93,58,.06); }
+.nav-card.pantry:hover { box-shadow: 0 8px 24px rgba(198,93,58,.12); }
+.nav-card.pantry .nav-card-tag { color: var(--pantry-accent); }
+.nav-card.workshop { border-left-color: var(--workshop-accent); background: rgba(90,99,120,.06); }
+.nav-card.workshop:hover { box-shadow: 0 8px 24px rgba(90,99,120,.12); }
+.nav-card.workshop .nav-card-tag { color: var(--workshop-accent); }
+.nav-card.toolkit { border-left-color: var(--toolkit-accent); background: rgba(26,154,175,.06); }
+.nav-card.toolkit:hover { box-shadow: 0 8px 24px rgba(26,154,175,.12); }
+.nav-card.toolkit .nav-card-tag { color: var(--toolkit-accent); }
+.nav-card.ledger { border-left-color: var(--ledger-accent); background: rgba(196,139,44,.06); }
+.nav-card.ledger:hover { box-shadow: 0 8px 24px rgba(196,139,44,.12); }
+.nav-card.ledger .nav-card-tag { color: var(--ledger-accent); }
+.nav-card.longgame { border-left-color: var(--longgame-accent); background: rgba(42,58,92,.06); }
+.nav-card.longgame:hover { box-shadow: 0 8px 24px rgba(42,58,92,.12); }
+.nav-card.longgame .nav-card-tag { color: var(--longgame-accent); }
+.nav-card.wallet { border-left-color: var(--wallet-accent); background: rgba(26,138,122,.06); }
+.nav-card.wallet:hover { box-shadow: 0 8px 24px rgba(26,138,122,.12); }
+.nav-card.wallet .nav-card-tag { color: var(--wallet-accent); }
+.nav-card.itinerary { border-left-color: var(--itinerary-accent); background: rgba(212,99,75,.06); }
+.nav-card.itinerary:hover { box-shadow: 0 8px 24px rgba(212,99,75,.12); }
+.nav-card.itinerary .nav-card-tag { color: var(--itinerary-accent); }
+
+/* Dividers for rotating sections */
+.dv-pantry { background: linear-gradient(90deg, var(--pantry-accent), #E8845A); }
+.dv-workshop { background: linear-gradient(90deg, var(--workshop-accent), #7A839A); }
+.dv-toolkit { background: linear-gradient(90deg, var(--toolkit-accent), #2AB8CE); }
+.dv-ledger { background: linear-gradient(90deg, var(--ledger-accent), #D4A03C); }
+.dv-longgame { background: linear-gradient(90deg, var(--longgame-accent), #4A5A8C); }
+.dv-wallet { background: linear-gradient(90deg, var(--wallet-accent), #2AB8A8); }
+.dv-itinerary { background: linear-gradient(90deg, var(--itinerary-accent), #E8845A); }
+
+/* ═══════════ Enhancement 12: CONTEXTUAL TIMELINES ═══════════ */
+.timeline {
+  position: relative;
+  padding-left: 32px;
+  margin: 24px 0;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 8px; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--rule);
+}
+.timeline-node {
+  position: relative;
+  padding: 12px 0 24px 16px;
+}
+.timeline-node::before {
+  content: '';
+  position: absolute;
+  left: -28px; top: 18px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--rose);
+  border: 2px solid var(--paper);
+}
+.timeline-node .timeline-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--ghost);
+  margin-bottom: 4px;
+}
+.timeline-node .timeline-content {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14.5px; line-height: 1.5;
+}
+.timeline-node .timeline-content strong { color: var(--ink); }
+
+/* Timeline on dark backgrounds */
+.touchline-section .timeline::before { background: rgba(255,255,255,.1); }
+.touchline-section .timeline-node::before { background: var(--turf-lt); border-color: var(--pitch); }
+.touchline-section .timeline-node .timeline-date { color: var(--turf-lt); }
+.touchline-section .timeline-node .timeline-content { color: rgba(255,255,255,.7); }
+.touchline-section .timeline-node .timeline-content strong { color: rgba(255,255,255,.95); }
+
+.screen-section .timeline::before { background: rgba(255,255,255,.1); }
+.screen-section .timeline-node::before { background: var(--neon); border-color: var(--screen-bg); }
+.screen-section .timeline-node .timeline-date { color: var(--neon); }
+.screen-section .timeline-node .timeline-content { color: rgba(255,255,255,.7); }
+.screen-section .timeline-node .timeline-content strong { color: rgba(255,255,255,.95); }
+
+.shelf-section .timeline::before { background: rgba(255,255,255,.1); }
+.shelf-section .timeline-node::before { background: var(--shelf-accent); border-color: var(--shelf-bg); }
+.shelf-section .timeline-node .timeline-date { color: var(--shelf-accent); }
+.shelf-section .timeline-node .timeline-content { color: rgba(255,255,255,.7); }
+.shelf-section .timeline-node .timeline-content strong { color: rgba(255,255,255,.95); }
+
+/* History timeline */
+.history-section .timeline::before { background: rgba(139,105,20,.2); }
+.history-section .timeline-node::before { background: var(--hist-accent); border-color: var(--hist-bg); }
+.history-section .timeline-node .timeline-date { color: var(--hist-accent); }
+.history-section .timeline-node .timeline-content { color: #5C4A20; }
+
+/* ═══════════ Enhancement 13: COMPACT TAKES ═══════════ */
+.compact-take {
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--rose);
+  border-radius: 0 6px 6px 0;
+  padding: 16px 18px;
+  margin: 12px 0;
+}
+.compact-take h4 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 17px; font-weight: 700; color: var(--ink);
+  text-transform: none; letter-spacing: 0;
+  margin: 0 0 6px;
+}
+.compact-take p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13.5px; color: var(--slate);
+  line-height: 1.5; margin: 0 0 6px;
+}
+.compact-take .src { margin-top: 4px; }
+
+/* Compact take — section accents */
+.tech-section .compact-take { border-left-color: var(--ember); background: white; }
+.touchline-section .compact-take { border-left-color: var(--turf-lt); background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.touchline-section .compact-take h4 { color: rgba(255,255,255,.95); }
+.touchline-section .compact-take p { color: rgba(255,255,255,.6); }
+.screen-section .compact-take { border-left-color: var(--neon); background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.screen-section .compact-take h4 { color: rgba(255,255,255,.95); }
+.screen-section .compact-take p { color: rgba(255,255,255,.6); }
+
+/* Compact grid — 2 compact takes side by side */
+.compact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+/* ═══════════ Enhancement 14: MARGIN NOTES ═══════════ */
+.margin-note {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--slate);
+  background: var(--warm);
+  border-left: 3px solid var(--rose);
+  padding: 12px 14px;
+  border-radius: 0 4px 4px 0;
+}
+/* On desktop, float to right margin */
+@media (min-width: 821px) {
+  .margin-note {
+    float: right;
+    width: 220px;
+    margin: 0 -60px 16px 24px;
+    position: relative;
+    z-index: 1;
+  }
+}
+/* Section-aware margin notes */
+.tech-section .margin-note { border-left-color: var(--ember); }
+.touchline-section .margin-note { background: rgba(255,255,255,.04); border-left-color: var(--turf-lt); color: rgba(255,255,255,.6); }
+.screen-section .margin-note { background: rgba(255,255,255,.04); border-left-color: var(--neon); color: rgba(255,255,255,.6); }
+.shelf-section .margin-note { background: rgba(255,255,255,.04); border-left-color: var(--shelf-accent); color: rgba(255,255,255,.6); }
+.history-section .margin-note { border-left-color: var(--hist-accent); background: rgba(139,105,20,.06); color: #5C4A20; }
+
+/* ═══════════ Enhancement 15: SECTION ICONS (inline SVG) ═══════════ */
+/* Icons use currentColor so they inherit from parent. Defined as classes for documentation. */
+.sec-icon {
+  display: inline-block;
+  width: 24px; height: 24px;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+.sec-icon svg {
+  width: 24px; height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ═══════════ Enhancement 17: COLLAPSIBLE SECTIONS ═══════════ */
+.collapsible {
+  margin: 20px 0;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.collapsible summary {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 700;
+  padding: 14px 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  list-style: none;
+  background: var(--warm);
+  color: var(--ink);
+  transition: background .15s ease;
+}
+.collapsible summary::-webkit-details-marker { display: none; }
+.collapsible summary::after {
+  content: '';
+  width: 8px; height: 8px;
+  border-right: 2px solid var(--ghost);
+  border-bottom: 2px solid var(--ghost);
+  transform: rotate(45deg);
+  transition: transform .2s ease;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+.collapsible[open] summary::after {
+  transform: rotate(-135deg);
+}
+.collapsible summary:hover { background: var(--rule); }
+.collapsible-content {
+  padding: 16px 18px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--slate);
+}
+
+/* Dark section collapsibles */
+.touchline-section .collapsible { border-color: rgba(255,255,255,.08); }
+.touchline-section .collapsible summary { background: rgba(255,255,255,.04); color: rgba(255,255,255,.9); }
+.touchline-section .collapsible summary::after { border-color: rgba(255,255,255,.3); }
+.touchline-section .collapsible summary:hover { background: rgba(255,255,255,.08); }
+.touchline-section .collapsible-content { color: rgba(255,255,255,.7); }
+
+.screen-section .collapsible { border-color: rgba(255,255,255,.08); }
+.screen-section .collapsible summary { background: rgba(255,255,255,.04); color: rgba(255,255,255,.9); }
+.screen-section .collapsible summary::after { border-color: rgba(255,255,255,.3); }
+.screen-section .collapsible summary:hover { background: rgba(255,255,255,.08); }
+.screen-section .collapsible-content { color: rgba(255,255,255,.7); }
+
+.shelf-section .collapsible { border-color: rgba(255,255,255,.08); }
+.shelf-section .collapsible summary { background: rgba(255,255,255,.04); color: rgba(255,255,255,.9); }
+.shelf-section .collapsible summary::after { border-color: rgba(255,255,255,.3); }
+.shelf-section .collapsible summary:hover { background: rgba(255,255,255,.08); }
+.shelf-section .collapsible-content { color: rgba(255,255,255,.7); }
+
+/* ═══════════ Enhancement 20: READ-NEXT CONNECTORS ═══════════ */
+.read-next {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  text-align: right;
+  margin-top: 28px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+  color: var(--ghost);
+}
+.read-next a {
+  font-weight: 700;
+  text-decoration: none;
+}
+.read-next .arrow {
+  display: inline-block;
+  margin-left: 4px;
+  transition: transform .15s ease;
+}
+.read-next:hover .arrow {
+  transform: translateX(3px);
+}
+
+/* Section-specific read-next colours */
+.world-section .read-next a { color: var(--rose); }
+.tech-section .read-next a { color: var(--ember); }
+.touchline-section .read-next { border-top-color: rgba(255,255,255,.08); color: rgba(255,255,255,.3); }
+.touchline-section .read-next a { color: var(--turf-lt); }
+.screen-section .read-next { border-top-color: rgba(255,255,255,.08); color: rgba(255,255,255,.3); }
+.screen-section .read-next a { color: var(--neon); }
+.shelf-section .read-next { border-top-color: rgba(255,255,255,.08); color: rgba(255,255,255,.3); }
+.shelf-section .read-next a { color: var(--shelf-accent); }
+.session-section .read-next a { color: var(--session-accent); }
+.history-section .read-next a { color: var(--hist-accent); }
+
+/* ═══════════ Enhancement 5: SCROLL-TRIGGERED ANIMATIONS ═══════════ */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* Staggered children */
+.reveal-group .reveal:nth-child(1) { transition-delay: 0ms; }
+.reveal-group .reveal:nth-child(2) { transition-delay: 80ms; }
+.reveal-group .reveal:nth-child(3) { transition-delay: 160ms; }
+.reveal-group .reveal:nth-child(4) { transition-delay: 240ms; }
+.reveal-group .reveal:nth-child(5) { transition-delay: 320ms; }
+.reveal-group .reveal:nth-child(6) { transition-delay: 400ms; }
+
+/* ═══════════ THE LONG SHELF ═══════════ */
+.longshelf-section { background: var(--paper); border-bottom: 1px solid var(--rule); }
+.longshelf-section .section-label { color: var(--rose); }
+/* Two-column compact layout */
+.longshelf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 32px; }
+.shelf-item { padding: 16px 0; border-bottom: 1px solid var(--rule); }
+.shelf-item:last-child { border-bottom: none; }
+.shelf-item .title { font-size: 17px; font-weight: 700; color: var(--ink); line-height: 1.3; }
+.shelf-item .meta {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; color: var(--ghost); margin-top: 2px;
+}
+.shelf-item .desc {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; color: var(--slate); margin-top: 4px; line-height: 1.5;
+}
+
+/* ═══════════ ON THE RADAR ═══════════ */
+.radar-section { background: var(--warm); }
+.radar-section .section-label { color: var(--ember); }
+.radar-section .radar-row { border-bottom-color: rgba(0,0,0,.06); color: var(--ink); }
+.radar-section .radar-date { color: var(--ember); font-size: 12px; }
+.radar-section .radar-row strong { color: var(--ink); }
+.radar-section .radar-cat.football { background: var(--turf); }
+.radar-section .radar-cat.film { background: var(--neon); }
+.radar-section .radar-cat.game { background: var(--ember); }
+.radar-section .radar-cat.event { background: var(--rose); }
+.radar-section .radar-cat.release { background: var(--shelf-accent); }
+
+/* ═══════════ FOOTER ═══════════ */
+.footer {
+  background: var(--deep); padding: 40px 60px; text-align: center;
+}
+.footer-brand { font-size: 28px; font-weight: 700; color: white; }
+.footer-brand span { color: var(--rose); font-style: italic; }
+.footer-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: rgba(255,255,255,.3);
+  letter-spacing: 2px; text-transform: uppercase; margin-top: 6px;
+}
+
+/* ═══════════ ARTICLE ENTRY PATTERNS ═══════════ */
+/* Stat lead — bold number + context opens an article */
+.entry-stat {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 56px; font-weight: 700; line-height: 1.1;
+  margin-bottom: 4px;
+}
+.entry-stat-context {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; color: var(--slate);
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 20px;
+}
+/* Quote lead — pull quote as opener */
+.entry-quote {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 24px; font-style: italic; line-height: 1.4;
+  border-left: 4px solid var(--rose);
+  padding-left: 20px; margin-bottom: 20px;
+  color: var(--ink);
+}
+.entry-quote cite {
+  display: block; font-style: normal; font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--ghost); margin-top: 8px;
+}
+/* Summary bullets lead — 3 key points upfront */
+.entry-bullets {
+  list-style: none; padding: 0; margin: 0 0 20px 0;
+  border-left: 4px solid var(--rose);
+  padding-left: 16px;
+}
+.entry-bullets li {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 500;
+  line-height: 1.5; padding: 4px 0;
+  color: var(--ink);
+}
+/* Question hook lead */
+.entry-question {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 28px; font-weight: 600; font-style: italic;
+  line-height: 1.3; margin-bottom: 16px;
+  color: var(--ink);
+}
+/* Dark section entry variants */
+.touchline-section .entry-stat,
+.screen-section .entry-stat,
+.shelf-section .entry-stat { color: rgba(255,255,255,.9); }
+.touchline-section .entry-stat-context,
+.screen-section .entry-stat-context,
+.shelf-section .entry-stat-context { color: rgba(255,255,255,.4); }
+.touchline-section .entry-quote,
+.screen-section .entry-quote,
+.shelf-section .entry-quote { color: rgba(255,255,255,.85); }
+.touchline-section .entry-bullets li,
+.screen-section .entry-bullets li,
+.shelf-section .entry-bullets li { color: rgba(255,255,255,.8); }
+.touchline-section .entry-question,
+.screen-section .entry-question,
+.shelf-section .entry-question { color: rgba(255,255,255,.85); }
+.touchline-section .entry-quote { border-color: var(--turf-lt); }
+.touchline-section .entry-bullets { border-color: var(--turf-lt); }
+.screen-section .entry-quote { border-color: var(--neon); }
+.screen-section .entry-bullets { border-color: var(--neon); }
+.shelf-section .entry-quote { border-color: var(--shelf-accent); }
+.shelf-section .entry-bullets { border-color: var(--shelf-accent); }
+
+/* ═══════════ SECTION BREATHER BANDS ═══════════ */
+.breather {
+  text-align: center;
+  padding: 28px 40px;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  margin: 0;
+}
+.breather-stat {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 42px; font-weight: 700;
+  color: var(--rose); line-height: 1.1;
+}
+.breather-context {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; color: var(--slate);
+  margin-top: 4px;
+}
+.breather-teaser {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 18px; font-style: italic;
+  color: var(--slate); line-height: 1.4;
+}
+/* Dark breather (between dark sections) */
+.breather.dark {
+  background: var(--deep);
+  border-color: rgba(255,255,255,.08);
+}
+.breather.dark .breather-stat { color: var(--turf-lt); }
+.breather.dark .breather-context,
+.breather.dark .breather-teaser { color: rgba(255,255,255,.45); }
+
+/* ═══════════ ALSO-LIST PRIORITY TIERS ═══════════ */
+.also-list li.tier-hot {
+  border-left: 3px solid var(--rose);
+  padding-left: 10px;
+  background: rgba(232,56,79,.04);
+  margin-bottom: 10px; padding-top: 4px; padding-bottom: 4px;
+}
+.also-list li.tier-warm {
+  border-left: 3px solid var(--ember);
+  padding-left: 10px;
+  margin-bottom: 10px; padding-top: 4px; padding-bottom: 4px;
+}
+.also-list li.tier-note {
+  border-left: 3px solid var(--rule);
+  padding-left: 10px;
+  margin-bottom: 10px; padding-top: 4px; padding-bottom: 4px;
+}
+/* Dark section tiers */
+.touchline-section .also-list li.tier-hot { border-color: var(--turf-lt); background: rgba(43,214,123,.06); }
+.touchline-section .also-list li.tier-warm { border-color: rgba(255,255,255,.25); }
+.touchline-section .also-list li.tier-note { border-color: rgba(255,255,255,.1); }
+.screen-section .also-list li.tier-hot { border-color: var(--neon); background: rgba(255,45,120,.06); }
+.screen-section .also-list li.tier-warm { border-color: rgba(255,255,255,.25); }
+.screen-section .also-list li.tier-note { border-color: rgba(255,255,255,.1); }
+.shelf-section .also-list li.tier-hot { border-color: var(--shelf-accent); background: rgba(212,160,60,.06); }
+.shelf-section .also-list li.tier-warm { border-color: rgba(255,255,255,.25); }
+.shelf-section .also-list li.tier-note { border-color: rgba(255,255,255,.1); }
+
+/* ═══════════ COMPARISON PANELS ═══════════ */
+.compare-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 20px 0;
+}
+.compare-side {
+  padding: 20px 24px;
+}
+.compare-side.left {
+  background: rgba(232,56,79,.04);
+  border-right: 1px solid var(--rule);
+}
+.compare-side.right {
+  background: rgba(26,122,76,.04);
+}
+.compare-side .compare-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.compare-side.left .compare-label { color: var(--rose); }
+.compare-side.right .compare-label { color: var(--turf); }
+.compare-side h4 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 20px; font-weight: 700;
+  margin-bottom: 8px;
+}
+.compare-side p {
+  font-size: 15px; line-height: 1.55;
+  margin-bottom: 8px;
+}
+.compare-side .compare-stat {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 36px; font-weight: 700;
+  line-height: 1.1; margin-bottom: 4px;
+}
+.compare-side.left .compare-stat { color: var(--rose); }
+.compare-side.right .compare-stat { color: var(--turf); }
+/* Dark section compare panels */
+.touchline-section .compare-side.left { background: rgba(43,214,123,.06); border-color: rgba(255,255,255,.08); }
+.touchline-section .compare-side.right { background: rgba(0,180,216,.06); }
+.touchline-section .compare-side p,
+.touchline-section .compare-side h4 { color: rgba(255,255,255,.85); }
+.touchline-section .compare-side.left .compare-label,
+.touchline-section .compare-side.left .compare-stat { color: var(--turf-lt); }
+.touchline-section .compare-side.right .compare-label,
+.touchline-section .compare-side.right .compare-stat { color: #00B4D8; }
+.screen-section .compare-side.left { background: rgba(255,45,120,.06); border-color: rgba(255,255,255,.08); }
+.screen-section .compare-side.right { background: rgba(0,180,216,.06); }
+.screen-section .compare-side p,
+.screen-section .compare-side h4 { color: rgba(255,255,255,.85); }
+.shelf-section .compare-side.left { background: rgba(212,160,60,.06); border-color: rgba(255,255,255,.08); }
+.shelf-section .compare-side.right { background: rgba(0,180,216,.06); }
+.shelf-section .compare-side p,
+.shelf-section .compare-side h4 { color: rgba(255,255,255,.85); }
+
+/* ═══════════ FLOATED INSET SIDEBAR ═══════════ */
+.sidebar-float {
+  float: right;
+  width: 260px;
+  margin: 0 0 16px 24px;
+  padding: 16px 18px;
+  background: var(--warm);
+  border-left: 3px solid var(--rose);
+  border-radius: 0 4px 4px 0;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; line-height: 1.5;
+}
+.sidebar-float .sidebar-title {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 8px;
+}
+.sidebar-float ul { list-style: none; padding: 0; margin: 0; }
+.sidebar-float li { padding: 4px 0; }
+/* Dark section float sidebars */
+.touchline-section .sidebar-float {
+  background: rgba(255,255,255,.05);
+  border-color: var(--turf-lt);
+  color: rgba(255,255,255,.8);
+}
+.touchline-section .sidebar-float .sidebar-title { color: var(--turf-lt); }
+.screen-section .sidebar-float {
+  background: rgba(255,255,255,.05);
+  border-color: var(--neon);
+  color: rgba(255,255,255,.8);
+}
+.screen-section .sidebar-float .sidebar-title { color: var(--neon); }
+.shelf-section .sidebar-float {
+  background: rgba(255,255,255,.05);
+  border-color: var(--shelf-accent);
+  color: rgba(255,255,255,.8);
+}
+.shelf-section .sidebar-float .sidebar-title { color: var(--shelf-accent); }
+
+/* ═══════════ RESPONSIVE ═══════════ */
+@media (max-width: 820px) {
+  .cover, .nav-section, .foreword, .sec, .touchline-section, .screen-section,
+  .shelf-section, .session-section, .history-section,
+  .longshelf-section, .radar-section, .footer {
+    padding-left: 24px; padding-right: 24px;
+  }
+  .hero-bleed { width: calc(100% + 48px); margin-left: -24px; }
+  .divider.inset { margin-left: 24px; margin-right: 24px; }
+  .cover-brand { font-size: 60px; }
+  .cover-headline { font-size: 26px; }
+  .nav-grid { grid-template-columns: 1fr 1fr; }
+  .nav-card.lead { grid-column: span 2; }
+  .longshelf-grid { grid-template-columns: 1fr; }
+  .book-grid { grid-template-columns: 1fr; }
+  /* Enhancement 1 */
+  .split-60-40, .split-40-60 { grid-template-columns: 1fr; }
+  /* Enhancement 4 */
+  .img-montage.layout-1-2, .img-montage.layout-2x2 { grid-template-columns: 1fr; }
+  .img-montage.layout-1-2 .montage-hero { grid-column: span 1; }
+  .img-offset { float: none; width: 100%; margin: 16px 0; }
+  /* Enhancement 2 */
+  .sec-watermark { font-size: 100px; }
+  /* Enhancement 7 */
+  .pull-quote.wide { margin-left: 0; margin-right: 0; }
+  /* Enhancement 8 */
+  .also-cards { grid-template-columns: 1fr; }
+  /* Enhancement 13 */
+  .compact-grid { grid-template-columns: 1fr; }
+  /* Enhancement 14: margin note goes inline */
+  .margin-note { float: none; width: 100%; margin: 16px 0; }
+  /* New components responsive */
+  .sidebar-float { float: none; width: 100%; margin: 16px 0; }
+  .compare-panel { grid-template-columns: 1fr; }
+  .compare-side.left { border-right: none; border-bottom: 1px solid var(--rule); }
+  .entry-stat { font-size: 44px; }
+  .entry-question { font-size: 24px; }
+}
+@media (max-width: 600px) {
+  .cover, .nav-section, .foreword, .sec, .touchline-section, .screen-section,
+  .shelf-section, .session-section, .history-section,
+  .longshelf-section, .radar-section, .footer {
+    padding-left: 20px; padding-right: 20px;
+  }
+  .hero-bleed { width: calc(100% + 40px); margin-left: -20px; }
+  .divider.inset { margin-left: 20px; margin-right: 20px; }
+  .cover-brand { font-size: 52px; }
+  .cover-headline { font-size: 22px; }
+  .nav-grid { grid-template-columns: 1fr; }
+  .nav-card.lead { grid-column: span 1; grid-template-columns: 1fr; }
+  .nav-card.lead .nav-card-thumb { min-height: 120px; }
+  .dual-col { grid-template-columns: 1fr; }
+  .stat-bar { grid-template-columns: repeat(2, 1fr); }
+  .stat-bar .stat:nth-child(2) { border-right: none; }
+  .results-strip { flex-direction: column; }
+  .result-card { max-width: 100%; }
+  .sec h2, .touchline-section h2, .screen-section h2, .shelf-section h2 { font-size: 28px; }
+  .longshelf-grid { grid-template-columns: 1fr; }
+  .book-grid { grid-template-columns: 1fr; }
+  .back-to-top { bottom: 16px; right: 16px; width: 40px; height: 40px; }
+  /* Enhancement 2: hide watermark on small screens */
+  .sec-watermark { display: none; }
+  /* Enhancement 3: scale down big numbers */
+  .big-number .num { font-size: 56px; }
+  .big-number-row { grid-template-columns: 1fr; gap: 16px; }
+  .big-number-row .big-number .num { font-size: 48px; }
+  /* Enhancement 10 */
+  .sec-opener h2 { font-size: 32px; }
+  .display-stat { font-size: 52px; }
+  /* Enhancement 16 */
+  .stack-card { flex: 0 0 200px; }
+  /* Enhancement 12 */
+  .timeline { padding-left: 24px; }
+}
+
+</style>
+</head>
+<body>
+<div class="progress-bar" id="progressBar"></div>
+<div class="mag">
+
+<!-- ══════ COVER ══════ -->
+<header class="cover" id="top">
+  <div class="cover-noise"></div>
+  <div class="cover-grain"></div>
+  <div class="cover-issue" style="position:relative;z-index:2">5 April 2026 · Issue #1 · Sunday Edition</div>
+  <div class="cover-brand">The Signal<span>.</span></div>
+  <div class="cover-headline">The world is on fire — literally and figuratively — and the FA Cup just made everyone's weekend stranger</div>
+  <div class="cover-tags">
+    <span class="tag">Iran War</span>
+    <span class="tag">Serie A</span>
+    <span class="tag">FA Cup Chaos</span>
+    <span class="tag">Switch 2</span>
+    <span class="tag">Star Wars: Maul</span>
+    <span class="tag">The Shelf</span>
+    <span class="tag">Concurrent Training</span>
+    <span class="tag">Constantinople</span>
+    <span class="tag">Sticky Miso Chicken</span>
+    <span class="tag">GeForce NOW</span>
+  </div>
+</header>
+
+<!-- ══════ NAVIGATOR ══════ -->
+<section class="nav-section" id="nav">
+  <h2>What's Inside</h2>
+  <div class="nav-grid">
+    <!-- Lead card -->
+    <a href="#world" class="nav-card lead world" style="text-decoration:none">
+      <div class="nav-card-content">
+        <div class="nav-card-tag">
+          <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10 15 15 0 0 1-4-10A15 15 0 0 1 12 2z"/></svg></span>
+          World</div>
+        <h3>The War at the World's Crossroads</h3>
+        <p>US-Israeli strikes on Iran are reshaping global oil, NATO, and the rules of deterrence — and it's only Week 6.</p>
+        <div class="read-time">9 min read</div>
+      </div>
+      <div class="nav-card-thumb" style="background-image:url('https://assets.cfr.org/images/w_1920/t_cfr_3_2/f_auto/v1772464933/IranWar_DB_03022026_A/IranWar_DB_03022026_A.jpg')"></div>
+    </a>
+
+    <a href="#tech" class="nav-card tech" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="4"/><line x1="6" y1="10" x2="6" y2="14"/><line x1="4" y1="12" x2="8" y2="12"/><circle cx="16" cy="10" r="0.8" fill="currentColor"/><circle cx="18" cy="12" r="0.8" fill="currentColor"/></svg></span>
+        Pixel &amp; Byte</div>
+      <h3>Switch 2 Leaks, Steam Machine &amp; April's Best Games</h3>
+      <p>Nintendo's 2026 roadmap has leaked, GeForce NOW gets PRAGMATA, and Gemini gets personal.</p>
+      <div class="read-time">6 min</div>
+    </a>
+
+    <a href="#football" class="nav-card football" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2l3 7h-6l3-7zM22 12l-7 3v-6l7 3zM12 22l-3-7h6l-3 7zM2 12l7-3v6l-7-3z"/></svg></span>
+        The Touchline</div>
+      <h3>Juve Hosts Genoa, Arsenal's Cup Dreams Die, CL Begins</h3>
+      <p>Inter marching to the title. Arsenal knocked out by Southampton. Champions League quarter-finals start Tuesday.</p>
+      <div class="read-time">7 min</div>
+    </a>
+
+    <a href="#screen" class="nav-card screen" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 8h20M2 16h20M8 4v16M16 4v16"/></svg></span>
+        Screen &amp; Sound</div>
+      <h3>Maul Returns. The Super Mario Movie Opened. April Is Loaded.</h3>
+      <p>Star Wars: Maul – Shadow Lord premieres tonight. Beef Season 2 is coming. It's a good month.</p>
+      <div class="read-time">5 min</div>
+    </a>
+
+    <a href="#shelf" class="nav-card shelf" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>
+        The Shelf</div>
+      <h3>April Books, Football Weekly's Best Episode, &amp; Synthwave Drops</h3>
+      <p>Fantasy's strongest April in years, a podcast you shouldn't skip, and a rising synthwave act worth your ears.</p>
+      <div class="read-time">4 min</div>
+    </a>
+
+    <a href="#session" class="nav-card session" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6h-2v12h2M18 6h2v12h-2M6 12h12"/><rect x="3" y="8" width="3" height="8" rx="1"/><rect x="18" y="8" width="3" height="8" rx="1"/></svg></span>
+        The Session</div>
+      <h3>Lifting + Running: The Interference Effect Is Overblown</h3>
+      <p>What Barbell Medicine's research actually says about combining strength and cardio — and how to sequence it.</p>
+      <div class="read-time">5 min</div>
+    </a>
+
+    <a href="#history" class="nav-card history" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12M6 22h12M7 2v4a5 5 0 0 0 5 5 5 5 0 0 0 5-5V2M7 22v-4a5 5 0 0 1 5-5 5 5 0 0 1 5 5v4"/></svg></span>
+        History</div>
+      <h3>6 April, 1453: The Cannons Open on Constantinople</h3>
+      <p>How one Hungarian gunsmith and a young sultan changed the world in 55 days.</p>
+      <div class="read-time">4 min</div>
+    </a>
+
+    <a href="#pantry" class="nav-card" style="text-decoration:none;border-left:4px solid var(--pantry-accent);background:rgba(198,93,58,.06)">
+      <div class="nav-card-tag" style="color:var(--pantry-accent)">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2l3 6h12l3-6"/><path d="M5 8v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8"/><line x1="9" y1="12" x2="15" y2="12"/></svg></span>
+        The Pantry</div>
+      <h3>Sticky Miso Chicken Prep Boxes — 50g Protein Per Serve</h3>
+      <p>Five containers, 50 minutes, week sorted. Mob Kitchen's finest high-protein batch recipe.</p>
+      <div class="read-time">2 min</div>
+    </a>
+
+    <a href="#longshelf" class="nav-card" style="text-decoration:none;border-left:4px solid var(--ghost)">
+      <div class="nav-card-tag" style="color:var(--ghost)">Worth Your Time</div>
+      <h3>The Long Shelf</h3>
+      <p>8 reads, listens, and watches — including 2 wildcards — to start the week right.</p>
+      <div class="read-time">2 min</div>
+    </a>
+
+    <a href="#radar" class="nav-card" style="text-decoration:none;border-left:4px solid var(--rose)">
+      <div class="nav-card-tag" style="color:var(--rose)">Coming Up</div>
+      <h3>On the Radar</h3>
+      <p>CL first legs, Juve vs Genoa, Pokémon Champions, FA Cup semis draw — the next 10 days at a glance.</p>
+      <div class="read-time">1 min</div>
+    </a>
+  </div>
+</section>
+
+<!-- ══════ FOREWORD ══════ -->
+<section class="foreword">
+  <p>The Strait of Hormuz is half-closed, a Championship club just knocked Arsenal out of the FA Cup, and it's Easter Sunday. None of these things are unrelated — they all share the same underlying logic: that the expected outcome is not guaranteed, and this week delivered that lesson in geopolitics, sport, and the football fixture list simultaneously. Welcome to Issue #1.</p>
+</section>
+
+<!-- ══════ THE LONG SHELF ══════ -->
+<section class="sec longshelf-section" id="longshelf">
+  <span class="section-label" style="color:var(--rose)">The Long Shelf — Worth Your Time</span>
+  <div class="longshelf-grid">
+    <div class="shelf-item">
+      <div class="title"><a href="https://www.barbellmedicine.com/blog/concurrent-training-and-the-interference-effect/">The Interference Effect: What The Research Actually Says</a></div>
+      <div class="meta">Barbell Medicine · Jordan Feigenbaum &amp; Austin Baraki</div>
+      <div class="desc">The most thorough, evidence-based breakdown of whether running kills your gains. Spoiler: it doesn't, unless your total load exceeds recovery. Essential reading if you're lifting and running concurrently.</div>
+    </div>
+    <div class="shelf-item">
+      <div class="title"><a href="https://mackinderforum.org/geopolitical-newsletter/weekly-geopolitical-news-bulletin-march-28-april-3-2026">Weekly Geopolitical Bulletin: The Iran War's Strategic Landscape</a></div>
+      <div class="meta">Mackinder Forum · April 2026</div>
+      <div class="desc">The sharpest executive-level breakdown of the US-Iran war's second-order effects — NATO fracture, oil supply constraints, Indo-Pacific realignment. Dense but worth it.</div>
+    </div>
+    <div class="shelf-item">
+      <div class="title"><a href="https://thephrasemaker.com/2026/03/27/sci-fi-fantasy-book-releases-april/">April 2026 Sci-Fi &amp; Fantasy Releases You Can't Miss</a></div>
+      <div class="meta">Phrasemaker · March 2026</div>
+      <div class="desc">The best curated rundown of April's fantasy and sci-fi books. John Chu's debut novel and the James S.A. Corey continuation are the ones to watch.</div>
+    </div>
+    <div class="shelf-item">
+      <div class="title"><a href="https://wired.com/story/garmins-top-training-features-explained/">Garmin's Top Training Features, Explained</a></div>
+      <div class="meta">WIRED · September 2025</div>
+      <div class="desc">Clear, non-manufacturer explanation of what Training Status, HRV Status, and Body Battery actually mean — and how to read them without overthinking it. Practical for Venu X1 users.</div>
+    </div>
+    <div class="shelf-item">
+      <div class="title"><a href="https://www.ign.com/articles/upcoming-new-star-wars-movies-2026-tv-shows-release-dates">Everything Coming in the Star Wars Universe in 2026</a></div>
+      <div class="meta">IGN · April 2026</div>
+      <div class="desc">Full confirmed pipeline: Maul premieres tonight, Mandalorian &amp; Grogu in May, Starfighter in 2027. Good reference to bookmark.</div>
+    </div>
+    <div class="shelf-item">
+      <div class="title"><a href="https://www.ebsco.com/research-starters/history/siege-constantinople-1453">The Siege of Constantinople, 1453</a></div>
+      <div class="meta">EBSCO Research Starters · History</div>
+      <div class="desc">Given this week's history feature, a clean narrative summary of the full 55-day siege — what made it strategically unprecedented and why it echoes in modern geopolitics.</div>
+    </div>
+    <div class="shelf-item">
+      <div class="title"><a href="https://www.techradar.com/gaming/consoles-pc/nothing-has-actually-changed-valve-recommits-to-a-2026-launch-for-the-steam-machine-amid-rumors-of-a-further-delay">Valve Commits (Again) to 2026 Steam Machine Launch</a></div>
+      <div class="meta">TechRadar · March 2026</div>
+      <div class="desc">A wildcard: Valve's Steam Machine — a proper mini-PC console — is coming in 2026 with 16GB DDR5. If you use GeForce NOW and a Xiaomi Pad today, this could matter to you.</div>
+    </div>
+    <div class="shelf-item">
+      <div class="title"><a href="https://gizmodo.com/72-new-sci-fi-fantasy-and-horror-books-arriving-in-april-2000733047">72 New SFF Books in April 2026</a></div>
+      <div class="meta">Gizmodo · April 2026</div>
+      <div class="desc">A wildcard: the full catalogue of what's landing in genre fiction this month — useful for building your Goodreads list or spotting something you'd have otherwise missed entirely.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ THE WORLD THIS WEEK ══════ -->
+<hr class="divider dv-world">
+<section class="sec world-section sec-opener" id="world">
+  <div class="sec-watermark">World</div>
+  <div class="opener-band"></div>
+  <div class="sec-gradient-overlay"></div>
+  <span class="section-label" style="color:var(--rose)">The World This Week</span>
+  <h2>The War That Broke Everything's Assumptions</h2>
+  <img class="hero-img reveal" src="https://assets.cfr.org/images/w_1920/t_cfr_3_2/f_auto/v1772464933/IranWar_DB_03022026_A/IranWar_DB_03022026_A.jpg" alt="Map showing the spread of US-Israel-Iran conflict across the Middle East">
+  <div class="caption">The Iran war's geographic footprint — Council on Foreign Relations</div>
+
+  <div class="stat-bar reveal">
+    <div class="stat"><div class="stat-num count-up" data-target="300+">0</div><div class="stat-label">US Personnel Wounded</div></div>
+    <div class="stat"><div class="stat-num count-up" data-target="113k+">0</div><div class="stat-label">Civilian Sites Hit (Iran claims)</div></div>
+    <div class="stat"><div class="stat-num count-up" data-target="40">0</div><div class="stat-label">Countries at Hormuz Summit</div></div>
+    <div class="stat"><div class="stat-num count-up" data-target="6">0</div><div class="stat-label">Weeks Since War Began</div></div>
+  </div>
+
+  <div class="entry-stat">Week 6</div>
+  <div class="entry-stat-context">of the US-Israel-Iran war — and the strategic consequences are accelerating faster than the battlefield</div>
+
+  <p>Six weeks in, the 2026 Iran war has stopped being a regional crisis and started being a civilisational stress-test. This week produced three developments that analysts will be writing about for years: Iran's parliament openly debating withdrawal from the Nuclear Non-Proliferation Treaty; Trump threatening to pull the US out of NATO after European allies refused to join military operations to reopen the Strait of Hormuz; and Iran shooting down a US F-15E Strike Eagle — the first confirmed loss of a US combat aircraft of that type to hostile fire in decades.</p>
+
+  <p>The bridge strike on Thursday was the moment that crystallised the week's character. The B1 suspension bridge west of Tehran — a civilian infrastructure project with no military function — was hit by US-Israeli airstrikes, then struck again an hour later as emergency crews arrived. Eight people died, 95 were injured. Iran's Red Crescent put total civilian infrastructure strikes at over 113,000 sites since the war began. Whether those numbers are accurate or not, the double-tap on rescue workers is the kind of moment that reshapes international opinion in ways that outlast the conflict itself.</p>
+
+  <div class="sidebar-float">
+    <div class="sidebar-title">Key Pressures This Week</div>
+    <ul>
+      <li><strong>Hormuz</strong> — UK convened 40+ nations without US presence</li>
+      <li><strong>NPT</strong> — Iran's parliament considering exit from nuclear treaty</li>
+      <li><strong>NATO</strong> — Trump called it a "paper tiger"; Hegseth declined to confirm Article 5</li>
+      <li><strong>Oil</strong> — OPEC March output fell sharply; Taiwan increasing fuel surcharges 157%</li>
+      <li><strong>Ukraine</strong> — Russia's March gains: just 23km², lowest since 2023</li>
+    </ul>
+  </div>
+
+  <p>Iran's response has been methodical rather than panicked. Drone and missile attacks on Kuwait's oil infrastructure, Qatar's LNG tankers, Amazon Web Services servers in Bahrain, and — in a move that felt almost theatrical — a reported strike on an Oracle data centre in Dubai (which UAE officials disputed). The message wasn't the damage; it was the target selection. Iran is demonstrating that it can reach anything in the Gulf.</p>
+
+  <p>The Strait of Hormuz situation deserves its own paragraph. Around 20% of the world's oil passes through those 21 nautical miles of water. Iran and Oman are reportedly drafting a "maritime transit protocol" — which is either a genuine off-ramp or a mechanism for Iran to exert permanent leverage over global energy supply. Britain hosting 40+ countries to discuss reopening the strait, with the US conspicuously absent after Trump declared it "not America's job," is the kind of diplomatic inversion that would have seemed like a Tom Clancy plot twist two years ago.</p>
+
+  <div class="angle reveal">
+    <div class="angle-label">The Angle</div>
+    <p>The most important story isn't the missiles. It's NATO. The alliance has survived disagreements over burden-sharing, over Iraq, over Afghanistan. It has never faced a US president who launched a war without consulting allies, then demanded they fight in it, then called the alliance a "paper tiger" when they refused. If Trump follows through on withdrawal rhetoric, the entire post-1945 European security architecture shifts on its axis. Russia is watching. China is watching. The Iran war may end; what it has done to Western institutional trust will not repair quickly.</p>
+  </div>
+
+  <h3>Ukraine: Zelensky Proposes Easter Ceasefire, Russia Strikes Markets</h3>
+
+  <div class="entry-bullets">
+    <ul>
+      <li>Russian drone struck a market in Nikopol this week, killing 5, wounding 19</li>
+      <li>Russia fired 280+ drones overnight — 260 intercepted according to Ukrainian Air Force</li>
+      <li>Russia's March territorial gains: just 23km² — a fraction of January's 319km²</li>
+      <li>Zelensky proposed Easter ceasefire including mutual halt to energy infrastructure strikes; Kremlin rejected it</li>
+    </ul>
+  </div>
+
+  <p>The contrast between Russia's narrative of battlefield progress and the ISW's data is striking. After two and a half years of war, March 2026 was Russia's worst month for territorial gains since the conflict began. Ukraine's counter-strikes in the south have disrupted logistics and supply chains in ways that are starting to show in measurable outcomes — not spectacular breakthroughs, but grinding attrition that is working. The Easter ceasefire rejection from Moscow was predictable; what's notable is Zelensky's continued willingness to propose restraint on energy infrastructure, which costs him politically at home.</p>
+
+  <div class="src"><a href="https://en.wikipedia.org/wiki/Portal:Current_events/April_2026">Wikipedia — Current Events April 2026</a> | <a href="https://mackinderforum.org/geopolitical-newsletter/weekly-geopolitical-news-bulletin-march-28-april-3-2026">Mackinder Forum Weekly Bulletin</a> | <a href="https://www.democracynow.org/2026/4/3/headlines">Democracy Now Headlines 3 April</a></div>
+
+  <div class="also"><div class="also-title">Also This Week</div>
+    <ul class="also-list">
+      <li class="tier-hot"><strong>Iran threatens NPT exit</strong> — Parliament considering withdrawal from the Nuclear Non-Proliferation Treaty, the most dangerous threshold development of the week.</li>
+      <li class="tier-hot"><strong>US F-15E shot down over Iran</strong> — One crew member rescued, one still missing. The first confirmed loss of that type of aircraft to hostile fire marks a significant escalation.</li>
+      <li class="tier-warm"><strong>Artemis II launches</strong> — NASA launched Artemis II from Kennedy Space Center this week, carrying four astronauts on a lunar flyby — the first crewed mission beyond low Earth orbit since Apollo 17.</li>
+      <li class="tier-warm"><strong>Sudan: UN returns to Khartoum</strong> — The UN reopened its Khartoum headquarters for the first time since 2023, though fighting in White Nile State continues to claim civilian lives.</li>
+      <li class="tier-note"><strong>Pakistan-Afghanistan fighting resumes</strong> — Artillery exchanges resumed after the Eid ceasefire collapsed, with each side accusing the other of shelling civilians.</li>
+      <li class="tier-note"><strong>North Korea solid-fuel engine test</strong> — Kim Jong Un observed a test of an upgraded solid-fuel ICBM engine, timed — almost certainly deliberately — to coincide with US military commitments elsewhere.</li>
+    </ul>
+  </div>
+  <div class="read-next">Up next: <a href="#tech">Pixel &amp; Byte <span class="arrow">→</span></a> — Nintendo's 2026 roadmap leaks, Steam Machine commitments, and April's best games</div>
+</section>
+
+<!-- ══════ BREATHER BAND ══════ -->
+<div class="breather">
+  <div class="breather-stat">6 weeks</div>
+  <div class="breather-context">Since the Iran war began — and already reshaping oil, NATO and nuclear non-proliferation</div>
+  <div class="breather-teaser">Next: gaming news, tech updates, and what Valve is building</div>
+</div>
+
+<!-- ══════ PIXEL & BYTE ══════ -->
+<hr class="divider dv-tech">
+<section class="sec tech-section" id="tech">
+  <div class="sec-watermark">Pixel</div>
+  <div class="sec-gradient-overlay"></div>
+  <span class="section-label" style="color:var(--ember)">Pixel &amp; Byte</span>
+
+  <h2>Nintendo's Full 2026 Roadmap Has Leaked</h2>
+
+  <img class="hero-img reveal" src="https://media.wired.com/photos/67896cc4ad521e22ddd81136/191:100/w_1280,c_limit/Nintendo-Switch-2-screen-joy-cons-SOURCE-Nintendo.jpg" alt="Nintendo Switch 2 console and Joy-Con controllers">
+  <div class="caption">Nintendo Switch 2 — WIRED / Nintendo</div>
+
+  <div class="entry-quote">
+    <p>"We hope to ship in 2026. Nothing has actually changed on our end."</p>
+    <cite>— Valve PR, on the Steam Machine delay rumours</cite>
+  </div>
+
+  <p>Multiple sources with solid track records have now leaked what appears to be Nintendo's full 2026 Switch 2 calendar, and it's substantially more exciting than anyone expected. The headliners: a new Star Fox game arriving this summer, and a Legend of Zelda: Ocarina of Time Remake with a special edition console bundle. There will be no major Nintendo Direct until June — when the summer showcase will drop the full reveal. Until then, Nintendo is doing what Nintendo does: drip-feeding the market with quality software.</p>
+
+  <p>April's eShop lineup alone is genuinely strong. <strong>South of Midnight: Weaver's Edition</strong> launched on April 1st — an award-winning third-person action adventure set in the American Deep South, from the makers of We Happy Few. <strong>Xenoblade Chronicles X: Definitive Edition – Switch 2 Edition</strong> arrives physically on April 16th with 4K upscaling and 60fps. <strong>Tomodachi Life: Living the Dream</strong> drops on Switch 1 the same day (Switch 2 performance enhancements included), and Capcom's long-in-development sci-fi action game <strong>Pragmata</strong> launches April 17th — a day earlier than originally planned.</p>
+
+  <div class="compare-panel">
+    <div class="compare-side left">
+      <h4>Nintendo Switch 2 — April Highlights</h4>
+      <ul>
+        <li><strong>South of Midnight: Weaver's Ed.</strong> — Apr 1 (out now)</li>
+        <li><strong>Xenoblade Chronicles X: NS2 Ed.</strong> — Apr 16 (physical)</li>
+        <li><strong>Tomodachi Life: Living the Dream</strong> — Apr 16 (Switch 1+2)</li>
+        <li><strong>Pragmata</strong> (Capcom) — Apr 17</li>
+        <li><strong>Pokémon Champions</strong> — Apr 8</li>
+        <li><strong>Outbound</strong> — Apr 24</li>
+      </ul>
+    </div>
+    <div class="compare-side right">
+      <h4>Steam / GeForce NOW — April Highlights</h4>
+      <ul>
+        <li><strong>Arknights: Endfield</strong> — Apr 2 (GFN day-one)</li>
+        <li><strong>Samson</strong> (ex-Just Cause devs) — Apr 8</li>
+        <li><strong>Replaced</strong> (pixel-art action) — Apr 14</li>
+        <li><strong>PRAGMATA</strong> — Apr 17 (day-one on GFN)</li>
+        <li><strong>Heroes of M&amp;M: Olden Era</strong> — Apr 30</li>
+        <li><strong>Diablo IV: Lord of Hatred</strong> — Apr 28</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Steam Machine: Still Coming, Just Not Q1</h3>
+  <p>Valve has reaffirmed its 2026 commitment to the Steam Machine — a console-form mini PC with 16GB DDR5 RAM and 8GB GDDR6 VRAM — after RAM supply concerns raised fears of a further delay. "Nothing has actually changed," the company told The Verge. The original "early 2026" window has clearly slipped, but the H1 target still appears to be the goal. This matters: if you're currently using GeForce NOW to play on a Xiaomi Pad, the Steam Machine represents a different calculus — local hardware, no subscription, proper desktop experience. Worth watching the pricing announcement carefully.</p>
+
+  <h3>Google Gemini Gets Personal (Literally)</h3>
+  <p>Google's most significant Gemini update of the year has been quietly rolling out: <strong>Personal Intelligence</strong>, which connects Gemini to your Gmail, Photos, Drive, and Search history to deliver contextualised, personalised responses rather than generic chat. It's currently US-only for Pro/Ultra subscribers, but a global rollout is expected this year. The practical upshot — Gemini summarising long email threads, prioritising your inbox, drafting with your tone — is genuinely useful in a way that previous AI assistant promises weren't. The privacy architecture matters here: opt-in only, each app connected individually.</p>
+
+  <div class="dyk">
+    <div class="dyk-title">Did You Know?</div>
+    <p>GeForce NOW's April 2026 lineup includes PRAGMATA with full path tracing support and DLSS Multi Frame Generation — making it one of the most technically demanding titles on the service. For cloud gaming, that's a remarkable capability demonstration: RTX 50-series server nodes doing real-time ray tracing for any device, including a Xiaomi tablet.</p>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-title">For the Kids</div>
+    <ul>
+      <li><strong>Pokémon Champions</strong> — Releases April 8 on Switch and Switch 2. Battle-focused, designed for the competitive crowd, but accessible enough for younger players learning type matchups.</li>
+      <li><strong>Tomodachi Life: Living the Dream</strong> — Launches April 16. Create Mii characters based on anyone you like and watch the drama unfold. Instant 10-year-old appeal.</li>
+      <li><strong>Darwin's Paradox!</strong> — Available now on Switch 2. Puzzle platformer about an octopus escaping a mysterious industrial complex. Clever, charming, and genuinely creative.</li>
+    </ul>
+  </div>
+
+  <div class="also"><div class="also-title">Also in Tech &amp; Gaming</div>
+    <div class="also-cards">
+      <div class="also-card">
+        <h4>Legacy of Kain: Ascendance</h4>
+        <p>Crystal Dynamics' new sequel to the legacy franchise landed on Switch 2 and Steam on March 31st. Early word is strong for fans of the gothic action-RPG originals.</p>
+        <span class="badge">Switch 2 / Steam</span>
+      </div>
+      <div class="also-card">
+        <h4>Mega Man Star Force Legacy Collection</h4>
+        <p>Seven-game collection of the spin-off series now streaming on GeForce NOW. Nostalgia delivery for anyone who grew up with the DS era.</p>
+        <span class="badge">GFN / Steam</span>
+      </div>
+      <div class="also-card">
+        <h4>Nintendo eShop Spring Sale</h4>
+        <p>Up to 75% off Switch 2 and Switch 1 games through April 12th. Worth a browse before the sale ends.</p>
+        <span class="badge">eShop · Until Apr 12</span>
+      </div>
+      <div class="also-card">
+        <h4>DLSS 4.5 Propagating on GFN</h4>
+        <p>Dynamic Multi Frame Generation and 6X mode are rolling through GeForce NOW's RTX 50-series server nodes — a meaningful visual upgrade for cloud gaming sessions.</p>
+        <span class="badge">GeForce NOW</span>
+      </div>
+    </div>
+  </div>
+  <div class="read-next">Up next: <a href="#football">The Touchline <span class="arrow">→</span></a> — Serie A, the FA Cup madness, and CL quarter-finals starting Tuesday</div>
+</section>
+
+<!-- ══════ THE PANTRY (between Pixel & Byte and Touchline) ══════ -->
+<hr class="divider" style="background:linear-gradient(90deg,var(--pantry-accent),#e8824a)">
+<section class="sec" id="pantry" style="background:var(--pantry-bg)">
+  <div class="sec-watermark" style="color:var(--pantry-accent)">Pantry</div>
+  <span class="section-label" style="color:var(--pantry-accent)">The Pantry</span>
+
+  <h2>Sticky Miso Chicken Prep Boxes</h2>
+  <p style="color:var(--slate);font-family:'DM Sans',sans-serif;font-size:15px;margin-bottom:24px">This week's batch cook. Five containers, 50 minutes, 50g protein per serve.</p>
+
+  <div class="split-60-40">
+    <div>
+      <p>This is Mob Kitchen's best high-protein formula right now — <strong>50g protein per serve</strong>, fibre-rich, batch-friendly, and flavoured well enough that you'll actually look forward to eating it on Wednesday. The miso glaze caramelises beautifully in the oven, the spring onion adds freshness, and the whole thing reheats without going rubbery. It's not bland "meal prep food." It's a proper dinner that happens to scale to five portions.</p>
+
+      <p>Critically for a cut: this is genuinely filling, keeps macros tight, and doesn't require you to eat the same flavour profile five days running — the spring onion and sesame vary enough from container to container as the miso intensifies.</p>
+
+      <div class="big-number" style="text-align:left">
+        <div class="num" style="color:var(--pantry-accent)">50g</div>
+        <div class="num-label" style="color:var(--slate)">Protein per serving</div>
+      </div>
+    </div>
+    <div>
+      <img src="https://healthyfitnessmeals.com/wp-content/uploads/2024/12/Chicken-rice-meal-prep-7-1.jpg" alt="High protein meal prep containers with chicken and rice" style="border-radius:8px;width:100%;object-fit:cover">
+    </div>
+  </div>
+
+  <div class="workout-card reveal" style="background:white;border-radius:8px;padding:24px;border:1px solid var(--rule)">
+    <div class="workout-card-title" style="font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--pantry-accent);margin-bottom:12px">Recipe — Serves 5 · 50 min total</div>
+    <table style="width:100%;border-collapse:collapse;font-family:'DM Sans',sans-serif;font-size:14px">
+      <tr style="border-bottom:2px solid var(--rule)">
+        <th style="text-align:left;padding:8px 12px;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--ghost)">Component</th>
+        <th style="text-align:left;padding:8px 12px;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--ghost)">Ingredient</th>
+        <th style="text-align:left;padding:8px 12px;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--ghost)">Qty</th>
+      </tr>
+      <tr class="highlight-row" style="background:rgba(198,93,58,.05)">
+        <td style="padding:8px 12px;font-weight:700">Protein</td>
+        <td style="padding:8px 12px">Chicken thigh fillets (skinless)</td>
+        <td style="padding:8px 12px">1kg</td>
+      </tr>
+      <tr>
+        <td style="padding:8px 12px;font-weight:700">Glaze</td>
+        <td style="padding:8px 12px">White miso paste, mirin, soy sauce, sesame oil, honey</td>
+        <td style="padding:8px 12px">3 tbsp / 2 tbsp / 2 tbsp / 1 tbsp / 1 tbsp</td>
+      </tr>
+      <tr style="background:rgba(198,93,58,.03)">
+        <td style="padding:8px 12px;font-weight:700">Grains</td>
+        <td style="padding:8px 12px">Brown rice or jasmine rice</td>
+        <td style="padding:8px 12px">350g dry</td>
+      </tr>
+      <tr>
+        <td style="padding:8px 12px;font-weight:700">Veg</td>
+        <td style="padding:8px 12px">Edamame, shredded red cabbage, spring onion</td>
+        <td style="padding:8px 12px">200g / 150g / 4 stalks</td>
+      </tr>
+      <tr style="background:rgba(198,93,58,.03)">
+        <td style="padding:8px 12px;font-weight:700">Garnish</td>
+        <td style="padding:8px 12px">Toasted sesame seeds, fresh coriander (optional)</td>
+        <td style="padding:8px 12px">to taste</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="stat-bar" style="margin-top:20px">
+    <div class="stat"><div class="stat-num" style="color:var(--pantry-accent)">50g</div><div class="stat-label">Protein / serve</div></div>
+    <div class="stat"><div class="stat-num">~480</div><div class="stat-label">Calories / serve</div></div>
+    <div class="stat"><div class="stat-num">50 min</div><div class="stat-label">Total Time</div></div>
+    <div class="stat"><div class="stat-num">5</div><div class="stat-label">Containers</div></div>
+  </div>
+
+  <div class="sidebar" style="margin-top:20px">
+    <div class="sidebar-title" style="color:var(--pantry-accent)">Storage &amp; Method Notes</div>
+    <ul>
+      <li><strong>Fridge:</strong> 4 days in airtight containers. Reheat with a splash of water to re-loosen the glaze.</li>
+      <li><strong>Freezer:</strong> Freeze rice and chicken separately — rice freezes well; glaze-coated chicken holds for up to 2 months.</li>
+      <li><strong>Macro adjustment:</strong> Swap brown rice for cauliflower rice to drop to ~340 kcal while keeping protein identical.</li>
+      <li><strong>Source:</strong> Adapted from Mob Kitchen's <em>High Protein Smash</em> series. Full video at <a href="https://www.mob.co.uk/recipes/collections/high-protein-chicken-recipes" style="color:var(--pantry-accent)">mob.co.uk</a>.</li>
+    </ul>
+  </div>
+
+  <div class="read-next" style="margin-top:24px">Up next: <a href="#football" style="color:var(--pantry-accent)">The Touchline <span class="arrow">→</span></a> — Serie A, FA Cup chaos, Champions League first legs incoming</div>
+</section>
+
+<!-- ══════ THE TOUCHLINE ══════ -->
+<hr class="divider dv-football">
+<section class="sec touchline-section" id="football">
+  <div class="sec-watermark">Touchline</div>
+  <span class="section-label" style="color:var(--turf-lt)">The Touchline</span>
+
+  <!-- DATA FIRST -->
+  <h3>Serie A — Standings After Round 30</h3>
+  <div class="table-wrap">
+    <table class="league-table">
+      <tr><th class="pos">#</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th><th></th></tr>
+      <tr><td class="pos">1</td><td>Inter Milan</td><td>30</td><td>22</td><td>3</td><td>5</td><td>66</td><td>24</td><td>+42</td><td>69</td><td><span class="pos-change same">•</span></td></tr>
+      <tr><td class="pos">2</td><td>AC Milan</td><td>30</td><td>18</td><td>9</td><td>3</td><td>47</td><td>23</td><td>+24</td><td>63</td><td><span class="pos-change up">▲ 1</span></td></tr>
+      <tr><td class="pos">3</td><td>Napoli</td><td>30</td><td>19</td><td>5</td><td>6</td><td>46</td><td>30</td><td>+16</td><td>62</td><td><span class="pos-change same">•</span></td></tr>
+      <tr><td class="pos">4</td><td>Como</td><td>30</td><td>16</td><td>9</td><td>5</td><td>53</td><td>22</td><td>+31</td><td>57</td><td><span class="pos-change up">▲ 2</span></td></tr>
+      <tr class="highlight"><td class="pos">5</td><td>Juventus</td><td>30</td><td>15</td><td>9</td><td>6</td><td>52</td><td>29</td><td>+23</td><td>54</td><td><span class="pos-change same">•</span></td></tr>
+      <tr><td class="pos">6</td><td>AS Roma</td><td>30</td><td>17</td><td>3</td><td>10</td><td>40</td><td>23</td><td>+17</td><td>54</td><td><span class="pos-change down">▼ 2</span></td></tr>
+      <tr><td class="pos">7</td><td>Atalanta</td><td>30</td><td>13</td><td>11</td><td>6</td><td>41</td><td>27</td><td>+14</td><td>50</td><td><span class="pos-change same">•</span></td></tr>
+      <tr><td class="pos">8</td><td>Lazio</td><td>30</td><td>11</td><td>11</td><td>8</td><td>32</td><td>29</td><td>+3</td><td>44</td><td><span class="pos-change same">•</span></td></tr>
+      <tr><td class="pos">9</td><td>Bologna</td><td>30</td><td>12</td><td>6</td><td>12</td><td>38</td><td>36</td><td>+2</td><td>42</td><td><span class="pos-change same">•</span></td></tr>
+      <tr><td class="pos">10</td><td>Sassuolo</td><td>30</td><td>11</td><td>6</td><td>13</td><td>36</td><td>40</td><td>-4</td><td>39</td><td><span class="pos-change same">•</span></td></tr>
+      <tr><td colspan="11" style="padding:4px;font-family:'DM Sans',sans-serif;font-size:10px;color:rgba(255,255,255,.2);letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.05)">— relegation zone —</td></tr>
+      <tr><td class="pos">18</td><td>Lecce</td><td>30</td><td>7</td><td>6</td><td>17</td><td>21</td><td>40</td><td>-19</td><td>27</td><td><span class="pos-change down">▼ 1</span></td></tr>
+      <tr><td class="pos">19</td><td>Hellas Verona</td><td>30</td><td>3</td><td>9</td><td>18</td><td>22</td><td>52</td><td>-30</td><td>18</td><td><span class="pos-change same">•</span></td></tr>
+      <tr><td class="pos">20</td><td>Pisa</td><td>30</td><td>2</td><td>12</td><td>16</td><td>23</td><td>54</td><td>-31</td><td>18</td><td><span class="pos-change same">•</span></td></tr>
+    </table>
+  </div>
+
+  <div style="margin:12px 0 20px">
+    <span style="font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(255,255,255,.5)">Juventus form (last 5)</span>
+    <span class="sparkline"><svg viewBox="0 0 200 40" preserveAspectRatio="none">
+      <path class="spark-area" d="M0,30 L40,10 L80,20 L120,5 L160,15 L200,8 L200,40 L0,40 Z"/>
+      <path class="spark-line" d="M0,30 L40,10 L80,20 L120,5 L160,15 L200,8"/>
+      <circle class="spark-dot" cx="200" cy="8" r="3"/>
+    </svg></span>
+    <span class="mini-bar-track"><span class="mini-bar-fill" style="width:75%"></span></span>
+    <span style="font-family:'DM Sans',sans-serif;font-size:11px;color:rgba(255,255,255,.4);margin-left:6px">W-W-D-W-W recent run</span>
+  </div>
+
+  <h3>Tonight: Juventus vs Genoa — Round 31</h3>
+  <p>Juventus host Genoa tonight at the Allianz Stadium (kick-off 17:00 BST). Juve arrive in decent form — Kenan Yildiz has been the standout player of their campaign with 10 goals and 6 assists — and will be heavy favourites against a Genoa side sitting 15th. The historical H2H is one-sided: Juve 21 wins, Genoa 4, 6 draws across all meetings. This is a game Juventus simply need to win. Inter's lead at the top is 15 points with eight games left — the title is functionally gone, but fourth place in the Champions League spots is the real prize now, and Juve's grip on that is comfortable but not unassailable.</p>
+
+  <div class="img-montage layout-1-2 reveal">
+    <img class="montage-hero" src="https://www.stadiumguide.com/wp-content/uploads/juventusstadium_top.jpg" alt="Allianz Stadium, Turin" style="max-height:220px;object-fit:cover">
+    <img src="https://www.juventus.com/images/image/private/t_editorial_landscape_12_desktop/f_auto/dev/n7srmfcckurfsc7a31u8.jpg" alt="Juventus Season 2025-26" style="max-height:110px;object-fit:cover">
+    <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/32/19/e6/70/caption.jpg?w=1100&h=1100&s=1" alt="Allianz Stadium interior" style="max-height:110px;object-fit:cover">
+    <div class="caption">Allianz Stadium, Turin — The Stadium Guide / Tripadvisor</div>
+  </div>
+
+  <h3>Serie A Title Race: Inter Are Basically Champions</h3>
+  <div class="entry-stat" style="color:var(--turf-lt)">+6</div>
+  <div class="entry-stat-context" style="color:rgba(255,255,255,.5)">points Inter lead over Milan, with 8 games left — effectively insurmountable barring a collapse</div>
+
+  <p>The 2025-26 Serie A title race is over in everything but mathematical confirmation. Inter's 69 points after 30 games represents one of the dominant campaigns in recent memory — 22 wins from 30 games, +42 goal difference. Milan have closed to within six points and Napoli are seven back, but Inter's form and fixture list give them almost no room to stumble. The more interesting subplot is fourth place: Como's extraordinary season under Cesc Fàbregas has them at 57 points, ahead of Juventus (54) and level-points Roma. Como finishing in the Champions League spots would be one of European football's great stories.</p>
+
+  <p>At the bottom, the gap between Verona (18pts) and Pisa (18pts) makes two of those relegation spots look settled. Lecce on 27 points have a genuine fight on their hands to survive.</p>
+
+  <div class="pull-quote wide reveal">
+    <p>"Como in the Champions League would be more surprising than Leicester City winning the Premier League. They're doing it on football principles."</p>
+    <cite>— Football Italia analysis, March 2026</cite>
+  </div>
+
+  <h3>Premier League — Matchweek 31 &amp; FA Cup Quarter-Finals</h3>
+  <div class="table-wrap">
+    <table class="league-table">
+      <tr><th class="pos">#</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>Pts</th><th></th></tr>
+      <tr><td class="pos">1</td><td>Arsenal</td><td>31</td><td>21</td><td>7</td><td>3</td><td>+39</td><td>70</td><td><span class="pos-change same">•</span></td></tr>
+      <tr><td class="pos">2</td><td>Manchester City</td><td>30</td><td>18</td><td>7</td><td>5</td><td>+32</td><td>61</td><td><span class="pos-change up">▲ 1</span></td></tr>
+      <tr><td class="pos">3</td><td>Manchester United</td><td>31</td><td>15</td><td>10</td><td>6</td><td>+13</td><td>55</td><td><span class="pos-change same">•</span></td></tr>
+      <tr><td class="pos">4</td><td>Aston Villa</td><td>31</td><td>16</td><td>6</td><td>9</td><td>+5</td><td>54</td><td><span class="pos-change same">•</span></td></tr>
+      <tr><td class="pos">5</td><td>Liverpool</td><td>31</td><td>14</td><td>7</td><td>10</td><td>+8</td><td>49</td><td><span class="pos-change down">▼ 1</span></td></tr>
+      <tr><td class="pos">6</td><td>Chelsea</td><td>31</td><td>13</td><td>9</td><td>9</td><td>+15</td><td>48</td><td><span class="pos-change same">•</span></td></tr>
+      <tr colspan="9" style="padding:4px"><td colspan="9" style="padding:4px;font-family:'DM Sans',sans-serif;font-size:10px;color:rgba(255,255,255,.2);letter-spacing:1px;text-transform:uppercase">— relegation zone —</td></tr>
+      <tr><td class="pos">18</td><td>Burnley</td><td>30</td><td>9</td><td>8</td><td>13</td><td>-14</td><td>35</td><td><span class="pos-change same">•</span></td></tr>
+      <tr><td class="pos">19</td><td>Wolves</td><td>31</td><td>8</td><td>6</td><td>17</td><td>-24</td><td>30</td><td><span class="pos-change down">▼ 1</span></td></tr>
+      <tr><td class="pos">20</td><td>Sunderland</td><td>31</td><td>6</td><td>9</td><td>16</td><td>-26</td><td>27</td><td><span class="pos-change down">▼ 2</span></td></tr>
+    </table>
+  </div>
+
+  <h3 class="narrative">The FA Cup Did Something Beautiful Yesterday</h3>
+
+  <p>Arsenal went to Southampton as 70-point Premier League leaders, nine points clear at the top, and lost 2-1 to a Championship club. Seventh in the second division. Southampton, managed by Tonda Eckert, had Ross Stewart score in the 35th minute — Ben White misjudging a long ball — and then substitute Shea Charles seal it in the 85th with a finish that will be replayed for years. Viktor Gyökeres equalised for Arsenal on 68 minutes, and for a moment normal service looked likely. Then Charles happened.</p>
+
+  <p>Meanwhile at the Etihad, Erling Haaland scored a hat-trick in 18 minutes to put Manchester City 4-0 up against Liverpool. Haaland's 12th hat-trick since joining City in 2022. Salah missed a penalty in the 64th minute. The full story of that afternoon — Arsenal out, Liverpool out, Southampton to Wembley — is one of the cleanest narratives the FA Cup has produced in decades. A Championship side, at Wembley, against Manchester City. You could not write it.</p>
+
+  <div class="angle reveal" style="border-left-color:var(--turf-lt)">
+    <div class="angle-label" style="color:var(--turf-lt)">The Take</div>
+    <p>Arsenal are still nine points clear in the league and heading into the Champions League quarter-final against Sporting CP on Tuesday. The cup exits hurt, but the real prize is still in front of them. The more pressing question is Arteta's squad depth — Rice and Saka were absent yesterday, Gabriel limped off. The CL draw against Leverkusen showed they can manage without their best, but Tuesday is a different kind of pressure.</p>
+  </div>
+
+  <h3>Champions League — Quarter-Final First Legs Preview</h3>
+  <div class="results-strip">
+    <div class="result-card reveal">
+      <span class="teams"><strong>Sporting CP</strong> vs Arsenal</span>
+      <span class="score">Tue 7 Apr</span>
+      <span style="font-size:11px;color:rgba(255,255,255,.4)">Estádio José Alvalade</span>
+    </div>
+    <div class="result-card reveal">
+      <span class="teams"><strong>Real Madrid</strong> vs Bayern München</span>
+      <span class="score">Tue 7 Apr</span>
+      <span style="font-size:11px;color:rgba(255,255,255,.4)">Bernabéu</span>
+    </div>
+    <div class="result-card reveal">
+      <span class="teams"><strong>Barcelona</strong> vs Atlético de Madrid</span>
+      <span class="score">Wed 8 Apr</span>
+      <span style="font-size:11px;color:rgba(255,255,255,.4)">Camp Nou</span>
+    </div>
+    <div class="result-card reveal">
+      <span class="teams"><strong>Paris Saint-Germain</strong> vs Liverpool</span>
+      <span class="score">Wed 8 Apr</span>
+      <span style="font-size:11px;color:rgba(255,255,255,.4)">Parc des Princes</span>
+    </div>
+  </div>
+
+  <p>The quarter-final draw has produced two genuinely blockbuster ties. PSG vs Liverpool is a repeat of last season's round of 16 (PSG won on penalties after a 1-1 aggregate). This time Liverpool arrive in worse domestic form — fifth in the Premier League, out of the FA Cup — and PSG dismantled Chelsea 8-2 on aggregate in the round of 16. The other eye-catcher is Real Madrid vs Bayern — the perennial CL collision that never gets old. Sporting vs Arsenal is Sporting's first quarter-final since 1983; they beat Bodø/Glimt in the round of 16 after being 3-0 down on aggregate after the first leg.</p>
+
+  <div class="also"><div class="also-title">Also on the Pitch</div>
+    <ul class="also-list">
+      <li class="tier-warm"><strong>Man City won the Carabao Cup final</strong> — 2-0 vs Arsenal at Wembley a fortnight ago; City now heading back to Wembley for FA Cup semi-finals against Southampton.</li>
+      <li class="tier-warm"><strong>Juventus CL campaign ended</strong> — Lost to Galatasaray 7-5 on aggregate in the knockout phase play-offs in February. Stings, but the rebuild continues.</li>
+      <li class="tier-note"><strong>Chelsea vs West Ham / Leeds</strong> — FA Cup quarter-final on Sunday; Chelsea drew Port Vale 7-0, West Ham plays Leeds for the final semi-final spot.</li>
+    </ul>
+  </div>
+  <div class="read-next">Up next: <a href="#screen">Screen &amp; Sound <span class="arrow">→</span></a> — Star Wars premieres tonight, plus April's full streaming calendar</div>
+</section>
+
+<!-- ══════ SCREEN & SOUND ══════ -->
+<hr class="divider dv-screen">
+<section class="sec screen-section" id="screen">
+  <div class="sec-watermark">Screen</div>
+  <span class="section-label" style="color:var(--neon)">Screen &amp; Sound</span>
+  <h2>Star Wars Returns. Tonight.</h2>
+
+  <img class="hero-img reveal" src="https://i.ytimg.com/vi/rjJC_QAQjJU/maxresdefault.jpg" alt="Star Wars: Maul - Shadow Lord animated series key art">
+  <div class="caption">Star Wars: Maul – Shadow Lord premieres on Disney+ tonight, 6 April 2026</div>
+
+  <div class="entry-question">What happens when the franchise's most visually compelling villain finally gets his own show?</div>
+
+  <p>Star Wars: Maul – Shadow Lord premieres on Disney+ <em>tonight</em>, and it's the project that has had the franchise's animated fanbase more genuinely excited than anything since The Clone Wars finale. Set after the Clone Wars, it follows Maul rebuilding his criminal syndicate on a planet the Empire hasn't yet touched — and, crucially, finding a disillusioned young Jedi Padawan who could become his apprentice. Sam Witwer reprises the role he's defined for over a decade. Two episodes drop tonight; two more each week until May 4th — Star Wars Day.</p>
+
+  <p>The creative team is Lucasfilm Animation at its sharpest. The premise — what does Maul <em>want</em> when revenge is no longer the only option? — is more interesting than it sounds. He's not a villain seeking the next conquest; he's a survivor trying to build something that lasts. That makes for richer storytelling than most Star Wars animated entries have managed. Early critical word (screeners went out last week) is very positive.</p>
+
+  <div class="sidebar-float">
+    <div class="sidebar-title">Star Wars in 2026</div>
+    <ul>
+      <li><strong>Maul: Shadow Lord</strong> — Now (Disney+)</li>
+      <li><strong>The Mandalorian &amp; Grogu</strong> — 22 May (cinema)</li>
+      <li><strong>Visions: The Ninth Jedi</strong> — TBC 2026</li>
+      <li><strong>Starfighter</strong> (Ryan Gosling) — May 2027</li>
+    </ul>
+  </div>
+
+  <p>The Mandalorian &amp; Grogu hits cinemas on 22 May — the first Star Wars theatrical release since The Rise of Skywalker in 2019. Directed by Jon Favreau, filming wrapped in late 2024. Expectations are high. The franchise is in a genuinely interesting transitional period: the Sequel Trilogy era is being recalibrated, the animation front has never been stronger, and the theatrical pipeline is starting to feel coherent again after years of announced-then-cancelled projects.</p>
+
+  <h3>Quick Reviews</h3>
+  <div class="card-stack">
+    <div class="stack-card">
+      <img class="stack-card-img" src="https://i5.walmartimages.com/seo/Nintendo-Switch-2-System_68fa1297-c7c9-4026-acfc-7e709cab0d8c.af0a22882bc21cefa5bd0fe4d8c71799.png?odnHeight=768&odnWidth=768&odnBg=FFFFFF" alt="Super Mario Galaxy Movie">
+      <div class="stack-card-body">
+        <div class="stack-card-title">The Super Mario Galaxy Movie</div>
+        <div class="stack-card-verdict">Better than the first Mario film — more cosmic scale, better writing, same voice cast. A genuinely good animated movie that earns its space aesthetic. Perfect for a 10-year-old and perfectly watchable for adults.</div>
+        <span class="rating"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span></span>
+        <span class="platform-badge">Cinema · Out Now</span>
+      </div>
+    </div>
+    <div class="stack-card">
+      <div class="stack-card-body">
+        <div class="stack-card-title">Beef Season 2 (Netflix)</div>
+        <div class="stack-card-verdict">Coming April 16th. Entirely new cast: Cailee Spaeny, Charles Melton, Oscar Isaac, Carey Mulligan. The premise — spiral from a single incident — is the same. The pedigree of the team and cast makes this one of the most anticipated shows of the spring.</div>
+        <span class="rating"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span></span>
+        <span class="platform-badge">Netflix · Apr 16</span>
+      </div>
+    </div>
+    <div class="stack-card">
+      <div class="stack-card-body">
+        <div class="stack-card-title">Daredevil: Born Again Season 2</div>
+        <div class="stack-card-verdict">Weekly episodes continue through April on Disney+. The show found its footing in Season 1 by leaning into the courtroom-and-street combination. Season 2 appears to raise the stakes. The Marvel universe's best street-level show is worth keeping up with.</div>
+        <span class="rating"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span><span class="dot"></span></span>
+        <span class="platform-badge">Disney+ · Weekly</span>
+      </div>
+    </div>
+    <div class="stack-card">
+      <div class="stack-card-body">
+        <div class="stack-card-title">The Testaments (Hulu/Disney+)</div>
+        <div class="stack-card-verdict">Margaret Atwood's Handmaid's Tale sequel gets the adaptation it always deserved. Launches April 8th. Atwood's novel was the rare sequel that genuinely added to the original story. If the adaptation matches the source, this will be the prestige drama of the spring.</div>
+        <span class="rating"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span></span>
+        <span class="platform-badge">Hulu/Disney+ · Apr 8</span>
+      </div>
+    </div>
+    <div class="stack-card">
+      <div class="stack-card-body">
+        <div class="stack-card-title">Stranger Things: Tales from '85</div>
+        <div class="stack-card-verdict">Animated, Saturday-morning-cartoon aesthetic, designed to look like something from 1985. It's nostalgia squared — nostalgia for the show that was nostalgia for the era. Arrives April 23rd. Whether that's a feature or a bug depends on your relationship with the franchise.</div>
+        <span class="rating"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span><span class="dot"></span></span>
+        <span class="platform-badge">Netflix · Apr 23</span>
+      </div>
+    </div>
+  </div>
+
+  <h3>The Release Radar</h3>
+  <div class="radar-grid">
+    <h3 style="margin-top:8px;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--neon)">Now Showing / Just Dropped</h3>
+    <div class="radar-row"><span class="radar-date">Apr 1</span><div><span class="radar-cat film"></span><strong>The Super Mario Galaxy Movie</strong> — Chris Pratt, Anya Taylor-Joy; bigger and better than the original. <span class="radar-platform">Cinema</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 1</span><div><span class="radar-cat tv"></span><strong>Stranger Things: Tales from '85</strong> — Animated series set in the Stranger Things universe. <span class="radar-platform">Netflix Apr 23</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 2</span><div><span class="radar-cat game"></span><strong>Legacy of Kain: Ascendance</strong> — Crystal Dynamics' sequel to the gothic action-RPG franchise. <span class="radar-platform">Switch 2 / Steam</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 2</span><div><span class="radar-cat game"></span><strong>Arknights: Endfield</strong> — Full 3D strategy RPG expansion. Day-one on GeForce NOW. <span class="radar-platform">PC / GFN</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 3</span><div><span class="radar-cat tv"></span><strong>Bloodhounds Season 2</strong> — Korean action thriller returns to Netflix. <span class="radar-platform">Netflix</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 6</span><div><span class="radar-cat tv"></span><strong>★ Star Wars: Maul – Shadow Lord</strong> — Two episodes tonight, two weekly until May 4th. <span class="radar-platform">Disney+</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 7</span><div><span class="radar-cat tv"></span><strong>Daredevil: Born Again S2 Ep.1</strong> — New episode weekly. <span class="radar-platform">Disney+</span></div></div>
+
+    <h3 style="margin-top:16px;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--neon)">Coming Soon</h3>
+    <div class="radar-row"><span class="radar-date">Apr 8</span><div><span class="radar-cat game"></span><strong>Pokémon Champions</strong> — Battle-focused Pokémon game on Switch and Switch 2. <span class="radar-platform">Nintendo Switch</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 8</span><div><span class="radar-cat tv"></span><strong>The Testaments</strong> — Handmaid's Tale sequel adaptation. <span class="radar-platform">Hulu/Disney+</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 10</span><div><span class="radar-cat tv"></span><strong>Malcolm in the Middle: Life's Still Unfair</strong> — Reunion special. <span class="radar-platform">Hulu</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 14</span><div><span class="radar-cat game"></span><strong>Replaced</strong> — Pixel-art action platformer, Game Pass day-one. <span class="radar-platform">Xbox / PC / GFN</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 16</span><div><span class="radar-cat game"></span><strong>Tomodachi Life: Living the Dream</strong> — Create Mii drama. <span class="radar-platform">Switch 1 (+2 enhancements)</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 16</span><div><span class="radar-cat game"></span><strong>Xenoblade Chronicles X: NS2 Edition</strong> — Physical version with 4K/60fps. <span class="radar-platform">Switch 2</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 16</span><div><span class="radar-cat tv"></span><strong>Beef Season 2</strong> — Oscar Isaac, Carey Mulligan; all-new cast, same premise. <span class="radar-platform">Netflix</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 17</span><div><span class="radar-cat game"></span><strong>Pragmata</strong> (Capcom) — Sci-fi action, 6 years in development. Day-one on GFN. <span class="radar-platform">PC / PS5 / XSX / GFN</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 17</span><div><span class="radar-cat film"></span><strong>Lee Cronin's The Mummy</strong> — Horror reimagining starring Jack Reynor. <span class="radar-platform">Cinema</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 22</span><div><span class="radar-cat film"></span><strong>Orangutan</strong> (Disneynature) — Earth Day release. <span class="radar-platform">Disney+</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 23</span><div><span class="radar-cat game"></span><strong>Outbound</strong> — Co-op camper van exploration RPG. <span class="radar-platform">Switch 2 / PC</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 24</span><div><span class="radar-cat film"></span><strong>Michael</strong> — Michael Jackson biopic directed by Antoine Fuqua. <span class="radar-platform">Cinema</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 24</span><div><span class="radar-cat film"></span><strong>APEX</strong> — Charlize Theron, Taron Egerton; survival thriller. <span class="radar-platform">Netflix</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 28</span><div><span class="radar-cat game"></span><strong>Diablo IV: Lord of Hatred</strong> — New expansion drops. <span class="radar-platform">PC / Console / GFN</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 30</span><div><span class="radar-cat game"></span><strong>Heroes of Might &amp; Magic: Olden Era</strong> — Full series reboot. <span class="radar-platform">PC / GFN</span></div></div>
+
+    <h3 style="margin-top:16px;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--neon)">Books — April Standouts</h3>
+    <div class="radar-row"><span class="radar-date">Apr 7</span><div><span class="radar-cat book"></span><strong>The Subtle Art of Folding Space</strong> — John Chu's debut novel (Hugo/Nebula winner). Hard sci-fi. <span class="radar-platform">Tordotcom</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 14</span><div><span class="radar-cat book"></span><strong>The Faith of Beasts</strong> — James S.A. Corey (The Expanse). Captive's War Book 2. <span class="radar-platform">Orbit</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 28</span><div><span class="radar-cat book"></span><strong>We Burned So Bright</strong> — T.J. Klune (The House in the Cerulean Sea). New standalone. <span class="radar-platform">Tor</span></div></div>
+
+    <h3 style="margin-top:16px;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--neon)">Leaving Soon</h3>
+    <div class="radar-row leaving"><span class="radar-date">Apr 30</span><div><span class="radar-cat film"></span><strong>Mission: Impossible 1-3 + Ghost Protocol + Rogue Nation</strong> — Added Apr 1st, leaving end of month. <span class="radar-platform">Netflix</span></div></div>
+  </div>
+
+  <div class="sidebar" style="background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.06)">
+    <div class="sidebar-title" style="color:var(--neon)">For the Kids</div>
+    <ul>
+      <li><strong>The Super Mario Galaxy Movie</strong> — In cinemas now. The sequel the first film needed to be.</li>
+      <li><strong>The Bad Guys: The Series Season 2</strong> — Now on Netflix. If they liked the film, this delivers more.</li>
+      <li><strong>Spider-Man: No Way Home</strong> — Arrives Disney+ April 15th. An ideal rewatch with company.</li>
+    </ul>
+  </div>
+
+  <div class="also"><div class="also-title">Also in Film &amp; TV</div>
+    <ul class="also-list">
+      <li class="tier-warm"><strong>Daredevil: Born Again S2</strong> — Weekly episodes through April on Disney+. Best street-level Marvel in years.</li>
+      <li class="tier-warm"><strong>XO, Kitty Season 3</strong> — Netflix, launched April 2nd. The most popular teen romcom on the platform continues.</li>
+      <li class="tier-note"><strong>The Ronaldinho Documentary</strong> — Netflix, April 16th. The one who should have won more, told properly.</li>
+    </ul>
+  </div>
+  <div class="read-next">Up next: <a href="#shelf">The Shelf <span class="arrow">→</span></a> — April's best fantasy books, Football Weekly's unmissable episode, and synthwave worth your time</div>
+</section>
+
+<!-- ══════ THE SHELF (between Screen & Sound and Session) ══════ -->
+<hr class="divider dv-shelf">
+<section class="sec shelf-section" id="shelf">
+  <div class="sec-watermark">Shelf</div>
+  <span class="section-label" style="color:var(--shelf-accent)">The Shelf</span>
+
+  <h2>April Is Fantasy Fiction's Strongest Month in Years</h2>
+
+  <p>This is the first appearance of The Shelf, so there's no catch-up gap to cover — we're starting fresh. And as a first issue, April couldn't be a better month to launch it: the fantasy and sci-fi calendar is genuinely stacked, with a Hugo/Nebula winner debuting his first novel, James S.A. Corey continuing his post-Expanse space opera, and a T.J. Klune standalone arriving for fans of his warmer, more literary fantasy voice.</p>
+
+  <h3>Books</h3>
+  <div class="book-grid">
+    <div class="book-card reveal">
+      <h4><a href="https://gizmodo.com/72-new-sci-fi-fantasy-and-horror-books-arriving-in-april-2000733047" style="color:var(--shelf-accent)">The Subtle Art of Folding Space</a></h4>
+      <div class="author">John Chu · Tordotcom · 7 April</div>
+      <p>John Chu has already won the Hugo for Best Short Story and the Nebula for Best Novelette. This is his debut novel. For a writer whose shorter work is known for precision and emotional intelligence, the step up to long form is the year's most interesting experiment in genre fiction. Details are sparse by design — Tordotcom is letting the author's reputation do the work.</p>
+      <div class="rating" style="margin-top:8px"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span></div>
+    </div>
+    <div class="book-card reveal">
+      <h4><a href="https://gizmodo.com/72-new-sci-fi-fantasy-and-horror-books-arriving-in-april-2000733047" style="color:var(--shelf-accent)">The Faith of Beasts</a></h4>
+      <div class="author">James S.A. Corey · Orbit · 14 April</div>
+      <p>The Expanse authors continue The Captive's War — their post-Expanse space opera trilogy about humanity enslaved by the alien Carryx empire. Book 2 raises the stakes as an agent of the Swarm infiltrates the Carryx war machine. If you're an Expanse fan who hasn't started this trilogy, it has all the same structural strengths: massive-scale conflict, character-driven plotting, genuine stakes. No Malazan spoilers in sight — different universe entirely.</p>
+      <div class="rating" style="margin-top:8px"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span></div>
+    </div>
+    <div class="book-card reveal">
+      <h4><a href="https://thephrasemaker.com/2026/03/27/sci-fi-fantasy-book-releases-april/" style="color:var(--shelf-accent)">City of Iron and Ivy</a></h4>
+      <div class="author">Thomas Kent West · Forever · 21 April</div>
+      <p>Alternate-history Victorian London where botanical magic is real — and someone is using it to kill. Murder mystery with industrial-era grit, living dangerous plant sorcery, and a body count. The pitch sounds niche but the execution, from advance reviews, is exceptional. If you find high fantasy world-building exhausting and want something with tighter scope and sharper plotting, this is your April pick.</p>
+      <div class="rating" style="margin-top:8px"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span></div>
+    </div>
+    <div class="book-card reveal">
+      <h4><a href="https://gizmodo.com/72-new-sci-fi-fantasy-and-horror-books-arriving-in-april-2000733047" style="color:var(--shelf-accent)">We Burned So Bright</a></h4>
+      <div class="author">T.J. Klune · Tor · 28 April</div>
+      <p>Klune's new standalone arrives at the end of the month. His voice — warm, emotionally direct, with a fantasy world that earns its emotional weight rather than decorating it — has made him one of the genre's most reliable authors for literary-leaning readers. If you haven't tried his work, <em>The House in the Cerulean Sea</em> is the entry point. This follows a different universe but the same authorial sensibility.</p>
+      <div class="rating" style="margin-top:8px"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span></div>
+    </div>
+  </div>
+
+  <!-- Down the Rabbit Hole sidebar embedded here -->
+  <div class="sidebar" style="background:rgba(212,160,60,.06);border-color:rgba(212,160,60,.15);margin:28px 0">
+    <div class="sidebar-title" style="color:var(--shelf-accent)">↓ Down the Rabbit Hole</div>
+    <p style="font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6;color:rgba(255,255,255,.7);margin-bottom:10px">You're deep into Malazan and interested in the Cosmere — both of which reward readers who enjoy the sense of a vast, internally-consistent world. A natural next step, if you haven't found it yet, is <strong>Lois McMaster Bujold's Vorkosigan Saga</strong>. Space opera with the character depth of literary fiction, running from the 1980s to the present day. The protagonist, Miles Vorkosigan, is one of the great characters in genre fiction — relentlessly clever, frequently disastrous, impossible not to root for.</p>
+    <ul style="margin:0;padding:0;list-style:none">
+      <li style="font-family:'DM Sans',sans-serif;font-size:13px;padding:4px 0;color:rgba(255,255,255,.6)">→ <a href="https://www.goodreads.com/book/show/61903.The_Warrior_s_Apprentice" style="color:var(--shelf-accent)">Start with: The Warrior's Apprentice (Goodreads)</a></li>
+      <li style="font-family:'DM Sans',sans-serif;font-size:13px;padding:4px 0;color:rgba(255,255,255,.6)">→ <a href="https://en.wikipedia.org/wiki/Vorkosigan_Saga" style="color:var(--shelf-accent)">Vorkosigan Saga overview — Wikipedia</a></li>
+      <li style="font-family:'DM Sans',sans-serif;font-size:13px;padding:4px 0;color:rgba(255,255,255,.6)">→ <a href="https://www.reddit.com/r/Fantasy/comments/suggestions_for_vorkosigan/" style="color:var(--shelf-accent)">r/Fantasy discussion thread on reading order</a></li>
+    </ul>
+  </div>
+
+  <h3>Podcasts</h3>
+  <div class="also-cards" style="margin-top:16px">
+    <div class="also-card" style="background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.06)">
+      <h4 style="color:rgba(255,255,255,.9)"><a href="https://open.spotify.com/show/6w8qWe0kjgHEHSWDSDGoLW" style="color:var(--shelf-accent)">Football Weekly — "Italian heartbreak and Tuchel's selection headache"</a></h4>
+      <p style="color:rgba(255,255,255,.6)">1 April 2026. Max Rushden, Barry Glendenning, Lars Sivertsen. The Italian angle — covering Juventus's European exit and the broader Serie A picture — is the main draw this week. Worth it specifically for the Juventus-Galatasaray post-mortem.</p>
+    </div>
+    <div class="also-card" style="background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.06)">
+      <h4 style="color:rgba(255,255,255,.9)"><a href="https://www.podbean.com/podcast-detail/gfgbn-414ba/Football-Weekly-Podcast" style="color:var(--shelf-accent)">Football Weekly — "Blimey O'Reilly: Carabao Cup Glory"</a></h4>
+      <p style="color:rgba(255,255,255,.6)">23 March 2026. Man City's 2-0 win over Arsenal in the League Cup final. The episode that marked Arsenal's first domestic cup exit — and set the table for what happened yesterday at Southampton.</p>
+    </div>
+  </div>
+
+  <h3>Music</h3>
+  <p>Magnavolt's new EP <strong>Renegade: Last Descendant</strong> dropped this month — announced back in March with genuine hype in the synthwave community. The Magnavolt/Megan McDuffee collaboration (covered in February's Vehlinggo list) set a high bar; this follow-up appears to lean further into the darker, more cinematic end of retrowave. <a href="https://vehlinggo.com/2026/02/03/list-new-arcades-magnavolt-megas-sandor-gavin-jacket-grant-polar-synthwave/" style="color:var(--shelf-accent)">Vehlinggo's February synthwave list</a> has the context on what Magnavolt has been building toward.</p>
+
+  <div class="read-next">Up next: <a href="#session">The Session <span class="arrow">→</span></a> — the science of combining lifting and running without sacrificing either</div>
+</section>
+
+<!-- ══════ THE SESSION ══════ -->
+<hr class="divider dv-session">
+<section class="sec session-section" id="session">
+  <div class="sec-watermark">Session</div>
+  <span class="section-label" style="color:var(--session-accent)">The Session</span>
+  <h2>You Can Lift and Run. The Science Says Stop Worrying.</h2>
+
+  <img class="hero-img reveal" src="https://www.barbellmedicine.com/wp-content/uploads/2025/11/CAP-Featured-Image.png" alt="Concurrent training - lifting and cardio research">
+  <div class="caption">Concurrent training research — Barbell Medicine</div>
+
+  <p>The "interference effect" is one of fitness's most persistent myths: the idea that combining strength training and cardio will blunt your gains. It has enough truth in it to sound credible, but not enough to make it a practical concern for most people training for health and body composition rather than elite performance.</p>
+
+  <p>Barbell Medicine published the most comprehensive layperson breakdown of the evidence recently, and the conclusion is clear: <strong>three recent meta-analyses found that concurrent training does not compromise strength or hypertrophy gains significantly when compared to lifting-only programmes.</strong> The interference effect, when it does appear, is primarily about <em>explosive power</em> — not the kind of strength or muscle mass you're building through a structured programme like Ibex.</p>
+
+  <div class="big-number">
+    <div class="num count-up" data-target="27" style="color:var(--session-accent)">0</div>
+    <div class="num-label">Studies in the key 2021 meta-analysis on concurrent training — finding no strength impairment for moderate-level athletes</div>
+  </div>
+
+  <p>The mechanism most people worry about — AMPK (activated by cardio) blocking mTOR (activated by lifting) — is real at the cellular level, but the <em>long-term</em> evidence suggests this transient suppression doesn't translate into meaningful differences in muscle growth over weeks and months. The practical concern isn't the molecular pathway; it's total training load exceeding recovery capacity. <span class="display-stat" style="color:var(--session-accent)">That's</span> the actual interference. Add too much too fast in either direction and something gives.</p>
+
+  <div class="workout-card reveal">
+    <div class="workout-card-title" style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--session-accent);margin-bottom:12px">Practical Rules for Concurrent Training</div>
+    <table style="width:100%;border-collapse:collapse;font-family:'DM Sans',sans-serif;font-size:14px">
+      <tr style="border-bottom:2px solid var(--rule)">
+        <th style="text-align:left;padding:8px 12px;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--ghost)">Rule</th>
+        <th style="text-align:left;padding:8px 12px;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--ghost)">Why It Matters</th>
+      </tr>
+      <tr class="highlight-row" style="background:rgba(212,98,43,.06)">
+        <td style="padding:9px 12px;font-weight:700">Lift before you run (same day)</td>
+        <td style="padding:9px 12px">Residual fatigue from cardio reduces motor unit recruitment in strength work. Lift first for maximal neuromuscular stimulus.</td>
+      </tr>
+      <tr>
+        <td style="padding:9px 12px;font-weight:700">6+ hours between sessions</td>
+        <td style="padding:9px 12px">Separating sessions by 6+ hours minimises acute AMPK/mTOR competition. Different-day training eliminates the concern entirely.</td>
+      </tr>
+      <tr style="background:rgba(212,98,43,.04)">
+        <td style="padding:9px 12px;font-weight:700">Add cardio gradually</td>
+        <td style="padding:9px 12px">The interference is mostly about total load exceeding recovery — not the concurrent nature itself. Build running volume at 10% per week max.</td>
+      </tr>
+      <tr>
+        <td style="padding:9px 12px;font-weight:700">Zone 2 over HIIT</td>
+        <td style="padding:9px 12px">High-intensity cardio creates more glycolytic fatigue and stronger AMPK activation. Moderate-intensity continuous training (Zone 2) minimises interference with strength adaptation.</td>
+      </tr>
+      <tr style="background:rgba(212,98,43,.04)">
+        <td style="padding:9px 12px;font-weight:700">Watch your Garmin metrics</td>
+        <td style="padding:9px 12px">Training Readiness below 50 after a run day is a signal, not a suggestion. Body Battery under 30 at training time means reduce intensity regardless of schedule.</td>
+      </tr>
+    </table>
+  </div>
+
+  <h3>Reading Your Garmin Data During Concurrent Training</h3>
+  <p>For someone running the Ibex 3-day programme alongside recreational running, the Garmin Venu X1's Training Readiness score is genuinely useful for managing the combined load. The key insight from WIRED's breakdown: Training Status evaluates long-term trend; Training Readiness evaluates <em>today</em>. Check Readiness before a session, not just Status. A Productive Training Status combined with a low Readiness score (under 40) means you've been training well — but today is not the day to push. HRV Status trending "Unbalanced" over 5+ consecutive days is the clearest early-warning signal that total load is outpacing recovery.</p>
+
+  <div class="dyk">
+    <div class="dyk-title">Did You Know?</div>
+    <p>Garmin's HRV Status uses a 7-day rolling window rather than a single-night measurement. This smooths out the noise from one bad night's sleep (caused by a late meal, a drink, or poor sleep position) while still catching sustained trends. The practical implication: a single low HRV reading is not a signal to rest — five consecutive low readings is.</p>
+  </div>
+
+  <div class="src"><a href="https://www.barbellmedicine.com/blog/concurrent-training-and-the-interference-effect/">Barbell Medicine — Concurrent Training and the Interference Effect</a> | <a href="https://wired.com/story/garmins-top-training-features-explained/">WIRED — Garmin Training Features Explained</a> | <a href="https://www.findyouredge.app/news/running-lifting-same-day-complete-guide">FindYourEdge — Running and Lifting Same Day Guide 2026</a></div>
+
+  <div class="read-next">Up next: <a href="#history">This Week in History <span class="arrow">→</span></a> — the day the Ottoman cannons opened on Constantinople</div>
+</section>
+
+<!-- ══════ THIS WEEK IN HISTORY (between Session and On the Radar) ══════ -->
+<hr class="divider dv-history">
+<section class="sec history-section sec-opener" id="history">
+  <div class="sec-watermark">History</div>
+  <div class="opener-band"></div>
+  <span class="section-label" style="color:var(--hist-accent)">This Week in History</span>
+  <h2>6 April 1453: The Cannons Open on Constantinople</h2>
+
+  <img class="img-offset" src="https://cdn.britannica.com/25/285425-050-08791D48/2026-iran-conflict-map.jpg" alt="Ottoman siege map" style="background:#F0EBE0">
+
+  <div class="big-number" style="text-align:left;display:inline-block;margin:0 24px 8px 0">
+    <div class="num" style="color:var(--hist-accent);font-size:64px">55</div>
+    <div class="num-label" style="color:var(--slate)">Days the siege lasted</div>
+  </div>
+
+  <p>On April 5th, 1453, the Ottoman forces of Sultan Mehmed II had fully surrounded Constantinople's land walls while the fleet blockaded the Bosporus. No supply ships could enter. No defenders could escape. Mehmed sent an emissary demanding unconditional surrender — and received no response. The following day, April 6th, his cannons opened fire.</p>
+
+  <p>What made this siege historically unprecedented was not the scale of the army — though 60,000-80,000 Ottoman troops against 8,000 Byzantine defenders was overwhelming — but the artillery. Mehmed had commissioned a Hungarian gunsmith named Urban to build cannon powerful enough to destroy Constantinople's famous Theodosian Walls. Urban's largest gun, known as the Basilica, was 8 metres long, fired a 600kg stone cannonball, and required 60 oxen to transport. It had never been done before. The walls that had protected Constantinople for a thousand years — walls that had repelled Goths, Huns, Avars, Arabs, Bulgars, and Crusaders — crumbled under sustained bombardment.</p>
+
+  <p>The city held for 55 days. Emperor Constantine XI Palaeologus, knowing relief would not come, reportedly removed his imperial regalia and died fighting in the final assault on May 29th. When Mehmed entered the city, he reportedly rode to Hagia Sophia, dismounted, took a handful of earth and poured it over his turban in a gesture of humility before God. He renamed the city Istanbul and made it the capital of his empire. <a href="https://en.wikipedia.org/wiki/Fall_of_Constantinople" style="color:var(--hist-accent)">The fall of Constantinople (Wikipedia)</a> is conventionally used to mark the end of the Middle Ages.</p>
+
+  <div class="angle" style="background:rgba(139,105,20,.08);border-left-color:var(--hist-accent)">
+    <div class="angle-label" style="color:var(--hist-accent)">Why It Resonates Now</div>
+    <p style="color:var(--ink)">The siege of Constantinople demonstrates something about strategic innovation that never goes stale: entrenched defensive systems that have worked for centuries can be broken by a single new capability applied with sufficient will. Urban's cannon was the technological disruption. Mehmed's willingness to invest in it, and to use it relentlessly, was the strategic decision. The city's defenders had the walls. The attacker had better artillery. The walls lost.</p>
+  </div>
+
+  <div class="also"><div class="also-title">Also This Week in History</div>
+    <div class="timeline">
+      <div class="timeline-node reveal">
+        <div class="timeline-date"><span class="year-badge">46 BC</span> 6 April</div>
+        <div class="timeline-content"><strong><a href="https://en.wikipedia.org/wiki/Battle_of_Thapsus" style="color:var(--hist-accent)">Battle of Thapsus</a></strong> — Julius Caesar decisively defeated Caecilius Metellus Scipio and Cato the Younger in North Africa, effectively ending the Republican resistance to his rule. Cato killed himself the following day rather than accept Caesar's pardon.</div>
+      </div>
+      <div class="timeline-node reveal">
+        <div class="timeline-date"><span class="year-badge">1320</span> 6 April</div>
+        <div class="timeline-content"><strong><a href="https://en.wikipedia.org/wiki/Declaration_of_Arbroath" style="color:var(--hist-accent)">The Declaration of Arbroath</a></strong> — Scottish nobles signed and sent this letter to Pope John XXII, asserting Scotland's independence from England. Considered one of history's most eloquent documents of national self-determination: "For as long as but a hundred of us remain alive, never will we on any conditions be brought under English rule."</div>
+      </div>
+      <div class="timeline-node reveal">
+        <div class="timeline-date"><span class="year-badge">1242</span> 5 April</div>
+        <div class="timeline-content"><strong><a href="https://en.wikipedia.org/wiki/Battle_on_the_Ice" style="color:var(--hist-accent)">Battle on the Ice (Lake Peipus)</a></strong> — Alexander Nevsky's Russian forces defeated the Teutonic Knights on the frozen Lake Peipus. Eisenstein's 1938 film Alexander Nevsky dramatised it as one of cinema's greatest battle sequences — worth finding if medieval warfare interests you.</div>
+      </div>
+      <div class="timeline-node reveal">
+        <div class="timeline-date"><span class="year-badge">823</span> 5 April</div>
+        <div class="timeline-content"><strong><a href="https://en.wikipedia.org/wiki/Lothair_I" style="color:var(--hist-accent)">Lothair I crowned King of Italy</a></strong> — Charlemagne's grandson was crowned by Pope Paschal I in Rome, adding another layer to the complex Carolingian succession that would eventually fracture into the kingdoms of France, Germany, and Italy.</div>
+      </div>
+    </div>
+  </div>
+  <div class="read-next">Up next: <a href="#radar">On the Radar <span class="arrow">→</span></a> — fixtures, releases, and dates to know for the next ten days</div>
+</section>
+
+<!-- ══════ ON THE RADAR ══════ -->
+<section class="sec radar-section" id="radar" style="background:var(--warm);border-top:1px solid var(--rule)">
+  <span class="section-label" style="color:var(--rose)">On the Radar — Coming Up</span>
+  <div class="radar-grid">
+    <div class="radar-row"><span class="radar-date">Sun 5 Apr</span><div><span class="radar-cat football"></span><strong>FA Cup semi-final draw</strong> — Today. City vs Southampton/Chelsea/West Ham/Leeds. <span class="radar-platform">BBC</span></div></div>
+    <div class="radar-row"><span class="radar-date">Sun 5 Apr</span><div><span class="radar-cat football"></span><strong>Juventus vs Genoa</strong> — Today, 17:00 BST. Allianz Stadium. Serie A Round 31. <span class="radar-platform">Sky Sport</span></div></div>
+    <div class="radar-row"><span class="radar-date">Mon 6 Apr</span><div><span class="radar-cat tv"></span><strong>Star Wars: Maul – Shadow Lord premieres</strong> — Two episodes now on Disney+. <span class="radar-platform">Disney+</span></div></div>
+    <div class="radar-row"><span class="radar-date">Tue 7 Apr</span><div><span class="radar-cat football"></span><strong>CL QF First Legs: Sporting CP vs Arsenal + Real Madrid vs Bayern</strong> — 20:00 BST both. <span class="radar-platform">TNT Sports</span></div></div>
+    <div class="radar-row"><span class="radar-date">Wed 8 Apr</span><div><span class="radar-cat football"></span><strong>CL QF: Barcelona vs Atlético + PSG vs Liverpool</strong> — 20:00 BST. The marquee double header. <span class="radar-platform">TNT Sports</span></div></div>
+    <div class="radar-row"><span class="radar-date">Wed 8 Apr</span><div><span class="radar-cat game"></span><strong>Pokémon Champions launches</strong> — Switch and Switch 2. <span class="radar-platform">Nintendo eShop</span></div></div>
+    <div class="radar-row"><span class="radar-date">Thu 9 Apr</span><div><span class="radar-cat football"></span><strong>PL Matchweek 32</strong> — Thursday evening fixtures, including West Ham vs Wolves. <span class="radar-platform">Sky Sports</span></div></div>
+    <div class="radar-row"><span class="radar-date">Fri–Sun 10–12 Apr</span><div><span class="radar-cat football"></span><strong>PL Matchweek 32 continues</strong> — Arsenal vs Bournemouth on Saturday; Liverpool vs Fulham on Saturday. Full round over the weekend. <span class="radar-platform">Sky/TNT</span></div></div>
+    <div class="radar-row"><span class="radar-date">Wed 15 Apr</span><div><span class="radar-cat football"></span><strong>CL QF Second Legs: Arsenal vs Sporting CP + Bayern vs Real Madrid</strong> — Return fixtures. <span class="radar-platform">TNT Sports</span></div></div>
+    <div class="radar-row"><span class="radar-date">Thu 16 Apr</span><div><span class="radar-cat game"></span><strong>Tomodachi Life: Living the Dream + Xenoblade Chronicles X NS2</strong> — Double Nintendo day. <span class="radar-platform">Nintendo Switch</span></div></div>
+  </div>
+</section>
+
+<!-- ══════ FOOTER ══════ -->
+<footer class="footer">
+  <div class="footer-brand">The Signal<span>.</span></div>
+  <div class="footer-issue">A Sunday Morning Magazine · Issue #1 · 5 April 2026</div>
+</footer>
+
+</div><!-- .mag -->
+
+<button class="back-to-top" id="backToTop" title="Back to top">↑</button>
+
+<script>
+// Reading progress bar
+(function() {
+  const bar = document.getElementById('progressBar');
+  if (!bar) return;
+  window.addEventListener('scroll', function() {
+    const h = document.documentElement;
+    const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    bar.style.width = Math.min(pct, 100) + '%';
+  }, { passive: true });
+})();
+
+// Back to top button visibility + click handler
+(function() {
+  const btn = document.getElementById('backToTop') || document.getElementById('btt');
+  if (!btn) return;
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 800) {
+      btn.classList.add('visible');
+    } else {
+      btn.classList.remove('visible');
+    }
+  }, { passive: true });
+  btn.addEventListener('click', function(e) {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+
+// Enhancement 5: IntersectionObserver for .reveal elements
+(function() {
+  var els = document.querySelectorAll('.reveal');
+  if (!els.length || !('IntersectionObserver' in window)) {
+    // Fallback: make everything visible if IntersectionObserver not supported
+    els.forEach(function(el) { el.classList.add('visible'); });
+    return;
+  }
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  els.forEach(function(el) { observer.observe(el); });
+})();
+
+// Enhancement 5: Count-up animation for .count-up elements
+(function() {
+  var els = document.querySelectorAll('.count-up');
+  if (!els.length || !('IntersectionObserver' in window)) return;
+
+  function animateCount(el) {
+    var target = el.getAttribute('data-target');
+    if (!target) return;
+    // Parse number — handle percentages, commas, decimals
+    var raw = target.replace(/[^0-9.\-]/g, '');
+    var num = parseFloat(raw);
+    if (isNaN(num)) return;
+    var prefix = target.match(/^[^0-9.\-]*/)[0] || '';
+    var suffix = target.match(/[^0-9.\-]*$/)[0] || '';
+    var isInt = num === Math.floor(num);
+    var duration = 800;
+    var start = performance.now();
+
+    function step(now) {
+      var progress = Math.min((now - start) / duration, 1);
+      // Ease-out cubic
+      var ease = 1 - Math.pow(1 - progress, 3);
+      var current = num * ease;
+      el.textContent = prefix + (isInt ? Math.floor(current).toLocaleString() : current.toFixed(1)) + suffix;
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    el.textContent = prefix + '0' + suffix;
+    requestAnimationFrame(step);
+  }
+
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        animateCount(entry.target);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  els.forEach(function(el) { observer.observe(el); });
+})();
+
+</script>
+
+</body>
+</html>
