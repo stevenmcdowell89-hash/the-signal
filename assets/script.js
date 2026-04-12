@@ -9,9 +9,9 @@
   }, { passive: true });
 })();
 
-// Back to top button visibility
+// Back to top button visibility + click handler
 (function() {
-  const btn = document.getElementById('backToTop');
+  const btn = document.getElementById('backToTop') || document.getElementById('btt');
   if (!btn) return;
   window.addEventListener('scroll', function() {
     if (window.scrollY > 800) {
@@ -20,13 +20,18 @@
       btn.classList.remove('visible');
     }
   }, { passive: true });
+  btn.addEventListener('click', function(e) {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
 })();
 
 // Enhancement 5: IntersectionObserver for .reveal elements
+// Low threshold + rootMargin so tall elements on mobile still trigger.
+// CSS makes .reveal visible by default below 601px as a belt-and-braces safety.
 (function() {
   var els = document.querySelectorAll('.reveal');
   if (!els.length || !('IntersectionObserver' in window)) {
-    // Fallback: make everything visible if IntersectionObserver not supported
     els.forEach(function(el) { el.classList.add('visible'); });
     return;
   }
@@ -37,7 +42,7 @@
         observer.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.15 });
+  }, { threshold: 0.02, rootMargin: '0px 0px 80px 0px' });
   els.forEach(function(el) { observer.observe(el); });
 })();
 
@@ -78,6 +83,6 @@
         observer.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.15 });
+  }, { threshold: 0.02, rootMargin: '0px 0px 80px 0px' });
   els.forEach(function(el) { observer.observe(el); });
 })();

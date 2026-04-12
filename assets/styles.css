@@ -19,6 +19,22 @@
   --session-accent: #D4622B;
   --hist-bg: #F0EBE0;
   --hist-accent: #8B6914;
+
+  /* ── Rotating section palettes ── */
+  --pantry-bg: #FAF5F0;
+  --pantry-accent: #C65D3A;
+  --workshop-bg: #F0F1F3;
+  --workshop-accent: #5A6378;
+  --toolkit-bg: #EFF3F6;
+  --toolkit-accent: #1A9AAF;
+  --ledger-bg: #FAF8F2;
+  --ledger-accent: #C48B2C;
+  --longgame-bg: #F0F1F4;
+  --longgame-accent: #2A3A5C;
+  --wallet-bg: #FAFBFC;
+  --wallet-accent: #1A8A7A;
+  --itinerary-bg: #FAF6F0;
+  --itinerary-accent: #D4634B;
 }
 
 /* ═══════════ RESET & BASE ═══════════ */
@@ -1084,6 +1100,139 @@ p:last-child { margin-bottom: 0; }
   z-index: 0;
 }
 
+/* ═══════════ ROTATING SECTION STYLES ═══════════ */
+/* Each rotating section gets a background, accent colour, and section-aware overrides */
+
+.pantry-section { background: var(--pantry-bg); }
+.pantry-section .section-label { color: var(--pantry-accent); }
+.pantry-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.pantry-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.pantry-section .sec-watermark { color: var(--pantry-accent); }
+.pantry-section .workout-card { border-left-color: var(--pantry-accent); } /* reuse workout-card for recipe cards */
+.pantry-section .workout-card-title { color: var(--pantry-accent); }
+.pantry-section .big-number .num { color: var(--pantry-accent); }
+.pantry-section .pull-quote { border-left-color: var(--pantry-accent); }
+.pantry-section .dyk { background: rgba(198,93,58,.06); border-color: rgba(198,93,58,.12); }
+.pantry-section .dyk-title { color: var(--pantry-accent); }
+.pantry-section .read-next a { color: var(--pantry-accent); }
+.pantry-section .sidebar { border-left-color: var(--pantry-accent); }
+.pantry-section .sidebar-title { color: var(--pantry-accent); }
+
+.workshop-section { background: var(--workshop-bg); }
+.workshop-section .section-label { color: var(--workshop-accent); }
+.workshop-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.workshop-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.workshop-section .sec-watermark { color: var(--workshop-accent); }
+.workshop-section .compare-panel .compare-side { border-color: rgba(90,99,120,.2); }
+.workshop-section .big-number .num { color: var(--workshop-accent); }
+.workshop-section .pull-quote { border-left-color: var(--workshop-accent); }
+.workshop-section .dyk { background: rgba(90,99,120,.06); border-color: rgba(90,99,120,.12); }
+.workshop-section .dyk-title { color: var(--workshop-accent); }
+.workshop-section .read-next a { color: var(--workshop-accent); }
+.workshop-section .sidebar { border-left-color: var(--workshop-accent); }
+.workshop-section .sidebar-title { color: var(--workshop-accent); }
+
+.toolkit-section { background: var(--toolkit-bg); }
+.toolkit-section .section-label { color: var(--toolkit-accent); }
+.toolkit-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.toolkit-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.toolkit-section .sec-watermark { color: var(--toolkit-accent); }
+.toolkit-section .big-number .num { color: var(--toolkit-accent); }
+.toolkit-section .pull-quote { border-left-color: var(--toolkit-accent); }
+.toolkit-section .dyk { background: rgba(26,154,175,.06); border-color: rgba(26,154,175,.12); }
+.toolkit-section .dyk-title { color: var(--toolkit-accent); }
+.toolkit-section .read-next a { color: var(--toolkit-accent); }
+.toolkit-section .also-cards .also-card { border-color: rgba(26,154,175,.12); }
+.toolkit-section .sidebar { border-left-color: var(--toolkit-accent); }
+.toolkit-section .sidebar-title { color: var(--toolkit-accent); }
+
+.ledger-section { background: var(--ledger-bg); }
+.ledger-section .section-label { color: var(--ledger-accent); }
+.ledger-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.ledger-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.ledger-section .sec-watermark { color: var(--ledger-accent); }
+.ledger-section .big-number .num { color: var(--ledger-accent); }
+.ledger-section .pull-quote { border-left-color: var(--ledger-accent); }
+.ledger-section .dyk { background: rgba(196,139,44,.06); border-color: rgba(196,139,44,.12); }
+.ledger-section .dyk-title { color: var(--ledger-accent); }
+.ledger-section .read-next a { color: var(--ledger-accent); }
+.ledger-section .stat-bar .stat-num { color: var(--ledger-accent); }
+.ledger-section .sidebar { border-left-color: var(--ledger-accent); }
+.ledger-section .sidebar-title { color: var(--ledger-accent); }
+
+.longgame-section { background: var(--longgame-bg); }
+.longgame-section .section-label { color: var(--longgame-accent); }
+.longgame-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.longgame-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.longgame-section .sec-watermark { color: var(--longgame-accent); }
+.longgame-section .big-number .num { color: var(--longgame-accent); }
+.longgame-section .pull-quote { border-left-color: var(--longgame-accent); }
+.longgame-section .dyk { background: rgba(42,58,92,.06); border-color: rgba(42,58,92,.12); }
+.longgame-section .dyk-title { color: var(--longgame-accent); }
+.longgame-section .read-next a { color: var(--longgame-accent); }
+.longgame-section .stat-bar .stat-num { color: var(--longgame-accent); }
+.longgame-section .sidebar { border-left-color: var(--longgame-accent); }
+.longgame-section .sidebar-title { color: var(--longgame-accent); }
+
+.wallet-section { background: var(--wallet-bg); }
+.wallet-section .section-label { color: var(--wallet-accent); }
+.wallet-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.wallet-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.wallet-section .sec-watermark { color: var(--wallet-accent); }
+.wallet-section .big-number .num { color: var(--wallet-accent); }
+.wallet-section .pull-quote { border-left-color: var(--wallet-accent); }
+.wallet-section .dyk { background: rgba(26,138,122,.06); border-color: rgba(26,138,122,.12); }
+.wallet-section .dyk-title { color: var(--wallet-accent); }
+.wallet-section .read-next a { color: var(--wallet-accent); }
+.wallet-section .compare-panel .compare-side { border-color: rgba(26,138,122,.2); }
+.wallet-section .sidebar { border-left-color: var(--wallet-accent); }
+.wallet-section .sidebar-title { color: var(--wallet-accent); }
+
+.itinerary-section { background: var(--itinerary-bg); }
+.itinerary-section .section-label { color: var(--itinerary-accent); }
+.itinerary-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.itinerary-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.itinerary-section .sec-watermark { color: var(--itinerary-accent); }
+.itinerary-section .big-number .num { color: var(--itinerary-accent); }
+.itinerary-section .pull-quote { border-left-color: var(--itinerary-accent); }
+.itinerary-section .dyk { background: rgba(212,99,75,.06); border-color: rgba(212,99,75,.12); }
+.itinerary-section .dyk-title { color: var(--itinerary-accent); }
+.itinerary-section .read-next a { color: var(--itinerary-accent); }
+.itinerary-section .sidebar { border-left-color: var(--itinerary-accent); }
+.itinerary-section .sidebar-title { color: var(--itinerary-accent); }
+
+/* Nav card styles for rotating sections */
+.nav-card.pantry { border-left-color: var(--pantry-accent); background: rgba(198,93,58,.06); }
+.nav-card.pantry:hover { box-shadow: 0 8px 24px rgba(198,93,58,.12); }
+.nav-card.pantry .nav-card-tag { color: var(--pantry-accent); }
+.nav-card.workshop { border-left-color: var(--workshop-accent); background: rgba(90,99,120,.06); }
+.nav-card.workshop:hover { box-shadow: 0 8px 24px rgba(90,99,120,.12); }
+.nav-card.workshop .nav-card-tag { color: var(--workshop-accent); }
+.nav-card.toolkit { border-left-color: var(--toolkit-accent); background: rgba(26,154,175,.06); }
+.nav-card.toolkit:hover { box-shadow: 0 8px 24px rgba(26,154,175,.12); }
+.nav-card.toolkit .nav-card-tag { color: var(--toolkit-accent); }
+.nav-card.ledger { border-left-color: var(--ledger-accent); background: rgba(196,139,44,.06); }
+.nav-card.ledger:hover { box-shadow: 0 8px 24px rgba(196,139,44,.12); }
+.nav-card.ledger .nav-card-tag { color: var(--ledger-accent); }
+.nav-card.longgame { border-left-color: var(--longgame-accent); background: rgba(42,58,92,.06); }
+.nav-card.longgame:hover { box-shadow: 0 8px 24px rgba(42,58,92,.12); }
+.nav-card.longgame .nav-card-tag { color: var(--longgame-accent); }
+.nav-card.wallet { border-left-color: var(--wallet-accent); background: rgba(26,138,122,.06); }
+.nav-card.wallet:hover { box-shadow: 0 8px 24px rgba(26,138,122,.12); }
+.nav-card.wallet .nav-card-tag { color: var(--wallet-accent); }
+.nav-card.itinerary { border-left-color: var(--itinerary-accent); background: rgba(212,99,75,.06); }
+.nav-card.itinerary:hover { box-shadow: 0 8px 24px rgba(212,99,75,.12); }
+.nav-card.itinerary .nav-card-tag { color: var(--itinerary-accent); }
+
+/* Dividers for rotating sections */
+.dv-pantry { background: linear-gradient(90deg, var(--pantry-accent), #E8845A); }
+.dv-workshop { background: linear-gradient(90deg, var(--workshop-accent), #7A839A); }
+.dv-toolkit { background: linear-gradient(90deg, var(--toolkit-accent), #2AB8CE); }
+.dv-ledger { background: linear-gradient(90deg, var(--ledger-accent), #D4A03C); }
+.dv-longgame { background: linear-gradient(90deg, var(--longgame-accent), #4A5A8C); }
+.dv-wallet { background: linear-gradient(90deg, var(--wallet-accent), #2AB8A8); }
+.dv-itinerary { background: linear-gradient(90deg, var(--itinerary-accent), #E8845A); }
+
 /* ═══════════ Enhancement 12: CONTEXTUAL TIMELINES ═══════════ */
 .timeline {
   position: relative;
@@ -1329,22 +1478,35 @@ p:last-child { margin-bottom: 0; }
 .history-section .read-next a { color: var(--hist-accent); }
 
 /* ═══════════ Enhancement 5: SCROLL-TRIGGERED ANIMATIONS ═══════════ */
+/* Mobile-safe: elements are visible by default. Animation only on viewports
+   wide enough that IntersectionObserver thresholds work reliably.
+   NEVER apply .reveal to <section> elements or large containers
+   (split-60-40, split-40-60, dual-col, also-cards) — only to small
+   leaf elements: images, angles, pull-quotes, individual cards. */
 .reveal {
-  opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
-}
-.reveal.visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: none;
 }
-/* Staggered children */
-.reveal-group .reveal:nth-child(1) { transition-delay: 0ms; }
-.reveal-group .reveal:nth-child(2) { transition-delay: 80ms; }
-.reveal-group .reveal:nth-child(3) { transition-delay: 160ms; }
-.reveal-group .reveal:nth-child(4) { transition-delay: 240ms; }
-.reveal-group .reveal:nth-child(5) { transition-delay: 320ms; }
-.reveal-group .reveal:nth-child(6) { transition-delay: 400ms; }
+@media (min-width: 601px) {
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* Staggered children (desktop only) */
+@media (min-width: 601px) {
+  .reveal-group .reveal:nth-child(1) { transition-delay: 0ms; }
+  .reveal-group .reveal:nth-child(2) { transition-delay: 80ms; }
+  .reveal-group .reveal:nth-child(3) { transition-delay: 160ms; }
+  .reveal-group .reveal:nth-child(4) { transition-delay: 240ms; }
+  .reveal-group .reveal:nth-child(5) { transition-delay: 320ms; }
+  .reveal-group .reveal:nth-child(6) { transition-delay: 400ms; }
+}
 
 /* ═══════════ THE LONG SHELF ═══════════ */
 .longshelf-section { background: var(--paper); border-bottom: 1px solid var(--rule); }
