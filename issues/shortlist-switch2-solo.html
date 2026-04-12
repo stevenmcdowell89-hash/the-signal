@@ -1,0 +1,2829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Signal — Solo Games for Switch 2 · Issue #8 · 12 April 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,500&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #111119;
+  --paper: #FAFAF8;
+  --warm: #F5F4F0;
+  --rose: #E8384F;
+  --ember: #FF6D3A;
+  --deep: #1B1B2F;
+  --slate: #64697B;
+  --ghost: #A4A8B6;
+  --rule: #E0DED8;
+  --pitch: #0A0E17;
+  --turf: #1A7A4C;
+  --turf-lt: #2BD67B;
+  --screen-bg: #14121E;
+  --neon: #FF2D78;
+  --shelf-bg: #1C1410;
+  --shelf-accent: #D4A03C;
+  --session-bg: #F2F7F4;
+  --session-accent: #D4622B;
+  --hist-bg: #F0EBE0;
+  --hist-accent: #8B6914;
+
+  /* ── Rotating section palettes ── */
+  --pantry-bg: #FAF5F0;
+  --pantry-accent: #C65D3A;
+  --workshop-bg: #F0F1F3;
+  --workshop-accent: #5A6378;
+  --toolkit-bg: #EFF3F6;
+  --toolkit-accent: #1A9AAF;
+  --ledger-bg: #FAF8F2;
+  --ledger-accent: #C48B2C;
+  --longgame-bg: #F0F1F4;
+  --longgame-accent: #2A3A5C;
+  --wallet-bg: #FAFBFC;
+  --wallet-accent: #1A8A7A;
+  --itinerary-bg: #FAF6F0;
+  --itinerary-accent: #D4634B;
+}
+
+/* ═══════════ RESET & BASE ═══════════ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  color: var(--ink);
+  background: #E8E6E1;
+  font-size: 18px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+.mag { max-width: 960px; margin: 0 auto; background: var(--paper); box-shadow: 0 4px 120px rgba(0,0,0,.12); position: relative; }
+img { max-width: 100%; height: auto; display: block; }
+a { color: var(--rose); text-decoration: none; }
+a:hover { text-decoration: underline; }
+p { margin-bottom: 16px; }
+p:last-child { margin-bottom: 0; }
+
+/* ═══════════ READING PROGRESS BAR ═══════════ */
+.progress-bar {
+  position: fixed; top: 0; left: 0; width: 0%;
+  height: 3px; z-index: 1000;
+  background: linear-gradient(90deg, var(--rose), var(--ember));
+  transition: width 100ms ease-out;
+}
+
+/* ═══════════ BACK TO TOP ═══════════ */
+.back-to-top {
+  position: fixed; bottom: 28px; right: 28px;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--deep); border: 1px solid rgba(255,255,255,.15);
+  color: white; font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transform: translateY(12px);
+  transition: opacity .25s ease, transform .25s ease;
+  z-index: 999; box-shadow: 0 4px 16px rgba(0,0,0,.2);
+}
+.back-to-top.visible { opacity: 1; transform: translateY(0); }
+.back-to-top:hover { background: var(--rose); }
+
+/* ═══════════ UTILITY CLASSES ═══════════ */
+.ui { font-family: 'DM Sans', sans-serif; }
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 3px; text-transform: uppercase;
+  margin-bottom: 12px; display: block;
+}
+/* Secondary labels use DM Sans — for sub-headers within sections */
+.sub-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--ghost); margin-bottom: 10px; display: block;
+}
+.caption {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; color: var(--ghost);
+  margin-top: 6px; line-height: 1.4;
+}
+.src {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; color: var(--ghost); margin-top: 12px;
+}
+.src a { color: var(--rose); }
+
+/* ═══════════ COVER ═══════════ */
+.cover {
+  background: var(--deep);
+  background-image:
+    radial-gradient(ellipse at 80% 20%, rgba(232,56,79,.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 20% 80%, rgba(255,109,58,.08) 0%, transparent 50%);
+  padding: 80px 60px 60px;
+  position: relative;
+  min-height: 480px;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  overflow: hidden;
+}
+.cover::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 5px;
+  background: linear-gradient(90deg, var(--rose), var(--ember), var(--rose));
+}
+
+/* Enhancement 18: Cover Ambient Animation — drifting gradients */
+.cover::after {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(ellipse at 80% 20%, rgba(232,56,79,.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 20% 80%, rgba(255,109,58,.08) 0%, transparent 50%);
+  animation: coverDrift 20s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes coverDrift {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-15px, 10px) scale(1.03); }
+  100% { transform: translate(10px, -8px) scale(1.01); }
+}
+
+/* Enhancement 18: Animated grain overlay */
+.cover-grain {
+  position: absolute; inset: 0;
+  background-image: repeating-conic-gradient(rgba(255,255,255,.015) 0% 25%, transparent 0% 50%);
+  background-size: 4px 4px;
+  animation: grainShift 0.8s steps(4) infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+@keyframes grainShift {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-2px, 2px); }
+  50% { transform: translate(2px, -1px); }
+  75% { transform: translate(-1px, -2px); }
+  100% { transform: translate(1px, 1px); }
+}
+
+/* Enhancement 9: Subtle noise texture on cover using base64 grain */
+.cover-noise {
+  position: absolute; inset: 0;
+  opacity: 0.035;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANWp0mAAAACHRSTlMzMzMzMzMzM85JBgUAAAA0SURBVDjLY2CgNmBWYBBgYFZgEGBkVmAQYGJWYBBgZlZgEGBhVmAQYGVWYBBgY6Y4AABxWAIRkPtLqAAAAABJRU5ErkJggg==");
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Enhancement 10: Cover brand — larger, tighter */
+.cover-brand {
+  font-size: 80px; font-weight: 700;
+  color: white; line-height: .95; letter-spacing: -3px; margin-bottom: 8px;
+  position: relative; z-index: 2;
+}
+.cover-brand span { color: var(--rose); font-style: italic; }
+.cover-issue {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: rgba(255,255,255,.4);
+  letter-spacing: 3px; text-transform: uppercase; margin-bottom: 32px;
+  position: relative; z-index: 2;
+}
+.cover-headline {
+  font-size: 32px; font-weight: 600;
+  color: rgba(255,255,255,.78); line-height: 1.25; max-width: 720px;
+  position: relative; z-index: 2;
+}
+.cover-tags { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 8px; position: relative; z-index: 2; }
+.cover-tags .tag {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 3px;
+  background: rgba(255,255,255,.06); color: rgba(255,255,255,.5);
+  border: 1px solid rgba(255,255,255,.08);
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  transition: background .15s ease, color .15s ease;
+  /* Enhancement 18: Staggered fade-in for tags */
+  opacity: 0;
+  animation: tagFadeIn 0.5s ease-out forwards;
+}
+.cover-tags .tag:nth-child(1) { animation-delay: 0.3s; }
+.cover-tags .tag:nth-child(2) { animation-delay: 0.4s; }
+.cover-tags .tag:nth-child(3) { animation-delay: 0.5s; }
+.cover-tags .tag:nth-child(4) { animation-delay: 0.6s; }
+.cover-tags .tag:nth-child(5) { animation-delay: 0.7s; }
+.cover-tags .tag:nth-child(6) { animation-delay: 0.8s; }
+.cover-tags .tag:nth-child(7) { animation-delay: 0.9s; }
+.cover-tags .tag:nth-child(8) { animation-delay: 1.0s; }
+.cover-tags .tag:nth-child(9) { animation-delay: 1.1s; }
+.cover-tags .tag:nth-child(10) { animation-delay: 1.2s; }
+@keyframes tagFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.cover-tags .tag:hover {
+  background: rgba(255,255,255,.12); color: rgba(255,255,255,.8);
+}
+
+/* ═══════════ NAVIGATOR ═══════════ */
+.nav-section { padding: 48px 60px; background: var(--paper); border-bottom: 1px solid var(--rule); }
+.nav-section h2 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 24px;
+}
+.nav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+/* Lead cards span two columns with optional thumbnail */
+.nav-card.lead {
+  grid-column: span 2;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+  padding: 0; overflow: hidden;
+}
+.nav-card.lead .nav-card-content { padding: 22px 24px; }
+.nav-card.lead .nav-card-thumb {
+  background-size: cover; background-position: center;
+  min-height: 140px;
+}
+.nav-card.lead h3 { font-size: 20px; }
+.nav-card {
+  background: var(--warm); border-radius: 8px; padding: 20px;
+  border-left: 4px solid var(--rule);
+  transition: transform .15s ease, box-shadow .15s ease;
+  text-decoration: none; display: block; cursor: pointer;
+}
+.nav-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.06); text-decoration: none; }
+.nav-card.world { border-left-color: var(--rose); }
+.nav-card.tech { border-left-color: var(--ember); }
+.nav-card.football { border-left-color: var(--turf); }
+.nav-card.screen { border-left-color: var(--neon); }
+.nav-card.shelf { border-left-color: var(--shelf-accent); }
+.nav-card.session { border-left-color: var(--session-accent); }
+.nav-card.history { border-left-color: var(--hist-accent); }
+
+/* Enhancement 6: Nav card tinted backgrounds & glow hovers */
+.nav-card.world { background: rgba(232,56,79,.06); }
+.nav-card.tech { background: rgba(255,109,58,.06); }
+.nav-card.football { background: rgba(26,122,76,.06); }
+.nav-card.screen { background: rgba(255,45,120,.06); }
+.nav-card.shelf { background: rgba(212,160,60,.06); }
+.nav-card.session { background: rgba(212,98,43,.06); }
+.nav-card.history { background: rgba(139,105,20,.06); }
+
+.nav-card.world:hover { box-shadow: 0 8px 24px rgba(232,56,79,.12); }
+.nav-card.tech:hover { box-shadow: 0 8px 24px rgba(255,109,58,.12); }
+.nav-card.football:hover { box-shadow: 0 8px 24px rgba(26,122,76,.12); }
+.nav-card.screen:hover { box-shadow: 0 8px 24px rgba(255,45,120,.12); }
+.nav-card.shelf:hover { box-shadow: 0 8px 24px rgba(212,160,60,.12); }
+.nav-card.session:hover { box-shadow: 0 8px 24px rgba(212,98,43,.12); }
+.nav-card.history:hover { box-shadow: 0 8px 24px rgba(139,105,20,.12); }
+
+.nav-card-tag {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: 6px;
+  display: flex; align-items: center; gap: 6px;
+}
+/* Enhancement 6 & 15: Nav card icon element */
+.nav-card-icon {
+  display: inline-flex; align-items: center;
+  width: 16px; height: 16px;
+  flex-shrink: 0;
+}
+.nav-card-icon svg { width: 16px; height: 16px; }
+.nav-card.world .nav-card-tag { color: var(--rose); }
+.nav-card.tech .nav-card-tag { color: var(--ember); }
+.nav-card.football .nav-card-tag { color: var(--turf); }
+.nav-card.screen .nav-card-tag { color: var(--neon); }
+.nav-card.shelf .nav-card-tag { color: var(--shelf-accent); }
+.nav-card.session .nav-card-tag { color: var(--session-accent); }
+.nav-card.history .nav-card-tag { color: var(--hist-accent); }
+.nav-card h3 {
+  font-size: 18px; font-weight: 700; line-height: 1.25;
+  color: var(--ink); margin-bottom: 4px;
+}
+.nav-card p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; color: var(--slate); line-height: 1.4; margin: 0;
+}
+.nav-card .read-time {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px; color: var(--ghost); margin-top: 8px;
+  letter-spacing: 0.5px; text-transform: uppercase;
+}
+
+/* ═══════════ FOREWORD ═══════════ */
+.foreword { padding: 48px 60px; border-bottom: 1px solid var(--rule); }
+.foreword p { font-size: 21px; line-height: 1.75; max-width: 680px; }
+.foreword p::first-letter {
+  font-size: 64px; font-weight: 700; float: left;
+  line-height: .78; margin: 8px 12px 0 0; color: var(--rose);
+}
+
+/* ═══════════ SECTION DIVIDERS ═══════════ */
+.divider { height: 8px; border: none; margin: 0; }
+.dv-world { background: linear-gradient(90deg, var(--rose), #c0392b); }
+.dv-tech { background: linear-gradient(90deg, var(--ember), #e67e22); }
+.dv-football { background: linear-gradient(90deg, var(--turf), var(--turf-lt)); }
+.dv-screen { background: linear-gradient(90deg, #9B59B6, var(--neon)); }
+.dv-shelf { background: linear-gradient(90deg, var(--shelf-accent), #A0722A); }
+.dv-session { background: linear-gradient(90deg, var(--session-accent), #E67E22); }
+.dv-history { background: linear-gradient(90deg, var(--hist-accent), #D4A03C); }
+.dv-other { background: linear-gradient(90deg, var(--slate), var(--ghost)); }
+/* Inset divider variant — centred with breathing room */
+.divider.inset { margin: 0 60px; border-radius: 4px; }
+
+/* ═══════════ GENERIC SECTION ═══════════ */
+.sec { padding: 48px 60px; position: relative; overflow: hidden; }
+.sec h2 { font-size: 36px; font-weight: 700; line-height: 1.15; margin-bottom: 20px; max-width: 680px; }
+/* Sub-story headings: lighter weight for visual hierarchy separation */
+.sec h3 { font-size: 22px; font-weight: 600; line-height: 1.2; margin: 28px 0 10px; }
+.sec h3.minor { font-weight: 400; font-style: italic; font-size: 20px; }
+.sec h4 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--ghost); margin: 28px 0 10px;
+}
+
+/* ═══════════ Enhancement 2: SECTION WATERMARK LABELS ═══════════ */
+.sec-watermark {
+  position: absolute;
+  top: 20px; left: -20px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 140px;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 0;
+  /* Default: use section accent at very low opacity */
+  color: currentColor;
+  opacity: 0.04;
+}
+
+/* Enhancement 2: Section opener variant */
+.sec-opener .section-label {
+  font-size: 14px;
+  letter-spacing: 4px;
+  margin-bottom: 16px;
+}
+.sec-opener h2 {
+  font-size: 42px;
+  max-width: 720px;
+}
+.sec-opener .opener-band {
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 120px;
+  background: linear-gradient(180deg, rgba(0,0,0,.03) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ═══════════ Enhancement 9: Section gradient overlay ═══════════ */
+.sec-gradient-overlay {
+  position: absolute;
+  bottom: 0; left: 0; right: 0; height: 200px;
+  pointer-events: none;
+  z-index: 0;
+}
+.world-section .sec-gradient-overlay { background: linear-gradient(180deg, transparent, rgba(232,56,79,.02)); }
+.tech-section .sec-gradient-overlay { background: linear-gradient(180deg, transparent, rgba(255,109,58,.02)); }
+.session-section .sec-gradient-overlay { background: linear-gradient(180deg, transparent, rgba(212,98,43,.02)); }
+
+/* ═══════════ STAT BAR ═══════════ */
+.stat-bar {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; margin: 24px 0;
+}
+.stat-bar .stat { padding: 18px 16px; text-align: center; border-right: 1px solid var(--rule); }
+.stat-bar .stat:last-child { border-right: none; }
+.stat-bar .stat-num { font-size: 32px; font-weight: 700; line-height: 1; }
+.stat-bar .stat-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px; font-weight: 700; color: var(--ghost);
+  text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;
+}
+
+/* ═══════════ Enhancement 3: BIG NUMBER CALLOUTS ═══════════ */
+.big-number {
+  text-align: center;
+  padding: 24px 0;
+  margin: 24px 0;
+}
+.big-number .num {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 80px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--rose);
+}
+.big-number .num-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ghost);
+  margin-top: 8px;
+}
+.big-number.float-left { float: left; margin: 0 32px 16px 0; text-align: left; }
+.big-number.float-right { float: right; margin: 0 0 16px 32px; text-align: right; }
+
+/* Big number row — 2-3 dramatic stats */
+.big-number-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin: 32px 0;
+  padding: 28px 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+.big-number-row .big-number {
+  margin: 0; padding: 0;
+}
+.big-number-row .big-number .num {
+  font-size: 64px;
+}
+
+/* Section-aware big numbers */
+.touchline-section .big-number .num { color: var(--turf-lt); }
+.touchline-section .big-number .num-label { color: rgba(255,255,255,.4); }
+.touchline-section .big-number-row { border-color: rgba(255,255,255,.1); }
+.screen-section .big-number .num { color: var(--neon); }
+.screen-section .big-number .num-label { color: rgba(255,255,255,.4); }
+.screen-section .big-number-row { border-color: rgba(255,255,255,.1); }
+.shelf-section .big-number .num { color: var(--shelf-accent); }
+.shelf-section .big-number .num-label { color: rgba(255,255,255,.4); }
+.shelf-section .big-number-row { border-color: rgba(255,255,255,.1); }
+.tech-section .big-number .num { color: var(--ember); }
+.session-section .big-number .num { color: var(--session-accent); }
+.history-section .big-number .num { color: var(--hist-accent); }
+
+/* Enhancement 10: Display stat — for inline dramatic numbers */
+.display-stat {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 72px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--rose);
+  display: inline;
+}
+
+/* ═══════════ ANGLE BOX ═══════════ */
+.angle {
+  background: var(--warm); border-left: 5px solid var(--rose);
+  padding: 24px 28px; margin: 28px 0; border-radius: 0 6px 6px 0;
+}
+.angle-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 8px;
+}
+.angle p { font-size: 17px; line-height: 1.65; font-weight: 600; }
+
+/* ═══════════ PULL QUOTE ═══════════ */
+.pull-quote {
+  border-left: 4px solid var(--rose); padding: 16px 28px; margin: 32px 0;
+}
+.pull-quote p {
+  font-size: 22px; font-style: italic; font-weight: 400;
+  line-height: 1.5; color: var(--ink); margin: 0;
+}
+.pull-quote cite {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-style: normal; color: var(--ghost);
+  display: block; margin-top: 8px;
+}
+
+/* Enhancement 7: Pull quote — centered variant */
+.pull-quote.centered {
+  border-left: none;
+  text-align: center;
+  padding: 32px 40px;
+  position: relative;
+}
+.pull-quote.centered::before {
+  content: 'C';
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 80px;
+  font-weight: 700;
+  color: var(--rose);
+  opacity: 0.25;
+  display: block;
+  line-height: 0.5;
+  margin-bottom: 8px;
+}
+
+/* Enhancement 7: Pull quote — wide variant */
+.pull-quote.wide {
+  margin-left: -32px;
+  margin-right: -32px;
+  padding: 24px 40px;
+  border-left-width: 5px;
+}
+
+/* Section-aware centered quotes */
+.touchline-section .pull-quote.centered::before { color: var(--turf-lt); }
+.screen-section .pull-quote.centered::before { color: var(--neon); }
+.shelf-section .pull-quote.centered::before { color: var(--shelf-accent); }
+
+/* ═══════════ DID YOU KNOW ═══════════ */
+.dyk {
+  background: linear-gradient(135deg, #FFF8E7, #FFF3D6);
+  border: 1px solid #E8D5A3; border-radius: 8px;
+  padding: 18px 22px; margin: 24px 0; position: relative;
+}
+.dyk::before {
+  content: '💡'; position: absolute; top: -10px; left: 16px;
+  font-size: 18px; background: var(--paper); padding: 0 4px;
+}
+.dyk-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: #B8860B; margin-bottom: 6px;
+}
+.dyk p { font-size: 15px; line-height: 1.55; margin: 0; color: #5C4A20; }
+
+/* ═══════════ SIDEBAR / CALLOUT BOX ═══════════ */
+.sidebar {
+  background: var(--warm); border-radius: 8px; padding: 22px 26px; margin: 24px 0;
+  border: 1px solid var(--rule);
+}
+.sidebar-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 10px;
+}
+.sidebar ul { list-style: none; }
+.sidebar li {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; line-height: 1.5; padding: 5px 0;
+  border-bottom: 1px solid rgba(0,0,0,.04); color: var(--ink);
+}
+.sidebar li:last-child { border-bottom: none; }
+
+/* ═══════════ ALSO THIS WEEK LIST ═══════════ */
+.also { margin-top: 32px; padding-top: 24px; border-top: 2px solid var(--rule); }
+.also-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--ghost); margin-bottom: 12px;
+}
+.also-list { list-style: none; }
+.also-list li {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14.5px; line-height: 1.5; padding: 8px 0;
+  border-bottom: 1px solid rgba(0,0,0,.04);
+}
+.also-list li:last-child { border-bottom: none; }
+
+/* Enhancement 8: Also cards — compact card grid alternative */
+.also-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+.also-card {
+  background: var(--warm);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 14px 16px;
+}
+.also-card h4 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 700;
+  color: var(--ink);
+  letter-spacing: 0; text-transform: none;
+  margin: 0 0 4px;
+}
+.also-card p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12.5px; color: var(--slate);
+  line-height: 1.4; margin: 0;
+}
+.also-card .badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--ghost);
+  margin-top: 6px; display: inline-block;
+}
+
+/* Dark section also-cards */
+.touchline-section .also-cards .also-card { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.06); }
+.touchline-section .also-cards .also-card h4 { color: rgba(255,255,255,.9); }
+.touchline-section .also-cards .also-card p { color: rgba(255,255,255,.6); }
+.touchline-section .also-cards .also-card .badge { color: rgba(255,255,255,.3); }
+.screen-section .also-cards .also-card { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.06); }
+.screen-section .also-cards .also-card h4 { color: rgba(255,255,255,.9); }
+.screen-section .also-cards .also-card p { color: rgba(255,255,255,.6); }
+.shelf-section .also-cards .also-card { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.06); }
+.shelf-section .also-cards .also-card h4 { color: rgba(255,255,255,.9); }
+.shelf-section .also-cards .also-card p { color: rgba(255,255,255,.6); }
+
+/* ═══════════ DUAL COLUMN ═══════════ */
+.dual-col { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 24px 0; }
+.col-card { border-left: 4px solid var(--rule); padding-left: 24px; }
+.col-card.accent-ember { border-left-color: var(--ember); }
+.col-card.accent-deep { border-left-color: var(--deep); }
+.col-card h3 { font-size: 22px; font-weight: 700; line-height: 1.2; margin: 0 0 10px; }
+.col-card p { font-size: 16px; }
+
+/* ═══════════ Enhancement 1: VARIED COLUMN LAYOUTS ═══════════ */
+.split-60-40 {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 32px;
+  margin: 24px 0;
+  align-items: start;
+}
+.split-40-60 {
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+  gap: 32px;
+  margin: 24px 0;
+  align-items: start;
+}
+
+/* ═══════════ HERO IMAGE ═══════════ */
+.hero-img { width: 100%; aspect-ratio: 16/7; object-fit: cover; border-radius: 8px; margin: 24px 0; }
+/* Full-bleed hero — bleeds to section edges above content */
+.hero-bleed { width: calc(100% + 120px); margin-left: -60px; border-radius: 0; margin-top: -48px; margin-bottom: 28px; aspect-ratio: 16/7; object-fit: cover; }
+.inline-img { border-radius: 6px; margin: 20px 0; }
+/* Float image for text wrap (books, album art) */
+.img-float-left { float: left; margin: 4px 24px 12px 0; border-radius: 6px; }
+
+/* ═══════════ Enhancement 4: IMAGE MONTAGE GRID ═══════════ */
+.img-montage {
+  display: grid;
+  gap: 8px;
+  margin: 24px 0;
+}
+.img-montage.layout-1-2 {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+}
+.img-montage.layout-1-2 .montage-hero {
+  grid-column: 1 / -1;
+}
+.img-montage.layout-2x2 {
+  grid-template-columns: 1fr 1fr;
+}
+.img-montage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+}
+.img-montage .caption {
+  grid-column: 1 / -1;
+}
+
+/* Enhancement 4: Offset image — asymmetric text wrap */
+.img-offset {
+  float: right;
+  width: 60%;
+  margin: 0 0 16px 24px;
+  border-radius: 6px;
+}
+.img-offset.left {
+  float: left;
+  margin: 0 24px 16px 0;
+}
+
+/* ═══════════ THE WORLD THIS WEEK ═══════════ */
+.world-section { background: var(--paper); }
+.world-section .section-label { color: var(--rose); }
+.world-section .sec-watermark { color: var(--rose); }
+
+/* ═══════════ PIXEL & BYTE ═══════════ */
+.tech-section { background: var(--warm); }
+.tech-section .section-label { color: var(--ember); }
+.tech-section .sec-watermark { color: var(--ember); }
+
+/* ═══════════ THE TOUCHLINE ═══════════ */
+.touchline-section { background: var(--pitch); color: rgba(255,255,255,.85); }
+.touchline-section .section-label { color: var(--turf-lt); }
+.touchline-section h2 { color: white; }
+.touchline-section h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--turf-lt); margin: 28px 0 12px;
+}
+.touchline-section h3.narrative {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px; text-transform: none; letter-spacing: 0; color: white;
+}
+.touchline-section p { color: rgba(255,255,255,.8); }
+.touchline-section a { color: var(--turf-lt); }
+.touchline-section .angle { background: rgba(255,255,255,.04); border-left-color: var(--turf-lt); }
+.touchline-section .angle-label { color: var(--turf-lt); }
+.touchline-section .angle p { color: rgba(255,255,255,.9); }
+.touchline-section .also { border-top-color: rgba(255,255,255,.1); }
+.touchline-section .also-title { color: rgba(255,255,255,.3); }
+.touchline-section .also-list li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+.touchline-section .pull-quote { border-left-color: var(--turf-lt); }
+.touchline-section .pull-quote p { color: rgba(255,255,255,.9); }
+.touchline-section .pull-quote cite { color: rgba(255,255,255,.4); }
+.touchline-section .sec-watermark { color: var(--turf-lt); }
+
+/* Touchline DYK — section-aware dark variant */
+.touchline-section .dyk { background: rgba(26,122,76,.08); border-color: rgba(43,214,123,.12); }
+.touchline-section .dyk::before { background: var(--pitch); }
+.touchline-section .dyk-title { color: var(--turf-lt); }
+.touchline-section .dyk p { color: rgba(255,255,255,.7); }
+
+/* Touchline sidebar */
+.touchline-section .sidebar { background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.touchline-section .sidebar-title { color: var(--turf-lt); }
+.touchline-section .sidebar li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+
+/* League Table */
+.league-table {
+  width: 100%; border-collapse: collapse; margin: 16px 0 24px;
+  font-family: 'DM Sans', sans-serif; font-size: 14px;
+}
+.league-table th {
+  text-align: left; padding: 10px 12px;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: rgba(255,255,255,.3); border-bottom: 1px solid rgba(255,255,255,.1);
+}
+.league-table td { padding: 9px 12px; border-bottom: 1px solid rgba(255,255,255,.04); color: rgba(255,255,255,.6); }
+.league-table tr:nth-child(even) td { background: rgba(255,255,255,.015); }
+.league-table tr.highlight td { color: var(--turf-lt); font-weight: 700; }
+.league-table .pos { width: 30px; text-align: center; }
+/* Scrollable wrapper for small screens */
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 16px 0 24px; }
+.table-wrap .league-table { margin: 0; min-width: 520px; }
+
+/* Results Strip */
+.results-strip { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+.result-card {
+  background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.06);
+  border-radius: 6px; padding: 12px 16px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px;
+  color: rgba(255,255,255,.65); line-height: 1.4; min-width: 190px;
+  flex: 1 1 190px; max-width: 220px;
+}
+.result-card .teams { color: rgba(255,255,255,.6); }
+.result-card strong { color: rgba(255,255,255,.9); font-weight: 700; }
+.result-card .score {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 18px; font-weight: 700; color: var(--turf-lt);
+  display: block; margin: 2px 0;
+}
+
+/* ═══════════ Enhancement 11: SPARKLINE ═══════════ */
+.sparkline {
+  display: inline-block;
+  width: 200px;
+  height: 40px;
+  vertical-align: middle;
+}
+.sparkline svg {
+  width: 100%;
+  height: 100%;
+}
+.sparkline .spark-line {
+  fill: none;
+  stroke: var(--turf-lt);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.sparkline .spark-area {
+  fill: var(--turf-lt);
+  opacity: 0.1;
+}
+.sparkline .spark-dot {
+  fill: var(--turf-lt);
+}
+
+/* Enhancement 11: Position change indicators */
+.pos-change {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+}
+.pos-change.up { color: #2BD67B; }
+.pos-change.down { color: var(--rose); }
+.pos-change.same { color: var(--ghost); }
+
+/* Enhancement 11: Mini horizontal bar */
+.mini-bar {
+  display: inline-block;
+  height: 6px;
+  border-radius: 3px;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+.mini-bar-track {
+  display: inline-block;
+  width: 100px;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255,255,255,.1);
+  position: relative;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+.mini-bar-track .mini-bar-fill {
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--turf-lt);
+}
+
+/* ═══════════ SCREEN & SOUND ═══════════ */
+.screen-section { background: var(--screen-bg); color: rgba(255,255,255,.85); }
+.screen-section .section-label { color: var(--neon); }
+.screen-section h2 { color: white; }
+.screen-section h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--neon); margin: 28px 0 12px;
+}
+.screen-section h3.feature-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px; text-transform: none; letter-spacing: 0; color: white; margin-bottom: 14px;
+}
+.screen-section p { color: rgba(255,255,255,.8); }
+.screen-section a { color: var(--neon); }
+.screen-section .also { border-top-color: rgba(255,255,255,.08); }
+.screen-section .also-title { color: rgba(255,255,255,.3); }
+.screen-section .also-list li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+.screen-section .pull-quote { border-left-color: var(--neon); }
+.screen-section .pull-quote p { color: rgba(255,255,255,.9); }
+.screen-section .pull-quote cite { color: rgba(255,255,255,.4); }
+.screen-section .sec-watermark { color: var(--neon); }
+
+/* Screen & Sound DYK — section-aware dark variant */
+.screen-section .dyk { background: rgba(255,45,120,.06); border-color: rgba(255,45,120,.12); }
+.screen-section .dyk::before { background: var(--screen-bg); }
+.screen-section .dyk-title { color: var(--neon); }
+.screen-section .dyk p { color: rgba(255,255,255,.7); }
+
+/* Screen sidebar */
+.screen-section .sidebar { background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.screen-section .sidebar-title { color: var(--neon); }
+.screen-section .sidebar li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+
+/* Radar — Release Radar and On the Radar */
+.radar-grid { margin: 16px 0; }
+.radar-row {
+  display: grid; grid-template-columns: 80px 1fr; gap: 14px;
+  padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,.06);
+  font-family: 'DM Sans', sans-serif; font-size: 14px;
+  color: rgba(255,255,255,.7); line-height: 1.4;
+}
+.radar-row:last-child { border-bottom: none; }
+.radar-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700; color: var(--neon); padding-top: 2px;
+}
+.radar-row strong { color: rgba(255,255,255,.95); }
+.radar-platform { font-size: 11px; color: rgba(255,255,255,.35); font-weight: 500; }
+/* Category dot for radar items */
+.radar-cat {
+  display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+  margin-right: 6px; vertical-align: middle;
+}
+.radar-cat.film { background: var(--neon); }
+.radar-cat.tv { background: #9B59B6; }
+.radar-cat.game { background: var(--ember); }
+.radar-cat.book { background: var(--shelf-accent); }
+.radar-cat.music { background: var(--turf-lt); }
+.radar-cat.tech { background: var(--ghost); }
+.radar-cat.lego { background: #E8384F; }
+/* Leaving Soon — urgency styling */
+.radar-row.leaving { border-left: 3px solid var(--rose); padding-left: 12px; margin-left: -3px; }
+.radar-row.leaving .radar-date { color: var(--rose); }
+
+/* ═══════════ Enhancement 16: CARD STACK — Horizontal scroll ═══════════ */
+.card-stack {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 8px 0 16px;
+  margin: 16px 0;
+}
+.card-stack::-webkit-scrollbar { height: 4px; }
+.card-stack::-webkit-scrollbar-track { background: rgba(255,255,255,.05); border-radius: 2px; }
+.card-stack::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 2px; }
+
+.stack-card {
+  flex: 0 0 240px;
+  scroll-snap-align: start;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.stack-card-img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+}
+.stack-card-body {
+  padding: 14px 16px;
+}
+.stack-card-title {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 17px; font-weight: 700;
+  color: rgba(255,255,255,.95);
+  margin-bottom: 4px;
+}
+.stack-card-verdict {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12.5px; color: rgba(255,255,255,.6);
+  line-height: 1.4; margin-bottom: 8px;
+}
+.stack-card .platform-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: rgba(255,255,255,.35);
+  background: rgba(255,255,255,.06);
+  padding: 2px 8px; border-radius: 3px;
+  display: inline-block;
+}
+
+/* Light section card stacks */
+.tech-section .stack-card { background: white; border-color: var(--rule); }
+.tech-section .stack-card-title { color: var(--ink); }
+.tech-section .stack-card-verdict { color: var(--slate); }
+.tech-section .stack-card .platform-badge { color: var(--ghost); background: var(--warm); }
+.tech-section .card-stack::-webkit-scrollbar-track { background: var(--rule); }
+.tech-section .card-stack::-webkit-scrollbar-thumb { background: var(--ghost); }
+
+/* ═══════════ Enhancement 19: SCORE/RATING DOTS ═══════════ */
+.rating {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  margin: 4px 0;
+}
+.rating .dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,.25);
+  background: transparent;
+}
+.rating .dot.filled {
+  border-color: transparent;
+}
+/* Section-specific rating colours */
+.screen-section .rating .dot.filled { background: var(--neon); }
+.shelf-section .rating .dot.filled { background: var(--shelf-accent); }
+.tech-section .rating .dot { border-color: var(--rule); }
+.tech-section .rating .dot.filled { background: var(--ember); border-color: transparent; }
+/* Light section dots */
+.session-section .rating .dot { border-color: var(--rule); }
+.session-section .rating .dot.filled { background: var(--session-accent); border-color: transparent; }
+.world-section .rating .dot { border-color: var(--rule); }
+.world-section .rating .dot.filled { background: var(--rose); border-color: transparent; }
+
+/* ═══════════ THE SHELF ═══════════ */
+.shelf-section { background: var(--shelf-bg); color: rgba(255,255,255,.85); }
+.shelf-section .section-label { color: var(--shelf-accent); }
+.shelf-section h2 { color: white; }
+.shelf-section h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--shelf-accent); margin: 28px 0 12px;
+}
+.shelf-section h3.feature-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px; text-transform: none; letter-spacing: 0; color: white; margin-bottom: 14px;
+}
+.shelf-section p { color: rgba(255,255,255,.8); }
+.shelf-section a { color: var(--shelf-accent); }
+.shelf-section .also { border-top-color: rgba(255,255,255,.08); }
+.shelf-section .also-title { color: rgba(255,255,255,.3); }
+.shelf-section .also-list li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+.shelf-section .sec-watermark { color: var(--shelf-accent); }
+.shelf-section .pull-quote { border-left-color: var(--shelf-accent); }
+.shelf-section .pull-quote p { color: rgba(255,255,255,.9); }
+.shelf-section .pull-quote cite { color: rgba(255,255,255,.4); }
+
+/* Shelf DYK — section-aware dark variant */
+.shelf-section .dyk { background: rgba(212,160,60,.06); border-color: rgba(212,160,60,.12); }
+.shelf-section .dyk::before { background: var(--shelf-bg); }
+.shelf-section .dyk-title { color: var(--shelf-accent); }
+.shelf-section .dyk p { color: rgba(255,255,255,.7); }
+
+/* Shelf sidebar */
+.shelf-section .sidebar { background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.shelf-section .sidebar-title { color: var(--shelf-accent); }
+.shelf-section .sidebar li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+
+/* Book Recommendation Card — with image float support */
+.book-card {
+  background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+  border-radius: 8px; padding: 18px 22px; margin: 12px 0;
+  overflow: hidden;
+}
+.book-card h4 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 19px; font-weight: 700; color: rgba(255,255,255,.95);
+  text-transform: none; letter-spacing: 0; margin: 0 0 4px;
+}
+.book-card .author {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; color: rgba(255,255,255,.4); margin-bottom: 6px;
+}
+.book-card p { font-size: 14px; color: rgba(255,255,255,.6); margin: 0; }
+.book-card img { float: left; width: 80px; margin: 0 16px 8px 0; border-radius: 4px; }
+/* Side-by-side book cards */
+.book-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+
+/* ═══════════ THE SESSION ═══════════ */
+.session-section { background: var(--session-bg); }
+.session-section .section-label { color: var(--session-accent); }
+.session-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.session-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.session-section .sec-watermark { color: var(--session-accent); }
+
+/* Workout Card — for rep schemes, protocols, programmes */
+.workout-card {
+  background: white; border: 1px solid var(--rule); border-radius: 8px;
+  padding: 22px 26px; margin: 20px 0;
+  border-left: 4px solid var(--session-accent);
+}
+.workout-card-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--session-accent); margin-bottom: 12px;
+}
+.workout-card table {
+  width: 100%; border-collapse: collapse; font-family: 'DM Sans', sans-serif; font-size: 14px;
+}
+.workout-card th {
+  text-align: left; padding: 6px 10px;
+  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--ghost); border-bottom: 1px solid var(--rule);
+}
+.workout-card td { padding: 7px 10px; border-bottom: 1px solid rgba(0,0,0,.04); color: var(--ink); }
+.workout-card .highlight-row td { color: var(--session-accent); font-weight: 700; }
+
+/* Workout icon labels */
+.workout-type {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'DM Sans', sans-serif; font-size: 11px;
+  color: var(--session-accent); font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; margin-bottom: 8px;
+}
+
+/* ═══════════ THIS WEEK IN HISTORY ═══════════ */
+.history-section { background: var(--hist-bg); }
+.history-section .section-label { color: var(--hist-accent); }
+.history-section h2 { font-size: 30px; font-weight: 700; line-height: 1.2; margin-bottom: 16px; color: #3D2E0F; }
+.history-section .sec-watermark { color: var(--hist-accent); }
+/* Year badges for history items */
+.year-badge {
+  display: inline-block; font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700; color: var(--hist-accent);
+  background: rgba(139,105,20,.08); border-radius: 3px;
+  padding: 2px 8px; margin-right: 8px; vertical-align: middle;
+}
+.history-section .also-list li { display: flex; align-items: baseline; gap: 0; }
+
+/* Enhancement 9: History paper texture — more pronounced */
+.history-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.06;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANWp0mAAAACHRSTlMzMzMzMzMzM85JBgUAAAA0SURBVDjLY2CgNmBWYBBgYFZgEGBkVmAQYGJWYBBgZlZgEGBhVmAQYGVWYBBgY6Y4AABxWAIRkPtLqAAAAABJRU5ErkJggg==");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ═══════════ ROTATING SECTION STYLES ═══════════ */
+/* Each rotating section gets a background, accent colour, and section-aware overrides */
+
+.pantry-section { background: var(--pantry-bg); }
+.pantry-section .section-label { color: var(--pantry-accent); }
+.pantry-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.pantry-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.pantry-section .sec-watermark { color: var(--pantry-accent); }
+.pantry-section .workout-card { border-left-color: var(--pantry-accent); } /* reuse workout-card for recipe cards */
+.pantry-section .workout-card-title { color: var(--pantry-accent); }
+.pantry-section .big-number .num { color: var(--pantry-accent); }
+.pantry-section .pull-quote { border-left-color: var(--pantry-accent); }
+.pantry-section .dyk { background: rgba(198,93,58,.06); border-color: rgba(198,93,58,.12); }
+.pantry-section .dyk-title { color: var(--pantry-accent); }
+.pantry-section .read-next a { color: var(--pantry-accent); }
+.pantry-section .sidebar { border-left-color: var(--pantry-accent); }
+.pantry-section .sidebar-title { color: var(--pantry-accent); }
+
+.workshop-section { background: var(--workshop-bg); }
+.workshop-section .section-label { color: var(--workshop-accent); }
+.workshop-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.workshop-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.workshop-section .sec-watermark { color: var(--workshop-accent); }
+.workshop-section .compare-panel .compare-side { border-color: rgba(90,99,120,.2); }
+.workshop-section .big-number .num { color: var(--workshop-accent); }
+.workshop-section .pull-quote { border-left-color: var(--workshop-accent); }
+.workshop-section .dyk { background: rgba(90,99,120,.06); border-color: rgba(90,99,120,.12); }
+.workshop-section .dyk-title { color: var(--workshop-accent); }
+.workshop-section .read-next a { color: var(--workshop-accent); }
+.workshop-section .sidebar { border-left-color: var(--workshop-accent); }
+.workshop-section .sidebar-title { color: var(--workshop-accent); }
+
+.toolkit-section { background: var(--toolkit-bg); }
+.toolkit-section .section-label { color: var(--toolkit-accent); }
+.toolkit-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.toolkit-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.toolkit-section .sec-watermark { color: var(--toolkit-accent); }
+.toolkit-section .big-number .num { color: var(--toolkit-accent); }
+.toolkit-section .pull-quote { border-left-color: var(--toolkit-accent); }
+.toolkit-section .dyk { background: rgba(26,154,175,.06); border-color: rgba(26,154,175,.12); }
+.toolkit-section .dyk-title { color: var(--toolkit-accent); }
+.toolkit-section .read-next a { color: var(--toolkit-accent); }
+.toolkit-section .also-cards .also-card { border-color: rgba(26,154,175,.12); }
+.toolkit-section .sidebar { border-left-color: var(--toolkit-accent); }
+.toolkit-section .sidebar-title { color: var(--toolkit-accent); }
+
+.ledger-section { background: var(--ledger-bg); }
+.ledger-section .section-label { color: var(--ledger-accent); }
+.ledger-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.ledger-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.ledger-section .sec-watermark { color: var(--ledger-accent); }
+.ledger-section .big-number .num { color: var(--ledger-accent); }
+.ledger-section .pull-quote { border-left-color: var(--ledger-accent); }
+.ledger-section .dyk { background: rgba(196,139,44,.06); border-color: rgba(196,139,44,.12); }
+.ledger-section .dyk-title { color: var(--ledger-accent); }
+.ledger-section .read-next a { color: var(--ledger-accent); }
+.ledger-section .stat-bar .stat-num { color: var(--ledger-accent); }
+.ledger-section .sidebar { border-left-color: var(--ledger-accent); }
+.ledger-section .sidebar-title { color: var(--ledger-accent); }
+
+.longgame-section { background: var(--longgame-bg); }
+.longgame-section .section-label { color: var(--longgame-accent); }
+.longgame-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.longgame-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.longgame-section .sec-watermark { color: var(--longgame-accent); }
+.longgame-section .big-number .num { color: var(--longgame-accent); }
+.longgame-section .pull-quote { border-left-color: var(--longgame-accent); }
+.longgame-section .dyk { background: rgba(42,58,92,.06); border-color: rgba(42,58,92,.12); }
+.longgame-section .dyk-title { color: var(--longgame-accent); }
+.longgame-section .read-next a { color: var(--longgame-accent); }
+.longgame-section .stat-bar .stat-num { color: var(--longgame-accent); }
+.longgame-section .sidebar { border-left-color: var(--longgame-accent); }
+.longgame-section .sidebar-title { color: var(--longgame-accent); }
+
+.wallet-section { background: var(--wallet-bg); }
+.wallet-section .section-label { color: var(--wallet-accent); }
+.wallet-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.wallet-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.wallet-section .sec-watermark { color: var(--wallet-accent); }
+.wallet-section .big-number .num { color: var(--wallet-accent); }
+.wallet-section .pull-quote { border-left-color: var(--wallet-accent); }
+.wallet-section .dyk { background: rgba(26,138,122,.06); border-color: rgba(26,138,122,.12); }
+.wallet-section .dyk-title { color: var(--wallet-accent); }
+.wallet-section .read-next a { color: var(--wallet-accent); }
+.wallet-section .compare-panel .compare-side { border-color: rgba(26,138,122,.2); }
+.wallet-section .sidebar { border-left-color: var(--wallet-accent); }
+.wallet-section .sidebar-title { color: var(--wallet-accent); }
+
+.itinerary-section { background: var(--itinerary-bg); }
+.itinerary-section .section-label { color: var(--itinerary-accent); }
+.itinerary-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.itinerary-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.itinerary-section .sec-watermark { color: var(--itinerary-accent); }
+.itinerary-section .big-number .num { color: var(--itinerary-accent); }
+.itinerary-section .pull-quote { border-left-color: var(--itinerary-accent); }
+.itinerary-section .dyk { background: rgba(212,99,75,.06); border-color: rgba(212,99,75,.12); }
+.itinerary-section .dyk-title { color: var(--itinerary-accent); }
+.itinerary-section .read-next a { color: var(--itinerary-accent); }
+.itinerary-section .sidebar { border-left-color: var(--itinerary-accent); }
+.itinerary-section .sidebar-title { color: var(--itinerary-accent); }
+
+/* Nav card styles for rotating sections */
+.nav-card.pantry { border-left-color: var(--pantry-accent); background: rgba(198,93,58,.06); }
+.nav-card.pantry:hover { box-shadow: 0 8px 24px rgba(198,93,58,.12); }
+.nav-card.pantry .nav-card-tag { color: var(--pantry-accent); }
+.nav-card.workshop { border-left-color: var(--workshop-accent); background: rgba(90,99,120,.06); }
+.nav-card.workshop:hover { box-shadow: 0 8px 24px rgba(90,99,120,.12); }
+.nav-card.workshop .nav-card-tag { color: var(--workshop-accent); }
+.nav-card.toolkit { border-left-color: var(--toolkit-accent); background: rgba(26,154,175,.06); }
+.nav-card.toolkit:hover { box-shadow: 0 8px 24px rgba(26,154,175,.12); }
+.nav-card.toolkit .nav-card-tag { color: var(--toolkit-accent); }
+.nav-card.ledger { border-left-color: var(--ledger-accent); background: rgba(196,139,44,.06); }
+.nav-card.ledger:hover { box-shadow: 0 8px 24px rgba(196,139,44,.12); }
+.nav-card.ledger .nav-card-tag { color: var(--ledger-accent); }
+.nav-card.longgame { border-left-color: var(--longgame-accent); background: rgba(42,58,92,.06); }
+.nav-card.longgame:hover { box-shadow: 0 8px 24px rgba(42,58,92,.12); }
+.nav-card.longgame .nav-card-tag { color: var(--longgame-accent); }
+.nav-card.wallet { border-left-color: var(--wallet-accent); background: rgba(26,138,122,.06); }
+.nav-card.wallet:hover { box-shadow: 0 8px 24px rgba(26,138,122,.12); }
+.nav-card.wallet .nav-card-tag { color: var(--wallet-accent); }
+.nav-card.itinerary { border-left-color: var(--itinerary-accent); background: rgba(212,99,75,.06); }
+.nav-card.itinerary:hover { box-shadow: 0 8px 24px rgba(212,99,75,.12); }
+.nav-card.itinerary .nav-card-tag { color: var(--itinerary-accent); }
+
+/* Dividers for rotating sections */
+.dv-pantry { background: linear-gradient(90deg, var(--pantry-accent), #E8845A); }
+.dv-workshop { background: linear-gradient(90deg, var(--workshop-accent), #7A839A); }
+.dv-toolkit { background: linear-gradient(90deg, var(--toolkit-accent), #2AB8CE); }
+.dv-ledger { background: linear-gradient(90deg, var(--ledger-accent), #D4A03C); }
+.dv-longgame { background: linear-gradient(90deg, var(--longgame-accent), #4A5A8C); }
+.dv-wallet { background: linear-gradient(90deg, var(--wallet-accent), #2AB8A8); }
+.dv-itinerary { background: linear-gradient(90deg, var(--itinerary-accent), #E8845A); }
+
+/* ═══════════ Enhancement 12: CONTEXTUAL TIMELINES ═══════════ */
+.timeline {
+  position: relative;
+  padding-left: 32px;
+  margin: 24px 0;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 8px; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--rule);
+}
+.timeline-node {
+  position: relative;
+  padding: 12px 0 24px 16px;
+}
+.timeline-node::before {
+  content: '';
+  position: absolute;
+  left: -28px; top: 18px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--rose);
+  border: 2px solid var(--paper);
+}
+.timeline-node .timeline-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--ghost);
+  margin-bottom: 4px;
+}
+.timeline-node .timeline-content {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14.5px; line-height: 1.5;
+}
+.timeline-node .timeline-content strong { color: var(--ink); }
+
+/* Timeline on dark backgrounds */
+.touchline-section .timeline::before { background: rgba(255,255,255,.1); }
+.touchline-section .timeline-node::before { background: var(--turf-lt); border-color: var(--pitch); }
+.touchline-section .timeline-node .timeline-date { color: var(--turf-lt); }
+.touchline-section .timeline-node .timeline-content { color: rgba(255,255,255,.7); }
+.touchline-section .timeline-node .timeline-content strong { color: rgba(255,255,255,.95); }
+
+.screen-section .timeline::before { background: rgba(255,255,255,.1); }
+.screen-section .timeline-node::before { background: var(--neon); border-color: var(--screen-bg); }
+.screen-section .timeline-node .timeline-date { color: var(--neon); }
+.screen-section .timeline-node .timeline-content { color: rgba(255,255,255,.7); }
+.screen-section .timeline-node .timeline-content strong { color: rgba(255,255,255,.95); }
+
+.shelf-section .timeline::before { background: rgba(255,255,255,.1); }
+.shelf-section .timeline-node::before { background: var(--shelf-accent); border-color: var(--shelf-bg); }
+.shelf-section .timeline-node .timeline-date { color: var(--shelf-accent); }
+.shelf-section .timeline-node .timeline-content { color: rgba(255,255,255,.7); }
+.shelf-section .timeline-node .timeline-content strong { color: rgba(255,255,255,.95); }
+
+/* History timeline */
+.history-section .timeline::before { background: rgba(139,105,20,.2); }
+.history-section .timeline-node::before { background: var(--hist-accent); border-color: var(--hist-bg); }
+.history-section .timeline-node .timeline-date { color: var(--hist-accent); }
+.history-section .timeline-node .timeline-content { color: #5C4A20; }
+
+/* ═══════════ Enhancement 13: COMPACT TAKES ═══════════ */
+.compact-take {
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--rose);
+  border-radius: 0 6px 6px 0;
+  padding: 16px 18px;
+  margin: 12px 0;
+}
+.compact-take h4 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 17px; font-weight: 700; color: var(--ink);
+  text-transform: none; letter-spacing: 0;
+  margin: 0 0 6px;
+}
+.compact-take p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13.5px; color: var(--slate);
+  line-height: 1.5; margin: 0 0 6px;
+}
+.compact-take .src { margin-top: 4px; }
+
+/* Compact take — section accents */
+.tech-section .compact-take { border-left-color: var(--ember); background: white; }
+.touchline-section .compact-take { border-left-color: var(--turf-lt); background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.touchline-section .compact-take h4 { color: rgba(255,255,255,.95); }
+.touchline-section .compact-take p { color: rgba(255,255,255,.6); }
+.screen-section .compact-take { border-left-color: var(--neon); background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.screen-section .compact-take h4 { color: rgba(255,255,255,.95); }
+.screen-section .compact-take p { color: rgba(255,255,255,.6); }
+
+/* Compact grid — 2 compact takes side by side */
+.compact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+/* ═══════════ Enhancement 14: MARGIN NOTES ═══════════ */
+.margin-note {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--slate);
+  background: var(--warm);
+  border-left: 3px solid var(--rose);
+  padding: 12px 14px;
+  border-radius: 0 4px 4px 0;
+}
+/* On desktop, float to right margin */
+@media (min-width: 821px) {
+  .margin-note {
+    float: right;
+    width: 220px;
+    margin: 0 -60px 16px 24px;
+    position: relative;
+    z-index: 1;
+  }
+}
+/* Section-aware margin notes */
+.tech-section .margin-note { border-left-color: var(--ember); }
+.touchline-section .margin-note { background: rgba(255,255,255,.04); border-left-color: var(--turf-lt); color: rgba(255,255,255,.6); }
+.screen-section .margin-note { background: rgba(255,255,255,.04); border-left-color: var(--neon); color: rgba(255,255,255,.6); }
+.shelf-section .margin-note { background: rgba(255,255,255,.04); border-left-color: var(--shelf-accent); color: rgba(255,255,255,.6); }
+.history-section .margin-note { border-left-color: var(--hist-accent); background: rgba(139,105,20,.06); color: #5C4A20; }
+
+/* ═══════════ Enhancement 15: SECTION ICONS (inline SVG) ═══════════ */
+/* Icons use currentColor so they inherit from parent. Defined as classes for documentation. */
+.sec-icon {
+  display: inline-block;
+  width: 24px; height: 24px;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+.sec-icon svg {
+  width: 24px; height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ═══════════ Enhancement 17: COLLAPSIBLE SECTIONS ═══════════ */
+.collapsible {
+  margin: 20px 0;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.collapsible summary {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 700;
+  padding: 14px 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  list-style: none;
+  background: var(--warm);
+  color: var(--ink);
+  transition: background .15s ease;
+}
+.collapsible summary::-webkit-details-marker { display: none; }
+.collapsible summary::after {
+  content: '';
+  width: 8px; height: 8px;
+  border-right: 2px solid var(--ghost);
+  border-bottom: 2px solid var(--ghost);
+  transform: rotate(45deg);
+  transition: transform .2s ease;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+.collapsible[open] summary::after {
+  transform: rotate(-135deg);
+}
+.collapsible summary:hover { background: var(--rule); }
+.collapsible-content {
+  padding: 16px 18px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--slate);
+}
+
+/* Dark section collapsibles */
+.touchline-section .collapsible { border-color: rgba(255,255,255,.08); }
+.touchline-section .collapsible summary { background: rgba(255,255,255,.04); color: rgba(255,255,255,.9); }
+.touchline-section .collapsible summary::after { border-color: rgba(255,255,255,.3); }
+.touchline-section .collapsible summary:hover { background: rgba(255,255,255,.08); }
+.touchline-section .collapsible-content { color: rgba(255,255,255,.7); }
+
+.screen-section .collapsible { border-color: rgba(255,255,255,.08); }
+.screen-section .collapsible summary { background: rgba(255,255,255,.04); color: rgba(255,255,255,.9); }
+.screen-section .collapsible summary::after { border-color: rgba(255,255,255,.3); }
+.screen-section .collapsible summary:hover { background: rgba(255,255,255,.08); }
+.screen-section .collapsible-content { color: rgba(255,255,255,.7); }
+
+.shelf-section .collapsible { border-color: rgba(255,255,255,.08); }
+.shelf-section .collapsible summary { background: rgba(255,255,255,.04); color: rgba(255,255,255,.9); }
+.shelf-section .collapsible summary::after { border-color: rgba(255,255,255,.3); }
+.shelf-section .collapsible summary:hover { background: rgba(255,255,255,.08); }
+.shelf-section .collapsible-content { color: rgba(255,255,255,.7); }
+
+/* ═══════════ Enhancement 20: READ-NEXT CONNECTORS ═══════════ */
+.read-next {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  text-align: right;
+  margin-top: 28px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+  color: var(--ghost);
+}
+.read-next a {
+  font-weight: 700;
+  text-decoration: none;
+}
+.read-next .arrow {
+  display: inline-block;
+  margin-left: 4px;
+  transition: transform .15s ease;
+}
+.read-next:hover .arrow {
+  transform: translateX(3px);
+}
+
+/* Section-specific read-next colours */
+.world-section .read-next a { color: var(--rose); }
+.tech-section .read-next a { color: var(--ember); }
+.touchline-section .read-next { border-top-color: rgba(255,255,255,.08); color: rgba(255,255,255,.3); }
+.touchline-section .read-next a { color: var(--turf-lt); }
+.screen-section .read-next { border-top-color: rgba(255,255,255,.08); color: rgba(255,255,255,.3); }
+.screen-section .read-next a { color: var(--neon); }
+.shelf-section .read-next { border-top-color: rgba(255,255,255,.08); color: rgba(255,255,255,.3); }
+.shelf-section .read-next a { color: var(--shelf-accent); }
+.session-section .read-next a { color: var(--session-accent); }
+.history-section .read-next a { color: var(--hist-accent); }
+
+/* ═══════════ Enhancement 5: SCROLL-TRIGGERED ANIMATIONS ═══════════ */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* Staggered children */
+.reveal-group .reveal:nth-child(1) { transition-delay: 0ms; }
+.reveal-group .reveal:nth-child(2) { transition-delay: 80ms; }
+.reveal-group .reveal:nth-child(3) { transition-delay: 160ms; }
+.reveal-group .reveal:nth-child(4) { transition-delay: 240ms; }
+.reveal-group .reveal:nth-child(5) { transition-delay: 320ms; }
+.reveal-group .reveal:nth-child(6) { transition-delay: 400ms; }
+
+/* ═══════════ THE LONG SHELF ═══════════ */
+.longshelf-section { background: var(--paper); border-bottom: 1px solid var(--rule); }
+.longshelf-section .section-label { color: var(--rose); }
+/* Two-column compact layout */
+.longshelf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 32px; }
+.shelf-item { padding: 16px 0; border-bottom: 1px solid var(--rule); }
+.shelf-item:last-child { border-bottom: none; }
+.shelf-item .title { font-size: 17px; font-weight: 700; color: var(--ink); line-height: 1.3; }
+.shelf-item .meta {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; color: var(--ghost); margin-top: 2px;
+}
+.shelf-item .desc {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; color: var(--slate); margin-top: 4px; line-height: 1.5;
+}
+
+/* ═══════════ ON THE RADAR ═══════════ */
+.radar-section { background: var(--warm); }
+.radar-section .section-label { color: var(--ember); }
+.radar-section .radar-row { border-bottom-color: rgba(0,0,0,.06); color: var(--ink); }
+.radar-section .radar-date { color: var(--ember); font-size: 12px; }
+.radar-section .radar-row strong { color: var(--ink); }
+.radar-section .radar-cat.football { background: var(--turf); }
+.radar-section .radar-cat.film { background: var(--neon); }
+.radar-section .radar-cat.game { background: var(--ember); }
+.radar-section .radar-cat.event { background: var(--rose); }
+.radar-section .radar-cat.release { background: var(--shelf-accent); }
+
+/* ═══════════ FOOTER ═══════════ */
+.footer {
+  background: var(--deep); padding: 40px 60px; text-align: center;
+}
+.footer-brand { font-size: 28px; font-weight: 700; color: white; }
+.footer-brand span { color: var(--rose); font-style: italic; }
+.footer-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: rgba(255,255,255,.3);
+  letter-spacing: 2px; text-transform: uppercase; margin-top: 6px;
+}
+
+/* ═══════════ ARTICLE ENTRY PATTERNS ═══════════ */
+/* Stat lead — bold number + context opens an article */
+.entry-stat {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 56px; font-weight: 700; line-height: 1.1;
+  margin-bottom: 4px;
+}
+.entry-stat-context {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; color: var(--slate);
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 20px;
+}
+/* Quote lead — pull quote as opener */
+.entry-quote {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 24px; font-style: italic; line-height: 1.4;
+  border-left: 4px solid var(--rose);
+  padding-left: 20px; margin-bottom: 20px;
+  color: var(--ink);
+}
+.entry-quote cite {
+  display: block; font-style: normal; font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--ghost); margin-top: 8px;
+}
+/* Summary bullets lead — 3 key points upfront */
+.entry-bullets {
+  list-style: none; padding: 0; margin: 0 0 20px 0;
+  border-left: 4px solid var(--rose);
+  padding-left: 16px;
+}
+.entry-bullets li {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 500;
+  line-height: 1.5; padding: 4px 0;
+  color: var(--ink);
+}
+/* Question hook lead */
+.entry-question {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 28px; font-weight: 600; font-style: italic;
+  line-height: 1.3; margin-bottom: 16px;
+  color: var(--ink);
+}
+/* Dark section entry variants */
+.touchline-section .entry-stat,
+.screen-section .entry-stat,
+.shelf-section .entry-stat { color: rgba(255,255,255,.9); }
+.touchline-section .entry-stat-context,
+.screen-section .entry-stat-context,
+.shelf-section .entry-stat-context { color: rgba(255,255,255,.4); }
+.touchline-section .entry-quote,
+.screen-section .entry-quote,
+.shelf-section .entry-quote { color: rgba(255,255,255,.85); }
+.touchline-section .entry-bullets li,
+.screen-section .entry-bullets li,
+.shelf-section .entry-bullets li { color: rgba(255,255,255,.8); }
+.touchline-section .entry-question,
+.screen-section .entry-question,
+.shelf-section .entry-question { color: rgba(255,255,255,.85); }
+.touchline-section .entry-quote { border-color: var(--turf-lt); }
+.touchline-section .entry-bullets { border-color: var(--turf-lt); }
+.screen-section .entry-quote { border-color: var(--neon); }
+.screen-section .entry-bullets { border-color: var(--neon); }
+.shelf-section .entry-quote { border-color: var(--shelf-accent); }
+.shelf-section .entry-bullets { border-color: var(--shelf-accent); }
+
+/* ═══════════ SECTION BREATHER BANDS ═══════════ */
+.breather {
+  text-align: center;
+  padding: 28px 40px;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  margin: 0;
+}
+.breather-stat {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 42px; font-weight: 700;
+  color: var(--rose); line-height: 1.1;
+}
+.breather-context {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; color: var(--slate);
+  margin-top: 4px;
+}
+.breather-teaser {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 18px; font-style: italic;
+  color: var(--slate); line-height: 1.4;
+}
+/* Dark breather (between dark sections) */
+.breather.dark {
+  background: var(--deep);
+  border-color: rgba(255,255,255,.08);
+}
+.breather.dark .breather-stat { color: var(--turf-lt); }
+.breather.dark .breather-context,
+.breather.dark .breather-teaser { color: rgba(255,255,255,.45); }
+
+/* ═══════════ ALSO-LIST PRIORITY TIERS ═══════════ */
+.also-list li.tier-hot {
+  border-left: 3px solid var(--rose);
+  padding-left: 10px;
+  background: rgba(232,56,79,.04);
+  margin-bottom: 10px; padding-top: 4px; padding-bottom: 4px;
+}
+.also-list li.tier-warm {
+  border-left: 3px solid var(--ember);
+  padding-left: 10px;
+  margin-bottom: 10px; padding-top: 4px; padding-bottom: 4px;
+}
+.also-list li.tier-note {
+  border-left: 3px solid var(--rule);
+  padding-left: 10px;
+  margin-bottom: 10px; padding-top: 4px; padding-bottom: 4px;
+}
+/* Dark section tiers */
+.touchline-section .also-list li.tier-hot { border-color: var(--turf-lt); background: rgba(43,214,123,.06); }
+.touchline-section .also-list li.tier-warm { border-color: rgba(255,255,255,.25); }
+.touchline-section .also-list li.tier-note { border-color: rgba(255,255,255,.1); }
+.screen-section .also-list li.tier-hot { border-color: var(--neon); background: rgba(255,45,120,.06); }
+.screen-section .also-list li.tier-warm { border-color: rgba(255,255,255,.25); }
+.screen-section .also-list li.tier-note { border-color: rgba(255,255,255,.1); }
+.shelf-section .also-list li.tier-hot { border-color: var(--shelf-accent); background: rgba(212,160,60,.06); }
+.shelf-section .also-list li.tier-warm { border-color: rgba(255,255,255,.25); }
+.shelf-section .also-list li.tier-note { border-color: rgba(255,255,255,.1); }
+
+/* ═══════════ COMPARISON PANELS ═══════════ */
+.compare-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 20px 0;
+}
+.compare-side {
+  padding: 20px 24px;
+}
+.compare-side.left {
+  background: rgba(232,56,79,.04);
+  border-right: 1px solid var(--rule);
+}
+.compare-side.right {
+  background: rgba(26,122,76,.04);
+}
+.compare-side .compare-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.compare-side.left .compare-label { color: var(--rose); }
+.compare-side.right .compare-label { color: var(--turf); }
+.compare-side h4 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 20px; font-weight: 700;
+  margin-bottom: 8px;
+}
+.compare-side p {
+  font-size: 15px; line-height: 1.55;
+  margin-bottom: 8px;
+}
+.compare-side .compare-stat {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 36px; font-weight: 700;
+  line-height: 1.1; margin-bottom: 4px;
+}
+.compare-side.left .compare-stat { color: var(--rose); }
+.compare-side.right .compare-stat { color: var(--turf); }
+/* Dark section compare panels */
+.touchline-section .compare-side.left { background: rgba(43,214,123,.06); border-color: rgba(255,255,255,.08); }
+.touchline-section .compare-side.right { background: rgba(0,180,216,.06); }
+.touchline-section .compare-side p,
+.touchline-section .compare-side h4 { color: rgba(255,255,255,.85); }
+.touchline-section .compare-side.left .compare-label,
+.touchline-section .compare-side.left .compare-stat { color: var(--turf-lt); }
+.touchline-section .compare-side.right .compare-label,
+.touchline-section .compare-side.right .compare-stat { color: #00B4D8; }
+.screen-section .compare-side.left { background: rgba(255,45,120,.06); border-color: rgba(255,255,255,.08); }
+.screen-section .compare-side.right { background: rgba(0,180,216,.06); }
+.screen-section .compare-side p,
+.screen-section .compare-side h4 { color: rgba(255,255,255,.85); }
+.shelf-section .compare-side.left { background: rgba(212,160,60,.06); border-color: rgba(255,255,255,.08); }
+.shelf-section .compare-side.right { background: rgba(0,180,216,.06); }
+.shelf-section .compare-side p,
+.shelf-section .compare-side h4 { color: rgba(255,255,255,.85); }
+
+/* ═══════════ FLOATED INSET SIDEBAR ═══════════ */
+.sidebar-float {
+  float: right;
+  width: 260px;
+  margin: 0 0 16px 24px;
+  padding: 16px 18px;
+  background: var(--warm);
+  border-left: 3px solid var(--rose);
+  border-radius: 0 4px 4px 0;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; line-height: 1.5;
+}
+.sidebar-float .sidebar-title {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 8px;
+}
+.sidebar-float ul { list-style: none; padding: 0; margin: 0; }
+.sidebar-float li { padding: 4px 0; }
+/* Dark section float sidebars */
+.touchline-section .sidebar-float {
+  background: rgba(255,255,255,.05);
+  border-color: var(--turf-lt);
+  color: rgba(255,255,255,.8);
+}
+.touchline-section .sidebar-float .sidebar-title { color: var(--turf-lt); }
+.screen-section .sidebar-float {
+  background: rgba(255,255,255,.05);
+  border-color: var(--neon);
+  color: rgba(255,255,255,.8);
+}
+.screen-section .sidebar-float .sidebar-title { color: var(--neon); }
+.shelf-section .sidebar-float {
+  background: rgba(255,255,255,.05);
+  border-color: var(--shelf-accent);
+  color: rgba(255,255,255,.8);
+}
+.shelf-section .sidebar-float .sidebar-title { color: var(--shelf-accent); }
+
+/* ═══════════ RESPONSIVE ═══════════ */
+@media (max-width: 820px) {
+  .cover, .nav-section, .foreword, .sec, .touchline-section, .screen-section,
+  .shelf-section, .session-section, .history-section,
+  .longshelf-section, .radar-section, .footer {
+    padding-left: 24px; padding-right: 24px;
+  }
+  .hero-bleed { width: calc(100% + 48px); margin-left: -24px; }
+  .divider.inset { margin-left: 24px; margin-right: 24px; }
+  .cover-brand { font-size: 60px; }
+  .cover-headline { font-size: 26px; }
+  .nav-grid { grid-template-columns: 1fr 1fr; }
+  .nav-card.lead { grid-column: span 2; }
+  .longshelf-grid { grid-template-columns: 1fr; }
+  .book-grid { grid-template-columns: 1fr; }
+  /* Enhancement 1 */
+  .split-60-40, .split-40-60 { grid-template-columns: 1fr; }
+  /* Enhancement 4 */
+  .img-montage.layout-1-2, .img-montage.layout-2x2 { grid-template-columns: 1fr; }
+  .img-montage.layout-1-2 .montage-hero { grid-column: span 1; }
+  .img-offset { float: none; width: 100%; margin: 16px 0; }
+  /* Enhancement 2 */
+  .sec-watermark { font-size: 100px; }
+  /* Enhancement 7 */
+  .pull-quote.wide { margin-left: 0; margin-right: 0; }
+  /* Enhancement 8 */
+  .also-cards { grid-template-columns: 1fr; }
+  /* Enhancement 13 */
+  .compact-grid { grid-template-columns: 1fr; }
+  /* Enhancement 14: margin note goes inline */
+  .margin-note { float: none; width: 100%; margin: 16px 0; }
+  /* New components responsive */
+  .sidebar-float { float: none; width: 100%; margin: 16px 0; }
+  .compare-panel { grid-template-columns: 1fr; }
+  .compare-side.left { border-right: none; border-bottom: 1px solid var(--rule); }
+  .entry-stat { font-size: 44px; }
+  .entry-question { font-size: 24px; }
+}
+@media (max-width: 600px) {
+  .cover, .nav-section, .foreword, .sec, .touchline-section, .screen-section,
+  .shelf-section, .session-section, .history-section,
+  .longshelf-section, .radar-section, .footer {
+    padding-left: 20px; padding-right: 20px;
+  }
+  .hero-bleed { width: calc(100% + 40px); margin-left: -20px; }
+  .divider.inset { margin-left: 20px; margin-right: 20px; }
+  .cover-brand { font-size: 52px; }
+  .cover-headline { font-size: 22px; }
+  .nav-grid { grid-template-columns: 1fr; }
+  .nav-card.lead { grid-column: span 1; grid-template-columns: 1fr; }
+  .nav-card.lead .nav-card-thumb { min-height: 120px; }
+  .dual-col { grid-template-columns: 1fr; }
+  .stat-bar { grid-template-columns: repeat(2, 1fr); }
+  .stat-bar .stat:nth-child(2) { border-right: none; }
+  .results-strip { flex-direction: column; }
+  .result-card { max-width: 100%; }
+  .sec h2, .touchline-section h2, .screen-section h2, .shelf-section h2 { font-size: 28px; }
+  .longshelf-grid { grid-template-columns: 1fr; }
+  .book-grid { grid-template-columns: 1fr; }
+  .back-to-top { bottom: 16px; right: 16px; width: 40px; height: 40px; }
+  /* Enhancement 2: hide watermark on small screens */
+  .sec-watermark { display: none; }
+  /* Enhancement 3: scale down big numbers */
+  .big-number .num { font-size: 56px; }
+  .big-number-row { grid-template-columns: 1fr; gap: 16px; }
+  .big-number-row .big-number .num { font-size: 48px; }
+  /* Enhancement 10 */
+  .sec-opener h2 { font-size: 32px; }
+  .display-stat { font-size: 52px; }
+  /* Enhancement 16 */
+  .stack-card { flex: 0 0 200px; }
+  /* Enhancement 12 */
+  .timeline { padding-left: 24px; }
+}
+
+</style>
+<style>
+/* ═══ SHORTLIST-SPECIFIC ADDITIONS ═══ */
+
+/* Compare table */
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  margin: 20px 0;
+}
+.compare-table thead tr {
+  background: var(--warm);
+  border-bottom: 2px solid var(--hist-accent);
+}
+.compare-table th {
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--hist-accent);
+}
+.compare-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(0,0,0,.05);
+  color: var(--ink);
+  vertical-align: top;
+}
+.compare-table tr:hover td {
+  background: rgba(139,105,20,.04);
+}
+.compare-table .game-name {
+  font-weight: 700;
+  color: var(--ink);
+}
+.compare-table .vibe-badge {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: rgba(139,105,20,.1);
+  color: var(--hist-accent);
+  padding: 2px 7px;
+  border-radius: 3px;
+}
+.compare-table .status-badge {
+  display: inline-block;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 3px;
+}
+.compare-table .status-available {
+  background: rgba(67,122,34,.1);
+  color: #437A22;
+}
+.compare-table .status-coming {
+  background: rgba(198,93,58,.1);
+  color: var(--pantry-accent);
+}
+
+/* Tier headers in shortlist */
+.tier-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 40px 0 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid rgba(212,160,60,.2);
+}
+.tier-header h3 {
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 3px !important;
+  text-transform: uppercase !important;
+  color: var(--shelf-accent) !important;
+  margin: 0 !important;
+}
+.tier-count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: rgba(255,255,255,.3);
+  background: rgba(212,160,60,.15);
+  padding: 2px 8px;
+  border-radius: 3px;
+}
+
+/* Top pick badge */
+.top-pick-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--shelf-accent);
+  background: rgba(212,160,60,.12);
+  border: 1px solid rgba(212,160,60,.25);
+  padding: 3px 10px;
+  border-radius: 3px;
+  margin-bottom: 10px;
+  display: inline-flex;
+}
+
+/* Game separator */
+.game-sep {
+  height: 1px;
+  background: rgba(255,255,255,.08);
+  margin: 36px 0;
+}
+
+/* Aside section */
+.aside-section {
+  background: var(--warm);
+  padding: 2.5rem 0;
+}
+.aside-section .sec {
+  background: transparent;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* Footer note */
+.footer-issue {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: rgba(255,255,255,.3);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+.footer-note {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 16px;
+  font-style: italic;
+  color: rgba(255,255,255,.4);
+  margin-top: 10px;
+  max-width: none;
+}
+
+/* Meanwhile category labels */
+.meanwhile-cat {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ghost);
+  margin: 28px 0 10px;
+  display: block;
+}
+.meanwhile-cat:first-child { margin-top: 0; }
+
+/* Sidebar stats row */
+.stat-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.stat-row-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+}
+.stat-row-item:last-child { border-bottom: none; }
+.stat-row-label {
+  color: rgba(255,255,255,.4);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.stat-row-value {
+  color: rgba(255,255,255,.85);
+  font-weight: 500;
+  text-align: right;
+  max-width: 60%;
+}
+</style>
+</head>
+<body>
+<div class="progress-bar" id="progressBar"></div>
+<div class="mag">
+
+<!-- ══════ COVER ══════ -->
+<header class="cover" id="top">
+  <div class="cover-noise"></div>
+  <div class="cover-grain"></div>
+  <div class="cover-issue" style="position:relative;z-index:2">12 April 2026 · Issue #8 · Shortlist Special</div>
+  <div class="cover-brand" style="position:relative;z-index:2">The Signal<span>.</span></div>
+  <div class="cover-headline" style="position:relative;z-index:2">Seven Solo Games Worth Your Next 100 Hours on Switch 2</div>
+  <div style="font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(255,255,255,.35);margin-top:12px;position:relative;z-index:2;letter-spacing:1px;">The games you haven't played yet — but should</div>
+  <div class="cover-tags">
+    <span class="tag">Roguelikes</span><span class="tag">RPGs</span><span class="tag">Tactics</span>
+    <span class="tag">Switch 2</span><span class="tag">Hidden Gems</span><span class="tag">Narrative</span>
+    <span class="tag">Solo Play</span><span class="tag">Deck-builders</span>
+  </div>
+</header>
+
+<!-- ══════ NAVIGATOR ══════ -->
+<section class="nav-section" id="nav">
+  <h2>What's Inside</h2>
+  <div class="nav-grid">
+    <!-- Lead card -->
+    <a href="#shortlist" class="nav-card lead shelf" style="text-decoration:none">
+      <div class="nav-card-content">
+        <div class="nav-card-tag">
+          <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>
+          The Shortlist</div>
+        <h3>Seven games across three tiers — from certifiable classics to intriguing wildcards</h3>
+        <p>Caves of Qud, Inscryption, Outer Wilds and four more picks that deserve your time</p>
+        <div class="read-time">12 min read</div>
+      </div>
+      <div class="nav-card-thumb" style="background-image:url('https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/333640/f1b42d35e0d87f7166960372af32db43c2a5b310/capsule_616x353.jpg?t=1775742814')"></div>
+    </a>
+    <!-- The Lens -->
+    <a href="#lens" class="nav-card tech" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="4"/><line x1="6" y1="10" x2="6" y2="14"/><line x1="4" y1="12" x2="8" y2="12"/><circle cx="16" cy="10" r="0.8" fill="currentColor"/><circle cx="18" cy="12" r="0.8" fill="currentColor"/></svg></span>
+        The Lens</div>
+      <h3>How we picked these seven</h3>
+      <p>The five criteria that separate a great solo game from a good one</p>
+      <div class="read-time">3 min</div>
+    </a>
+    <!-- Also Worth Knowing -->
+    <a href="#also" class="nav-card session" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6h-2v12h2M18 6h2v12h-2M6 12h12"/><rect x="3" y="8" width="3" height="8" rx="1"/><rect x="18" y="8" width="3" height="8" rx="1"/></svg></span>
+        Also Worth Knowing</div>
+      <h3>On the horizon</h3>
+      <p>Five upcoming titles — from Switch 2 exclusives to Oblivion's grand return</p>
+      <div class="read-time">2 min</div>
+    </a>
+    <!-- Cheat Sheet -->
+    <a href="#cheatsheet" class="nav-card history" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12M6 22h12M7 2v4a5 5 0 0 0 5 5 5 5 0 0 0 5-5V2M7 22v-4a5 5 0 0 1 5-5 5 5 0 0 1 5 5v4"/></svg></span>
+        The Cheat Sheet</div>
+      <h3>Quick-reference table</h3>
+      <p>All twelve picks at a glance — genre, price, playtime, vibe</p>
+      <div class="read-time">1 min</div>
+    </a>
+    <!-- Meanwhile -->
+    <a href="#meanwhile" class="nav-card world" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10 15 15 0 0 1-4-10A15 15 0 0 1 12 2z"/></svg></span>
+        Meanwhile</div>
+      <h3>The world this week</h3>
+      <p>Iran talks collapse, Masters drama, Hades 2 goes console and more</p>
+      <div class="read-time">3 min</div>
+    </a>
+  </div>
+</section>
+
+<!-- ══════ FOREWORD ══════ -->
+<section class="foreword">
+  <p>There's a specific pleasure in discovering a game that fits perfectly around everything else in life — one that doesn't demand a six-hour unbroken session, that rewards the twenty-minute commute window and the post-bedtime hour equally. Switch 2's backwards compatibility doesn't just give you new hardware; it opens a back catalogue of some of the most distinctive games made in the past decade, many of which slipped quietly past during a busier season. This issue is a field guide to the ones worth going back for — and a couple arriving imminently.</p>
+</section>
+
+<!-- ══════ THE LENS ══════ -->
+<hr class="divider dv-tech">
+<section class="sec world-section sec-opener reveal" id="lens">
+  <div class="opener-band"></div>
+  <div class="sec-watermark">Lens</div>
+  <span class="section-label" style="color:var(--ember)">The Lens — How We Picked These</span>
+  <h2>What makes a solo game worth 100 hours of your life?</h2>
+
+  <div class="sidebar-float">
+    <div class="sidebar-title">The Criteria</div>
+    <ul>
+      <li>📈 <strong>Meaningful progression</strong> — not just stats up; knowledge, mastery, or narrative momentum</li>
+      <li>📖 <strong>Narrative or systemic depth</strong> — something to think about between sessions</li>
+      <li>⏱ <strong>Tight pacing</strong> — no padding, no artificial gating, no twenty-hour tutorials</li>
+      <li>🎲 <strong>Right length</strong> — 15-25 hour sweet spot, or roguelites with genuine run-to-run variety</li>
+      <li>✅ <strong>Available now or imminently</strong> on Switch 2 (native or backwards compatible)</li>
+    </ul>
+  </div>
+
+  <p>The question driving this issue is simple: what would you play after Blue Prince? Not as a palate cleanser — as a worthy successor. Blue Prince works because it understands something most games don't: the only thing worth giving the player is information. Every run teaches you something. Every failure is a step toward an answer you didn't even know existed. That's a high bar.</p>
+
+  <p>The games on this list were evaluated against five criteria. First, progression must mean something beyond a number going up — it should feel like accumulating mastery, uncovering a mystery, or building towards a genuinely climactic moment. Second, the game needs either narrative depth (a reason to care about its world and characters) or systemic depth (a ruleset complex enough to generate emergent stories). These aren't mutually exclusive; the best games on this list have both.</p>
+
+  <p>Third, pacing. Games that front-load twenty hours of setup before becoming interesting didn't make the cut. Switch 2 is a handheld — it gets played in thirty-minute windows on trains and during lunch. Every game here earns your attention from the first session. Fourth, the length has to be honest: either a defined 15-25 hour experience that doesn't overstay its welcome, or a roguelite with enough genuine variety that run 40 feels different from run 1. Finally, everything here is playable on Switch 2 today or in the very near future.</p>
+
+  <div class="dyk">
+    <div class="dyk-title">Did You Know</div>
+    <p>According to the NPD Group, only <strong>17% of players</strong> who start an open-world RPG reach its conclusion. Games with tighter 15-25 hour runtimes consistently post completion rates three to four times higher — which means more people actually finish the story you paid for.</p>
+  </div>
+
+  <div class="read-next">Down the shortlist <a href="#shortlist">Seven picks, three tiers <span class="arrow">→</span></a></div>
+</section>
+
+<!-- ══════ BREATHER BETWEEN LENS AND SHORTLIST ══════ -->
+<div class="breather dark">
+  <div class="breather-stat">7 picks</div>
+  <div class="breather-context">Across three tiers — Top Picks, Strong Picks, and Wildcards</div>
+  <div class="breather-teaser">Hundreds of hours, one console, no wrong answers</div>
+</div>
+
+<!-- ══════ THE SHORTLIST ══════ -->
+<hr class="divider dv-shelf">
+<section class="sec shelf-section sec-opener reveal" id="shortlist">
+  <div class="opener-band"></div>
+  <div class="sec-watermark">Shortlist</div>
+  <span class="section-label" style="color:var(--shelf-accent)">The Shortlist — Seven Solo Games for Switch 2</span>
+  <h2>The definitive shortlist for the post-Blue Prince gap</h2>
+
+  <!-- ══ TOP PICKS TIER HEADER ══ -->
+  <div class="tier-header">
+    <h3>Top Picks</h3>
+    <span class="tier-count">3 games</span>
+    <span style="font-family:'DM Sans',sans-serif;font-size:12px;color:rgba(255,255,255,.4)">— the ones you genuinely should not miss</span>
+  </div>
+
+  <!-- ══ PICK 1: CAVES OF QUD ══ -->
+  <div class="split-60-40 reveal">
+    <div>
+      <div class="top-pick-badge">⭐ Top Pick</div>
+      <div class="entry-stat count-up" data-target="17">17</div>
+      <div class="entry-stat-context">years in development before reaching version 1.0</div>
+
+      <h3 class="feature-title" style="font-family:'Cormorant Garamond',serif;font-size:28px;text-transform:none;letter-spacing:0;color:white;margin-bottom:14px">Caves of Qud</h3>
+
+      <p>This is the Morrowind of roguelikes — not in setting, but in the way it treats you as a genuine participant in its world. After seventeen years of development, <em>Caves of Qud</em> reached 1.0 in late 2024 and came to Switch in early 2026. What you get is a post-apocalyptic sci-fantasy world of extraordinary depth, procedurally generated but stuffed with authored content: factions, histories, ancient ruins, cities that remember what happened to them.</p>
+
+      <p>Character creation alone is a commitment. Choose between mutated humans — who can start the game with a beak, slime glands, gelatinous anatomy, or the ability to absorb nearby minerals — or True Kin, the cybernetically enhanced remnants of an ancient civilisation who can slot in night-vision implants, rapid release wrists, and electromagnetic pulse fields. Every combination plays differently. Every death teaches you something about the world's internal logic.</p>
+
+      <p>The writing is the thing. Hugo Award-winning fiction authors have contributed to the world-building. The procedural quest generation means no two playthroughs surface identical stories. For anyone who wants a game that genuinely surprises them a hundred hours in, nothing on this list competes.</p>
+
+      <p class="src">Sources: <a href="https://www.nintendolife.com" target="_blank">Nintendo Life review (8/10)</a> · <a href="https://www.gamecritix.com" target="_blank">Game Critix</a></p>
+    </div>
+    <div>
+      <img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/333640/f1b42d35e0d87f7166960372af32db43c2a5b310/capsule_616x353.jpg?t=1775742814" alt="Caves of Qud" class="inline-img" style="border-radius:6px;width:100%">
+      <div class="sidebar" style="margin-top:16px">
+        <div class="sidebar-title">Quick Stats</div>
+        <div class="stat-row">
+          <div class="stat-row-item">
+            <span class="stat-row-label">Genre</span>
+            <span class="stat-row-value">Traditional roguelike RPG</span>
+          </div>
+          <div class="stat-row-item">
+            <span class="stat-row-label">Platform</span>
+            <span class="stat-row-value">Switch (BC on Switch 2)</span>
+          </div>
+          <div class="stat-row-item">
+            <span class="stat-row-label">Price</span>
+            <span class="stat-row-value">~£16 / $20</span>
+          </div>
+          <div class="stat-row-item">
+            <span class="stat-row-label">Playtime</span>
+            <span class="stat-row-value">50–200+ hours</span>
+          </div>
+          <div class="stat-row-item">
+            <span class="stat-row-label">Review Score</span>
+            <span class="stat-row-value">8/10 — Nintendo Life</span>
+          </div>
+          <div class="stat-row-item">
+            <span class="stat-row-label">Rating</span>
+            <span class="stat-row-value">
+              <span class="rating">
+                <span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span>
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="game-sep"></div>
+
+  <!-- ══ PICK 2: INSCRYPTION ══ -->
+  <div class="split-60-40 reveal">
+    <div>
+      <div class="entry-quote">
+        "A generational game from Devolver Digital"
+        <cite>— Phenixx Gaming</cite>
+      </div>
+
+      <h3 class="feature-title" style="font-family:'Cormorant Garamond',serif;font-size:28px;text-transform:none;letter-spacing:0;color:white;margin-bottom:14px">Inscryption</h3>
+
+      <p>You wake up in a dark cabin. Across the table sits a hooded figure called Leshy. He wants you to play cards. This is either straightforward or the most elaborate deception in the history of the medium — and within two hours, you'll know exactly which.</p>
+
+      <p><em>Inscryption</em> is a deckbuilder with escape-room puzzles between rounds. The card mechanics are genuinely excellent — sacrificing weak cards to summon powerful beasts, managing tooth and bone as resources, building synergies around animal totems. But the game's real move is structural. Between rounds, you can stand up from the table and explore the cabin. There are items on shelves. Codes to find. Secrets that feed back into the card game in ways that initially seem impossible.</p>
+
+      <p>Then the game reinvents itself. Once. And again. Each reinvention maintains the deckbuilding DNA while completely overhauling the aesthetic, tone, and mechanics around it. Ten hours. Not a minute wasted. If you're the kind of person who found Blue Prince's genre-defying structure thrilling, Inscryption was made for you.</p>
+
+      <div class="dyk">
+        <div class="dyk-title">Why It's Here</div>
+        <p>Daniel Mullins built <em>Inscryption</em> as a solo developer. Its construction — layered secrets, a game-within-a-game-within-a-game — is a remarkable piece of design craft. At £16 for ten dense hours, the value proposition is absurd.</p>
+      </div>
+
+      <p class="src">Sources: <a href="https://www.nintendoworldreport.com" target="_blank">Nintendo World Report</a> · <a href="https://qualbert.com" target="_blank">Qualbert review</a></p>
+    </div>
+    <div>
+      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1092790/ss_79a146c36a3f0b728a8e0085327cec8c7fba82d6.jpg" alt="Inscryption" class="inline-img" style="border-radius:6px;width:100%">
+      <div class="sidebar" style="margin-top:16px">
+        <div class="sidebar-title">Quick Stats</div>
+        <div class="stat-row">
+          <div class="stat-row-item">
+            <span class="stat-row-label">Genre</span>
+            <span class="stat-row-value">Deckbuilder / horror / escape room</span>
+          </div>
+          <div class="stat-row-item">
+            <span class="stat-row-label">Platform</span>
+            <span class="stat-row-value">Switch (BC on Switch 2)</span>
+          </div>
+          <div class="stat-row-item">
+            <span class="stat-row-label">Price</span>
+            <span class="stat-row-value">~£16 / $20</span>
+          </div>
+          <div class="stat-row-item">
+            <span class="stat-row-label">Playtime</span>
+            <span class="stat-row-value">8–10 hours</span>
+          </div>
+          <div class="stat-row-item">
+            <span class="stat-row-label">Review Consensus</span>
+            <span class="stat-row-value">Exceptional across the board</span>
+          </div>
+          <div class="stat-row-item">
+            <span class="stat-row-label">Rating</span>
+            <span class="stat-row-value">
+              <span class="rating">
+                <span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span>
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="game-sep"></div>
+
+  <!-- ══ PICK 3: OUTER WILDS ══ -->
+  <div class="split-60-40 reveal">
+    <div>
+      <div class="entry-question">"What happens when the only thing you keep between lives is what you know?"</div>
+
+      <h3 class="feature-title" style="font-family:'Cormorant Garamond',serif;font-size:28px;text-transform:none;letter-spacing:0;color:white;margin-bottom:14px">Outer Wilds: Archaeologist Edition</h3>
+
+      <p>Every 22 minutes, the sun explodes. The solar system resets. You start over. What you carry forward is not better equipment, not upgraded stats — only the knowledge of what you discovered in the previous loop. An ancient alien civilization called the Nomai left records of their research throughout the solar system, and piece by piece, you reconstruct what they were trying to do and why it matters right now.</p>
+
+      <p>The Archaeologist Edition includes <em>Echoes of the Eye</em>, a DLC expansion that takes the game's central mechanic in a completely different, deeply unsettling direction. Base game alone runs 12-15 hours; with DLC you're looking at 20-25. Both deserve full attention.</p>
+
+      <p>This is the purest possible expression of the "knowledge as progression" philosophy. Every planet in the solar system has its own physics, its own secrets, its own logic. A moon with sand that flows upward. A planet with a shrinking surface. An ash-covered world orbiting too close to the sun. None of these are puzzles in the traditional sense — they're places to understand. When you finally understand them, the game ends, and the ending is one of the best in all of interactive fiction. The Switch 2 port holds a solid 30fps via backwards compatibility.</p>
+
+      <p class="src">Sources: <a href="https://www.cubed3.com" target="_blank">Cubed3 review</a> · <a href="https://www.digitalchumps.com" target="_blank">Digital Chumps review</a></p>
+    </div>
+    <div>
+      <img src="https://cdn.mos.cms.futurecdn.net/0e5e94b5736dd0d2d1d2f51cf11aeaf0.jpg" alt="Outer Wilds" class="inline-img" style="border-radius:6px;width:100%">
+      <div class="sidebar" style="margin-top:16px">
+        <div class="sidebar-title">Quick Stats</div>
+        <div class="stat-row">
+          <div class="stat-row-item">
+            <span class="stat-row-label">Genre</span>
+            <span class="stat-row-value">Exploration / puzzle / mystery</span>
+          </div>
+          <div class="stat-row-item">
+            <span class="stat-row-label">Platform</span>
+            <span class="stat-row-value">Switch (BC on Switch 2)</span>
+          </div>
+          <div class="stat-row-item">
+            <span class="stat-row-label">Price</span>
+            <span class="stat-row-value">~£20 / $25 (inc. DLC)</span>
+          </div>
+          <div class="stat-row-item">
+            <span class="stat-row-label">Playtime</span>
+            <span class="stat-row-value">20–25 hours (base + DLC)</span>
+          </div>
+          <div class="stat-row-item">
+            <span class="stat-row-label">Performance</span>
+            <span class="stat-row-value">30fps stable on Switch 2</span>
+          </div>
+          <div class="stat-row-item">
+            <span class="stat-row-label">Rating</span>
+            <span class="stat-row-value">
+              <span class="rating">
+                <span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span>
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ STRONG PICKS TIER HEADER ══ -->
+  <div class="tier-header" style="margin-top:52px">
+    <h3>Strong Picks</h3>
+    <span class="tier-count">2 games</span>
+    <span style="font-family:'DM Sans',sans-serif;font-size:12px;color:rgba(255,255,255,.4)">— excellent with a caveat or two</span>
+  </div>
+
+  <!-- ══ PICK 4: 13 SENTINELS ══ -->
+  <div class="dual-col reveal">
+    <div class="col-card accent-ember">
+      <h3 class="feature-title" style="font-family:'Cormorant Garamond',serif;font-size:24px;text-transform:none;letter-spacing:0;color:white;margin-bottom:12px">13 Sentinels: Aegis Rim</h3>
+      <div class="sidebar" style="margin-bottom:16px">
+        <div class="sidebar-title">Quick Stats</div>
+        <div class="stat-row">
+          <div class="stat-row-item"><span class="stat-row-label">Genre</span><span class="stat-row-value">Visual novel + RTS hybrid</span></div>
+          <div class="stat-row-item"><span class="stat-row-label">Price</span><span class="stat-row-value">~£35 / $40</span></div>
+          <div class="stat-row-item"><span class="stat-row-label">Playtime</span><span class="stat-row-value">30–35 hours</span></div>
+          <div class="stat-row-item"><span class="stat-row-label">RPG Site Score</span><span class="stat-row-value">100/100</span></div>
+        </div>
+      </div>
+      <p>Thirteen protagonists, multiple time periods, one alien invasion — and Vanillaware's most ambitious storytelling yet. RPG Site awarded it a perfect score, and that's not hyperbole. The narrative structure is genuinely complex: you unravel the story non-linearly, switching between characters who each hold a different piece of the puzzle, and the moment it clicks together is extraordinary.</p>
+      <p>The RTS battles are a pleasant surprise — not a distraction from the visual novel sections, but a natural extension of them. You manage mech loadouts and cooldown rotations, cycle your pilots to prevent fatigue, and choose your engagement priorities under genuine time pressure. Don't let the anime aesthetic fool you: the tactical layer is real. And Vanillaware's hand-drawn art is among the best in the medium.</p>
+      <p class="src">Sources: <a href="https://www.nintendolife.com" target="_blank">Nintendo Life (9/10)</a> · <a href="https://www.rpgsite.net" target="_blank">RPG Site (100/100)</a></p>
+    </div>
+    <div class="col-card accent-ember">
+      <img src="https://personacentral.com/wp-content/uploads/2020/10/13-Sentinels-Header.jpg" alt="13 Sentinels: Aegis Rim" class="inline-img" style="border-radius:6px;width:100%;margin-bottom:16px">
+      <div class="pull-quote">
+        <p>"Its narrative complexity rivals Baldur's Gate 3 while asking for a fraction of the time."</p>
+      </div>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;color:rgba(255,255,255,.65)">The case for 13 Sentinels is this: it's a game where the storytelling is the innovation. Not the combat system, not the art (though both are excellent) — the structure of how it delivers its story across thirteen intersecting arcs is something that hasn't been done quite like this anywhere else.</p>
+    </div>
+  </div>
+
+  <div class="game-sep"></div>
+
+  <!-- ══ PICK 5: FIGHTS IN TIGHT SPACES ══ -->
+  <div class="split-60-40 reveal">
+    <div>
+      <div class="entry-bullets">
+        <li>Turn-based positional combat — manoeuvre enemies into each other's gunfire</li>
+        <li>John Wick energy with Into the Breach tactical depth</li>
+        <li>Multiple difficulty tiers — your first run is the tutorial</li>
+      </div>
+
+      <h3 class="feature-title" style="font-family:'Cormorant Garamond',serif;font-size:26px;text-transform:none;letter-spacing:0;color:white;margin-bottom:14px">Fights in Tight Spaces</h3>
+
+      <p>The pitch is John Wick meets Into the Breach, and it delivers on both halves. A minimalist white-and-grey aesthetic — Superhot adjacent — stages every encounter on a small grid. You play cards to punch, kick, shove, and redirect; enemies telegraph their next moves with coloured indicators; the whole thing becomes a spatial puzzle about positioning, momentum, and not leaving yourself flanked.</p>
+
+      <p>The tactical depth accumulates quietly. By the time you've built a deck around combo chains and environmental hazards — kicking enemies off ledges, shoving them into each other, burning your entire hand on one devastating sequence — you realise this is a game about geometry as much as cards. At £18 for a first run plus hours of mastery depth, it's one of the better-value entries on this list.</p>
+
+      <p class="src">Sources: <a href="https://www.nintendolife.com" target="_blank">Nintendo Life (Recommended)</a> · <a href="https://www.gamespot.com" target="_blank">GameSpot review</a></p>
+    </div>
+    <div>
+      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1265820/capsule_616x353.jpg?t=1774909410" alt="Fights in Tight Spaces" class="inline-img" style="border-radius:6px;width:100%">
+      <div class="sidebar" style="margin-top:16px">
+        <div class="sidebar-title">Quick Stats</div>
+        <div class="stat-row">
+          <div class="stat-row-item"><span class="stat-row-label">Genre</span><span class="stat-row-value">Turn-based tactical deckbuilder</span></div>
+          <div class="stat-row-item"><span class="stat-row-label">Platform</span><span class="stat-row-value">Switch (BC on Switch 2)</span></div>
+          <div class="stat-row-item"><span class="stat-row-label">Price</span><span class="stat-row-value">~£18 / $20</span></div>
+          <div class="stat-row-item"><span class="stat-row-label">Playtime</span><span class="stat-row-value">15–40+ hours</span></div>
+          <div class="stat-row-item"><span class="stat-row-label">Rating</span><span class="stat-row-value">
+            <span class="rating">
+              <span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span>
+            </span>
+          </span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ WILDCARDS TIER HEADER ══ -->
+  <div class="tier-header" style="margin-top:52px">
+    <h3>Wildcards</h3>
+    <span class="tier-count">2 games</span>
+    <span style="font-family:'DM Sans',sans-serif;font-size:12px;color:rgba(255,255,255,.4)">— unusual picks that reward the right temperament</span>
+  </div>
+
+  <!-- ══ PICK 6: WILDERMYTH ══ -->
+  <div class="split-40-60 reveal">
+    <div>
+      <div class="sidebar">
+        <div class="sidebar-title">Quick Stats</div>
+        <div class="stat-row">
+          <div class="stat-row-item"><span class="stat-row-label">Genre</span><span class="stat-row-value">Tactical RPG + procedural storytelling</span></div>
+          <div class="stat-row-item"><span class="stat-row-label">Platform</span><span class="stat-row-value">Switch (patching ongoing)</span></div>
+          <div class="stat-row-item"><span class="stat-row-label">Price</span><span class="stat-row-value">~£20 / $25</span></div>
+          <div class="stat-row-item"><span class="stat-row-label">Playtime</span><span class="stat-row-value">20–60+ hours</span></div>
+          <div class="stat-row-item"><span class="stat-row-label">Caveat</span><span class="stat-row-value">Bugs present, patches incoming</span></div>
+        </div>
+      </div>
+
+      <div class="dyk" style="margin-top:16px">
+        <div class="dyk-title">Why This Is Here</div>
+        <p>Wildermyth is the rare game where the procedural storytelling actually works. Your heroes age. They fall in love. They can permanently fuse with forest spirits, becoming part-tree. Children inherit the legacies of retired parents. No two campaigns are identical, and the emergent stories it generates are genuinely moving — something no amount of hand-crafted cutscenes can guarantee.</p>
+      </div>
+    </div>
+    <div>
+      <div class="entry-question">"What if your RPG characters wrote their own stories?"</div>
+
+      <h3 class="feature-title" style="font-family:'Cormorant Garamond',serif;font-size:26px;text-transform:none;letter-spacing:0;color:white;margin-bottom:14px">Wildermyth</h3>
+
+      <p>Imagine XCOM built inside a tabletop RPG by a storytelling engine that genuinely cares about its characters. Wildermyth generates your heroes procedurally — their backstories, their personalities, the relationships they form during campaigns — then puts them on a grid-based tactical battlefield where the combat is clean, fast, and built around magical infusion and environmental manipulation.</p>
+
+      <p>The headline mechanic is transformation: heroes can merge with forest spirits, becoming part-animal, part-plant, part-something-else, permanently changing their combat abilities and visual appearance. They can retire to legend, and their descendants inherit echoes of their power. The Switch port has stability issues as of April 2026 — occasional crashes and a reported save corruption bug — but patches are in progress, and when it runs cleanly, it's unlike anything else available on the platform.</p>
+
+      <p>Best suited to fans of FTL's emergent storytelling and Fire Emblem's character attachment. If losing a soldier and genuinely feeling something about it appeals to you, Wildermyth is the game.</p>
+
+      <p class="src">Sources: <a href="https://www.godisageek.com" target="_blank">GodisaGeek review</a> · <a href="https://www.digitallydowned.com" target="_blank">Digitally Downloaded</a></p>
+    </div>
+  </div>
+
+  <div class="game-sep"></div>
+
+  <!-- ══ PICK 7: ROGUE LEGACY 2 ══ -->
+  <div class="split-60-40 reveal">
+    <div>
+      <div class="dyk">
+        <div class="dyk-title">Why This Is Here</div>
+        <p>Rogue Legacy 2 is the argument that meta-progression, done well, is its own form of storytelling. Fifteen distinct character classes, each with genuinely different mechanics. A trait system so varied that your next heir might have IBS (which causes fog of war around food pickups), gigantism (doubled size, halved doors), or colour blindness (the world rendered in greyscale). These aren't jokes — they're mechanical constraints that force you to play differently every run.</p>
+      </div>
+
+      <h3 class="feature-title" style="font-family:'Cormorant Garamond',serif;font-size:26px;text-transform:none;letter-spacing:0;color:white;margin-bottom:14px">Rogue Legacy 2</h3>
+
+      <p>Each death passes the torch to a new heir — a descendant of your previous character, complete with their own randomly assigned traits, class, and backstory fragments. The estate that grows between runs is your legacy: new biomes unlocked, new classes discovered, heirlooms passed down that permanently expand your toolkit.</p>
+
+      <p>Unlike Dead Cells — which is a superb combat game that happens to be a roguelite — Rogue Legacy 2 makes the between-run investment feel meaningful. Your first successful run, which will take most players 16-20 hours, is essentially the tutorial. The real game begins when you're chasing alternate endings, completing class-specific challenges, and hunting the late-game content that opens after the credits roll.</p>
+
+      <p>At £22 for 30-80 hours of content, with an ENEBA score of 9.9/10 and a recommendation from Nintendo Life's best-roguelikes roundup, it earns its place here. The Switch version runs excellently — fast, fluid, no performance concerns.</p>
+
+      <p class="src">Sources: <a href="https://www.eneba.com" target="_blank">ENEBA (9.9/10)</a> · <a href="https://www.nintendolife.com" target="_blank">Nintendo Life best roguelikes list</a></p>
+    </div>
+    <div>
+      <div class="sidebar" style="margin-bottom:16px">
+        <div class="sidebar-title">Quick Stats</div>
+        <div class="stat-row">
+          <div class="stat-row-item"><span class="stat-row-label">Genre</span><span class="stat-row-value">Action-platformer roguelite</span></div>
+          <div class="stat-row-item"><span class="stat-row-label">Platform</span><span class="stat-row-value">Switch (BC on Switch 2)</span></div>
+          <div class="stat-row-item"><span class="stat-row-label">Price</span><span class="stat-row-value">~£22 / $25</span></div>
+          <div class="stat-row-item"><span class="stat-row-label">Playtime</span><span class="stat-row-value">30–80+ hours</span></div>
+          <div class="stat-row-item"><span class="stat-row-label">Score</span><span class="stat-row-value">9.9/10 — ENEBA</span></div>
+          <div class="stat-row-item"><span class="stat-row-label">Rating</span><span class="stat-row-value">
+            <span class="rating">
+              <span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span>
+            </span>
+          </span></div>
+        </div>
+      </div>
+      <div class="pull-quote">
+        <p>"Fifteen playable classes. Each death funds your successor's inheritance."</p>
+      </div>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13.5px;color:rgba(255,255,255,.65)">The trait system alone — over 100 possible traits, each with genuine mechanical consequences — gives Rogue Legacy 2 a replayability floor that most games with ten times the content can't match.</p>
+    </div>
+  </div>
+
+  <div class="read-next">Coming up <a href="#aside">The pattern these games share <span class="arrow">→</span></a></div>
+</section>
+
+<!-- ══════ THE ASIDE ══════ -->
+<section class="aside-section" id="aside">
+<div class="sec reveal" style="background:transparent;padding-top:2.5rem;padding-bottom:2.5rem">
+  <span class="section-label" style="color:var(--rose)">The Aside — A Pattern</span>
+  <h2 style="font-size:32px;max-width:680px">The best solo games make failure interesting</h2>
+
+  <div class="pull-quote centered" style="max-width:640px;margin:0 auto 28px">
+    <p>In Hades, dying is how you learn Zagreus's backstory. Failure is the narrative engine, not a setback.</p>
+  </div>
+
+  <p>Look across this shortlist and you'll notice a pattern. Caves of Qud kills you in ways that teach you what the world's rules actually are. Outer Wilds's 22-minute loops are not failures — they're research sessions. Inscryption weaponises your confusion about what it even is. Rogue Legacy 2 converts defeat into dynasty-building. Fights in Tight Spaces punishes bad positioning so immediately that you understand what went wrong before the death screen finishes loading.</p>
+
+  <p>Hades made this explicit: dying was literally the point, because every conversation with the underworld's inhabitants advanced the story. FTL made it mathematical — defeat reveals your decision tree's flaw, and the next run you route differently. The best roguelites and loop-based games have understood for years what linear games struggle with: the space around failure is where players actually think. Make that space interesting and you have a game that teaches rather than frustrates. Every pick on this list passes that test.</p>
+</div>
+</section>
+
+<!-- ══════ ALSO WORTH KNOWING ══════ -->
+<hr class="divider dv-session">
+<section class="sec session-section reveal" id="also">
+  <div class="sec-watermark">Also</div>
+  <span class="section-label" style="color:var(--session-accent)">Also Worth Knowing — On the Horizon</span>
+  <h2>What's coming next for Switch 2</h2>
+  <p style="font-family:'DM Sans',sans-serif;font-size:15px;color:var(--slate);margin-bottom:24px">None of these are out yet — but they're worth watching.</p>
+
+  <div class="also-cards reveal-group">
+    <div class="also-card reveal">
+      <h4>Fire Emblem: Fortune's Weave</h4>
+      <p>Switch 2 exclusive, 2026 TBC. The tactical RPG team that made Three Houses is back with a new setting, a new cast, and reportedly the deepest supports system the series has attempted. Worth the wait — this is the Switch 2's first must-own solo release if it lands with anything close to Three Houses' quality.</p>
+      <div class="badge">Switch 2 Exclusive · Tactical RPG · TBC 2026</div>
+    </div>
+    <div class="also-card reveal">
+      <h4>Xenoblade Chronicles X: Definitive Edition</h4>
+      <p>Switch 2 Edition arrives April 16. The most mechanically ambitious Xenoblade — mech combat, a genuinely vast open world, and a story that becomes fascinating once it commits to its premise. Running at 4K/60fps on Switch 2. Not for the impatient: this is an 80+ hour commitment and the opening 10 hours are genuinely rough. Gets exceptional from there.</p>
+      <div class="badge">Switch 2 · Open World RPG · April 16 · 80+ hrs</div>
+    </div>
+    <div class="also-card reveal">
+      <h4>Oblivion Remastered</h4>
+      <p>The UE5 remake is confirmed for Switch 2 in 2026. No release date yet. The original Oblivion — with its absurd NPC schedules, its hand-crafted Daedric quests, and its peculiar elder-statesmen energy — is one of the great open-world time sinks. If the remaster preserves the soul of it (and doesn't smooth away all the weirdness in the name of modernity), this will be an event.</p>
+      <div class="badge">Switch 2 · Open World RPG · 2026 TBC</div>
+    </div>
+    <div class="also-card reveal">
+      <h4>Moonlighter 2: The Endless Vault</h4>
+      <p>Coming to Switch 2 in 2026 TBC. The original Moonlighter had a clever loop — dungeon-dive for loot, return to sell it in your shop, reinvest in gear. The sequel promises a deeper dungeon system and a more expansive merchant mechanic. For anyone who found the first game a pleasant 15-hour package, the sequel's trajectory looks right.</p>
+      <div class="badge">Switch 2 · Dungeon Roguelite · 2026 TBC</div>
+    </div>
+    <div class="also-card reveal">
+      <h4>Pragmata</h4>
+      <p>Launches April 17 on Switch 2. Capcom's sci-fi action-puzzle has been in development for years, and early footage shows a visually striking cel-shaded world where a soldier and a mysterious girl navigate a holographic cityscape. Running beautifully on Switch 2 hardware. One to watch — Capcom's single-player pedigree (Resident Evil, Devil May Cry) earns it more benefit of the doubt than most.</p>
+      <div class="badge">Switch 2 · Sci-fi Action/Puzzle · April 17</div>
+    </div>
+  </div>
+
+  <div class="read-next">For reference <a href="#cheatsheet">The Cheat Sheet <span class="arrow">→</span></a></div>
+</section>
+
+<!-- ══════ THE CHEAT SHEET ══════ -->
+<hr class="divider dv-history">
+<section class="sec history-section sec-opener reveal" id="cheatsheet">
+  <div class="sec-watermark">Ref</div>
+  <span class="section-label" style="color:var(--hist-accent)">The Cheat Sheet — All Picks at a Glance</span>
+  <h2>Quick-reference: every game in this issue</h2>
+
+  <div class="table-wrap">
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Game</th>
+          <th>Genre</th>
+          <th>Price</th>
+          <th>Playtime</th>
+          <th>Status</th>
+          <th>Vibe</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="game-name">⭐ Caves of Qud</td>
+          <td>Traditional roguelike RPG</td>
+          <td>~£16 / $20</td>
+          <td>50–200+ hrs</td>
+          <td><span class="status-badge status-available">Available</span></td>
+          <td><span class="vibe-badge">Sprawling</span></td>
+        </tr>
+        <tr>
+          <td class="game-name">⭐ Inscryption</td>
+          <td>Deckbuilder / horror / escape room</td>
+          <td>~£16 / $20</td>
+          <td>8–10 hrs</td>
+          <td><span class="status-badge status-available">Available</span></td>
+          <td><span class="vibe-badge">Unsettling</span></td>
+        </tr>
+        <tr>
+          <td class="game-name">⭐ Outer Wilds: Archaeologist Ed.</td>
+          <td>Exploration / mystery</td>
+          <td>~£20 / $25</td>
+          <td>20–25 hrs</td>
+          <td><span class="status-badge status-available">Available</span></td>
+          <td><span class="vibe-badge">Transcendent</span></td>
+        </tr>
+        <tr>
+          <td class="game-name">13 Sentinels: Aegis Rim</td>
+          <td>Visual novel + RTS</td>
+          <td>~£35 / $40</td>
+          <td>30–35 hrs</td>
+          <td><span class="status-badge status-available">Available</span></td>
+          <td><span class="vibe-badge">Epic</span></td>
+        </tr>
+        <tr>
+          <td class="game-name">Fights in Tight Spaces</td>
+          <td>Tactical deckbuilder roguelite</td>
+          <td>~£18 / $20</td>
+          <td>15–40+ hrs</td>
+          <td><span class="status-badge status-available">Available</span></td>
+          <td><span class="vibe-badge">Slick</span></td>
+        </tr>
+        <tr>
+          <td class="game-name">Wildermyth</td>
+          <td>Tactical RPG / narrative</td>
+          <td>~£20 / $25</td>
+          <td>20–60+ hrs</td>
+          <td><span class="status-badge status-available">Available</span></td>
+          <td><span class="vibe-badge">Mythic</span></td>
+        </tr>
+        <tr>
+          <td class="game-name">Rogue Legacy 2</td>
+          <td>Action-platformer roguelite</td>
+          <td>~£22 / $25</td>
+          <td>30–80+ hrs</td>
+          <td><span class="status-badge status-available">Available</span></td>
+          <td><span class="vibe-badge">Addictive</span></td>
+        </tr>
+        <tr style="background:rgba(139,105,20,.04)">
+          <td class="game-name" style="color:var(--hist-accent);font-style:italic">Fire Emblem: Fortune's Weave</td>
+          <td>Tactical RPG</td>
+          <td>TBC</td>
+          <td>40–60+ hrs</td>
+          <td><span class="status-badge status-coming">Coming</span></td>
+          <td><span class="vibe-badge">Tactical</span></td>
+        </tr>
+        <tr style="background:rgba(139,105,20,.04)">
+          <td class="game-name" style="color:var(--hist-accent);font-style:italic">Xenoblade Chronicles X: DE</td>
+          <td>Open world RPG</td>
+          <td>~£55 / $60</td>
+          <td>80+ hrs</td>
+          <td><span class="status-badge status-coming">Apr 16</span></td>
+          <td><span class="vibe-badge">Vast</span></td>
+        </tr>
+        <tr style="background:rgba(139,105,20,.04)">
+          <td class="game-name" style="color:var(--hist-accent);font-style:italic">Oblivion Remastered</td>
+          <td>Open world RPG</td>
+          <td>TBC</td>
+          <td>60–100+ hrs</td>
+          <td><span class="status-badge status-coming">2026 TBC</span></td>
+          <td><span class="vibe-badge">Nostalgic</span></td>
+        </tr>
+        <tr style="background:rgba(139,105,20,.04)">
+          <td class="game-name" style="color:var(--hist-accent);font-style:italic">Moonlighter 2: The Endless Vault</td>
+          <td>Dungeon roguelite</td>
+          <td>TBC</td>
+          <td>15–25 hrs</td>
+          <td><span class="status-badge status-coming">2026 TBC</span></td>
+          <td><span class="vibe-badge">Cosy-intense</span></td>
+        </tr>
+        <tr style="background:rgba(139,105,20,.04)">
+          <td class="game-name" style="color:var(--hist-accent);font-style:italic">Pragmata</td>
+          <td>Sci-fi action / puzzle</td>
+          <td>TBC</td>
+          <td>TBC</td>
+          <td><span class="status-badge status-coming">Apr 17</span></td>
+          <td><span class="vibe-badge">Cinematic</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ghost);margin-top:8px">⭐ = Top Pick · Italic rows = "Also Worth Knowing" entries · Prices are approximate eShop pricing</p>
+
+  <div class="read-next">Before you go <a href="#meanwhile">Meanwhile — the week's news <span class="arrow">→</span></a></div>
+</section>
+
+<!-- ══════ MEANWHILE ══════ -->
+<hr class="divider dv-world">
+<section class="sec world-section reveal" id="meanwhile">
+  <div class="sec-watermark">Meanwhile</div>
+  <span class="section-label" style="color:var(--rose)">Meanwhile — Week of 6–12 April 2026</span>
+  <h2>The world while you were playing</h2>
+
+  <span class="meanwhile-cat">World</span>
+  <ul class="also-list">
+    <li class="tier-hot"><strong>Iran-US talks collapse in Pakistan.</strong> Vance declared "no agreement reached" and departed with what the White House described as a "final offer." The ceasefire expires April 21; Trump has threatened a Hormuz blockade if Tehran doesn't comply. The diplomatic window is narrowing fast. <a href="https://www.nytimes.com/live/2026/04/12/world/iran-war-trump-talks-pakistan" target="_blank">NYT</a></li>
+    <li class="tier-hot"><strong>Russia-Ukraine Easter ceasefire — and immediate violations.</strong> Putin announced a 32-hour Orthodox Easter pause; both sides accused the other of breaking it within hours. 175 prisoners were exchanged, the largest swap since early 2025. <a href="https://www.ksat.com/news/world/2026/04/12/russia-and-ukraine-accuse-each-other-of-violating-orthodox-easter-ceasefire/" target="_blank">KSAT</a></li>
+    <li class="tier-hot"><strong>Hungary election polls close.</strong> A key test for Viktor Orbán as the Tisza Party holds a polling lead. Results expected Sunday evening; a Tisza majority would be the most significant shift in Hungarian politics in over a decade. <a href="https://www.ksat.com/news/world/2026/04/12/polls-open-in-hungary-in-a-key-election-that-could-unseat-populist-prime-minister-orban/" target="_blank">KSAT</a></li>
+  </ul>
+
+  <span class="meanwhile-cat">Sport</span>
+  <ul class="also-list">
+    <li class="tier-hot"><strong>Masters drama: Rory and Cameron Young tied at -11 entering Sunday.</strong> McIlroy blew a six-shot Moving Day lead in what Augusta veterans are calling the most dramatic Saturday in years. Scheffler lurks at -7 after a 65. Sunday's final round will be watched by everyone. <a href="https://www.golfchannel.com/pga-tour/live/2026-masters-live-updates-leaderboard-scores-results-highlights-and-news-from-round-3" target="_blank">Golf Channel</a></li>
+    <li class="tier-warm"><strong>Shane Lowry holes out for his fifth career Tour ace.</strong> Augusta's 6th hole witnessed Lowry's fifth hole-in-one on Tour. On any other Saturday it would be the day's headline. <a href="https://www.golfchannel.com/pga-tour/live/2026-masters-live-updates-leaderboard-scores-results-highlights-and-news-from-round-3" target="_blank">Golf Channel</a></li>
+    <li class="tier-warm"><strong>Crystal Palace 2–1 Newcastle.</strong> Mateta converted a stoppage-time penalty to take the three points. Newcastle's Champions League charge takes a significant dent. <a href="https://www.espn.com/soccer/match/_/gameId/740910" target="_blank">ESPN</a></li>
+  </ul>
+
+  <span class="meanwhile-cat">Gaming</span>
+  <ul class="also-list">
+    <li class="tier-warm"><strong>Pokémon Champions launched April 8 on Switch.</strong> The online competitive battling platform is live; early reports suggest stable matchmaking and a clean UI, though the content depth will be judged over the coming weeks. <a href="https://www.nintendo.com/au/news-and-articles/upcoming-games-april-2026/" target="_blank">Nintendo</a></li>
+    <li class="tier-warm"><strong>Pragmata and Mouse: P.I. for Hire both launch April 17 on Switch 2.</strong> Two very different games arriving the same day — Capcom's sci-fi action title and Mouse's 1930s noir detective adventure. A good fortnight for handheld owners. <a href="https://www.nintendolife.com/news/2026/04/video-12-exciting-new-games-coming-to-switch-1-and-2-in-april-2026" target="_blank">Nintendo Life</a></li>
+    <li class="tier-warm"><strong>Xenoblade Chronicles X: Definitive Edition Switch 2 Edition physical launch April 16.</strong> Confirmed 4K/60fps on Switch 2. Physical editions include a download code for additional content. <a href="https://www.nintendo.com/au/news-and-articles/upcoming-games-april-2026/" target="_blank">Nintendo</a></li>
+    <li class="tier-warm"><strong>Hades 2 launches April 14 on PS5 and Xbox.</strong> Supergiant's sequel has been in early access on PC — now console players get it. Following one of the greatest roguelites ever made is an almost impossible brief. <a href="https://www.videogameschronicle.com/guide/upcoming-game-release-dates-schedule/" target="_blank">VGC</a></li>
+  </ul>
+
+  <span class="meanwhile-cat">Entertainment</span>
+  <ul class="also-list">
+    <li class="tier-warm"><strong>Star Wars: Maul — Shadow Lord premiered April 6 on Disney+.</strong> Dave Filoni's live-action series stars Sam Witwer returning as Maul, with two episodes weekly through May 4. Early social reaction has been cautiously positive. <a href="https://press.disney.co.uk/news/star-wars-maul-shadow-lord-to-premiere-on-disney-april-6-2026" target="_blank">Disney</a></li>
+    <li class="tier-warm"><strong>The Mandalorian &amp; Grogu confirmed May 22 theatrical release.</strong> The first Star Wars film since 2019. The theatrical window is back; whether it marks a creative reset or more of the same will define the franchise's next phase. <a href="https://www.ign.com/articles/upcoming-new-star-wars-movies-2026-tv-shows-release-dates" target="_blank">IGN</a></li>
+    <li class="tier-note"><strong>PlayStation State of Play rumoured for April 16.</strong> Industry sources suggest a potential Assassin's Creed: Black Flag remake reveal and a new Metro game announcement. Unconfirmed, but credible. <a href="https://insider-gaming.com" target="_blank">Insider Gaming</a></li>
+  </ul>
+</section>
+
+<!-- ══════ FOOTER ══════ -->
+<hr class="divider dv-world">
+<footer class="footer" id="footer">
+  <div class="footer-brand">The Signal<span>.</span></div>
+  <div class="footer-issue">Shortlist Special · Issue #8 · 12 April 2026</div>
+  <p class="footer-note">Seven games. One console. Too many hours ahead.</p>
+</footer>
+
+</div><!-- .mag -->
+
+<button class="back-to-top" id="backToTop" title="Back to top">↑</button>
+
+<script>
+// Reading progress bar
+(function() {
+  const bar = document.getElementById('progressBar');
+  if (!bar) return;
+  window.addEventListener('scroll', function() {
+    const h = document.documentElement;
+    const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    bar.style.width = Math.min(pct, 100) + '%';
+  }, { passive: true });
+})();
+
+// Back to top button visibility + click handler
+(function() {
+  const btn = document.getElementById('backToTop') || document.getElementById('btt');
+  if (!btn) return;
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 800) {
+      btn.classList.add('visible');
+    } else {
+      btn.classList.remove('visible');
+    }
+  }, { passive: true });
+  btn.addEventListener('click', function(e) {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+
+// Enhancement 5: IntersectionObserver for .reveal elements
+(function() {
+  var els = document.querySelectorAll('.reveal');
+  if (!els.length || !('IntersectionObserver' in window)) {
+    // Fallback: make everything visible if IntersectionObserver not supported
+    els.forEach(function(el) { el.classList.add('visible'); });
+    return;
+  }
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  els.forEach(function(el) { observer.observe(el); });
+})();
+
+// Enhancement 5: Count-up animation for .count-up elements
+(function() {
+  var els = document.querySelectorAll('.count-up');
+  if (!els.length || !('IntersectionObserver' in window)) return;
+
+  function animateCount(el) {
+    var target = el.getAttribute('data-target');
+    if (!target) return;
+    // Parse number — handle percentages, commas, decimals
+    var raw = target.replace(/[^0-9.\-]/g, '');
+    var num = parseFloat(raw);
+    if (isNaN(num)) return;
+    var prefix = target.match(/^[^0-9.\-]*/)[0] || '';
+    var suffix = target.match(/[^0-9.\-]*$/)[0] || '';
+    var isInt = num === Math.floor(num);
+    var duration = 800;
+    var start = performance.now();
+
+    function step(now) {
+      var progress = Math.min((now - start) / duration, 1);
+      // Ease-out cubic
+      var ease = 1 - Math.pow(1 - progress, 3);
+      var current = num * ease;
+      el.textContent = prefix + (isInt ? Math.floor(current).toLocaleString() : current.toFixed(1)) + suffix;
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    el.textContent = prefix + '0' + suffix;
+    requestAnimationFrame(step);
+  }
+
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        animateCount(entry.target);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  els.forEach(function(el) { observer.observe(el); });
+})();
+
+</script>
+</body>
+</html>
