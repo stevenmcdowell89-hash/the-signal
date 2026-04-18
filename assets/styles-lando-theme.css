@@ -1,0 +1,145 @@
+/* Theme override — aligns palette + typography to
+   stevenmcdowell89-hash/The-signal-reloaded special-edition template
+   (blueprint scheme: deep navy / cream paper / vermillion orange). */
+
+:root {
+  --bg: #0a1626;
+  --bg-elev: #11203a;
+  --bg-card: #0f1c33;
+  --bg-hover: #14284a;
+  --ink: #ece4d0;
+  --ink-dim: rgba(236,228,208,0.72);
+  --ink-faint: rgba(236,228,208,0.44);
+  --accent: #ff6a1f;
+  --accent-dim: rgba(255,106,31,0.55);
+  --accent-soft: rgba(255,106,31,0.12);
+  --rule: rgba(236,228,208,0.14);
+  --rule-strong: rgba(236,228,208,0.28);
+
+  --sec-world: #c8a372;
+  --sec-tech: #ff6a1f;
+  --sec-turf: #7ee0b3;
+  --sec-screen: #ff9b7a;
+  --sec-shelf: #b8902a;
+  --sec-session: #c9a27a;
+  --sec-history: #8a7f6a;
+  --sec-toolkit: #6f7f95;
+  --sec-wallet: #7ee0b3;
+  --sec-workshop: #8a7f6a;
+
+  --rose: var(--accent);
+  --ember: var(--accent);
+  --turf: var(--sec-turf);
+  --session-accent: var(--sec-session);
+  --workshop-accent: var(--sec-workshop);
+  --toolkit-accent: var(--sec-toolkit);
+  --wallet-accent: var(--sec-wallet);
+
+  --display: 'Instrument Serif', 'Fraunces', Georgia, serif;
+  --ui: 'Geist', system-ui, -apple-system, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+  --editorial: 'Fraunces', 'Instrument Serif', Georgia, serif;
+}
+
+html, body { background: var(--bg); color: var(--ink); font-family: var(--ui); }
+
+body::before {
+  background:
+    radial-gradient(1400px 900px at 80% -10%, rgba(255,106,31,0.08), transparent 60%),
+    radial-gradient(900px 600px at -10% 110%, rgba(255,106,31,0.05), transparent 60%) !important;
+}
+
+body::after {
+  content: "";
+  position: fixed; inset: 0; pointer-events: none; z-index: 100;
+  opacity: 0.12;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.93 0 0 0 0 0.87 0 0 0 0 0.77 0 0 0 0.5 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+.cover-brand,
+.footer-brand,
+.opener-band h1, .opener-band h2,
+h2, h3, h4, h5,
+.breather-stat,
+.pull-quote,
+.stat-num, .big-number,
+.entry-stat,
+.nav-card .title,
+.marquee-track,
+.workout-card-title,
+.sec-watermark {
+  font-family: var(--display);
+  font-weight: 400;
+  letter-spacing: -0.015em;
+}
+
+.cover-brand { letter-spacing: -0.02em; }
+.cover-brand span { color: var(--accent); }
+
+h1 em, h2 em, h3 em,
+.cover-headline em,
+.opener-band em,
+.nav-card .title em { font-style: italic; color: var(--accent); }
+
+.pull-quote,
+.sec-watermark { font-style: italic; font-weight: 400; }
+
+.cover-headline { font-family: var(--editorial); font-weight: 400; font-style: italic; }
+
+.sec p, .sec li,
+.nav-card .desc,
+.foreword,
+.angle,
+.caption {
+  font-family: var(--ui);
+  color: var(--ink-dim);
+}
+.sec p strong, .sec li strong { color: var(--ink); font-weight: 500; }
+
+.foreword p::first-letter {
+  font-family: var(--display);
+  font-style: italic;
+  color: var(--accent);
+}
+
+.tag {
+  background: rgba(236,228,208,0.04);
+  border-color: var(--rule-strong);
+  color: var(--ink-dim);
+  font-family: var(--mono);
+}
+.tag:hover { color: var(--accent); border-color: var(--accent); }
+
+.section-label { color: var(--accent); border-color: var(--accent); }
+
+@media (max-width: 820px) {
+  .blob-canvas { display: block !important; }
+}
+
+.nav-card.flash::before,
+.nav-card.pressed::before { transform: translateY(0) !important; }
+.nav-card.flash,
+.nav-card.pressed { color: var(--bg) !important; }
+.nav-card.flash .nav-card-tag,
+.nav-card.pressed .nav-card-tag,
+.nav-card.flash .read-time,
+.nav-card.pressed .read-time { color: var(--bg) !important; opacity: 0.8; }
+.nav-card.flash .arrow,
+.nav-card.pressed .arrow { transform: translate(6px,-6px) !important; color: var(--bg) !important; }
+.nav-card.flash .desc,
+.nav-card.pressed .desc { color: rgba(10,22,38,0.75) !important; }
+.nav-card.flash .nav-card-icon,
+.nav-card.pressed .nav-card-icon { color: var(--bg) !important; }
+
+.divider { background: var(--rule); }
+.divider::before { background: var(--bg); color: var(--accent); }
+
+.league-table th,
+.league-table td,
+.radar-platform { color: var(--ink-dim); }
+.league-table th { color: var(--accent); border-bottom-color: var(--accent); }
+
+.hero-img, .sec img, .sec-watermark, .breather-stat { will-change: transform; }
+
+.lando-boot { color: var(--accent) !important; background: var(--bg) !important; }
