@@ -76,6 +76,28 @@
     .issue-accent {
       color: #E94560;
     }
+    .issue-link.variant {
+      background: #0A0A0C;
+      border: 1px solid #D2FF00;
+    }
+    .issue-link.variant:hover {
+      background: #141418;
+      box-shadow: 0 8px 32px rgba(210,255,0,0.15);
+    }
+    .issue-link.variant .issue-accent { color: #D2FF00; }
+    .variant-chip {
+      display: inline-block;
+      font-size: 0.65rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #0A0A0C;
+      background: #D2FF00;
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin-left: 8px;
+      font-weight: 700;
+      vertical-align: middle;
+    }
   </style>
 </head>
 <body>
@@ -83,6 +105,12 @@
     <div class="masthead">The Signal</div>
     <div class="tagline">Weekly Intelligence Brief</div>
     <ul class="issue-list">
+      <li>
+        <a href="issues/signal_weekly_2026-04-12-lando.html" class="issue-link variant">
+          <div class="issue-title">Issue <span class="issue-accent">#6 — Lando Edition</span><span class="variant-chip">Design Variant</span></div>
+          <div class="issue-meta">6–12 April 2026 · Standard weekly reimagined with fluo-yellow / near-black styling, GSAP scroll motion, and a WebGL liquid-blob cursor on the cover</div>
+        </a>
+      </li>
       <li>
         <a href="issues/shortlist-switch2-solo.html" class="issue-link">
           <div class="issue-title">Shortlist <span class="issue-accent">— Solo Games for Switch 2</span></div>
