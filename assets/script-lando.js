@@ -231,7 +231,7 @@
       uTime:   { value: 0 },
       uMouse:  { value: new THREE.Vector2(0, 0) },
       uActive: { value: 1 },
-      uColor:  { value: new THREE.Color(0xD2FF00) },
+      uColor:  { value: new THREE.Color(0xff6a1f) },
       uIntensity: { value: 1 }
     };
 
