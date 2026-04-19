@@ -3,7 +3,7 @@
   THE SIGNAL — Weekly Template
   Regenerated for Sunday 19 April 2026.
 -->
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -2973,6 +2973,34 @@ h3.ln > span {
   transform: translateY(0);
 }
 
+/* ------------------------------------------------------------
+   NO-JS / SCRIPTING DISABLED FALLBACK
+   If JavaScript never runs, everything must still be readable.
+   The <html> element gets .no-js by default; script.js removes it.
+   Also covers browsers where scripting is forced off.
+   ------------------------------------------------------------ */
+.no-js body,
+html.no-js body {
+  opacity: 1 !important;
+}
+.no-js .reveal,
+.no-js .ln,
+.no-js .dropcap,
+html.no-js .reveal,
+html.no-js .ln,
+html.no-js .dropcap {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+@media (scripting: none) {
+  body { opacity: 1 !important; }
+  .reveal, .ln, .dropcap {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
 /* End of stylesheet */
 </style>
 </head>
@@ -3827,7 +3855,7 @@ h3.ln > span {
           }
         });
       },
-      { threshold: 0.2 }
+      { threshold: 0, rootMargin: '0px 0px -5% 0px' }
     );
     targets.forEach((t) => io.observe(t));
   }
@@ -4205,6 +4233,10 @@ h3.ln > span {
      ------------------------------------------------------------ */
 
   function init() {
+    // Remove .no-js marker so CSS fallback stops overriding
+    docEl.classList.remove('no-js');
+    docEl.classList.add('js');
+
     renderSeals();
     setupRibbons();
     splitAllHeads();
@@ -4221,6 +4253,25 @@ h3.ln > span {
     updateProgress();
     updateColourFlood();
     updateColophonRise();
+
+    /* ------------------------------------------------------------
+       SAFETY NETS — guarantee content is visible even if observers
+       never fire (edge-case mobile browsers, JS errors upstream).
+       ------------------------------------------------------------ */
+
+    // 1. Hard guarantee body fades in even if orchestrateLoad's rAF stalls
+    setTimeout(() => {
+      if (!body.classList.contains('loaded')) {
+        body.classList.add('loaded');
+      }
+    }, 300);
+
+    // 2. Force-reveal any element still stuck at opacity 0 after 1.5s
+    setTimeout(() => {
+      document
+        .querySelectorAll('.reveal:not(.in), .ln:not(.in), .dropcap:not(.in)')
+        .forEach((el) => el.classList.add('in'));
+    }, 1500);
   }
 
   function splitAllHeads() {

@@ -142,7 +142,7 @@
           }
         });
       },
-      { threshold: 0.2 }
+      { threshold: 0, rootMargin: '0px 0px -5% 0px' }
     );
     targets.forEach((t) => io.observe(t));
   }
@@ -520,6 +520,10 @@
      ------------------------------------------------------------ */
 
   function init() {
+    // Remove .no-js marker so CSS fallback stops overriding
+    docEl.classList.remove('no-js');
+    docEl.classList.add('js');
+
     renderSeals();
     setupRibbons();
     splitAllHeads();
@@ -536,6 +540,25 @@
     updateProgress();
     updateColourFlood();
     updateColophonRise();
+
+    /* ------------------------------------------------------------
+       SAFETY NETS — guarantee content is visible even if observers
+       never fire (edge-case mobile browsers, JS errors upstream).
+       ------------------------------------------------------------ */
+
+    // 1. Hard guarantee body fades in even if orchestrateLoad's rAF stalls
+    setTimeout(() => {
+      if (!body.classList.contains('loaded')) {
+        body.classList.add('loaded');
+      }
+    }, 300);
+
+    // 2. Force-reveal any element still stuck at opacity 0 after 1.5s
+    setTimeout(() => {
+      document
+        .querySelectorAll('.reveal:not(.in), .ln:not(.in), .dropcap:not(.in)')
+        .forEach((el) => el.classList.add('in'));
+    }, 1500);
   }
 
   function splitAllHeads() {
