@@ -1,145 +1,333 @@
 # The Signal — Compliance Checklist
 
-Two gates. Gate 1 is a mechanical text scan — run it BEFORE reading Gate 2. If Gate 1 fails, fix before proceeding. Gate 2 is editorial and visual quality.
+> Run this after generation (Step 7) and after editorial review (Step 8) in the workflow.
+> Gate 1 is mechanical — zero tolerance, fix before proceeding. Gate 2 is editorial — fix failures before delivery.
+> Source of truth for allowed components: `assets/styles.css` and `assets/weekly-template.html`.
 
 ---
 
-## GATE 1 — Hard Fails (scan the output text)
+## GATE 1 — Hard Fails
 
-These are the most common and most damaging errors. Each one requires a literal scan of the generated HTML text. Do not skip this gate. Do not skim it. Run each check deliberately.
+Gate 1 is a mechanical text scan. Every item below is binary: pass or fail. No partial credit. **Fix every failure before proceeding to Gate 2.**
 
-### 1A. Reader-Profile Leaks
+---
 
-Search the full text for ANY phrase that reveals the magazine knows who the reader is. The reader profile exists to guide research and selection — it must be invisible in the prose.
+### 1A — Reader-Profile Leaks
 
-**Search for these patterns and remove/rewrite every match:**
-- The reader's specific devices by name: "Xiaomi", "Garmin", "Todoist" (unless in a general product review context where any magazine would name them)
-- Direct reader address: "your tablet", "your watch", "your son", "this matters to you", "you'll appreciate", "worth it for you"
-- Profile callbacks: "as a [interest] fan", "for someone who [trait]", "since you're into [topic]"
-- Selection justifications: "You're deep into Malazan", "Given your interest in", "Since you follow Serie A" — the selection already did this work
-- Invisible-rule announcements: "no spoilers in sight", "spoiler-free" (the no-spoilers rule is absolute but never mentioned)
-- "It's not X, it's Y" defensive pattern: "It's not bland meal prep food", "This isn't just another listicle"
+The reader profile drives topic selection. It must be invisible in the prose. Scan the entire HTML output for every instance of the following patterns (case-insensitive). Any match is a hard fail.
 
-**The test:** would this sentence make sense in a magazine with 100,000 readers? If it would only make sense written for one person, rewrite it.
+**Forbidden direct-address patterns:**
+- "as a banking"
+- "your role in fintech"
+- "since you're tracking a 10k"
+- "since you're training"
+- "fellow Malazan fan"
+- "fellow Cosmere fan"
+- "fellow [X] fan" (any fandom substituted)
+- "as a [job title]" (any job title substituted)
+- "as an engineering manager"
+- "your work in banking"
+- "in your line of work"
+- "your Garmin"
+- "your Ibex programme"
+- "your 10k"
+- "your run"
+- "your home gym"
+- "your house in Northern Ireland"
+- "your dog"
+- "your Pixel"
+- "your Monzo"
+- "for someone like you"
+- "if you're a fan of [X]" where X is any tracked interest
+- "you'll love this if you play Nintendo"
+- "as a parent"
+- "if you're considering children"
+- Second-person "you" used to make a claim about the reader's job, family, location, fitness level, or interests
 
-**Good examples to aim for:** "If you find high fantasy world-building exhausting and want something with tighter scope" / "For anyone watching the Serie A title race" / "If you're gaming via cloud streaming on a tablet"
+**The cardinal rule verbatim (must be embedded in your reasoning, not your output):** The reader profile is invisible in the prose. Write as a general-interest Sunday magazine journalist for any educated adult. The reader profile drives TOPIC SELECTION — it never shows in voice, framing, or second-person address. No "as a banking engineering manager", no "your role in fintech", no "since you're tracking a 10k", no "fellow Malazan fan".
 
-### 1B. Fabrication
+**Fix:** Rewrite the sentence as though writing for any educated adult Sunday magazine reader. Remove the direct address entirely.
 
-- [ ] **No fabricated results.** "Drew 7-0" is not a thing. Every scoreline must be verified. If unconfirmed, don't include it.
-- [ ] **No fabricated podcast/article/video content.** Do not invent what a specific episode discussed. If you can't verify it, link without a summary or omit.
-- [ ] **No fabricated URLs.** Every link must be real.
-- [ ] **No fabricated media.** Every TV show, film, game, book, podcast must be confirmed as real and current. No implying new episodes for ended shows. No miscategorising (game listed as a Netflix show).
+---
 
-### 1C. Staleness
+### 1B — Fabrication
 
-- [ ] **Every news item is from the current week (7 days).** A Champions League exit from 5 weeks ago is not this week's story. A Carabao Cup final from a fortnight ago is not this week's story.
-- [ ] **No forced favourite-team content.** If Juventus haven't played this week, they appear in the league table and that's it. Don't dredge up old results to fill space. Same for any team or topic from the reader profile.
-- [ ] **Fixture dates verified.** Serie A has Sunday and Monday fixtures. Check every match date. If a match hasn't been played yet, say so — don't report a result that doesn't exist.
-- [ ] **Ongoing stories in tracker, not headline.** Check `ongoing_stories` in state file. Any story that has led for 2+ consecutive weeks must be in an Ongoing tracker box, not leading the section again with a new angle.
+Scan for unsourced numeric claims and attributed quotes.
 
-### 1D. Links
+**Statistics:**
+- Every percentage, metric, price, count, or rate in the issue must have a source attributed.
+- Inline attribution ("according to the ONS", "per the Bank of England") is sufficient for prose.
+- Any stat that appears in a `.dash__cell`, `.datum-card`, `.plate__stat`, or `.chart-card__foot` must have a source in the Colophon sources block.
+- Fail if: a stat is stated as fact with no attribution and no colophon source.
 
-- [ ] **Every substantial item has at least one outbound link.** No dead ends.
-- [ ] **Links go to the specific item**, not a category page. The recipe, not "all chicken recipes." The episode, not the show page.
-- [ ] **History items link to Wikipedia** (preferred) for every featured event and every "Also" one-liner.
+**Quotes:**
+- Every attributed quote (in `.pull-break__quote`, `.pull-quote-card`, `.marginalia__pull`, `blockquote`) must be traceable to a real person who said it in a real context.
+- Fail if: a quote is attributed to a named individual but cannot be verified as real. When in doubt, use "— paraphrased" or rephrase as reported speech.
+- Fail if: a fictional quote (invented for atmosphere) is presented as a real attributed quote.
+
+**Book/product details:**
+- Author names, publisher names, game titles, app version numbers must be accurate.
+- Fail if: a title is attributed to the wrong author.
+
+---
+
+### 1C — Staleness
+
+**Date in masthead:**
+- The masthead `<header class="mast">` must display the current issue date in the `line1` div: `SUNDAY 06:40 · NO. [N] · [DD MONTH]`.
+- The `.cover__meta-top` and the Colophon footer must also carry the correct date.
+- Fail if: the date is blank, templated (`[DD MONTH]`), or more than 6 days behind the generation date.
+
+**"Last week" references:**
+- Fail if: any reference to "last week" in The Week section describes an event that predates the current issue by more than 12 days.
+- Fail if: any ongoing story counter (e.g. "Week 7 of the conflict") is not updated from the state file.
+
+**Issue number:**
+- Fail if: the issue number in the masthead, cover, Contents, and Colophon do not all match.
+
+---
+
+### 1D — Links
+
+**Outbound links:**
+- All `href` values in the issue must be either `#` (internal anchor) or begin with `https://` or `http://`.
+- Fail if: any href is a relative path, a placeholder (`[URL]`), an empty string, or a `javascript:` URI.
+- Outbound links in the Colophon sources block must open in a new tab (`target="_blank" rel="noopener"`).
+
+**Colophon sources:**
+- The Colophon must have ≥ 6 source entries in `.colophon__sources`.
+- Each source must have a non-empty `href` that is a real URL.
+- Fail if: any source URL is a placeholder.
+
+---
+
+### 1E — Forbidden Fonts, Hexes, and Classes
+
+Scan the HTML and any inline styles for the following. **Any match is a hard fail.**
+
+**Forbidden fonts (must not appear in any `font-family`, `@font-face`, or Google Fonts URL):**
+- `Cormorant`
+- `DM Sans`
+- `JetBrains Mono`
+- `Instrument Serif`
+- `Inter`
+- `Newsreader`
+- `IBM Plex Mono`
+
+The only permitted fonts are **Fraunces** and **Geist**, loaded from the Google Fonts URL in `<head>`.
+
+**Forbidden hex values (must not appear in any `style=""`, `fill`, `stroke`, or colour property):**
+- `#1B1B2F`
+- `#E8384F`
+- `#D2FF00`
+- `#FF8700` (McLaren orange)
+- Any hex that is not from the ember, dossier, blueprint, or midnight palette definitions in `styles.css`.
+
+Never use `rgb()` or `rgba()` inline for colour values if the colour is not defined as a CSS variable.
+
+**Forbidden CSS classes (must not appear anywhere in the HTML):**
+
+| Forbidden | Use instead |
+|-----------|-------------|
+| `.book-card` | `.fan-spread__card` |
+| `.big-number` | `.dash__num` or `.datum-card__value` |
+| `.big-number-row` | `.dash` |
+| `.cover-brand` | `.mast` |
+| `.section-label` | `.section-eyebrow` or `.spine-label` |
+| `.cover-tags` | `.cover__tags` |
+| `.cover-headline` | `.cover__headline` |
+| `.cover-issue` | `.cover__meta-top` |
+| `.cover-noise` | `.grain` |
+| `.cover-grain` | `.grain` |
+| `.dyk` | *(no equivalent — remove the "Did you know" pattern entirely)* |
+| `.angle` | *(no equivalent — remove)* |
+| `.also-cards` | `.brief-grid` |
+| `.also-list` | `.colophon__list` |
+| `.compare-panel` | *(no equivalent — use `.chart-card` or `.dash`)* |
+| `.stat-bar` | `.dash__cell` or `.plate__stat` |
+| `.workout-card` | `.fan-spread__card` |
+| `.card-stack` | `.fan-spread__deck` |
+| `.sidebar` | `.marginalia` |
+| `.sidebar-float` | `.marginalia` |
+| `.margin-note` | `.marginalia__note` |
+| `.entry-stat` | `.datum-card` |
+| `.entry-quote` | `.pull-quote-card` or `.marginalia__pull` |
+| `.entry-question` | *(remove)* |
+| `.tier-hot` | *(remove tier patterns entirely)* |
+| `.tier-warm` | *(remove)* |
+| `.tier-note` | *(remove)* |
+| `.nav-section` | `.mast` |
+| `.nav-grid` | *(remove)* |
+| `.nav-card` | *(remove)* |
+| `.radar-grid` | *(remove)* |
+| `.league-table` | `.contents-ledger` |
+| `.results-strip` | `.index-strip` |
+| `.split-60-40` | *(use CSS grid inline or layout within feature-band)* |
+| `.img-offset` | `.feature-band__hero` |
+| `.breather` | `.ribbon` or `.pull-break` |
+| `.rating` | *(no equivalent — express opinion in prose)* |
+| `.collapsible` | *(remove)* |
+| `.mag` | *(remove)* |
+| `.pull-quote` wrapper | `.pull-quote-card` |
+
+**Forbidden section names and vocabulary:**
+- "Dispatch" (the word — the seal component `dispatch-seal` is fine, but do not call the issue a "Dispatch")
+- "Chapter" as a section label
+- "Foreword" (use "Editor's Note")
+- "Navigator" (use `.mast`)
+- Roman numerals as section markers (I, II, III — use arabic: 01, 02, 03)
+- "The Long Shelf" (it is "The Shelf")
+- "The World This Week" (it is "The Week")
+- "Pixel & Byte" (no longer exists)
+- "The Touchline" (no longer exists)
+- "Screen & Sound" (no longer exists)
+- "The Session" (no longer exists)
+- "The Wallet" (no longer exists)
+- "On the Radar" (no longer exists)
+- "Footer" (it is "Colophon")
+
+---
+
+### 1F — Template Placeholders
+
+During generation (Step 5), the template markers `<!-- INJECT:CSS -->` and `<!-- INJECT:JS -->` must be present in the output:
+- `<!-- INJECT:CSS -->` inside `<head>`, after the Google Fonts link.
+- `<!-- INJECT:JS -->` just before `</body>`.
+
+**Before inject (Steps 1–5):** both markers must be present.
+**After inject (Step 6 — `bash scripts/inject-assets.sh <file>`):** both markers are replaced by the full CSS and JS. Verify neither marker remains in the injected file.
+
+Fail if: markers are absent before inject, or still present after inject.
 
 ---
 
 ## GATE 2 — Editorial & Visual Quality
 
-Only proceed here after Gate 1 passes clean.
+Gate 2 items may require editorial judgement. Fix all failures before delivery.
 
-### Coverage
-- [ ] Word count meets format target (see editorial spec Issue Formats)
-- [ ] Every major section has at least one relevant image
-- [ ] Touchline: lead story is most compelling sport of the week. Serie A ≥ PL depth on normal domestic weeks. Full table (top 10 + relegation zone). Coverage beyond Juve. Doesn't exceed ~30% of issue.
-- [ ] Release Radar: 15-20+ items across ALL categories, chronological within sub-sections
-- [ ] Star Wars mentioned somewhere
-- [ ] No coverage gaps in fixed sections
-- [ ] Issue has news AND features/evergreen — not purely news
-- [ ] On the Radar: 8-10 items, no overlap with Release Radar, specific and non-patronising
+---
 
-### Rotating Sections
-- [ ] 2-3 rotating sections selected from state file cadence priority
-- [ ] Only selected sections researched — no wasted research
-- [ ] Catch-up rule respected (Shelf, etc. — full gap since last appearance)
-- [ ] Navigator only shows sections present in this issue
-- [ ] Down the Rabbit Hole included as sidebar if due (3-4 weeks)
+### 2A — Coverage
 
-### Ongoing Stories
-- [ ] Ongoing trackers are factual, not editorial — situation report tone
-- [ ] Ongoing trackers have proper space — scaled to the week's developments
-- [ ] New lead story is genuinely new — not a rehashed angle on the ongoing story
-- [ ] State file updated with ongoing_stories changes
+**Core groups:** Confirm that every core group from the Search Checklist was researched and is represented in the issue:
+- World news
+- UK news
+- Sport (PL, CL, Serie A/Juventus, golf if in season)
+- Tech and Gaming
+- Entertainment
+- Training and Running
+- UK Personal Finance
+- Books
 
-### Structure
-- [ ] Touchline leads with data (tables, scores) before narrative
-- [ ] Foreword: 50-80 words, one thread
-- [ ] LEGO in Pixel & Byte, not Screen & Sound
-- [ ] History prefers pre-WW2; images match the historical event (no reusing images from other sections)
-- [ ] Music only when relevant within The Shelf's rotation; music releases still in Release Radar when Shelf absent
-- [ ] Session: only sourced content, or omitted entirely
-- [ ] Podcast recs are episode-specific: title, date, reason — verified content only
-- [ ] The Itinerary owns all travel/parks/NI content when present; On the Radar one-liners when absent
+Not every group needs a full section — some will appear as items in The Week. But none should be silently missing.
 
-### Voice
-- [ ] Opinions present throughout — not neutral press releases
-- [ ] Football reads as editorial, not match reports
-- [ ] No spoilers — ever
-- [ ] Writes like a magazine journalist, not a personal assistant
-- [ ] Each taste-based section (Shelf, Session, Screen & Sound) writes as a general reviewer — profile drives selection, not prose
+**Rotating sections:** Confirm that each selected rotating section was fully researched using its specific search groups from `sections.md`.
 
-### Visual Variety
-- [ ] 10+ different component types
-- [ ] No two consecutive sections use the same layout pattern
-- [ ] No 3+ screen-heights of unbroken prose
-- [ ] At least 3 pull quotes, 2 big-number callouts, 3-5 DYK boxes
-- [ ] Entry pattern rotation (`.entry-stat`, `.entry-quote`, `.entry-bullets`, `.entry-question`, prose)
-- [ ] 1-2 breather bands between dense sections
-- [ ] At least 1 compare panel or sidebar-float
-- [ ] Read-next connectors between at least 3 major sections
-- [ ] Maps included when relevant (history, world news, travel) — sourced from real sources, not AI-generated
+---
 
-### Visual Language (from `references/visual-language.md`)
-These are the self-check items from visual-language §10. Every “no” is a fix-before-ship.
-- [ ] **Two fonts only** — Fraunces (display/serif) and Geist (sans). Zero Cormorant, DM Sans, JetBrains Mono, Inter, Instrument Serif in the output. `grep -c -E "Cormorant|DM Sans|JetBrains|Instrument Serif" <file>` returns 0.
-- [ ] **Ember accent** (`#d2411e`) is the primary accent. No `--rose` leaks on a weekly. `grep -c "var(--rose)" <file>` ≤ 2 (allowed only as deliberate override, not default).
-- [ ] ≥ 4 distinct component treatments from visual-language §4 appear in the issue
-- [ ] No single component appears more than twice (guards against bridger-sameness)
-- [ ] Dark and paper grounds alternate across consecutive sections — never two consecutive on the same ground
-- [ ] Every section meets its minimum density from visual-language §6.1
-- [ ] Every list-item carries ≥ 1 sentence of editorial verdict
-- [ ] ≥ 2 continuous scroll-linked motion moves from visual-language §5.1 are present (parallax on hero, section colour flood, sticky image with scrolling captions, count-up numerals, colour-adaptive nav, footer-rising-card, image progressive reveal, cover photo scale-down)
-- [ ] Accent occupies ≤ ~8% of any on-screen position (no decorative accent borders on sidebars, rails, rules)
-- [ ] Inline italic accent via `<em>` in body — no `.hl` highlight bars. `grep -c "class=\"hl\"" <file>` returns 0.
-- [ ] Zero roman numerals as section markers. Zero “Dispatch” / “Chapter” vocabulary. Zero preloader pun text.
-- [ ] Dispatch seal appears only on cover + colophon (not every section)
-- [ ] Masthead has Sunday timestamp (`06:40`), issue number, date in MMXXVI form
-- [ ] Feels right at both 1194×834 (tablet landscape) and 834×1194 (tablet portrait)
+### 2B — Rotating Sections
 
-### Wildcards & Synthesis
-- [ ] 2-3 items the reader didn't ask for
-- [ ] 2 of 8 Long Shelf items are wildcards
-- [ ] Cross-cluster connections present where natural
+- Confirm 2–3 rotating sections were selected (not fewer, not more).
+- Confirm selection was by cadence priority (most overdue first).
+- Confirm Down the Rabbit Hole was evaluated against its cadence and included or excluded accordingly.
+- Confirm no two consecutive rotating sections share the same primary component without a ribbon or pull-break interlude between them.
 
-### Special Editions (when applicable)
-- [ ] "Meanwhile..." section present before Footer, 12-18 linked items
-- [ ] Guardrails respected: no 3+ consecutive specials, manual triggers override
-- [ ] Trip-aware rules: Rewinds deferred near trips, Field Guide before Countdown, Season Reviews patient
-- [ ] State file updated: `last_special_date`, `last_special_format`, `consecutive_specials_count`
+---
 
-### Field Guide (when applicable)
-- [ ] Reference-first, scannable on a phone
-- [ ] Every meal slot covered with 3-5+ options
-- [ ] Full spectrum: fine dining → comfort food fallbacks
-- [ ] Theming/experience noted, kid-friendly callouts, booking notes
-- [ ] Multi-venue: primary gets full treatment, secondary gets practical section
-- [ ] Research depth: official menus, TripAdvisor, blogs, Reddit, YouTube all consulted
+### 2C — Ongoing Stories
 
-### Technical
-- [ ] **CSS/JS injected:** verify the output contains `<style>` and `<script>` tags (not `<!-- INJECT:CSS -->` placeholders). If placeholders remain, run `scripts/inject-assets.sh` again.
-- [ ] **No `.reveal` on sections or containers.** Search for `<section.*reveal` and for `reveal` on `split-60-40`, `split-40-60`, `dual-col`, `also-cards`. `.reveal` may only appear on small leaf elements (individual images, angles, pull-quotes, cards). Sections and layout containers must always be visible — `reveal` with `opacity:0` on large elements causes blank pages on mobile.
-- [ ] Navigator cards anchor-link to sections with matching `id` attributes
-- [ ] Progress bar and back-to-top button functional
-- [ ] No rendering artefacts: no stray numbers, no garbled sections, no broken layouts
+Check the `ongoing_stories` array in the state file. For each active story:
+- Confirm the story is either updated as a lead item, a Week item, or carries a running counter ("Week N of the conflict").
+- If a story has been ongoing for ≥ 3 weeks, it should be mentioned somewhere even if not as the lead.
+- Fail if: an active ongoing story is not referenced anywhere in the issue.
+
+---
+
+### 2D — Structure
+
+- Confirm exactly 13 structural positions in the correct order (Cover → Contents → Lead → Lead Pull-Break → The Week → [rotating A] → [rotating B] → [rotating C if selected] → Rabbit Hole → Rabbit Hole Pull-Break → Editor's Note → Colophon).
+- Confirm grounds alternate (dark/paper) across consecutive sections. No two adjacent sections share the same ground.
+- Confirm Lead is paper by default (or dark with justification noted in a comment).
+- Confirm Rabbit Hole ground contrasts the section immediately preceding it.
+- Confirm Colophon is dark.
+- Confirm Cover is dark.
+
+---
+
+### 2E — Voice
+
+- Every list item (in `.index-strip`, `.colophon__list`, `.brief-card`, fan-spread card body, plate caption, timeline-row body) carries ≥ 1 opinion sentence — not just a factual description.
+- British English throughout: colour, favour, programme, defence, analyse, realise.
+- No spoilers for Malazan, Cosmere (any Sanderson), Star Wars (any era), or The Running Man.
+- No hedging filler ("quite possibly", "somewhat arguably").
+
+---
+
+### 2F — Visual Variety
+
+- ≥ 4 distinct component types used across the issue.
+- No single component used more than twice consecutively without a visual break.
+- ≥ 1 image per major section (Lead, each rotating section, Rabbit Hole). Images must have descriptive `alt` text — not empty, not "[ALT]".
+- ≥ 2 pull quotes total (one per pull-break, ≥ 1 more in marginalia or pull-quote-card).
+- ≥ 1 `.count-up` stat with a real `data-target` numeric value.
+- ≥ 1 `.fan-spread` or `.plate-strip` in the rotating sections.
+
+---
+
+### 2G — Motion
+
+- Cover hero image has `.parallax` class on the container div (required).
+- Feature-band hero images have `.parallax` (recommended — warn if absent).
+- All major content blocks have `.reveal` class.
+- All numeric stat displays (`.dash__num`, `.plate__stat-num`, `.datum-card__value`) contain a `.count-up` span with a real `data-target`.
+- At least one `.ribbon` is present (with `.ribbon__track` and ≥ 3 `.ribbon__item` elements).
+- No motion class is applied to an element that does not exist in the CSS (run Gate 1E first).
+
+---
+
+### 2H — Responsive Layouts
+
+- The issue should read cleanly at 1194×834 (landscape tablet) and 834×1194 (portrait tablet).
+- Fan-spread decks must not overflow their container on portrait.
+- Plate-strips use horizontal scroll-snap — confirm `overflow-x: auto` is not overridden.
+- No fixed-width values that would clip content below 768px wide.
+
+---
+
+### 2I — Technical
+
+- Valid HTML: every opened tag is closed; no unclosed `<section>`, `<div>`, `<article>`.
+- All `<img>` have `alt` text that is descriptive (not empty, not a placeholder).
+- All `href` values in the Colophon sources are real URLs beginning with `https://`.
+- Outbound links in the sources block have `target="_blank" rel="noopener"`.
+- The `.dispatch-seal` has `data-num`, `data-month`, and `data-year` attributes set with real values, not placeholders.
+- No inline `style="font-family: ..."` anywhere. CSS owns all fonts.
+- No inline `style="color: #..."` unless overriding `--accent` for a dossier scheme section (`style="--accent:#b8902a;"`).
+- The `<body>` has `data-scheme="ember"` and `data-ground="dark"` attributes.
+- `<html lang="en">` is present.
+- `<meta charset="UTF-8">` and `<meta name="viewport" ...>` are present.
+
+---
+
+## Quick Checklist Summary
+
+Copy-paste for fast pre-delivery review:
+
+**Gate 1 (zero-tolerance):**
+- [ ] 1A: No reader-profile leaks in prose
+- [ ] 1B: All stats sourced, all quotes attributable
+- [ ] 1C: Date correct in masthead, cover, and colophon; issue number consistent
+- [ ] 1D: All links `https://` or internal anchors; colophon has ≥ 6 real URLs
+- [ ] 1E: No forbidden fonts, hexes, or class names
+- [ ] 1F: INJECT markers present before injection; absent after injection
+
+**Gate 2 (editorial quality):**
+- [ ] 2A: All 8 core groups covered
+- [ ] 2B: 2–3 rotating sections selected by cadence priority; DtRH evaluated
+- [ ] 2C: Ongoing stories referenced and counters updated
+- [ ] 2D: 13 sections in order; grounds alternate; Lead=paper; Rabbit Hole contrasts preceding section
+- [ ] 2E: Opinion per list item; British English; no spoilers
+- [ ] 2F: ≥ 4 distinct components; ≥ 1 image per major section; ≥ 2 pull quotes; ≥ 1 count-up stat; ≥ 1 fan-spread or plate-strip
+- [ ] 2G: Parallax on cover hero; reveal on all blocks; count-up on stats; ≥ 1 ribbon
+- [ ] 2H: Readable at 1194×834 and 834×1194
+- [ ] 2I: Valid HTML; all img have alt; outbound links open new tab; dispatch-seal has real data attributes; no inline font-family

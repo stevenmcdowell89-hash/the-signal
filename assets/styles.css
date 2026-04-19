@@ -742,6 +742,38 @@ body[data-ground="dark"] .mast {
   pointer-events: none;
 }
 
+/* §5.1 Cover ambient colour drift — slow sunrise/horizon wash over the hero.
+   A second fixed layer above the scrim with radial accent glows, drifting
+   on a 22s cycle. Kept at very low opacity (accent-tinted) so it reads as
+   "the light is moving" rather than a UI effect. Disabled on reduced motion. */
+.cover__ambient {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse 60% 40% at 72% 18%,
+      color-mix(in srgb, var(--accent) 14%, transparent) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 45% 55% at 18% 82%,
+      color-mix(in srgb, var(--accent) 8%, transparent) 0%,
+      transparent 65%
+    );
+  mix-blend-mode: screen;
+  animation: cover-drift 22s ease-in-out infinite alternate;
+  will-change: transform, opacity;
+  opacity: 0.9;
+}
+
+@keyframes cover-drift {
+  0%   { transform: translate3d(0, 0, 0) scale(1);       opacity: 0.85; }
+  50%  { transform: translate3d(-18px, 10px, 0) scale(1.04); opacity: 1; }
+  100% { transform: translate3d(12px, -8px, 0) scale(1.02); opacity: 0.9; }
+}
+
 .cover__meta-top {
   position: relative;
   z-index: 5;
@@ -2369,6 +2401,7 @@ h3.ln > span {
   .dispatch-seal__ring,
   .ribbon__track,
   .cover__scroll-hint::after,
+  .cover__ambient,
   .mast__dot {
     animation: none !important;
   }

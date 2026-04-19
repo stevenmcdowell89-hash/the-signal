@@ -79,6 +79,9 @@
       <img src="[COVER_IMAGE_URL]" alt="[COVER_IMAGE_ALT]" />
     </div>
     <div class="cover__scrim" aria-hidden="true"></div>
+    <!-- §5.1 Cover ambient drift — slow sunrise-wash accent glow, 22s cycle.
+         Sits above scrim, below text. Respects prefers-reduced-motion. -->
+    <div class="cover__ambient" aria-hidden="true"></div>
 
     <!-- Dispatch seal: rotating SVG, 28s linear, cover-only -->
     <div class="dispatch-seal"
@@ -184,7 +187,12 @@
   <!-- ================== THE LEAD (world feature) ================== -->
   <!-- Dark ground. Feature band + pull break + marginalia.
        Density: 600 words body + ≥2 pull quotes + ≥1 stat + ≥1 image. -->
-  <section class="sec dark" data-section="lead" data-scheme="ember">
+  <!-- LEAD: paper ground by default. The lead is the longest read in the issue —
+       cream paper ground improves legibility over dark. Keep as `sec paper`
+       unless the week's lead story is a cinematic/visual piece (e.g. a death,
+       a disaster, a war milestone) where dark gravity is warranted. In that
+       case, change to `sec dark` and also reconsider the Lead pull-break below. -->
+  <section class="sec paper" data-section="lead" data-scheme="ember">
     <span class="spine-label">· 01 · THE LEAD · WORLD</span>
 
     <div class="section-eyebrow reveal">
@@ -233,6 +241,8 @@
   </section>
 
   <!-- PULL BREAK — full-bleed dark band, giant accent quotes peeking from corners -->
+  <!-- LEAD PULL-BREAK: dark by default for contrast after paper Lead.
+       If Lead was flipped to dark, consider flipping this to paper (sec paper pull-break reveal). -->
   <section class="sec dark pull-break reveal" data-section="lead-pull" data-scheme="ember">
     <span class="pull-break__q-open" aria-hidden="true">"</span>
     <span class="pull-break__q-close" aria-hidden="true">"</span>
@@ -902,6 +912,12 @@
 
   <!-- ================== DOWN THE RABBIT HOLE (long read) ================== -->
   <!-- Dark ground. Feature band + pull break + marginalia. Density: 600 words + 2 pulls + 1 stat + 1 image. -->
+  <!-- RABBIT HOLE: ground is DYNAMIC — choose whichever contrasts with the
+       preceding section for a clean flood transition. If the section directly
+       before this (The Ledger / Long Game / Toolkit — whichever appears in the
+       issue) is `dark`, set this to `sec paper`. If the preceding section is
+       `paper`, keep this as `sec dark`. Default here is `dark`; flip to `paper`
+       at generation time when needed. The pull-break below should flip with it. -->
   <section class="sec dark" data-section="rabbithole" data-scheme="ember">
     <span class="spine-label">· 11 · DOWN THE RABBIT HOLE</span>
 
@@ -951,6 +967,8 @@
   </section>
 
   <!-- Second pull-break for the rabbit-hole piece -->
+  <!-- RABBIT HOLE PULL-BREAK: match the Rabbit Hole ground above.
+       If you set rabbithole to `sec paper`, set this to `sec paper pull-break reveal`. -->
   <section class="sec dark pull-break reveal" data-section="rh-pull" data-scheme="ember">
     <span class="pull-break__q-open" aria-hidden="true">"</span>
     <span class="pull-break__q-close" aria-hidden="true">"</span>
