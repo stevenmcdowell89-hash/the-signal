@@ -3,7 +3,7 @@
   --paper: #FAFAF8;
   --warm: #F5F4F0;
   --rose: #E8384F;
-  --ember: #FF6D3A;
+  --ember: #d2411e;
   --deep: #1B1B2F;
   --slate: #64697B;
   --ghost: #A4A8B6;
@@ -41,7 +41,7 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Fraunces', Georgia, serif;
   color: var(--ink);
   background: #E8E6E1;
   font-size: 18px;
@@ -78,29 +78,29 @@ p:last-child { margin-bottom: 0; }
 .back-to-top:hover { background: var(--rose); }
 
 /* ═══════════ UTILITY CLASSES ═══════════ */
-.ui { font-family: 'DM Sans', sans-serif; }
-.mono { font-family: 'JetBrains Mono', monospace; }
+.ui { font-family: 'Geist', 'Inter', sans-serif; }
+.mono { font-family: 'Geist', 'Inter', sans-serif; }
 
 .section-label {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 11px; font-weight: 700;
   letter-spacing: 3px; text-transform: uppercase;
   margin-bottom: 12px; display: block;
 }
-/* Secondary labels use DM Sans — for sub-headers within sections */
+/* Secondary labels use Geist — for sub-headers within sections */
 .sub-label {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 11px; font-weight: 700;
   letter-spacing: 1.5px; text-transform: uppercase;
   color: var(--ghost); margin-bottom: 10px; display: block;
 }
 .caption {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 12px; color: var(--ghost);
   margin-top: 6px; line-height: 1.4;
 }
 .src {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 12px; color: var(--ghost); margin-top: 12px;
 }
 .src a { color: var(--rose); }
@@ -173,7 +173,7 @@ p:last-child { margin-bottom: 0; }
 }
 .cover-brand span { color: var(--rose); font-style: italic; }
 .cover-issue {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 11px; color: rgba(255,255,255,.4);
   letter-spacing: 3px; text-transform: uppercase; margin-bottom: 32px;
   position: relative; z-index: 2;
@@ -185,7 +185,7 @@ p:last-child { margin-bottom: 0; }
 }
 .cover-tags { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 8px; position: relative; z-index: 2; }
 .cover-tags .tag {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
   padding: 4px 10px; border-radius: 3px;
   background: rgba(255,255,255,.06); color: rgba(255,255,255,.5);
@@ -217,7 +217,7 @@ p:last-child { margin-bottom: 0; }
 /* ═══════════ NAVIGATOR ═══════════ */
 .nav-section { padding: 48px 60px; background: var(--paper); border-bottom: 1px solid var(--rule); }
 .nav-section h2 {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
   color: var(--rose); margin-bottom: 24px;
 }
@@ -271,7 +271,7 @@ p:last-child { margin-bottom: 0; }
 .nav-card.history:hover { box-shadow: 0 8px 24px rgba(139,105,20,.12); }
 
 .nav-card-tag {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
   margin-bottom: 6px;
   display: flex; align-items: center; gap: 6px;
@@ -295,11 +295,11 @@ p:last-child { margin-bottom: 0; }
   color: var(--ink); margin-bottom: 4px;
 }
 .nav-card p {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 13px; color: var(--slate); line-height: 1.4; margin: 0;
 }
 .nav-card .read-time {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 10px; color: var(--ghost); margin-top: 8px;
   letter-spacing: 0.5px; text-transform: uppercase;
 }
@@ -332,7 +332,7 @@ p:last-child { margin-bottom: 0; }
 .sec h3 { font-size: 22px; font-weight: 600; line-height: 1.2; margin: 28px 0 10px; }
 .sec h3.minor { font-weight: 400; font-style: italic; font-size: 20px; }
 .sec h4 {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
   color: var(--ghost); margin: 28px 0 10px;
 }
@@ -341,7 +341,7 @@ p:last-child { margin-bottom: 0; }
 .sec-watermark {
   position: absolute;
   top: 20px; left: -20px;
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 140px;
   font-weight: 700;
   line-height: 1;
@@ -392,7 +392,7 @@ p:last-child { margin-bottom: 0; }
 .stat-bar .stat:last-child { border-right: none; }
 .stat-bar .stat-num { font-size: 32px; font-weight: 700; line-height: 1; }
 .stat-bar .stat-label {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 10px; font-weight: 700; color: var(--ghost);
   text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;
 }
@@ -404,14 +404,14 @@ p:last-child { margin-bottom: 0; }
   margin: 24px 0;
 }
 .big-number .num {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 80px;
   font-weight: 700;
   line-height: 1;
   color: var(--rose);
 }
 .big-number .num-label {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 2px;
@@ -455,7 +455,7 @@ p:last-child { margin-bottom: 0; }
 
 /* Enhancement 10: Display stat — for inline dramatic numbers */
 .display-stat {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 72px;
   font-weight: 700;
   line-height: 1;
@@ -469,7 +469,7 @@ p:last-child { margin-bottom: 0; }
   padding: 24px 28px; margin: 28px 0; border-radius: 0 6px 6px 0;
 }
 .angle-label {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
   color: var(--rose); margin-bottom: 8px;
 }
@@ -484,7 +484,7 @@ p:last-child { margin-bottom: 0; }
   line-height: 1.5; color: var(--ink); margin: 0;
 }
 .pull-quote cite {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 12px; font-style: normal; color: var(--ghost);
   display: block; margin-top: 8px;
 }
@@ -498,7 +498,7 @@ p:last-child { margin-bottom: 0; }
 }
 .pull-quote.centered::before {
   content: '\201C';
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 80px;
   font-weight: 700;
   color: var(--rose);
@@ -532,7 +532,7 @@ p:last-child { margin-bottom: 0; }
   font-size: 18px; background: var(--paper); padding: 0 4px;
 }
 .dyk-title {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
   color: #B8860B; margin-bottom: 6px;
 }
@@ -544,13 +544,13 @@ p:last-child { margin-bottom: 0; }
   border: 1px solid var(--rule);
 }
 .sidebar-title {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
   color: var(--rose); margin-bottom: 10px;
 }
 .sidebar ul { list-style: none; }
 .sidebar li {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 14px; line-height: 1.5; padding: 5px 0;
   border-bottom: 1px solid rgba(0,0,0,.04); color: var(--ink);
 }
@@ -559,13 +559,13 @@ p:last-child { margin-bottom: 0; }
 /* ═══════════ ALSO THIS WEEK LIST ═══════════ */
 .also { margin-top: 32px; padding-top: 24px; border-top: 2px solid var(--rule); }
 .also-title {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
   color: var(--ghost); margin-bottom: 12px;
 }
 .also-list { list-style: none; }
 .also-list li {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 14.5px; line-height: 1.5; padding: 8px 0;
   border-bottom: 1px solid rgba(0,0,0,.04);
 }
@@ -585,19 +585,19 @@ p:last-child { margin-bottom: 0; }
   padding: 14px 16px;
 }
 .also-card h4 {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 14px; font-weight: 700;
   color: var(--ink);
   letter-spacing: 0; text-transform: none;
   margin: 0 0 4px;
 }
 .also-card p {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 12.5px; color: var(--slate);
   line-height: 1.4; margin: 0;
 }
 .also-card .badge {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 9px; font-weight: 700;
   letter-spacing: 1px; text-transform: uppercase;
   color: var(--ghost);
@@ -701,12 +701,12 @@ p:last-child { margin-bottom: 0; }
 .touchline-section .section-label { color: var(--turf-lt); }
 .touchline-section h2 { color: white; }
 .touchline-section h3 {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
   color: var(--turf-lt); margin: 28px 0 12px;
 }
 .touchline-section h3.narrative {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Fraunces', serif;
   font-size: 26px; text-transform: none; letter-spacing: 0; color: white;
 }
 .touchline-section p { color: rgba(255,255,255,.8); }
@@ -736,7 +736,7 @@ p:last-child { margin-bottom: 0; }
 /* League Table */
 .league-table {
   width: 100%; border-collapse: collapse; margin: 16px 0 24px;
-  font-family: 'DM Sans', sans-serif; font-size: 14px;
+  font-family: 'Geist', 'Inter', sans-serif; font-size: 14px;
 }
 .league-table th {
   text-align: left; padding: 10px 12px;
@@ -756,14 +756,14 @@ p:last-child { margin-bottom: 0; }
 .result-card {
   background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.06);
   border-radius: 6px; padding: 12px 16px;
-  font-family: 'DM Sans', sans-serif; font-size: 13px;
+  font-family: 'Geist', 'Inter', sans-serif; font-size: 13px;
   color: rgba(255,255,255,.65); line-height: 1.4; min-width: 190px;
   flex: 1 1 190px; max-width: 220px;
 }
 .result-card .teams { color: rgba(255,255,255,.6); }
 .result-card strong { color: rgba(255,255,255,.9); font-weight: 700; }
 .result-card .score {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 18px; font-weight: 700; color: var(--turf-lt);
   display: block; margin: 2px 0;
 }
@@ -796,7 +796,7 @@ p:last-child { margin-bottom: 0; }
 
 /* Enhancement 11: Position change indicators */
 .pos-change {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 11px;
   font-weight: 700;
   display: inline-flex;
@@ -838,12 +838,12 @@ p:last-child { margin-bottom: 0; }
 .screen-section .section-label { color: var(--neon); }
 .screen-section h2 { color: white; }
 .screen-section h3 {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
   color: var(--neon); margin: 28px 0 12px;
 }
 .screen-section h3.feature-title {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Fraunces', serif;
   font-size: 26px; text-transform: none; letter-spacing: 0; color: white; margin-bottom: 14px;
 }
 .screen-section p { color: rgba(255,255,255,.8); }
@@ -872,12 +872,12 @@ p:last-child { margin-bottom: 0; }
 .radar-row {
   display: grid; grid-template-columns: 80px 1fr; gap: 14px;
   padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,.06);
-  font-family: 'DM Sans', sans-serif; font-size: 14px;
+  font-family: 'Geist', 'Inter', sans-serif; font-size: 14px;
   color: rgba(255,255,255,.7); line-height: 1.4;
 }
 .radar-row:last-child { border-bottom: none; }
 .radar-date {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 11px; font-weight: 700; color: var(--neon); padding-top: 2px;
 }
 .radar-row strong { color: rgba(255,255,255,.95); }
@@ -929,18 +929,18 @@ p:last-child { margin-bottom: 0; }
   padding: 14px 16px;
 }
 .stack-card-title {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 17px; font-weight: 700;
   color: rgba(255,255,255,.95);
   margin-bottom: 4px;
 }
 .stack-card-verdict {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 12.5px; color: rgba(255,255,255,.6);
   line-height: 1.4; margin-bottom: 8px;
 }
 .stack-card .platform-badge {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 9px; font-weight: 700;
   letter-spacing: 1px; text-transform: uppercase;
   color: rgba(255,255,255,.35);
@@ -989,12 +989,12 @@ p:last-child { margin-bottom: 0; }
 .shelf-section .section-label { color: var(--shelf-accent); }
 .shelf-section h2 { color: white; }
 .shelf-section h3 {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
   color: var(--shelf-accent); margin: 28px 0 12px;
 }
 .shelf-section h3.feature-title {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Fraunces', serif;
   font-size: 26px; text-transform: none; letter-spacing: 0; color: white; margin-bottom: 14px;
 }
 .shelf-section p { color: rgba(255,255,255,.8); }
@@ -1025,12 +1025,12 @@ p:last-child { margin-bottom: 0; }
   overflow: hidden;
 }
 .book-card h4 {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Fraunces', serif;
   font-size: 19px; font-weight: 700; color: rgba(255,255,255,.95);
   text-transform: none; letter-spacing: 0; margin: 0 0 4px;
 }
 .book-card .author {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 12px; color: rgba(255,255,255,.4); margin-bottom: 6px;
 }
 .book-card p { font-size: 14px; color: rgba(255,255,255,.6); margin: 0; }
@@ -1052,12 +1052,12 @@ p:last-child { margin-bottom: 0; }
   border-left: 4px solid var(--session-accent);
 }
 .workout-card-title {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
   color: var(--session-accent); margin-bottom: 12px;
 }
 .workout-card table {
-  width: 100%; border-collapse: collapse; font-family: 'DM Sans', sans-serif; font-size: 14px;
+  width: 100%; border-collapse: collapse; font-family: 'Geist', 'Inter', sans-serif; font-size: 14px;
 }
 .workout-card th {
   text-align: left; padding: 6px 10px;
@@ -1070,7 +1070,7 @@ p:last-child { margin-bottom: 0; }
 /* Workout icon labels */
 .workout-type {
   display: inline-flex; align-items: center; gap: 6px;
-  font-family: 'DM Sans', sans-serif; font-size: 11px;
+  font-family: 'Geist', 'Inter', sans-serif; font-size: 11px;
   color: var(--session-accent); font-weight: 700; text-transform: uppercase;
   letter-spacing: 1px; margin-bottom: 8px;
 }
@@ -1082,7 +1082,7 @@ p:last-child { margin-bottom: 0; }
 .history-section .sec-watermark { color: var(--hist-accent); }
 /* Year badges for history items */
 .year-badge {
-  display: inline-block; font-family: 'JetBrains Mono', monospace;
+  display: inline-block; font-family: 'Geist', 'Inter', sans-serif;
   font-size: 11px; font-weight: 700; color: var(--hist-accent);
   background: rgba(139,105,20,.08); border-radius: 3px;
   padding: 2px 8px; margin-right: 8px; vertical-align: middle;
@@ -1260,14 +1260,14 @@ p:last-child { margin-bottom: 0; }
   border: 2px solid var(--paper);
 }
 .timeline-node .timeline-date {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 11px; font-weight: 700;
   letter-spacing: 1px; text-transform: uppercase;
   color: var(--ghost);
   margin-bottom: 4px;
 }
 .timeline-node .timeline-content {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 14.5px; line-height: 1.5;
 }
 .timeline-node .timeline-content strong { color: var(--ink); }
@@ -1306,13 +1306,13 @@ p:last-child { margin-bottom: 0; }
   margin: 12px 0;
 }
 .compact-take h4 {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 17px; font-weight: 700; color: var(--ink);
   text-transform: none; letter-spacing: 0;
   margin: 0 0 6px;
 }
 .compact-take p {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 13.5px; color: var(--slate);
   line-height: 1.5; margin: 0 0 6px;
 }
@@ -1337,7 +1337,7 @@ p:last-child { margin-bottom: 0; }
 
 /* ═══════════ Enhancement 14: MARGIN NOTES ═══════════ */
 .margin-note {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 13px;
   line-height: 1.5;
   color: var(--slate);
@@ -1388,7 +1388,7 @@ p:last-child { margin-bottom: 0; }
   overflow: hidden;
 }
 .collapsible summary {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 14px; font-weight: 700;
   padding: 14px 18px;
   cursor: pointer;
@@ -1417,7 +1417,7 @@ p:last-child { margin-bottom: 0; }
 .collapsible summary:hover { background: var(--rule); }
 .collapsible-content {
   padding: 16px 18px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 14px;
   line-height: 1.6;
   color: var(--slate);
@@ -1444,7 +1444,7 @@ p:last-child { margin-bottom: 0; }
 
 /* ═══════════ Enhancement 20: READ-NEXT CONNECTORS ═══════════ */
 .read-next {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 12px;
   text-align: right;
   margin-top: 28px;
@@ -1517,11 +1517,11 @@ p:last-child { margin-bottom: 0; }
 .shelf-item:last-child { border-bottom: none; }
 .shelf-item .title { font-size: 17px; font-weight: 700; color: var(--ink); line-height: 1.3; }
 .shelf-item .meta {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 11px; color: var(--ghost); margin-top: 2px;
 }
 .shelf-item .desc {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 13px; color: var(--slate); margin-top: 4px; line-height: 1.5;
 }
 
@@ -1544,7 +1544,7 @@ p:last-child { margin-bottom: 0; }
 .footer-brand { font-size: 28px; font-weight: 700; color: white; }
 .footer-brand span { color: var(--rose); font-style: italic; }
 .footer-sub {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 10px; color: rgba(255,255,255,.3);
   letter-spacing: 2px; text-transform: uppercase; margin-top: 6px;
 }
@@ -1552,19 +1552,19 @@ p:last-child { margin-bottom: 0; }
 /* ═══════════ ARTICLE ENTRY PATTERNS ═══════════ */
 /* Stat lead — bold number + context opens an article */
 .entry-stat {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 56px; font-weight: 700; line-height: 1.1;
   margin-bottom: 4px;
 }
 .entry-stat-context {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 13px; color: var(--slate);
   text-transform: uppercase; letter-spacing: 1px;
   margin-bottom: 20px;
 }
 /* Quote lead — pull quote as opener */
 .entry-quote {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 24px; font-style: italic; line-height: 1.4;
   border-left: 4px solid var(--rose);
   padding-left: 20px; margin-bottom: 20px;
@@ -1572,7 +1572,7 @@ p:last-child { margin-bottom: 0; }
 }
 .entry-quote cite {
   display: block; font-style: normal; font-size: 13px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   color: var(--ghost); margin-top: 8px;
 }
 /* Summary bullets lead — 3 key points upfront */
@@ -1582,14 +1582,14 @@ p:last-child { margin-bottom: 0; }
   padding-left: 16px;
 }
 .entry-bullets li {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 14px; font-weight: 500;
   line-height: 1.5; padding: 4px 0;
   color: var(--ink);
 }
 /* Question hook lead */
 .entry-question {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 28px; font-weight: 600; font-style: italic;
   line-height: 1.3; margin-bottom: 16px;
   color: var(--ink);
@@ -1626,17 +1626,17 @@ p:last-child { margin-bottom: 0; }
   margin: 0;
 }
 .breather-stat {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 42px; font-weight: 700;
   color: var(--rose); line-height: 1.1;
 }
 .breather-context {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 13px; color: var(--slate);
   margin-top: 4px;
 }
 .breather-teaser {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 18px; font-style: italic;
   color: var(--slate); line-height: 1.4;
 }
@@ -1697,7 +1697,7 @@ p:last-child { margin-bottom: 0; }
   background: rgba(26,122,76,.04);
 }
 .compare-side .compare-label {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 11px; font-weight: 700;
   letter-spacing: 1.5px; text-transform: uppercase;
   margin-bottom: 12px;
@@ -1705,7 +1705,7 @@ p:last-child { margin-bottom: 0; }
 .compare-side.left .compare-label { color: var(--rose); }
 .compare-side.right .compare-label { color: var(--turf); }
 .compare-side h4 {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 20px; font-weight: 700;
   margin-bottom: 8px;
 }
@@ -1714,7 +1714,7 @@ p:last-child { margin-bottom: 0; }
   margin-bottom: 8px;
 }
 .compare-side .compare-stat {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 36px; font-weight: 700;
   line-height: 1.1; margin-bottom: 4px;
 }
@@ -1747,7 +1747,7 @@ p:last-child { margin-bottom: 0; }
   background: var(--warm);
   border-left: 3px solid var(--rose);
   border-radius: 0 4px 4px 0;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Geist', 'Inter', sans-serif;
   font-size: 14px; line-height: 1.5;
 }
 .sidebar-float .sidebar-title {
