@@ -1,478 +1,1071 @@
 <!DOCTYPE html>
+<!--
+  THE SIGNAL — Weekly Template
+
+  Generator notes:
+  - Fill every [PLACEHOLDER] with real content. Use data from research pass.
+  - Alternate .dark / .paper grounds across consecutive sections (§2.2).
+  - Every major section must hit its minimum density (§6.1).
+  - Every list-item needs ≥1 opinion sentence.
+  - Accent word emphasis uses <em> inside prose only — no highlight bars.
+  - NO inline style="font-family" anywhere — CSS owns fonts.
+  - Asset placeholders live in head and before body close; inject CSS and JS there.
+  - Component mapping per §9:
+      Cover              → .cover
+      The Lead (world)   → .feature-band + .pull-break + .marginalia
+      The Week           → .timeline-rows.condensed
+      The Shelf          → .fan-spread + .brief-card grid
+      The Pantry         → .plate-strip + .brief-card
+      The Workshop       → .feature-band (dossier) + .chart-card
+      The Itinerary      → .plan-infographic + .timeline-rows
+      The Ledger         → .dash + .chart-card
+      The Wallet         → .dash + .feature-band
+      The Long Game      → .timeline-rows + .chart-card
+      The Toolkit        → .fan-spread + .brief-card
+      Week in History    → .timeline-rows (dossier)
+      Rabbit Hole        → .feature-band + .pull-break + .marginalia
+      Colophon           → .colophon
+-->
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Signal — [DATE RANGE]</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Geist:wght@300..700&display=swap" rel="stylesheet">
-<!--
-  AGENT INSTRUCTIONS:
-  Read assets/styles.css for the full CSS — paste it into a <style> tag when generating an issue.
-  Read assets/script.js for the JS — paste it into a <script> tag before </body>.
-  This skeleton shows the HTML structure and available components for each section.
-  Match class names exactly. Swap placeholder text [in brackets] with real content.
--->
-<style>/* PASTE contents of assets/styles.css here when generating an issue */</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>The Signal · No. [ISSUE_NUMBER] · [DATE]</title>
+  <meta name="description" content="[ISSUE_TAGLINE]">
+
+  <!-- Fonts: Fraunces (display + serif) + Geist (sans). Two families only. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400;1,9..144,500&family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- INJECT:CSS -->
 </head>
-<body>
-<div class="progress-bar" id="progressBar"></div>
-<div class="mag">
+<body data-scheme="ember" data-ground="dark">
 
-<!-- ══════ COVER ══════ -->
-<header class="cover" id="top">
-  <div class="cover-noise"></div>
-  <div class="cover-grain"></div>
-  <div class="cover-issue" style="position:relative;z-index:2">[DATE RANGE] · Issue #[N] · Sunday Edition</div>
-  <div class="cover-brand">The Signal<span>.</span></div>
-  <div class="cover-headline">[One-sentence editorial hook]</div>
-  <div class="cover-tags">
-    <span class="tag">[Topic 1]</span><span class="tag">[Topic 2]</span><span class="tag">[Topic 3]</span>
-    <span class="tag">[Topic 4]</span><span class="tag">[Topic 5]</span><span class="tag">[Topic 6]</span>
-    <!-- 6-10 tags -->
-  </div>
-</header>
+  <!-- ================== FIXED CHROME ================== -->
 
-<!-- ══════ NAVIGATOR ══════ -->
-<section class="nav-section" id="nav">
-  <h2>What's Inside</h2>
-  <div class="nav-grid">
-    <!-- Lead card: spans 2 columns, has thumbnail -->
-    <a href="#world" class="nav-card lead world" style="text-decoration:none">
-      <div class="nav-card-content">
-        <div class="nav-card-tag">
-          <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10 15 15 0 0 1-4-10A15 15 0 0 1 12 2z"/></svg></span>
-          World</div>
-        <h3>[Lead headline]</h3><p>[Hook]</p>
-        <div class="read-time">8 min read</div>
+  <!-- Film grain: always on, fixed full-viewport -->
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- Colour flood layer: JS drives clip-path per section boundary -->
+  <div class="colour-flood" aria-hidden="true"></div>
+
+  <!-- Progress bar: thin accent line top, follows scroll -->
+  <div class="progress-bar" aria-hidden="true"></div>
+
+  <!-- Masthead: fixed, 3-col grid, mix-blend-mode: difference.
+       §3.1 Time "06:40" is LITERAL and never changes.
+       Issue number + date update per issue. -->
+  <header class="mast" role="banner">
+    <div class="mast__left">
+      <span class="mast__dot" aria-hidden="true"></span>
+      <span class="mast__left-text">
+        <span>· THE SIGNAL</span>
+        <span class="sub">A Sunday magazine</span>
+      </span>
+    </div>
+    <div class="mast__centre">The Signal · Sunday</div>
+    <div class="mast__right">
+      <div class="line1">SUNDAY 06:40 · NO. [ISSUE_NUMBER] · [DD MONTH]</div>
+      <div class="line2">MMXXVI</div>
+    </div>
+  </header>
+
+  <!-- ================== COVER ================== -->
+  <!-- Density: headline (2-5 words, italic accent) + ≥3 meta lines + image.
+       §3.2 Dispatch seal appears ONLY on cover + colophon. -->
+  <section class="cover" data-section="cover">
+    <div class="cover__hero parallax">
+      <img src="[COVER_IMAGE_URL]" alt="[COVER_IMAGE_ALT]" />
+    </div>
+    <div class="cover__scrim" aria-hidden="true"></div>
+
+    <!-- Dispatch seal: rotating SVG, 28s linear, cover-only -->
+    <div class="dispatch-seal"
+         data-num="[ISSUE_NUMBER]"
+         data-month="[MONTH]"
+         data-year="MMXXVI"
+         aria-hidden="true"></div>
+
+    <div class="cover__meta-top">
+      <span>SUNDAY MAGAZINE · NO. [ISSUE_NUMBER]</span>
+      <span>[DD MONTH] MMXXVI</span>
+    </div>
+
+    <div class="cover__body">
+      <div class="cover__eyebrow eyebrow--wide">THIS WEEK'S LEAD</div>
+      <!-- Cover headline. Use <br> to split across lines — JS wraps each in span for stagger entry.
+           Keep italic accent on one key word via <em>. -->
+      <h1 class="cover__headline ln">
+        [COVER_HEADLINE_LINE_1]<br>
+        [COVER_HEADLINE_<em>LINE_2</em>]<br>
+        [COVER_HEADLINE_LINE_3]
+      </h1>
+      <p class="cover__dek">[COVER_DEK — 1–2 sentences in italic display, setting up the issue's tone.]</p>
+    </div>
+
+    <div class="cover__meta-bottom">
+      <div class="cover__tags">
+        <span class="cover__tag cover__tag--accent">[TAG_PRIMARY]</span>
+        <span class="cover__tag">[TAG_2]</span>
+        <span class="cover__tag">[TAG_3]</span>
+        <span class="cover__tag">[TAG_4]</span>
       </div>
-      <div class="nav-card-thumb" style="background-image:url('[IMAGE_URL]')"></div>
-    </a>
-    <!-- Standard nav cards (repeat pattern for each section) -->
-    <a href="#tech" class="nav-card tech" style="text-decoration:none">
-      <div class="nav-card-tag">
-        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="4"/><line x1="6" y1="10" x2="6" y2="14"/><line x1="4" y1="12" x2="8" y2="12"/><circle cx="16" cy="10" r="0.8" fill="currentColor"/><circle cx="18" cy="12" r="0.8" fill="currentColor"/></svg></span>
-        Gaming</div>
-      <h3>[Headline]</h3><p>[Hook]</p><div class="read-time">5 min</div>
-    </a>
-    <a href="#football" class="nav-card football" style="text-decoration:none">
-      <div class="nav-card-tag">
-        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2l3 7h-6l3-7zM22 12l-7 3v-6l7 3zM12 22l-3-7h6l-3 7zM2 12l7-3v6l-7-3z"/></svg></span>
-        Football</div>
-      <h3>[Headline]</h3><p>[Hook]</p><div class="read-time">6 min</div>
-    </a>
-    <a href="#screen" class="nav-card screen" style="text-decoration:none">
-      <div class="nav-card-tag">
-        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 8h20M2 16h20M8 4v16M16 4v16"/></svg></span>
-        Film/TV</div>
-      <h3>[Headline]</h3><p>[Hook]</p><div class="read-time">4 min</div>
-    </a>
-    <a href="#shelf" class="nav-card shelf" style="text-decoration:none">
-      <div class="nav-card-tag">
-        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>
-        Books</div>
-      <h3>[Headline]</h3><p>[Hook]</p><div class="read-time">3 min</div>
-    </a>
-    <a href="#session" class="nav-card session" style="text-decoration:none">
-      <div class="nav-card-tag">
-        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6h-2v12h2M18 6h2v12h-2M6 12h12"/><rect x="3" y="8" width="3" height="8" rx="1"/><rect x="18" y="8" width="3" height="8" rx="1"/></svg></span>
-        Fitness</div>
-      <h3>[Headline]</h3><p>[Hook]</p><div class="read-time">4 min</div>
-    </a>
-    <a href="#history" class="nav-card history" style="text-decoration:none">
-      <div class="nav-card-tag">
-        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12M6 22h12M7 2v4a5 5 0 0 0 5 5 5 5 0 0 0 5-5V2M7 22v-4a5 5 0 0 1 5-5 5 5 0 0 1 5 5v4"/></svg></span>
-        History</div>
-      <h3>[Headline]</h3><p>[Hook]</p><div class="read-time">3 min</div>
-    </a>
-    <!-- 8-14 cards total -->
-  </div>
-</section>
-
-<!-- ══════ FOREWORD ══════ -->
-<section class="foreword">
-  <p>[50-80 words. One thread, one hook. Drop-cap renders automatically.]</p>
-</section>
-
-<!-- ══════ THE LONG SHELF ══════ -->
-<section class="sec longshelf-section">
-  <span class="section-label" style="color:var(--rose)">The Long Shelf — Worth Your Time</span>
-  <div class="longshelf-grid">
-    <div class="shelf-item">
-      <div class="title"><a href="[URL]">[Title]</a></div>
-      <div class="meta">[Source] · [Author]</div>
-      <div class="desc">[Why it's worth the reader's time]</div>
+      <div class="cover__scroll-hint" aria-hidden="true">SCROLL</div>
     </div>
-    <!-- 6-8 items -->
-  </div>
-</section>
+  </section>
 
-<!-- ══════ THE WORLD THIS WEEK ══════ -->
-<hr class="divider dv-world">
-<section class="sec world-section sec-opener" id="world">
-  <div class="sec-watermark">World</div>
-  <div class="opener-band"></div>
-  <div class="sec-gradient-overlay"></div>
-  <span class="section-label" style="color:var(--rose)">The World This Week</span>
-  <h2>[Lead headline]</h2>
-  <img class="hero-img reveal" src="[URL]" alt="[description]">
-  <div class="caption">[Credit]</div>
+  <!-- ================== CONTENTS LEDGER ================== -->
+  <!-- Paper ground. 01 · 02 · 03 arabic numbering (never roman). -->
+  <section class="sec paper" data-section="contents">
+    <span class="gutter-mark gutter-mark--tl"></span>
+    <span class="gutter-mark gutter-mark--tr"></span>
+    <span class="gutter-mark gutter-mark--bl"></span>
+    <span class="spine-label">· CONTENTS · INSIDE THIS ISSUE</span>
 
-  <!-- AVAILABLE COMPONENTS (use as needed, rotate per issue):
-    .margin-note         — Tufte-style side annotation
-    .stat-bar > .stat    — Row of stats with .count-up on .stat-num
-    .big-number          — Single dramatic stat (.num.count-up + .num-label)
-    .big-number-row      — 2-3 big numbers in a row
-    .split-60-40         — Asymmetric 2-col (text + image/sidebar)
-    .split-40-60         — Reverse direction
-    .angle               — "The Angle" callout box
-    .pull-quote          — Left-bordered quote (+.centered, +.wide variants)
-    .timeline            — Vertical timeline (.timeline-node > .timeline-date + .timeline-content)
-    .dyk                 — Did You Know box (section-aware colours)
-    .compact-take        — Card-format short news item
-    .compact-grid        — Two compact-takes side by side
-    .collapsible         — <details>/<summary> accordion
-    .img-montage         — Grid of 2-4 images (.layout-1-2)
-    .img-offset          — 60% width image pushed to side, text wraps
-    .also-list           — Simple bold+description list
-    .also-cards          — 2-col card grid for 4+ items
-    .read-next           — "Up next: [Section] →" connector
-    .sidebar-float       — Floated inset sidebar, text wraps around it
-    .compare-panel       — Side-by-side comparison (specs, stats, recs)
-    ENTRY PATTERNS       — .entry-stat, .entry-quote, .entry-bullets, .entry-question
-    BREATHER BANDS       — .breather (.breather-stat, .breather-context, .breather-teaser)
-    ALSO-LIST TIERS      — .tier-hot, .tier-warm, .tier-note on <li>
-  -->
-
-  <!-- ── ENTRY PATTERN EXAMPLES (rotate — no two adjacent articles open the same way) ── -->
-  <!--
-    Stat-first entry:
-    <div class="entry-stat">74%</div>
-    <div class="entry-stat-context">of global trade routes now pass through contested waters</div>
-    <p>[Article body continues here...]</p>
-
-    Quote-first entry:
-    <div class="entry-quote">
-      <p>"We are not prepared for what comes next."</p>
-      <cite>— [Attribution]</cite>
+    <div class="section-eyebrow">
+      <span>In this issue</span>
+      <span class="section-eyebrow__num">№ [ISSUE_NUMBER]</span>
     </div>
-    <p>[Article body continues here...]</p>
+    <h2 class="section-head ln">The <em>ledger</em><br>of the week.</h2>
 
-    Bullets-first entry:
-    <ul class="entry-bullets">
-      <li>[Key fact one]</li>
-      <li>[Key fact two]</li>
-      <li>[Key fact three]</li>
-    </ul>
-    <p>[Article body continues here...]</p>
-
-    Question-first entry:
-    <div class="entry-question">What happens when a ceasefire holds for exactly one week?</div>
-    <p>[Article body continues here...]</p>
-  -->
-
-  <!-- ── SIDEBAR-FLOAT EXAMPLE (text wraps around naturally) ── -->
-  <!--
-    <div class="sidebar-float">
-      <div class="sidebar-title">[e.g. "Key Players"]</div>
-      <ul>
-        <li><strong>[Name]</strong> — [Detail]</li>
-        <li><strong>[Name]</strong> — [Detail]</li>
-      </ul>
-    </div>
-    <p>[Prose that wraps around the floated sidebar...]</p>
-  -->
-
-  <!-- ── COMPARE-PANEL EXAMPLE (side-by-side) ── -->
-  <!--
-    <div class="compare-panel">
-      <div class="compare-side left">
-        <h4>[Option A]</h4>
-        <ul><li>[Detail]</li><li>[Detail]</li></ul>
+    <div class="contents-ledger">
+      <!-- Generator: one row per section in the issue. -->
+      <div class="contents-ledger__row">
+        <span class="contents-ledger__num">01</span>
+        <span class="contents-ledger__title">The <em>Lead</em></span>
+        <span class="contents-ledger__meta">World · [N] min read · P. 02</span>
       </div>
-      <div class="compare-side right">
-        <h4>[Option B]</h4>
-        <ul><li>[Detail]</li><li>[Detail]</li></ul>
+      <div class="contents-ledger__row">
+        <span class="contents-ledger__num">02</span>
+        <span class="contents-ledger__title">The <em>Week</em></span>
+        <span class="contents-ledger__meta">Brief · 2 min · P. 03</span>
+      </div>
+      <div class="contents-ledger__row">
+        <span class="contents-ledger__num">03</span>
+        <span class="contents-ledger__title">The <em>Shelf</em></span>
+        <span class="contents-ledger__meta">Books · 4 items · P. 04</span>
+      </div>
+      <div class="contents-ledger__row">
+        <span class="contents-ledger__num">04</span>
+        <span class="contents-ledger__title">The <em>Pantry</em></span>
+        <span class="contents-ledger__meta">Food · 5 plates · P. 05</span>
+      </div>
+      <div class="contents-ledger__row">
+        <span class="contents-ledger__num">05</span>
+        <span class="contents-ledger__title">The <em>Workshop</em></span>
+        <span class="contents-ledger__meta">Training · [N] min · P. 06</span>
+      </div>
+      <div class="contents-ledger__row">
+        <span class="contents-ledger__num">06</span>
+        <span class="contents-ledger__title">The <em>Itinerary</em></span>
+        <span class="contents-ledger__meta">Travel · P. 07</span>
+      </div>
+      <div class="contents-ledger__row">
+        <span class="contents-ledger__num">07</span>
+        <span class="contents-ledger__title">Down the <em>Rabbit Hole</em></span>
+        <span class="contents-ledger__meta">Long read · [N] min · P. 08</span>
       </div>
     </div>
-  -->
 
-  <p>[Article body]</p>
-  <div class="angle reveal"><div class="angle-label">The Angle</div><p>[Deeper point]</p></div>
-  <div class="src"><a href="[URL]">[Source]</a></div>
-  <div class="also"><div class="also-title">Also This Week</div>
-    <!-- TIERED ALSO-LIST: add .tier-hot / .tier-warm / .tier-note to <li> for visual weight -->
-    <ul class="also-list">
-      <li class="tier-hot"><strong>[Major headline]</strong> — [One sentence]</li>
-      <li class="tier-warm"><strong>[Notable headline]</strong> — [One sentence]</li>
-      <li class="tier-note"><strong>[Brief note]</strong> — [One sentence]</li>
-      <li><strong>[Standard item]</strong> — [One sentence — no tier class = default]</li>
-    </ul>
-  </div>
-  <div class="read-next">Up next: <a href="#tech">Pixel &amp; Byte <span class="arrow">→</span></a> — [teaser]</div>
-</section>
-
-<!-- ── BREATHER BAND (place between dense sections for breathing room) ── -->
-<!--
-  Light breather (between light/warm sections):
-  <div class="breather">
-    <div class="breather-stat">[Stat or number]</div>
-    <div class="breather-context">[One-line context]</div>
-    <div class="breather-teaser">[Teaser for next section]</div>
-  </div>
-
-  Dark breather (between dark sections):
-  <div class="breather dark">
-    <div class="breather-stat">[Stat or number]</div>
-    <div class="breather-context">[One-line context]</div>
-    <div class="breather-teaser">[Teaser for next section]</div>
-  </div>
--->
-
-<!-- ══════ PIXEL & BYTE ══════ -->
-<hr class="divider dv-tech">
-<section class="sec tech-section" id="tech">
-  <div class="sec-watermark">Pixel</div>
-  <div class="sec-gradient-overlay"></div>
-  <span class="section-label" style="color:var(--ember)">Pixel &amp; Byte</span>
-
-  <!-- Use compact-grid, dual-col, compact-take, sidebar, sidebar-float, compare-panel, also-cards etc. -->
-  <!-- Use entry patterns (.entry-stat, .entry-quote, .entry-bullets, .entry-question) to vary article openings -->
-  <h3>[Feature headline]</h3>
-  <p>[Article body]</p>
-
-  <!-- COMPARE PANEL: natural for tech specs, console comparisons, etc. -->
-  <div class="compare-panel">
-    <div class="compare-side left">
-      <h4>[Device/Option A]</h4>
-      <ul><li>[Spec]</li><li>[Spec]</li><li>[Price]</li></ul>
+    <div class="index-strip" aria-hidden="true">
+      <span class="index-strip__item">Lead</span>
+      <span class="index-strip__item is-current">Contents</span>
+      <span class="index-strip__item">Week</span>
+      <span class="index-strip__item">Shelf</span>
+      <span class="index-strip__item">Pantry</span>
+      <span class="index-strip__item">Workshop</span>
+      <span class="index-strip__item">Itinerary</span>
+      <span class="index-strip__item">Ledger</span>
+      <span class="index-strip__item">Rabbit Hole</span>
     </div>
-    <div class="compare-side right">
-      <h4>[Device/Option B]</h4>
-      <ul><li>[Spec]</li><li>[Spec]</li><li>[Price]</li></ul>
+  </section>
+
+  <!-- ================== THE LEAD (world feature) ================== -->
+  <!-- Dark ground. Feature band + pull break + marginalia.
+       Density: 600 words body + ≥2 pull quotes + ≥1 stat + ≥1 image. -->
+  <section class="sec dark" data-section="lead">
+    <span class="spine-label">· 01 · THE LEAD · WORLD</span>
+
+    <div class="section-eyebrow">
+      <span>01 — The Lead</span>
+      <span class="section-eyebrow__num">World</span>
     </div>
-  </div>
+    <h2 class="section-head ln">[LEAD_HEADLINE_LINE_1]<br>[LEAD_HEADLINE_<em>KEY_WORD</em>]<br>[LEAD_HEADLINE_LINE_3]</h2>
 
-  <div class="sidebar"><div class="sidebar-title">[e.g. "Family Picks"]</div>
-    <ul><li><strong>[Item]</strong> — [Detail]</li></ul>
-  </div>
-  <div class="also"><div class="also-title">Also in Tech &amp; Gaming</div>
-    <div class="also-cards">
-      <div class="also-card"><h4>[Headline]</h4><p>[One line]</p><span class="badge">[Source]</span></div>
+    <!-- Feature band with marginalia -->
+    <div class="feature-band feature-band--with-marginalia">
+      <div class="feature-band__rail">
+        <span class="feature-band__rail-num">01</span>
+        <span class="feature-band__rail-label">THE LEAD · WORLD</span>
+      </div>
+
+      <div class="feature-band__body lead">
+        <p class="body-lead"><span class="dropcap">[L]</span>[LEAD_BODY_OPENING — 2-3 sentences. Use <em>one or two accent italic phrases</em> inside prose. Set up the stakes.]</p>
+
+        <p>[LEAD_BODY_PARA_2 — 3-4 sentences building context. <em>Italic emphasis</em> sparingly.]</p>
+
+        <h3>[LEAD_SUBHED_1]</h3>
+        <p>[LEAD_BODY_PARA_3 — 3-5 sentences of analysis.]</p>
+        <p>[LEAD_BODY_PARA_4 — 3-5 sentences. What's <em>actually</em> changing.]</p>
+
+        <h3>[LEAD_SUBHED_2]</h3>
+        <p>[LEAD_BODY_PARA_5 — 4-6 sentences.]</p>
+        <p>[LEAD_BODY_PARA_6 — close with a verdict. Signal's opinion goes here.]</p>
+      </div>
+
+      <aside class="marginalia" aria-label="Margin notes">
+        <div class="marginalia__note">
+          <div class="marginalia__note-label">Context</div>
+          <p class="marginalia__note-body">[CONTEXT_NOTE — 2-3 sentences of supporting background.]</p>
+        </div>
+        <blockquote class="marginalia__pull">[MARGIN_PULL_QUOTE — 1 short sentence, maybe with <em>italic</em>.]</blockquote>
+        <div class="marginalia__note">
+          <div class="marginalia__note-label">See also</div>
+          <p class="marginalia__note-body">[CROSS_REFERENCE — related piece from a prior issue.]</p>
+        </div>
+        <p class="marginalia__footnote"><sup>1</sup>[FOOTNOTE — source caveat or aside.]</p>
+      </aside>
     </div>
-  </div>
-  <div class="read-next">Up next: <a href="#football">The Touchline <span class="arrow">→</span></a> — [teaser]</div>
-</section>
 
-<!-- ══════ THE TOUCHLINE ══════ -->
-<hr class="divider dv-football">
-<section class="sec touchline-section" id="football">
-  <div class="sec-watermark">Touchline</div>
-  <span class="section-label">The Touchline</span>
+    <!-- Decorative folio watermark -->
+    <span class="folio-watermark" aria-hidden="true">1</span>
+  </section>
 
-  <!-- DATA FIRST: CL results, Serie A top 6, PL top 6, then narrative -->
-  <h3>Champions League — [Round] Results</h3>
-  <div class="results-strip">
-    <div class="result-card reveal"><span class="teams"><strong>[Team]</strong> vs [Team]</span><span class="score">[X]–[X]</span></div>
-  </div>
+  <!-- PULL BREAK — full-bleed dark band, giant accent quotes peeking from corners -->
+  <section class="sec dark pull-break" data-section="lead-pull">
+    <span class="pull-break__q-open" aria-hidden="true">"</span>
+    <span class="pull-break__q-close" aria-hidden="true">"</span>
+    <blockquote class="pull-break__quote ln">[PULL_BREAK_QUOTE — a single sentence, probably with <em>one italic phrase</em>.]</blockquote>
+    <div class="pull-break__attribution">[ATTRIBUTION] · [SOURCE]</div>
+  </section>
 
-  <h3>Serie A — Top 6</h3>
-  <div class="table-wrap"><table class="league-table">
-    <tr><th class="pos">#</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>Pts</th><th></th></tr>
-    <tr class="highlight"><td class="pos">5</td><td>Juventus</td><td></td><td></td><td></td><td></td><td></td><td><span class="pos-change up">▲ 2</span></td></tr>
-    <tr><td class="pos">1</td><td>[Team]</td><td></td><td></td><td></td><td></td><td></td><td><span class="pos-change same">•</span></td></tr>
-  </table></div>
+  <!-- ================== THE WEEK (news brief timeline) ================== -->
+  <!-- Paper ground. Timeline rows condensed. Density: ≥5 items, 1 sentence each. -->
+  <section class="sec paper" data-section="week">
+    <span class="gutter-mark gutter-mark--tl"></span>
+    <span class="gutter-mark gutter-mark--tr"></span>
+    <span class="gutter-mark gutter-mark--bl"></span>
+    <span class="spine-label">· 02 · THE WEEK</span>
 
-  <!-- Sparkline + mini-bar for form -->
-  <h3>Form — Points Per Match (Last 6)</h3>
-  <div style="margin:12px 0">
-    <span style="font-family:'Geist',sans-serif;font-size:13px;color:rgba(255,255,255,.5)">Juventus</span>
-    <span class="sparkline"><svg viewBox="0 0 200 40" preserveAspectRatio="none">
-      <path class="spark-area" d="M0,35 L33,28 L66,15 L100,20 L133,10 L166,5 L200,12 L200,40 L0,40 Z"/>
-      <path class="spark-line" d="M0,35 L33,28 L66,15 L100,20 L133,10 L166,5 L200,12"/>
-      <circle class="spark-dot" cx="200" cy="12" r="3"/>
-    </svg></span>
-    <span class="mini-bar-track"><span class="mini-bar-fill" style="width:72%"></span></span>
-    <span style="font-family:'Geist',sans-serif;font-size:11px;color:rgba(255,255,255,.4);margin-left:6px">72%</span>
-  </div>
+    <div class="section-eyebrow">
+      <span>02 — The Week</span>
+      <span class="section-eyebrow__num">Brief</span>
+    </div>
+    <h2 class="section-head ln">What <em>moved</em>.</h2>
 
-  <h3>Premier League — Top 6</h3>
-  <div class="table-wrap"><table class="league-table">
-    <tr><th class="pos">#</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>Pts</th><th></th></tr>
-    <tr><td class="pos">1</td><td>[Team]</td><td></td><td></td><td></td><td></td><td></td><td><span class="pos-change same">•</span></td></tr>
-  </table></div>
-
-  <!-- Image montage for match photos -->
-  <div class="img-montage layout-1-2 reveal">
-    <img class="montage-hero" src="[URL]" alt="[desc]">
-    <img src="[URL]" alt="[desc]"><img src="[URL]" alt="[desc]">
-    <div class="caption">[Credits]</div>
-  </div>
-
-  <!-- THEN NARRATIVE -->
-  <h3 class="narrative">[Headline]</h3>
-  <p>[Article body]</p>
-  <div class="pull-quote wide reveal"><p>[Quote]</p><cite>— [Attribution]</cite></div>
-  <div class="sidebar"><div class="sidebar-title">[e.g. "Juve Players Involved"]</div>
-    <ul><li><strong>[Player]</strong> — [Context]</li></ul>
-  </div>
-  <div class="angle reveal"><div class="angle-label">The Take</div><p>[Opinion]</p></div>
-  <div class="also"><div class="also-title">Also on the Pitch</div>
-    <ul class="also-list"><li><strong>[Item]</strong> — [Detail]</li></ul>
-  </div>
-  <div class="read-next">Up next: <a href="#screen">Screen &amp; Sound <span class="arrow">→</span></a> — [teaser]</div>
-</section>
-
-<!-- ══════ SCREEN & SOUND ══════ -->
-<hr class="divider dv-screen">
-<section class="sec screen-section" id="screen">
-  <div class="sec-watermark">Screen</div>
-  <span class="section-label">Screen &amp; Sound</span>
-  <h2>[Lead feature headline]</h2>
-
-  <!-- SIDEBAR-FLOAT: text wraps around naturally, more editorial than .split-60-40 -->
-  <div class="sidebar-float">
-    <div class="sidebar-title">[e.g. "Quick Take"]</div>
-    <ul>
-      <li><strong>[Item]</strong> — [Detail]</li>
-      <li><strong>[Item]</strong> — [Detail]</li>
-    </ul>
-  </div>
-  <p>[Feature article with opinion — prose wraps around the floated sidebar...]</p>
-
-  <!-- Rating dots: .dot.filled for filled, .dot for empty -->
-  <div style="margin:12px 0">
-    <span style="font-family:'Geist',sans-serif;font-size:12px;color:rgba(255,255,255,.5);margin-right:8px">[Title]</span>
-    <span class="rating"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span></span>
-  </div>
-
-  <!-- Card stack for quick reviews -->
-  <h3>Quick Reviews</h3>
-  <div class="card-stack">
-    <div class="stack-card">
-      <img class="stack-card-img" src="[URL]" alt="[title]">
-      <div class="stack-card-body">
-        <div class="stack-card-title">[Title]</div>
-        <div class="stack-card-verdict">[One-line verdict]</div>
-        <span class="rating"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span></span>
-        <span class="platform-badge">[Platform]</span>
+    <div class="timeline-rows timeline-rows--condensed">
+      <div class="timeline-row">
+        <div class="timeline-row__date">[MON DD]</div>
+        <div class="timeline-row__body">
+          <h5>[WEEK_ITEM_1_TITLE]</h5>
+          <p>[WEEK_ITEM_1_BODY — 1-2 sentences with editorial verdict, <em>italic accent</em> optional.]</p>
+        </div>
+      </div>
+      <div class="timeline-row">
+        <div class="timeline-row__date">[MON DD]</div>
+        <div class="timeline-row__body">
+          <h5>[WEEK_ITEM_2_TITLE]</h5>
+          <p>[WEEK_ITEM_2_BODY]</p>
+        </div>
+      </div>
+      <div class="timeline-row">
+        <div class="timeline-row__date">[MON DD]</div>
+        <div class="timeline-row__body">
+          <h5>[WEEK_ITEM_3_TITLE]</h5>
+          <p>[WEEK_ITEM_3_BODY]</p>
+        </div>
+      </div>
+      <div class="timeline-row">
+        <div class="timeline-row__date">[MON DD]</div>
+        <div class="timeline-row__body">
+          <h5>[WEEK_ITEM_4_TITLE]</h5>
+          <p>[WEEK_ITEM_4_BODY]</p>
+        </div>
+      </div>
+      <div class="timeline-row">
+        <div class="timeline-row__date">[MON DD]</div>
+        <div class="timeline-row__body">
+          <h5>[WEEK_ITEM_5_TITLE]</h5>
+          <p>[WEEK_ITEM_5_BODY]</p>
+        </div>
+      </div>
+      <div class="timeline-row">
+        <div class="timeline-row__date">[MON DD]</div>
+        <div class="timeline-row__body">
+          <h5>[WEEK_ITEM_6_TITLE]</h5>
+          <p>[WEEK_ITEM_6_BODY]</p>
+        </div>
       </div>
     </div>
-    <!-- More stack-cards -->
-  </div>
+  </section>
 
-  <!-- Collapsible: <details class="collapsible"><summary>[Title]</summary><div class="collapsible-content">...</div></details> -->
-
-  <h3>Star Wars</h3>
-  <p>[Star Wars news/feature]</p>
-
-  <!-- THE RELEASE RADAR — 15-20+ items across ALL categories -->
-  <h3>The Release Radar</h3>
-  <div class="radar-grid">
-    <h3 style="margin-top:8px">Now Showing / Just Dropped</h3>
-    <div class="radar-row"><span class="radar-date">[Date]</span><div><span class="radar-cat film"></span><strong>[Title]</strong> — [Hook] <span class="radar-platform">[Platform]</span></div></div>
-    <!-- Category dots: .radar-cat.film .game .tv .lego .tech .book .music -->
-    <h3>Coming Soon</h3>
-    <div class="radar-row"><span class="radar-date">[Date]</span><div><span class="radar-cat tv"></span><strong>[Title]</strong> — [Hook]</div></div>
-    <h3>Leaving Soon</h3>
-    <div class="radar-row leaving"><span class="radar-date">[Date]</span><div><span class="radar-cat film"></span><strong>[Title]</strong> — [Hook]</div></div>
-    <h3>Also Streaming This Month</h3>
-    <div class="radar-row"><span class="radar-date">[Platform]</span><div><strong>[Title]</strong> — [Hook]</div></div>
-  </div>
-  <div class="sidebar"><div class="sidebar-title">[e.g. "For the Kids"]</div>
-    <ul><li><strong>[Title]</strong> — [Why]</li></ul>
-  </div>
-  <div class="also"><div class="also-title">Also in Film &amp; TV</div>
-    <ul class="also-list"><li><strong>[Title]</strong> — [Detail]</li></ul>
-  </div>
-  <div class="read-next">Up next: <a href="#shelf">The Shelf <span class="arrow">→</span></a> — [teaser]</div>
-</section>
-
-<!-- ══════ THE SHELF ══════ -->
-<hr class="divider dv-shelf">
-<section class="sec shelf-section" id="shelf">
-  <div class="sec-watermark">Shelf</div>
-  <span class="section-label">The Shelf</span>
-  <h3>Books</h3>
-  <h3 class="feature-title">[Book feature headline]</h3>
-  <p>[Feature body]</p>
-  <div class="book-grid">
-    <div class="book-card reveal">
-      <h4>[Book Title]</h4>
-      <div class="author">[Author] · [Series]</div>
-      <p>[Recommendation text]</p>
-      <div class="rating" style="margin-top:8px"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span></div>
+  <!-- RIBBON — transition marker -->
+  <div class="ribbon" aria-hidden="true">
+    <div class="ribbon__track">
+      <span class="ribbon__item">THE SIGNAL · NO. [ISSUE_NUMBER]</span>
+      <span class="ribbon__item">SUNDAY MAGAZINE · [DATE]</span>
+      <span class="ribbon__item">A QUIET READ WITH COFFEE</span>
+      <span class="ribbon__item">· THE SHELF · THE PANTRY ·</span>
+      <span class="ribbon__item">SUNDAY 06:40</span>
     </div>
-    <!-- More book-cards -->
   </div>
-  <h3>Music</h3><p>[When relevant]</p>
-  <h3>Podcasts</h3><p>[Episode cross-refs]</p>
-  <div class="also"><div class="also-title">Also on The Shelf</div>
-    <ul class="also-list"><li><strong>[Item]</strong> — [Detail]</li></ul>
-  </div>
-  <div class="read-next">Up next: <a href="#session">The Session <span class="arrow">→</span></a> — [teaser]</div>
-</section>
 
-<!-- ══════ THE SESSION ══════ -->
-<hr class="divider dv-session">
-<section class="sec session-section" id="session">
-  <div class="sec-watermark">Session</div>
-  <span class="section-label" style="color:var(--session-accent)">The Session</span>
-  <h2>[Feature headline]</h2>
-  <p>[Sourced feature article]</p>
-  <!-- Display stat inline: <span class="display-stat" style="color:var(--session-accent)">[N]</span> -->
-  <div class="workout-card reveal">
-    <div class="workout-card-title">[Protocol Name]</div>
-    <table>
-      <tr><th>Scheme</th><th>Reps</th><th>Notes</th></tr>
-      <tr><td>[Name]</td><td>[Reps]</td><td>[Description]</td></tr>
-      <tr class="highlight-row"><td>[Name]</td><td>[Reps]</td><td>[Description]</td></tr>
-    </table>
-  </div>
-  <div class="src"><a href="[URL]">[Source]</a></div>
-  <div class="read-next">Up next: <a href="#history">This Week in History <span class="arrow">→</span></a> — [teaser]</div>
-</section>
+  <!-- ================== THE SHELF (books, fan-spread) ================== -->
+  <!-- Dark ground. Fan-spread card deck (5-7 books) + brief card grid below.
+       Density: ≥4 items, each ≥3 sentences of opinion + image. -->
+  <section class="sec dark" data-section="shelf">
+    <span class="spine-label">· 03 · THE SHELF · BOOKS</span>
 
-<!-- ══════ THIS WEEK IN HISTORY ══════ -->
-<hr class="divider dv-history">
-<section class="sec history-section sec-opener" id="history">
-  <div class="sec-watermark">History</div>
-  <span class="section-label" style="color:var(--hist-accent)">This Week in History</span>
-  <h2>[Event title]</h2>
-  <p>[150-300 words. Pre-WW2 preferred.]</p>
-  <!-- Use .img-offset for asymmetric image + text wrap -->
-  <div class="also"><div class="also-title">Also This Week in History</div>
-    <div class="timeline">
-      <div class="timeline-node reveal">
-        <div class="timeline-date"><span class="year-badge">[YEAR]</span> [Date]</div>
-        <div class="timeline-content"><strong>[Event]</strong> — [Description]</div>
+    <div class="section-eyebrow">
+      <span>03 — The Shelf</span>
+      <span class="section-eyebrow__num">Books</span>
+    </div>
+    <h2 class="section-head ln">What's <em>been read</em>.</h2>
+    <p class="dek" style="max-width: 52ch; margin-bottom: 32px;">[SHELF_DEK — 1-2 sentences setting up this week's books.]</p>
+
+    <!-- FAN-SPREAD: 5-7 cards in overlapping hand-of-cards formation -->
+    <div class="fan-spread">
+      <div class="fan-spread__deck">
+        <article class="fan-spread__card">
+          <div class="fan-spread__card-kicker">01 · Fiction</div>
+          <div class="fan-spread__card-image"><img src="[BOOK_1_COVER]" alt="[BOOK_1_TITLE]"></div>
+          <h4 class="fan-spread__card-title"><em>[BOOK_1_TITLE]</em></h4>
+          <p class="fan-spread__card-body">[BOOK_1_TAKE]</p>
+          <div class="fan-spread__card-meta">[BOOK_1_AUTHOR]</div>
+        </article>
+        <article class="fan-spread__card">
+          <div class="fan-spread__card-kicker">02 · Non-fiction</div>
+          <div class="fan-spread__card-image"><img src="[BOOK_2_COVER]" alt="[BOOK_2_TITLE]"></div>
+          <h4 class="fan-spread__card-title"><em>[BOOK_2_TITLE]</em></h4>
+          <p class="fan-spread__card-body">[BOOK_2_TAKE]</p>
+          <div class="fan-spread__card-meta">[BOOK_2_AUTHOR]</div>
+        </article>
+        <article class="fan-spread__card">
+          <div class="fan-spread__card-kicker">03 · Essay</div>
+          <div class="fan-spread__card-image"><img src="[BOOK_3_COVER]" alt="[BOOK_3_TITLE]"></div>
+          <h4 class="fan-spread__card-title"><em>[BOOK_3_TITLE]</em></h4>
+          <p class="fan-spread__card-body">[BOOK_3_TAKE]</p>
+          <div class="fan-spread__card-meta">[BOOK_3_AUTHOR]</div>
+        </article>
+        <article class="fan-spread__card">
+          <div class="fan-spread__card-kicker">04 · Memoir</div>
+          <div class="fan-spread__card-image"><img src="[BOOK_4_COVER]" alt="[BOOK_4_TITLE]"></div>
+          <h4 class="fan-spread__card-title"><em>[BOOK_4_TITLE]</em></h4>
+          <p class="fan-spread__card-body">[BOOK_4_TAKE]</p>
+          <div class="fan-spread__card-meta">[BOOK_4_AUTHOR]</div>
+        </article>
+        <article class="fan-spread__card">
+          <div class="fan-spread__card-kicker">05 · Reissue</div>
+          <div class="fan-spread__card-image"><img src="[BOOK_5_COVER]" alt="[BOOK_5_TITLE]"></div>
+          <h4 class="fan-spread__card-title"><em>[BOOK_5_TITLE]</em></h4>
+          <p class="fan-spread__card-body">[BOOK_5_TAKE]</p>
+          <div class="fan-spread__card-meta">[BOOK_5_AUTHOR]</div>
+        </article>
       </div>
-      <!-- 3-4 items -->
+    </div>
+
+    <!-- Brief-card grid below the fan: each book's editorial verdict -->
+    <div class="brief-grid mt-48">
+      <article class="brief-card">
+        <div class="brief-card__kicker">01 · The pick</div>
+        <h4 class="brief-card__title">[BOOK_PICK_TITLE]</h4>
+        <p class="brief-card__body">[BOOK_PICK_VERDICT — 3-4 sentences, the core opinion.]</p>
+        <div class="brief-card__byline">By [AUTHOR] · [PUBLISHER]</div>
+      </article>
+      <article class="brief-card">
+        <div class="brief-card__kicker">02 · Pair with</div>
+        <h4 class="brief-card__title">[BOOK_PAIR_TITLE]</h4>
+        <p class="brief-card__body">[BOOK_PAIR_TEXT]</p>
+        <div class="brief-card__byline">By [AUTHOR]</div>
+      </article>
+      <article class="brief-card">
+        <div class="brief-card__kicker">03 · Skip unless</div>
+        <h4 class="brief-card__title">[BOOK_SKIP_TITLE]</h4>
+        <p class="brief-card__body">[BOOK_SKIP_TEXT]</p>
+        <div class="brief-card__byline">By [AUTHOR]</div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ================== THE PANTRY (food, plate-strip) ================== -->
+  <!-- Paper ground. Horizontal plate-strip (scroll-snap) + brief card sidebar. -->
+  <section class="sec paper" data-section="pantry">
+    <span class="gutter-mark gutter-mark--tl"></span>
+    <span class="gutter-mark gutter-mark--tr"></span>
+    <span class="gutter-mark gutter-mark--bl"></span>
+    <span class="spine-label">· 04 · THE PANTRY · FOOD</span>
+
+    <div class="section-eyebrow">
+      <span>04 — The Pantry</span>
+      <span class="section-eyebrow__num">Food</span>
+    </div>
+    <h2 class="section-head ln">On the <em>table</em>.</h2>
+    <p class="dek" style="max-width: 52ch; margin-bottom: 32px;">[PANTRY_DEK — what's been cooked this week.]</p>
+
+    <!-- PLATE-STRIP: horizontal scroll-snap gallery. Variable caption density per plate. -->
+    <div class="plate-strip">
+      <div class="plate-strip__track">
+        <!-- Plate 01 — caption only -->
+        <figure class="plate">
+          <div class="plate__number">01</div>
+          <div class="plate__frame"><img src="[PLATE_1_IMG]" alt="[PLATE_1_ALT]"></div>
+          <figcaption class="plate__caption">
+            <div class="plate__caption-head">[PLATE_1_NAME]</div>
+            [PLATE_1_CAPTION — 1-2 sentences.]
+          </figcaption>
+        </figure>
+
+        <!-- Plate 02 — caption + stat -->
+        <figure class="plate">
+          <div class="plate__number">02</div>
+          <div class="plate__frame"><img src="[PLATE_2_IMG]" alt="[PLATE_2_ALT]"></div>
+          <figcaption class="plate__caption">
+            <div class="plate__caption-head">[PLATE_2_NAME]</div>
+            [PLATE_2_CAPTION]
+            <div class="plate__stat">
+              <span class="plate__stat-num count-up" data-target="[N]" data-suffix=" min">[N] min</span>
+              <span class="plate__stat-label">Total time</span>
+            </div>
+          </figcaption>
+        </figure>
+
+        <!-- Plate 03 — caption + stat + body + quote (full density) -->
+        <figure class="plate">
+          <div class="plate__number">03</div>
+          <div class="plate__frame"><img src="[PLATE_3_IMG]" alt="[PLATE_3_ALT]"></div>
+          <figcaption class="plate__caption">
+            <div class="plate__caption-head">[PLATE_3_NAME]</div>
+            [PLATE_3_CAPTION]
+            <div class="plate__stat">
+              <span class="plate__stat-num count-up" data-target="[N]">[N]</span>
+              <span class="plate__stat-label">Servings</span>
+            </div>
+            <p class="plate__body">[PLATE_3_BODY — 2-3 sentences of method or note.]</p>
+            <blockquote class="plate__quote">[PLATE_3_QUOTE — pull from the recipe or a verdict.]</blockquote>
+          </figcaption>
+        </figure>
+
+        <!-- Plate 04 -->
+        <figure class="plate">
+          <div class="plate__number">04</div>
+          <div class="plate__frame"><img src="[PLATE_4_IMG]" alt="[PLATE_4_ALT]"></div>
+          <figcaption class="plate__caption">
+            <div class="plate__caption-head">[PLATE_4_NAME]</div>
+            [PLATE_4_CAPTION]
+          </figcaption>
+        </figure>
+
+        <!-- Plate 05 -->
+        <figure class="plate">
+          <div class="plate__number">05</div>
+          <div class="plate__frame"><img src="[PLATE_5_IMG]" alt="[PLATE_5_ALT]"></div>
+          <figcaption class="plate__caption">
+            <div class="plate__caption-head">[PLATE_5_NAME]</div>
+            [PLATE_5_CAPTION]
+            <div class="plate__stat">
+              <span class="plate__stat-num count-up" data-target="[N]" data-suffix="°">[N]°</span>
+              <span class="plate__stat-label">Oven</span>
+            </div>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="brief-grid mt-48">
+      <article class="brief-card">
+        <div class="brief-card__kicker">Pantry note</div>
+        <h4 class="brief-card__title">[PANTRY_NOTE_TITLE]</h4>
+        <p class="brief-card__body">[PANTRY_NOTE_BODY — sidebar recipe note or ingredient observation, 3-4 sentences.]</p>
+        <div class="brief-card__byline">Pantry · [DATE]</div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ================== THE WORKSHOP (training/tech, dossier scheme) ================== -->
+  <!-- Dark ground. Feature band with dossier accent + chart card.
+       Density: 400 words + ≥1 pull + ≥1 datum + ≥1 image. -->
+  <section class="sec dark" data-section="workshop" data-scheme="dossier" style="--accent:#b8902a;">
+    <span class="spine-label">· 05 · THE WORKSHOP · TRAINING</span>
+
+    <div class="section-eyebrow">
+      <span>05 — The Workshop</span>
+      <span class="section-eyebrow__num">Dossier</span>
+    </div>
+    <h2 class="section-head ln">This week at the <em>bench</em>.</h2>
+
+    <div class="feature-band">
+      <div class="feature-band__rail">
+        <span class="feature-band__rail-num">05</span>
+        <span class="feature-band__rail-label">WORKSHOP · BLOCK [N]</span>
+      </div>
+
+      <div class="feature-band__body">
+        <p class="body-lead"><span class="dropcap">[W]</span>[WORKSHOP_BODY_OPENING — set up the week's training narrative. <em>Italic accent</em> on the crux.]</p>
+
+        <h3>[WORKSHOP_SUBHED_1]</h3>
+        <p>[WORKSHOP_PARA_2]</p>
+        <p>[WORKSHOP_PARA_3]</p>
+
+        <h3>[WORKSHOP_SUBHED_2]</h3>
+        <p>[WORKSHOP_PARA_4]</p>
+      </div>
+
+      <aside class="feature-band__margin">
+        <figure class="feature-band__hero parallax">
+          <img src="[WORKSHOP_IMG]" class="pan" alt="[WORKSHOP_IMG_ALT]">
+          <figcaption class="feature-band__hero-caption">[WORKSHOP_IMG_CAPTION]</figcaption>
+        </figure>
+        <blockquote class="pull-quote-card">
+          "[WORKSHOP_PULL_QUOTE]"
+          <div class="pull-quote-card__attribution">[ATTRIBUTION]</div>
+        </blockquote>
+        <div class="chart-card dark">
+          <div class="chart-card__kicker">Weekly volume</div>
+          <h4 class="chart-card__title">[CHART_TITLE]</h4>
+          <svg class="chart-card__svg" viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg">
+            <g stroke="currentColor" stroke-width="0.5" opacity="0.2">
+              <line x1="0" y1="140" x2="320" y2="140"/>
+              <line x1="0" y1="100" x2="320" y2="100"/>
+              <line x1="0" y1="60" x2="320" y2="60"/>
+              <line x1="0" y1="20" x2="320" y2="20"/>
+            </g>
+            <polyline points="[CHART_POINTS]" fill="none" stroke="var(--accent)" stroke-width="2"/>
+          </svg>
+          <div class="chart-card__foot">[CHART_FOOT — source + units]</div>
+        </div>
+        <div class="datum-card">
+          <div class="datum-card__label">Weekly mileage</div>
+          <div class="datum-card__value"><span class="count-up" data-target="[N]" data-suffix="km">[N]km</span></div>
+          <div class="datum-card__note">vs. prior <span>[N]</span>km</div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================== THE ITINERARY (travel) ================== -->
+  <!-- Paper ground. Plan infographic + timeline rows. -->
+  <section class="sec paper" data-section="itinerary" data-accent="cool">
+    <span class="gutter-mark gutter-mark--tl"></span>
+    <span class="gutter-mark gutter-mark--tr"></span>
+    <span class="gutter-mark gutter-mark--bl"></span>
+    <span class="spine-label">· 06 · THE ITINERARY · TRAVEL</span>
+
+    <div class="section-eyebrow">
+      <span>06 — The Itinerary</span>
+      <span class="section-eyebrow__num">Route</span>
+    </div>
+    <h2 class="section-head ln">A route <em>plotted</em>.</h2>
+
+    <!-- Plan infographic: 16:10 dark-on-paper diagram -->
+    <div class="plan-infographic">
+      <h4 class="plan-infographic__title">[ITIN_TITLE]<br><em>[ITIN_DATES]</em></h4>
+      <svg class="plan-infographic__svg" viewBox="0 0 640 400" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 80 300 Q 220 150 360 200 T 560 120" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="4 4"/>
+        <circle cx="80"  cy="300" r="6" fill="var(--accent)"/>
+        <circle cx="360" cy="200" r="6" fill="var(--accent)"/>
+        <circle cx="560" cy="120" r="6" fill="var(--accent)"/>
+      </svg>
+      <div class="plan-infographic__label" style="top:62%; left:10%;">
+        <span>START</span>
+        <span class="val">[POINT_A]</span>
+      </div>
+      <div class="plan-infographic__label" style="top:44%; left:50%;">
+        <span>STOP</span>
+        <span class="val">[POINT_B]</span>
+      </div>
+      <div class="plan-infographic__label" style="top:22%; left:80%;">
+        <span>END</span>
+        <span class="val">[POINT_C]</span>
+      </div>
+      <div class="plan-infographic__caption">ROUTE · [ITIN_LEGS] LEGS · [ITIN_MILES] KM</div>
+    </div>
+
+    <div class="timeline-rows mt-48">
+      <div class="timeline-row">
+        <div class="timeline-row__date">DAY 01</div>
+        <div class="timeline-row__body">
+          <h5>[DAY_1_PLACE]</h5>
+          <p>[DAY_1_BODY — 2-3 sentences of plan + Signal's editorial angle.]</p>
+        </div>
+      </div>
+      <div class="timeline-row">
+        <div class="timeline-row__date">DAY 02</div>
+        <div class="timeline-row__body">
+          <h5>[DAY_2_PLACE]</h5>
+          <p>[DAY_2_BODY]</p>
+        </div>
+      </div>
+      <div class="timeline-row">
+        <div class="timeline-row__date">DAY 03</div>
+        <div class="timeline-row__body">
+          <h5>[DAY_3_PLACE]</h5>
+          <p>[DAY_3_BODY]</p>
+        </div>
+      </div>
+      <div class="timeline-row">
+        <div class="timeline-row__date">DAY 04</div>
+        <div class="timeline-row__body">
+          <h5>[DAY_4_PLACE]</h5>
+          <p>[DAY_4_BODY]</p>
+        </div>
+      </div>
+      <div class="timeline-row">
+        <div class="timeline-row__date">DAY 05</div>
+        <div class="timeline-row__body">
+          <h5>[DAY_5_PLACE]</h5>
+          <p>[DAY_5_BODY]</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================== THE LEDGER (numeric / dash + chart) ================== -->
+  <!-- Dark ground. Dash cells + chart card. Density: ≥4 stats + ≥1 chart OR 200w interpretation. -->
+  <section class="sec dark" data-section="ledger">
+    <span class="spine-label">· 07 · THE LEDGER · NUMBERS</span>
+
+    <div class="section-eyebrow">
+      <span>07 — The Ledger</span>
+      <span class="section-eyebrow__num">Data</span>
+    </div>
+    <h2 class="section-head ln">By the <em>numbers</em>.</h2>
+    <p class="dek mb-32" style="max-width:50ch;">[LEDGER_DEK]</p>
+
+    <div class="dash">
+      <div class="dash__cell">
+        <span class="dash__hint">Inflation</span>
+        <span class="dash__num"><span class="count-up" data-target="2.8" data-suffix="%" data-decimals="1">2.8%</span></span>
+        <span class="dash__l">Year on year, April print.</span>
+        <span class="dash__delta">▲ 0.1pp</span>
+      </div>
+      <div class="dash__cell">
+        <span class="dash__hint">Rate</span>
+        <span class="dash__num"><span class="count-up" data-target="4.25" data-suffix="%" data-decimals="2">4.25%</span></span>
+        <span class="dash__l">Central bank target, unchanged.</span>
+        <span class="dash__delta">= 0</span>
+      </div>
+      <div class="dash__cell">
+        <span class="dash__hint">Oil (Brent)</span>
+        <span class="dash__num"><span class="count-up" data-target="82" data-prefix="$">$82</span></span>
+        <span class="dash__l">Per barrel, midweek close.</span>
+        <span class="dash__delta">▼ 3.1%</span>
+      </div>
+      <div class="dash__cell">
+        <span class="dash__hint">Gold</span>
+        <span class="dash__num"><span class="count-up" data-target="2340" data-prefix="$">$2340</span></span>
+        <span class="dash__l">Per ounce, spot.</span>
+        <span class="dash__delta">▲ 1.4%</span>
+      </div>
+      <div class="dash__cell">
+        <span class="dash__hint">BTC</span>
+        <span class="dash__num"><span class="count-up" data-target="63400" data-prefix="$">$63,400</span></span>
+        <span class="dash__l">Weekly close.</span>
+        <span class="dash__delta">▲ 2.2%</span>
+      </div>
+      <div class="dash__cell">
+        <span class="dash__hint">Unemployment</span>
+        <span class="dash__num"><span class="count-up" data-target="3.9" data-suffix="%" data-decimals="1">3.9%</span></span>
+        <span class="dash__l">Headline rate, March data.</span>
+        <span class="dash__delta">= 0</span>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 48px;">
+      <div class="chart-card dark">
+        <div class="chart-card__kicker">Twelve-month arc</div>
+        <h4 class="chart-card__title">[LEDGER_CHART_1_TITLE]</h4>
+        <svg class="chart-card__svg" viewBox="0 0 320 180">
+          <g stroke="currentColor" stroke-width="0.5" opacity="0.2">
+            <line x1="0" y1="140" x2="320" y2="140"/>
+            <line x1="0" y1="90" x2="320" y2="90"/>
+            <line x1="0" y1="40" x2="320" y2="40"/>
+          </g>
+          <polyline points="0,120 40,110 80,100 120,92 160,85 200,80 240,70 280,55 320,40" fill="none" stroke="var(--accent)" stroke-width="2"/>
+        </svg>
+        <div class="chart-card__foot">[SOURCE] · points monthly</div>
+      </div>
+      <div class="chart-card dark">
+        <div class="chart-card__kicker">Verdict</div>
+        <h4 class="chart-card__title">[LEDGER_VERDICT_TITLE]</h4>
+        <p style="font-size:15px; line-height:1.55;">[LEDGER_VERDICT — 3-4 sentences interpreting the numbers with a clear point of view.]</p>
+        <div class="chart-card__foot">— The Editors</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================== THE LONG GAME (retrospective) ================== -->
+  <!-- Paper ground. Timeline + chart card. -->
+  <section class="sec paper" data-section="longgame">
+    <span class="gutter-mark gutter-mark--tl"></span>
+    <span class="gutter-mark gutter-mark--tr"></span>
+    <span class="gutter-mark gutter-mark--bl"></span>
+    <span class="spine-label">· 08 · THE LONG GAME</span>
+
+    <div class="section-eyebrow">
+      <span>08 — The Long Game</span>
+      <span class="section-eyebrow__num">Retrospective</span>
+    </div>
+    <h2 class="section-head ln">A <em>decade</em> of.</h2>
+
+    <div style="display:grid; grid-template-columns: 1.2fr 1fr; gap: 48px;">
+      <div class="timeline-rows">
+        <div class="timeline-row">
+          <div class="timeline-row__date">2016</div>
+          <div class="timeline-row__body">
+            <h5>[LG_2016_TITLE]</h5>
+            <p>[LG_2016_BODY — 2-3 sentences with editorial take.]</p>
+          </div>
+        </div>
+        <div class="timeline-row">
+          <div class="timeline-row__date">2018</div>
+          <div class="timeline-row__body">
+            <h5>[LG_2018_TITLE]</h5>
+            <p>[LG_2018_BODY]</p>
+          </div>
+        </div>
+        <div class="timeline-row">
+          <div class="timeline-row__date">2020</div>
+          <div class="timeline-row__body">
+            <h5>[LG_2020_TITLE]</h5>
+            <p>[LG_2020_BODY]</p>
+          </div>
+        </div>
+        <div class="timeline-row">
+          <div class="timeline-row__date">2022</div>
+          <div class="timeline-row__body">
+            <h5>[LG_2022_TITLE]</h5>
+            <p>[LG_2022_BODY]</p>
+          </div>
+        </div>
+        <div class="timeline-row">
+          <div class="timeline-row__date">2024</div>
+          <div class="timeline-row__body">
+            <h5>[LG_2024_TITLE]</h5>
+            <p>[LG_2024_BODY]</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-card__kicker">The shape of it</div>
+        <h4 class="chart-card__title">[LG_CHART_TITLE]</h4>
+        <svg class="chart-card__svg" viewBox="0 0 320 180">
+          <g stroke="currentColor" stroke-width="0.5" opacity="0.3">
+            <line x1="0" y1="140" x2="320" y2="140"/>
+            <line x1="0" y1="90" x2="320" y2="90"/>
+            <line x1="0" y1="40" x2="320" y2="40"/>
+          </g>
+          <polyline points="0,140 60,120 120,100 180,70 240,60 300,30" fill="none" stroke="var(--accent)" stroke-width="2"/>
+        </svg>
+        <div class="chart-card__foot">[LG_CHART_FOOT]</div>
+      </div>
+    </div>
+
+    <!-- Hero quote break -->
+    <div class="hero-quote mt-48">
+      <span class="hero-quote__glyph" aria-hidden="true">"</span>
+      <blockquote class="hero-quote__text">[LG_HERO_QUOTE — one italic sentence, <em>accented word</em> near the end.]</blockquote>
+      <div class="hero-quote__attribution">[ATTRIBUTION] · [SOURCE]</div>
+    </div>
+  </section>
+
+  <!-- ================== THE TOOLKIT (apps / tools) ================== -->
+  <!-- Dark ground. Fan-spread + brief cards. Density: ≥4 items × ≥3 sentences opinion + image. -->
+  <section class="sec dark" data-section="toolkit">
+    <span class="spine-label">· 09 · THE TOOLKIT · TOOLS</span>
+
+    <div class="section-eyebrow">
+      <span>09 — The Toolkit</span>
+      <span class="section-eyebrow__num">Tools</span>
+    </div>
+    <h2 class="section-head ln">Tried and <em>kept</em>.</h2>
+
+    <div class="fan-spread">
+      <div class="fan-spread__deck">
+        <article class="fan-spread__card">
+          <div class="fan-spread__card-kicker">01 · App</div>
+          <div class="fan-spread__card-image"><img src="[TOOL_1_IMG]" alt="[TOOL_1_NAME]"></div>
+          <h4 class="fan-spread__card-title"><em>[TOOL_1_NAME]</em></h4>
+          <p class="fan-spread__card-body">[TOOL_1_TAKE]</p>
+          <div class="fan-spread__card-meta">[TOOL_1_CATEGORY]</div>
+        </article>
+        <article class="fan-spread__card">
+          <div class="fan-spread__card-kicker">02 · Tool</div>
+          <div class="fan-spread__card-image"><img src="[TOOL_2_IMG]" alt="[TOOL_2_NAME]"></div>
+          <h4 class="fan-spread__card-title"><em>[TOOL_2_NAME]</em></h4>
+          <p class="fan-spread__card-body">[TOOL_2_TAKE]</p>
+          <div class="fan-spread__card-meta">[TOOL_2_CATEGORY]</div>
+        </article>
+        <article class="fan-spread__card">
+          <div class="fan-spread__card-kicker">03 · Object</div>
+          <div class="fan-spread__card-image"><img src="[TOOL_3_IMG]" alt="[TOOL_3_NAME]"></div>
+          <h4 class="fan-spread__card-title"><em>[TOOL_3_NAME]</em></h4>
+          <p class="fan-spread__card-body">[TOOL_3_TAKE]</p>
+          <div class="fan-spread__card-meta">[TOOL_3_CATEGORY]</div>
+        </article>
+        <article class="fan-spread__card">
+          <div class="fan-spread__card-kicker">04 · Service</div>
+          <div class="fan-spread__card-image"><img src="[TOOL_4_IMG]" alt="[TOOL_4_NAME]"></div>
+          <h4 class="fan-spread__card-title"><em>[TOOL_4_NAME]</em></h4>
+          <p class="fan-spread__card-body">[TOOL_4_TAKE]</p>
+          <div class="fan-spread__card-meta">[TOOL_4_CATEGORY]</div>
+        </article>
+        <article class="fan-spread__card">
+          <div class="fan-spread__card-kicker">05 · Site</div>
+          <div class="fan-spread__card-image"><img src="[TOOL_5_IMG]" alt="[TOOL_5_NAME]"></div>
+          <h4 class="fan-spread__card-title"><em>[TOOL_5_NAME]</em></h4>
+          <p class="fan-spread__card-body">[TOOL_5_TAKE]</p>
+          <div class="fan-spread__card-meta">[TOOL_5_CATEGORY]</div>
+        </article>
+      </div>
+    </div>
+
+    <div class="brief-grid mt-48">
+      <article class="brief-card">
+        <div class="brief-card__kicker">Pick of the week</div>
+        <h4 class="brief-card__title">[TOOLKIT_PICK]</h4>
+        <p class="brief-card__body">[TOOLKIT_PICK_BODY — 3-4 sentences of Signal's verdict.]</p>
+        <div class="brief-card__byline">Toolkit</div>
+      </article>
+      <article class="brief-card">
+        <div class="brief-card__kicker">Retired</div>
+        <h4 class="brief-card__title">[TOOLKIT_RETIRED]</h4>
+        <p class="brief-card__body">[TOOLKIT_RETIRED_BODY]</p>
+        <div class="brief-card__byline">Toolkit</div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ================== THIS WEEK IN HISTORY (dossier scheme) ================== -->
+  <!-- Paper ground, dossier palette tint via data-scheme override on the section. -->
+  <section class="sec paper" data-section="history" data-scheme="dossier" style="--accent:#b8902a;">
+    <span class="gutter-mark gutter-mark--tl"></span>
+    <span class="gutter-mark gutter-mark--tr"></span>
+    <span class="gutter-mark gutter-mark--bl"></span>
+    <span class="spine-label">· 10 · WEEK IN HISTORY</span>
+
+    <div class="section-eyebrow">
+      <span>10 — This Week in History</span>
+      <span class="section-eyebrow__num">Archive</span>
+    </div>
+    <h2 class="section-head ln">On this <em>same</em> Sunday.</h2>
+
+    <div class="timeline-rows">
+      <div class="timeline-row">
+        <div class="timeline-row__date">1927</div>
+        <div class="timeline-row__body">
+          <h5>[HIST_1_TITLE]</h5>
+          <p>[HIST_1_BODY — 2-3 sentences.]</p>
+        </div>
+      </div>
+      <div class="timeline-row">
+        <div class="timeline-row__date">1961</div>
+        <div class="timeline-row__body">
+          <h5>[HIST_2_TITLE]</h5>
+          <p>[HIST_2_BODY]</p>
+        </div>
+      </div>
+      <div class="timeline-row">
+        <div class="timeline-row__date">1984</div>
+        <div class="timeline-row__body">
+          <h5>[HIST_3_TITLE]</h5>
+          <p>[HIST_3_BODY]</p>
+        </div>
+      </div>
+      <div class="timeline-row">
+        <div class="timeline-row__date">1995</div>
+        <div class="timeline-row__body">
+          <h5>[HIST_4_TITLE]</h5>
+          <p>[HIST_4_BODY]</p>
+        </div>
+      </div>
+      <div class="timeline-row">
+        <div class="timeline-row__date">2011</div>
+        <div class="timeline-row__body">
+          <h5>[HIST_5_TITLE]</h5>
+          <p>[HIST_5_BODY]</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REVERSE RIBBON pair -->
+  <div class="ribbon reverse" aria-hidden="true">
+    <div class="ribbon__track">
+      <span class="ribbon__item">HISTORY · MEMORY · TIME</span>
+      <span class="ribbon__item">· RETURN TO THE PRESENT ·</span>
+      <span class="ribbon__item">THE SIGNAL · SUNDAY 06:40</span>
+      <span class="ribbon__item">· KEEP READING ·</span>
     </div>
   </div>
-  <div class="read-next">Up next: <a href="#radar">On the Radar <span class="arrow">→</span></a> — [teaser]</div>
-</section>
 
-<!-- ══════ ON THE RADAR ══════ -->
-<section class="sec radar-section" id="radar">
-  <span class="section-label" style="color:var(--rose)">On the Radar — Coming Up</span>
-  <div class="radar-grid">
-    <div class="radar-row"><span class="radar-date">[Date]</span><div><span class="radar-cat"></span><strong>[Event]</strong> — [Detail]</div></div>
-    <!-- 8-10 items. NO overlap with Release Radar. -->
-  </div>
-</section>
+  <!-- ================== DOWN THE RABBIT HOLE (long read) ================== -->
+  <!-- Dark ground. Feature band + pull break + marginalia. Density: 600 words + 2 pulls + 1 stat + 1 image. -->
+  <section class="sec dark" data-section="rabbithole">
+    <span class="spine-label">· 11 · DOWN THE RABBIT HOLE</span>
 
-<!-- ══════ FOOTER ══════ -->
-<footer class="footer">
-  <div class="footer-brand">The Signal<span>.</span></div>
-  <div class="footer-issue">A Sunday Morning Magazine · Issue #[N] · [Date]</div>
-</footer>
+    <div class="section-eyebrow">
+      <span>11 — Down the Rabbit Hole</span>
+      <span class="section-eyebrow__num">Long read</span>
+    </div>
+    <h2 class="section-head ln">A <em>strange</em> thing<br>to keep thinking about.</h2>
 
-</div><!-- .mag -->
+    <div class="feature-band feature-band--with-marginalia">
+      <div class="feature-band__rail">
+        <span class="feature-band__rail-num">11</span>
+        <span class="feature-band__rail-label">LONG READ · THIS ISSUE</span>
+      </div>
 
-<button class="back-to-top" id="backToTop" title="Back to top">↑</button>
+      <div class="feature-band__body lead">
+        <p class="body-lead"><span class="dropcap">[R]</span>[RH_OPENING — 2-3 sentences. Draw the reader in. <em>Accent italic</em> once.]</p>
 
-<!-- PASTE contents of assets/script.js here when generating an issue -->
-<script>/* See assets/script.js */</script>
+        <p>[RH_PARA_2]</p>
+        <p>[RH_PARA_3]</p>
 
+        <h3>[RH_SUBHED_1]</h3>
+        <p>[RH_PARA_4]</p>
+        <p>[RH_PARA_5 — <em>italic</em> key phrase.]</p>
+
+        <h3>[RH_SUBHED_2]</h3>
+        <p>[RH_PARA_6]</p>
+        <p>[RH_PARA_7]</p>
+        <p>[RH_PARA_8 — Signal's close.]</p>
+      </div>
+
+      <aside class="marginalia">
+        <div class="marginalia__note">
+          <div class="marginalia__note-label">Source</div>
+          <p class="marginalia__note-body">[RH_SOURCE_NOTE — where we first came across this.]</p>
+        </div>
+        <blockquote class="marginalia__pull">[RH_MARGIN_QUOTE — italic pull.]</blockquote>
+        <div class="marginalia__note">
+          <div class="marginalia__note-label">Further</div>
+          <p class="marginalia__note-body">[RH_FURTHER — a book, a paper, a reading.]</p>
+        </div>
+        <p class="marginalia__footnote"><sup>1</sup>[RH_FOOTNOTE]</p>
+      </aside>
+    </div>
+
+    <span class="folio-watermark" aria-hidden="true">?</span>
+  </section>
+
+  <!-- Second pull-break for the rabbit-hole piece -->
+  <section class="sec dark pull-break" data-section="rh-pull">
+    <span class="pull-break__q-open" aria-hidden="true">"</span>
+    <span class="pull-break__q-close" aria-hidden="true">"</span>
+    <blockquote class="pull-break__quote ln">[RH_PULL_QUOTE — one sentence, <em>italic emphasis</em>.]</blockquote>
+    <div class="pull-break__attribution">[ATTRIBUTION]</div>
+  </section>
+
+  <!-- ================== EDITOR'S NOTE (optional panel before colophon) ================== -->
+  <section class="sec paper" data-section="note">
+    <span class="gutter-mark gutter-mark--tl"></span>
+    <span class="gutter-mark gutter-mark--tr"></span>
+    <span class="gutter-mark gutter-mark--bl"></span>
+
+    <div class="section-eyebrow">
+      <span>Editor's note</span>
+      <span class="section-eyebrow__num">From the desk</span>
+    </div>
+
+    <div class="editors-note">
+      <h2 class="editors-note__left ln">
+        A short <em>note</em><br>to close<br>the week.
+      </h2>
+      <div class="editors-note__right">
+        <div class="eyebrow">[DATE] · SUNDAY 06:40</div>
+        <p class="dek">[NOTE_DEK — 1-2 sentences of italic context.]</p>
+        <p>[NOTE_BODY_1 — 3-4 sentences with editorial voice.]</p>
+        <p>[NOTE_BODY_2]</p>
+        <div class="editors-note__signoff">— The Editors</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================== COLOPHON ================== -->
+  <!-- Dark ground. Rising rounded-rectangle card. Four columns.
+       Density: masthead + in-this-issue ≥ [N items] + ≥6 sources WITH URLs + about. -->
+  <section class="sec dark" data-section="colophon">
+    <span class="spine-label">· 12 · COLOPHON</span>
+
+    <!-- Dispatch seal appears again here (cover + colophon only per §3.2) -->
+    <div class="dispatch-seal"
+         data-num="[ISSUE_NUMBER]"
+         data-month="[MONTH]"
+         data-year="MMXXVI"
+         aria-hidden="true"></div>
+
+    <div class="colophon">
+      <div class="colophon__grid">
+        <div class="colophon__block">
+          <span class="eyebrow">The masthead</span>
+          <h3 class="colophon__masthead-title">The <em>Signal</em></h3>
+          <div class="colophon__masthead-sub">A Sunday magazine · No. [ISSUE_NUMBER]</div>
+          <p class="colophon__about">[ABOUT_PARA — 3-4 sentences about The Signal's purpose, cadence, and voice.]</p>
+        </div>
+
+        <div class="colophon__block">
+          <span class="eyebrow">In this issue</span>
+          <ul class="colophon__list">
+            <li><span class="tag">01 · Lead</span>[LEAD_TITLE_SHORT]</li>
+            <li><span class="tag">02 · Week</span>[WEEK_SUMMARY]</li>
+            <li><span class="tag">03 · Shelf</span>[SHELF_LINE]</li>
+            <li><span class="tag">04 · Pantry</span>[PANTRY_LINE]</li>
+            <li><span class="tag">05 · Workshop</span>[WORKSHOP_LINE]</li>
+            <li><span class="tag">06 · Itinerary</span>[ITINERARY_LINE]</li>
+            <li><span class="tag">07 · Ledger</span>[LEDGER_LINE]</li>
+            <li><span class="tag">11 · Rabbit Hole</span>[RH_LINE]</li>
+          </ul>
+        </div>
+
+        <div class="colophon__block">
+          <span class="eyebrow">Sources</span>
+          <ul class="colophon__list colophon__sources">
+            <li>
+              <span class="source-title">[SRC_1_TITLE]</span>
+              <a href="[SRC_1_URL]">[SRC_1_URL]</a>
+            </li>
+            <li>
+              <span class="source-title">[SRC_2_TITLE]</span>
+              <a href="[SRC_2_URL]">[SRC_2_URL]</a>
+            </li>
+            <li>
+              <span class="source-title">[SRC_3_TITLE]</span>
+              <a href="[SRC_3_URL]">[SRC_3_URL]</a>
+            </li>
+            <li>
+              <span class="source-title">[SRC_4_TITLE]</span>
+              <a href="[SRC_4_URL]">[SRC_4_URL]</a>
+            </li>
+            <li>
+              <span class="source-title">[SRC_5_TITLE]</span>
+              <a href="[SRC_5_URL]">[SRC_5_URL]</a>
+            </li>
+            <li>
+              <span class="source-title">[SRC_6_TITLE]</span>
+              <a href="[SRC_6_URL]">[SRC_6_URL]</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="colophon__block">
+          <span class="eyebrow">About</span>
+          <p class="colophon__about">The Signal is assembled every Sunday and <em>meant to be read with coffee</em>. It carries news, books, food, training, travel, data, and long reads — whatever the week left on the desk.</p>
+          <p class="colophon__about mt-16">Designed at 06:40. Set in Fraunces &amp; Geist. Printed on a warm ember ground.</p>
+        </div>
+      </div>
+
+      <div class="colophon__footer">
+        <span>© MMXXVI · THE SIGNAL · NO. [ISSUE_NUMBER]</span>
+        <span>NEXT ISSUE · SUNDAY 06:40</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Back to top -->
+  <button class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+
+  <!-- INJECT:JS -->
 </body>
 </html>
