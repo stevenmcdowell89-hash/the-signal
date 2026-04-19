@@ -37,22 +37,35 @@ If the user explicitly overrides (e.g. "run the weekly on the top model" or "kee
 
 ## Workflow
 
-### 0. Pre-flight — verify skill files are intact
-Before any other step, verify the skill has not been partially restored from an older snapshot. Run:
+### 0. Pre-flight — force-sync skill from GitHub, then validate content
+
+**GitHub main is the source of truth.** Local skill files are disposable caches that can silently drift (failed regens can overwrite them, context restores don't refresh them). Always sync first, then validate content (not just existence), before reading anything.
 
 ```bash
-for f in references/editorial-spec.md references/sections.md references/compliance-checklist.md references/component-contracts.md references/visual-language.md assets/styles.css assets/weekly-template.html assets/script.js; do
-  [ -f "/home/user/workspace/skills/user/the-signal/$f" ] || echo "MISSING: $f"
+# 0a. Force-sync every skill file from canonical main branch — overwrites local copies.
+SKILL=/home/user/workspace/skills/user/the-signal
+REPO=stevenmcdowell89-hash/the-signal
+for f in assets/weekly-template.html assets/styles.css assets/script.js \
+         references/editorial-spec.md references/sections.md references/compliance-checklist.md \
+         references/component-contracts.md references/visual-language.md \
+         scripts/inject-assets.sh SKILL.md; do
+  gh api "repos/$REPO/contents/$f?ref=main" -H 'Accept: application/vnd.github.raw' > "$SKILL/$f" \
+    || { echo "SYNC FAIL: $f"; exit 1; }
 done
+chmod +x $SKILL/scripts/inject-assets.sh
+
+# 0b. Content validation — not just existence. If ANY of these fail, STOP and tell the user.
+CSS=$SKILL/assets/styles.css
+TPL=$SKILL/assets/weekly-template.html
+[ "$(grep -cE 'Fraunces|Geist' $CSS)" -ge 2 ] || { echo 'FAIL: new fonts missing from CSS'; exit 1; }
+[ "$(grep -cE 'Cormorant|DM Sans|JetBrains Mono' $CSS)" -eq 0 ] || { echo 'FAIL: old fonts in CSS'; exit 1; }
+[ "$(grep -cE 'book-card|big-number|cover-brand' $CSS)" -eq 0 ] || { echo 'FAIL: old classes in CSS'; exit 1; }
+[ "$(grep -cE 'feature-band|fan-spread|plate-strip' $CSS)" -ge 10 ] || { echo 'FAIL: new components missing from CSS'; exit 1; }
+[ "$(grep -cE 'book-card|big-number|cover-brand' $TPL)" -eq 0 ] || { echo 'FAIL: old classes in template'; exit 1; }
+echo 'PRE-FLIGHT OK'
 ```
 
-If any file prints MISSING, pull it from the canonical GitHub repo `stevenmcdowell89-hash/the-signal` before continuing:
-
-```bash
-gh api repos/stevenmcdowell89-hash/the-signal/contents/<path>?ref=main -H 'Accept: application/vnd.github.raw' > /home/user/workspace/skills/user/the-signal/<path>
-```
-
-Also spot-check: `grep -c Fraunces /home/user/workspace/skills/user/the-signal/assets/styles.css` — expect ≥ 3. If 0, the font swap has been reverted and must be re-applied before generation (see §6).
+**Requires `api_credentials=["github"]` on the bash call.** Uses `gh api ... --raw` which returns file contents verbatim and fails loudly on 404. Never skip this step — a silently-stale skill directory is the #1 cause of regressions.
 
 ### 1. Read core spec + state file
 Read `references/editorial-spec.md` (the core spec — editorial rules, reader profile, key rules, issue formats, auto-triggers, search checklist, component reference, visual design). Also read the state file at `/home/user/workspace/signal-state.json`.
