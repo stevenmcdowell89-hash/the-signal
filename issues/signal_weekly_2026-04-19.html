@@ -1,0 +1,2807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Signal — April 13–19, 2026 · Issue #3</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,500&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #111119;
+  --paper: #FAFAF8;
+  --warm: #F5F4F0;
+  --rose: #E8384F;
+  --ember: #FF6D3A;
+  --deep: #1B1B2F;
+  --slate: #64697B;
+  --ghost: #A4A8B6;
+  --rule: #E0DED8;
+  --pitch: #0A0E17;
+  --turf: #1A7A4C;
+  --turf-lt: #2BD67B;
+  --screen-bg: #14121E;
+  --neon: #FF2D78;
+  --shelf-bg: #1C1410;
+  --shelf-accent: #D4A03C;
+  --session-bg: #F2F7F4;
+  --session-accent: #D4622B;
+  --hist-bg: #F0EBE0;
+  --hist-accent: #8B6914;
+
+  /* ── Rotating section palettes ── */
+  --pantry-bg: #FAF5F0;
+  --pantry-accent: #C65D3A;
+  --workshop-bg: #F0F1F3;
+  --workshop-accent: #5A6378;
+  --toolkit-bg: #EFF3F6;
+  --toolkit-accent: #1A9AAF;
+  --ledger-bg: #FAF8F2;
+  --ledger-accent: #C48B2C;
+  --longgame-bg: #F0F1F4;
+  --longgame-accent: #2A3A5C;
+  --wallet-bg: #FAFBFC;
+  --wallet-accent: #1A8A7A;
+  --itinerary-bg: #FAF6F0;
+  --itinerary-accent: #D4634B;
+}
+
+/* ═══════════ RESET & BASE ═══════════ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  color: var(--ink);
+  background: #E8E6E1;
+  font-size: 18px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+.mag { max-width: 960px; margin: 0 auto; background: var(--paper); box-shadow: 0 4px 120px rgba(0,0,0,.12); position: relative; }
+img { max-width: 100%; height: auto; display: block; }
+a { color: var(--rose); text-decoration: none; }
+a:hover { text-decoration: underline; }
+p { margin-bottom: 16px; }
+p:last-child { margin-bottom: 0; }
+
+/* ═══════════ READING PROGRESS BAR ═══════════ */
+.progress-bar {
+  position: fixed; top: 0; left: 0; width: 0%;
+  height: 3px; z-index: 1000;
+  background: linear-gradient(90deg, var(--rose), var(--ember));
+  transition: width 100ms ease-out;
+}
+
+/* ═══════════ BACK TO TOP ═══════════ */
+.back-to-top {
+  position: fixed; bottom: 28px; right: 28px;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--deep); border: 1px solid rgba(255,255,255,.15);
+  color: white; font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transform: translateY(12px);
+  transition: opacity .25s ease, transform .25s ease;
+  z-index: 999; box-shadow: 0 4px 16px rgba(0,0,0,.2);
+}
+.back-to-top.visible { opacity: 1; transform: translateY(0); }
+.back-to-top:hover { background: var(--rose); }
+
+/* ═══════════ UTILITY CLASSES ═══════════ */
+.ui { font-family: 'DM Sans', sans-serif; }
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 3px; text-transform: uppercase;
+  margin-bottom: 12px; display: block;
+}
+/* Secondary labels use DM Sans — for sub-headers within sections */
+.sub-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--ghost); margin-bottom: 10px; display: block;
+}
+.caption {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; color: var(--ghost);
+  margin-top: 6px; line-height: 1.4;
+}
+.src {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; color: var(--ghost); margin-top: 12px;
+}
+.src a { color: var(--rose); }
+
+/* ═══════════ COVER ═══════════ */
+.cover {
+  background: var(--deep);
+  background-image:
+    radial-gradient(ellipse at 80% 20%, rgba(232,56,79,.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 20% 80%, rgba(255,109,58,.08) 0%, transparent 50%);
+  padding: 80px 60px 60px;
+  position: relative;
+  min-height: 480px;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  overflow: hidden;
+}
+.cover::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 5px;
+  background: linear-gradient(90deg, var(--rose), var(--ember), var(--rose));
+}
+
+/* Enhancement 18: Cover Ambient Animation — drifting gradients */
+.cover::after {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(ellipse at 80% 20%, rgba(232,56,79,.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 20% 80%, rgba(255,109,58,.08) 0%, transparent 50%);
+  animation: coverDrift 20s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes coverDrift {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-15px, 10px) scale(1.03); }
+  100% { transform: translate(10px, -8px) scale(1.01); }
+}
+
+/* Enhancement 18: Animated grain overlay */
+.cover-grain {
+  position: absolute; inset: 0;
+  background-image: repeating-conic-gradient(rgba(255,255,255,.015) 0% 25%, transparent 0% 50%);
+  background-size: 4px 4px;
+  animation: grainShift 0.8s steps(4) infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+@keyframes grainShift {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-2px, 2px); }
+  50% { transform: translate(2px, -1px); }
+  75% { transform: translate(-1px, -2px); }
+  100% { transform: translate(1px, 1px); }
+}
+
+/* Enhancement 9: Subtle noise texture on cover using base64 grain */
+.cover-noise {
+  position: absolute; inset: 0;
+  opacity: 0.035;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANWp0mAAAACHRSTlMzMzMzMzMzM85JBgUAAAA0SURBVDjLY2CgNmBWYBBgYFZgEGBkVmAQYGJWYBBgZlZgEGBhVmAQYGVWYBBgY6Y4AABxWAIRkPtLqAAAAABJRU5ErkJggg==");
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Enhancement 10: Cover brand — larger, tighter */
+.cover-brand {
+  font-size: 80px; font-weight: 700;
+  color: white; line-height: .95; letter-spacing: -3px; margin-bottom: 8px;
+  position: relative; z-index: 2;
+}
+.cover-brand span { color: var(--rose); font-style: italic; }
+.cover-issue {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: rgba(255,255,255,.4);
+  letter-spacing: 3px; text-transform: uppercase; margin-bottom: 32px;
+  position: relative; z-index: 2;
+}
+.cover-headline {
+  font-size: 32px; font-weight: 600;
+  color: rgba(255,255,255,.78); line-height: 1.25; max-width: 720px;
+  position: relative; z-index: 2;
+}
+.cover-tags { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 8px; position: relative; z-index: 2; }
+.cover-tags .tag {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 3px;
+  background: rgba(255,255,255,.06); color: rgba(255,255,255,.5);
+  border: 1px solid rgba(255,255,255,.08);
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  transition: background .15s ease, color .15s ease;
+  /* Enhancement 18: Staggered fade-in for tags */
+  opacity: 0;
+  animation: tagFadeIn 0.5s ease-out forwards;
+}
+.cover-tags .tag:nth-child(1) { animation-delay: 0.3s; }
+.cover-tags .tag:nth-child(2) { animation-delay: 0.4s; }
+.cover-tags .tag:nth-child(3) { animation-delay: 0.5s; }
+.cover-tags .tag:nth-child(4) { animation-delay: 0.6s; }
+.cover-tags .tag:nth-child(5) { animation-delay: 0.7s; }
+.cover-tags .tag:nth-child(6) { animation-delay: 0.8s; }
+.cover-tags .tag:nth-child(7) { animation-delay: 0.9s; }
+.cover-tags .tag:nth-child(8) { animation-delay: 1.0s; }
+.cover-tags .tag:nth-child(9) { animation-delay: 1.1s; }
+.cover-tags .tag:nth-child(10) { animation-delay: 1.2s; }
+@keyframes tagFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.cover-tags .tag:hover {
+  background: rgba(255,255,255,.12); color: rgba(255,255,255,.8);
+}
+
+/* ═══════════ NAVIGATOR ═══════════ */
+.nav-section { padding: 48px 60px; background: var(--paper); border-bottom: 1px solid var(--rule); }
+.nav-section h2 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 24px;
+}
+.nav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+/* Lead cards span two columns with optional thumbnail */
+.nav-card.lead {
+  grid-column: span 2;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+  padding: 0; overflow: hidden;
+}
+.nav-card.lead .nav-card-content { padding: 22px 24px; }
+.nav-card.lead .nav-card-thumb {
+  background-size: cover; background-position: center;
+  min-height: 140px;
+}
+.nav-card.lead h3 { font-size: 20px; }
+.nav-card {
+  background: var(--warm); border-radius: 8px; padding: 20px;
+  border-left: 4px solid var(--rule);
+  transition: transform .15s ease, box-shadow .15s ease;
+  text-decoration: none; display: block; cursor: pointer;
+}
+.nav-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.06); text-decoration: none; }
+.nav-card.world { border-left-color: var(--rose); }
+.nav-card.tech { border-left-color: var(--ember); }
+.nav-card.football { border-left-color: var(--turf); }
+.nav-card.screen { border-left-color: var(--neon); }
+.nav-card.shelf { border-left-color: var(--shelf-accent); }
+.nav-card.session { border-left-color: var(--session-accent); }
+.nav-card.history { border-left-color: var(--hist-accent); }
+
+/* Enhancement 6: Nav card tinted backgrounds & glow hovers */
+.nav-card.world { background: rgba(232,56,79,.06); }
+.nav-card.tech { background: rgba(255,109,58,.06); }
+.nav-card.football { background: rgba(26,122,76,.06); }
+.nav-card.screen { background: rgba(255,45,120,.06); }
+.nav-card.shelf { background: rgba(212,160,60,.06); }
+.nav-card.session { background: rgba(212,98,43,.06); }
+.nav-card.history { background: rgba(139,105,20,.06); }
+
+.nav-card.world:hover { box-shadow: 0 8px 24px rgba(232,56,79,.12); }
+.nav-card.tech:hover { box-shadow: 0 8px 24px rgba(255,109,58,.12); }
+.nav-card.football:hover { box-shadow: 0 8px 24px rgba(26,122,76,.12); }
+.nav-card.screen:hover { box-shadow: 0 8px 24px rgba(255,45,120,.12); }
+.nav-card.shelf:hover { box-shadow: 0 8px 24px rgba(212,160,60,.12); }
+.nav-card.session:hover { box-shadow: 0 8px 24px rgba(212,98,43,.12); }
+.nav-card.history:hover { box-shadow: 0 8px 24px rgba(139,105,20,.12); }
+
+.nav-card-tag {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: 6px;
+  display: flex; align-items: center; gap: 6px;
+}
+/* Enhancement 6 & 15: Nav card icon element */
+.nav-card-icon {
+  display: inline-flex; align-items: center;
+  width: 16px; height: 16px;
+  flex-shrink: 0;
+}
+.nav-card-icon svg { width: 16px; height: 16px; }
+.nav-card.world .nav-card-tag { color: var(--rose); }
+.nav-card.tech .nav-card-tag { color: var(--ember); }
+.nav-card.football .nav-card-tag { color: var(--turf); }
+.nav-card.screen .nav-card-tag { color: var(--neon); }
+.nav-card.shelf .nav-card-tag { color: var(--shelf-accent); }
+.nav-card.session .nav-card-tag { color: var(--session-accent); }
+.nav-card.history .nav-card-tag { color: var(--hist-accent); }
+.nav-card h3 {
+  font-size: 18px; font-weight: 700; line-height: 1.25;
+  color: var(--ink); margin-bottom: 4px;
+}
+.nav-card p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; color: var(--slate); line-height: 1.4; margin: 0;
+}
+.nav-card .read-time {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px; color: var(--ghost); margin-top: 8px;
+  letter-spacing: 0.5px; text-transform: uppercase;
+}
+
+/* ═══════════ FOREWORD ═══════════ */
+.foreword { padding: 48px 60px; border-bottom: 1px solid var(--rule); }
+.foreword p { font-size: 21px; line-height: 1.75; max-width: 680px; }
+.foreword p::first-letter {
+  font-size: 64px; font-weight: 700; float: left;
+  line-height: .78; margin: 8px 12px 0 0; color: var(--rose);
+}
+
+/* ═══════════ SECTION DIVIDERS ═══════════ */
+.divider { height: 8px; border: none; margin: 0; }
+.dv-world { background: linear-gradient(90deg, var(--rose), #c0392b); }
+.dv-tech { background: linear-gradient(90deg, var(--ember), #e67e22); }
+.dv-football { background: linear-gradient(90deg, var(--turf), var(--turf-lt)); }
+.dv-screen { background: linear-gradient(90deg, #9B59B6, var(--neon)); }
+.dv-shelf { background: linear-gradient(90deg, var(--shelf-accent), #A0722A); }
+.dv-session { background: linear-gradient(90deg, var(--session-accent), #E67E22); }
+.dv-history { background: linear-gradient(90deg, var(--hist-accent), #D4A03C); }
+.dv-other { background: linear-gradient(90deg, var(--slate), var(--ghost)); }
+/* Inset divider variant — centred with breathing room */
+.divider.inset { margin: 0 60px; border-radius: 4px; }
+
+/* ═══════════ GENERIC SECTION ═══════════ */
+.sec { padding: 48px 60px; position: relative; overflow: hidden; }
+.sec h2 { font-size: 36px; font-weight: 700; line-height: 1.15; margin-bottom: 20px; max-width: 680px; }
+/* Sub-story headings: lighter weight for visual hierarchy separation */
+.sec h3 { font-size: 22px; font-weight: 600; line-height: 1.2; margin: 28px 0 10px; }
+.sec h3.minor { font-weight: 400; font-style: italic; font-size: 20px; }
+.sec h4 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--ghost); margin: 28px 0 10px;
+}
+
+/* ═══════════ Enhancement 2: SECTION WATERMARK LABELS ═══════════ */
+.sec-watermark {
+  position: absolute;
+  top: 20px; left: -20px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 140px;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 0;
+  /* Default: use section accent at very low opacity */
+  color: currentColor;
+  opacity: 0.04;
+}
+
+/* Enhancement 2: Section opener variant */
+.sec-opener .section-label {
+  font-size: 14px;
+  letter-spacing: 4px;
+  margin-bottom: 16px;
+}
+.sec-opener h2 {
+  font-size: 42px;
+  max-width: 720px;
+}
+.sec-opener .opener-band {
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 120px;
+  background: linear-gradient(180deg, rgba(0,0,0,.03) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ═══════════ Enhancement 9: Section gradient overlay ═══════════ */
+.sec-gradient-overlay {
+  position: absolute;
+  bottom: 0; left: 0; right: 0; height: 200px;
+  pointer-events: none;
+  z-index: 0;
+}
+.world-section .sec-gradient-overlay { background: linear-gradient(180deg, transparent, rgba(232,56,79,.02)); }
+.tech-section .sec-gradient-overlay { background: linear-gradient(180deg, transparent, rgba(255,109,58,.02)); }
+.session-section .sec-gradient-overlay { background: linear-gradient(180deg, transparent, rgba(212,98,43,.02)); }
+
+/* ═══════════ STAT BAR ═══════════ */
+.stat-bar {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; margin: 24px 0;
+}
+.stat-bar .stat { padding: 18px 16px; text-align: center; border-right: 1px solid var(--rule); }
+.stat-bar .stat:last-child { border-right: none; }
+.stat-bar .stat-num { font-size: 32px; font-weight: 700; line-height: 1; }
+.stat-bar .stat-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px; font-weight: 700; color: var(--ghost);
+  text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;
+}
+
+/* ═══════════ Enhancement 3: BIG NUMBER CALLOUTS ═══════════ */
+.big-number {
+  text-align: center;
+  padding: 24px 0;
+  margin: 24px 0;
+}
+.big-number .num {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 80px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--rose);
+}
+.big-number .num-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ghost);
+  margin-top: 8px;
+}
+.big-number.float-left { float: left; margin: 0 32px 16px 0; text-align: left; }
+.big-number.float-right { float: right; margin: 0 0 16px 32px; text-align: right; }
+
+/* Big number row — 2-3 dramatic stats */
+.big-number-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin: 32px 0;
+  padding: 28px 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+.big-number-row .big-number {
+  margin: 0; padding: 0;
+}
+.big-number-row .big-number .num {
+  font-size: 64px;
+}
+
+/* Section-aware big numbers */
+.touchline-section .big-number .num { color: var(--turf-lt); }
+.touchline-section .big-number .num-label { color: rgba(255,255,255,.4); }
+.touchline-section .big-number-row { border-color: rgba(255,255,255,.1); }
+.screen-section .big-number .num { color: var(--neon); }
+.screen-section .big-number .num-label { color: rgba(255,255,255,.4); }
+.screen-section .big-number-row { border-color: rgba(255,255,255,.1); }
+.shelf-section .big-number .num { color: var(--shelf-accent); }
+.shelf-section .big-number .num-label { color: rgba(255,255,255,.4); }
+.shelf-section .big-number-row { border-color: rgba(255,255,255,.1); }
+.tech-section .big-number .num { color: var(--ember); }
+.session-section .big-number .num { color: var(--session-accent); }
+.history-section .big-number .num { color: var(--hist-accent); }
+
+/* Enhancement 10: Display stat — for inline dramatic numbers */
+.display-stat {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 72px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--rose);
+  display: inline;
+}
+
+/* ═══════════ ANGLE BOX ═══════════ */
+.angle {
+  background: var(--warm); border-left: 5px solid var(--rose);
+  padding: 24px 28px; margin: 28px 0; border-radius: 0 6px 6px 0;
+}
+.angle-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 8px;
+}
+.angle p { font-size: 17px; line-height: 1.65; font-weight: 600; }
+
+/* ═══════════ PULL QUOTE ═══════════ */
+.pull-quote {
+  border-left: 4px solid var(--rose); padding: 16px 28px; margin: 32px 0;
+}
+.pull-quote p {
+  font-size: 22px; font-style: italic; font-weight: 400;
+  line-height: 1.5; color: var(--ink); margin: 0;
+}
+.pull-quote cite {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-style: normal; color: var(--ghost);
+  display: block; margin-top: 8px;
+}
+
+/* Enhancement 7: Pull quote — centered variant */
+.pull-quote.centered {
+  border-left: none;
+  text-align: center;
+  padding: 32px 40px;
+  position: relative;
+}
+.pull-quote.centered::before {
+  content: '\201C';
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 80px;
+  font-weight: 700;
+  color: var(--rose);
+  opacity: 0.25;
+  display: block;
+  line-height: 0.5;
+  margin-bottom: 8px;
+}
+
+/* Enhancement 7: Pull quote — wide variant */
+.pull-quote.wide {
+  margin-left: -32px;
+  margin-right: -32px;
+  padding: 24px 40px;
+  border-left-width: 5px;
+}
+
+/* Section-aware centered quotes */
+.touchline-section .pull-quote.centered::before { color: var(--turf-lt); }
+.screen-section .pull-quote.centered::before { color: var(--neon); }
+.shelf-section .pull-quote.centered::before { color: var(--shelf-accent); }
+
+/* ═══════════ DID YOU KNOW ═══════════ */
+.dyk {
+  background: linear-gradient(135deg, #FFF8E7, #FFF3D6);
+  border: 1px solid #E8D5A3; border-radius: 8px;
+  padding: 18px 22px; margin: 24px 0; position: relative;
+}
+.dyk::before {
+  content: '💡'; position: absolute; top: -10px; left: 16px;
+  font-size: 18px; background: var(--paper); padding: 0 4px;
+}
+.dyk-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: #B8860B; margin-bottom: 6px;
+}
+.dyk p { font-size: 15px; line-height: 1.55; margin: 0; color: #5C4A20; }
+
+/* ═══════════ SIDEBAR / CALLOUT BOX ═══════════ */
+.sidebar {
+  background: var(--warm); border-radius: 8px; padding: 22px 26px; margin: 24px 0;
+  border: 1px solid var(--rule);
+}
+.sidebar-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 10px;
+}
+.sidebar ul { list-style: none; }
+.sidebar li {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; line-height: 1.5; padding: 5px 0;
+  border-bottom: 1px solid rgba(0,0,0,.04); color: var(--ink);
+}
+.sidebar li:last-child { border-bottom: none; }
+
+/* ═══════════ ALSO THIS WEEK LIST ═══════════ */
+.also { margin-top: 32px; padding-top: 24px; border-top: 2px solid var(--rule); }
+.also-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--ghost); margin-bottom: 12px;
+}
+.also-list { list-style: none; }
+.also-list li {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14.5px; line-height: 1.5; padding: 8px 0;
+  border-bottom: 1px solid rgba(0,0,0,.04);
+}
+.also-list li:last-child { border-bottom: none; }
+
+/* Enhancement 8: Also cards — compact card grid alternative */
+.also-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+.also-card {
+  background: var(--warm);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 14px 16px;
+}
+.also-card h4 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 700;
+  color: var(--ink);
+  letter-spacing: 0; text-transform: none;
+  margin: 0 0 4px;
+}
+.also-card p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12.5px; color: var(--slate);
+  line-height: 1.4; margin: 0;
+}
+.also-card .badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--ghost);
+  margin-top: 6px; display: inline-block;
+}
+
+/* Dark section also-cards */
+.touchline-section .also-cards .also-card { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.06); }
+.touchline-section .also-cards .also-card h4 { color: rgba(255,255,255,.9); }
+.touchline-section .also-cards .also-card p { color: rgba(255,255,255,.6); }
+.touchline-section .also-cards .also-card .badge { color: rgba(255,255,255,.3); }
+.screen-section .also-cards .also-card { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.06); }
+.screen-section .also-cards .also-card h4 { color: rgba(255,255,255,.9); }
+.screen-section .also-cards .also-card p { color: rgba(255,255,255,.6); }
+.shelf-section .also-cards .also-card { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.06); }
+.shelf-section .also-cards .also-card h4 { color: rgba(255,255,255,.9); }
+.shelf-section .also-cards .also-card p { color: rgba(255,255,255,.6); }
+
+/* ═══════════ DUAL COLUMN ═══════════ */
+.dual-col { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 24px 0; }
+.col-card { border-left: 4px solid var(--rule); padding-left: 24px; }
+.col-card.accent-ember { border-left-color: var(--ember); }
+.col-card.accent-deep { border-left-color: var(--deep); }
+.col-card h3 { font-size: 22px; font-weight: 700; line-height: 1.2; margin: 0 0 10px; }
+.col-card p { font-size: 16px; }
+
+/* ═══════════ Enhancement 1: VARIED COLUMN LAYOUTS ═══════════ */
+.split-60-40 {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 32px;
+  margin: 24px 0;
+  align-items: start;
+}
+.split-40-60 {
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+  gap: 32px;
+  margin: 24px 0;
+  align-items: start;
+}
+
+/* ═══════════ HERO IMAGE ═══════════ */
+.hero-img { width: 100%; aspect-ratio: 16/7; object-fit: cover; border-radius: 8px; margin: 24px 0; }
+/* Full-bleed hero — bleeds to section edges above content */
+.hero-bleed { width: calc(100% + 120px); margin-left: -60px; border-radius: 0; margin-top: -48px; margin-bottom: 28px; aspect-ratio: 16/7; object-fit: cover; }
+.inline-img { border-radius: 6px; margin: 20px 0; }
+/* Float image for text wrap (books, album art) */
+.img-float-left { float: left; margin: 4px 24px 12px 0; border-radius: 6px; }
+
+/* ═══════════ Enhancement 4: IMAGE MONTAGE GRID ═══════════ */
+.img-montage {
+  display: grid;
+  gap: 8px;
+  margin: 24px 0;
+}
+.img-montage.layout-1-2 {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+}
+.img-montage.layout-1-2 .montage-hero {
+  grid-column: 1 / -1;
+}
+.img-montage.layout-2x2 {
+  grid-template-columns: 1fr 1fr;
+}
+.img-montage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+}
+.img-montage .caption {
+  grid-column: 1 / -1;
+}
+
+/* Enhancement 4: Offset image — asymmetric text wrap */
+.img-offset {
+  float: right;
+  width: 60%;
+  margin: 0 0 16px 24px;
+  border-radius: 6px;
+}
+.img-offset.left {
+  float: left;
+  margin: 0 24px 16px 0;
+}
+
+/* ═══════════ THE WORLD THIS WEEK ═══════════ */
+.world-section { background: var(--paper); }
+.world-section .section-label { color: var(--rose); }
+.world-section .sec-watermark { color: var(--rose); }
+
+/* ═══════════ PIXEL & BYTE ═══════════ */
+.tech-section { background: var(--warm); }
+.tech-section .section-label { color: var(--ember); }
+.tech-section .sec-watermark { color: var(--ember); }
+
+/* ═══════════ THE TOUCHLINE ═══════════ */
+.touchline-section { background: var(--pitch); color: rgba(255,255,255,.85); }
+.touchline-section .section-label { color: var(--turf-lt); }
+.touchline-section h2 { color: white; }
+.touchline-section h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--turf-lt); margin: 28px 0 12px;
+}
+.touchline-section h3.narrative {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px; text-transform: none; letter-spacing: 0; color: white;
+}
+.touchline-section p { color: rgba(255,255,255,.8); }
+.touchline-section a { color: var(--turf-lt); }
+.touchline-section .angle { background: rgba(255,255,255,.04); border-left-color: var(--turf-lt); }
+.touchline-section .angle-label { color: var(--turf-lt); }
+.touchline-section .angle p { color: rgba(255,255,255,.9); }
+.touchline-section .also { border-top-color: rgba(255,255,255,.1); }
+.touchline-section .also-title { color: rgba(255,255,255,.3); }
+.touchline-section .also-list li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+.touchline-section .pull-quote { border-left-color: var(--turf-lt); }
+.touchline-section .pull-quote p { color: rgba(255,255,255,.9); }
+.touchline-section .pull-quote cite { color: rgba(255,255,255,.4); }
+.touchline-section .sec-watermark { color: var(--turf-lt); }
+
+/* Touchline DYK — section-aware dark variant */
+.touchline-section .dyk { background: rgba(26,122,76,.08); border-color: rgba(43,214,123,.12); }
+.touchline-section .dyk::before { background: var(--pitch); }
+.touchline-section .dyk-title { color: var(--turf-lt); }
+.touchline-section .dyk p { color: rgba(255,255,255,.7); }
+
+/* Touchline sidebar */
+.touchline-section .sidebar { background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.touchline-section .sidebar-title { color: var(--turf-lt); }
+.touchline-section .sidebar li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+
+/* League Table */
+.league-table {
+  width: 100%; border-collapse: collapse; margin: 16px 0 24px;
+  font-family: 'DM Sans', sans-serif; font-size: 14px;
+}
+.league-table th {
+  text-align: left; padding: 10px 12px;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: rgba(255,255,255,.3); border-bottom: 1px solid rgba(255,255,255,.1);
+}
+.league-table td { padding: 9px 12px; border-bottom: 1px solid rgba(255,255,255,.04); color: rgba(255,255,255,.6); }
+.league-table tr:nth-child(even) td { background: rgba(255,255,255,.015); }
+.league-table tr.highlight td { color: var(--turf-lt); font-weight: 700; }
+.league-table .pos { width: 30px; text-align: center; }
+/* Scrollable wrapper for small screens */
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 16px 0 24px; }
+.table-wrap .league-table { margin: 0; min-width: 520px; }
+
+/* Results Strip */
+.results-strip { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+.result-card {
+  background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.06);
+  border-radius: 6px; padding: 12px 16px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px;
+  color: rgba(255,255,255,.65); line-height: 1.4; min-width: 190px;
+  flex: 1 1 190px; max-width: 220px;
+}
+.result-card .teams { color: rgba(255,255,255,.6); }
+.result-card strong { color: rgba(255,255,255,.9); font-weight: 700; }
+.result-card .score {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 18px; font-weight: 700; color: var(--turf-lt);
+  display: block; margin: 2px 0;
+}
+
+/* ═══════════ Enhancement 11: SPARKLINE ═══════════ */
+.sparkline {
+  display: inline-block;
+  width: 200px;
+  height: 40px;
+  vertical-align: middle;
+}
+.sparkline svg {
+  width: 100%;
+  height: 100%;
+}
+.sparkline .spark-line {
+  fill: none;
+  stroke: var(--turf-lt);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.sparkline .spark-area {
+  fill: var(--turf-lt);
+  opacity: 0.1;
+}
+.sparkline .spark-dot {
+  fill: var(--turf-lt);
+}
+
+/* Enhancement 11: Position change indicators */
+.pos-change {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+}
+.pos-change.up { color: #2BD67B; }
+.pos-change.down { color: var(--rose); }
+.pos-change.same { color: var(--ghost); }
+
+/* Enhancement 11: Mini horizontal bar */
+.mini-bar {
+  display: inline-block;
+  height: 6px;
+  border-radius: 3px;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+.mini-bar-track {
+  display: inline-block;
+  width: 100px;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255,255,255,.1);
+  position: relative;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+.mini-bar-track .mini-bar-fill {
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--turf-lt);
+}
+
+/* ═══════════ SCREEN & SOUND ═══════════ */
+.screen-section { background: var(--screen-bg); color: rgba(255,255,255,.85); }
+.screen-section .section-label { color: var(--neon); }
+.screen-section h2 { color: white; }
+.screen-section h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--neon); margin: 28px 0 12px;
+}
+.screen-section h3.feature-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px; text-transform: none; letter-spacing: 0; color: white; margin-bottom: 14px;
+}
+.screen-section p { color: rgba(255,255,255,.8); }
+.screen-section a { color: var(--neon); }
+.screen-section .also { border-top-color: rgba(255,255,255,.08); }
+.screen-section .also-title { color: rgba(255,255,255,.3); }
+.screen-section .also-list li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+.screen-section .pull-quote { border-left-color: var(--neon); }
+.screen-section .pull-quote p { color: rgba(255,255,255,.9); }
+.screen-section .pull-quote cite { color: rgba(255,255,255,.4); }
+.screen-section .sec-watermark { color: var(--neon); }
+
+/* Screen & Sound DYK — section-aware dark variant */
+.screen-section .dyk { background: rgba(255,45,120,.06); border-color: rgba(255,45,120,.12); }
+.screen-section .dyk::before { background: var(--screen-bg); }
+.screen-section .dyk-title { color: var(--neon); }
+.screen-section .dyk p { color: rgba(255,255,255,.7); }
+
+/* Screen sidebar */
+.screen-section .sidebar { background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.screen-section .sidebar-title { color: var(--neon); }
+.screen-section .sidebar li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+
+/* Radar — Release Radar and On the Radar */
+.radar-grid { margin: 16px 0; }
+.radar-row {
+  display: grid; grid-template-columns: 80px 1fr; gap: 14px;
+  padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,.06);
+  font-family: 'DM Sans', sans-serif; font-size: 14px;
+  color: rgba(255,255,255,.7); line-height: 1.4;
+}
+.radar-row:last-child { border-bottom: none; }
+.radar-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700; color: var(--neon); padding-top: 2px;
+}
+.radar-row strong { color: rgba(255,255,255,.95); }
+.radar-platform { font-size: 11px; color: rgba(255,255,255,.35); font-weight: 500; }
+/* Category dot for radar items */
+.radar-cat {
+  display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+  margin-right: 6px; vertical-align: middle;
+}
+.radar-cat.film { background: var(--neon); }
+.radar-cat.tv { background: #9B59B6; }
+.radar-cat.game { background: var(--ember); }
+.radar-cat.book { background: var(--shelf-accent); }
+.radar-cat.music { background: var(--turf-lt); }
+.radar-cat.tech { background: var(--ghost); }
+.radar-cat.lego { background: #E8384F; }
+/* Leaving Soon — urgency styling */
+.radar-row.leaving { border-left: 3px solid var(--rose); padding-left: 12px; margin-left: -3px; }
+.radar-row.leaving .radar-date { color: var(--rose); }
+
+/* ═══════════ Enhancement 16: CARD STACK — Horizontal scroll ═══════════ */
+.card-stack {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 8px 0 16px;
+  margin: 16px 0;
+}
+.card-stack::-webkit-scrollbar { height: 4px; }
+.card-stack::-webkit-scrollbar-track { background: rgba(255,255,255,.05); border-radius: 2px; }
+.card-stack::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 2px; }
+
+.stack-card {
+  flex: 0 0 240px;
+  scroll-snap-align: start;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.stack-card-img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+}
+.stack-card-body {
+  padding: 14px 16px;
+}
+.stack-card-title {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 17px; font-weight: 700;
+  color: rgba(255,255,255,.95);
+  margin-bottom: 4px;
+}
+.stack-card-verdict {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12.5px; color: rgba(255,255,255,.6);
+  line-height: 1.4; margin-bottom: 8px;
+}
+.stack-card .platform-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: rgba(255,255,255,.35);
+  background: rgba(255,255,255,.06);
+  padding: 2px 8px; border-radius: 3px;
+  display: inline-block;
+}
+
+/* Light section card stacks */
+.tech-section .stack-card { background: white; border-color: var(--rule); }
+.tech-section .stack-card-title { color: var(--ink); }
+.tech-section .stack-card-verdict { color: var(--slate); }
+.tech-section .stack-card .platform-badge { color: var(--ghost); background: var(--warm); }
+.tech-section .card-stack::-webkit-scrollbar-track { background: var(--rule); }
+.tech-section .card-stack::-webkit-scrollbar-thumb { background: var(--ghost); }
+
+/* ═══════════ Enhancement 19: SCORE/RATING DOTS ═══════════ */
+.rating {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  margin: 4px 0;
+}
+.rating .dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,.25);
+  background: transparent;
+}
+.rating .dot.filled {
+  border-color: transparent;
+}
+/* Section-specific rating colours */
+.screen-section .rating .dot.filled { background: var(--neon); }
+.shelf-section .rating .dot.filled { background: var(--shelf-accent); }
+.tech-section .rating .dot { border-color: var(--rule); }
+.tech-section .rating .dot.filled { background: var(--ember); border-color: transparent; }
+/* Light section dots */
+.session-section .rating .dot { border-color: var(--rule); }
+.session-section .rating .dot.filled { background: var(--session-accent); border-color: transparent; }
+.world-section .rating .dot { border-color: var(--rule); }
+.world-section .rating .dot.filled { background: var(--rose); border-color: transparent; }
+
+/* ═══════════ THE SHELF ═══════════ */
+.shelf-section { background: var(--shelf-bg); color: rgba(255,255,255,.85); }
+.shelf-section .section-label { color: var(--shelf-accent); }
+.shelf-section h2 { color: white; }
+.shelf-section h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--shelf-accent); margin: 28px 0 12px;
+}
+.shelf-section h3.feature-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px; text-transform: none; letter-spacing: 0; color: white; margin-bottom: 14px;
+}
+.shelf-section p { color: rgba(255,255,255,.8); }
+.shelf-section a { color: var(--shelf-accent); }
+.shelf-section .also { border-top-color: rgba(255,255,255,.08); }
+.shelf-section .also-title { color: rgba(255,255,255,.3); }
+.shelf-section .also-list li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+.shelf-section .sec-watermark { color: var(--shelf-accent); }
+.shelf-section .pull-quote { border-left-color: var(--shelf-accent); }
+.shelf-section .pull-quote p { color: rgba(255,255,255,.9); }
+.shelf-section .pull-quote cite { color: rgba(255,255,255,.4); }
+
+/* Shelf DYK — section-aware dark variant */
+.shelf-section .dyk { background: rgba(212,160,60,.06); border-color: rgba(212,160,60,.12); }
+.shelf-section .dyk::before { background: var(--shelf-bg); }
+.shelf-section .dyk-title { color: var(--shelf-accent); }
+.shelf-section .dyk p { color: rgba(255,255,255,.7); }
+
+/* Shelf sidebar */
+.shelf-section .sidebar { background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.shelf-section .sidebar-title { color: var(--shelf-accent); }
+.shelf-section .sidebar li { color: rgba(255,255,255,.7); border-bottom-color: rgba(255,255,255,.04); }
+
+/* Book Recommendation Card — with image float support */
+.book-card {
+  background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+  border-radius: 8px; padding: 18px 22px; margin: 12px 0;
+  overflow: hidden;
+}
+.book-card h4 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 19px; font-weight: 700; color: rgba(255,255,255,.95);
+  text-transform: none; letter-spacing: 0; margin: 0 0 4px;
+}
+.book-card .author {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; color: rgba(255,255,255,.4); margin-bottom: 6px;
+}
+.book-card p { font-size: 14px; color: rgba(255,255,255,.6); margin: 0; }
+.book-card img { float: left; width: 80px; margin: 0 16px 8px 0; border-radius: 4px; }
+/* Side-by-side book cards */
+.book-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+
+/* ═══════════ THE SESSION ═══════════ */
+.session-section { background: var(--session-bg); }
+.session-section .section-label { color: var(--session-accent); }
+.session-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.session-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.session-section .sec-watermark { color: var(--session-accent); }
+
+/* Workout Card — for rep schemes, protocols, programmes */
+.workout-card {
+  background: white; border: 1px solid var(--rule); border-radius: 8px;
+  padding: 22px 26px; margin: 20px 0;
+  border-left: 4px solid var(--session-accent);
+}
+.workout-card-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--session-accent); margin-bottom: 12px;
+}
+.workout-card table {
+  width: 100%; border-collapse: collapse; font-family: 'DM Sans', sans-serif; font-size: 14px;
+}
+.workout-card th {
+  text-align: left; padding: 6px 10px;
+  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--ghost); border-bottom: 1px solid var(--rule);
+}
+.workout-card td { padding: 7px 10px; border-bottom: 1px solid rgba(0,0,0,.04); color: var(--ink); }
+.workout-card .highlight-row td { color: var(--session-accent); font-weight: 700; }
+
+/* Workout icon labels */
+.workout-type {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'DM Sans', sans-serif; font-size: 11px;
+  color: var(--session-accent); font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; margin-bottom: 8px;
+}
+
+/* ═══════════ THIS WEEK IN HISTORY ═══════════ */
+.history-section { background: var(--hist-bg); }
+.history-section .section-label { color: var(--hist-accent); }
+.history-section h2 { font-size: 30px; font-weight: 700; line-height: 1.2; margin-bottom: 16px; color: #3D2E0F; }
+.history-section .sec-watermark { color: var(--hist-accent); }
+/* Year badges for history items */
+.year-badge {
+  display: inline-block; font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700; color: var(--hist-accent);
+  background: rgba(139,105,20,.08); border-radius: 3px;
+  padding: 2px 8px; margin-right: 8px; vertical-align: middle;
+}
+.history-section .also-list li { display: flex; align-items: baseline; gap: 0; }
+
+/* Enhancement 9: History paper texture — more pronounced */
+.history-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.06;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANWp0mAAAACHRSTlMzMzMzMzMzM85JBgUAAAA0SURBVDjLY2CgNmBWYBBgYFZgEGBkVmAQYGJWYBBgZlZgEGBhVmAQYGVWYBBgY6Y4AABxWAIRkPtLqAAAAABJRU5ErkJggg==");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ═══════════ ROTATING SECTION STYLES ═══════════ */
+/* Each rotating section gets a background, accent colour, and section-aware overrides */
+
+.pantry-section { background: var(--pantry-bg); }
+.pantry-section .section-label { color: var(--pantry-accent); }
+.pantry-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.pantry-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.pantry-section .sec-watermark { color: var(--pantry-accent); }
+.pantry-section .workout-card { border-left-color: var(--pantry-accent); } /* reuse workout-card for recipe cards */
+.pantry-section .workout-card-title { color: var(--pantry-accent); }
+.pantry-section .big-number .num { color: var(--pantry-accent); }
+.pantry-section .pull-quote { border-left-color: var(--pantry-accent); }
+.pantry-section .dyk { background: rgba(198,93,58,.06); border-color: rgba(198,93,58,.12); }
+.pantry-section .dyk-title { color: var(--pantry-accent); }
+.pantry-section .read-next a { color: var(--pantry-accent); }
+.pantry-section .sidebar { border-left-color: var(--pantry-accent); }
+.pantry-section .sidebar-title { color: var(--pantry-accent); }
+
+.workshop-section { background: var(--workshop-bg); }
+.workshop-section .section-label { color: var(--workshop-accent); }
+.workshop-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.workshop-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.workshop-section .sec-watermark { color: var(--workshop-accent); }
+.workshop-section .compare-panel .compare-side { border-color: rgba(90,99,120,.2); }
+.workshop-section .big-number .num { color: var(--workshop-accent); }
+.workshop-section .pull-quote { border-left-color: var(--workshop-accent); }
+.workshop-section .dyk { background: rgba(90,99,120,.06); border-color: rgba(90,99,120,.12); }
+.workshop-section .dyk-title { color: var(--workshop-accent); }
+.workshop-section .read-next a { color: var(--workshop-accent); }
+.workshop-section .sidebar { border-left-color: var(--workshop-accent); }
+.workshop-section .sidebar-title { color: var(--workshop-accent); }
+
+.toolkit-section { background: var(--toolkit-bg); }
+.toolkit-section .section-label { color: var(--toolkit-accent); }
+.toolkit-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.toolkit-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.toolkit-section .sec-watermark { color: var(--toolkit-accent); }
+.toolkit-section .big-number .num { color: var(--toolkit-accent); }
+.toolkit-section .pull-quote { border-left-color: var(--toolkit-accent); }
+.toolkit-section .dyk { background: rgba(26,154,175,.06); border-color: rgba(26,154,175,.12); }
+.toolkit-section .dyk-title { color: var(--toolkit-accent); }
+.toolkit-section .read-next a { color: var(--toolkit-accent); }
+.toolkit-section .also-cards .also-card { border-color: rgba(26,154,175,.12); }
+.toolkit-section .sidebar { border-left-color: var(--toolkit-accent); }
+.toolkit-section .sidebar-title { color: var(--toolkit-accent); }
+
+.ledger-section { background: var(--ledger-bg); }
+.ledger-section .section-label { color: var(--ledger-accent); }
+.ledger-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.ledger-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.ledger-section .sec-watermark { color: var(--ledger-accent); }
+.ledger-section .big-number .num { color: var(--ledger-accent); }
+.ledger-section .pull-quote { border-left-color: var(--ledger-accent); }
+.ledger-section .dyk { background: rgba(196,139,44,.06); border-color: rgba(196,139,44,.12); }
+.ledger-section .dyk-title { color: var(--ledger-accent); }
+.ledger-section .read-next a { color: var(--ledger-accent); }
+.ledger-section .stat-bar .stat-num { color: var(--ledger-accent); }
+.ledger-section .sidebar { border-left-color: var(--ledger-accent); }
+.ledger-section .sidebar-title { color: var(--ledger-accent); }
+
+.longgame-section { background: var(--longgame-bg); }
+.longgame-section .section-label { color: var(--longgame-accent); }
+.longgame-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.longgame-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.longgame-section .sec-watermark { color: var(--longgame-accent); }
+.longgame-section .big-number .num { color: var(--longgame-accent); }
+.longgame-section .pull-quote { border-left-color: var(--longgame-accent); }
+.longgame-section .dyk { background: rgba(42,58,92,.06); border-color: rgba(42,58,92,.12); }
+.longgame-section .dyk-title { color: var(--longgame-accent); }
+.longgame-section .read-next a { color: var(--longgame-accent); }
+.longgame-section .stat-bar .stat-num { color: var(--longgame-accent); }
+.longgame-section .sidebar { border-left-color: var(--longgame-accent); }
+.longgame-section .sidebar-title { color: var(--longgame-accent); }
+
+.wallet-section { background: var(--wallet-bg); }
+.wallet-section .section-label { color: var(--wallet-accent); }
+.wallet-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.wallet-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.wallet-section .sec-watermark { color: var(--wallet-accent); }
+.wallet-section .big-number .num { color: var(--wallet-accent); }
+.wallet-section .pull-quote { border-left-color: var(--wallet-accent); }
+.wallet-section .dyk { background: rgba(26,138,122,.06); border-color: rgba(26,138,122,.12); }
+.wallet-section .dyk-title { color: var(--wallet-accent); }
+.wallet-section .read-next a { color: var(--wallet-accent); }
+.wallet-section .compare-panel .compare-side { border-color: rgba(26,138,122,.2); }
+.wallet-section .sidebar { border-left-color: var(--wallet-accent); }
+.wallet-section .sidebar-title { color: var(--wallet-accent); }
+
+.itinerary-section { background: var(--itinerary-bg); }
+.itinerary-section .section-label { color: var(--itinerary-accent); }
+.itinerary-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.itinerary-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.itinerary-section .sec-watermark { color: var(--itinerary-accent); }
+.itinerary-section .big-number .num { color: var(--itinerary-accent); }
+.itinerary-section .pull-quote { border-left-color: var(--itinerary-accent); }
+.itinerary-section .dyk { background: rgba(212,99,75,.06); border-color: rgba(212,99,75,.12); }
+.itinerary-section .dyk-title { color: var(--itinerary-accent); }
+.itinerary-section .read-next a { color: var(--itinerary-accent); }
+.itinerary-section .sidebar { border-left-color: var(--itinerary-accent); }
+.itinerary-section .sidebar-title { color: var(--itinerary-accent); }
+
+/* Nav card styles for rotating sections */
+.nav-card.pantry { border-left-color: var(--pantry-accent); background: rgba(198,93,58,.06); }
+.nav-card.pantry:hover { box-shadow: 0 8px 24px rgba(198,93,58,.12); }
+.nav-card.pantry .nav-card-tag { color: var(--pantry-accent); }
+.nav-card.workshop { border-left-color: var(--workshop-accent); background: rgba(90,99,120,.06); }
+.nav-card.workshop:hover { box-shadow: 0 8px 24px rgba(90,99,120,.12); }
+.nav-card.workshop .nav-card-tag { color: var(--workshop-accent); }
+.nav-card.toolkit { border-left-color: var(--toolkit-accent); background: rgba(26,154,175,.06); }
+.nav-card.toolkit:hover { box-shadow: 0 8px 24px rgba(26,154,175,.12); }
+.nav-card.toolkit .nav-card-tag { color: var(--toolkit-accent); }
+.nav-card.ledger { border-left-color: var(--ledger-accent); background: rgba(196,139,44,.06); }
+.nav-card.ledger:hover { box-shadow: 0 8px 24px rgba(196,139,44,.12); }
+.nav-card.ledger .nav-card-tag { color: var(--ledger-accent); }
+.nav-card.longgame { border-left-color: var(--longgame-accent); background: rgba(42,58,92,.06); }
+.nav-card.longgame:hover { box-shadow: 0 8px 24px rgba(42,58,92,.12); }
+.nav-card.longgame .nav-card-tag { color: var(--longgame-accent); }
+.nav-card.wallet { border-left-color: var(--wallet-accent); background: rgba(26,138,122,.06); }
+.nav-card.wallet:hover { box-shadow: 0 8px 24px rgba(26,138,122,.12); }
+.nav-card.wallet .nav-card-tag { color: var(--wallet-accent); }
+.nav-card.itinerary { border-left-color: var(--itinerary-accent); background: rgba(212,99,75,.06); }
+.nav-card.itinerary:hover { box-shadow: 0 8px 24px rgba(212,99,75,.12); }
+.nav-card.itinerary .nav-card-tag { color: var(--itinerary-accent); }
+
+/* Dividers for rotating sections */
+.dv-pantry { background: linear-gradient(90deg, var(--pantry-accent), #E8845A); }
+.dv-workshop { background: linear-gradient(90deg, var(--workshop-accent), #7A839A); }
+.dv-toolkit { background: linear-gradient(90deg, var(--toolkit-accent), #2AB8CE); }
+.dv-ledger { background: linear-gradient(90deg, var(--ledger-accent), #D4A03C); }
+.dv-longgame { background: linear-gradient(90deg, var(--longgame-accent), #4A5A8C); }
+.dv-wallet { background: linear-gradient(90deg, var(--wallet-accent), #2AB8A8); }
+.dv-itinerary { background: linear-gradient(90deg, var(--itinerary-accent), #E8845A); }
+
+/* ═══════════ Enhancement 12: CONTEXTUAL TIMELINES ═══════════ */
+.timeline {
+  position: relative;
+  padding-left: 32px;
+  margin: 24px 0;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 8px; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--rule);
+}
+.timeline-node {
+  position: relative;
+  padding: 12px 0 24px 16px;
+}
+.timeline-node::before {
+  content: '';
+  position: absolute;
+  left: -28px; top: 18px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--rose);
+  border: 2px solid var(--paper);
+}
+.timeline-node .timeline-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--ghost);
+  margin-bottom: 4px;
+}
+.timeline-node .timeline-content {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14.5px; line-height: 1.5;
+}
+.timeline-node .timeline-content strong { color: var(--ink); }
+
+/* Timeline on dark backgrounds */
+.touchline-section .timeline::before { background: rgba(255,255,255,.1); }
+.touchline-section .timeline-node::before { background: var(--turf-lt); border-color: var(--pitch); }
+.touchline-section .timeline-node .timeline-date { color: var(--turf-lt); }
+.touchline-section .timeline-node .timeline-content { color: rgba(255,255,255,.7); }
+.touchline-section .timeline-node .timeline-content strong { color: rgba(255,255,255,.95); }
+
+.screen-section .timeline::before { background: rgba(255,255,255,.1); }
+.screen-section .timeline-node::before { background: var(--neon); border-color: var(--screen-bg); }
+.screen-section .timeline-node .timeline-date { color: var(--neon); }
+.screen-section .timeline-node .timeline-content { color: rgba(255,255,255,.7); }
+.screen-section .timeline-node .timeline-content strong { color: rgba(255,255,255,.95); }
+
+.shelf-section .timeline::before { background: rgba(255,255,255,.1); }
+.shelf-section .timeline-node::before { background: var(--shelf-accent); border-color: var(--shelf-bg); }
+.shelf-section .timeline-node .timeline-date { color: var(--shelf-accent); }
+.shelf-section .timeline-node .timeline-content { color: rgba(255,255,255,.7); }
+.shelf-section .timeline-node .timeline-content strong { color: rgba(255,255,255,.95); }
+
+/* History timeline */
+.history-section .timeline::before { background: rgba(139,105,20,.2); }
+.history-section .timeline-node::before { background: var(--hist-accent); border-color: var(--hist-bg); }
+.history-section .timeline-node .timeline-date { color: var(--hist-accent); }
+.history-section .timeline-node .timeline-content { color: #5C4A20; }
+
+/* ═══════════ Enhancement 13: COMPACT TAKES ═══════════ */
+.compact-take {
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--rose);
+  border-radius: 0 6px 6px 0;
+  padding: 16px 18px;
+  margin: 12px 0;
+}
+.compact-take h4 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 17px; font-weight: 700; color: var(--ink);
+  text-transform: none; letter-spacing: 0;
+  margin: 0 0 6px;
+}
+.compact-take p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13.5px; color: var(--slate);
+  line-height: 1.5; margin: 0 0 6px;
+}
+.compact-take .src { margin-top: 4px; }
+
+/* Compact take — section accents */
+.tech-section .compact-take { border-left-color: var(--ember); background: white; }
+.touchline-section .compact-take { border-left-color: var(--turf-lt); background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.touchline-section .compact-take h4 { color: rgba(255,255,255,.95); }
+.touchline-section .compact-take p { color: rgba(255,255,255,.6); }
+.screen-section .compact-take { border-left-color: var(--neon); background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.screen-section .compact-take h4 { color: rgba(255,255,255,.95); }
+.screen-section .compact-take p { color: rgba(255,255,255,.6); }
+
+/* Compact grid — 2 compact takes side by side */
+.compact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+/* ═══════════ Enhancement 14: MARGIN NOTES ═══════════ */
+.margin-note {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--slate);
+  background: var(--warm);
+  border-left: 3px solid var(--rose);
+  padding: 12px 14px;
+  border-radius: 0 4px 4px 0;
+}
+/* On desktop, float to right margin */
+@media (min-width: 821px) {
+  .margin-note {
+    float: right;
+    width: 220px;
+    margin: 0 -60px 16px 24px;
+    position: relative;
+    z-index: 1;
+  }
+}
+/* Section-aware margin notes */
+.tech-section .margin-note { border-left-color: var(--ember); }
+.touchline-section .margin-note { background: rgba(255,255,255,.04); border-left-color: var(--turf-lt); color: rgba(255,255,255,.6); }
+.screen-section .margin-note { background: rgba(255,255,255,.04); border-left-color: var(--neon); color: rgba(255,255,255,.6); }
+.shelf-section .margin-note { background: rgba(255,255,255,.04); border-left-color: var(--shelf-accent); color: rgba(255,255,255,.6); }
+.history-section .margin-note { border-left-color: var(--hist-accent); background: rgba(139,105,20,.06); color: #5C4A20; }
+
+/* ═══════════ Enhancement 15: SECTION ICONS (inline SVG) ═══════════ */
+/* Icons use currentColor so they inherit from parent. Defined as classes for documentation. */
+.sec-icon {
+  display: inline-block;
+  width: 24px; height: 24px;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+.sec-icon svg {
+  width: 24px; height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ═══════════ Enhancement 17: COLLAPSIBLE SECTIONS ═══════════ */
+.collapsible {
+  margin: 20px 0;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.collapsible summary {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 700;
+  padding: 14px 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  list-style: none;
+  background: var(--warm);
+  color: var(--ink);
+  transition: background .15s ease;
+}
+.collapsible summary::-webkit-details-marker { display: none; }
+.collapsible summary::after {
+  content: '';
+  width: 8px; height: 8px;
+  border-right: 2px solid var(--ghost);
+  border-bottom: 2px solid var(--ghost);
+  transform: rotate(45deg);
+  transition: transform .2s ease;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+.collapsible[open] summary::after {
+  transform: rotate(-135deg);
+}
+.collapsible summary:hover { background: var(--rule); }
+.collapsible-content {
+  padding: 16px 18px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--slate);
+}
+
+/* Dark section collapsibles */
+.touchline-section .collapsible { border-color: rgba(255,255,255,.08); }
+.touchline-section .collapsible summary { background: rgba(255,255,255,.04); color: rgba(255,255,255,.9); }
+.touchline-section .collapsible summary::after { border-color: rgba(255,255,255,.3); }
+.touchline-section .collapsible summary:hover { background: rgba(255,255,255,.08); }
+.touchline-section .collapsible-content { color: rgba(255,255,255,.7); }
+
+.screen-section .collapsible { border-color: rgba(255,255,255,.08); }
+.screen-section .collapsible summary { background: rgba(255,255,255,.04); color: rgba(255,255,255,.9); }
+.screen-section .collapsible summary::after { border-color: rgba(255,255,255,.3); }
+.screen-section .collapsible summary:hover { background: rgba(255,255,255,.08); }
+.screen-section .collapsible-content { color: rgba(255,255,255,.7); }
+
+.shelf-section .collapsible { border-color: rgba(255,255,255,.08); }
+.shelf-section .collapsible summary { background: rgba(255,255,255,.04); color: rgba(255,255,255,.9); }
+.shelf-section .collapsible summary::after { border-color: rgba(255,255,255,.3); }
+.shelf-section .collapsible summary:hover { background: rgba(255,255,255,.08); }
+.shelf-section .collapsible-content { color: rgba(255,255,255,.7); }
+
+/* ═══════════ Enhancement 20: READ-NEXT CONNECTORS ═══════════ */
+.read-next {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  text-align: right;
+  margin-top: 28px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+  color: var(--ghost);
+}
+.read-next a {
+  font-weight: 700;
+  text-decoration: none;
+}
+.read-next .arrow {
+  display: inline-block;
+  margin-left: 4px;
+  transition: transform .15s ease;
+}
+.read-next:hover .arrow {
+  transform: translateX(3px);
+}
+
+/* Section-specific read-next colours */
+.world-section .read-next a { color: var(--rose); }
+.tech-section .read-next a { color: var(--ember); }
+.touchline-section .read-next { border-top-color: rgba(255,255,255,.08); color: rgba(255,255,255,.3); }
+.touchline-section .read-next a { color: var(--turf-lt); }
+.screen-section .read-next { border-top-color: rgba(255,255,255,.08); color: rgba(255,255,255,.3); }
+.screen-section .read-next a { color: var(--neon); }
+.shelf-section .read-next { border-top-color: rgba(255,255,255,.08); color: rgba(255,255,255,.3); }
+.shelf-section .read-next a { color: var(--shelf-accent); }
+.session-section .read-next a { color: var(--session-accent); }
+.history-section .read-next a { color: var(--hist-accent); }
+
+/* ═══════════ Enhancement 5: SCROLL-TRIGGERED ANIMATIONS ═══════════ */
+/* Mobile-safe: elements are visible by default. Animation only on viewports
+   wide enough that IntersectionObserver thresholds work reliably.
+   NEVER apply .reveal to <section> elements or large containers
+   (split-60-40, split-40-60, dual-col, also-cards) — only to small
+   leaf elements: images, angles, pull-quotes, individual cards. */
+.reveal {
+  opacity: 1;
+  transform: none;
+}
+@media (min-width: 601px) {
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* Staggered children (desktop only) */
+@media (min-width: 601px) {
+  .reveal-group .reveal:nth-child(1) { transition-delay: 0ms; }
+  .reveal-group .reveal:nth-child(2) { transition-delay: 80ms; }
+  .reveal-group .reveal:nth-child(3) { transition-delay: 160ms; }
+  .reveal-group .reveal:nth-child(4) { transition-delay: 240ms; }
+  .reveal-group .reveal:nth-child(5) { transition-delay: 320ms; }
+  .reveal-group .reveal:nth-child(6) { transition-delay: 400ms; }
+}
+
+/* ═══════════ THE LONG SHELF ═══════════ */
+.longshelf-section { background: var(--paper); border-bottom: 1px solid var(--rule); }
+.longshelf-section .section-label { color: var(--rose); }
+/* Two-column compact layout */
+.longshelf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 32px; }
+.shelf-item { padding: 16px 0; border-bottom: 1px solid var(--rule); }
+.shelf-item:last-child { border-bottom: none; }
+.shelf-item .title { font-size: 17px; font-weight: 700; color: var(--ink); line-height: 1.3; }
+.shelf-item .meta {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; color: var(--ghost); margin-top: 2px;
+}
+.shelf-item .desc {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; color: var(--slate); margin-top: 4px; line-height: 1.5;
+}
+
+/* ═══════════ ON THE RADAR ═══════════ */
+.radar-section { background: var(--warm); }
+.radar-section .section-label { color: var(--ember); }
+.radar-section .radar-row { border-bottom-color: rgba(0,0,0,.06); color: var(--ink); }
+.radar-section .radar-date { color: var(--ember); font-size: 12px; }
+.radar-section .radar-row strong { color: var(--ink); }
+.radar-section .radar-cat.football { background: var(--turf); }
+.radar-section .radar-cat.film { background: var(--neon); }
+.radar-section .radar-cat.game { background: var(--ember); }
+.radar-section .radar-cat.event { background: var(--rose); }
+.radar-section .radar-cat.release { background: var(--shelf-accent); }
+
+/* ═══════════ FOOTER ═══════════ */
+.footer {
+  background: var(--deep); padding: 40px 60px; text-align: center;
+}
+.footer-brand { font-size: 28px; font-weight: 700; color: white; }
+.footer-brand span { color: var(--rose); font-style: italic; }
+.footer-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: rgba(255,255,255,.3);
+  letter-spacing: 2px; text-transform: uppercase; margin-top: 6px;
+}
+
+/* ═══════════ ARTICLE ENTRY PATTERNS ═══════════ */
+/* Stat lead — bold number + context opens an article */
+.entry-stat {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 56px; font-weight: 700; line-height: 1.1;
+  margin-bottom: 4px;
+}
+.entry-stat-context {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; color: var(--slate);
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 20px;
+}
+/* Quote lead — pull quote as opener */
+.entry-quote {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 24px; font-style: italic; line-height: 1.4;
+  border-left: 4px solid var(--rose);
+  padding-left: 20px; margin-bottom: 20px;
+  color: var(--ink);
+}
+.entry-quote cite {
+  display: block; font-style: normal; font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--ghost); margin-top: 8px;
+}
+/* Summary bullets lead — 3 key points upfront */
+.entry-bullets {
+  list-style: none; padding: 0; margin: 0 0 20px 0;
+  border-left: 4px solid var(--rose);
+  padding-left: 16px;
+}
+.entry-bullets li {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 500;
+  line-height: 1.5; padding: 4px 0;
+  color: var(--ink);
+}
+/* Question hook lead */
+.entry-question {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 28px; font-weight: 600; font-style: italic;
+  line-height: 1.3; margin-bottom: 16px;
+  color: var(--ink);
+}
+/* Dark section entry variants */
+.touchline-section .entry-stat,
+.screen-section .entry-stat,
+.shelf-section .entry-stat { color: rgba(255,255,255,.9); }
+.touchline-section .entry-stat-context,
+.screen-section .entry-stat-context,
+.shelf-section .entry-stat-context { color: rgba(255,255,255,.4); }
+.touchline-section .entry-quote,
+.screen-section .entry-quote,
+.shelf-section .entry-quote { color: rgba(255,255,255,.85); }
+.touchline-section .entry-bullets li,
+.screen-section .entry-bullets li,
+.shelf-section .entry-bullets li { color: rgba(255,255,255,.8); }
+.touchline-section .entry-question,
+.screen-section .entry-question,
+.shelf-section .entry-question { color: rgba(255,255,255,.85); }
+.touchline-section .entry-quote { border-color: var(--turf-lt); }
+.touchline-section .entry-bullets { border-color: var(--turf-lt); }
+.screen-section .entry-quote { border-color: var(--neon); }
+.screen-section .entry-bullets { border-color: var(--neon); }
+.shelf-section .entry-quote { border-color: var(--shelf-accent); }
+.shelf-section .entry-bullets { border-color: var(--shelf-accent); }
+
+/* ═══════════ SECTION BREATHER BANDS ═══════════ */
+.breather {
+  text-align: center;
+  padding: 28px 40px;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  margin: 0;
+}
+.breather-stat {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 42px; font-weight: 700;
+  color: var(--rose); line-height: 1.1;
+}
+.breather-context {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; color: var(--slate);
+  margin-top: 4px;
+}
+.breather-teaser {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 18px; font-style: italic;
+  color: var(--slate); line-height: 1.4;
+}
+/* Dark breather (between dark sections) */
+.breather.dark {
+  background: var(--deep);
+  border-color: rgba(255,255,255,.08);
+}
+.breather.dark .breather-stat { color: var(--turf-lt); }
+.breather.dark .breather-context,
+.breather.dark .breather-teaser { color: rgba(255,255,255,.45); }
+
+/* ═══════════ ALSO-LIST PRIORITY TIERS ═══════════ */
+.also-list li.tier-hot {
+  border-left: 3px solid var(--rose);
+  padding-left: 10px;
+  background: rgba(232,56,79,.04);
+  margin-bottom: 10px; padding-top: 4px; padding-bottom: 4px;
+}
+.also-list li.tier-warm {
+  border-left: 3px solid var(--ember);
+  padding-left: 10px;
+  margin-bottom: 10px; padding-top: 4px; padding-bottom: 4px;
+}
+.also-list li.tier-note {
+  border-left: 3px solid var(--rule);
+  padding-left: 10px;
+  margin-bottom: 10px; padding-top: 4px; padding-bottom: 4px;
+}
+/* Dark section tiers */
+.touchline-section .also-list li.tier-hot { border-color: var(--turf-lt); background: rgba(43,214,123,.06); }
+.touchline-section .also-list li.tier-warm { border-color: rgba(255,255,255,.25); }
+.touchline-section .also-list li.tier-note { border-color: rgba(255,255,255,.1); }
+.screen-section .also-list li.tier-hot { border-color: var(--neon); background: rgba(255,45,120,.06); }
+.screen-section .also-list li.tier-warm { border-color: rgba(255,255,255,.25); }
+.screen-section .also-list li.tier-note { border-color: rgba(255,255,255,.1); }
+.shelf-section .also-list li.tier-hot { border-color: var(--shelf-accent); background: rgba(212,160,60,.06); }
+.shelf-section .also-list li.tier-warm { border-color: rgba(255,255,255,.25); }
+.shelf-section .also-list li.tier-note { border-color: rgba(255,255,255,.1); }
+
+/* ═══════════ COMPARISON PANELS ═══════════ */
+.compare-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 20px 0;
+}
+.compare-side {
+  padding: 20px 24px;
+}
+.compare-side.left {
+  background: rgba(232,56,79,.04);
+  border-right: 1px solid var(--rule);
+}
+.compare-side.right {
+  background: rgba(26,122,76,.04);
+}
+.compare-side .compare-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.compare-side.left .compare-label { color: var(--rose); }
+.compare-side.right .compare-label { color: var(--turf); }
+.compare-side h4 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 20px; font-weight: 700;
+  margin-bottom: 8px;
+}
+.compare-side p {
+  font-size: 15px; line-height: 1.55;
+  margin-bottom: 8px;
+}
+.compare-side .compare-stat {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 36px; font-weight: 700;
+  line-height: 1.1; margin-bottom: 4px;
+}
+.compare-side.left .compare-stat { color: var(--rose); }
+.compare-side.right .compare-stat { color: var(--turf); }
+/* Dark section compare panels */
+.touchline-section .compare-side.left { background: rgba(43,214,123,.06); border-color: rgba(255,255,255,.08); }
+.touchline-section .compare-side.right { background: rgba(0,180,216,.06); }
+.touchline-section .compare-side p,
+.touchline-section .compare-side h4 { color: rgba(255,255,255,.85); }
+.touchline-section .compare-side.left .compare-label,
+.touchline-section .compare-side.left .compare-stat { color: var(--turf-lt); }
+.touchline-section .compare-side.right .compare-label,
+.touchline-section .compare-side.right .compare-stat { color: #00B4D8; }
+.screen-section .compare-side.left { background: rgba(255,45,120,.06); border-color: rgba(255,255,255,.08); }
+.screen-section .compare-side.right { background: rgba(0,180,216,.06); }
+.screen-section .compare-side p,
+.screen-section .compare-side h4 { color: rgba(255,255,255,.85); }
+.shelf-section .compare-side.left { background: rgba(212,160,60,.06); border-color: rgba(255,255,255,.08); }
+.shelf-section .compare-side.right { background: rgba(0,180,216,.06); }
+.shelf-section .compare-side p,
+.shelf-section .compare-side h4 { color: rgba(255,255,255,.85); }
+
+/* ═══════════ FLOATED INSET SIDEBAR ═══════════ */
+.sidebar-float {
+  float: right;
+  width: 260px;
+  margin: 0 0 16px 24px;
+  padding: 16px 18px;
+  background: var(--warm);
+  border-left: 3px solid var(--rose);
+  border-radius: 0 4px 4px 0;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; line-height: 1.5;
+}
+.sidebar-float .sidebar-title {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 8px;
+}
+.sidebar-float ul { list-style: none; padding: 0; margin: 0; }
+.sidebar-float li { padding: 4px 0; }
+/* Dark section float sidebars */
+.touchline-section .sidebar-float {
+  background: rgba(255,255,255,.05);
+  border-color: var(--turf-lt);
+  color: rgba(255,255,255,.8);
+}
+.touchline-section .sidebar-float .sidebar-title { color: var(--turf-lt); }
+.screen-section .sidebar-float {
+  background: rgba(255,255,255,.05);
+  border-color: var(--neon);
+  color: rgba(255,255,255,.8);
+}
+.screen-section .sidebar-float .sidebar-title { color: var(--neon); }
+.shelf-section .sidebar-float {
+  background: rgba(255,255,255,.05);
+  border-color: var(--shelf-accent);
+  color: rgba(255,255,255,.8);
+}
+.shelf-section .sidebar-float .sidebar-title { color: var(--shelf-accent); }
+
+/* ═══════════ RESPONSIVE ═══════════ */
+@media (max-width: 820px) {
+  .cover, .nav-section, .foreword, .sec, .touchline-section, .screen-section,
+  .shelf-section, .session-section, .history-section,
+  .longshelf-section, .radar-section, .footer {
+    padding-left: 24px; padding-right: 24px;
+  }
+  .hero-bleed { width: calc(100% + 48px); margin-left: -24px; }
+  .divider.inset { margin-left: 24px; margin-right: 24px; }
+  .cover-brand { font-size: 60px; }
+  .cover-headline { font-size: 26px; }
+  .nav-grid { grid-template-columns: 1fr 1fr; }
+  .nav-card.lead { grid-column: span 2; }
+  .longshelf-grid { grid-template-columns: 1fr; }
+  .book-grid { grid-template-columns: 1fr; }
+  /* Enhancement 1 */
+  .split-60-40, .split-40-60 { grid-template-columns: 1fr; }
+  /* Enhancement 4 */
+  .img-montage.layout-1-2, .img-montage.layout-2x2 { grid-template-columns: 1fr; }
+  .img-montage.layout-1-2 .montage-hero { grid-column: span 1; }
+  .img-offset { float: none; width: 100%; margin: 16px 0; }
+  /* Enhancement 2 */
+  .sec-watermark { font-size: 100px; }
+  /* Enhancement 7 */
+  .pull-quote.wide { margin-left: 0; margin-right: 0; }
+  /* Enhancement 8 */
+  .also-cards { grid-template-columns: 1fr; }
+  /* Enhancement 13 */
+  .compact-grid { grid-template-columns: 1fr; }
+  /* Enhancement 14: margin note goes inline */
+  .margin-note { float: none; width: 100%; margin: 16px 0; }
+  /* New components responsive */
+  .sidebar-float { float: none; width: 100%; margin: 16px 0; }
+  .compare-panel { grid-template-columns: 1fr; }
+  .compare-side.left { border-right: none; border-bottom: 1px solid var(--rule); }
+  .entry-stat { font-size: 44px; }
+  .entry-question { font-size: 24px; }
+}
+@media (max-width: 600px) {
+  .cover, .nav-section, .foreword, .sec, .touchline-section, .screen-section,
+  .shelf-section, .session-section, .history-section,
+  .longshelf-section, .radar-section, .footer {
+    padding-left: 20px; padding-right: 20px;
+  }
+  .hero-bleed { width: calc(100% + 40px); margin-left: -20px; }
+  .divider.inset { margin-left: 20px; margin-right: 20px; }
+  .cover-brand { font-size: 52px; }
+  .cover-headline { font-size: 22px; }
+  .nav-grid { grid-template-columns: 1fr; }
+  .nav-card.lead { grid-column: span 1; grid-template-columns: 1fr; }
+  .nav-card.lead .nav-card-thumb { min-height: 120px; }
+  .dual-col { grid-template-columns: 1fr; }
+  .stat-bar { grid-template-columns: repeat(2, 1fr); }
+  .stat-bar .stat:nth-child(2) { border-right: none; }
+  .results-strip { flex-direction: column; }
+  .result-card { max-width: 100%; }
+  .sec h2, .touchline-section h2, .screen-section h2, .shelf-section h2 { font-size: 28px; }
+  .longshelf-grid { grid-template-columns: 1fr; }
+  .book-grid { grid-template-columns: 1fr; }
+  .back-to-top { bottom: 16px; right: 16px; width: 40px; height: 40px; }
+  /* Enhancement 2: hide watermark on small screens */
+  .sec-watermark { display: none; }
+  /* Enhancement 3: scale down big numbers */
+  .big-number .num { font-size: 56px; }
+  .big-number-row { grid-template-columns: 1fr; gap: 16px; }
+  .big-number-row .big-number .num { font-size: 48px; }
+  /* Enhancement 10 */
+  .sec-opener h2 { font-size: 32px; }
+  .display-stat { font-size: 52px; }
+  /* Enhancement 16 */
+  .stack-card { flex: 0 0 200px; }
+  /* Enhancement 12 */
+  .timeline { padding-left: 24px; }
+}
+
+</style>
+</head>
+<body>
+<div class="progress-bar" id="progressBar"></div>
+<div class="mag">
+
+<!-- ══════ COVER ══════ -->
+<header class="cover" id="top">
+  <div class="cover-noise"></div>
+  <div class="cover-grain"></div>
+  <div class="cover-issue" style="position:relative;z-index:2">April 13–19, 2026 · Issue #3 · Sunday Edition</div>
+  <div class="cover-brand">The Signal<span>.</span></div>
+  <div class="cover-headline">The Strait That Decides Everything — a 24-hour reversal at the world's most contested waterway, three aircraft carriers on standby, and a ceasefire that expires in four days</div>
+  <div class="cover-tags">
+    <span class="tag">Iran / Hormuz</span>
+    <span class="tag">Hungary</span>
+    <span class="tag">Champions League</span>
+    <span class="tag">Bayern 4–3 Real</span>
+    <span class="tag">Pragmata</span>
+    <span class="tag">LEGO Star Wars</span>
+    <span class="tag">Race Taper</span>
+    <span class="tag">UK ISAs</span>
+    <span class="tag">Etsy 2026</span>
+    <span class="tag">Efteling</span>
+  </div>
+</header>
+
+<!-- ══════ NAVIGATOR ══════ -->
+<section class="nav-section" id="nav">
+  <h2>What's Inside</h2>
+  <div class="nav-grid">
+    <a href="#world" class="nav-card lead world" style="text-decoration:none">
+      <div class="nav-card-content">
+        <div class="nav-card-tag">
+          <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10 15 15 0 0 1-4-10A15 15 0 0 1 12 2z"/></svg></span>
+          World</div>
+        <h3>The Strait That Blinked — then Closed Again</h3>
+        <p>A 24-hour whiplash at the Strait of Hormuz, Iran fires on tankers, and a ceasefire that expires Wednesday.</p>
+        <div class="read-time">9 min read</div>
+      </div>
+      <div class="nav-card-thumb" style="background-image:url('https://www.aljazeera.com/wp-content/uploads/2026/04/2026-04-17T153425Z_747732_RC23RKADD3VV_RTRMADP_3_IRAQ-BASRA-OIL-1776507086.jpg?resize=770%2C513&quality=80')"></div>
+    </a>
+    <a href="#tech" class="nav-card tech" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="4"/><line x1="6" y1="10" x2="6" y2="14"/><line x1="4" y1="12" x2="8" y2="12"/><circle cx="16" cy="10" r="0.8" fill="currentColor"/><circle cx="18" cy="12" r="0.8" fill="currentColor"/></svg></span>
+        Pixel &amp; Byte</div>
+      <h3>Capcom's Pragmata and the Switch 2 question</h3>
+      <p>New sci-fi IP lands day-and-date on Nintendo's hybrid — with caveats.</p>
+      <div class="read-time">5 min</div>
+    </a>
+    <a href="#longgame" class="nav-card" style="text-decoration:none;--card-accent:var(--navy,#1a3a5c)">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>
+        The Long Game</div>
+      <h3>'Awful April' and the new tax year</h3>
+      <p>State pension rises 4.8%, dividend tax climbs, frozen thresholds bite harder.</p>
+      <div class="read-time">4 min</div>
+    </a>
+    <a href="#football" class="nav-card football" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2l3 7h-6l3-7zM22 12l-7 3v-6l7 3zM12 22l-3-7h6l-3 7zM2 12l7-3v6l-7-3z"/></svg></span>
+        The Touchline</div>
+      <h3>Bayern 4–3 Real: the night Munich remembered</h3>
+      <p>Arda Güler scores twice inside a minute, Olise seals it in the 90th. CL semis confirmed.</p>
+      <div class="read-time">7 min</div>
+    </a>
+    <a href="#ledger" class="nav-card" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span>
+        The Ledger</div>
+      <h3>What actually sells on Etsy in 2026</h3>
+      <p>Design files dominate. Bundles beat singles. And Notion templates are quietly growing.</p>
+      <div class="read-time">4 min</div>
+    </a>
+    <a href="#screen" class="nav-card screen" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 8h20M2 16h20M8 4v16M16 4v16"/></svg></span>
+        Screen &amp; Sound</div>
+      <h3>Maul goes dark — episodes 5 &amp; 6 drop Monday</h3>
+      <p>Shadow Lord moves into its most dangerous phase yet. Plus: Beef is back, Rock Hall revealed.</p>
+      <div class="read-time">5 min</div>
+    </a>
+    <a href="#session" class="nav-card session" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6h-2v12h2M18 6h2v12h-2M6 12h12"/><rect x="3" y="8" width="3" height="8" rx="1"/><rect x="18" y="8" width="3" height="8" rx="1"/></svg></span>
+        The Session</div>
+      <h3>Two weeks to go — the science of the final push</h3>
+      <p>What the taper actually does, why you should trust it, and how to fuel the final days.</p>
+      <div class="read-time">5 min</div>
+    </a>
+    <a href="#itinerary" class="nav-card" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 1 8 8c0 5-8 13-8 13S4 15 4 10a8 8 0 0 1 8-8z"/></svg></span>
+        The Itinerary</div>
+      <h3>Efteling gets a free-fall ride. Disney shrinks a park. NI has a forest fest.</h3>
+      <p>Parks news, travel notes, and a few local gems worth adding to the calendar.</p>
+      <div class="read-time">4 min</div>
+    </a>
+    <a href="#radar" class="nav-card" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></span>
+        On the Radar</div>
+      <h3>Coming Up</h3>
+      <p>CL semi-final first legs, race day, May 4 finale, and more.</p>
+      <div class="read-time">2 min</div>
+    </a>
+  </div>
+</section>
+
+<!-- ══════ FOREWORD ══════ -->
+<section class="foreword">
+  <p>The ceasefire expires Wednesday. Iran reopened the Strait of Hormuz on Friday, then closed it again on Saturday after Iran's IRGC gunboats fired on two oil tankers. Three US aircraft carriers are in the Gulf, a US naval blockade is still in place, and diplomats are scrambling in Islamabad. Elsewhere this week: Munich produced one of the great European nights in recent memory, Hungary ended sixteen years of Orbán in a single election, and Capcom landed a new IP on a handheld. It is, as ever, a lot.</p>
+</section>
+
+<!-- ══════ THE LONG SHELF ══════ -->
+<section class="sec longshelf-section">
+  <span class="section-label" style="color:var(--rose)">The Long Shelf — Worth Your Time</span>
+  <div class="longshelf-grid">
+    <div class="shelf-item">
+      <div class="title"><a href="https://www.outsideonline.com/running/racing/race-strategy/the-art-and-science-of-the-5k-10k-taper/">The Art and Science of the 5K/10K Taper</a></div>
+      <div class="meta">Outside Online · Sweat Science</div>
+      <div class="desc">The most common mistake in tapering is not trusting it — this piece explains exactly why the body needs 7–10 days to absorb a training stimulus, and what the science says about the ideal volume cut.</div>
+    </div>
+    <div class="shelf-item">
+      <div class="title"><a href="https://carnegieendowment.org/middle-east/diwan/2026/04/the-united-states-and-iran-have-agreed-to-a-two-week-ceasefire">The US–Iran Ceasefire: What Actually Happened in Islamabad</a></div>
+      <div class="meta">Carnegie Endowment for International Peace · Michael Young</div>
+      <div class="desc">Clear-eyed analysis of the Pakistan-brokered deal — the ten-point Iranian proposal, what Trump thought he was getting, and why the Hormuz question was always going to be the sticking point.</div>
+    </div>
+    <div class="shelf-item">
+      <div class="title"><a href="https://mydesigns.io/blog/digital-products-to-sell-on-etsy/">Digital Products That Actually Move on Etsy in 2026</a></div>
+      <div class="meta">MyDesigns · Research Roundup</div>
+      <div class="desc">Not a clickbait listicle — this pulls data from top-selling shops to show which formats (PNG bundles, SVG files, Notion templates) are generating real passive income and why volume compounds the way it does.</div>
+    </div>
+    <div class="shelf-item">
+      <div class="title"><a href="https://www.nytimes.com/2026/04/13/world/europe/hungary-election-results-orban-magyar.html">Four Takeaways From Orbán's Defeat</a></div>
+      <div class="meta">The New York Times · European Desk</div>
+      <div class="desc">A sharp post-election breakdown: how economics and anti-corruption sentiment ended sixteen years of electoral autocracy in a single night with a record 79.5% turnout.</div>
+    </div>
+    <div class="shelf-item">
+      <div class="title"><a href="https://www.mayoclinichealthsystem.org/hometown-health/speaking-of-health/designing-your-taper-to-maximize-your-potential-on-race-day">Designing Your Taper to Maximise Race Day Potential</a></div>
+      <div class="meta">Mayo Clinic Health System · Sports Medicine</div>
+      <div class="desc">The meta-analysis behind the 41–60% volume reduction rule, with practical guidance on how to keep intensity high while your body rebuilds. One of the clearest summaries of the evidence out there.</div>
+    </div>
+    <div class="shelf-item">
+      <div class="title"><a href="https://www.thesixthaxis.com/2026/04/16/pragmata-switch-2-review/">Pragmata on Switch 2 — Superb Sci-fi with a Few Hiccups</a></div>
+      <div class="meta">TheSixthAxis · Game Review</div>
+      <div class="desc">Honest, technical review of Capcom's new IP on Nintendo's hybrid — what the performance concessions actually look like in practice, and why it's still worth playing handheld despite the variable framerate.</div>
+    </div>
+    <div class="shelf-item">
+      <div class="title"><a href="https://www.bbc.com/news/articles/cd9vg782kx7o">Orbán Era Swept Away by Magyar's Election Landslide</a></div>
+      <div class="meta">BBC News · Budapest Correspondent</div>
+      <div class="desc">A rare moment in modern politics — a 45-year-old former party insider dismantles a 16-year electoral machine in a single night. The BBC's on-the-ground account of celebrations by the Danube is worth reading in full.</div>
+    </div>
+    <div class="shelf-item">
+      <div class="title"><a href="https://ezycourse.com/blog/platforms-to-sell-notion-templates">The Notion Template Economy: Which Platforms Actually Pay</a></div>
+      <div class="meta">EzyCourse · Creator Economy</div>
+      <div class="desc">A genuinely useful comparison of where to sell — Etsy vs. Gumroad vs. the Notion Marketplace — with fee structures, traffic realities, and the recurring argument for your own storefront. <strong>Wildcard:</strong> the top earners are building niches so specific most sellers overlook them.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ THE WORLD THIS WEEK ══════ -->
+<hr class="divider dv-world">
+<section class="sec world-section sec-opener" id="world">
+  <div class="sec-watermark">World</div>
+  <div class="opener-band"></div>
+  <div class="sec-gradient-overlay"></div>
+  <span class="section-label" style="color:var(--rose)">The World This Week</span>
+  <h2>The Strait That Blinked — Then Closed Again</h2>
+  <img class="hero-img reveal" src="https://www.aljazeera.com/wp-content/uploads/2026/04/2026-04-17T153425Z_747732_RC23RKADD3VV_RTRMADP_3_IRAQ-BASRA-OIL-1776507086.jpg?resize=770%2C513&quality=80" alt="Oil tanker in the Strait of Hormuz">
+  <div class="caption">Oil tanker near Basra, Iraq, as the Strait of Hormuz standoff enters its latest phase. Credit: Reuters / Al Jazeera</div>
+
+  <ul class="entry-bullets">
+    <li>Iran reopened the Strait of Hormuz to commercial traffic on Friday — and closed it again on Saturday</li>
+    <li>IRGC gunboats fired on two vessels attempting to cross; India summoned Iran's ambassador over attacks on its crude carriers</li>
+    <li>The two-week ceasefire — brokered by Pakistan on April 8 — expires Wednesday. No date set for a second round of talks</li>
+  </ul>
+
+  <div class="sidebar-float">
+    <div class="sidebar-title">Key Numbers</div>
+    <ul>
+      <li><strong>20%</strong> — share of world oil through the Strait</li>
+      <li><strong>~3,000</strong> — Iranian deaths in the conflict</li>
+      <li><strong>13</strong> — US service members killed</li>
+      <li><strong>~80</strong> — energy facilities damaged in the region</li>
+      <li><strong>3</strong> — US aircraft carriers currently in the Gulf</li>
+      <li><strong>4 days</strong> — until ceasefire expiry as of Saturday</li>
+    </ul>
+  </div>
+
+  <p>On Friday, there was a moment of genuine optimism. Iran's foreign minister declared the Strait of Hormuz "completely open." Oil prices fell nearly 9%, the biggest single-day drop since the war began in late February. US President Donald Trump said things were going "along very well." A second round of Islamabad talks seemed hours away.</p>
+
+  <p>Then Trump reaffirmed that the US naval blockade — which prevents ships from entering or departing Iranian ports — would "remain in full force" until a deal was done. Iran's Supreme Leader Khamenei responded that the country's navy would "make their enemies taste the bitterness of new defeats." By Saturday morning, the IRGC's joint military command declared that "control of the Strait of Hormuz has reverted to its prior condition under stringent management and oversight." IRGC gunboats then fired on an Indian crude carrier and a container vessel attempting to transit.</p>
+
+  <p>The economic damage is already structural. The International Energy Agency estimates approximately 10% of global oil supply has been shut down. Over 80 energy facilities in the region have sustained damage. Analysts say restoring production to pre-war levels could take up to two years even with an immediate agreement. Oil prices, which briefly touched $90 per barrel on Friday, climbed back toward $97 by Saturday evening. Jet fuel and natural gas shortages are expected to persist in some markets regardless of outcome.</p>
+
+  <div class="angle reveal">
+    <div class="angle-label">The Angle</div>
+    <p>The duelling blockades are the story here. The US demands the Strait reopen before negotiations can progress; Iran demands the naval blockade be lifted before the Strait reopens. Neither side can afford to go first. That deadlock makes a clean diplomatic resolution before Wednesday's ceasefire expiry look increasingly unlikely. A third outcome — a rolling series of short extensions with incremental tension releases — now seems more probable than either a deal or a resumption of full hostilities. But the gap between those outcomes is enormous, and the Strait of Hormuz is the fulcrum either way.</p>
+  </div>
+
+  <div class="src"><a href="https://apnews.com/article/us-iran-war-israel-hormuz-18-april-2026-ab475cb979825b956a10d60103026b37">AP News — Iran Closes Strait of Hormuz Over US Blockade</a></div>
+
+  <!-- ── ONGOING TRACKER ── -->
+  <div class="sidebar" style="margin:28px 0;border-left:4px solid var(--rose);background:rgba(220,38,38,.06)">
+    <div class="sidebar-title" style="color:var(--rose)">Iran War — Ongoing Tracker · Week 8</div>
+    <p style="margin:8px 0 4px"><strong>Ceasefire status:</strong> The Pakistan-mediated two-week ceasefire, agreed April 8, expires approximately April 22. As of Sunday morning no extension has been confirmed and Iran says no date for new talks has been set.</p>
+    <p style="margin:4px 0"><strong>Strait of Hormuz:</strong> Reopened briefly Friday; closed again Saturday after the US maintained its naval blockade. IRGC gunboats fired on two tankers Saturday. Ships continuing to avoid the strait without Iranian consent per navigation data firm Kpler.</p>
+    <p style="margin:4px 0"><strong>Lebanon ceasefire:</strong> A 10-day truce between Israel and Hezbollah is holding — described as fragile. A UN peacekeeper (French national) was killed Saturday in what France and UNIFIL say was likely a Hezbollah attack. Thousands of displaced Lebanese have begun returning south despite official warnings.</p>
+    <p style="margin:4px 0"><strong>Diplomacy:</strong> Pakistan's PM Shehbaz Sharif is visiting Riyadh and Ankara to press for a second round of US–Iran talks. Pakistan's army chief met Iran's parliament speaker on Thursday. US and Iranian negotiators were described as making "headway" in Islamabad last Tuesday. Iran's Deputy FM Khatibzadeh says Washington's "maximalist positions" remain the obstacle.</p>
+    <p style="margin:4px 0"><strong>Energy impact:</strong> Oil at ~$95–97/barrel; around 10% of global supply offline; ~80 energy facilities damaged. IEA: full production recovery could take 2 years.</p>
+    <p style="margin:4px 0"><strong>China angle:</strong> Beijing is securing discounted energy while positioning itself as a "responsible stable power" — dozens of world leaders have visited in recent months, capitalising on US foreign policy chaos, according to regional analysts.</p>
+    <p style="margin:4px 0 0"><strong>Sources:</strong> <a href="https://www.aljazeera.com/news/liveblog/2026/4/19/iran-war-live-tehran-says-no-date-set-for-us-talks-hormuz-strait-closed">Al Jazeera liveblog</a> · <a href="https://apnews.com/article/us-iran-war-lebanon-israel-talks-pakistan-hormuz-17-april-2026-4bd5a29af608ecbd72356559b3c55d67">AP News</a> · <a href="https://www.nytimes.com/live/2026/04/18/world/iran-us-war-trump-hormuz">NYT live</a></p>
+  </div>
+
+  <div class="also"><div class="also-title">Also This Week</div>
+    <ul class="also-list">
+      <li class="tier-hot"><strong>Hungary's political earthquake</strong> — Péter Magyar's Tisza party won a historic majority (138 of 199 seats, projected) ending Viktor Orbán's 16-year grip on power. Record turnout of 79.5%. Magyar pledged to "create a functioning and compassionate country for everyone." <a href="https://www.bbc.com/news/articles/cd9vg782kx7o">BBC</a></li>
+      <li class="tier-hot"><strong>Pope Leo XIV vs. Trump</strong> — The new pontiff, on an 11-day Africa tour, told crowds in Cameroon that "the world is being ravaged by a handful of tyrants" — widely read as aimed at US policy in Iran. Trump called him "ineffective." Leo told journalists on the papal plane he's "not interested in debating" the US president. <a href="https://www.npr.org/2026/04/16/nx-s1-5787753/pope-leo-takes-trump-war-tyrants-iran-africa">NPR</a></li>
+      <li class="tier-warm"><strong>Sudan — four years on</strong> — UN Under-Secretary-General Tom Fletcher reports ~700 people killed in drone strikes since the year started. MSF logged five Sudanese military drone strikes in Darfur this week alone. <a href="https://en.wikipedia.org/wiki/Portal:Current_events/2026_April_14">Wikipedia current events</a></li>
+      <li class="tier-warm"><strong>Rock &amp; Roll Hall of Fame 2026 class announced</strong> — Inductees include Oasis, Iron Maiden, Billy Idol, Joy Division/New Order, Sade, Phil Collins, Wu-Tang Clan, and the late Luther Vandross. Ceremony: November 14 in Los Angeles. <a href="https://rockhall.com/2026-inductees/">Rock Hall</a></li>
+      <li class="tier-warm"><strong>Midwest tornado outbreak</strong> — At least 35 tornadoes reported across 10 US states over the weekend, with several homes destroyed. Further storms forecast Monday.</li>
+      <li class="tier-warm"><strong>Ambazonian ceasefire in Cameroon</strong> — Militant groups declared a temporary halt to nearly a decade of conflict in anticipation of Pope Leo's visit. <a href="https://en.wikipedia.org/wiki/Portal:Current_events/2026_April_14">Wikipedia</a></li>
+      <li class="tier-note"><strong>Evergrande founder pleads guilty</strong> — Hui Ka Yan entered guilty pleas on fundraising fraud and illegal public deposits at a Shenzhen trial. <a href="https://en.wikipedia.org/wiki/Portal:Current_events/2026_April_14">Wikipedia</a></li>
+      <li class="tier-note"><strong>IMF/World Bank Spring Meetings</strong> — Finance ministers gathered in Washington DC this week with the Iran-driven global energy crisis dominating the agenda.</li>
+    </ul>
+  </div>
+  <div class="read-next">Up next: <a href="#tech">Pixel &amp; Byte <span class="arrow">→</span></a> — Capcom brings Pragmata to Switch 2 and new LEGO Star Wars hits shelves</div>
+</section>
+
+<!-- ══════ PIXEL & BYTE ══════ -->
+<hr class="divider dv-tech">
+<section class="sec tech-section" id="tech">
+  <div class="sec-watermark">Pixel</div>
+  <div class="sec-gradient-overlay"></div>
+  <span class="section-label" style="color:var(--ember)">Pixel &amp; Byte</span>
+
+  <h2>Capcom on Switch 2: Pragmata Lands, Imperfect but Worth It</h2>
+
+  <div class="entry-stat">9/10</div>
+  <div class="entry-stat-context">Nintendo Life's score for Pragmata on Switch 2 — "another excellent Capcom port"</div>
+
+  <p>Capcom has made an art of treating Nintendo's hybrid as a first-class platform. After the RE Engine's successful run with the Resident Evil trilogy, expectations were high for <strong>Pragmata</strong>, the studio's ambitious new sci-fi IP arriving day-and-date on Switch 2 on April 17. The verdict: brilliant game, honest performance trade-offs.</p>
+
+  <div class="compare-panel">
+    <div class="compare-side left">
+      <h4>Switch 2 Version</h4>
+      <ul>
+        <li>540p internal (handheld), DLSS upscaled to 1080p docked</li>
+        <li>Unlocked framerate — 30–40fps in busy scenes, ~50fps indoors</li>
+        <li>Simplified shadows and textures vs. PS5</li>
+        <li>Strand hair replaced with rigid card rendering</li>
+        <li>VRR in handheld helps smooth the choppier moments</li>
+        <li><strong>Verdict:</strong> Fully playable, worth it if Switch 2 is your platform</li>
+      </ul>
+    </div>
+    <div class="compare-side right">
+      <h4>PS5 Version</h4>
+      <ul>
+        <li>Full 4K/60fps with high-fidelity lighting and effects</li>
+        <li>Strand-based hair physics</li>
+        <li>Full shadow maps and texture detail</li>
+        <li>The definitive visual experience</li>
+        <li>Not portable</li>
+        <li><strong>Verdict:</strong> Best-looking; Switch 2 owners won't feel hard done by</li>
+      </ul>
+    </div>
+  </div>
+
+  <p>The game itself is one of the surprises of 2026. Pragmata centres on Hugh, a space-suit-wearing mercenary trapped on a disintegrating moon base, and Diana, a small android who rides on his back and provides hacking abilities. The combat system — simultaneously shooting with Hugh while guiding Diana's hacking grid via face buttons — creates a genuinely fresh tension that, reportedly, never gets boring even as enemy complexity ramps up. <a href="https://www.thesixthaxis.com/2026/04/16/pragmata-switch-2-review/">TheSixthAxis</a> calls it "one of the highlights of 2026."</p>
+
+  <div class="dyk">
+    <span class="dyk-label">Did You Know?</span>
+    This is the first time ever that Real Madrid started a Champions League match without any Spanish players in their lineup — confirmed during the Bayern second leg on Wednesday.
+  </div>
+
+  <h3>Also in Tech &amp; Gaming</h3>
+
+  <div class="also-cards">
+    <div class="also-card">
+      <h4>Switch 2 — Upcoming Wave</h4>
+      <p>Ratings have appeared for unannounced Switch 2 titles; speculation points to Zelda and Star Fox projects slated for summer. A Starfield port also surfaced in a rating.</p>
+      <span class="badge">Nintendo Life</span>
+    </div>
+    <div class="also-card">
+      <h4>Xenoblade Chronicles X: Definitive Edition</h4>
+      <p>The physical edition arrived April 16 on Switch 2 — the open-world RPG now with improved resolution, framerates, and updated story elements.</p>
+      <span class="badge">Nintendo</span>
+    </div>
+    <div class="also-card">
+      <h4>LEGO Star Wars May the 4th Wave</h4>
+      <p>April 26 sees the Razor Crest (£139.99), Yoda Bust, Darth Vader Bust, and the Mandalorian &amp; Grogu BrickHeadz land — timed ahead of the Mandalorian &amp; Grogu film on May 22.</p>
+      <span class="badge">IGN / Jay's Brick Blog</span>
+    </div>
+    <div class="also-card">
+      <h4>LEGO Tintin Moon Rocket + DC-3</h4>
+      <p>The Ideas Tintin Moon Rocket (£139.99) and Icons Douglas DC-3 PAN AM (£219.99) are now in shops — two of the strongest April releases for adult builders.</p>
+      <span class="badge">The Brick Fan</span>
+    </div>
+    <div class="also-card">
+      <h4>Outbound — April 24</h4>
+      <p>Build a home on wheels and explore a utopian open world — arriving Switch 2 and Switch on April 24. A gentle co-op alternative to the week's bigger releases.</p>
+      <span class="badge">Nintendo AU</span>
+    </div>
+    <div class="also-card">
+      <h4>Clair Obscur: Expedition 33 — Update 1.5.3</h4>
+      <p>March's patch for the 2025 GOTY fixed the long-reported Siren crash, save collectible bugs, and audio issues. The game shows no signs of slowing down a year after launch.</p>
+      <span class="badge">Gameblog</span>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-title">Family Picks — April</div>
+    <ul>
+      <li><strong>LEGO Mandalorian &amp; Grogu BrickHeadz (40856)</strong> — £34.99, April 26. Instantly recognisable pair for younger builders ahead of the film.</li>
+      <li><strong>Mario Kart: Luigi &amp; Mach 8 (72050)</strong> — Now in shops. Large racing set with genuine replay value for kids already playing Mario Kart World.</li>
+      <li><strong>Outbound (Switch 2)</strong> — The low-pressure co-op camper van adventure is exactly the kind of thing you play with a child on a rainy afternoon.</li>
+    </ul>
+  </div>
+
+  <div class="read-next">Up next: <a href="#longgame">The Long Game <span class="arrow">→</span></a> — 'Awful April' and what the new UK tax year means for your money</div>
+</section>
+
+<!-- ══════ THE LONG GAME ══════ -->
+<hr class="divider dv-longgame" style="border-color:rgba(26,58,92,.2)">
+<section class="sec" id="longgame" style="background:var(--long-game-bg,#f0f4f8);color:#1a1a2e;position:relative;padding:48px 32px;border-radius:0">
+  <div class="sec-watermark" style="color:rgba(26,58,92,.08)">Finance</div>
+  <span class="section-label" style="color:#1a3a5c;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase">The Long Game — Personal Finance</span>
+
+  <h2 style="color:#1a1a2e">'Awful April' and the New Tax Year</h2>
+
+  <div class="entry-question" style="color:#1a3a5c;font-style:italic;font-size:1.15em;margin:16px 0 24px;padding-left:16px;border-left:3px solid #1a3a5c">The tax year resets every April 6. This one brought more changes than most — and not all of them in your favour.</div>
+
+  <div class="big-number-row">
+    <div class="big-number">
+      <div class="num">4.8%</div>
+      <div class="num-label">State pension rise — April 2026</div>
+    </div>
+    <div class="big-number">
+      <div class="num">£20,000</div>
+      <div class="num-label">ISA allowance 2026/27 — unchanged (for now)</div>
+    </div>
+    <div class="big-number">
+      <div class="num">£12,000</div>
+      <div class="num-label">Cash ISA limit from April 2027 (under-65s)</div>
+    </div>
+  </div>
+
+  <p>The 2026/27 tax year opened on April 6 with a raft of changes that AJ Bell has collectively labelled "Awful April." The state pension rose 4.8% under the triple lock — the new full pension is £241.30/week, up from £230.25. That sounds positive until you notice the personal allowance remains frozen at £12,570 until 2031, meaning the full state pension now sits within touching distance of the tax-free threshold. The government has promised that from April 2027, no one with only state pension income will pay tax — but in the meantime, more pensioners will be pulled into paying income tax than at any point in recent history.</p>
+
+  <div class="sidebar" style="background:rgba(26,58,92,.06);border-left:3px solid #1a3a5c">
+    <div class="sidebar-title" style="color:#1a3a5c">Key Changes — April 2026</div>
+    <ul>
+      <li><strong>Dividend tax up 2%</strong> — now 10.75% (basic rate), 35.75% (higher/additional)</li>
+      <li><strong>IHT on farm/business assets</strong> — full relief up to £2.5m; 50% above that (was 100%)</li>
+      <li><strong>AIM shares IHT relief halved</strong> — from 100% to 50% business property relief</li>
+      <li><strong>Making Tax Digital</strong> — sole traders/landlords over £50k income now file quarterly</li>
+      <li><strong>State pension age rise begins</strong> — phased increase to 67 by April 2028</li>
+      <li><strong>Energy bills up</strong> — April's bills increase lands alongside frozen wages for many</li>
+    </ul>
+  </div>
+
+  <p>The ISA allowance stays at £20,000 for 2026/27 — but this is effectively the last full year under-65s can use the complete cash ISA allowance. From April 2027, that drops to £12,000 for cash ISAs (the full £20,000 can still go into stocks and shares). The stated rationale is pushing savers toward UK equities investment, though critics note it simply removes flexibility. If you have unused cash you want to shelter from tax, the window to put the full £20k into a cash ISA closes April 5, 2027.</p>
+
+  <div class="pull-quote reveal">
+    <p>"Every pound placed in an ISA grows without being taxed, which can significantly impact long-term returns. For those with excess savings outside tax-protected accounts, increasing an ISA balance before the tax year concludes can be one of the simplest methods to ensure their funds generate interest."</p>
+    <cite>— Andrew Prosser, Head of Investments, InvestEngine</cite>
+  </div>
+
+  <p>The pension picture is complex but important: the annual allowance remains £60,000 (or your earnings, whichever is lower), and carry-forward lets you contribute from up to three previous tax years — potentially £220,000 if you've left all three years unused. From April 2027, unspent pensions will lose IHT exemption, so anyone using a SIPP as an inheritance vehicle has roughly twelve months to review their estate planning. The interactive investor/AJ Bell consensus: the change most likely to shift behaviour is the IHT on pensions, not the ISA cut.</p>
+
+  <div class="sidebar" style="background:rgba(26,58,92,.06);border-left:3px solid #1a3a5c">
+    <div class="sidebar-title" style="color:#1a3a5c">One Thing to Do This Month</div>
+    <p style="margin:8px 0 0">If you haven't contributed to your 2026/27 ISA yet, the new tax year's allowance is now live. Consider splitting between cash and stocks &amp; shares before next April's cash ISA cap kicks in. This is also a good moment to review any old ISAs paying below current rates — you can transfer without losing tax-free status. <a href="https://www.ybs.co.uk/savings/guides/what-is-the-isa-allowance" style="color:#1a3a5c">YBS guide →</a></p>
+  </div>
+
+  <div class="read-next" style="color:#1a3a5c">Up next: <a href="#football" style="color:#1a3a5c">The Touchline <span class="arrow">→</span></a> — Bayern 4–3 Real Madrid, CL semis confirmed, Serie A's rolling title race</div>
+</section>
+
+<!-- ══════ THE TOUCHLINE ══════ -->
+<hr class="divider dv-football">
+<section class="sec touchline-section" id="football">
+  <div class="sec-watermark">Touchline</div>
+  <span class="section-label">The Touchline</span>
+
+  <h2>Wednesday Night in Munich</h2>
+
+  <div class="entry-quote">
+    <p>"What a match we have on our hands. 45 minutes, 15 shots, five goals."</p>
+    <cite>— Flashscore live commentary, 21:53 CET, April 15</cite>
+  </div>
+
+  <h3>Champions League — Quarter-Final Second Legs</h3>
+
+  <p><strong>Tuesday, April 14</strong></p>
+  <div class="results-strip">
+    <div class="result-card reveal"><span class="teams"><strong>PSG</strong> vs Liverpool</span><span class="score">2–0</span></div>
+    <div class="result-card reveal"><span class="teams"><strong>Atlético Madrid</strong> vs Barcelona</span><span class="score">2–1</span></div>
+  </div>
+  <p style="color:rgba(255,255,255,.6);font-size:.9em;margin:4px 0 16px">PSG win 4–0 on aggregate. Atlético win 3–2 on aggregate (Lookman decisive).</p>
+
+  <p><strong>Wednesday, April 15</strong></p>
+  <div class="results-strip">
+    <div class="result-card reveal"><span class="teams"><strong>Bayern Munich</strong> vs Real Madrid</span><span class="score">4–3</span></div>
+    <div class="result-card reveal"><span class="teams">Arsenal vs Sporting CP</span><span class="score">0–0</span></div>
+  </div>
+  <p style="color:rgba(255,255,255,.6);font-size:.9em;margin:4px 0 24px">Bayern win 6–4 on aggregate. Arsenal win 1–0 on aggregate.</p>
+
+  <img class="hero-img reveal" src="https://news.cgtn.com/news/2026-04-16/Bayern-Munich-get-through-Real-Madrid-thriller-to-reach-UCL-semifinals-1MnVduwfgLm/img/ccc8a734fb354c5595f6bf43d6de7983/ccc8a734fb354c5595f6bf43d6de7983.png" alt="Bayern Munich celebrate advancing against Real Madrid">
+  <div class="caption">Bayern celebrate at the Allianz Arena after a 4–3 win in one of the games of the season. Credit: CGTN</div>
+
+  <h3 class="narrative">The Night Madrid's Resistance Broke</h3>
+
+  <p>Real Madrid arrived in Munich having won the first leg 2–1, and for 90 minutes they nearly pulled off a <em>remontada</em> worthy of their greatest European nights. Arda Güler — in just 35 seconds — lobbed Manuel Neuer from distance with the fastest Champions League goal of the season. Güler then made it 2–0 Real on the night with a stunning free kick. Harry Kane equalised from inside the box. Kylian Mbappé restored the lead in first-half stoppage time. At 3–2 on the night (4–4 aggregate), Real were heading through.</p>
+
+  <p>Then Eduardo Camavinga received a second yellow card in the 86th minute for two needless challenges. Ten men. Three minutes later, Luis Díaz thundered one in from range to make it 3–3 — 5–4 on aggregate, Bayern through. In the 90th minute, Michael Olise added the cherry. The final: 4–3. Aggregate: 6–4. Real Madrid are out.</p>
+
+  <div class="angle reveal">
+    <div class="angle-label">The Take</div>
+    <p>Camavinga's red card may be the most costly disciplinary moment in Real Madrid's European season in years. The result was mathematically possible without it — but the ten-man final minutes turned an extraordinary game into a historic upset. Vincent Kompany has now eliminated the reigning European champions. Arsenal, meanwhile, qualified with a 0–0 — efficient, unspectacular, and entirely intentional from Arteta. The semi-final draw couldn't be more evenly matched.</p>
+  </div>
+
+  <h3>Champions League Semi-Final Draw</h3>
+  <div class="compare-panel">
+    <div class="compare-side left">
+      <h4>PSG vs Bayern Munich</h4>
+      <ul>
+        <li>1st leg: PSG away — April 28</li>
+        <li>2nd leg: Allianz Arena — May 6</li>
+        <li>A rematch of the 2020 final, won by Bayern</li>
+        <li>PSG defending champions; Bayern knocked out the holders</li>
+      </ul>
+    </div>
+    <div class="compare-side right">
+      <h4>Atlético Madrid vs Arsenal</h4>
+      <ul>
+        <li>1st leg: Metropolitano — April 29</li>
+        <li>2nd leg: Emirates — May 5</li>
+        <li>Arsenal beat Atlético 4–0 in the league phase in October</li>
+        <li>Simeone's revenge subplot writes itself</li>
+      </ul>
+    </div>
+  </div>
+  <p style="color:rgba(255,255,255,.6);font-size:.85em">Final: May 30 at Puskás Aréna, Budapest. <a href="https://www.standard.co.uk/sport/football/champions-league-semi-final-draw-dates-in-full-arsenal-fc-atletico-madrid-psg-b1278847.html" style="color:rgba(255,255,255,.5)">Evening Standard</a></p>
+
+  <!-- SERIE A -->
+  <h3>Serie A — Matchday 33</h3>
+  <p>Matchday 33 fixtures are spread across the weekend. Saturday results confirmed:</p>
+  <div class="results-strip">
+    <div class="result-card reveal"><span class="teams"><strong>Sassuolo</strong> vs Como</span><span class="score">2–1</span></div>
+    <div class="result-card reveal"><span class="teams"><strong>Udinese</strong> vs Parma</span><span class="score">1–0</span></div>
+    <div class="result-card reveal"><span class="teams">Napoli vs <strong>Lazio</strong></span><span class="score">0–2</span></div>
+  </div>
+
+  <p><strong>Sunday fixtures (today, as you read this):</strong> Cremonese vs. Torino (12:30), <strong>Hellas Verona vs. AC Milan (15:00)</strong>, Pisa vs. Genoa (18:00), Juventus vs. Bologna (20:45). The Milan game at Bentegodi and the Juventus home fixture are the ones to watch.</p>
+
+  <p>Lazio's 2–0 win at Napoli on Saturday is the result of the weekend so far — Cancellieri and Bašić on the scoresheet. Napoli drop to second as Inter maintain their lead. The title race remains Inter's to lose, but Napoli are not going quietly. <strong>Note: Milan vs. Juventus is next week (April 26)</strong>, not today.</p>
+
+  <h3>Serie A — Current Standings (after MD32, before Sunday results)</h3>
+  <div class="table-wrap"><table class="league-table">
+    <tr><th class="pos">#</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>Pts</th><th></th></tr>
+    <tr><td class="pos">1</td><td><strong>Inter Milan</strong></td><td>33</td><td>25</td><td>3</td><td>5</td><td><strong>78</strong></td><td><span class="pos-change same">•</span></td></tr>
+    <tr><td class="pos">2</td><td>Napoli</td><td>33</td><td>20</td><td>6</td><td>7</td><td>66</td><td><span class="pos-change down">▼ 1</span></td></tr>
+    <tr><td class="pos">3</td><td>AC Milan</td><td>32</td><td>18</td><td>9</td><td>5</td><td>63</td><td><span class="pos-change same">•</span></td></tr>
+    <tr class="highlight"><td class="pos">4</td><td>Juventus</td><td>32</td><td>17</td><td>9</td><td>6</td><td>60</td><td><span class="pos-change same">•</span></td></tr>
+    <tr><td class="pos">5</td><td>Como</td><td>33</td><td>16</td><td>10</td><td>7</td><td>58</td><td><span class="pos-change down">▼ 1</span></td></tr>
+    <tr><td class="pos">6</td><td>Roma</td><td>32</td><td>17</td><td>3</td><td>12</td><td>54</td><td><span class="pos-change same">•</span></td></tr>
+    <tr><td class="pos">7</td><td>Atalanta</td><td>32</td><td>14</td><td>11</td><td>7</td><td>53</td><td><span class="pos-change same">•</span></td></tr>
+    <tr><td class="pos">8</td><td>Bologna</td><td>32</td><td>14</td><td>6</td><td>12</td><td>48</td><td><span class="pos-change same">•</span></td></tr>
+    <tr><td class="pos">9</td><td>Lazio</td><td>33</td><td>11</td><td>11</td><td>11</td><td>44</td><td><span class="pos-change up">▲ 1</span></td></tr>
+    <tr><td class="pos">10</td><td>Udinese</td><td>33</td><td>12</td><td>7</td><td>14</td><td>43</td><td><span class="pos-change up">▲ 1</span></td></tr>
+    <tr style="border-top:2px dashed rgba(255,255,255,.2)"><td class="pos">17</td><td>Cremonese</td><td>32</td><td>5</td><td>9</td><td>18</td><td>24</td><td><span class="pos-change same">•</span></td></tr>
+    <tr><td class="pos">18</td><td>Lecce</td><td>32</td><td>6</td><td>6</td><td>20</td><td>24</td><td><span class="pos-change same">•</span></td></tr>
+    <tr><td class="pos">19</td><td>Hellas Verona</td><td>32</td><td>2</td><td>9</td><td>21</td><td>15</td><td><span class="pos-change same">•</span></td></tr>
+    <tr><td class="pos">20</td><td>Pisa SC</td><td>32</td><td>1</td><td>12</td><td>19</td><td>15</td><td><span class="pos-change same">•</span></td></tr>
+  </table></div>
+  <p style="color:rgba(255,255,255,.4);font-size:.8em;margin:4px 0 16px">Source: <a href="https://www.espn.com/soccer/standings/_/league/ita.1" style="color:rgba(255,255,255,.4)">ESPN</a> · Updated through MD32; Sunday results pending. Inter's lead growing to 12 points over Napoli.</p>
+
+  <!-- PL -->
+  <h3>Premier League — Matchweek 33</h3>
+  <p><strong>Saturday results:</strong></p>
+  <div class="results-strip">
+    <div class="result-card reveal"><span class="teams">Brentford vs Fulham</span><span class="score">0–0</span></div>
+    <div class="result-card reveal"><span class="teams">Newcastle vs <strong>Bournemouth</strong></span><span class="score">1–2</span></div>
+    <div class="result-card reveal"><span class="teams"><strong>Leeds</strong> vs Wolves</span><span class="score">3–0</span></div>
+    <div class="result-card reveal"><span class="teams">Tottenham vs Brighton</span><span class="score">2–2</span></div>
+    <div class="result-card reveal"><span class="teams">Chelsea vs <strong>Man United</strong></span><span class="score">0–1</span></div>
+  </div>
+  <p><strong>Sunday fixtures still to play:</strong> Aston Villa vs. Sunderland, Everton vs. Liverpool, Nottingham Forest vs. Burnley, and <strong>Man City vs. Arsenal</strong> (17:30 BST) — the latter is effectively a title-race checkpoint with Arsenal 6 points ahead.</p>
+
+  <div class="table-wrap"><table class="league-table">
+    <tr><th class="pos">#</th><th>Team</th><th>GP</th><th>Pts</th><th>GD</th><th></th></tr>
+    <tr><td class="pos">1</td><td><strong>Arsenal</strong></td><td>32</td><td>70</td><td>+38</td><td><span class="pos-change same">•</span></td></tr>
+    <tr><td class="pos">2</td><td>Man City</td><td>31</td><td>64</td><td>+35</td><td><span class="pos-change same">•</span></td></tr>
+    <tr><td class="pos">3</td><td>Man United</td><td>33</td><td>58</td><td>+13</td><td><span class="pos-change up">▲ 1</span></td></tr>
+    <tr><td class="pos">4</td><td>Aston Villa</td><td>32</td><td>55</td><td>+5</td><td><span class="pos-change same">•</span></td></tr>
+    <tr><td class="pos">5</td><td>Liverpool</td><td>32</td><td>52</td><td>+10</td><td><span class="pos-change same">•</span></td></tr>
+    <tr><td class="pos">6</td><td>Chelsea</td><td>33</td><td>48</td><td>+11</td><td><span class="pos-change down">▼ 1</span></td></tr>
+    <tr style="border-top:2px dashed rgba(255,255,255,.2)"><td class="pos">18</td><td>Tottenham</td><td>33</td><td>30</td><td>—</td><td><span class="pos-change same">•</span></td></tr>
+    <tr><td class="pos">19</td><td>Burnley</td><td>32</td><td>20</td><td>—</td><td><span class="pos-change same">•</span></td></tr>
+    <tr><td class="pos">20</td><td>Wolves</td><td>33</td><td>17</td><td>—</td><td><span class="pos-change down">▼</span></td></tr>
+  </table></div>
+  <p style="color:rgba(255,255,255,.4);font-size:.8em;margin:4px 0 8px">Source: <a href="https://en.as.com/resultados/futbol/inglaterra/jornada/" style="color:rgba(255,255,255,.4)">AS.com</a> / <a href="https://www.espn.com/soccer/standings/_/league/ita.1" style="color:rgba(255,255,255,.4)">ESPN</a></p>
+
+  <div class="dyk">
+    <span class="dyk-label">Did You Know?</span>
+    The USS Gerald R. Ford carrier group, currently in the Persian Gulf as part of the Iran standoff, broke the record this week for the longest post-Vietnam War deployment by a US aircraft carrier — now exceeding 10 months continuously at sea.
+  </div>
+
+  <div class="also"><div class="also-title">Also on the Pitch</div>
+    <ul class="also-list">
+      <li><strong>Matheus Cunha</strong> — his first-half strike was enough for Man United to beat Chelsea 1–0, opening a 10-point gap in the race for Champions League qualification. <a href="https://www.espn.com.au/football/match/_/gameId/740922/manchester-united-chelsea">ESPN</a></li>
+      <li><strong>Lazio 2–0 Napoli</strong> — A big Saturday result in Serie A. Cancellieri and Bašić both scored; Napoli drop to second having played a game more than Inter.</li>
+      <li><strong>Sassuolo 2–1 Como</strong> — Como's title race fades slightly; they remain fifth but the gap to the Champions League places widens.</li>
+      <li><strong>Rock Hall 2026</strong> — Oasis inducted; the Manchester band's complicated reunion arc now has an official chapter in music history.</li>
+    </ul>
+  </div>
+  <div class="read-next">Up next: <a href="#ledger">The Ledger <span class="arrow">→</span></a> — What the data actually says about selling digital products in 2026</div>
+</section>
+
+<!-- ══════ THE LEDGER ══════ -->
+<hr class="divider dv-ledger" style="border-color:rgba(180,120,40,.2)">
+<section class="sec" id="ledger" style="background:var(--ledger-bg,#fdf8ee);color:#2a1f0a;position:relative;padding:48px 32px">
+  <div class="sec-watermark" style="color:rgba(180,120,40,.08)">Ledger</div>
+  <span class="section-label" style="color:#b47828;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase">The Ledger — Side Hustle &amp; Digital Products</span>
+
+  <h2 style="color:#2a1f0a">What Actually Sells on Etsy in 2026</h2>
+
+  <ul class="entry-bullets" style="border-left-color:#b47828">
+    <li>PNG/SVG design files dominate — high volume, repeat buyers, scales with listings</li>
+    <li>Bundles consistently outsell single products at every price point</li>
+    <li>Notion templates: growing but niche-dependent — the generic ones aren't moving</li>
+  </ul>
+
+  <p>There is a version of the Etsy digital products story that goes: "create once, earn forever." That version is true but incomplete. The sellers generating consistent monthly income aren't running 10 perfect listings — they're running 300+ listings across tightly niched product sets, and they reached that number by understanding what the platform's algorithm actually rewards: transaction velocity and listing count.</p>
+
+  <div class="stat-bar" style="background:rgba(180,120,40,.08);border-radius:8px;padding:16px 20px;margin:20px 0">
+    <div class="stat"><div class="stat-num count-up" data-target="50">0</div><div class="stat-label">Million Notion users globally (demand signal)</div></div>
+    <div class="stat"><div class="stat-num count-up" data-target="500">0</div><div class="stat-label">Minimum monthly $ many template creators report</div></div>
+    <div class="stat"><div class="stat-num count-up" data-target="10000">0</div><div class="stat-label">Top end monthly $ for established template shops</div></div>
+  </div>
+
+  <p>The categories with the strongest 2026 data are <strong>PNG clipart sets and SVG cut files</strong> — primarily for Cricut and Silhouette users who buy in volume and return repeatedly. These are not glamorous products, but they're durable. Tumbler wrap designs and mug wrap files are running at similar velocity. The economics: a 50-file SVG bundle at £8 outperforms ten individual files at £1 in both revenue and algorithmic weight per transaction.</p>
+
+  <div class="pull-quote reveal" style="border-left-color:#b47828;color:#2a1f0a">
+    <p>"Volume compounds passive income — one seller in our community went from 12 listings to 400+ in a month by batch-creating design sets. The algorithm rewards active shops."</p>
+    <cite>— MyDesigns research roundup, 2026</cite>
+  </div>
+
+  <h3 style="color:#2a1f0a;margin-top:24px">Notion Templates — The Honest Picture</h3>
+  <p>The top Notion template creator (Easlo) has earned over $500,000. A handful of sellers report $1,500+/month from a single template on the Notion marketplace. On Etsy specifically, the picture is more modest — one seller on Reddit reported £640 profit in their most active year, noting that without active Pinterest promotion, sales become sporadic. The consensus from practitioners: Notion templates work on Etsy if you're in a specific niche (fantasy writers, ADHD planning, wedding planning, freelance business systems) rather than generic productivity. "Life planner" and "second brain" templates are now crowded; the gap is in verticals most creators haven't built for yet.</p>
+
+  <div class="also-cards" style="--card-bg:rgba(180,120,40,.06)">
+    <div class="also-card">
+      <h4>Pricing Insight</h4>
+      <p>Notion templates on Etsy: $8–25 for individual templates, more for bundles. Resume templates (Canva): $5–15. Wedding invitation suites: $15–60. The productivity/template niche punches above its weight on AOV.</p>
+      <span class="badge">EzyCourse / Reddit r/Notion</span>
+    </div>
+    <div class="also-card">
+      <h4>The SEO Reality</h4>
+      <p>Etsy's algorithm favours shops with high listing counts and steady transaction velocity. Digital products are the fastest way to build volume because fulfilment is automated — no inventory, no shipping, no production delays.</p>
+      <span class="badge">MyDesigns</span>
+    </div>
+    <div class="also-card">
+      <h4>2026 Design Trends</h4>
+      <p>"Color storm" — loud, layered, multi-dimensional palettes — is a currently undersaturated Etsy aesthetic trend. Galactic metallic / holographic finishes are also moving well for younger buyer segments.</p>
+      <span class="badge">YouTube / Printify</span>
+    </div>
+    <div class="also-card">
+      <h4>Kindle Scribe Templates</h4>
+      <p>Digital sticker sheets and note-taking templates for iPad and e-ink planners (GoodNotes, Kindle Scribe) attract an actively buying community — less crowded than general productivity templates.</p>
+      <span class="badge">MyDesigns</span>
+    </div>
+  </div>
+
+  <div class="angle reveal" style="border-color:#b47828;background:rgba(180,120,40,.08)">
+    <div class="angle-label" style="background:#b47828">The Angle</div>
+    <p style="color:#2a1f0a">The sellers who treat digital products as a catalogue business — rather than a one-hit-product business — are the ones building durable income. The logic is the same as any long-tail retail operation: breadth compounds. If you're building in the Notion/Kindle Scribe space specifically, the competitive advantage lies in depth of niche rather than width of product type. A library of 20 templates for fantasy writers beats a single generic life planner every time.</p>
+  </div>
+
+  <div class="read-next" style="color:#2a1f0a">Up next: <a href="#screen" style="color:#b47828">Screen &amp; Sound <span class="arrow">→</span></a> — Maul's darkest chapter yet, Beef is back, and the Rock Hall class revealed</div>
+</section>
+
+<!-- ══════ SCREEN & SOUND ══════ -->
+<hr class="divider dv-screen">
+<section class="sec screen-section" id="screen">
+  <div class="sec-watermark">Screen</div>
+  <span class="section-label">Screen &amp; Sound</span>
+
+  <h2>Maul in the Dark</h2>
+
+  <img class="hero-img reveal" src="https://whatsondisneyplus.b-cdn.net/wp-content/uploads/2026/03/maul-1024x575.webp" alt="Star Wars: Maul — Shadow Lord on Disney+">
+  <div class="caption">Star Wars: Maul — Shadow Lord, streaming on Disney+. Credit: What's on Disney Plus</div>
+
+  <h3>Star Wars: Maul — Shadow Lord</h3>
+
+  <div class="sidebar-float">
+    <div class="sidebar-title">Episode Schedule</div>
+    <ul>
+      <li>Eps 1–2 — Apr 6 ✓</li>
+      <li>Eps 3–4 — Apr 13 ✓</li>
+      <li><strong>Eps 5–6 — Apr 20</strong></li>
+      <li>Eps 7–8 — Apr 27</li>
+      <li>Eps 9–10 — May 4 (SW Day)</li>
+    </ul>
+  </div>
+
+  <p>Four episodes in, the series has already surpassed 4.1 million views globally in its first seven days. Episodes 5 ("Inquisition") and 6 ("Night of the Hunted") drop tomorrow (Monday, April 20) at 3am ET / 8am BST — moving the story into what early promotional material describes as its "most intense and dangerous phase," as Maul's growing criminal empire begins attracting attention from the Empire itself.</p>
+
+  <p>The series, created by Dave Filoni and animated by Lucasfilm Animation, is set after the rise of the Galactic Empire. The first four episodes have established a genuinely interesting moral geometry: Maul as a tactician of crime rather than a dark-side caricature, TDF Captain Brander Lawson as an exhausted law enforcement counterpart trying to protect his city without calling in the Empire, and fugitive Jedi Devon Izara as a wildcard whose fate may define Maul's next move. Filoni has already confirmed Season 2 is in development.</p>
+
+  <div class="dyk">
+    <span class="dyk-label">Did You Know?</span>
+    The demoscene — the underground community of coders and musicians creating real-time computer art — shares considerable DNA with synthwave: both are rooted in late-80s/early-90s home computer culture, both celebrate limitation as an aesthetic, and both have active 2026 communities. Worth a look if you've never explored it.
+  </div>
+
+  <h3>Also Worth Watching</h3>
+  <div class="card-stack">
+    <div class="stack-card">
+      <div class="stack-card-body">
+        <div class="stack-card-title">Beef — Season 2 (Netflix)</div>
+        <div class="stack-card-verdict">Oscar Isaac and Carey Mulligan lead a new feud sparked at a country club. The anthology format is a strength — no prior viewing required. Premiered April 16.</div>
+        <span class="rating"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span></span>
+        <span class="platform-badge">Netflix</span>
+      </div>
+    </div>
+    <div class="stack-card">
+      <div class="stack-card-body">
+        <div class="stack-card-title">Stranger Things: Tales From '85 (Netflix)</div>
+        <div class="stack-card-verdict">Animated prequel anthology set in 1985 Hawkins. A different entry point for the universe — shorter episodes, lighter tone. For fans who want more without waiting for the final season.</div>
+        <span class="rating"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span><span class="dot"></span></span>
+        <span class="platform-badge">Netflix</span>
+      </div>
+    </div>
+    <div class="stack-card">
+      <div class="stack-card-body">
+        <div class="stack-card-title">Hacks — Season 5 (HBO Max)</div>
+        <div class="stack-card-verdict">The final season of one of the sharpest comedies of the decade. Jean Smart remains extraordinary. Premiered April 9.</div>
+        <span class="rating"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span></span>
+        <span class="platform-badge">HBO Max</span>
+      </div>
+    </div>
+    <div class="stack-card">
+      <div class="stack-card-body">
+        <div class="stack-card-title">The Boys — Season 5 (Prime Video)</div>
+        <div class="stack-card-verdict">The final season of Amazon's superhero satire. Premiered April 8. The show has been remarkably consistent — rare for a series this far in.</div>
+        <span class="rating"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span></span>
+        <span class="platform-badge">Prime Video</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RELEASE RADAR -->
+  <h3>The Release Radar</h3>
+  <div class="radar-grid">
+    <h3 style="margin-top:8px">Now Showing / Just Dropped</h3>
+    <div class="radar-row"><span class="radar-date">Apr 6</span><div><span class="radar-cat tv"></span><strong>Star Wars: Maul — Shadow Lord</strong> (Eps 1–4 live) — Maul rebuilds his criminal empire in post-Order 66 darkness. <span class="radar-platform">Disney+</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 8</span><div><span class="radar-cat tv"></span><strong>The Boys</strong> S5 premiere — Final season, satirical superhero chaos. <span class="radar-platform">Prime Video</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 9</span><div><span class="radar-cat tv"></span><strong>Hacks</strong> S5 — Jean Smart's final season as Deborah Vance. <span class="radar-platform">HBO Max</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 9</span><div><span class="radar-cat tv"></span><strong>Big Mistakes</strong> S1 — Netflix drama series. <span class="radar-platform">Netflix</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 16</span><div><span class="radar-cat tv"></span><strong>Beef</strong> S2 — Oscar Isaac, Carey Mulligan in new feud anthology. <span class="radar-platform">Netflix</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 17</span><div><span class="radar-cat game"></span><strong>Pragmata</strong> — Capcom's new sci-fi action RPG. <span class="radar-platform">Switch 2 / PS5 / Xbox / PC</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 1</span><div><span class="radar-cat lego"></span><strong>LEGO Tintin Moon Rocket</strong> (21367) — £139.99. <span class="radar-platform">LEGO Shops</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 4</span><div><span class="radar-cat lego"></span><strong>LEGO Douglas DC-3 PAN AM</strong> (11378) — £219.99. <span class="radar-platform">LEGO Shops</span></div></div>
+
+    <h3>Coming Soon</h3>
+    <div class="radar-row"><span class="radar-date">Apr 20</span><div><span class="radar-cat tv"></span><strong>Maul: Shadow Lord</strong> Eps 5–6 — "Inquisition" / "Night of the Hunted" <span class="radar-platform">Disney+</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 24</span><div><span class="radar-cat game"></span><strong>Outbound</strong> — co-op camper van adventure. <span class="radar-platform">Switch 2</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 26</span><div><span class="radar-cat lego"></span><strong>LEGO Razor Crest</strong> (75447) — £139.99, May the 4th wave. <span class="radar-platform">LEGO Shops</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 26</span><div><span class="radar-cat lego"></span><strong>LEGO Darth Vader Bust</strong> (75439) + <strong>Yoda Bust</strong> — From £34.99. <span class="radar-platform">LEGO Shops</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 27</span><div><span class="radar-cat tv"></span><strong>Maul: Shadow Lord</strong> Eps 7–8 <span class="radar-platform">Disney+</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 28</span><div><span class="radar-cat tv"></span><strong>CL Semi-Final 1:</strong> PSG vs Bayern Munich <span class="radar-platform">Live</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 29</span><div><span class="radar-cat tv"></span><strong>CL Semi-Final 2:</strong> Atlético vs Arsenal <span class="radar-platform">Live</span></div></div>
+    <div class="radar-row"><span class="radar-date">Apr 29</span><div><span class="radar-cat game"></span><strong>MotoGP 26</strong> — <span class="radar-platform">Switch 2</span></div></div>
+    <div class="radar-row"><span class="radar-date">May 4</span><div><span class="radar-cat tv"></span><strong>Maul: Shadow Lord</strong> Eps 9–10 finale (Star Wars Day) <span class="radar-platform">Disney+</span></div></div>
+    <div class="radar-row"><span class="radar-date">May 22</span><div><span class="radar-cat film"></span><strong>The Mandalorian &amp; Grogu</strong> — theatrical release <span class="radar-platform">Cinemas</span></div></div>
+
+    <h3>Also Streaming This Month</h3>
+    <div class="radar-row"><span class="radar-date">Netflix</span><div><strong>Stranger Things: Tales From '85</strong> — Animated prequel anthology set in Hawkins</div></div>
+    <div class="radar-row"><span class="radar-date">Netflix</span><div><strong>Dandelion</strong> — Supernatural comedy anime based on manga by Hideaki Sorachi</div></div>
+    <div class="radar-row"><span class="radar-date">Netflix</span><div><strong>XO, Kitty</strong> S3 — The YA rom-com returns for another season</div></div>
+    <div class="radar-row"><span class="radar-date">Prime</span><div><strong>Crime 101</strong> — New thriller arriving mid-April</div></div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-title">For the Kids</div>
+    <ul>
+      <li><strong>LEGO Friends The Next Chapter</strong> S4 (Netflix) — Kids' animation, now streaming</li>
+      <li><strong>CoComelon Lane</strong> S2 — April 20, Netflix</li>
+      <li><strong>Outbound (Switch 2)</strong> — Low-pressure co-op van builder, perfect for younger players</li>
+      <li><strong>LEGO Mandalorian &amp; Grogu BrickHeadz</strong> (April 26) — A build they'll actually want to display</li>
+    </ul>
+  </div>
+
+  <div class="read-next">Up next: <a href="#session">The Session <span class="arrow">→</span></a> — Two weeks to race day: the science behind the final push</div>
+</section>
+
+<!-- ══════ THE SESSION ══════ -->
+<hr class="divider dv-session">
+<section class="sec session-section" id="session">
+  <div class="sec-watermark">Session</div>
+  <span class="section-label" style="color:var(--session-accent)">The Session</span>
+
+  <h2>Two Weeks Out: Why the Taper Works (And Why You Have to Trust It)</h2>
+
+  <img class="hero-img reveal" src="https://images.ctfassets.net/rbzqg6pelgqa/7ixz27LLaWLRE2hwgEdl9l/377e1936f2bcfa8e9cb843ed259a5f2e/Marathon_Taper_example-training-week-whooppng-960x624.png?fm=webp&q=25&w=960" alt="Marathon taper training example">
+  <div class="caption">Taper structure example — volume reduces while intensity is maintained. Credit: WHOOP</div>
+
+  <div class="entry-stat" style="color:var(--session-accent)">41–60%</div>
+  <div class="entry-stat-context">Volume reduction shown to maximise race performance in Bosquet et al. — across five endurance sports, this range outperforms both larger and smaller cuts</div>
+
+  <p>Two weeks before a 10k race is precisely the window where the taper begins in earnest — and where the most common mistake is made. That mistake is not trusting it. The body takes 7 to 10 days to adapt to any given training stimulus. Once you're within that window, you cannot add to your fitness. What you can do is show up to the start line with all your previous adaptations intact and zero accumulated fatigue. That's the entire game.</p>
+
+  <p>The science is clearer than most runners think. A meta-analysis of 27 studies published in <em>Medicine &amp; Science in Sports &amp; Exercise</em> identified the optimal taper as progressive — not an instant cut — where volume decreases by 41–60% over roughly two weeks, while <strong>intensity and frequency remain unchanged</strong>. That last part is counterintuitive. You don't slow down during a taper. You run fewer miles per session, but you run them at race pace or threshold effort. Dropping intensity is the single fastest way to feel flat and underprepared on race day.</p>
+
+  <div class="workout-card reveal">
+    <div class="workout-card-title">Two-Week 10k Taper Structure</div>
+    <table>
+      <tr><th>Day</th><th>Session</th><th>Notes</th></tr>
+      <tr><td>Day 1–3 (Week 1)</td><td>Moderate easy runs</td><td>Maintain frequency; test gear. No new shoes, no new food.</td></tr>
+      <tr class="highlight-row"><td>Day 4</td><td>Race-pace tempo</td><td>2 × 10 min at goal 10k pace, 2 min walk recovery. Builds confidence, not fatigue.</td></tr>
+      <tr><td>Day 5–7</td><td>Long run (6–7km easy) + rest day</td><td>Last "long" run of the block. Conversational pace only.</td></tr>
+      <tr><td>Week 2, Days 1–4</td><td>Short &amp; sharp (20–30 min)</td><td>Add 4–6 strides at the end to keep legs sharp. Avoid the urge to do more.</td></tr>
+      <tr class="highlight-row"><td>2 days before</td><td>Rest / very easy walk</td><td>Focus: hydration, familiar food, sleep. No heroics.</td></tr>
+      <tr><td>Day before</td><td>15 min easy + strides</td><td>Optional — just to keep legs moving. Some runners rest completely. Both work.</td></tr>
+      <tr><td>Race morning</td><td>Warm-up jog + dynamic stretching</td><td>10–15 min gentle jog, leg swings, 4–6 × 15-second strides.</td></tr>
+    </table>
+  </div>
+
+  <h3>The Fuelling Side</h3>
+
+  <p>For a 10k, traditional carbohydrate loading — the 48-hour high-carb protocol designed for marathons — is largely unnecessary. The race is short enough that your glycogen stores at normal carbohydrate intake (5–7g/kg/day) will be sufficient. The Science in Sport fuelling guide's recommendation for a 10k is more targeted: maintain consistent carbohydrate in the 2–3 days before, don't introduce new foods, and prioritise a solid pre-race meal 2–3 hours before the start (1–4g carbohydrate per kg bodyweight, low fibre, familiar).</p>
+
+  <p>During the race itself, a single gel or a few sips of sports drink at the 4–5km mark isn't physiologically necessary for most runners completing in under 60 minutes — but the research suggests a small amount of carbohydrate may have a direct effect on the central nervous system, reducing the perception of effort. Caffeine gel in the final kilometre is a legitimate performance tool if your gut tolerates it in training.</p>
+
+  <div class="pull-quote reveal">
+    <p>"The biggest mistake people make in tapering is that they don't trust it. Distance runners have to have discipline, but it's a different type of discipline to back off."</p>
+    <cite>— Thom Hunt, former American 10K record holder, via Outside Online</cite>
+  </div>
+
+  <p>The taper crazies — the itch, the anxiety, the feeling that two weeks of reduced running is erasing fitness you spent months building — are normal and almost universal. Research from <em>Frontiers in Sport and Active Living</em> (158,000+ runners) found that structured 3-week tapers were associated with finishing 2.6% faster than shorter, less structured tapers. The hay is in the barn. The next two weeks are about showing up with fresh legs, not adding to the stack.</p>
+
+  <div class="src"><a href="https://www.outsideonline.com/running/racing/race-strategy/the-art-and-science-of-the-5k-10k-taper/">Outside Online — The Art and Science of the 5K/10K Taper</a> · <a href="https://www.mayoclinichealthsystem.org/hometown-health/speaking-of-health/designing-your-taper-to-maximize-your-potential-on-race-day">Mayo Clinic Health System</a></div>
+
+  <div class="read-next">Up next: <a href="#itinerary">The Itinerary <span class="arrow">→</span></a> — Efteling gets a free-fall ride, Disney closes some classics, NI has surprises</div>
+</section>
+
+<!-- ══════ THE ITINERARY ══════ -->
+<hr class="divider dv-itinerary" style="border-color:rgba(220,100,60,.2)">
+<section class="sec" id="itinerary" style="background:var(--itinerary-bg,#fdf6ef);color:#2a1a0e;position:relative;padding:48px 32px">
+  <div class="sec-watermark" style="color:rgba(220,100,60,.08)">Travel</div>
+  <span class="section-label" style="color:#dc6438;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase">The Itinerary — Parks, Travel &amp; Local Finds</span>
+
+  <h2 style="color:#2a1a0e">Free Falls, Refurbs, and a Forest Worth Knowing</h2>
+
+  <!-- Theme Parks -->
+  <h3 style="color:#2a1a0e">Efteling</h3>
+
+  <div class="entry-bullets" style="border-left-color:#dc6438">
+    <li>Hooghmoed — a brand-new free-fall tower attraction — opens May 1, 2026</li>
+    <li>Located right next to Baron 1898; theming matches the existing steampunk mine aesthetic</li>
+    <li>Capacity: 600 guests/hour across three lift towers</li>
+  </div>
+
+  <p>The park announced Hooghmoed ("Arrogance" in Dutch — it's a word with seven deadly sins theming) back in spring 2025, and it opens in six weeks. The free-fall ride sits beside the park's beloved dive coaster, Baron 1898, which means the Mine area is becoming one of the denser experience clusters in the park. The attraction is designed for families — shorter than a dedicated thrill drop tower, high throughput, and in keeping with Efteling's signature folklore theming. A raven-flight concept ride is also in development for later in 2026. <a href="https://www.efteling.com/en/blog/nieuws/new-efteling-attraction-hooghmoed-opens-on-1-may-2026" style="color:#dc6438">Efteling.com →</a></p>
+
+  <div class="dyk" style="background:rgba(220,100,60,.08);border-left-color:#dc6438">
+    <span class="dyk-label" style="background:#dc6438">Did You Know?</span>
+    Efteling's "Sprookjesbos" (Fairytale Forest) — the oldest section of the park — opened in 1952 and is still one of the most emotionally resonant areas of any European theme park. Several of its original fairy tale tableaux are now over 70 years old.
+  </div>
+
+  <h3 style="color:#2a1a0e">Disney Parks — April Update</h3>
+
+  <p>Walt Disney World has four rides in various states of refurbishment through April, including the ongoing "summer 2026" closure of a major attraction. On the positive side, Toy Story Land's ride that closed for track replacement and enhancements officially reopened April 8. <strong>Soarin' Over California</strong> at Disneyland continues running through July 1 before Soarin' Across America takes over — if you're planning a US park visit this year, there's no rush. <strong>Pirates of the Caribbean</strong> at Disneyland closes in early May for an extended refurbishment; Blue Bayou Restaurant closes alongside it.</p>
+
+  <p>Disneyland's Star Wars Nite events (April 28 and 30) will close the park at 8pm — worth knowing if you're in California and don't have tickets. The park's Eggstravaganza Easter event wrapped April 6. <a href="https://mickeyvisit.com/disneyland-changes-happening-in-april-april-2-2026/" style="color:#dc6438">Mickey Visit full guide →</a></p>
+
+  <!-- NI -->
+  <h3 style="color:#2a1a0e">Northern Ireland — Local Finds</h3>
+
+  <p>The summer calendar is filling up faster than you might expect. A few things worth bookmarking now:</p>
+
+  <div class="also-cards" style="--card-bg:rgba(220,100,60,.06)">
+    <div class="also-card">
+      <h4>Stendhal Festival — July 2–4</h4>
+      <p>Three days of music, comedy, art, and a dedicated family programme at Ballymully Cottage Farm, Limavady. One of the most genuinely family-friendly festivals on the island. Day tickets and weekend camping available. Worth booking early — it sells out.</p>
+      <span class="badge">Stendhal / NI Holidays</span>
+    </div>
+    <div class="also-card">
+      <h4>Marble Arch Caves — any weekend</h4>
+      <p>Genuinely underrated. A 1.5km guided walk through underground rivers, waterfalls, and huge chambers in Fermanagh — including a short boat section (water levels permitting). Not a tourist trap: it's spectacular. Book in advance.</p>
+      <span class="badge">NI Holidays</span>
+    </div>
+    <div class="also-card">
+      <h4>Montalto Estate Gardens, Co. Down</h4>
+      <p>Multiple themed gardens (Alpine, Winter, Formal), a natural children's play area, award-winning café, and shop. Gardens peak through May–June. Something of a hidden gem even for locals — very few queues, genuinely beautiful.</p>
+      <span class="badge">Irish Times / NI 2026</span>
+    </div>
+    <div class="also-card">
+      <h4>Slieve Gullion Forest Park</h4>
+      <p>The Giant's Lair / Fionn's Giant Adventure Trail is one of the best kids' days out in NI — fairy houses, sculptures, a music area, adventure playground, and café. A reliable two-to-three hour visit without feeling rushed.</p>
+      <span class="badge">Destination Daydreamer</span>
+    </div>
+  </div>
+
+  <div class="sidebar" style="background:rgba(220,100,60,.06);border-left:3px solid #dc6438">
+    <div class="sidebar-title" style="color:#dc6438">Summer Calendar — Save the Dates</div>
+    <ul>
+      <li><strong>Lady of the Lake Festival</strong> — July 11–19, Fermanagh. 9-day festival on Lough Erne: raft race, music, truck parade.</li>
+      <li><strong>Fiddler's Green International Festival</strong> — July 15–19, Rostrevor. Irish music, family-focused, 200 events.</li>
+      <li><strong>Armoy Road Races</strong> — July 24–25. Free entry on country roads around Armoy — proper road racing.</li>
+      <li><strong>Fleadh Cheoil na hÉireann</strong> — Aug 2–9, Belfast. The world's biggest traditional Irish music festival, this year in the city. Pub sessions, street performances, major stage shows.</li>
+    </ul>
+  </div>
+
+  <div class="read-next" style="color:#2a1a0e">Up next: <a href="#radar" style="color:#dc6438">On the Radar <span class="arrow">→</span></a> — Dates, fixtures, and deadlines coming up</div>
+</section>
+
+<!-- ══════ BREATHER ══════ -->
+<div class="breather">
+  <div class="breather-stat">14 days</div>
+  <div class="breather-context">Until race day — the taper is now in effect</div>
+  <div class="breather-teaser">On the Radar: CL semi-finals, May the 4th, and Hooghmoed opening →</div>
+</div>
+
+<!-- ══════ ON THE RADAR ══════ -->
+<section class="sec radar-section" id="radar">
+  <span class="section-label" style="color:var(--rose)">On the Radar — Coming Up</span>
+  <div class="radar-grid">
+    <div class="radar-row"><span class="radar-date">Apr 20</span><div><span class="radar-cat tv"></span><strong>Maul Eps 5–6 drop</strong> — "Inquisition" &amp; "Night of the Hunted" — Disney+, 8am BST</div></div>
+    <div class="radar-row"><span class="radar-date">Apr 21</span><div><span class="radar-cat"></span><strong>Lyrid Meteor Shower — peak nights</strong> — April 21–23, best after midnight. No equipment needed.</div></div>
+    <div class="radar-row"><span class="radar-date">Apr 22</span><div><span class="radar-cat"></span><strong>Iran ceasefire expiry</strong> — Two-week Pakistan-brokered ceasefire expires. Watch for extension announcement or resumption of hostilities.</div></div>
+    <div class="radar-row"><span class="radar-date">Apr 26</span><div><span class="radar-cat football"></span><strong>Serie A — Milan vs Juventus</strong> (Matchday 34) — One of the biggest league fixtures of the season. Not today — next Sunday.</div></div>
+    <div class="radar-row"><span class="radar-date">Apr 27</span><div><span class="radar-cat tv"></span><strong>Maul Eps 7–8</strong> — Disney+</div></div>
+    <div class="radar-row"><span class="radar-date">Apr 28</span><div><span class="radar-cat football"></span><strong>CL Semi-Final (1st leg):</strong> PSG vs Bayern Munich — 8pm BST</div></div>
+    <div class="radar-row"><span class="radar-date">Apr 29</span><div><span class="radar-cat football"></span><strong>CL Semi-Final (1st leg):</strong> Atlético Madrid vs Arsenal — 8pm BST</div></div>
+    <div class="radar-row"><span class="radar-date">May 1</span><div><span class="radar-cat"></span><strong>Efteling — Hooghmoed opens</strong> — New free-fall ride beside Baron 1898</div></div>
+    <div class="radar-row"><span class="radar-date">May 3</span><div><span class="radar-cat"></span><strong>10k Race Day</strong> — The hay is in the barn. Go.</div></div>
+    <div class="radar-row"><span class="radar-date">May 4</span><div><span class="radar-cat tv"></span><strong>Star Wars Day — Maul Eps 9–10 finale</strong> — Disney+</div></div>
+  </div>
+</section>
+
+<!-- ══════ FOOTER ══════ -->
+<footer class="footer">
+  <div class="footer-brand">The Signal<span>.</span></div>
+  <div class="footer-issue">A Sunday Morning Magazine · Issue #3 · April 19, 2026</div>
+</footer>
+
+</div><!-- .mag -->
+
+<button class="back-to-top" id="backToTop" title="Back to top">↑</button>
+
+<script>
+// Reading progress bar
+(function() {
+  const bar = document.getElementById('progressBar');
+  if (!bar) return;
+  window.addEventListener('scroll', function() {
+    const h = document.documentElement;
+    const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    bar.style.width = Math.min(pct, 100) + '%';
+  }, { passive: true });
+})();
+
+// Back to top button visibility + click handler
+(function() {
+  const btn = document.getElementById('backToTop') || document.getElementById('btt');
+  if (!btn) return;
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 800) {
+      btn.classList.add('visible');
+    } else {
+      btn.classList.remove('visible');
+    }
+  }, { passive: true });
+  btn.addEventListener('click', function(e) {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+
+// Enhancement 5: IntersectionObserver for .reveal elements
+// Low threshold + rootMargin so tall elements on mobile still trigger.
+// CSS makes .reveal visible by default below 601px as a belt-and-braces safety.
+(function() {
+  var els = document.querySelectorAll('.reveal');
+  if (!els.length || !('IntersectionObserver' in window)) {
+    els.forEach(function(el) { el.classList.add('visible'); });
+    return;
+  }
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.02, rootMargin: '0px 0px 80px 0px' });
+  els.forEach(function(el) { observer.observe(el); });
+})();
+
+// Enhancement 5: Count-up animation for .count-up elements
+(function() {
+  var els = document.querySelectorAll('.count-up');
+  if (!els.length || !('IntersectionObserver' in window)) return;
+
+  function animateCount(el) {
+    var target = el.getAttribute('data-target');
+    if (!target) return;
+    // Parse number — handle percentages, commas, decimals
+    var raw = target.replace(/[^0-9.\-]/g, '');
+    var num = parseFloat(raw);
+    if (isNaN(num)) return;
+    var prefix = target.match(/^[^0-9.\-]*/)[0] || '';
+    var suffix = target.match(/[^0-9.\-]*$/)[0] || '';
+    var isInt = num === Math.floor(num);
+    var duration = 800;
+    var start = performance.now();
+
+    function step(now) {
+      var progress = Math.min((now - start) / duration, 1);
+      // Ease-out cubic
+      var ease = 1 - Math.pow(1 - progress, 3);
+      var current = num * ease;
+      el.textContent = prefix + (isInt ? Math.floor(current).toLocaleString() : current.toFixed(1)) + suffix;
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    el.textContent = prefix + '0' + suffix;
+    requestAnimationFrame(step);
+  }
+
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        animateCount(entry.target);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.02, rootMargin: '0px 0px 80px 0px' });
+  els.forEach(function(el) { observer.observe(el); });
+})();
+
+</script>
+</body>
+</html>
