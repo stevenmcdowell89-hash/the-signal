@@ -117,17 +117,17 @@
 
   <!-- ================== CONTENTS LEDGER ================== -->
   <!-- Paper ground. 01 · 02 · 03 arabic numbering (never roman). -->
-  <section class="sec paper" data-section="contents">
+  <section class="sec paper" data-section="contents" data-scheme="ember">
     <span class="gutter-mark gutter-mark--tl"></span>
     <span class="gutter-mark gutter-mark--tr"></span>
     <span class="gutter-mark gutter-mark--bl"></span>
     <span class="spine-label">· CONTENTS · INSIDE THIS ISSUE</span>
 
-    <div class="section-eyebrow">
+    <div class="section-eyebrow reveal">
       <span>In this issue</span>
       <span class="section-eyebrow__num">№ [ISSUE_NUMBER]</span>
     </div>
-    <h2 class="section-head ln">The <em>ledger</em><br>of the week.</h2>
+    <h2 class="section-head ln reveal">The <em>ledger</em><br>of the week.</h2>
 
     <div class="contents-ledger">
       <!-- Generator: one row per section in the issue. -->
@@ -184,17 +184,17 @@
   <!-- ================== THE LEAD (world feature) ================== -->
   <!-- Dark ground. Feature band + pull break + marginalia.
        Density: 600 words body + ≥2 pull quotes + ≥1 stat + ≥1 image. -->
-  <section class="sec dark" data-section="lead">
+  <section class="sec dark" data-section="lead" data-scheme="ember">
     <span class="spine-label">· 01 · THE LEAD · WORLD</span>
 
-    <div class="section-eyebrow">
+    <div class="section-eyebrow reveal">
       <span>01 — The Lead</span>
       <span class="section-eyebrow__num">World</span>
     </div>
-    <h2 class="section-head ln">[LEAD_HEADLINE_LINE_1]<br>[LEAD_HEADLINE_<em>KEY_WORD</em>]<br>[LEAD_HEADLINE_LINE_3]</h2>
+    <h2 class="section-head ln reveal">[LEAD_HEADLINE_LINE_1]<br>[LEAD_HEADLINE_<em>KEY_WORD</em>]<br>[LEAD_HEADLINE_LINE_3]</h2>
 
     <!-- Feature band with marginalia -->
-    <div class="feature-band feature-band--with-marginalia">
+    <div class="feature-band feature-band--with-marginalia reveal">
       <div class="feature-band__rail">
         <span class="feature-band__rail-num">01</span>
         <span class="feature-band__rail-label">THE LEAD · WORLD</span>
@@ -233,7 +233,7 @@
   </section>
 
   <!-- PULL BREAK — full-bleed dark band, giant accent quotes peeking from corners -->
-  <section class="sec dark pull-break" data-section="lead-pull">
+  <section class="sec dark pull-break reveal" data-section="lead-pull" data-scheme="ember">
     <span class="pull-break__q-open" aria-hidden="true">"</span>
     <span class="pull-break__q-close" aria-hidden="true">"</span>
     <blockquote class="pull-break__quote ln">[PULL_BREAK_QUOTE — a single sentence, probably with <em>one italic phrase</em>.]</blockquote>
@@ -242,57 +242,57 @@
 
   <!-- ================== THE WEEK (news brief timeline) ================== -->
   <!-- Paper ground. Timeline rows condensed. Density: ≥5 items, 1 sentence each. -->
-  <section class="sec paper" data-section="week">
+  <section class="sec paper" data-section="week" data-scheme="ember">
     <span class="gutter-mark gutter-mark--tl"></span>
     <span class="gutter-mark gutter-mark--tr"></span>
     <span class="gutter-mark gutter-mark--bl"></span>
     <span class="spine-label">· 02 · THE WEEK</span>
 
-    <div class="section-eyebrow">
+    <div class="section-eyebrow reveal">
       <span>02 — The Week</span>
       <span class="section-eyebrow__num">Brief</span>
     </div>
-    <h2 class="section-head ln">What <em>moved</em>.</h2>
+    <h2 class="section-head ln reveal">What <em>moved</em>.</h2>
 
-    <div class="timeline-rows timeline-rows--condensed">
-      <div class="timeline-row">
-        <div class="timeline-row__date">[MON DD]</div>
-        <div class="timeline-row__body">
+    <div class="timeline-rows timeline-rows--condensed reveal">
+      <div class="timeline-row reveal">
+        <div class="timeline-row__date reveal">[MON DD]</div>
+        <div class="timeline-row__body reveal">
           <h5>[WEEK_ITEM_1_TITLE]</h5>
           <p>[WEEK_ITEM_1_BODY — 1-2 sentences with editorial verdict, <em>italic accent</em> optional.]</p>
         </div>
       </div>
-      <div class="timeline-row">
-        <div class="timeline-row__date">[MON DD]</div>
-        <div class="timeline-row__body">
+      <div class="timeline-row reveal">
+        <div class="timeline-row__date reveal">[MON DD]</div>
+        <div class="timeline-row__body reveal">
           <h5>[WEEK_ITEM_2_TITLE]</h5>
           <p>[WEEK_ITEM_2_BODY]</p>
         </div>
       </div>
-      <div class="timeline-row">
-        <div class="timeline-row__date">[MON DD]</div>
-        <div class="timeline-row__body">
+      <div class="timeline-row reveal">
+        <div class="timeline-row__date reveal">[MON DD]</div>
+        <div class="timeline-row__body reveal">
           <h5>[WEEK_ITEM_3_TITLE]</h5>
           <p>[WEEK_ITEM_3_BODY]</p>
         </div>
       </div>
-      <div class="timeline-row">
-        <div class="timeline-row__date">[MON DD]</div>
-        <div class="timeline-row__body">
+      <div class="timeline-row reveal">
+        <div class="timeline-row__date reveal">[MON DD]</div>
+        <div class="timeline-row__body reveal">
           <h5>[WEEK_ITEM_4_TITLE]</h5>
           <p>[WEEK_ITEM_4_BODY]</p>
         </div>
       </div>
-      <div class="timeline-row">
-        <div class="timeline-row__date">[MON DD]</div>
-        <div class="timeline-row__body">
+      <div class="timeline-row reveal">
+        <div class="timeline-row__date reveal">[MON DD]</div>
+        <div class="timeline-row__body reveal">
           <h5>[WEEK_ITEM_5_TITLE]</h5>
           <p>[WEEK_ITEM_5_BODY]</p>
         </div>
       </div>
-      <div class="timeline-row">
-        <div class="timeline-row__date">[MON DD]</div>
-        <div class="timeline-row__body">
+      <div class="timeline-row reveal">
+        <div class="timeline-row__date reveal">[MON DD]</div>
+        <div class="timeline-row__body reveal">
           <h5>[WEEK_ITEM_6_TITLE]</h5>
           <p>[WEEK_ITEM_6_BODY]</p>
         </div>
@@ -314,18 +314,18 @@
   <!-- ================== THE SHELF (books, fan-spread) ================== -->
   <!-- Dark ground. Fan-spread card deck (5-7 books) + brief card grid below.
        Density: ≥4 items, each ≥3 sentences of opinion + image. -->
-  <section class="sec dark" data-section="shelf">
+  <section class="sec dark" data-section="shelf" data-scheme="ember">
     <span class="spine-label">· 03 · THE SHELF · BOOKS</span>
 
-    <div class="section-eyebrow">
+    <div class="section-eyebrow reveal">
       <span>03 — The Shelf</span>
       <span class="section-eyebrow__num">Books</span>
     </div>
-    <h2 class="section-head ln">What's <em>been read</em>.</h2>
+    <h2 class="section-head ln reveal">What's <em>been read</em>.</h2>
     <p class="dek" style="max-width: 52ch; margin-bottom: 32px;">[SHELF_DEK — 1-2 sentences setting up this week's books.]</p>
 
     <!-- FAN-SPREAD: 5-7 cards in overlapping hand-of-cards formation -->
-    <div class="fan-spread">
+    <div class="fan-spread reveal">
       <div class="fan-spread__deck">
         <article class="fan-spread__card">
           <div class="fan-spread__card-kicker">01 · Fiction</div>
@@ -367,19 +367,19 @@
 
     <!-- Brief-card grid below the fan: each book's editorial verdict -->
     <div class="brief-grid mt-48">
-      <article class="brief-card">
+      <article class="brief-card reveal">
         <div class="brief-card__kicker">01 · The pick</div>
         <h4 class="brief-card__title">[BOOK_PICK_TITLE]</h4>
         <p class="brief-card__body">[BOOK_PICK_VERDICT — 3-4 sentences, the core opinion.]</p>
         <div class="brief-card__byline">By [AUTHOR] · [PUBLISHER]</div>
       </article>
-      <article class="brief-card">
+      <article class="brief-card reveal">
         <div class="brief-card__kicker">02 · Pair with</div>
         <h4 class="brief-card__title">[BOOK_PAIR_TITLE]</h4>
         <p class="brief-card__body">[BOOK_PAIR_TEXT]</p>
         <div class="brief-card__byline">By [AUTHOR]</div>
       </article>
-      <article class="brief-card">
+      <article class="brief-card reveal">
         <div class="brief-card__kicker">03 · Skip unless</div>
         <h4 class="brief-card__title">[BOOK_SKIP_TITLE]</h4>
         <p class="brief-card__body">[BOOK_SKIP_TEXT]</p>
@@ -390,21 +390,21 @@
 
   <!-- ================== THE PANTRY (food, plate-strip) ================== -->
   <!-- Paper ground. Horizontal plate-strip (scroll-snap) + brief card sidebar. -->
-  <section class="sec paper" data-section="pantry">
+  <section class="sec paper" data-section="pantry" data-scheme="ember">
     <span class="gutter-mark gutter-mark--tl"></span>
     <span class="gutter-mark gutter-mark--tr"></span>
     <span class="gutter-mark gutter-mark--bl"></span>
     <span class="spine-label">· 04 · THE PANTRY · FOOD</span>
 
-    <div class="section-eyebrow">
+    <div class="section-eyebrow reveal">
       <span>04 — The Pantry</span>
       <span class="section-eyebrow__num">Food</span>
     </div>
-    <h2 class="section-head ln">On the <em>table</em>.</h2>
+    <h2 class="section-head ln reveal">On the <em>table</em>.</h2>
     <p class="dek" style="max-width: 52ch; margin-bottom: 32px;">[PANTRY_DEK — what's been cooked this week.]</p>
 
     <!-- PLATE-STRIP: horizontal scroll-snap gallery. Variable caption density per plate. -->
-    <div class="plate-strip">
+    <div class="plate-strip reveal">
       <div class="plate-strip__track">
         <!-- Plate 01 — caption only -->
         <figure class="plate">
@@ -473,7 +473,7 @@
     </div>
 
     <div class="brief-grid mt-48">
-      <article class="brief-card">
+      <article class="brief-card reveal">
         <div class="brief-card__kicker">Pantry note</div>
         <h4 class="brief-card__title">[PANTRY_NOTE_TITLE]</h4>
         <p class="brief-card__body">[PANTRY_NOTE_BODY — sidebar recipe note or ingredient observation, 3-4 sentences.]</p>
@@ -488,13 +488,13 @@
   <section class="sec dark" data-section="workshop" data-scheme="dossier" style="--accent:#b8902a;">
     <span class="spine-label">· 05 · THE WORKSHOP · TRAINING</span>
 
-    <div class="section-eyebrow">
+    <div class="section-eyebrow reveal">
       <span>05 — The Workshop</span>
       <span class="section-eyebrow__num">Dossier</span>
     </div>
-    <h2 class="section-head ln">This week at the <em>bench</em>.</h2>
+    <h2 class="section-head ln reveal">This week at the <em>bench</em>.</h2>
 
-    <div class="feature-band">
+    <div class="feature-band reveal">
       <div class="feature-band__rail">
         <span class="feature-band__rail-num">05</span>
         <span class="feature-band__rail-label">WORKSHOP · BLOCK [N]</span>
@@ -520,7 +520,7 @@
           "[WORKSHOP_PULL_QUOTE]"
           <div class="pull-quote-card__attribution">[ATTRIBUTION]</div>
         </blockquote>
-        <div class="chart-card dark">
+        <div class="chart-card dark reveal">
           <div class="chart-card__kicker">Weekly volume</div>
           <h4 class="chart-card__title">[CHART_TITLE]</h4>
           <svg class="chart-card__svg" viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg">
@@ -545,20 +545,20 @@
 
   <!-- ================== THE ITINERARY (travel) ================== -->
   <!-- Paper ground. Plan infographic + timeline rows. -->
-  <section class="sec paper" data-section="itinerary" data-accent="cool">
+  <section class="sec paper" data-section="itinerary" data-accent="cool" data-scheme="ember">
     <span class="gutter-mark gutter-mark--tl"></span>
     <span class="gutter-mark gutter-mark--tr"></span>
     <span class="gutter-mark gutter-mark--bl"></span>
     <span class="spine-label">· 06 · THE ITINERARY · TRAVEL</span>
 
-    <div class="section-eyebrow">
+    <div class="section-eyebrow reveal">
       <span>06 — The Itinerary</span>
       <span class="section-eyebrow__num">Route</span>
     </div>
-    <h2 class="section-head ln">A route <em>plotted</em>.</h2>
+    <h2 class="section-head ln reveal">A route <em>plotted</em>.</h2>
 
     <!-- Plan infographic: 16:10 dark-on-paper diagram -->
-    <div class="plan-infographic">
+    <div class="plan-infographic reveal">
       <h4 class="plan-infographic__title">[ITIN_TITLE]<br><em>[ITIN_DATES]</em></h4>
       <svg class="plan-infographic__svg" viewBox="0 0 640 400" xmlns="http://www.w3.org/2000/svg">
         <path d="M 80 300 Q 220 150 360 200 T 560 120" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="4 4"/>
@@ -581,38 +581,38 @@
       <div class="plan-infographic__caption">ROUTE · [ITIN_LEGS] LEGS · [ITIN_MILES] KM</div>
     </div>
 
-    <div class="timeline-rows mt-48">
-      <div class="timeline-row">
-        <div class="timeline-row__date">DAY 01</div>
-        <div class="timeline-row__body">
+    <div class="timeline-rows mt-48 reveal">
+      <div class="timeline-row reveal">
+        <div class="timeline-row__date reveal">DAY 01</div>
+        <div class="timeline-row__body reveal">
           <h5>[DAY_1_PLACE]</h5>
           <p>[DAY_1_BODY — 2-3 sentences of plan + Signal's editorial angle.]</p>
         </div>
       </div>
-      <div class="timeline-row">
-        <div class="timeline-row__date">DAY 02</div>
-        <div class="timeline-row__body">
+      <div class="timeline-row reveal">
+        <div class="timeline-row__date reveal">DAY 02</div>
+        <div class="timeline-row__body reveal">
           <h5>[DAY_2_PLACE]</h5>
           <p>[DAY_2_BODY]</p>
         </div>
       </div>
-      <div class="timeline-row">
-        <div class="timeline-row__date">DAY 03</div>
-        <div class="timeline-row__body">
+      <div class="timeline-row reveal">
+        <div class="timeline-row__date reveal">DAY 03</div>
+        <div class="timeline-row__body reveal">
           <h5>[DAY_3_PLACE]</h5>
           <p>[DAY_3_BODY]</p>
         </div>
       </div>
-      <div class="timeline-row">
-        <div class="timeline-row__date">DAY 04</div>
-        <div class="timeline-row__body">
+      <div class="timeline-row reveal">
+        <div class="timeline-row__date reveal">DAY 04</div>
+        <div class="timeline-row__body reveal">
           <h5>[DAY_4_PLACE]</h5>
           <p>[DAY_4_BODY]</p>
         </div>
       </div>
-      <div class="timeline-row">
-        <div class="timeline-row__date">DAY 05</div>
-        <div class="timeline-row__body">
+      <div class="timeline-row reveal">
+        <div class="timeline-row__date reveal">DAY 05</div>
+        <div class="timeline-row__body reveal">
           <h5>[DAY_5_PLACE]</h5>
           <p>[DAY_5_BODY]</p>
         </div>
@@ -622,17 +622,17 @@
 
   <!-- ================== THE LEDGER (numeric / dash + chart) ================== -->
   <!-- Dark ground. Dash cells + chart card. Density: ≥4 stats + ≥1 chart OR 200w interpretation. -->
-  <section class="sec dark" data-section="ledger">
+  <section class="sec dark" data-section="ledger" data-scheme="ember">
     <span class="spine-label">· 07 · THE LEDGER · NUMBERS</span>
 
-    <div class="section-eyebrow">
+    <div class="section-eyebrow reveal">
       <span>07 — The Ledger</span>
       <span class="section-eyebrow__num">Data</span>
     </div>
-    <h2 class="section-head ln">By the <em>numbers</em>.</h2>
+    <h2 class="section-head ln reveal">By the <em>numbers</em>.</h2>
     <p class="dek mb-32" style="max-width:50ch;">[LEDGER_DEK]</p>
 
-    <div class="dash">
+    <div class="dash reveal">
       <div class="dash__cell">
         <span class="dash__hint">Inflation</span>
         <span class="dash__num"><span class="count-up" data-target="2.8" data-suffix="%" data-decimals="1">2.8%</span></span>
@@ -672,7 +672,7 @@
     </div>
 
     <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 48px;">
-      <div class="chart-card dark">
+      <div class="chart-card dark reveal">
         <div class="chart-card__kicker">Twelve-month arc</div>
         <h4 class="chart-card__title">[LEDGER_CHART_1_TITLE]</h4>
         <svg class="chart-card__svg" viewBox="0 0 320 180">
@@ -685,7 +685,7 @@
         </svg>
         <div class="chart-card__foot">[SOURCE] · points monthly</div>
       </div>
-      <div class="chart-card dark">
+      <div class="chart-card dark reveal">
         <div class="chart-card__kicker">Verdict</div>
         <h4 class="chart-card__title">[LEDGER_VERDICT_TITLE]</h4>
         <p style="font-size:15px; line-height:1.55;">[LEDGER_VERDICT — 3-4 sentences interpreting the numbers with a clear point of view.]</p>
@@ -696,58 +696,58 @@
 
   <!-- ================== THE LONG GAME (retrospective) ================== -->
   <!-- Paper ground. Timeline + chart card. -->
-  <section class="sec paper" data-section="longgame">
+  <section class="sec paper" data-section="longgame" data-scheme="ember">
     <span class="gutter-mark gutter-mark--tl"></span>
     <span class="gutter-mark gutter-mark--tr"></span>
     <span class="gutter-mark gutter-mark--bl"></span>
     <span class="spine-label">· 08 · THE LONG GAME</span>
 
-    <div class="section-eyebrow">
+    <div class="section-eyebrow reveal">
       <span>08 — The Long Game</span>
       <span class="section-eyebrow__num">Retrospective</span>
     </div>
-    <h2 class="section-head ln">A <em>decade</em> of.</h2>
+    <h2 class="section-head ln reveal">A <em>decade</em> of.</h2>
 
     <div style="display:grid; grid-template-columns: 1.2fr 1fr; gap: 48px;">
-      <div class="timeline-rows">
-        <div class="timeline-row">
-          <div class="timeline-row__date">2016</div>
-          <div class="timeline-row__body">
+      <div class="timeline-rows reveal">
+        <div class="timeline-row reveal">
+          <div class="timeline-row__date reveal">2016</div>
+          <div class="timeline-row__body reveal">
             <h5>[LG_2016_TITLE]</h5>
             <p>[LG_2016_BODY — 2-3 sentences with editorial take.]</p>
           </div>
         </div>
-        <div class="timeline-row">
-          <div class="timeline-row__date">2018</div>
-          <div class="timeline-row__body">
+        <div class="timeline-row reveal">
+          <div class="timeline-row__date reveal">2018</div>
+          <div class="timeline-row__body reveal">
             <h5>[LG_2018_TITLE]</h5>
             <p>[LG_2018_BODY]</p>
           </div>
         </div>
-        <div class="timeline-row">
-          <div class="timeline-row__date">2020</div>
-          <div class="timeline-row__body">
+        <div class="timeline-row reveal">
+          <div class="timeline-row__date reveal">2020</div>
+          <div class="timeline-row__body reveal">
             <h5>[LG_2020_TITLE]</h5>
             <p>[LG_2020_BODY]</p>
           </div>
         </div>
-        <div class="timeline-row">
-          <div class="timeline-row__date">2022</div>
-          <div class="timeline-row__body">
+        <div class="timeline-row reveal">
+          <div class="timeline-row__date reveal">2022</div>
+          <div class="timeline-row__body reveal">
             <h5>[LG_2022_TITLE]</h5>
             <p>[LG_2022_BODY]</p>
           </div>
         </div>
-        <div class="timeline-row">
-          <div class="timeline-row__date">2024</div>
-          <div class="timeline-row__body">
+        <div class="timeline-row reveal">
+          <div class="timeline-row__date reveal">2024</div>
+          <div class="timeline-row__body reveal">
             <h5>[LG_2024_TITLE]</h5>
             <p>[LG_2024_BODY]</p>
           </div>
         </div>
       </div>
 
-      <div class="chart-card">
+      <div class="chart-card reveal">
         <div class="chart-card__kicker">The shape of it</div>
         <h4 class="chart-card__title">[LG_CHART_TITLE]</h4>
         <svg class="chart-card__svg" viewBox="0 0 320 180">
@@ -772,16 +772,16 @@
 
   <!-- ================== THE TOOLKIT (apps / tools) ================== -->
   <!-- Dark ground. Fan-spread + brief cards. Density: ≥4 items × ≥3 sentences opinion + image. -->
-  <section class="sec dark" data-section="toolkit">
+  <section class="sec dark" data-section="toolkit" data-scheme="ember">
     <span class="spine-label">· 09 · THE TOOLKIT · TOOLS</span>
 
-    <div class="section-eyebrow">
+    <div class="section-eyebrow reveal">
       <span>09 — The Toolkit</span>
       <span class="section-eyebrow__num">Tools</span>
     </div>
-    <h2 class="section-head ln">Tried and <em>kept</em>.</h2>
+    <h2 class="section-head ln reveal">Tried and <em>kept</em>.</h2>
 
-    <div class="fan-spread">
+    <div class="fan-spread reveal">
       <div class="fan-spread__deck">
         <article class="fan-spread__card">
           <div class="fan-spread__card-kicker">01 · App</div>
@@ -822,13 +822,13 @@
     </div>
 
     <div class="brief-grid mt-48">
-      <article class="brief-card">
+      <article class="brief-card reveal">
         <div class="brief-card__kicker">Pick of the week</div>
         <h4 class="brief-card__title">[TOOLKIT_PICK]</h4>
         <p class="brief-card__body">[TOOLKIT_PICK_BODY — 3-4 sentences of Signal's verdict.]</p>
         <div class="brief-card__byline">Toolkit</div>
       </article>
-      <article class="brief-card">
+      <article class="brief-card reveal">
         <div class="brief-card__kicker">Retired</div>
         <h4 class="brief-card__title">[TOOLKIT_RETIRED]</h4>
         <p class="brief-card__body">[TOOLKIT_RETIRED_BODY]</p>
@@ -845,44 +845,44 @@
     <span class="gutter-mark gutter-mark--bl"></span>
     <span class="spine-label">· 10 · WEEK IN HISTORY</span>
 
-    <div class="section-eyebrow">
+    <div class="section-eyebrow reveal">
       <span>10 — This Week in History</span>
       <span class="section-eyebrow__num">Archive</span>
     </div>
-    <h2 class="section-head ln">On this <em>same</em> Sunday.</h2>
+    <h2 class="section-head ln reveal">On this <em>same</em> Sunday.</h2>
 
-    <div class="timeline-rows">
-      <div class="timeline-row">
-        <div class="timeline-row__date">1927</div>
-        <div class="timeline-row__body">
+    <div class="timeline-rows reveal">
+      <div class="timeline-row reveal">
+        <div class="timeline-row__date reveal">1927</div>
+        <div class="timeline-row__body reveal">
           <h5>[HIST_1_TITLE]</h5>
           <p>[HIST_1_BODY — 2-3 sentences.]</p>
         </div>
       </div>
-      <div class="timeline-row">
-        <div class="timeline-row__date">1961</div>
-        <div class="timeline-row__body">
+      <div class="timeline-row reveal">
+        <div class="timeline-row__date reveal">1961</div>
+        <div class="timeline-row__body reveal">
           <h5>[HIST_2_TITLE]</h5>
           <p>[HIST_2_BODY]</p>
         </div>
       </div>
-      <div class="timeline-row">
-        <div class="timeline-row__date">1984</div>
-        <div class="timeline-row__body">
+      <div class="timeline-row reveal">
+        <div class="timeline-row__date reveal">1984</div>
+        <div class="timeline-row__body reveal">
           <h5>[HIST_3_TITLE]</h5>
           <p>[HIST_3_BODY]</p>
         </div>
       </div>
-      <div class="timeline-row">
-        <div class="timeline-row__date">1995</div>
-        <div class="timeline-row__body">
+      <div class="timeline-row reveal">
+        <div class="timeline-row__date reveal">1995</div>
+        <div class="timeline-row__body reveal">
           <h5>[HIST_4_TITLE]</h5>
           <p>[HIST_4_BODY]</p>
         </div>
       </div>
-      <div class="timeline-row">
-        <div class="timeline-row__date">2011</div>
-        <div class="timeline-row__body">
+      <div class="timeline-row reveal">
+        <div class="timeline-row__date reveal">2011</div>
+        <div class="timeline-row__body reveal">
           <h5>[HIST_5_TITLE]</h5>
           <p>[HIST_5_BODY]</p>
         </div>
@@ -902,16 +902,16 @@
 
   <!-- ================== DOWN THE RABBIT HOLE (long read) ================== -->
   <!-- Dark ground. Feature band + pull break + marginalia. Density: 600 words + 2 pulls + 1 stat + 1 image. -->
-  <section class="sec dark" data-section="rabbithole">
+  <section class="sec dark" data-section="rabbithole" data-scheme="ember">
     <span class="spine-label">· 11 · DOWN THE RABBIT HOLE</span>
 
-    <div class="section-eyebrow">
+    <div class="section-eyebrow reveal">
       <span>11 — Down the Rabbit Hole</span>
       <span class="section-eyebrow__num">Long read</span>
     </div>
-    <h2 class="section-head ln">A <em>strange</em> thing<br>to keep thinking about.</h2>
+    <h2 class="section-head ln reveal">A <em>strange</em> thing<br>to keep thinking about.</h2>
 
-    <div class="feature-band feature-band--with-marginalia">
+    <div class="feature-band feature-band--with-marginalia reveal">
       <div class="feature-band__rail">
         <span class="feature-band__rail-num">11</span>
         <span class="feature-band__rail-label">LONG READ · THIS ISSUE</span>
@@ -951,7 +951,7 @@
   </section>
 
   <!-- Second pull-break for the rabbit-hole piece -->
-  <section class="sec dark pull-break" data-section="rh-pull">
+  <section class="sec dark pull-break reveal" data-section="rh-pull" data-scheme="ember">
     <span class="pull-break__q-open" aria-hidden="true">"</span>
     <span class="pull-break__q-close" aria-hidden="true">"</span>
     <blockquote class="pull-break__quote ln">[RH_PULL_QUOTE — one sentence, <em>italic emphasis</em>.]</blockquote>
@@ -959,17 +959,17 @@
   </section>
 
   <!-- ================== EDITOR'S NOTE (optional panel before colophon) ================== -->
-  <section class="sec paper" data-section="note">
+  <section class="sec paper" data-section="note" data-scheme="ember">
     <span class="gutter-mark gutter-mark--tl"></span>
     <span class="gutter-mark gutter-mark--tr"></span>
     <span class="gutter-mark gutter-mark--bl"></span>
 
-    <div class="section-eyebrow">
+    <div class="section-eyebrow reveal">
       <span>Editor's note</span>
       <span class="section-eyebrow__num">From the desk</span>
     </div>
 
-    <div class="editors-note">
+    <div class="editors-note reveal">
       <h2 class="editors-note__left ln">
         A short <em>note</em><br>to close<br>the week.
       </h2>
@@ -986,7 +986,7 @@
   <!-- ================== COLOPHON ================== -->
   <!-- Dark ground. Rising rounded-rectangle card. Four columns.
        Density: masthead + in-this-issue ≥ [N items] + ≥6 sources WITH URLs + about. -->
-  <section class="sec dark" data-section="colophon">
+  <section class="sec dark" data-section="colophon" data-scheme="ember">
     <span class="spine-label">· 12 · COLOPHON</span>
 
     <!-- Dispatch seal appears again here (cover + colophon only per §3.2) -->

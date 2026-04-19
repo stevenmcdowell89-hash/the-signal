@@ -760,7 +760,9 @@ body[data-ground="dark"] .mast {
   position: relative;
   z-index: 5;
   align-self: end;
+  width: 100%;
   max-width: 1100px;
+  min-width: 0;
 }
 
 .cover__eyebrow {
@@ -876,6 +878,8 @@ h1.ln > span,
 h2.ln > span,
 h3.ln > span {
   display: inline-block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
   transform: translateY(14px);
   opacity: 0;
   transition:
@@ -899,6 +903,12 @@ h3.ln > span {
   margin-bottom: 48px;
   text-wrap: balance;
   max-width: 16ch;
+  overflow-wrap: anywhere;
+}
+
+.section-head span,
+.section-head .ln > span {
+  overflow-wrap: anywhere;
 }
 
 .section-head em {
@@ -989,7 +999,7 @@ h3.ln > span {
 }
 
 .feature-band__body {
-  min-width: 500px;
+  min-width: 0;
   max-width: 720px;
   font-size: var(--t-body);
   line-height: 1.62;
@@ -2448,6 +2458,233 @@ h3.ln > span {
   .fan-spread__card:nth-child(5) { transform: rotate(12deg)  translateX(110px)  translateY(4px); }
   .fan-spread__card:nth-child(6) { transform: rotate(22deg)  translateX(170px)  translateY(20px); }
   .fan-spread__card:nth-child(7) { transform: rotate(30deg)  translateX(220px)  translateY(36px); }
+}
+
+/* Portrait tablet (834×1194) — first-class target per visual-language §8 */
+@media (max-width: 1000px) {
+  :root {
+    --s-gutter: clamp(22px, 3.8vw, 40px);
+    --s-rail-w: 56px;
+    --s-margin-w: 0px;
+    --t-cover: clamp(56px, 10.5vw, 104px);
+    --t-section: clamp(44px, 8.4vw, 88px);
+  }
+
+  /* Cover — cap widths to viewport, stack masthead rows */
+  .cover {
+    padding: 108px var(--s-gutter) var(--s-gutter);
+  }
+  .cover__meta-top {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    row-gap: 8px;
+    column-gap: 16px;
+    font-size: 9px;
+    white-space: nowrap;
+  }
+  .cover__meta-top > * {
+    white-space: normal;
+  }
+  .cover__meta-top > *:nth-child(2) { display: none; } /* centre wordmark duplicated by masthead */
+  .cover__body {
+    max-width: 100%;
+    min-width: 0;
+    word-break: normal;
+    overflow-wrap: anywhere;
+  }
+  .cover__headline {
+    font-size: var(--t-cover);
+    letter-spacing: -0.025em;
+    word-break: normal;
+    overflow-wrap: anywhere;
+  }
+  .cover__headline em {
+    overflow-wrap: anywhere;
+  }
+  .cover__dek {
+    max-width: 100%;
+    font-size: clamp(17px, 2.2vw, 22px);
+    margin-bottom: 36px;
+  }
+  .cover__meta-bottom {
+    flex-wrap: wrap;
+    gap: 20px;
+    font-size: 9.5px;
+  }
+  .cover__tags {
+    gap: 8px;
+  }
+
+  /* Masthead compact */
+  .mast {
+    font-size: 9.5px;
+    padding: 14px clamp(18px, 3vw, 28px);
+  }
+  .mast__right .line2 {
+    font-size: 9px;
+  }
+
+  /* Dispatch seal tightened so it doesn't clip the cover */
+  .dispatch-seal {
+    width: 132px;
+    height: 132px;
+    top: 24px;
+    right: 24px;
+  }
+  .dispatch-seal__hub {
+    font-size: 28px;
+  }
+
+  /* Feature band — collapse to single column, marginalia below body */
+  .feature-band,
+  .feature-band--with-marginalia {
+    grid-template-columns: 56px minmax(0, 1fr);
+    grid-template-areas:
+      "rail body"
+      ".    margin";
+    gap: 24px 28px;
+    max-width: 100%;
+  }
+  .feature-band__rail { grid-area: rail; }
+  .feature-band__body {
+    grid-area: body;
+    min-width: 0;
+    max-width: 100%;
+    font-size: 17.5px;
+  }
+  /* Marginalia is a direct grid child in the .feature-band grid */
+  .feature-band .marginalia,
+  .feature-band__margin {
+    grid-area: margin;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 24px;
+    max-width: 100%;
+    padding-left: 0;
+    border-left: 0;
+    border-top: 1px solid var(--rule);
+    padding-top: 20px;
+  }
+  .sec.paper .feature-band .marginalia {
+    border-top-color: var(--rule-paper);
+  }
+  .feature-band .marginalia > * {
+    min-width: 0;
+  }
+  .feature-band .marginalia .marginalia__pull {
+    grid-column: 1 / -1;
+  }
+  .feature-band .marginalia .marginalia__footnote {
+    grid-column: 1 / -1;
+  }
+  .feature-band__hero {
+    position: static;
+    grid-column: 1 / -1;
+    margin-bottom: 8px;
+  }
+  .feature-band__hero img {
+    aspect-ratio: 16 / 10;
+    width: 100%;
+    height: auto;
+  }
+  .feature-band__body h3 {
+    font-size: clamp(22px, 3vw, 30px);
+  }
+  .dropcap {
+    font-size: 104px;
+  }
+
+  /* Editors note */
+  .editors-note {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .editors-note__left {
+    font-size: clamp(48px, 9vw, 80px);
+  }
+
+  /* Colophon */
+  .colophon__grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+
+  /* Stat / dash rows */
+  .stat-row,
+  .stat-row--3 { grid-template-columns: repeat(3, 1fr); }
+  .stat-row--5,
+  .stat-row--6 { grid-template-columns: repeat(3, 1fr); }
+
+  /* Fan-spread — tighter deck to fit 834 without overlap collisions */
+  .fan-spread {
+    min-height: 520px;
+  }
+  .fan-spread__deck {
+    height: 420px;
+  }
+  .fan-spread__card {
+    width: 168px;
+    height: 244px;
+  }
+  .fan-spread__card:nth-child(1) { transform: rotate(-18deg) translateX(-130px) translateY(14px); }
+  .fan-spread__card:nth-child(2) { transform: rotate(-9deg)  translateX(-60px)  translateY(2px); }
+  .fan-spread__card:nth-child(3) { transform: rotate(-2deg)  translateX(-6px)   translateY(-4px); }
+  .fan-spread__card:nth-child(4) { transform: rotate(6deg)   translateX(50px)   translateY(-2px); }
+  .fan-spread__card:nth-child(5) { transform: rotate(14deg)  translateX(110px)  translateY(6px); }
+  .fan-spread__card:nth-child(6) { transform: rotate(22deg)  translateX(170px)  translateY(22px); }
+  .fan-spread__card:nth-child(7) { transform: rotate(30deg)  translateX(230px)  translateY(40px); }
+
+  /* Plate strip — confirm horizontal snap is the intended behaviour */
+  .plate-strip {
+    scroll-padding-left: var(--s-gutter);
+  }
+  .plate {
+    width: 300px;
+  }
+
+  /* Timeline rows — keep 2-col but tighten date column */
+  .timeline-row {
+    grid-template-columns: 120px 1fr;
+    gap: 20px;
+  }
+
+  /* Plan infographic */
+  .plan-infographic {
+    aspect-ratio: 3 / 4;
+  }
+
+  /* Nav grid */
+  .nav-grid,
+  .contents__grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Section section padding */
+  .sec {
+    padding-left: var(--s-gutter);
+    padding-right: var(--s-gutter);
+  }
+
+  /* Pull-break quote */
+  .pull-break__quote {
+    font-size: clamp(32px, 6vw, 52px);
+    max-width: 90%;
+  }
+
+  /* Hero quote card */
+  .hero-quote-card {
+    padding: 40px 28px;
+  }
+
+  /* Chart cards — full width in a single column */
+  .chart-card {
+    width: 100%;
+  }
+
+  /* Brief cards — 2-up max */
+  .brief-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 /* Mobile portrait (390×844) */
