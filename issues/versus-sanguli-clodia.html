@@ -143,9 +143,14 @@ p:last-child { margin-bottom: 0; }
 /* ═══════════ COVER ═══════════ */
 .cover {
   background: var(--deep);
+  /* v8.10.1 — softened ambient gradients. Larger falloff (90%/85%) plus lower
+     opacity (.07/.05) means the rose/ember ellipses read as ambient atmosphere
+     at every aspect ratio, never as a visible panel edge. Previously the
+     elliptical falloff produced a clean geometric boundary at tablet-portrait
+     ratios (~3:4) where the ellipse landed neatly across the upper half. */
   background-image:
-    radial-gradient(ellipse at 80% 20%, rgba(232,56,79,.12) 0%, transparent 60%),
-    radial-gradient(ellipse at 20% 80%, rgba(255,109,58,.08) 0%, transparent 50%);
+    radial-gradient(ellipse 120% 80% at 75% 18%, rgba(232,56,79,.07) 0%, transparent 90%),
+    radial-gradient(ellipse 110% 80% at 25% 82%, rgba(255,109,58,.05) 0%, transparent 85%);
   padding: 80px 60px 60px;
   position: relative;
   min-height: 480px;
@@ -158,13 +163,18 @@ p:last-child { margin-bottom: 0; }
   background: linear-gradient(90deg, var(--rose), var(--ember), var(--rose));
 }
 
-/* Enhancement 18: Cover Ambient Animation — drifting gradients */
+/* Enhancement 18: Cover Ambient Animation — drifting gradients
+   v8.10.1 — `::after` ellipses are intentionally OFFSET from the base layer
+   (different positions, different sizes) so the two layers diffuse across each
+   other instead of stacking on the same ridge. Combined with the softened
+   opacities above, this kills the tablet-portrait "light box" without removing
+   the cover's ambient glow. */
 .cover::after {
   content: '';
   position: absolute; inset: 0;
   background-image:
-    radial-gradient(ellipse at 80% 20%, rgba(232,56,79,.12) 0%, transparent 60%),
-    radial-gradient(ellipse at 20% 80%, rgba(255,109,58,.08) 0%, transparent 50%);
+    radial-gradient(ellipse 100% 70% at 60% 35%, rgba(232,56,79,.05) 0%, transparent 85%),
+    radial-gradient(ellipse 90% 70% at 35% 70%, rgba(255,109,58,.04) 0%, transparent 80%);
   animation: coverDrift 20s ease-in-out infinite alternate;
   pointer-events: none;
 }
