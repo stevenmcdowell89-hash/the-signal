@@ -6717,32 +6717,41 @@ body.is-special.sp-motion-ready .sp-chapter-gate .scg-deck {
   will-change: opacity, transform;
 }
 
-/* v8.7.1 timing — pulled earlier. All four layers are fully solid by
-   progress 0.20 so 80% of the sticky hold shows the fully-revealed title.
-   This guarantees the user never sees the black panel fully on-screen
-   without text. */
-/* Arc: 0.00 → 0.06 */
+/* v8.10.2 timing — combined with the JS progress shift (script.js v8.10.2),
+   layers begin appearing as the panel rises into view, not after it locks.
+   New JS mapping puts the lock-moment at progress ~0.40 and the release at
+   progress = 1.0. Reveal windows now stretch across the full hold so the
+   build-up is gradual rather than a quick crescendo, and every layer is
+   already partly visible by the time the panel covers the viewport.
+     Arc:     0.00 → 0.20  (drifts in while panel is still rising)
+     Numeral: 0.10 → 0.45  (fully visible roughly as panel locks)
+     Title:   0.25 → 0.60  (eases in across the first half of the hold)
+     Deck:    0.40 → 0.75  (final layer, settles before release)
+   The last 25% of progress (0.75 → 1.0) holds everything fully solid before
+   the panel releases — this is the breath beat. */
+
+/* Arc: 0.00 → 0.20 */
 body.is-special.sp-motion-ready .sp-chapter-gate .scg-arc {
-  opacity: clamp(0, calc(var(--scg-progress) / 0.06), 1);
-  transform: translateY(calc(12px - 12px * clamp(0, var(--scg-progress) / 0.06, 1)));
+  opacity: clamp(0, calc(var(--scg-progress) / 0.20), 1);
+  transform: translateY(calc(12px - 12px * clamp(0, var(--scg-progress) / 0.20, 1)));
 }
 
-/* Numeral: 0.02 → 0.10 (with a gentle scale-in) */
+/* Numeral: 0.10 → 0.45 (with a gentle scale-in) */
 body.is-special.sp-motion-ready .sp-chapter-gate .scg-numeral {
-  opacity: clamp(0, calc((var(--scg-progress) - 0.02) / 0.08), 1);
-  transform: scale(calc(0.88 + 0.12 * clamp(0, (var(--scg-progress) - 0.02) / 0.08, 1)));
+  opacity: clamp(0, calc((var(--scg-progress) - 0.10) / 0.35), 1);
+  transform: scale(calc(0.88 + 0.12 * clamp(0, (var(--scg-progress) - 0.10) / 0.35, 1)));
 }
 
-/* Title: 0.06 → 0.14 */
+/* Title: 0.25 → 0.60 */
 body.is-special.sp-motion-ready .sp-chapter-gate .scg-title {
-  opacity: clamp(0, calc((var(--scg-progress) - 0.06) / 0.08), 1);
-  transform: translateY(calc(8px - 8px * clamp(0, (var(--scg-progress) - 0.06) / 0.08, 1)));
+  opacity: clamp(0, calc((var(--scg-progress) - 0.25) / 0.35), 1);
+  transform: translateY(calc(8px - 8px * clamp(0, (var(--scg-progress) - 0.25) / 0.35, 1)));
 }
 
-/* Deck: 0.10 → 0.20 */
+/* Deck: 0.40 → 0.75 */
 body.is-special.sp-motion-ready .sp-chapter-gate .scg-deck {
-  opacity: clamp(0, calc((var(--scg-progress) - 0.10) / 0.10), 1);
-  transform: translateY(calc(8px - 8px * clamp(0, (var(--scg-progress) - 0.10) / 0.10, 1)));
+  opacity: clamp(0, calc((var(--scg-progress) - 0.40) / 0.35), 1);
+  transform: translateY(calc(8px - 8px * clamp(0, (var(--scg-progress) - 0.40) / 0.35, 1)));
 }
 
 /* ---- Mobile / tablet ---- */
@@ -8986,9 +8995,14 @@ body[data-special="countdown"][data-multi-venue="true"] section[data-sp-chapter]
     var vh = window.innerHeight || document.documentElement.clientHeight;
     visibleGates.forEach(function (gate) {
       var r = gate.getBoundingClientRect();
-      // scrollDistance = how far past the gate's top we've scrolled.
-      // When r.top = 0, scrollDistance = 0. When r.top = -vh, scrollDistance = vh.
-      var scrolled = -r.top;
+      // v8.10.2 — progress starts as the panel begins sliding into view, not
+      // when its top reaches the viewport top. Otherwise on portrait the
+      // sticky panel can fill the screen with progress still near 0, leaving
+      // a long black-with-no-title moment. New mapping: progress = 0 when the
+      // gate's top is 0.4*vh below the viewport top (~40% of the strip already
+      // visible as it rises), progress = 1 when r.top = -0.6*vh (panel locked,
+      // most of the hold consumed). Span = 1.0*vh.
+      var scrolled = (vh * 0.4) + (-r.top);
       var p = scrolled / vh;
       if (p < 0) p = 0;
       else if (p > 1) p = 1;
