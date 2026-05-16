@@ -124,14 +124,15 @@
       ],
       "field_guide_due": true,
       "countdown_due": true,
-      "field_guide_topic": "food and where to eat at Efteling and Beekse Bergen -- food-focused Field Guide, NOT a general trip preview. Per editorial-spec.md § The Field Guide rule 1: subject is FOOD. Cover every meal slot across both venues, with the multi-venue balance rule (rule 7) weighting Beekse Bergen as primary (5 nights) and Efteling as secondary (2 nights).",
+      "field_guide_topic": "food and where to eat at Efteling and Beekse Bergen -- food-focused Field Guide, NOT a general trip preview. Per editorial-spec.md § The Field Guide rule 1: subject is FOOD. Both venues are wholly self-contained for this trip -- the reader is staying ONSITE at each, so coverage is restricted to food available within each park / resort estate. No outside-the-gates dining, no nearby-towns coverage, no day-trip food picks. The park / resort estate IS the universe.",
       "countdown_topic": "trip anticipation -- attractions, accommodation, mood board, moments worth the trip. Per editorial-spec.md § The Countdown: hype over homework, logistics demoted to coda.",
-      "primary_venue_by_nights": "Beekse Bergen Safari Resort",
-      "secondary_venue_by_nights": "Efteling",
+      "primary_venue": "Efteling",
+      "secondary_venue": "Beekse Bergen Safari Resort",
+      "primary_venue_rationale": "Efteling is the primary venue for the Field Guide despite being the shorter stay (2 nights vs 5 at Beekse Bergen). The reader has chosen to weight it as primary because (a) Efteling days are busier and more time-pressured -- knowing where to eat in advance pays off most; (b) theme park food choice is denser and harder to navigate without prep; (c) Beekse Bergen as a safari + resort has more diverse and flexible dining that's discoverable in the moment. Apply rule 7 (multi-venue balance) accordingly: Efteling gets the full Unmissables treatment + ranked meal-slot chapters; Beekse Bergen gets a substantive secondary section (>= 800 words) covering key dining options, standout picks, and practical notes.",
       "access_constraints": {
-        "excluded_modes": [],
-        "allowed_modes": [],
-        "notes": "TBD -- ask user before next Field Guide / Countdown run to set excluded_modes (e.g. ['car'] if not driving) and allowed_modes. Until set, the agent should write venue access in neutral terms (distance, public-transport availability noted, car-dependent options not auto-cut but flagged)."
+        "excluded_modes": ["car_off_estate"],
+        "allowed_modes": ["walking_within_estate"],
+        "notes": "Reader is staying ONSITE at both venues for the entire trip (Schiphol -> train -> taxi, then onsite throughout). Field Guide and Countdown coverage is restricted to dining available WITHIN each park / resort estate. Do not include outside-the-gates restaurants, nearby-town picks, day-trip food, or any venue requiring transport off the estate. The estate IS the universe for this reader. Walking distance within the estate is the only relevant access metric for the practical footer; transit modes off the estate are not part of this trip's reality."
       }
     }
   ],
