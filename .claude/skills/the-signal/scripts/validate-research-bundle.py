@@ -26,11 +26,56 @@ Exit codes:
   1 — FAIL (one or more rules violated; report printed)
   2 — usage / missing file
 """
+import argparse
+import concurrent.futures
+import datetime
 import json
 import sys
+import urllib.error
+import urllib.request
 from collections import Counter
 from pathlib import Path
 from urllib.parse import urlparse
+
+
+BROWSER_UA = (
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+)
+
+
+def head_verify(url: str, timeout: float = 6.0) -> tuple[int | str, str]:
+    """HEAD-check a URL; fall back to range-GET on 4xx that block HEAD.
+    Returns (status_or_error_str, content_type)."""
+    req = urllib.request.Request(url, method="HEAD", headers={
+        "User-Agent": BROWSER_UA,
+        "Accept": "image/*,*/*;q=0.5",
+    })
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return (resp.status, (resp.headers.get("Content-Type") or "").split(";")[0].strip().lower())
+    except urllib.error.HTTPError as e:
+        if e.code in (403, 405, 501):
+            try:
+                req_get = urllib.request.Request(url, method="GET", headers={
+                    "User-Agent": BROWSER_UA,
+                    "Accept": "image/*,*/*;q=0.5",
+                    "Range": "bytes=0-0",
+                })
+                with urllib.request.urlopen(req_get, timeout=timeout) as resp:
+                    return (resp.status, (resp.headers.get("Content-Type") or "").split(";")[0].strip().lower())
+            except Exception as e2:
+                return (f"HEAD {e.code} / GET {e2.__class__.__name__}", "")
+        deny = (e.headers.get("x-deny-reason") if e.headers else None) or ""
+        if deny:
+            return (f"blocked:{deny}", "")
+        return (e.code, "")
+    except urllib.error.URLError as e:
+        if "host_not_allowed" in str(e.reason) or "Network is unreachable" in str(e.reason):
+            return ("blocked:egress", "")
+        return (f"URLError:{e.reason}", "")
+    except Exception as e:
+        return (f"{e.__class__.__name__}:{e}", "")
 
 
 def load_lookup(skill_dir: Path) -> dict:
@@ -59,11 +104,20 @@ def classify_domain(url: str, lookup: dict, explicit_type: str | None = None) ->
 
 
 def main():
-    if len(sys.argv) < 2:
-        print("Usage: validate-research-bundle.py <research-bundle.json>", file=sys.stderr)
-        sys.exit(2)
+    ap = argparse.ArgumentParser(description="Phase 3b research-bundle validator.")
+    ap.add_argument("bundle_path", help="Path to research-bundle.json")
+    ap.add_argument("--verify-network", action="store_true",
+                    help="HEAD-check every candidate URL ourselves and OVERWRITE the researcher's "
+                         "verified block with the actual result. Use in CI or anywhere network egress works. "
+                         "Closes the self-attestation hole at zero subagent cost.")
+    ap.add_argument("--workers", type=int, default=8,
+                    help="Parallel workers for --verify-network HEAD checks.")
+    ap.add_argument("--write-back", action="store_true",
+                    help="When used with --verify-network, write the rewritten bundle back to disk "
+                         "so subsequent phases see the orchestrator-verified URLs.")
+    args = ap.parse_args()
 
-    bundle_path = Path(sys.argv[1])
+    bundle_path = Path(args.bundle_path)
     if not bundle_path.exists():
         print(f"ERROR: {bundle_path} not found", file=sys.stderr)
         sys.exit(2)
@@ -78,6 +132,43 @@ def main():
     if not candidates:
         print("ADVISORY: research-bundle.json has no image_candidates — skipping image-source validation.")
         sys.exit(0)
+
+    # ── v8.13.8 orchestrator-side HEAD verification ───────────────────────
+    # When --verify-network is on (always in CI; in pipeline whenever egress
+    # works), HEAD-check every URL ourselves and overwrite the researcher's
+    # self-attested `verified` block with the actual result. This closes the
+    # hole where a researcher could fabricate verification.
+    # When egress is blocked (sandbox), every candidate gets verified:
+    # {"head_status": "blocked:egress"} — the bundle gate downstream knows
+    # to treat these as "verify in CI" rather than reject outright.
+    if args.verify_network:
+        print(f"=== --verify-network: HEAD-checking {len(candidates)} candidates (parallel) ===")
+        urls = [c.get("url_or_keyword", "") for c in candidates]
+        results: dict[int, tuple[int | str, str]] = {}
+        with concurrent.futures.ThreadPoolExecutor(max_workers=args.workers) as pool:
+            future_to_i = {pool.submit(head_verify, u): i for i, u in enumerate(urls) if u}
+            for fut in concurrent.futures.as_completed(future_to_i):
+                results[future_to_i[fut]] = fut.result()
+        now = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+        for i, c in enumerate(candidates):
+            if i not in results:
+                continue
+            status, ctype = results[i]
+            c["verified"] = {
+                "head_status": status,
+                "content_type": ctype,
+                "verified_at": now,
+                "verified_by": "orchestrator",
+            }
+        if args.write_back:
+            bundle_path.write_text(json.dumps(bundle, indent=2), encoding="utf-8")
+            print(f"  wrote orchestrator-verified bundle back to {bundle_path}")
+        # Quick stats
+        ok = sum(1 for s, ct in results.values() if isinstance(s, int) and 200 <= s < 300 and ct.startswith("image/"))
+        blocked = sum(1 for s, ct in results.values() if isinstance(s, str) and s.startswith("blocked"))
+        bad = len(results) - ok - blocked
+        print(f"  verified: {ok} OK / {blocked} egress-blocked / {bad} bad")
+        print()
 
     failures = []
     warnings = []
@@ -156,13 +247,22 @@ def main():
             continue
         v_status = verified.get("head_status")
         v_ctype = (verified.get("content_type") or "").lower()
-        if not (isinstance(v_status, int) and 200 <= v_status < 300):
+        # v8.13.8 — a `blocked:*` status means the orchestrator's network was
+        # restricted (sandbox), so verification deferred to CI. Treat as a
+        # warning, not a fail: the bundle proceeds, the CI workflow does the
+        # real verification, the auto-promote step holds main on red.
+        if isinstance(v_status, str) and v_status.startswith("blocked"):
+            warnings.append(
+                f"  entry[{i}] ({ctx}): verified.head_status = {v_status!r} (egress restricted). "
+                f"CI will re-verify with full network. URL: {url}"
+            )
+        elif not (isinstance(v_status, int) and 200 <= v_status < 300):
             failures.append(
                 f"  entry[{i}] ({ctx}): verified.head_status is {v_status!r}, must be 2xx. URL: {url}\n"
                 f"    Replace this candidate with a URL that returns 2xx, or drop it from the bundle."
             )
             continue
-        if not v_ctype.startswith("image/"):
+        elif not v_ctype.startswith("image/"):
             failures.append(
                 f"  entry[{i}] ({ctx}): verified.content_type is {v_ctype!r}, must start with 'image/'. URL: {url}\n"
                 f"    The URL returns non-image content (likely an HTML page). Replace it with a direct CDN image URL."

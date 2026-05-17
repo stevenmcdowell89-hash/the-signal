@@ -133,19 +133,19 @@ jobs:
           script: |
             const sha = context.sha.substring(0, 7);
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-            const title = `Issue validation failed on ${sha}`;
+            const title = `Issue ${sha}: residual defects after Phase 9 self-heal`;
             const body = [
-              `The \`validate-issue\` workflow failed on commit \`${sha}\`.`,
+              `**This is an informational tracking issue — no action required.**`,
               ``,
-              `**Most likely cause:** a broken / fabricated / duplicate image URL slipped past the sandboxed pipeline gates. The CI run had full network access and caught it.`,
+              `The pipeline's Phase 9 auto-repair ran up to 3 rounds on this issue and shipped what it produced (per the v8.13.8 publish-anyway rule — a slightly-imperfect new issue is preferable to no new issue, and previous issues remain accessible via index.html).`,
               ``,
-              `**What to do:** check the [run details](${runUrl}) for the specific failure, then either:`,
-              `  1. Revert the offending commit if the issue already shipped to GitHub Pages, OR`,
-              `  2. Re-run the pipeline with the failure report inlined so the researcher fixes the bundle.`,
+              `This CI workflow then re-ran every gate with full network access (which the sandboxed pipeline cannot do) and found defects that survived Phase 9. The new issue is **live on the site** with these defects.`,
               ``,
-              `**Why this issue exists:** The Signal's normal pipeline runs in a sandbox that blocks outbound HTTPS, so it cannot HEAD-check image URLs reliably. This CI workflow runs the same gates in an unrestricted environment and is the only structural enforcement against the broken-images class of bug.`,
+              `**For curiosity:** see the [run details](${runUrl}) for the specific failures (typically broken image URLs, duplicate substitutions when the bundle was thin, or new content-type drift on a previously-working URL).`,
               ``,
-              `_Auto-filed by .github/workflows/issue-validation.yml — close once the issue is resolved or reverted._`,
+              `**For action:** none unless the issue is visually broken in a way you care about. You can close this issue freely — it does not block the next Sunday's run.`,
+              ``,
+              `_Auto-filed by .github/workflows/issue-validation.yml. The pipeline runs again next Sunday; if the residual defect was a transient URL issue, it'll be absent from the new issue's bundle._`,
             ].join("\n");
             const { data: existing } = await github.rest.issues.listForRepo({
               owner: context.repo.owner,

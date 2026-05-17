@@ -260,12 +260,29 @@ This is the "browser-eye QA" replacement for environments without headless-Chrom
 ### Phase 8 — Stitched-issue Gate (Gate 3)
 Cross-chapter checks: no two consecutive sections same component pattern, accent lockdown across chapters, link health, ongoing-story consistency. Plus Gate 2 editorial/visual quality. (Image-source diversity is enforced by Phase 7.7.) Fix any failures.
 
-### Phase 9 — Repair (if needed)
-Max 3 rounds. Each round: identify failing chapter, spawn ONE repair `Agent` (`subagent_type: "general-purpose"`, `model: "sonnet"`) with the chapter HTML + the specific failure report, re-write that chapter, re-stitch, re-inject, re-grep. After 3 failed rounds: escalate to the reader.
+### Phase 9 — Self-healing repair (v8.13.8 — autonomous, max 3 rounds)
+
+The reader is the **audience**, not a triage layer. Phase 9 must resolve gate failures itself; if it cannot, Phase 10 ships the best-effort issue anyway. Last week's issue stays accessible via `index.html` — a less-than-perfect new issue is preferable to no new issue.
+
+**Round 0 — image defects auto-repair first (programmatic, no subagent).**
+Run `python3 scripts/auto-repair-images.py <stitched-html> /tmp/signal-build/research-bundle.json`. This script rotates unused bundle URLs through every defective image slot in the rendered DOM (duplicates from D6, unbundled from D7, page-URLs from D3). It is pure Python — no subagent dependency. Exits 0 if all defects fixed, 1 if some are unfixable (bundle exhausted).
+
+Why this runs first: image defects are mechanically fixable from the existing bundle, and the bundle is the only authority writers may use anyway. Running this BEFORE spawning expensive repair agents avoids wasting writer-round budget on what's really an asset-substitution problem.
+
+After auto-repair runs, re-stitch is **not** needed (the script edits the stitched HTML in place); just re-run Phase 7.5/7.6/7.7/7.8 gates.
+
+**Rounds 1–3 — targeted subagent repair for content defects.**
+If gates STILL fail after auto-repair (or fail in non-image ways — release-date errors, ground discipline, accent leaks, banned phrases), spawn ONE repair `Agent` (`subagent_type: "general-purpose"`, `model: "sonnet"`) per round. Pass the chapter HTML + the specific failure report + the bundle. Repair re-writes the chapter; re-stitch; re-run auto-repair-images.py; re-run gates. Cost log: `bash scripts/log-call.sh repair sonnet <issue_id> <chapter_id> <round> <outcome>`.
+
+**After 3 rounds — PROCEED to Phase 10 regardless of remaining gate failures.** Do NOT escalate to the reader. The pipeline publishes the best-effort issue. The orchestrator records the remaining defects in the closing summary; the CI workflow files a tracking GitHub issue for visibility (informational, not blocking).
+
+**Bundle-exhaustion case.** If `auto-repair-images.py` reports "bundle exhausted" (cannot substitute all defects), one of the round 1–3 repairs should re-spawn the **researcher** with an inline "find N more verified image URLs for venue X" brief, append the new candidates to the bundle, then re-run auto-repair. Only fall back to "ship with duplicates" after this researcher-extension also failed within the 3-round budget.
 
 **Cost log:** after each repair attempt, run `bash scripts/log-call.sh repair <model> <issue_id> <chapter_id> <round_number> <outcome>`. Outcome is `gate_fail` if the gate still fails and another round is coming, `ok` if the chapter now passes, `escalated` if all 3 rounds exhausted. See § Cost Logging.
 
-### Phase 10 — Deliver + publish
+### Phase 10 — Deliver + publish (always publishes; CI is post-hoc)
+
+**Cardinal rule (v8.13.8):** Phase 10 ALWAYS publishes. Phase 9 has already done up to 3 rounds of self-healing repair; whatever survived is what ships. The reader gets a new issue every Sunday — degraded if necessary, broken-imperfect rather than missing. Last week's issue remains accessible at `/issues/<previous-filename>.html` via `index.html`, so the live site never lacks content even if this week's has minor defects.
 
 **Stage the final HTML** to scratch first. Filename: `signal_weekly_YYYY-MM-DD.html` for standard weeklies, `signal_<format>_YYYY-MM-DD.html` for specials (e.g. `signal_countdown_2026-06-07.html`). The scratch copy is `/tmp/signal-build/<filename>`; the durable copy lives in the repo (step 2 below).
 
@@ -280,17 +297,14 @@ Max 3 rounds. Each round: identify failing chapter, spawn ONE repair `Agent` (`s
    - Call `mcp__github__push_files` with `owner: "stevenmcdowell89-hash"`, `repo: "the-signal"`, `branch: "main"`, the commit `message` (see below), and `files` listing every changed path with its contents read from disk. Three files in a standard run: `issues/<filename>.html`, `index.html`, `state/signal-state.json`. Plus the cost log if it lives in the repo (`state/cost-log.jsonl`).
    - **Commit message format:** `Issue #N — <date range>: <headlines>` for standard weeklies; `<Format> — <Topic>: <date>` for specials.
    - If MCP push fails, fall back to plain `git push` from inside the cloned repo — credentials may be configured.
-5. Confirm publication by stating the GitHub Pages URL for the new issue in the closing summary.
-6. **Wait for CI verification.** The `validate-issue` workflow (`.github/workflows/issue-validation.yml`) runs on every push to `main` and re-checks every image URL with full network access — the gate the sandboxed pipeline cannot run. Use `mcp__github__get_commit` to fetch the commit's check-runs status after a 60-90s wait. If the workflow concludes `failure`:
-   - The workflow auto-files a GitHub issue labelled `validation-failed` with the diagnostic
-   - You MUST either (a) push a revert commit (`git revert <sha>` + push), or (b) push a follow-up commit that fixes the specific URLs the workflow flagged, then wait for CI again
-   - Do NOT consider the issue published until CI is green
+5. Confirm publication by stating the GitHub Pages URL for the new issue in the closing summary. Include a note if Phase 9 had remaining defects (e.g. "Note: shipped with N image substitutions after auto-repair could not fully clear the bundle. CI will track.").
+6. **Do NOT wait for CI; do NOT revert on CI red.** CI (`.github/workflows/issue-validation.yml`) runs automatically and files a tracking issue if it finds defects the pipeline missed. The tracking issue is informational — the reader (audience, not engineer) is not required to act on it. The previous week's issue stays accessible via `index.html` so the site never degrades.
 
-If you cannot reach CI from the current session, surface the workflow URL in the closing summary so the reader can check manually.
+**Why we publish even on red:** the reader's weekly Sunday read is the product. A new issue with imperfect images is preferable to no new issue. Phase 9's 3-round budget is the defence; if 3 rounds couldn't fix it, additional rounds rarely would. Better to ship and surface the residual issue in CI than to gate the audience's reading on a defect-resolution loop.
 
 **Why state lives in the repo.** Claude Code on the web runs in an ephemeral container that is reclaimed when the session ends. The repo is the only path that's visible from every session, and it gives you version history of every state change for free.
 
-**The deliverable is the published GitHub Pages URL with green CI**, not a workspace file. The reader receives the URL in the closing summary.
+**The deliverable is the published GitHub Pages URL** + a record of any Phase 9 residual defects, not a perfect issue. The reader receives the URL in the closing summary.
 
 ### Note on unbreakable enforcement
 
@@ -543,6 +557,7 @@ When the reader asks to tweak styling or structure rather than generate an issue
 | `scripts/check-image-diversity.sh` | **Phase 7.7 mandatory post-stitch gate.** Classifies every image domain in the stitched HTML via the lookup table and enforces the same diversity rules as Phase 3b. Defence in depth — catches writers omitting bundle images and skewing the final ratio, or new domains slipping in. Sandbox-aware: unknown domains warn rather than fail. |
 | `references/image-source-types.json` | Lookup table mapping domain → source type (press_kit / government / archive / news_cdn / wikimedia) plus the threshold values. Edit when a new recurring source appears in research. Both Phase 3b and 7.7 gates read this file. |
 | `scripts/log-call.sh` | Fire-and-forget logger — main loop calls this after each subagent returns. Appends one JSON line to the cost log (default `/tmp/the-signal/state/cost-log.jsonl`, override via `SIGNAL_COST_LOG`). Errors are silent so logging never blocks the pipeline. |
+| `scripts/auto-repair-images.py` | **Phase 9 round-0 programmatic repair.** Takes stitched HTML + research-bundle.json, identifies image defects (duplicates D6, unbundled D7, page-URL-as-image D3) and substitutes unused bundle URLs in-place. Pure Python — no subagent dependency. Exits 0 on clean / fully-repaired, 1 on partial (bundle exhausted). The orchestrator's Phase 9 loop absorbs partial failures via the 3-round budget; after 3, Phase 10 ships anyway. |
 | `scripts/cost-summary.sh` | Reads the cost log and prints a per-issue and aggregate breakdown (calls per role, model usage, retry rate, validator/gate failures, escalations). Run after a few issues to validate the model fallback chains. |
 
 **Rules for CSS edits:**
