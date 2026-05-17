@@ -145,6 +145,31 @@ If no Priority 1 or 2 trigger has fired in the last 5 weeks, the editor picks a 
 
 ## chapter-gate
 
+### Editorial motion layer (tier 5.5) — MANDATORY for loud special editions
+
+The tier-5 body kit gives the magazine its structure. The tier-5.5 motion layer (in `28-special-motion-editorial.css` + matching JS controllers in `assets/script.js`) gives it kinetic life. Inspired by adapted motion vocabulary from landonorris.com (wipe-band reveals, scroll drift, staggered entries) — translated into editorial idiom. **Most of it is automatic** — applied by the JS controllers on scroll. A few patterns require explicit class application.
+
+**Automatic — no markup changes required:**
+- `.sp-folio` watermarks drift ±60px on scroll (subtle parallax, via `--sp-folio-y`)
+- `.sp-chapter-chrome` opens with a sequenced wipe (numeral → hair → name → slug, staggered)
+- `.sp-dash-cell`s stagger in 90ms apart
+- `.sp-tl-row`s stagger in down the timeline
+- `.sp-hero-quote` lifts in with the corner glyph drifting in opposite direction
+- `.sp-brief` slides in with its accent rule scaling vertically from 0
+- `.sp-pull-break` corner quote marks scale in from opposite corners
+- `.sp-bridger` three columns enter staggered
+- `.sp-spread` rail and margin slide in from opposite sides as body fades up
+- `.sp-spread-body` first letter (drop cap) pops in with a slight scale
+- `.sp-signoff` scale-in finale
+- `.sp-caption-strip` hairline rule draws across
+- All in-prose `<a>` links get an underline-draw on hover (background-size 0% → 100%)
+- Native `scroll-behavior: smooth` on the document
+- Ground-seam accent hairline appears between alternating-ground chapters
+- Paper-bg components (`.sp-brief`, `.sp-hero-quote`, `.sp-bridger`, `.sp-margin`) automatically lock to ink text colour even when nested in `.sp-ground-ink` chapters (readability lock — no need to add `.sp-island` manually)
+
+**Explicit class application — REQUIRED on loud specials:**
+- **`.sp-band`** is THE signature move (the Lando wipe-band reveal). Every chapter chrome's `.sp-eyebrow` and `.sp-chapter-name` MUST carry `.sp-band`. Every `.sp-signoff` label MUST carry `.sp-band`. Every standalone `.sp-eyebrow` kicker above a major component title gets `.sp-band`. The JS auto-wraps the inner text into `.sp-band-t` on the first observation.
+- **`.sp-band sp-band-thin`** — lighter underline-sweep variant. Apply to dashboard `.sp-dash-hint` kickers and caption-strip eyebrows where you want the sweep without hiding the text.
 - **`.sp-spine`** — decorative inline SVG hairline that draws itself in (`stroke-dashoffset` animation) when scrolled into view. Add 1-2 per long chapter inside the `.sp-margin` column or `.sp-rail` to add typographic depth without weight. Pattern: `<svg class="sp-spine" viewBox="0 0 2 200"><path d="M1 0 V200" /></svg>` (or a curve). Lives decoratively in the margins, never near body text.
 
 **Reduced-motion:** All tier-5.5 motion is wrapped in a `@media (prefers-reduced-motion: reduce)` kill switch — animations collapse to instant, transforms reset, decorative drift disabled. Content-readable state always reachable without motion.
@@ -185,31 +210,6 @@ These components compose with the existing `.sp-wipe`, `.sp-curtain`, ground alt
 
 - **`.sp-chapter-beads`** — fixed right-gutter bead strip, one per chapter, with within-chapter progress connector. **Universal: works on standard weekly AND every special edition.** Markup: a single `<aside class="sp-chapter-beads" aria-hidden="true"></aside>` near the end of `<body>` (already included in `template-parts/19-closing.html`). **Chapter discovery order:** (1) elements with `[data-sp-chapter]` — typical for specials; (2) fallback to `.mag > section.sec` — used by every standard-weekly section. **Title resolution:** `[data-sp-chapter-title]` → first `<h2>` text → section `id` (title-cased) → `Chapter N`. Accent colour auto-cascades: `--sp-accent` on specials, `--accent` on standards. **Mobile (≤ 820px):** collapses to a thin vertical line with no labels. Click a bead to scroll to that chapter.
 - **`.sp-horizon`** — bottom-edge strip bleeds the next chapter's ground colour upward as within-chapter progress nears 100%. Markup: a single `<div class="sp-horizon" aria-hidden="true"></div>` near the end of `<body>`. Each chapter element must carry `data-sp-chapter` AND `data-sp-ground-color="#hex"` so the next chapter's colour is known.
-
-**Authoring contract for ambient:**
-- Both ambient components share the same per-chapter progress calculation (one rAF loop, zero duplicated work). Adding `.sp-horizon` for free if you've already added `.sp-chapter-beads`.
-- Both require chapters to be marked with `data-sp-chapter` on the section root and `data-sp-chapter-title` for tooltips (specials). **Standard editions need no mark-up** — beads auto-discover from `<section class="sec">`. `data-sp-ground-color` is required only if you use `.sp-horizon` (special editions only).
-- Reduced-motion: beads stay (active state only, no fill animation); horizon collapses to a static 2vh strip near chapter end.
-
-### Chapter gate (MANDATORY for every chapter on every special edition — v8.5, sticky scroll model)
-
-**The chapter gate is the single most important element in a special edition.** It is the digital equivalent of turning a page in a real magazine — a viewport-locking moment that unambiguously says *"a new chapter starts here"*. It is the permanent, unmissable signal the reader can spot at any scroll speed.
-
-**Mandatory on:** every `[data-sp-chapter]` in every special edition. If a chapter does not open with `.sp-chapter-gate`, the issue fails Gate 2.
-
-**Structure:**
-```
-<aside class="sp-chapter-gate"
-       data-chapter-num="V"
-       data-chapter-title="BEEKSE BERGEN"
-       data-chapter-arc="Act III — the wild">
-  <p class="scg-deck">Five days inside Europe's largest safari park, and a hotel where the lions wake you up.</p>
-</aside>
-```
-Place the gate **immediately before** the chapter section's opening `<section data-sp-chapter="…">` tag. The controller auto-builds the black panel and drives the scroll-progress reveal.
-
-**How it behaves (v8.5 sticky scroll model):**
-- The gate is a 160vh scroll track containing a `position: sticky` full-bleed black panel (`#0A0E17`) that locks to the viewport for ~1 screen-height of scroll.
 
 
 ---
@@ -266,6 +266,37 @@ Every `<img src="…">` in the rendered HTML must point to a unique URL. Re-usin
 
 ## signature-moments
 
+- **D3 page-url-as-image:** any image URL whose path has no recognised image extension fails. Catches the "page URL pasted as `<img src>`" pattern.
+- **D6 duplicate image URLs:** any URL used more than `max_uses_per_url` times (default 1) fails. Enforces the no-duplicate-src rule above mechanically.
+- **D7 unbundled images:** with `--bundle <path>`, every DOM image URL must appear verbatim in `image_candidates`. Catches URLs the writer invented.
+
+**Layer 6 — CI workflow (`.github/workflows/issue-validation.yml`).** Runs all gates on every push and PR in an unrestricted-egress environment. The image-URL HEAD check that degrades to a warning in the sandboxed pipeline runs for real here. On failure, auto-files a GitHub issue labelled `validation-failed`. For full enforcement, branch protection on `main` requires this workflow to pass before merge (one-time UI setup).
+
+This is the complete chain. Each layer is enforced by code, not by writer discipline. Adding a new image-shipping defect class means adding a new layer here.
+
+**Editorial body kit (tier 5 — magazine-spread structure):**
+- `.sp-ground-paper` / `.sp-ground-ink` — alternating-ground wrapper for chapters. Apply to each major section so chapters alternate between paper (cream) and ink (deep) grounds. The shift of value on scroll IS the transition between chapters; no bridge component needed when alternating. Variants: `.sp-ground-warm` (warm cream), `.sp-ground-tint` (rose-tinted paper), `.sp-ground-deep` (pitch black).
+- `.sp-chapter-chrome` — thin top bar inside every chapter: `<span class="sp-roman">III</span><span class="sp-hair"></span><span class="sp-chapter-name">…</span><span class="sp-chapter-slug">…</span>`. Mandatory at the top of every chapter on a special edition. Anchors the bound-magazine feel.
+- `.sp-folio` — giant background numeral behind chapter content (300-700px, ~5% opacity). Position with `.sp-folio-tl/-tr/-bl` variants. Place inside a chapter wrapper that has its own positioning context.
+- `.sp-spread` with `.sp-rail` + `.sp-spread-body` + `.sp-margin` — three-column feature-spread pattern. Narrow ink rail (oversized italic numeral, vertical spine label, act/section name) | body prose with proper drop cap and § section marks | tinted right margin column carrying marginalia and datums. Mandatory for any chapter ≥800 words. Collapses to single column ≤980px.
+  - Inside `.sp-margin`: use `.sp-margin-kicker`, `.sp-margin-quote` (with `.sp-margin-attrib`), and one or more `.sp-datum` (each containing `.sp-datum-n` + `.sp-datum-l`).
+- `.sp-brief` — sidebar card with thick accent left rule. `<div class="sp-brief"><p class="sp-brief-kicker">…</p><h4 class="sp-brief-h">…</h4><p>…</p><p class="sp-brief-byline">…</p></div>`.
+- `.sp-hero-quote` — bordered card with oversized translucent “ peeking above the top edge. `.sp-hero-quote-q` for the quote, `.sp-hero-quote-at` for attribution.
+- `.sp-dash` — stat dashboard band: 3-4 `.sp-dash-cell`s, soft tinted background, oversized italic numerals (`.sp-dash-n`) + mono labels (`.sp-dash-l`) + accent kickers (`.sp-dash-hint`). Use this instead of italicised stat lists.
+- `.sp-timeline` — editorial two-column timeline. Each `.sp-tl-row` contains `.sp-tl-when` (large italic date with optional `.sp-tl-tag`) and `.sp-tl-what` (with `<strong>` lede + serif body, accent dot on rule). Perfect for day-by-day plans.
+- `.sp-pull-break` — full-bleed dark band with two giant translucent quote marks in opposite corners and centred pull (`.sp-pull` + `.sp-pull-attrib`). Much more dramatic than a normal pull quote; use 1-2 per issue.
+- `.sp-bridger` — three-column interlude inside a section: numeral marker (`.sp-bridger-side` with `.sp-bridger-num`) | prose (`.sp-bridger-main`) | sidebar/quote (`.sp-bridger-aside`). Sits on warm-cream ground, breaks body rhythm.
+- `.sp-caption-strip` — richer photo caption with hairline rule + `.sp-cap-loc` mono location chip on the right.
+- `.sp-signoff` — italic display sigil with hairline accent rule, marking the end of a chapter.
+- `.sp-eyebrow` — tiny mono kicker in accent colour, used above any major heading or component title.
+
+
+---
+
+## chapter-transitions
+
+
+### Editorial body kit — MANDATORY rules for loud special editions
 
 The tier-4 imagery budget addresses *what's in* each chapter. The tier-5 editorial body kit addresses *how each chapter is structured*. Both apply.
 
@@ -283,37 +314,6 @@ The tier-4 imagery budget addresses *what's in* each chapter. The tier-5 editori
 - Section headings inside `.sp-spread-body` use the `§` section mark automatically (built into the CSS)
 - First paragraph of each `.sp-spread-body` gets a 110px italic accent drop cap automatically (built into the CSS) — do not manually wrap the first letter
 
-### Editorial motion layer (tier 5.5) — MANDATORY for loud special editions
-
-The tier-5 body kit gives the magazine its structure. The tier-5.5 motion layer (in `28-special-motion-editorial.css` + matching JS controllers in `assets/script.js`) gives it kinetic life. Inspired by adapted motion vocabulary from landonorris.com (wipe-band reveals, scroll drift, staggered entries) — translated into editorial idiom. **Most of it is automatic** — applied by the JS controllers on scroll. A few patterns require explicit class application.
-
-**Automatic — no markup changes required:**
-- `.sp-folio` watermarks drift ±60px on scroll (subtle parallax, via `--sp-folio-y`)
-
-
----
-
-## chapter-transitions
-
-- `.sp-chapter-chrome` opens with a sequenced wipe (numeral → hair → name → slug, staggered)
-- `.sp-dash-cell`s stagger in 90ms apart
-- `.sp-tl-row`s stagger in down the timeline
-- `.sp-hero-quote` lifts in with the corner glyph drifting in opposite direction
-- `.sp-brief` slides in with its accent rule scaling vertically from 0
-- `.sp-pull-break` corner quote marks scale in from opposite corners
-- `.sp-bridger` three columns enter staggered
-- `.sp-spread` rail and margin slide in from opposite sides as body fades up
-- `.sp-spread-body` first letter (drop cap) pops in with a slight scale
-- `.sp-signoff` scale-in finale
-- `.sp-caption-strip` hairline rule draws across
-- All in-prose `<a>` links get an underline-draw on hover (background-size 0% → 100%)
-- Native `scroll-behavior: smooth` on the document
-- Ground-seam accent hairline appears between alternating-ground chapters
-- Paper-bg components (`.sp-brief`, `.sp-hero-quote`, `.sp-bridger`, `.sp-margin`) automatically lock to ink text colour even when nested in `.sp-ground-ink` chapters (readability lock — no need to add `.sp-island` manually)
-
-**Explicit class application — REQUIRED on loud specials:**
-- **`.sp-band`** is THE signature move (the Lando wipe-band reveal). Every chapter chrome's `.sp-eyebrow` and `.sp-chapter-name` MUST carry `.sp-band`. Every `.sp-signoff` label MUST carry `.sp-band`. Every standalone `.sp-eyebrow` kicker above a major component title gets `.sp-band`. The JS auto-wraps the inner text into `.sp-band-t` on the first observation.
-- **`.sp-band sp-band-thin`** — lighter underline-sweep variant. Apply to dashboard `.sp-dash-hint` kickers and caption-strip eyebrows where you want the sweep without hiding the text.
 
 
 ---
@@ -481,6 +481,31 @@ At ≤ 980px, `.sp-spread` becomes `display: flow-root; position: relative`.
 
 ## holiday-identity
 
+| Stat curtain (transition) | CSS + JS auto-fires from trigger | `.sp-stat-curtain` + `data-curtain-for="id"` trigger — max 2 per issue |
+| Page fold (3D transition at ground swap) | CSS auto | `.sp-page-fold-wrap` between chapters — max 2 per issue |
+| Signature moment (per-format) | CSS + JS auto from `[data-special]` | Format-specific markup from the signature-moment table |
+| Wax seal + progress bar + back-to-top | CSS + JS auto | Nothing |
+| Full-viewport cover (v8.7.3) | CSS auto via `min-height: 100dvh` | Nothing — works on tablet and phone |
+| Accent lockdown (coral reserved for gate/D-day/progress only) | CSS auto via token cascade | Nothing — demoted secondary accent fills everywhere else |
+| Imagery/stat budget enforcement | Author-side checklist | Gate 2 of compliance checklist; not enforced in code |
+
+**What this means for future issues:** when a Countdown / Versus / Rewind / Deep Dive / etc. is generated in four weeks' time, the author does not need to re-request any of the above. They fire automatically provided (1) `<body class="mag-body is-special" data-special="...">`, (2) every chapter wrapper carries `data-sp-chapter` + alternating `sp-ground-paper` / `sp-ground-ink`, and (3) every chapter is preceded by a `.sp-chapter-gate`. Anything requiring author markup is a class contract, not a CSS request — it's documented in the Feature column with the minimum markup.
+
+**What is NOT auto-applied and requires editorial judgement each time:** imagery density (budget is a minimum, not a ceiling), accommodation-chapter depth, word counts per chapter, the choice of signature moment for the format, placement of `.sp-pull-break` / `.sp-bridger` / `.sp-dash` interludes, and the editorial arc labels (`data-chapter-arc`). These are content decisions the editor makes during generation, not mechanical features.
+
+---
+
+## What Good Looks Like
+
+- Scannable in 60 seconds via navigator; rewards 30-45 minutes of deep reading
+- Feels like a thoughtful human editor, not an AI summary bot
+- Varies in tone across sections while feeling like one publication
+- Connects stories the reader wouldn't have linked themselves
+- **Visually varied** — split layouts, big numbers, pull quotes, card stacks, timelines, margin notes, collapsible sections throughout
+- **Has visual moments** — 3-4 points where the reader pauses because something looks interesting
+- **Animates subtly** — reveal on scroll, count-up numbers, ambient cover gradient
+- Includes 2-3 things the reader didn't know they wanted to read about
+
 ---
 
 ## Holiday Identity (v8.12 — Countdown and Field Guide only)
@@ -640,29 +665,4 @@ This sits alongside `.hol-unmissable` rather than replacing it. The two patterns
   </div>
 </section>
 ```
-
-**4. Cover poster variant (NEW component).**
-
-A 70s travel-brochure cover for Countdown and Field Guide issues. Activate by adding `.hol-cover--poster` to the existing `.hol-cover` element. The base `.hol-cover` treatment (cloud-drift indigo poster with collage on the right) is preserved for issues that want the scrapbook-collage feel; the poster variant replaces it with a silkscreen-print SVG illustration plate plus a centred title stack.
-
-The illustration plate is a static SVG: midnight sky gradient, sunburst rays from the upper-right, big moon-with-face character, scattered round stars, four-point sparkle stars, distant ridge silhouette, offset-overprint castle silhouette in rose ghost + cream front with brass lit windows, floating clouds, water reflection, and shoreline trees. The plate is identical across Countdown and Field Guide — it reads as the fairytale night sky on both.
-
-On top of the plate sit, in order:
-- `.hol-cover__sig` — the meta strip (brand + issue + kicker)
-- `.hol-cover__arch` — SVG text-on-path arc (e.g. "★ GREETINGS FROM ★" for Countdown, "★ EAT YOUR WAY THROUGH ★" for Field Guide)
-- `.hol-cover__title` with a `.hol-cover__title--print` inner span — chunky Bowlby One with a hard offset shadow in `--hol-ruby` that reads as misregistered screen-print
-- `.hol-cover__sub` — Yellowtail subtitle, slightly tilted
-- `.hol-cover__deck` — three-pill mono row with star dividers (date · gates · family-of-four, etc.)
-- `.hol-countdown` — the existing live digit grid, pinned at the bottom of the stack
-
-Template part: `assets/template-parts/03-cover-poster.html`. The full SVG plate plus the stack scaffold is embedded — writers paste it verbatim and fill the bracketed placeholders.
-
-**5. Letterpress titles on Half II.**
-
-The Half II opener title now uses `text-shadow: 6px 6px 0 var(--hol-burnt)` for a letterpress / poster-print feel instead of the original drop-shadow. This is a single-line change but it lands every chapter title in the savannah half as a hand-printed poster.
-
-**Pre-flight regressions added in v8.13:**
-- **RT-14:** Flat-fill ground on Half II is banned. Let `.hol-half--two` paint its own ground; don't set `background:` on the wrapper or on inner sections.
-- **RT-15:** Venue/half mismatch is banned. Every Efteling chapter sits in `.hol-half--one`; every Beekse Bergen chapter sits in `.hol-half--two`. Cross-venue chapters live outside both halves (after the cover, or as the transit body).
-
 
