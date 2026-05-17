@@ -92,13 +92,14 @@ Each trigger: what it looks like, why it's banned, what to do instead.
 ### RT-5: Image Source Diversity Violation
 
 **What it looks like:**
+- 9 of 14 images sourced from `commons.wikimedia.org` (the 17 May 2026 test issue, pre-rebalance)
 - 8 of 10 images sourced from `upload.wikimedia.org`
 - All hotel images from the official hotel website
 - All park images from one press kit domain
 
-**Why banned (Field Guide / Countdown):** Over-reliance on a single domain signals shallow research. Gate 3 flags any single domain >50% of attributed images.
+**Why banned (every format):** Over-reliance on a single domain signals shallow research. A magazine where most images come from one easy host couldn't be bothered to look further. Gate 3 hard-fails any issue where a single domain exceeds 50% of attributed images. Wikimedia is specifically capped at 4 entries or 30% of images, whichever is smaller — it is the *last-resort supplement*, not the default (see `references/spec/global.md` image-integrity).
 
-**Instead:** Mix source types per chapter: official press kit + Wikimedia + credited Flickr CC + tourism board. For any venue, confirm you can name at least 3 independent image domains across the issue.
+**Instead:** Pull from the five source-type menu in `references/spec/global.md` image-integrity — press kits / brand CDNs, government Flickr + media libraries, museum/archive direct hosts, news-agency CDNs (when editorial-use cleared), and Wikimedia. Every issue must draw from at least three of those five. For any venue or topic, confirm you can name at least 3 independent image domains across the issue before publish.
 
 ---
 
@@ -326,6 +327,49 @@ grep -oE 'background[^;]*(:|=)[^;]*(c25a2e|terracotta|orange|d97706|f97316)' cha
 awk '/class="hol-half hol-half--one/,/<\/section>/' issue.html | grep -iE 'beekse|safari resort|karibu|tamani|safari bus'
 # expect: empty
 awk '/class="hol-half hol-half--two/,/<\/section>/' issue.html | grep -iE 'efteling|kaatsheuvel|polles|wonder hotel|symbolica|aquanura|witte paard'
+# expect: empty
+```
+
+---
+
+### RT-16: Fabricated image URL (v8.13.4)
+
+**The trap.** Writer subagents construct plausible-looking `src=` URLs by pattern-matching against domains seen in research (`upload.wikimedia.org/wikipedia/commons/X/XY/Name.jpg`, `press.bethesda.net/game/...`, `lumiere-a.akamaihd.net/v1/images/...`). The Wikimedia path requires the actual MD5 hash prefix of the filename; the press-kit URLs are pages not assets; the Lumiere file slugs differ per asset. Guessing produces a 404 that the pipeline does not currently detect — the issue ships with broken-image icons.
+
+**Confirmed prior fabrications (the 17 May 2026 test issue):**
+- `upload.wikimedia.org/.../0/08/Pálinkás_Ferenc_Stadion_2.jpg` — "Pálinkás" is Hungarian fruit brandy; the stadium is Puskás
+- `press.bethesda.net/game/indiana-jones-and-the-great-circle` — page slug, not image asset
+- `www.starwars.com/press-assets/the-mandalorian-and-grogu/key-art` — invented URL pattern
+- `photojournal.jpl.nasa.gov/jpeg/PIA26178.jpg` — guessed PIA number
+- `upload.wikimedia.org/.../9/94/Cloudflare_Logo.png` — guessed hash prefix
+- 9 more in the same issue
+
+**The rule.**
+
+1. **Writers MUST NOT construct image URLs.** Every `src=` value must come verbatim from `research-bundle.json` → `image_candidates[i].url_or_keyword`. If that field is a keyword rather than a URL (legacy bundles), OMIT the `<img>` tag entirely and let the caption stand alone — never guess.
+
+2. **Researchers MUST provide URLs from at least 3 of the 5 source types in `references/spec/global.md` image-integrity.** Pull from press kits / brand CDNs, government Flickr + media libraries, museum / archive direct hosts, news-agency CDNs, and Wikimedia. Cap Wikimedia at 4 entries or 30% of the issue's image budget (whichever is smaller) — it is the supplement of last resort, not the default. RT-5 hard-fails any issue where one domain exceeds 50%.
+
+3. **When using Wikimedia as a supplement**, format every URL as `https://commons.wikimedia.org/wiki/Special:FilePath/Exact_File_Name.jpg?width=N` — the redirect resolves any verified file by canonical name. Never construct an `upload.wikimedia.org/wikipedia/commons/X/XY/...` URL manually; the hash prefix is computed from the filename and guessing it gets it wrong.
+
+4. **Phase 3b (`validate-research-bundle.py`) blocks the planner if the bundle contains keywords-not-URLs, fails diversity, or breaches the Wikimedia cap.** Phase 7.6 (`validate-issue.py`) probes every `<img src>` for HTTP reachability post-stitch. Phase 7.7 (`check-image-diversity.sh`) re-checks domain ratios post-stitch as defence in depth. All three are non-skippable gates under the orchestrator's gate-discipline rule (see SKILL.md). The JS onerror fallback in `script.js` is the runtime safety net for the rare case where a verified URL goes offline between publish and viewing.
+
+**Self-audit grep:**
+```bash
+# Reject any src= that doesn't appear in research-bundle.json
+python3 -c "
+import json, re
+bundle = json.load(open('/tmp/signal-build/research-bundle.json'))
+allowed = set()
+for c in bundle.get('image_candidates', []):
+    u = c.get('url_or_keyword', '')
+    if u.startswith('http'):
+        allowed.add(u)
+html = open('chapters/MY-CHAPTER.html').read()
+for src in re.findall(r'<img[^>]+src=\"([^\"]+)\"', html):
+    if src not in allowed:
+        print(f'FABRICATED: {src}')
+"
 # expect: empty
 ```
 

@@ -9,6 +9,29 @@
   }, { passive: true });
 })();
 
+// Broken-image fallback — hide any <img> that fails to load along with its
+// caption/figure wrapper, so a fabricated or expired image URL doesn't
+// render a broken-image icon. Capture-phase listener because img error
+// events don't bubble. Belt to the Phase 7.6 check-image-urls.sh gate's
+// braces.
+(function() {
+  document.addEventListener('error', function(e) {
+    var t = e.target;
+    if (!t || t.tagName !== 'IMG') return;
+    t.style.display = 'none';
+    var p = t.parentElement;
+    if (!p) return;
+    // Hide a sibling .caption (the common pattern) and any wrapping <figure>
+    var next = t.nextElementSibling;
+    if (next && next.classList && next.classList.contains('caption')) {
+      next.style.display = 'none';
+    }
+    if (p.tagName === 'FIGURE') {
+      p.style.display = 'none';
+    }
+  }, true);
+})();
+
 // Back to top button visibility + click handler
 (function() {
   const btn = document.getElementById('backToTop') || document.getElementById('btt');
