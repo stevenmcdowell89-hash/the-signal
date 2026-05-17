@@ -38,6 +38,7 @@ import re
 import sys
 import urllib.request
 import urllib.error
+import urllib.parse
 from collections import Counter
 from pathlib import Path
 
@@ -321,13 +322,25 @@ BROWSER_UA = (
 
 
 def head_check_one(url: str, timeout: float) -> tuple[str, int | str]:
-    """Return (url, status_code_or_error_str). Treats 2xx and 3xx as OK."""
+    """Return (url, status_code_or_error_str). Treats 2xx and 3xx as OK.
+    Additionally rejects 200 responses whose Content-Type starts with
+    text/html — that's a page being served at a URL the writer treated as
+    an image (e.g. background-image:url('https://www.efteling.com/.../polles-keuken')
+    returns HTML 200 OK in any environment, and renders nothing as an image).
+    """
+    def _check_content_type(resp, label):
+        ct = (resp.headers.get("Content-Type") or "").split(";")[0].strip().lower()
+        if ct.startswith("text/") or ct in ("application/xhtml+xml",):
+            return (url, f"{label} {resp.status} but Content-Type={ct} (page URL used as image src)")
+        return None
     req = urllib.request.Request(url, method="HEAD", headers={
         "User-Agent": BROWSER_UA,
         "Accept": "image/*,*/*;q=0.5",
     })
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
+            bad = _check_content_type(resp, "HEAD")
+            if bad: return bad
             return (url, resp.status)
     except urllib.error.HTTPError as e:
         # Some servers reject HEAD with 4xx but serve GET fine — fall back.
@@ -339,6 +352,8 @@ def head_check_one(url: str, timeout: float) -> tuple[str, int | str]:
                     "Range": "bytes=0-0",
                 })
                 with urllib.request.urlopen(req_get, timeout=timeout) as resp:
+                    bad = _check_content_type(resp, "GET")
+                    if bad: return bad
                     return (url, resp.status)
             except urllib.error.HTTPError as e2:
                 # Try to surface egress-policy hints (managed-runtime proxies
@@ -359,6 +374,38 @@ def head_check_one(url: str, timeout: float) -> tuple[str, int | str]:
         return (url, f"URLError: {e.reason}")
     except Exception as e:
         return (url, f"{e.__class__.__name__}: {e}")
+
+
+def static_image_url_check(html: str, report: Report) -> bool:
+    """Static-only check: any background-image:url(...) or <img src='...'>
+    whose path lacks an image extension AND is not a data: URI is suspicious.
+    Returns True if any failures registered. Runs even when network is blocked
+    so the page-URL-as-image bug is caught regardless of environment.
+    """
+    urls = extract_image_urls(html)
+    IMG_EXTS = (".jpg", ".jpeg", ".png", ".webp", ".gif", ".avif", ".svg",
+                ".JPG", ".JPEG", ".PNG", ".WEBP", ".GIF", ".AVIF", ".SVG")
+    suspicious = []
+    for u in urls:
+        if u.startswith("data:"):
+            continue
+        try:
+            parsed = urllib.parse.urlparse(u)
+            path = parsed.path
+        except Exception:
+            suspicious.append((u, "unparseable URL"))
+            continue
+        if not path.endswith(IMG_EXTS):
+            suspicious.append((u, "no image extension — looks like a page URL"))
+    if suspicious:
+        lines = [f"{len(suspicious)} suspicious image URL(s) — no image extension (likely a page URL used as <img src> or background-image):"]
+        for u, reason in suspicious:
+            lines.append(f"    • {u}  →  {reason}")
+        lines.append("    Fix: replace with the direct CDN image URL (e.g. .jpg/.png/.webp). If this is a legitimate")
+        lines.append("    extension-less CDN, the issue can be shipped after manual verification.")
+        report.fail("image-urls-static", "\n".join(lines))
+        return True
+    return False
 
 
 def check_image_urls(html: str, timeout: float, workers: int, report: Report) -> None:
@@ -492,7 +539,11 @@ def main(argv: list[str]) -> int:
         if args.multi_venue:
             check_multi_venue(html, report)
 
-    # Image URL checks
+    # Image URL static check — runs ALWAYS, even in restricted environments.
+    # Catches page URLs used as image src regardless of egress policy.
+    static_image_url_check(html, report)
+
+    # Image URL HEAD checks (network-dependent)
     if args.skip_image_urls:
         report.warn("image-urls", "skipped per --skip-image-urls")
     else:
