@@ -242,9 +242,13 @@ echo "  Output: $OUT_PATH"
 
 CHAPTER_IDS_CSV=$(IFS=','; echo "${CHAPTER_IDS_ORDERED[*]}")
 
+# Pass SCAFFOLD_PARTS to Python as argv[8] so the bash-level holiday override
+# (which drops 01-masthead.html / 03-cover.html / 18-footer.html on holiday
+# formats) reaches the assembly step. Without this, Python re-reads the plan
+# and reuses the un-overridden list.
 python3 - \
   "$PLAN_PATH" "$CHAPTERS_DIR" "$TEMPLATE_DIR" "$CSS_DIR" "$JS_FILE" \
-  "$OUT_PATH" "$CHAPTER_IDS_CSV" \
+  "$OUT_PATH" "$CHAPTER_IDS_CSV" "$SCAFFOLD_PARTS" \
   <<'PYEOF'
 
 import sys, json, re
@@ -257,12 +261,16 @@ css_dir      = Path(sys.argv[4])
 js_file      = Path(sys.argv[5])
 out_path     = Path(sys.argv[6])
 chapter_ids  = sys.argv[7].split(',') if sys.argv[7] else []
+scaffold_parts_override = sys.argv[8].split(',') if len(sys.argv) > 8 and sys.argv[8] else None
 
 with open(plan_path) as f:
     plan = json.load(f)
 
 assets = plan.get("assets", {})
-scaffold_parts = assets.get("scaffold_parts_used", [])
+# Use the bash-resolved override list (which may have been modified by the
+# holiday-format rule above) in preference to the raw plan value.
+scaffold_parts = scaffold_parts_override if scaffold_parts_override is not None \
+                 else assets.get("scaffold_parts_used", [])
 css_marker = assets.get("css_inject_marker", "<!-- INJECT:CSS -->")
 js_marker  = assets.get("js_inject_marker",  "<!-- INJECT:JS -->")
 
