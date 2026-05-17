@@ -44,7 +44,7 @@ The Signal runs as a multi-subagent pipeline. Each role has different reasoning 
 
 The Signal runs ONE pipeline for every issue — standard weekly or special edition. The format is decided in Phase 0; Phases 3–10 then run for every format. The format only changes WHICH chapters get written and HOW writers are sequenced (parallel vs sequential), not WHICH phases run.
 
-The pipeline: Phase 0 (decide format) → Phase 3 (researcher subagent) → Phase 3b (research-bundle validator) → Phase 4 (planner subagent + validator) → Phase 5 (writer subagents, parallel or sequential) → Phase 6 (stitch) → Phase 7 (per-chapter Gate 1) → Phase 7.5 (release-date check) → **Phase 7.6 (structural + asset validator — `validate-issue.py`)** → Phase 7.7 (image-source diversity — `check-image-diversity.sh`) → **Phase 7.8 (DOM visual smoke test — `visual-smoke-test.py`)** → Phase 8 (stitched-issue Gate) → Phase 9 (repair if needed) → Phase 10 (deliver + publish).
+The pipeline: Phase 0 (decide format) → Phase 3 (researcher subagent) → **Phase 3a-verify (orchestrator WebFetch every URL — v8.13.8)** → Phase 3b (research-bundle validator) → Phase 4 (planner subagent + validator) → Phase 5 (writer subagents, parallel or sequential) → Phase 6 (stitch) → Phase 7 (per-chapter Gate 1) → Phase 7.5 (release-date check) → **Phase 7.6 (structural + asset validator — `validate-issue.py`)** → Phase 7.7 (image-source diversity — `check-image-diversity.sh`) → **Phase 7.8 (DOM visual smoke test — `visual-smoke-test.py`)** → Phase 8 (stitched-issue Gate) → Phase 9 (repair if needed) → Phase 10 (deliver + publish + CI verification).
 
 There is NO separate "lightweight" path. Standard weeklies run the full pipeline same as specials. Build dir is `/tmp/signal-build/`, cleared at the start of every run.
 
@@ -142,6 +142,21 @@ Common fabrication traps to avoid:
 - Brand-site page slugs (e.g. `https://www.efteling.com/en/park/restaurants/polles-keuken`) — those are HTML pages, not images. The validator rejects them with no extension AND no image content-type.
 
 **Cost log:** after the researcher returns, run `bash scripts/log-call.sh researcher <model> <issue_id> - 0 ok` (one call). See § Cost Logging.
+
+### Phase 3a-verify — Orchestrator-side WebFetch (MANDATORY, v8.13.8)
+
+The researcher subagent is trusted to call WebFetch, but its `verified` block is self-attested — a fabricated `{head_status: 200, content_type: "image/jpeg"}` passes Phase 3b just as easily as a real verification. To close this hole, the **orchestrator (you, the main pipeline loop)** MUST independently WebFetch every URL in `image_candidates` AFTER the researcher returns and BEFORE running Phase 3b.
+
+For each `image_candidate[i]`:
+1. Call `WebFetch(url)` directly using your own tool — not the subagent's.
+2. Read the response status and `Content-Type`.
+3. Replace the candidate's `verified` block with the orchestrator's actual result, including a `verified_by: "orchestrator"` marker.
+4. If status is non-2xx OR Content-Type doesn't start with `image/`, **remove the candidate from the bundle**. Do not patch it through.
+5. After the loop, rewrite the bundle and proceed to Phase 3b.
+
+This is the only enforcement layer the researcher cannot fake. The CI workflow (`.github/workflows/issue-validation.yml`) re-checks every URL with full network access — fabricated `verified` blocks that pass orchestrator verification but fail CI will surface as a red ✗ on the publish commit (and an auto-filed GitHub issue).
+
+If WebFetch fails for the orchestrator in a given environment (egress restricted on the URL's host), record `verified.head_status: "blocked"` and `verified.content_type: "blocked"` on the candidate, and rely on the CI workflow as the authoritative gate. The candidate is NOT dropped — it's flagged for CI to resolve.
 
 ### Phase 3b — Research-bundle validator (mandatory before planner spawns)
 Run `python3 scripts/validate-research-bundle.py /tmp/signal-build/research-bundle.json`. The script enforces the `image_candidates` rules from `references/spec/global.md` image-integrity:
@@ -266,10 +281,26 @@ Max 3 rounds. Each round: identify failing chapter, spawn ONE repair `Agent` (`s
    - **Commit message format:** `Issue #N — <date range>: <headlines>` for standard weeklies; `<Format> — <Topic>: <date>` for specials.
    - If MCP push fails, fall back to plain `git push` from inside the cloned repo — credentials may be configured.
 5. Confirm publication by stating the GitHub Pages URL for the new issue in the closing summary.
+6. **Wait for CI verification.** The `validate-issue` workflow (`.github/workflows/issue-validation.yml`) runs on every push to `main` and re-checks every image URL with full network access — the gate the sandboxed pipeline cannot run. Use `mcp__github__get_commit` to fetch the commit's check-runs status after a 60-90s wait. If the workflow concludes `failure`:
+   - The workflow auto-files a GitHub issue labelled `validation-failed` with the diagnostic
+   - You MUST either (a) push a revert commit (`git revert <sha>` + push), or (b) push a follow-up commit that fixes the specific URLs the workflow flagged, then wait for CI again
+   - Do NOT consider the issue published until CI is green
+
+If you cannot reach CI from the current session, surface the workflow URL in the closing summary so the reader can check manually.
 
 **Why state lives in the repo.** Claude Code on the web runs in an ephemeral container that is reclaimed when the session ends. The repo is the only path that's visible from every session, and it gives you version history of every state change for free.
 
-**The deliverable is the published GitHub Pages URL**, not a workspace file. The reader receives the URL in the closing summary.
+**The deliverable is the published GitHub Pages URL with green CI**, not a workspace file. The reader receives the URL in the closing summary.
+
+### Note on unbreakable enforcement
+
+The pipeline runs in a sandbox that blocks outbound HTTPS to arbitrary hosts, so all in-pipeline image-URL gates degrade to advisories. The CI workflow at `.github/workflows/issue-validation.yml` is the only **structural** gate — it runs in an unrestricted environment on the same artifact about to be published.
+
+**For true unbreakability** (CI failure blocks merge to `main`), enable branch protection in the GitHub repo settings:
+
+> Settings → Branches → Branch protection rules → Add rule → Branch name pattern: `main` → tick "Require status checks to pass before merging" → select the `validate` job from the `validate-issue` workflow → Save.
+
+Without that one-time setup, the CI workflow is loud-but-advisory: it shows red ✗ on the commit and opens a tracking issue, but does not stop publish. The orchestrator (this skill, future runs) is responsible for checking CI status in Phase 10 step 6 and reverting if red.
 
 ## Cost Logging
 

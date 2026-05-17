@@ -322,8 +322,9 @@ def d5_empty_hero_bands(dom: str) -> list[str]:
 def main():
     ap = argparse.ArgumentParser(description="Phase 7.8 DOM visual smoke test for The Signal issues.")
     ap.add_argument("issue_html", type=Path, help="Path to stitched issue HTML")
-    ap.add_argument("--format", default="", help="Issue format (e.g. field-guide, countdown, weekly)")
-    ap.add_argument("--multi-venue", action="store_true", help="Issue has multiple venues")
+    ap.add_argument("--format", default="", help="Issue format. If omitted, auto-detected from <body data-special>.")
+    ap.add_argument("--multi-venue", action="store_true",
+                    help="Assert multi-venue. If omitted, auto-detected from <body data-multi-venue>.")
     ap.add_argument("--bundle", type=Path, default=None,
                     help="Path to research-bundle.json. When provided, enables D7 (every DOM "
                          "image URL must appear in image_candidates).")
@@ -338,6 +339,18 @@ def main():
     raw = args.issue_html.read_text(encoding="utf-8")
     dom = body_dom(strip_inline(raw))
     fmt = (args.format or "").lower().replace("_", "-")
+    multi_venue = args.multi_venue
+    # Anchor body detection to </head> — scaffold comments contain example
+    # body tags that confuse a naive regex.
+    head_end = re.search(r'</head\s*>', raw, re.IGNORECASE)
+    body_m = re.search(r'<body\b[^>]*>', raw[head_end.end():], re.IGNORECASE) if head_end else None
+    body_tag = body_m.group() if body_m else ""
+    if not fmt:
+        ds = re.search(r'data-special="([^"]+)"', body_tag)
+        fmt = ds.group(1).lower().replace("_", "-") if ds else "weekly"
+    if not multi_venue and 'data-multi-venue="true"' in body_tag:
+        multi_venue = True
+    args.multi_venue = multi_venue  # propagate for downstream checks
 
     print("=== Phase 7.8: visual-smoke-test.py ===")
     print(f"File:   {args.issue_html}")

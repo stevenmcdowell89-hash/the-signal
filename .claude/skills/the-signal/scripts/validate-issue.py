@@ -499,8 +499,9 @@ def normalize_format(fmt: str) -> str:
 def main(argv: list[str]) -> int:
     ap = argparse.ArgumentParser(description="Post-stitch validation gate for The Signal.")
     ap.add_argument("html_path")
-    ap.add_argument("--format", required=True, help="Issue format (e.g. field-guide)")
-    ap.add_argument("--multi-venue", action="store_true")
+    ap.add_argument("--format", default="", help="Issue format (e.g. field-guide). If omitted, auto-detected from <body data-special=\"...\">.")
+    ap.add_argument("--multi-venue", action="store_true",
+                    help="Assert multi-venue. If omitted, auto-detected from <body data-multi-venue=\"true\">.")
     ap.add_argument("--skip-image-urls", action="store_true")
     ap.add_argument("--image-timeout", type=float, default=5.0)
     ap.add_argument("--workers", type=int, default=16)
@@ -512,16 +513,41 @@ def main(argv: list[str]) -> int:
         print(f"ERROR: file not found: {path}")
         return 2
 
-    fmt = normalize_format(args.format)
+    html = path.read_text(encoding="utf-8")
+
+    # Auto-detect format + multi-venue from body attributes if not supplied
+    # explicitly. Lets CI run with just the file path — no per-issue config.
+    # Anchor to </head> first: the scaffold's AGENT INSTRUCTIONS comment in
+    # 00-head-open.html contains a literal example <body> tag string
+    # ('<body class="is-special" data-special="countdown"> (or field-guide).')
+    # that a naive <body> regex hits before the real DOM body. Same trick the
+    # stitcher uses (v8.13.4).
+    fmt = normalize_format(args.format) if args.format else ""
+    multi_venue = args.multi_venue
+    head_end = re.search(r'</head\s*>', html, re.IGNORECASE)
+    body_match = None
+    if head_end:
+        body_match = re.search(r'<body\b[^>]*>', html[head_end.end():], re.IGNORECASE)
+    body_tag = body_match.group() if body_match else ""
+    if not fmt:
+        ds = re.search(r'data-special="([^"]+)"', body_tag)
+        if ds:
+            fmt = normalize_format(ds.group(1))
+        else:
+            # Fallback for weekly: no data-special on body
+            fmt = "weekly"
+        print(f"  (auto-detected format from <body>: {fmt})")
+    if not multi_venue and 'data-multi-venue="true"' in body_tag:
+        multi_venue = True
+        print(f"  (auto-detected multi-venue from <body>)")
+
     if fmt not in KNOWN_FORMATS:
         print(f"ERROR: unknown format '{fmt}'. Known: {sorted(KNOWN_FORMATS)}")
         return 2
 
-    html = path.read_text(encoding="utf-8")
-
     print("=== validate-issue.py ===")
     print(f"File:   {path}")
-    print(f"Format: {fmt}  Multi-venue: {args.multi_venue}  Strict: {args.strict}")
+    print(f"Format: {fmt}  Multi-venue: {multi_venue}  Strict: {args.strict}")
     print(f"Size:   {len(html):,} chars / {len(html.encode('utf-8')):,} bytes")
     print()
 
@@ -534,9 +560,9 @@ def main(argv: list[str]) -> int:
 
     # Holiday-only checks
     if fmt in HOLIDAY_FORMATS:
-        check_holiday_activation(html, fmt, args.multi_venue, report)
+        check_holiday_activation(html, fmt, multi_venue, report)
         check_holiday_components(html, report)
-        if args.multi_venue:
+        if multi_venue:
             check_multi_venue(html, report)
 
     # Image URL static check — runs ALWAYS, even in restricted environments.

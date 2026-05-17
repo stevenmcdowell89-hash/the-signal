@@ -1,0 +1,167 @@
+name: validate-issue
+# Runs the full The Signal validation stack against any changed issue HTML
+# in a network-enabled environment. This is the structural enforcement
+# layer that catches what the sandboxed pipeline cannot — fabricated /
+# dead / wrong-content image URLs, in particular.
+#
+# Triggered on every PR + push that touches an issue file or the skill.
+# On failure: opens a GitHub issue with the diagnostic, plus the standard
+# red ✗ on the commit. Does NOT block merge unless branch protection is
+# configured on `main` to require this workflow.
+
+on:
+  push:
+    paths:
+      - "issues/**.html"
+      - "index.html"
+      - ".claude/skills/the-signal/scripts/**"
+      - ".claude/skills/the-signal/references/**"
+      - ".github/workflows/issue-validation.yml"
+  pull_request:
+    paths:
+      - "issues/**.html"
+      - "index.html"
+      - ".claude/skills/the-signal/scripts/**"
+      - ".claude/skills/the-signal/references/**"
+      - ".github/workflows/issue-validation.yml"
+  workflow_dispatch:
+    inputs:
+      target_path:
+        description: "Path to a single issue HTML to validate (default: all changed)"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # need history to compute changed files
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Determine targets
+        id: targets
+        run: |
+          set -e
+          if [ -n "${{ github.event.inputs.target_path }}" ]; then
+            TARGETS="${{ github.event.inputs.target_path }}"
+          elif [ "${{ github.event_name }}" = "pull_request" ]; then
+            TARGETS=$(git diff --name-only "${{ github.event.pull_request.base.sha }}...HEAD" -- 'issues/*.html' || true)
+          else
+            # Push: compare against the previous commit on this branch
+            if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
+              # New branch — validate every existing issue
+              TARGETS=$(ls issues/*.html 2>/dev/null || true)
+            else
+              TARGETS=$(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" -- 'issues/*.html' || true)
+            fi
+          fi
+          # If skill scripts changed but no issue changed, re-validate every issue
+          # so that improved gates retroactively flag legacy defects.
+          if [ -z "$TARGETS" ]; then
+            SKILL_CHANGED=$(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" -- '.claude/skills/the-signal/scripts/' '.claude/skills/the-signal/references/' 2>/dev/null || true)
+            if [ -n "$SKILL_CHANGED" ]; then
+              echo "Skill changes detected — re-validating every issue."
+              TARGETS=$(ls issues/*.html 2>/dev/null || true)
+            fi
+          fi
+          if [ -z "$TARGETS" ]; then
+            echo "No targets — nothing to validate."
+            echo "targets=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "Targets:"; echo "$TARGETS"
+          # Encode as space-separated for downstream
+          echo "targets<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$TARGETS" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Validate each target
+        if: steps.targets.outputs.targets != ''
+        env:
+          TARGETS: ${{ steps.targets.outputs.targets }}
+        run: |
+          set -e
+          SKILL=.claude/skills/the-signal
+          FAILED=0
+          for f in $TARGETS; do
+            if [ ! -f "$f" ]; then
+              echo "(skipping deleted file: $f)"
+              continue
+            fi
+            echo ""
+            echo "════════════════════════════════════════════════════════"
+            echo "  VALIDATING $f"
+            echo "════════════════════════════════════════════════════════"
+
+            # Phase 7.6 — structural + image URL HEAD check (network-enabled here,
+            # unlike the sandboxed pipeline run, so this gate is authoritative)
+            echo ""
+            echo "── Phase 7.6: validate-issue.py (auto-detect format + multi-venue) ──"
+            python3 "$SKILL/scripts/validate-issue.py" "$f" --strict || FAILED=1
+
+            # Phase 7.7 — image source diversity
+            echo ""
+            echo "── Phase 7.7: check-image-diversity.sh ──"
+            bash "$SKILL/scripts/check-image-diversity.sh" "$f" || FAILED=1
+
+            # Phase 7.8 — DOM visual smoke test (no bundle here — D7 skipped)
+            echo ""
+            echo "── Phase 7.8: visual-smoke-test.py ──"
+            python3 "$SKILL/scripts/visual-smoke-test.py" "$f" || FAILED=1
+          done
+          if [ "$FAILED" = "1" ]; then
+            echo ""
+            echo "❌ One or more gates failed. See output above. The issue must not ship as-is."
+            exit 1
+          fi
+          echo ""
+          echo "✅ All gates passed."
+
+      - name: Open tracking issue on failure
+        if: failure() && github.event_name != 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const sha = context.sha.substring(0, 7);
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const title = `Issue validation failed on ${sha}`;
+            const body = [
+              `The \`validate-issue\` workflow failed on commit \`${sha}\`.`,
+              ``,
+              `**Most likely cause:** a broken / fabricated / duplicate image URL slipped past the sandboxed pipeline gates. The CI run had full network access and caught it.`,
+              ``,
+              `**What to do:** check the [run details](${runUrl}) for the specific failure, then either:`,
+              `  1. Revert the offending commit if the issue already shipped to GitHub Pages, OR`,
+              `  2. Re-run the pipeline with the failure report inlined so the researcher fixes the bundle.`,
+              ``,
+              `**Why this issue exists:** The Signal's normal pipeline runs in a sandbox that blocks outbound HTTPS, so it cannot HEAD-check image URLs reliably. This CI workflow runs the same gates in an unrestricted environment and is the only structural enforcement against the broken-images class of bug.`,
+              ``,
+              `_Auto-filed by .github/workflows/issue-validation.yml — close once the issue is resolved or reverted._`,
+            ].join("\n");
+            const { data: existing } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'validation-failed',
+              per_page: 100,
+            });
+            if (existing.some(i => i.title === title)) {
+              core.info(`Tracking issue already exists for ${sha} — skipping create.`);
+              return;
+            }
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body,
+              labels: ['validation-failed'],
+            });
