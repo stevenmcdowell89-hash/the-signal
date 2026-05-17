@@ -100,6 +100,29 @@ def main():
             )
             continue
 
+        # v8.13.6 — reject URLs that are not direct image assets.
+        # A "page URL" (e.g. https://www.efteling.com/en/park/restaurants/polles-keuken)
+        # cannot be used as <img src> or background-image: a browser fetches HTML
+        # and renders nothing. Writers have been observed copying these page URLs
+        # verbatim from the bundle's notes. Block them upstream.
+        # Accept .jpg/.jpeg/.png/.webp/.gif/.avif extensions OR an explicit
+        # `direct_cdn: true` flag (escape hatch for CDN paths without extensions,
+        # e.g. signed URLs / image proxies — rare but legitimate).
+        IMG_EXTS = (".jpg", ".jpeg", ".png", ".webp", ".gif", ".avif",
+                    ".JPG", ".JPEG", ".PNG", ".WEBP", ".GIF", ".AVIF")
+        # Strip querystring before checking extension (CDNs often append ?w=1280).
+        path_only = urlparse(url).path
+        is_image_ext = path_only.endswith(IMG_EXTS)
+        explicit_direct = bool(c.get("direct_cdn", False))
+        if not is_image_ext and not explicit_direct:
+            failures.append(
+                f"  entry[{i}] ({ctx}): url_or_keyword has no image extension and no direct_cdn flag: {url}\n"
+                f"    Researcher must supply a direct image URL (.jpg/.png/.webp/.gif/.avif) — page URLs\n"
+                f"    cannot be used as <img src>. If the CDN serves images without extensions (signed URLs,\n"
+                f"    image proxies), set \"direct_cdn\": true on the candidate to bypass this check."
+            )
+            continue
+
         stype = classify_domain(url, lookup, explicit_type)
         if stype == "ambiguous":
             failures.append(
