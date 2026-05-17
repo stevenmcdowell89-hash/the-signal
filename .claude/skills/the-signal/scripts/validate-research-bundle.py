@@ -123,6 +123,52 @@ def main():
             )
             continue
 
+        # v8.13.7 — UNBREAKABLE RULE: every image_candidate MUST carry a
+        # `verified` block proving the researcher HEAD-checked the URL and
+        # got a 2xx with Content-Type starting with image/. This closes the
+        # last gap that lets fabricated, dead, or wrong-content URLs reach
+        # writers. A URL the researcher could not verify must be DROPPED
+        # from the bundle, not shipped with a "verify later" note.
+        #
+        # Required schema on each candidate:
+        #   "verified": {
+        #     "head_status": 200,
+        #     "content_type": "image/jpeg",
+        #     "verified_at": "2026-05-17T08:14:22Z"
+        #   }
+        #
+        # Researcher contract: use the WebFetch tool (or equivalent) to HEAD/GET
+        # every candidate URL during Phase 3. If the URL does not return a 2xx
+        # with image/* Content-Type, find a replacement or drop the candidate.
+        # Do NOT speculate URLs (e.g. /wikipedia/commons/thumb/{hash}/{hash}/
+        # filename.jpg/1280px-filename.jpg) — Wikimedia thumbnail paths in
+        # particular only exist for pre-generated sizes. Use the canonical
+        # /wikipedia/commons/{hash}/{hash}/{filename}.{ext} path instead.
+        verified = c.get("verified")
+        if not isinstance(verified, dict):
+            failures.append(
+                f"  entry[{i}] ({ctx}): missing `verified` block. URL: {url}\n"
+                f"    Researcher MUST HEAD-check every URL and record:\n"
+                f"      \"verified\": {{ \"head_status\": 200, \"content_type\": \"image/jpeg\", \"verified_at\": \"<ISO timestamp>\" }}\n"
+                f"    Unverified URLs cannot reach writers — fabricated, dead, and wrong-content URLs\n"
+                f"    have shipped repeatedly when this check was absent."
+            )
+            continue
+        v_status = verified.get("head_status")
+        v_ctype = (verified.get("content_type") or "").lower()
+        if not (isinstance(v_status, int) and 200 <= v_status < 300):
+            failures.append(
+                f"  entry[{i}] ({ctx}): verified.head_status is {v_status!r}, must be 2xx. URL: {url}\n"
+                f"    Replace this candidate with a URL that returns 2xx, or drop it from the bundle."
+            )
+            continue
+        if not v_ctype.startswith("image/"):
+            failures.append(
+                f"  entry[{i}] ({ctx}): verified.content_type is {v_ctype!r}, must start with 'image/'. URL: {url}\n"
+                f"    The URL returns non-image content (likely an HTML page). Replace it with a direct CDN image URL."
+            )
+            continue
+
         stype = classify_domain(url, lookup, explicit_type)
         if stype == "ambiguous":
             failures.append(
@@ -173,6 +219,23 @@ def main():
                 f"  Source-type diversity: {len(types)} types represented ({sorted(types)}) "
                 f"< minimum of {thresholds['min_distinct_source_types']}.\n"
                 f"    The 5-type menu: {sorted(lookup['types'].keys())}."
+            )
+
+        # Rule 4 (v8.13.7): unique-URL minimum. The researcher MUST surface
+        # enough distinct candidates that writers can fill every chapter slot
+        # without reuse. Issues have consistently shipped with the same image
+        # repeated 2–3 times across the DOM because writers ran out of
+        # bundle candidates. Enforce a minimum unique-URL count tied to the
+        # bundle's stated need.
+        unique_urls = {u for u, _, _ in valid_entries}
+        min_unique = thresholds.get("min_unique_candidates", 16)
+        if len(unique_urls) < min_unique:
+            failures.append(
+                f"  Unique-URL minimum: {len(unique_urls)} < required {min_unique}.\n"
+                f"    Writers will be forced to reuse images. The researcher must surface MORE\n"
+                f"    distinct candidates (target {min_unique}+) before the planner can spawn.\n"
+                f"    Adjust thresholds.min_unique_candidates in image-source-types.json if a\n"
+                f"    smaller issue legitimately needs fewer images."
             )
 
     # Report

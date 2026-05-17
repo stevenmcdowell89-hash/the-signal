@@ -229,6 +229,64 @@ def d4_orphan_holiday_elements(dom: str, fmt: str, multi_venue: bool) -> list[st
     return issues
 
 
+def d6_duplicate_image_urls(dom: str, max_uses: int = 1) -> list[str]:
+    """No image URL may appear more than `max_uses` times in the rendered DOM.
+    Counts each <img src> and background-image:url(...) occurrence. This is
+    the hard rule that prevents the "same image, three slots" pattern that
+    has shipped repeatedly when writers run out of bundle candidates.
+
+    Override: pass max_uses=2 for issues that legitimately repeat (rare).
+    """
+    img_re = re.compile(r'<img\b[^>]*?\bsrc\s*=\s*"([^"]+)"', re.IGNORECASE)
+    bg_re = re.compile(
+        r"background(?:-image)?\s*:\s*[^;\"']*?url\(\s*['\"]?([^'\")]+)['\"]?\s*\)",
+        re.IGNORECASE,
+    )
+    from collections import Counter
+    urls = list(img_re.findall(dom)) + list(bg_re.findall(dom))
+    # Don't count data: URIs or fragment refs
+    urls = [u for u in urls if u and not u.startswith("data:") and not u.startswith("#")]
+    counts = Counter(urls)
+    issues = []
+    for u, n in counts.items():
+        if n > max_uses:
+            issues.append(
+                f"D6.duplicate-image — URL used {n}x (max allowed: {max_uses}): {u}\n"
+                f"    Writer ran out of distinct candidates and recycled. The researcher must surface "
+                f"more verified image_candidates; once bundle has enough unique URLs, writers won't "
+                f"need to reuse. Set --max-uses-per-url <N> to override for legitimate dual-use."
+            )
+    return issues
+
+
+def d7_unbundled_images(dom: str, bundle_path: Path | None) -> list[str]:
+    """Every image URL in the DOM must appear verbatim in the bundle's
+    image_candidates set. This prevents writers from inventing URLs that
+    were never verified.
+    """
+    if not bundle_path or not bundle_path.exists():
+        return []  # skipped when no bundle supplied
+    import json
+    bundle = json.loads(bundle_path.read_text(encoding="utf-8"))
+    bundle_urls = {c.get("url_or_keyword", "") for c in bundle.get("image_candidates", [])}
+    img_re = re.compile(r'<img\b[^>]*?\bsrc\s*=\s*"([^"]+)"', re.IGNORECASE)
+    bg_re = re.compile(
+        r"background(?:-image)?\s*:\s*[^;\"']*?url\(\s*['\"]?([^'\")]+)['\"]?\s*\)",
+        re.IGNORECASE,
+    )
+    urls = set(img_re.findall(dom)) | set(bg_re.findall(dom))
+    issues = []
+    for u in urls:
+        if not u or u.startswith("data:") or u.startswith("#"):
+            continue
+        if u not in bundle_urls:
+            issues.append(
+                f"D7.unbundled-image — DOM contains URL not in research-bundle.json image_candidates: {u}\n"
+                f"    Writers may only use images the researcher verified. This URL bypassed Phase 3b."
+            )
+    return issues
+
+
 def d5_empty_hero_bands(dom: str) -> list[str]:
     """Hero bands with no text content (visible as blank stretch)."""
     issues = []
@@ -266,6 +324,11 @@ def main():
     ap.add_argument("issue_html", type=Path, help="Path to stitched issue HTML")
     ap.add_argument("--format", default="", help="Issue format (e.g. field-guide, countdown, weekly)")
     ap.add_argument("--multi-venue", action="store_true", help="Issue has multiple venues")
+    ap.add_argument("--bundle", type=Path, default=None,
+                    help="Path to research-bundle.json. When provided, enables D7 (every DOM "
+                         "image URL must appear in image_candidates).")
+    ap.add_argument("--max-uses-per-url", type=int, default=1,
+                    help="Maximum times a single image URL may appear in the DOM. Default 1.")
     args = ap.parse_args()
 
     if not args.issue_html.exists():
@@ -289,6 +352,8 @@ def main():
         ("D3 page-url-as-image", lambda: d3_page_url_as_image(dom)),
         ("D4 orphan holiday elements", lambda: d4_orphan_holiday_elements(dom, fmt, args.multi_venue)),
         ("D5 empty hero bands", lambda: d5_empty_hero_bands(dom)),
+        ("D6 duplicate image URLs", lambda: d6_duplicate_image_urls(dom, args.max_uses_per_url)),
+        ("D7 unbundled images", lambda: d7_unbundled_images(dom, args.bundle)),
     ):
         found = fn()
         if found:

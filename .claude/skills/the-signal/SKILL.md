@@ -130,6 +130,17 @@ From the committed format, derive `execution_mode`:
 ### Phase 3a — Researcher subagent
 Spawn an `Agent` with `subagent_type: "Explore"` and `model: "sonnet"` (fallback `"haiku"`). In the prompt, tell it to read `references/spec/global.md` (sections `key-rules` and `image-integrity`), `references/spec/triggers.md` (full file — short), and the matching format section in `references/spec/formats.md` (H2 anchor for the issue's format). Pass committed format + state snapshot inline. The subagent does all web research and writes `/tmp/signal-build/research-bundle.json` (sources, key facts, image candidates with attribution, ongoing-story status, training-phase context).
 
+**MANDATORY (v8.13.7) — Researcher MUST verify every image URL with WebFetch.** For each candidate, run WebFetch on the URL. Accept it ONLY if the response is 2xx and `Content-Type` starts with `image/`. Record the result inline on the candidate as:
+```json
+"verified": { "head_status": 200, "content_type": "image/jpeg", "verified_at": "<ISO timestamp>" }
+```
+If the URL is a brand-site PAGE (returns `text/html`), open it with WebFetch and find the real `<img src>` CDN URL in the markup — use THAT URL, not the page URL. If you cannot find a working URL for a subject, DROP the candidate from the bundle. Do not ship `"verify later"` notes. The bundle must surface at least 16 distinct verified URLs (per `thresholds.min_unique_candidates`) so writers don't recycle.
+
+Common fabrication traps to avoid:
+- Wikimedia `/wiki/commons/thumb/<hash>/<hash>/<file>.jpg/1280px-<file>.jpg` — only exists if a thumbnail at that exact size was pre-generated. Use the canonical `/wiki/commons/<hash>/<hash>/<file>.jpg` or `Special:FilePath/<file>?width=N` instead.
+- Made-up filenames (e.g. `Efteling_-_Polles_Keuken_(2).jpg` when the real file is `Polles_Keuken_Efteling_2.JPG`). Confirm exact spelling via `site:commons.wikimedia.org "File:..."`.
+- Brand-site page slugs (e.g. `https://www.efteling.com/en/park/restaurants/polles-keuken`) — those are HTML pages, not images. The validator rejects them with no extension AND no image content-type.
+
 **Cost log:** after the researcher returns, run `bash scripts/log-call.sh researcher <model> <issue_id> - 0 ok` (one call). See § Cost Logging.
 
 ### Phase 3b — Research-bundle validator (mandatory before planner spawns)
@@ -217,15 +228,17 @@ Unknown domains (not in the lookup) trigger an advisory rather than a hard fail 
 This gate exists as a downstream catch for what Phase 3b missed — writers omitting some bundle images and skewing the final ratio, or new domains slipping in via writer prose that weren't in the bundle. The upstream validator (Phase 3b) is the primary defence; this is defence in depth.
 
 ### Phase 7.8 — DOM visual smoke test (mandatory before publish)
-Run `python3 scripts/visual-smoke-test.py <stitched-html-path> --format <format> [--multi-venue]`. A pure-Python DOM analyser that catches five shipping-defect classes the earlier gates miss because they check structure or HTTP status, not what would render:
+Run `python3 scripts/visual-smoke-test.py <stitched-html-path> --format <format> [--multi-venue] --bundle /tmp/signal-build/research-bundle.json`. A pure-Python DOM analyser that catches seven shipping-defect classes the earlier gates miss because they check structure or HTTP status, not what would render:
 
-- **D1 duplicate chrome** — both the legacy `header.cover` / `div.mast` / `footer.footer` AND the holiday `.hol-cover` / `.hol-masthead` / `.hol-footer-row` present in the same DOM (the viewer sees a duplicate title page / footer). Already prevented at stitch time by the holiday scaffold override, this is the defence-in-depth check.
-- **D2 un-wrapped venue chapters** — on holiday + multi-venue issues, venue chapters (sections with `data-venue="X"`) that are NOT DOM-descendants of the matching `.hol-half--N` wrapper. Those chapters render against the body default with no venue ground.
-- **D3 page-url-as-image** — any `<img src>` or `background-image:url(...)` whose URL has no recognised image extension (and isn't a `data:` URI). Almost always a writer pasted a brand-site page URL where a CDN image URL was expected.
+- **D1 duplicate chrome** — both the legacy `header.cover` / `div.mast` / `footer.footer` AND the holiday `.hol-cover` / `.hol-masthead` / `.hol-footer-row` present in the same DOM. Defence-in-depth alongside the stitcher's holiday scaffold override.
+- **D2 un-wrapped venue chapters** — on holiday + multi-venue issues, venue chapters that are NOT DOM-descendants of the matching `.hol-half--N` wrapper.
+- **D3 page-url-as-image** — any image reference whose URL has no recognised image extension (almost always a brand-site page URL pasted where a CDN URL was expected).
 - **D4 orphan holiday elements** — a multi-venue holiday issue with NO `.hol-half` blocks at all.
-- **D5 empty hero bands** — `.hol-cover` or `.hol-half__opener` containing no visible text.
+- **D5 empty hero bands** — `.hol-cover` or `.hol-half__opener` with no visible text.
+- **D6 duplicate image URLs** — any image URL used more than once in the rendered DOM. Default max = 1 (override with `--max-uses-per-url N`). Catches the recurring "writer ran out of bundle URLs and recycled" pattern.
+- **D7 unbundled images** — when `--bundle <path>` is supplied, every image URL in the DOM must appear verbatim in `image_candidates`. Writers that invent URLs (even legitimate-looking CDN paths) fail this gate — the bundle is the only authority.
 
-Runs without network, so it works in every environment (including the egress-restricted managed runtime where Phase 7.6's image-URL HEAD check degrades to a warning). **The orchestrator runs this script directly and reads the exit code** — non-zero = issue NOT shippable.
+Runs without network, so it works in every environment (including the egress-restricted managed runtime where Phase 7.6's image-URL HEAD check degrades to a warning). **The orchestrator runs this script directly and reads the exit code** — non-zero = issue NOT shippable. **Always pass `--bundle`** so D7 is active; D6+D7 together are the unbreakable rule against the broken-images class.
 
 This is the "browser-eye QA" replacement for environments without headless-Chromium. It's deliberately conservative — false negatives are possible, but the five detectors target the recurring failure modes that have shipped or nearly shipped in prior runs.
 

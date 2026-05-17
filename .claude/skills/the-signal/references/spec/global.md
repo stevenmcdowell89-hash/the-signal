@@ -138,6 +138,28 @@ The pipeline has confirmed two failure modes:
 
 Every entry in `image_candidates[i].url_or_keyword` must be a **direct, verified URL** — never a keyword — and the set across the issue must come from **at least three of the five source types below**.
 
+**UNBREAKABLE RULE (v8.13.7): VERIFY EVERY URL.** Each `image_candidates[i]` MUST carry a `verified` block proving the researcher HEAD-checked the URL during Phase 3 and got a 2xx with `Content-Type: image/*`. A candidate without a verified block — or with a non-image content type, or a non-2xx status — is rejected by `validate-research-bundle.py` and never reaches writers. Use the `WebFetch` tool to fetch each candidate URL during research; record the result inline:
+
+```json
+{
+  "url_or_keyword": "https://content.presspage.com/uploads/.../polles-keuken.jpg",
+  "credit": "Efteling press kit",
+  "source_type": "press_kit",
+  "verified": {
+    "head_status": 200,
+    "content_type": "image/jpeg",
+    "verified_at": "2026-05-17T08:14:22Z"
+  }
+}
+```
+
+Do NOT speculate URLs. Common fabrication traps the gate catches:
+- Wikimedia `/wiki/commons/thumb/<hash>/<hash>/<file>.jpg/1280px-<file>.jpg` — thumbnail paths only exist for pre-generated sizes. Use the canonical `/wiki/commons/<hash>/<hash>/<file>.jpg` path or `Special:FilePath/<file>?width=N`.
+- Brand-site page URLs like `https://www.efteling.com/en/park/restaurants/polles-keuken` — that's an HTML page, not an image. Open it in WebFetch, find the actual `<img src>` in the markup, and use that CDN URL.
+- Made-up filenames like `Efteling_-_Polles_Keuken_(2).jpg` when the canonical file is `Polles_Keuken_Efteling_2.JPG` — capitalisation, extension case, and exact filename matter.
+
+**MINIMUM UNIQUE-URL FLOOR.** The bundle must surface at least 16 distinct verified URLs (configurable per format via `thresholds.min_unique_candidates`). Writers should never need to recycle: every chapter slot gets a unique image. Phase 7.8 D6 (no-duplicates) enforces this on the rendered DOM.
+
 1. **Official press kits / brand CDNs** — the editorial gold standard for sports, entertainment, products, and tech. Examples (from prior published issues, pre-cleared): `lumiere-a.akamaihd.net` (Lucasfilm), `intermilan.bynder.com` (Inter Milan DAM), `gaming-cdn.com` (game product imagery), Bethesda press, Sony press. Use direct *image* paths, never page slugs like `press.bethesda.net/game/<name>`.
 
 2. **Government / public-sector Flickr + media libraries** — stable URLs, clean licensing. UK Parliament Flickr (Open Parliament Licence), Number 10 Downing Street (`flickr.com/photos/number10gov`, OGL), White House (`flickr.com/photos/whitehouse`, public domain), Department of Defense, NASA JPL Photojournal direct jpegs (`photojournal.jpl.nasa.gov/jpeg/PIA<N>.jpg`), NASA Image Library, ESA, NOAA. For Flickr, the direct image URL pattern is `https://live.staticflickr.com/<server>/<photo_id>_<secret>_<size>.jpg` — fetch the photo page to get the secret, never guess.
@@ -160,6 +182,10 @@ A Field Guide or Countdown should lean heavier on official press kits and venue 
 #### Writer contract
 
 Writers MUST use `src=` values **verbatim** from the research bundle. Constructing a URL by domain pattern is forbidden (RT-16). If a writer needs an image not in the bundle, the chapter ships without it — the caption can stand alone.
+
+**v8.13.7 enforcement:** Phase 7.8 D7 (`visual-smoke-test.py --bundle <research-bundle.json>`) asserts that every `<img src>` and `background-image:url(...)` in the rendered DOM appears verbatim in `image_candidates[].url_or_keyword`. URLs the writer invented — even legitimate-looking CDN paths — fail the gate. The bundle is the only authority.
+
+**Plus:** Phase 7.8 D6 fails if any URL appears more than once in the DOM. If a writer is tempted to reuse the same image across two picks because nothing else fits, the answer is to expand the bundle (re-run the researcher), not to recycle.
 
 #### Why diversity beats monoculture
 
