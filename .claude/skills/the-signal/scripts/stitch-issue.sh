@@ -306,6 +306,75 @@ for ch_id in chapter_ids:
     ch_file = chapters_dir / f"{ch_id}.html"
     chapter_bodies.append(ch_file.read_text(encoding="utf-8"))
 
+# ── Holiday half-wrap reorganisation (v8.13.5) ──
+# On holiday + multi_venue issues, the .hol-half--N wrapper must contain
+# the opener AND every subsequent venue chapter so they share the half's
+# painted ground (tier 11/12 paints background on .hol-half--{one,two}).
+# Writers naturally produce each chapter as a self-contained <section>,
+# so we walk the chapter stream and merge same-venue runs inside one
+# half wrapper. This is the structural counterpart to the scaffold
+# override above — without it, only the half-opener gets the venue
+# ground and the rest of the venue's chapters render against the body
+# default.
+issue_meta_pre = plan.get("issue_meta", {})
+issue_format_pre = issue_meta_pre.get("format", "").lower().replace("_", "-")
+multi_venue_pre = bool(issue_meta_pre.get("multi_venue", False))
+if issue_format_pre in {"countdown", "field-guide"} and multi_venue_pre:
+    HALF_OPEN_RE = re.compile(
+        r'<section\b[^>]*\bclass="[^"]*\bhol-half\b[^"]*\bhol-half--(?P<half>one|two)\b[^"]*"[^>]*(?:\bdata-venue="(?P<venue>[^"]+)")?[^>]*>',
+        re.IGNORECASE,
+    )
+    # Pull data-venue from each chapter body for stream-level pairing
+    def venue_of(body):
+        m = re.search(r'<section\b[^>]*\bdata-venue="([^"]+)"', body, re.IGNORECASE)
+        return m.group(1).strip().lower() if m else None
+    def is_half_opener(body):
+        return bool(HALF_OPEN_RE.search(body))
+    def strip_trailing_close(body):
+        # Strip trailing </section> and the </div> that closes hol-half__inner.
+        # The opener leaves the wrapper OPEN — subsequent venue chapters render
+        # inside it. The matching close is appended to the LAST chapter of the
+        # same venue's run.
+        b = body.rstrip()
+        if b.endswith('</section>'):
+            b = b[:-len('</section>')].rstrip()
+        if b.endswith('</div>'):
+            b = b[:-len('</div>')].rstrip()
+        return b + "\n"
+    # Walk chapter_bodies, marking which need opener-strip and which need
+    # half-close appended. We do TWO passes: first identify run boundaries,
+    # then rewrite.
+    venues_per_chapter = [venue_of(b) for b in chapter_bodies]
+    half_opener_idx    = [is_half_opener(b) for b in chapter_bodies]
+    # For each half-opener, find the index of the LAST consecutive chapter
+    # with matching venue (could be the opener itself if no follow-ups).
+    rewritten = list(chapter_bodies)
+    n = len(chapter_bodies)
+    i = 0
+    transforms = 0
+    while i < n:
+        if half_opener_idx[i] and venues_per_chapter[i]:
+            v = venues_per_chapter[i]
+            # Find end of run
+            end = i
+            j = i + 1
+            while j < n and venues_per_chapter[j] == v:
+                end = j
+                j += 1
+            if end > i:
+                # Strip the opener's closing </div></section> so the wrapper
+                # stays open across the run.
+                rewritten[i] = strip_trailing_close(rewritten[i])
+                # Append matching close to the LAST chapter in the run.
+                rewritten[end] = rewritten[end].rstrip() + "\n\n  </div>\n</section>\n"
+                transforms += 1
+            i = j
+        else:
+            i += 1
+    if transforms:
+        print(f"  HOLIDAY HALF-WRAP: nested {transforms} venue run(s) inside their .hol-half--N wrappers")
+        chapter_bodies = rewritten
+
 # ── Compose full HTML ──
 # Structure: head_open → [middle scaffold parts] → [chapters] → closing
 html_parts = [head_open] + middle_parts + chapter_bodies + [closing]
