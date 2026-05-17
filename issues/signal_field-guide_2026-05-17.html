@@ -7268,12 +7268,19 @@ body.is-special .sp-ground-gallery .unmissable-footer dt {
    ========================================================================== */
 
 /* ==========================================================================
-   33-countdown-destinations.css — v8.10
-   Multi-venue Countdown destination theming
+   33-countdown-destinations.css — v8.11
+   Multi-venue destination theming (Countdown + Field Guide)
    --------------------------------------------------------------------------
-   OPT-IN, additive layer on top of the existing Countdown chrome. Activates
-   only when the body carries BOTH:
-     body[data-special="countdown"][data-multi-venue="true"]
+   v8.11 (2026-05-17): widened from Countdown-only to both Countdown and
+   Field Guide. The 17 May 2026 Efteling + Beekse Bergen Field Guide needed
+   the same per-venue paper/ink/accent treatment that was originally built
+   for the Countdown two weeks later. Every body[data-special="countdown"]
+   selector is now body:is([data-special="countdown"],[data-special="field_guide"]),
+   preserving the multi-venue gate while unlocking both formats.
+   --------------------------------------------------------------------------
+   OPT-IN, additive layer on top of the existing special-edition chrome.
+   Activates only when the body carries BOTH:
+     body:is([data-special="countdown"],[data-special="field_guide"])[data-multi-venue="true"]
    ...and the chapter section opts in via:
      section[data-sp-chapter][data-venue="efteling"]
      section[data-sp-chapter][data-venue="beekse-bergen"]
@@ -7296,19 +7303,19 @@ body.is-special .sp-ground-gallery .unmissable-footer dt {
    ========================================================================== */
 
 /* ── 1. Per-venue grounds ─────────────────────────────────────────────── */
-body[data-special="countdown"][data-multi-venue="true"] section[data-sp-chapter][data-venue="efteling"].sp-ground-paper {
+body:is([data-special="countdown"],[data-special="field_guide"])[data-multi-venue="true"] section[data-sp-chapter][data-venue="efteling"].sp-ground-paper {
   background: var(--eft-paper);
   color: var(--eft-ink);
 }
-body[data-special="countdown"][data-multi-venue="true"] section[data-sp-chapter][data-venue="efteling"].sp-ground-ink {
+body:is([data-special="countdown"],[data-special="field_guide"])[data-multi-venue="true"] section[data-sp-chapter][data-venue="efteling"].sp-ground-ink {
   background: var(--eft-ink);
   color: var(--eft-paper);
 }
-body[data-special="countdown"][data-multi-venue="true"] section[data-sp-chapter][data-venue="beekse-bergen"].sp-ground-paper {
+body:is([data-special="countdown"],[data-special="field_guide"])[data-multi-venue="true"] section[data-sp-chapter][data-venue="beekse-bergen"].sp-ground-paper {
   background: var(--bee-paper);
   color: var(--bee-ink);
 }
-body[data-special="countdown"][data-multi-venue="true"] section[data-sp-chapter][data-venue="beekse-bergen"].sp-ground-ink {
+body:is([data-special="countdown"],[data-special="field_guide"])[data-multi-venue="true"] section[data-sp-chapter][data-venue="beekse-bergen"].sp-ground-ink {
   background: var(--bee-ink);
   color: var(--bee-paper);
 }
@@ -7319,21 +7326,21 @@ body[data-special="countdown"][data-multi-venue="true"] section[data-sp-chapter]
    value is !important so it beats the lockdown rule (which itself uses
    !important). Hype-variant chapters keep their coral; this only fires on
    non-hype venue chapters. */
-body[data-special="countdown"][data-multi-venue="true"] section[data-sp-chapter][data-venue="efteling"].sp-ground-paper :is(.sp-kicker, .sp-brief-kicker, .sp-datum-value, .sp-eyebrow, .sp-pullquote-huge cite, .sp-spread h2::before),
-body[data-special="countdown"][data-multi-venue="true"] section[data-sp-chapter][data-venue="efteling"].sp-ground-paper .sp-dash strong {
+body:is([data-special="countdown"],[data-special="field_guide"])[data-multi-venue="true"] section[data-sp-chapter][data-venue="efteling"].sp-ground-paper :is(.sp-kicker, .sp-brief-kicker, .sp-datum-value, .sp-eyebrow, .sp-pullquote-huge cite, .sp-spread h2::before),
+body:is([data-special="countdown"],[data-special="field_guide"])[data-multi-venue="true"] section[data-sp-chapter][data-venue="efteling"].sp-ground-paper .sp-dash strong {
   color: var(--eft-accent) !important;
 }
-body[data-special="countdown"][data-multi-venue="true"] section[data-sp-chapter][data-venue="beekse-bergen"].sp-ground-paper :is(.sp-kicker, .sp-brief-kicker, .sp-datum-value, .sp-eyebrow, .sp-pullquote-huge cite, .sp-spread h2::before),
-body[data-special="countdown"][data-multi-venue="true"] section[data-sp-chapter][data-venue="beekse-bergen"].sp-ground-paper .sp-dash strong {
+body:is([data-special="countdown"],[data-special="field_guide"])[data-multi-venue="true"] section[data-sp-chapter][data-venue="beekse-bergen"].sp-ground-paper :is(.sp-kicker, .sp-brief-kicker, .sp-datum-value, .sp-eyebrow, .sp-pullquote-huge cite, .sp-spread h2::before),
+body:is([data-special="countdown"],[data-special="field_guide"])[data-multi-venue="true"] section[data-sp-chapter][data-venue="beekse-bergen"].sp-ground-paper .sp-dash strong {
   color: var(--bee-accent) !important;
 }
 /* Ink grounds — accent gets a touch lighter for legibility. */
-body[data-special="countdown"][data-multi-venue="true"] section[data-sp-chapter][data-venue="efteling"].sp-ground-ink :is(.sp-kicker, .sp-brief-kicker, .sp-datum-value, .sp-eyebrow, .sp-pullquote-huge cite, .sp-spread h2::before),
-body[data-special="countdown"][data-multi-venue="true"] section[data-sp-chapter][data-venue="efteling"].sp-ground-ink .sp-dash strong {
+body:is([data-special="countdown"],[data-special="field_guide"])[data-multi-venue="true"] section[data-sp-chapter][data-venue="efteling"].sp-ground-ink :is(.sp-kicker, .sp-brief-kicker, .sp-datum-value, .sp-eyebrow, .sp-pullquote-huge cite, .sp-spread h2::before),
+body:is([data-special="countdown"],[data-special="field_guide"])[data-multi-venue="true"] section[data-sp-chapter][data-venue="efteling"].sp-ground-ink .sp-dash strong {
   color: var(--eft-accent) !important;
 }
-body[data-special="countdown"][data-multi-venue="true"] section[data-sp-chapter][data-venue="beekse-bergen"].sp-ground-ink :is(.sp-kicker, .sp-brief-kicker, .sp-datum-value, .sp-eyebrow, .sp-pullquote-huge cite, .sp-spread h2::before),
-body[data-special="countdown"][data-multi-venue="true"] section[data-sp-chapter][data-venue="beekse-bergen"].sp-ground-ink .sp-dash strong {
+body:is([data-special="countdown"],[data-special="field_guide"])[data-multi-venue="true"] section[data-sp-chapter][data-venue="beekse-bergen"].sp-ground-ink :is(.sp-kicker, .sp-brief-kicker, .sp-datum-value, .sp-eyebrow, .sp-pullquote-huge cite, .sp-spread h2::before),
+body:is([data-special="countdown"],[data-special="field_guide"])[data-multi-venue="true"] section[data-sp-chapter][data-venue="beekse-bergen"].sp-ground-ink .sp-dash strong {
   color: var(--bee-accent) !important;
 }
 
@@ -7342,7 +7349,7 @@ body[data-special="countdown"][data-multi-venue="true"] section[data-sp-chapter]
    of each venue chapter as quiet wayfinding. Uses ::after on the chapter
    section. Pointer-events:none, no stacking-context, never blocks content.
    Ground-aware opacity via currentColor + alpha-channel control. */
-body[data-special="countdown"][data-multi-venue="true"] section[data-sp-chapter][data-venue]::after {
+body:is([data-special="countdown"],[data-special="field_guide"])[data-multi-venue="true"] section[data-sp-chapter][data-venue]::after {
   content: "";
   position: absolute;
   right: clamp(16px, 3vw, 48px);
@@ -7365,20 +7372,20 @@ body[data-special="countdown"][data-multi-venue="true"] section[data-sp-chapter]
 /* Ensure chapters can host an absolute glyph. position:relative is already
    set in 26-special-editorial.css for sp-spread, but data-sp-chapter is a
    broader hook — set it defensively, scoped only to venue chapters. */
-body[data-special="countdown"][data-multi-venue="true"] section[data-sp-chapter][data-venue] {
+body:is([data-special="countdown"],[data-special="field_guide"])[data-multi-venue="true"] section[data-sp-chapter][data-venue] {
   position: relative;
 }
 /* Ink-ground chapters need a touch more glyph alpha to read against dark. */
-body[data-special="countdown"][data-multi-venue="true"] section[data-sp-chapter][data-venue].sp-ground-ink::after {
+body:is([data-special="countdown"],[data-special="field_guide"])[data-multi-venue="true"] section[data-sp-chapter][data-venue].sp-ground-ink::after {
   opacity: 0.08;
 }
 
 /* Per-venue glyph image */
-body[data-special="countdown"][data-multi-venue="true"] section[data-sp-chapter][data-venue="efteling"]::after {
+body:is([data-special="countdown"],[data-special="field_guide"])[data-multi-venue="true"] section[data-sp-chapter][data-venue="efteling"]::after {
   -webkit-mask-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20200%20400%22%20fill%3D%22currentColor%22%3E%20%3C%21--%20Twisting%20vine%20with%20crown%20finial%20%E2%80%94%20Efteling%20fairy-tale%20forest%20--%3E%20%3C%21--%20Main%20twisting%20vine%20--%3E%20%3Cpath%20d%3D%22M100%20380%20C%2080%20360%2C%20120%20340%2C%20100%20320%20C%2080%20300%2C%20120%20280%2C%20100%20260%20C%2080%20240%2C%20120%20220%2C%20100%20200%20C%2080%20180%2C%20120%20160%2C%20100%20140%20C%2080%20120%2C%20120%20100%2C%20100%2080%22%20stroke%3D%22currentColor%22%20stroke-width%3D%226%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22%2F%3E%20%3C%21--%20Leaf%20left%20--%3E%20%3Cpath%20d%3D%22M88%20320%20C%2070%20318%2C%2060%20308%2C%2062%20295%20C%2075%20300%2C%2086%20308%2C%2088%20320%20Z%22%2F%3E%20%3C%21--%20Leaf%20right%20--%3E%20%3Cpath%20d%3D%22M112%20280%20C%20130%20282%2C%20140%20272%2C%20138%20259%20C%20125%20264%2C%20114%20272%2C%20112%20280%20Z%22%2F%3E%20%3C%21--%20Leaf%20left%20lower%20--%3E%20%3Cpath%20d%3D%22M88%20240%20C%2070%20238%2C%2060%20228%2C%2062%20215%20C%2075%20220%2C%2086%20228%2C%2088%20240%20Z%22%2F%3E%20%3C%21--%20Leaf%20right%20--%3E%20%3Cpath%20d%3D%22M112%20200%20C%20130%20202%2C%20140%20192%2C%20138%20179%20C%20125%20184%2C%20114%20192%2C%20112%20200%20Z%22%2F%3E%20%3C%21--%20Leaf%20left%20--%3E%20%3Cpath%20d%3D%22M88%20160%20C%2070%20158%2C%2060%20148%2C%2062%20135%20C%2075%20140%2C%2086%20148%2C%2088%20160%20Z%22%2F%3E%20%3C%21--%20Small%20bud%20near%20top%20--%3E%20%3Ccircle%20cx%3D%22100%22%20cy%3D%2295%22%20r%3D%224%22%2F%3E%20%3C%21--%20Crown%20finial%20--%3E%20%3C%21--%20Crown%20band%20--%3E%20%3Crect%20x%3D%2272%22%20y%3D%2260%22%20width%3D%2256%22%20height%3D%2210%22%20rx%3D%222%22%2F%3E%20%3C%21--%20Crown%20center%20spike%20--%3E%20%3Cpath%20d%3D%22M100%2060%20L%2092%2030%20L%20100%2038%20L%20108%2030%20L%20100%2060%20Z%22%2F%3E%20%3C%21--%20Crown%20left%20spike%20--%3E%20%3Cpath%20d%3D%22M82%2060%20L%2076%2038%20L%2082%2044%20L%2088%2038%20L%2082%2060%20Z%22%2F%3E%20%3C%21--%20Crown%20right%20spike%20--%3E%20%3Cpath%20d%3D%22M118%2060%20L%20112%2038%20L%20118%2044%20L%20124%2038%20L%20118%2060%20Z%22%2F%3E%20%3C%21--%20Crown%20jewels%20--%3E%20%3Ccircle%20cx%3D%22100%22%20cy%3D%2232%22%20r%3D%223%22%2F%3E%20%3Ccircle%20cx%3D%2282%22%20cy%3D%2240%22%20r%3D%222%22%2F%3E%20%3Ccircle%20cx%3D%22118%22%20cy%3D%2240%22%20r%3D%222%22%2F%3E%20%3C%2Fsvg%3E");
   mask-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20200%20400%22%20fill%3D%22currentColor%22%3E%20%3C%21--%20Twisting%20vine%20with%20crown%20finial%20%E2%80%94%20Efteling%20fairy-tale%20forest%20--%3E%20%3C%21--%20Main%20twisting%20vine%20--%3E%20%3Cpath%20d%3D%22M100%20380%20C%2080%20360%2C%20120%20340%2C%20100%20320%20C%2080%20300%2C%20120%20280%2C%20100%20260%20C%2080%20240%2C%20120%20220%2C%20100%20200%20C%2080%20180%2C%20120%20160%2C%20100%20140%20C%2080%20120%2C%20120%20100%2C%20100%2080%22%20stroke%3D%22currentColor%22%20stroke-width%3D%226%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22%2F%3E%20%3C%21--%20Leaf%20left%20--%3E%20%3Cpath%20d%3D%22M88%20320%20C%2070%20318%2C%2060%20308%2C%2062%20295%20C%2075%20300%2C%2086%20308%2C%2088%20320%20Z%22%2F%3E%20%3C%21--%20Leaf%20right%20--%3E%20%3Cpath%20d%3D%22M112%20280%20C%20130%20282%2C%20140%20272%2C%20138%20259%20C%20125%20264%2C%20114%20272%2C%20112%20280%20Z%22%2F%3E%20%3C%21--%20Leaf%20left%20lower%20--%3E%20%3Cpath%20d%3D%22M88%20240%20C%2070%20238%2C%2060%20228%2C%2062%20215%20C%2075%20220%2C%2086%20228%2C%2088%20240%20Z%22%2F%3E%20%3C%21--%20Leaf%20right%20--%3E%20%3Cpath%20d%3D%22M112%20200%20C%20130%20202%2C%20140%20192%2C%20138%20179%20C%20125%20184%2C%20114%20192%2C%20112%20200%20Z%22%2F%3E%20%3C%21--%20Leaf%20left%20--%3E%20%3Cpath%20d%3D%22M88%20160%20C%2070%20158%2C%2060%20148%2C%2062%20135%20C%2075%20140%2C%2086%20148%2C%2088%20160%20Z%22%2F%3E%20%3C%21--%20Small%20bud%20near%20top%20--%3E%20%3Ccircle%20cx%3D%22100%22%20cy%3D%2295%22%20r%3D%224%22%2F%3E%20%3C%21--%20Crown%20finial%20--%3E%20%3C%21--%20Crown%20band%20--%3E%20%3Crect%20x%3D%2272%22%20y%3D%2260%22%20width%3D%2256%22%20height%3D%2210%22%20rx%3D%222%22%2F%3E%20%3C%21--%20Crown%20center%20spike%20--%3E%20%3Cpath%20d%3D%22M100%2060%20L%2092%2030%20L%20100%2038%20L%20108%2030%20L%20100%2060%20Z%22%2F%3E%20%3C%21--%20Crown%20left%20spike%20--%3E%20%3Cpath%20d%3D%22M82%2060%20L%2076%2038%20L%2082%2044%20L%2088%2038%20L%2082%2060%20Z%22%2F%3E%20%3C%21--%20Crown%20right%20spike%20--%3E%20%3Cpath%20d%3D%22M118%2060%20L%20112%2038%20L%20118%2044%20L%20124%2038%20L%20118%2060%20Z%22%2F%3E%20%3C%21--%20Crown%20jewels%20--%3E%20%3Ccircle%20cx%3D%22100%22%20cy%3D%2232%22%20r%3D%223%22%2F%3E%20%3Ccircle%20cx%3D%2282%22%20cy%3D%2240%22%20r%3D%222%22%2F%3E%20%3Ccircle%20cx%3D%22118%22%20cy%3D%2240%22%20r%3D%222%22%2F%3E%20%3C%2Fsvg%3E");
 }
-body[data-special="countdown"][data-multi-venue="true"] section[data-sp-chapter][data-venue="beekse-bergen"]::after {
+body:is([data-special="countdown"],[data-special="field_guide"])[data-multi-venue="true"] section[data-sp-chapter][data-venue="beekse-bergen"]::after {
   -webkit-mask-image: url("data:image/svg+xml;utf8,%3Csvg%20version%3D%221.0%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22144.000000pt%22%20height%3D%22190.000000pt%22%20viewBox%3D%220%200%20144.000000%20190.000000%22%20preserveAspectRatio%3D%22xMidYMid%20meet%22%3E%20%3Cmetadata%3E%20Created%20by%20potrace%201.16%2C%20written%20by%20Peter%20Selinger%202001-2019%20%3C%2Fmetadata%3E%20%3Cg%20transform%3D%22translate%280.000000%2C190.000000%29%20scale%280.100000%2C-0.100000%29%22%20fill%3D%22currentColor%22%20stroke%3D%22none%22%3E%20%3Cpath%20d%3D%22M216%201883%20c-4%20-5%20-14%20-22%20-21%20-40%20-9%20-20%20-26%20-38%20-47%20-46%20-18%20-8%20-44%20-29%20-58%20-47%20-14%20-18%20-40%20-50%20-57%20-72%20-62%20-75%20-41%20-88%2099%20-64%2055%2010%20104%2014%20108%209%205%20-4%2037%20-65%2073%20-134%2082%20-161%20129%20-230%20244%20-355%2051%20-57%2093%20-111%2093%20-122%200%20-11%20-7%20-36%20-15%20-55%20-20%20-49%20-19%20-79%206%20-154%2021%20-61%2021%20-65%205%20-130%20-9%20-38%20-32%20-108%20-50%20-158%20-21%20-55%20-41%20-133%20-51%20-203%20-22%20-154%20-42%20-222%20-71%20-253%20-35%20-36%20-31%20-49%2016%20-49%2034%200%2042%204%2050%2025%205%2014%2014%2025%2019%2025%205%200%2012%2021%2015%2048%2011%2074%2055%20251%2070%20281%207%2014%2023%2049%2035%2076%2029%2065%2072%20138%2077%20132%204%20-4%2031%20-124%2064%20-282%205%20-22%2013%20-82%2019%20-134%2010%20-87%209%20-96%20-9%20-121%20-29%20-41%20-25%20-50%2020%20-50%2036%200%2041%203%2054%2035%2012%2028%2013%2047%205%2092%20-6%2032%20-14%20121%20-19%20198%20-5%2077%20-14%20169%20-19%20205%20-6%2036%20-13%2082%20-16%20104%20l-6%2038%2073%20-7%20c40%20-4%2077%20-11%2082%20-16%2013%20-12%2046%20-11%2046%201%200%205%2013%2016%2028%2024%20l28%2015%2024%20-72%20c61%20-190%2073%20-305%2050%20-472%20-9%20-58%20-16%20-75%20-40%20-98%20-17%20-15%20-30%20-32%20-30%20-36%200%20-5%2017%20-11%2038%20-13%2030%20-4%2042%200%2064%2021%2024%2023%2027%2034%2028%2086%200%2066%2017%20229%2027%20260%205%2017%208%2014%2019%20-16%2015%20-44%2043%20-209%2045%20-264%201%20-22%20-2%20-50%20-6%20-63%20-7%20-20%20-4%20-22%2027%20-22%2031%200%2036%204%2045%2035%209%2028%207%2055%20-8%20128%20-25%20122%20-33%20207%20-24%20254%20l7%2038%2026%20-50%2026%20-50%208%2040%20c11%2049%20-6%20172%20-33%20234%20-14%2031%20-19%2067%20-19%20128%200%20101%20-11%20131%20-76%20201%20-48%2053%20-111%2091%20-214%20132%20-28%2011%20-85%2048%20-128%2083%20-101%2083%20-161%20125%20-252%20177%20-97%2056%20-204%20160%20-282%20274%20-77%20112%20-135%20176%20-159%20176%20-15%200%20-19%208%20-19%2040%200%2038%20-14%2052%20-34%2033z%20m1137%20-1288%20c4%20-78%203%20-86%20-8%20-65%20-21%2038%20-28%20114%20-19%20199%20l8%2076%207%20-60%20c3%20-33%209%20-100%2012%20-150z%22%2F%3E%20%3C%2Fg%3E%20%3C%2Fsvg%3E");
   mask-image: url("data:image/svg+xml;utf8,%3Csvg%20version%3D%221.0%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22144.000000pt%22%20height%3D%22190.000000pt%22%20viewBox%3D%220%200%20144.000000%20190.000000%22%20preserveAspectRatio%3D%22xMidYMid%20meet%22%3E%20%3Cmetadata%3E%20Created%20by%20potrace%201.16%2C%20written%20by%20Peter%20Selinger%202001-2019%20%3C%2Fmetadata%3E%20%3Cg%20transform%3D%22translate%280.000000%2C190.000000%29%20scale%280.100000%2C-0.100000%29%22%20fill%3D%22currentColor%22%20stroke%3D%22none%22%3E%20%3Cpath%20d%3D%22M216%201883%20c-4%20-5%20-14%20-22%20-21%20-40%20-9%20-20%20-26%20-38%20-47%20-46%20-18%20-8%20-44%20-29%20-58%20-47%20-14%20-18%20-40%20-50%20-57%20-72%20-62%20-75%20-41%20-88%2099%20-64%2055%2010%20104%2014%20108%209%205%20-4%2037%20-65%2073%20-134%2082%20-161%20129%20-230%20244%20-355%2051%20-57%2093%20-111%2093%20-122%200%20-11%20-7%20-36%20-15%20-55%20-20%20-49%20-19%20-79%206%20-154%2021%20-61%2021%20-65%205%20-130%20-9%20-38%20-32%20-108%20-50%20-158%20-21%20-55%20-41%20-133%20-51%20-203%20-22%20-154%20-42%20-222%20-71%20-253%20-35%20-36%20-31%20-49%2016%20-49%2034%200%2042%204%2050%2025%205%2014%2014%2025%2019%2025%205%200%2012%2021%2015%2048%2011%2074%2055%20251%2070%20281%207%2014%2023%2049%2035%2076%2029%2065%2072%20138%2077%20132%204%20-4%2031%20-124%2064%20-282%205%20-22%2013%20-82%2019%20-134%2010%20-87%209%20-96%20-9%20-121%20-29%20-41%20-25%20-50%2020%20-50%2036%200%2041%203%2054%2035%2012%2028%2013%2047%205%2092%20-6%2032%20-14%20121%20-19%20198%20-5%2077%20-14%20169%20-19%20205%20-6%2036%20-13%2082%20-16%20104%20l-6%2038%2073%20-7%20c40%20-4%2077%20-11%2082%20-16%2013%20-12%2046%20-11%2046%201%200%205%2013%2016%2028%2024%20l28%2015%2024%20-72%20c61%20-190%2073%20-305%2050%20-472%20-9%20-58%20-16%20-75%20-40%20-98%20-17%20-15%20-30%20-32%20-30%20-36%200%20-5%2017%20-11%2038%20-13%2030%20-4%2042%200%2064%2021%2024%2023%2027%2034%2028%2086%200%2066%2017%20229%2027%20260%205%2017%208%2014%2019%20-16%2015%20-44%2043%20-209%2045%20-264%201%20-22%20-2%20-50%20-6%20-63%20-7%20-20%20-4%20-22%2027%20-22%2031%200%2036%204%2045%2035%209%2028%207%2055%20-8%20128%20-25%20122%20-33%20207%20-24%20254%20l7%2038%2026%20-50%2026%20-50%208%2040%20c11%2049%20-6%20172%20-33%20234%20-14%2031%20-19%2067%20-19%20128%200%20101%20-11%20131%20-76%20201%20-48%2053%20-111%2091%20-214%20132%20-28%2011%20-85%2048%20-128%2083%20-101%2083%20-161%20125%20-252%20177%20-97%2056%20-204%20160%20-282%20274%20-77%20112%20-135%20176%20-159%20176%20-15%200%20-19%208%20-19%2040%200%2038%20-14%2052%20-34%2033z%20m1137%20-1288%20c4%20-78%203%20-86%20-8%20-65%20-21%2038%20-28%20114%20-19%20199%20l8%2076%207%20-60%20c3%20-33%209%20-100%2012%20-150z%22%2F%3E%20%3C%2Fg%3E%20%3C%2Fsvg%3E");
 }
@@ -7386,7 +7393,7 @@ body[data-special="countdown"][data-multi-venue="true"] section[data-sp-chapter]
 /* ── 4. Inline venue tag pill ─────────────────────────────────────────── */
 /* Tiny labeled pill authors can drop in a chapter (e.g. above kicker) to
    call out which venue the chapter belongs to. */
-body[data-special="countdown"][data-multi-venue="true"] .sp-venue-tag {
+body:is([data-special="countdown"],[data-special="field_guide"])[data-multi-venue="true"] .sp-venue-tag {
   display: inline-flex;
   align-items: center;
   gap: 0.4em;
@@ -7398,11 +7405,11 @@ body[data-special="countdown"][data-multi-venue="true"] .sp-venue-tag {
   text-transform: uppercase;
   opacity: 0.9;
 }
-body[data-special="countdown"][data-multi-venue="true"] section[data-sp-chapter][data-venue="efteling"] .sp-venue-tag {
+body:is([data-special="countdown"],[data-special="field_guide"])[data-multi-venue="true"] section[data-sp-chapter][data-venue="efteling"] .sp-venue-tag {
   color: var(--eft-accent);
   border-color: var(--eft-accent);
 }
-body[data-special="countdown"][data-multi-venue="true"] section[data-sp-chapter][data-venue="beekse-bergen"] .sp-venue-tag {
+body:is([data-special="countdown"],[data-special="field_guide"])[data-multi-venue="true"] section[data-sp-chapter][data-venue="beekse-bergen"] .sp-venue-tag {
   color: var(--bee-accent);
   border-color: var(--bee-accent);
 }
@@ -7410,7 +7417,7 @@ body[data-special="countdown"][data-multi-venue="true"] section[data-sp-chapter]
 /* ── 5. Preservation guards ───────────────────────────────────────────── */
 /* If a chapter happens to contain a sp-ground-gallery, do NOT recolour
    ground — galleries have their own neutral slate from 32-hype-variants. */
-body[data-special="countdown"][data-multi-venue="true"] section[data-sp-chapter][data-venue].sp-ground-gallery {
+body:is([data-special="countdown"],[data-special="field_guide"])[data-multi-venue="true"] section[data-sp-chapter][data-venue].sp-ground-gallery {
   background: #1A1E27;
   color: #E5E1D8;
 }
@@ -7418,7 +7425,7 @@ body[data-special="countdown"][data-multi-venue="true"] section[data-sp-chapter]
 /* Reduced-motion users — no extra animation in this file, but be explicit:
    no glyph fade, no transitions. Glyph remains as static decoration. */
 @media (prefers-reduced-motion: reduce) {
-  body[data-special="countdown"][data-multi-venue="true"] section[data-sp-chapter][data-venue]::after {
+  body:is([data-special="countdown"],[data-special="field_guide"])[data-multi-venue="true"] section[data-sp-chapter][data-venue]::after {
     transition: none !important;
   }
 }
@@ -7585,7 +7592,7 @@ div.sp-pullquote-huge {
 
 </style>
 </head>
-<body>
+<body class="is-special" data-special="field_guide" data-multi-venue="true">
 <div class="progress-bar" id="progressBar"></div>
 
 <!-- ══════ PERSISTENT MASTHEAD (Enhancement 19A) ══════
