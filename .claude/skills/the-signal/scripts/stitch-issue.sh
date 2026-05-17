@@ -124,6 +124,26 @@ CSS_MARKER=$(echo "$PLAN_DATA" | grep '^CSS_MARKER=' | cut -d= -f2-)
 JS_MARKER=$(echo "$PLAN_DATA" | grep '^JS_MARKER=' | cut -d= -f2-)
 SCAFFOLD_PARTS=$(echo "$PLAN_DATA" | grep '^SCAFFOLD_PARTS=' | cut -d= -f2-)
 
+# Holiday formats (countdown, field_guide/field-guide) MUST NOT ship the legacy
+# default-chrome scaffold parts (01-masthead.html, 03-cover.html, 18-footer.html).
+# Holiday Identity tier 11 styles .hol-masthead / .hol-cover / .hol-footer-row
+# but does NOT hide the legacy .mast / header.cover / footer.footer — those
+# would still render alongside the holiday equivalents, producing a duplicate
+# masthead, duplicate cover, and duplicate footer in the same issue.
+# Force scaffold_parts_used to only head + closing on holiday formats regardless
+# of what the planner specified.
+HOLIDAY_FORMATS_RE="^(countdown|field_guide|field-guide)$"
+if [[ "$FORMAT" =~ $HOLIDAY_FORMATS_RE ]]; then
+  ORIGINAL_PARTS="$SCAFFOLD_PARTS"
+  SCAFFOLD_PARTS="00-head-open.html,19-closing.html"
+  if [[ "$ORIGINAL_PARTS" != "$SCAFFOLD_PARTS" ]]; then
+    echo "  HOLIDAY FORMAT — overrode scaffold_parts_used:"
+    echo "    plan said:   $ORIGINAL_PARTS"
+    echo "    stitcher uses: $SCAFFOLD_PARTS"
+    echo "    (legacy .mast / header.cover / .footer dropped — would duplicate .hol-* chrome)"
+  fi
+fi
+
 # Collect chapters in order
 CHAPTER_IDS_ORDERED=()
 while IFS= read -r line; do
