@@ -191,6 +191,22 @@ awk '/<figcaption/,/<\/figcaption>/' FILE | grep -v -E 'Photo:|Still:|Credit:|Im
 
 **Why this is Gate 1, not Gate 2:** image-caption mismatch is fabrication of visual claims, parallel to fabrication of factual claims (1B). One v8.10.x issue had the same YouTube thumbnail captioned as two different venues in two different chapters — a confident lie the reader would only notice on close inspection. Mechanical detection prevents the class entirely.
 
+### 1F+. Image URL verification chain (v8.13.7+ — UNBREAKABLE)
+
+Gate 1F handles per-issue scans the writer/orchestrator can run by eye. The verification chain below is **structurally enforced** by gate scripts the orchestrator MUST run. Each is non-skippable; together they make broken / fabricated / duplicate image URLs impossible to ship.
+
+| Phase | Script | What it enforces |
+|---|---|---|
+| 3a | (researcher subagent) | Every `image_candidates[i]` carries a `verified` block with `head_status: 200`, `content_type: image/*`. Bundle floor ≥16 unique URLs. |
+| **3a-verify** | (orchestrator WebFetch loop) | Orchestrator re-fetches every URL itself and OVERWRITES the researcher's `verified` block with the orchestrator's actual result. Closes the self-attestation hole. |
+| 3b | `scripts/validate-research-bundle.py` | Rejects bundle if any candidate is unverified / non-2xx / non-image / no image extension / fewer than `min_unique_candidates` distinct URLs. |
+| 7.8 D3 | `scripts/visual-smoke-test.py` | Any DOM image URL with no image extension fails. |
+| 7.8 D6 | `scripts/visual-smoke-test.py` | Any URL used more than `max_uses_per_url` times in the DOM fails (default 1). |
+| 7.8 D7 | `scripts/visual-smoke-test.py --bundle` | Every DOM image URL must appear verbatim in `image_candidates`. |
+| CI | `.github/workflows/issue-validation.yml` | All gates re-run in unrestricted-egress environment on every push/PR. Auto-files `validation-failed` issue on failure. |
+
+See `references/spec/global.md` § image-integrity → "Image URL verification chain" for the full layer-by-layer description and rationale.
+
 ---
 
 ## GATE 2 — Editorial & Visual Quality

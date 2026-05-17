@@ -101,12 +101,116 @@ These are editorial principles. The compliance checklist (Gate 1 + Gate 2) handl
 
 ## markup-contracts
 
+
+**Structure:**
+```
+<aside class="sp-chapter-gate"
+       data-chapter-num="V"
+       data-chapter-title="BEEKSE BERGEN"
+       data-chapter-arc="Act III — the wild">
+  <p class="scg-deck">Five days inside Europe's largest safari park, and a hotel where the lions wake you up.</p>
+</aside>
+```
+Place the gate **immediately before** the chapter section's opening `<section data-sp-chapter="…">` tag. The controller auto-builds the black panel and drives the scroll-progress reveal.
+
+**How it behaves (v8.5 sticky scroll model):**
+- The gate is a 160vh scroll track containing a `position: sticky` full-bleed black panel (`#0A0E17`) that locks to the viewport for ~1 screen-height of scroll.
+- As the reader scrolls *through* the gate, a `--scg-progress` CSS variable runs 0 → 1. The four text layers are revealed in sequence:
+  - **0.10 → 0.30** arc label fades in
+  - **0.25 → 0.55** Roman numeral scales + fades in (coral)
+  - **0.45 → 0.70** chapter title fades in (reserved typeface)
+
+
+---
+
+## image-integrity
+
+### Image-caption integrity (v8.10.3 — hard rule)
+
+A wrong image with a confident caption is worse than no image at all. Three failure modes have been observed in past issues; all are forbidden, all are mechanically scannable in Gate 1F.
+
+**1. No duplicate `src` URLs in one issue.**
+Every `<img src="…">` in the rendered HTML must point to a unique URL. Re-using the same image with two different captions is a fabrication: at least one caption is lying. If the same image genuinely belongs in two places, redesign — find a second source for the second placement, or cut one of the placements. The most common variant of this bug is the same YouTube thumbnail used twice with contradictory subjects (e.g. `i.ytimg.com/vi/<id>/maxresdefault.jpg` captioned as Venue A's pools in chapter III and Venue B's harbour in chapter VII). Banned without exception.
+
+**2. YouTube thumbnail subject must match the video.**
+Every `i.ytimg.com/vi/<id>/...` URL has its subject defined by the video at `https://youtube.com/watch?v=<id>`. Before using a YouTube thumbnail as a still image, confirm the video's title actually depicts the captioned subject. If you cannot watch or verify the video, do not use the thumbnail — find a different image. The thumbnail is the first frame or chosen poster of the video; it has one subject only.
+
+**3. Wikimedia filename must match caption subject.**
+Wikimedia Commons URLs encode their subject in the filename: `Sirmione_007.JPG` is a photograph of Sirmione, not Salou. Before captioning a Wikimedia image, read the filename and the Commons file page to confirm what the photograph actually shows. The caption may abbreviate (`Sirmione harbour at dusk` is fine for `Sirmione_007.JPG`) but it must not contradict (`Salou seafront` for `Sirmione_007.JPG` is fabrication).
+
+**4. Caption describes ACTUAL image content, not intended subject.**
+If the only image you can find for a chapter on Venue A's safari park is a stock photo of a giraffe with no Venue-A context, the caption must say `A reticulated giraffe — illustrative` not `Giraffes at Venue A's drive-through enclosure`. Captions must be honest about what the photograph shows, not aspirational about what it represents. Where a generic image is unavoidable, flag it as illustrative; where it isn't unavoidable, find a specific image instead (see §Image specificity check in compliance checklist).
+
+**5. Every image carries a credit line.**
+The credit lives inside the `<figcaption>` (or `.sp-caption-strip`) and names the photographer / source publication / Wikimedia author. Reused official press kits cite the venue (`Photo: Efteling press kit`). Wikimedia images cite the Commons author + license (`Photo: Velvet, CC-BY-SA 4.0 via Wikimedia Commons`). YouTube stills cite the channel (`Still: TheCoasterFanatics, YouTube`). No credit = the image cannot ship.
+
+### Image URL verification chain (v8.13.7+) — UNBREAKABLE RULE
+
+Image bugs have shipped repeatedly despite gates passing because the gates trusted self-attestation. The verification chain below makes broken / fabricated / duplicate images structurally impossible to ship — each layer alone is bypassable, together they are not. Pipeline phases enforce each layer:
+
+**Layer 1 — Researcher (Phase 3a).** Every entry in `image_candidates[i]` MUST carry a `verified` block proving the researcher ran `WebFetch` on the URL during research and received 2xx + `Content-Type: image/*`:
+```json
+"verified": { "head_status": 200, "content_type": "image/jpeg", "verified_at": "<ISO timestamp>" }
+```
+A candidate the researcher cannot verify is **dropped**, not passed through with a "verify later" note. Common fabrication traps to avoid: Wikimedia `/thumb/<hash>/<hash>/<file>.jpg/1280px-<file>.jpg` (only exists if pre-generated at that size); made-up filenames (`Polles_Keuken_(2).jpg` when the real file is `Polles_Keuken_Efteling_2.JPG`); brand-site page URLs treated as images (returns HTML, browser renders nothing). Bundle floor: **≥16 unique verified URLs** (threshold `min_unique_candidates` in `image-source-types.json`) so writers never need to recycle.
+
+**Layer 2 — Orchestrator (Phase 3a-verify).** After the researcher returns, the orchestrator (main pipeline loop) MUST itself call `WebFetch` on every URL and **overwrite** the researcher's `verified` block with its own result. This closes the self-attestation hole — a fabricated `verified` block from the researcher is replaced with the orchestrator's truth. If WebFetch is egress-blocked in the orchestrator's environment, the bundle records `verified.head_status: "blocked"` and the CI workflow becomes the authoritative gate.
+
+**Layer 3 — Bundle gate (Phase 3b, `validate-research-bundle.py`).** Rejects any bundle with: a candidate missing `verified`; a candidate with non-2xx `head_status`; a candidate with non-`image/*` `content_type`; fewer than `min_unique_candidates` distinct URLs; URLs without an image extension and no `direct_cdn: true` flag.
+
+**Layer 4 — Writer contract.** Writers MUST use `src=` values **verbatim** from `image_candidates`. Inventing URLs (even legitimate-looking CDN paths) is forbidden — caught by Phase 7.8 D7.
+
+**Layer 5 — DOM gates (Phase 7.8, `visual-smoke-test.py`).**
+- **D3 page-url-as-image:** any image URL whose path has no recognised image extension fails. Catches the "page URL pasted as `<img src>`" pattern.
+- **D6 duplicate image URLs:** any URL used more than `max_uses_per_url` times (default 1) fails. Enforces the no-duplicate-src rule above mechanically.
+- **D7 unbundled images:** with `--bundle <path>`, every DOM image URL must appear verbatim in `image_candidates`. Catches URLs the writer invented.
+
+**Layer 6 — CI workflow (`.github/workflows/issue-validation.yml`).** Runs all gates on every push and PR in an unrestricted-egress environment. The image-URL HEAD check that degrades to a warning in the sandboxed pipeline runs for real here. On failure, auto-files a GitHub issue labelled `validation-failed`. For full enforcement, branch protection on `main` requires this workflow to pass before merge (one-time UI setup).
+
+This is the complete chain. Each layer is enforced by code, not by writer discipline. Adding a new image-shipping defect class means adding a new layer here.
+
+
+
+---
+
+## ground-discipline
+
+
+**Authoring contract for ambient:**
+- Both ambient components share the same per-chapter progress calculation (one rAF loop, zero duplicated work). Adding `.sp-horizon` for free if you've already added `.sp-chapter-beads`.
+- Both require chapters to be marked with `data-sp-chapter` on the section root and `data-sp-chapter-title` for tooltips (specials). **Standard editions need no mark-up** — beads auto-discover from `<section class="sec">`. `data-sp-ground-color` is required only if you use `.sp-horizon` (special editions only).
+- Reduced-motion: beads stay (active state only, no fill animation); horizon collapses to a static 2vh strip near chapter end.
+
+### Chapter gate (MANDATORY for every chapter on every special edition — v8.5, sticky scroll model)
+
+**The chapter gate is the single most important element in a special edition.** It is the digital equivalent of turning a page in a real magazine — a viewport-locking moment that unambiguously says *"a new chapter starts here"*. It is the permanent, unmissable signal the reader can spot at any scroll speed.
+
+**Mandatory on:** every `[data-sp-chapter]` in every special edition. If a chapter does not open with `.sp-chapter-gate`, the issue fails Gate 2.
+
+
+---
+
+## accent-lockdown
+
+  - **0.65 → 0.88** deck line fades in (italic, on the black)
+- When scroll passes the end of the track, the panel unsticks and the next chapter is revealed underneath.
+- **No cream "breath" zones before or after.** The previous chapter butts straight up against the black cover; the next chapter appears straight out of it. The pause is *time* (scroll-hold), not *whitespace*.
+- **Reduced-motion / no-JS fallback:** panel collapses to a static full-bleed black band (~52vh) with all four text layers fully visible. No sticky, no progress driver. Same visual anchor, no motion.
+
+**Four text layers, all live inside the black panel (v8.5):**
+1. **Arc label** — italic, small, muted bone (e.g. "Act III — the wild")
 2. **Roman numeral** — display size (72–180px), coral, reserved typeface
 3. **Chapter title** — medium, letter-spaced caps, bone, reserved typeface
 4. **Deck line** — italic, dim bone, one sentence (mandatory)
 
 **Three elements reserved exclusively for the gate (never used elsewhere):**
 1. The **full-bleed black panel** (`.scg-strip`). If you see one, it means "new chapter". Nothing else in the magazine uses this.
+
+
+---
+
+## stat-budget
+
 2. The **chapter-title typeface** (`var(--sp-chapter-ff)` — Space Grotesk). Banned from pull-quotes, kickers, stats, sidebars, covers, navigators.
 3. **Display-size Roman numerals** (72–180px). The wax seal's small ornamental numeral is the only other Roman numeral permitted.
 
@@ -119,137 +223,6 @@ These are editorial principles. The compliance checklist (Gate 1 + Gate 2) handl
 **The deck line — what makes it good:**
 - One sentence. Italic. Max ~20 words.
 - Answers: *"why should I read this chapter?"* not *"what is this chapter?"*
-
-
----
-
-## image-integrity
-
-### URL provenance + source diversity — MANDATORY (v8.13.4)
-
-The pipeline has confirmed two failure modes:
-
-- **Fabricated URLs** — writer subagents construct plausible-looking image URLs from domain pattern-matching (invented Wikimedia hash prefixes, page slugs treated as image assets, typo'd filenames, guessed JPL PIA numbers). Phase 7.6 (`scripts/check-image-urls.sh`) probes liveness, but the systemic fix is upstream.
-- **Mono-sourcing** — defaulting every image to `commons.wikimedia.org/wiki/Special:FilePath/...` because that pattern verifies easily. The 17-May test issue shipped at 64% Wikimedia, failing RT-5 (no single domain >50%). Easy verification became lazy editorial.
-
-**Both failures are the researcher's responsibility to prevent.** Writers consume what the bundle provides; the bundle has to be good.
-
-#### Researcher contract
-
-Every entry in `image_candidates[i].url_or_keyword` must be a **direct, verified URL** — never a keyword — and the set across the issue must come from **at least three of the five source types below**.
-
-**UNBREAKABLE RULE (v8.13.7): VERIFY EVERY URL.** Each `image_candidates[i]` MUST carry a `verified` block proving the researcher HEAD-checked the URL during Phase 3 and got a 2xx with `Content-Type: image/*`. A candidate without a verified block — or with a non-image content type, or a non-2xx status — is rejected by `validate-research-bundle.py` and never reaches writers. Use the `WebFetch` tool to fetch each candidate URL during research; record the result inline:
-
-```json
-{
-  "url_or_keyword": "https://content.presspage.com/uploads/.../polles-keuken.jpg",
-  "credit": "Efteling press kit",
-  "source_type": "press_kit",
-  "verified": {
-    "head_status": 200,
-    "content_type": "image/jpeg",
-    "verified_at": "2026-05-17T08:14:22Z"
-  }
-}
-```
-
-Do NOT speculate URLs. Common fabrication traps the gate catches:
-- Wikimedia `/wiki/commons/thumb/<hash>/<hash>/<file>.jpg/1280px-<file>.jpg` — thumbnail paths only exist for pre-generated sizes. Use the canonical `/wiki/commons/<hash>/<hash>/<file>.jpg` path or `Special:FilePath/<file>?width=N`.
-- Brand-site page URLs like `https://www.efteling.com/en/park/restaurants/polles-keuken` — that's an HTML page, not an image. Open it in WebFetch, find the actual `<img src>` in the markup, and use that CDN URL.
-- Made-up filenames like `Efteling_-_Polles_Keuken_(2).jpg` when the canonical file is `Polles_Keuken_Efteling_2.JPG` — capitalisation, extension case, and exact filename matter.
-
-**MINIMUM UNIQUE-URL FLOOR.** The bundle must surface at least 16 distinct verified URLs (configurable per format via `thresholds.min_unique_candidates`). Writers should never need to recycle: every chapter slot gets a unique image. Phase 7.8 D6 (no-duplicates) enforces this on the rendered DOM.
-
-1. **Official press kits / brand CDNs** — the editorial gold standard for sports, entertainment, products, and tech. Examples (from prior published issues, pre-cleared): `lumiere-a.akamaihd.net` (Lucasfilm), `intermilan.bynder.com` (Inter Milan DAM), `gaming-cdn.com` (game product imagery), Bethesda press, Sony press. Use direct *image* paths, never page slugs like `press.bethesda.net/game/<name>`.
-
-2. **Government / public-sector Flickr + media libraries** — stable URLs, clean licensing. UK Parliament Flickr (Open Parliament Licence), Number 10 Downing Street (`flickr.com/photos/number10gov`, OGL), White House (`flickr.com/photos/whitehouse`, public domain), Department of Defense, NASA JPL Photojournal direct jpegs (`photojournal.jpl.nasa.gov/jpeg/PIA<N>.jpg`), NASA Image Library, ESA, NOAA. For Flickr, the direct image URL pattern is `https://live.staticflickr.com/<server>/<photo_id>_<secret>_<size>.jpg` — fetch the photo page to get the secret, never guess.
-
-3. **Museum / archive direct hosts** — `iwm.org.uk` (Imperial War Museums collection items), `rafmuseum.org.uk`, `britishmuseum.org`, `vam.ac.uk`, Geograph.org.uk (CC-BY-SA UK landscape/building photos), Library of Congress, Wellcome Collection. URL patterns vary by institution — verify with WebFetch / WebSearch before listing.
-
-4. **News-agency / publication CDNs** — only where editorial use is permitted by the publication's terms or where the URL pattern is taken from a prior published Signal issue (which means it's pre-cleared). Examples from prior issues: `akm-img-a-in.tosshub.com`, `media-cldnry.s-nbcnews.com`, `npr.brightspotcdn.com`, `news.cgtn.com`, `content.presspage.com`. Do not invent these — copy verified URLs from research, never construct.
-
-5. **Wikimedia Commons** — last resort, supplement only. Format: `https://commons.wikimedia.org/wiki/Special:FilePath/<Exact_File_Name>?width=N` (the redirect resolves any verified file by canonical name without needing the hash prefix). Confirm the file exists via WebSearch (`site:commons.wikimedia.org "File:..."`) before listing — never construct a Wikimedia filename. **Cap Wikimedia at 4 of the issue's image budget**, or 30% of total images, whichever is smaller.
-
-Aim for a typical 8–14-image weekly issue to look like:
-- 2–4 from press kits / brand CDNs
-- 2–3 from government / public-sector hosts
-- 1–2 from museums / archives (when topically relevant)
-- 1–2 from verified news CDNs
-- 0–4 from Wikimedia as supplement
-
-A Field Guide or Countdown should lean heavier on official press kits and venue media libraries; a History anchor leans on museum / archive hosts; a tech/AI section leans on company press resources and NASA / agency hosts.
-
-#### Writer contract
-
-Writers MUST use `src=` values **verbatim** from the research bundle. Constructing a URL by domain pattern is forbidden (RT-16). If a writer needs an image not in the bundle, the chapter ships without it — the caption can stand alone.
-
-**v8.13.7 enforcement:** Phase 7.8 D7 (`visual-smoke-test.py --bundle <research-bundle.json>`) asserts that every `<img src>` and `background-image:url(...)` in the rendered DOM appears verbatim in `image_candidates[].url_or_keyword`. URLs the writer invented — even legitimate-looking CDN paths — fail the gate. The bundle is the only authority.
-
-**Plus:** Phase 7.8 D6 fails if any URL appears more than once in the DOM. If a writer is tempted to reuse the same image across two picks because nothing else fits, the answer is to expand the bundle (re-run the researcher), not to recycle.
-
-#### Why diversity beats monoculture
-
-Editorial credibility. A magazine where 9 of 14 images come from the same single host signals shallow research — the issue couldn't be bothered to look beyond the easiest source. Phase 8 / Gate 3 hard-fails at >50% from any single domain (RT-5). The diversity rule is older than the URL-provenance rule, and it stays primary.
-
-### Markup components
-
-- `.sp-parallax` with `.p-bg` / `.p-mid` / `.p-fg` layers — layered parallax on hero and section openers
-- `.sp-stagger` with `.sp-word` children — word-by-word reveal on h2 openers (400ms cap)
-- `.sp-wipe` with three `.sp-wipe-layer` children (l1/l2/l3) — contained colour-wipe transitions between sections. The wipe container is `overflow: hidden` and `contain: layout paint` — it never extends past content width and cannot push surrounding columns during transition.
-- `.sp-dday` — Countdown-only live days-to-go badge, top-left, reads `data-trip-date` from `<body>`, does NOT scrub with scroll
-
-**Layout breakouts (tier 3 — loud formats):**
-- `.sp-manifesto` — oversized foreword
-- `.sp-bignum` — full-width statement number
-- `.sp-gallery` — broken editorial gallery
-- `.sp-diptych` — split-screen contrast layout
-- `.sp-marquee` — source-strip marquee at end of issue
-
-**Cover kinetic (opt-in):**
-- `.cover-kinetic` with `.k-bold` / `.k-italic` / `.k-outline` — three overlapping title layers that collide on arrival
-
-**Body-embedded components (tier 4 — inside article sections, not between them):**
-- `.sp-scroll-image` (+ `.is-fullbleed` variant) — hero image that can drop into any section mid-article. Image has subtle parallax (±20px) within its frame as it scrolls through viewport. Supports `<figcaption>` with `<cite>` for credit.
-- `.sp-inline-figure` (+ `.is-left` / default right) — half-width floating figure alongside body copy. Reveals with fade + 20px slide when scrolled into view. Collapses to full-width at ≤820px.
-- `.sp-image-strip` with `.sp-strip-track` — 3-image horizontal strip that drifts sideways as the page scrolls vertically. Echoes the landonorris.com horizontal-in-vertical motion.
-- `.sp-pullquote-huge` — oversized full-column italic pull quote with ornamental quote mark, top+bottom rules. Breaks up long prose blocks. Contains `<p>` and optional `<cite>`.
-- `.sp-number` (inline) and `.sp-number-block` / `.sp-number-huge` (block) — count-up stat callouts. Add `data-to="N"` (with optional comma formatting) to trigger the animation when scrolled into view. Can be used inline in prose: `<span class="sp-number" data-to="74">74</span>`.
-- `.sp-marginalia` (with `data-side="left|right"`) — fact/stat chip that floats in from the margin. Parent must be `position: relative` (all sections already are). Falls back to inline breakout at ≤1200px.
-- `.sp-kicker` — class for h3/h4 sub-headings inside long articles. Reveals with 10px slide + fade when entering view. Keeps body reading flow intact.
-- `.sp-image-quote` — photo with overlaid italic pull quote. For "what people say about X" breakouts. Image is darkened (brightness 0.55) so text sits over it cleanly.
-- `.sp-curtain` with `.sp-curtain-panel` — vertical curtain-drop transition between sections. Half the height of `.sp-wipe` (60px). Drops, then retracts 700ms later. Use sparingly for rhythm variety.
-- `.sp-chapter-number` with `.sp-chapter-num` + `.sp-chapter-label` — oversized roman/arabic numeral that precedes a long section. Adds typographic weight without needing imagery. Good opener for internal chapters.
-
-### Imagery budget — MANDATORY for loud special editions
-
-A Countdown / Versus / Rewind issue **must not** have entire sections that are walls of text. The previous pattern (front-loaded imagery in the opening then plain prose for the rest) is banned. Apply the following rule at generation time:
-
-**Every major body section (Foreword excepted) must include at least ONE of:**
-- A `.sp-scroll-image`, `.sp-inline-figure`, `.sp-image-quote`, or `.sp-image-strip` (imagery)
-- A `.sp-number-block`, `.sp-pullquote-huge`, `.sp-bignum`, or `.sp-chapter-number` (high-impact typographic component)
-
-
----
-
-## ground-discipline
-
-- As the reader scrolls *through* the gate, a `--scg-progress` CSS variable runs 0 → 1. The four text layers are revealed in sequence:
-  - **0.10 → 0.30** arc label fades in
-  - **0.25 → 0.55** Roman numeral scales + fades in (coral)
-  - **0.45 → 0.70** chapter title fades in (reserved typeface)
-  - **0.65 → 0.88** deck line fades in (italic, on the black)
-- When scroll passes the end of the track, the panel unsticks and the next chapter is revealed underneath.
-- **No cream "breath" zones before or after.** The previous chapter butts straight up against the black cover; the next chapter appears straight out of it. The pause is *time* (scroll-hold), not *whitespace*.
-- **Reduced-motion / no-JS fallback:** panel collapses to a static full-bleed black band (~52vh) with all four text layers fully visible. No sticky, no progress driver. Same visual anchor, no motion.
-
-**Four text layers, all live inside the black panel (v8.5):**
-1. **Arc label** — italic, small, muted bone (e.g. "Act III — the wild")
-
-
----
-
-## accent-lockdown
-
 - Concrete, not abstract. "Five days inside Europe's largest safari park" > "An overview of our stay".
 - Never restates the chapter title.
 
@@ -263,12 +236,6 @@ A Countdown / Versus / Rewind issue **must not** have entire sections that are w
 **Narrative-arc labels (required on long-form specials):**
 - **Countdown** (typically 9–11 chapters): Act I (hype setup — By the Numbers, Event in Depth) → Act II (centrepiece hype — Top Attractions, Accommodation, Mood Board) → Act III (softer hype — What to Watch/Read/Play, Five Moments Worth the Trip) → Coda (Before You Go: compressed logistics + surprising facts + On the Radar)
 - **Deep Dive** (8–10 chapters): Premise → Evidence I → Evidence II → Counterargument → Verdict
-
-
----
-
-## stat-budget
-
 - **Rewind** (chronological): Year-by-year or phase-by-phase labels
 - **Season Review**: Opening Acts → Mid-Season → Finale → Verdict
 Map every chapter to its arc beat and put the label in `data-chapter-arc`. This is how the reader keeps orientation through ten chapters.
@@ -333,29 +300,4 @@ If a draft exceeds the cap, cut the weakest blocks. Rule of thumb: any stat that
 
 - **`.sp-sticky-pin`** — a single image or pull-quote that pins to the side of the column for ~1.5 viewports of scroll while the prose continues past, then releases. A thin accent rule on the card grows as a within-section progress indicator. Use for a character portrait during an interview (watches the reader), or a pull-quote that lingers while the argument unfolds around it. Variants: `sp-sticky-pin--portrait` (image, default right-float), `sp-sticky-pin--quote` (left-border pull quote), `sp-sticky-pin--left` (flip to left margin). Markup:
   ```
-  <aside class="sp-sticky-pin sp-sticky-pin--portrait">
-    <div class="spin-inner">
-      <img src="…" alt="…">
-      <figcaption class="spin-cap">…</figcaption>
-      <div class="spin-rule" aria-hidden="true"></div>
-    </div>
-  </aside>
-  ```
-  **Rules (enforced):**
-  1. **Max one per issue.** If multiple `.sp-sticky-pin` elements exist, JS keeps the first and demotes the rest to inline figures.
-  2. **Never** in a section that already uses `.sp-parallax` or `.sp-scroll-image` — they solve overlapping problems.
-  3. Only inside a host section with **≥ 150vh of prose** — otherwise the stick is imperceptible.
-  4. **Mobile (≤ 820px):** collapses to a normal inline figure; no stick (sticky on tablet causes vertigo).
-  5. Best uses: a single character portrait during an interview, or a pull-quote that watches over an unfolding argument. Never a decorative stock photo.
-
-### Issue accent
-Each format maps to a palette variable: countdown → rose, rewind → ember, versus → neon, season-review → turf, field-guide → itinerary-accent, deep-dive → deep, blueprint → longgame, shortlist → shelf-gold, starter-kit → session-accent. `--issue-accent` is set from `[data-special]` selectors and drives splash colour, format badge, D-day badge, and wipe default colour. No neon-lime — The Signal's identity is preserved, just intensified.
-
-### Chrome positioning ground rules
-Fixed chrome elements must not overlap. Current occupation:
-- Masthead: `top: 0` full-width, `z-index: 50`
-- Wax-stamp seal: `top: 76px; right: 28px; z-index: 45`
-- Format badge (special): `top: 76px; right: 28px` range — rotated, lower z-index
-- D-day badge (countdown): `top: 88px; left: 18px; z-index: 46` — kept on the LEFT to avoid seal collision
-- Back-to-top: `bottom: 28px; right: 28px`
 

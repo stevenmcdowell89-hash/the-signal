@@ -712,6 +712,31 @@ If the only image you can find for a chapter on Venue A's safari park is a stock
 **5. Every image carries a credit line.**
 The credit lives inside the `<figcaption>` (or `.sp-caption-strip`) and names the photographer / source publication / Wikimedia author. Reused official press kits cite the venue (`Photo: Efteling press kit`). Wikimedia images cite the Commons author + license (`Photo: Velvet, CC-BY-SA 4.0 via Wikimedia Commons`). YouTube stills cite the channel (`Still: TheCoasterFanatics, YouTube`). No credit = the image cannot ship.
 
+### Image URL verification chain (v8.13.7+) — UNBREAKABLE RULE
+
+Image bugs have shipped repeatedly despite gates passing because the gates trusted self-attestation. The verification chain below makes broken / fabricated / duplicate images structurally impossible to ship — each layer alone is bypassable, together they are not. Pipeline phases enforce each layer:
+
+**Layer 1 — Researcher (Phase 3a).** Every entry in `image_candidates[i]` MUST carry a `verified` block proving the researcher ran `WebFetch` on the URL during research and received 2xx + `Content-Type: image/*`:
+```json
+"verified": { "head_status": 200, "content_type": "image/jpeg", "verified_at": "<ISO timestamp>" }
+```
+A candidate the researcher cannot verify is **dropped**, not passed through with a "verify later" note. Common fabrication traps to avoid: Wikimedia `/thumb/<hash>/<hash>/<file>.jpg/1280px-<file>.jpg` (only exists if pre-generated at that size); made-up filenames (`Polles_Keuken_(2).jpg` when the real file is `Polles_Keuken_Efteling_2.JPG`); brand-site page URLs treated as images (returns HTML, browser renders nothing). Bundle floor: **≥16 unique verified URLs** (threshold `min_unique_candidates` in `image-source-types.json`) so writers never need to recycle.
+
+**Layer 2 — Orchestrator (Phase 3a-verify).** After the researcher returns, the orchestrator (main pipeline loop) MUST itself call `WebFetch` on every URL and **overwrite** the researcher's `verified` block with its own result. This closes the self-attestation hole — a fabricated `verified` block from the researcher is replaced with the orchestrator's truth. If WebFetch is egress-blocked in the orchestrator's environment, the bundle records `verified.head_status: "blocked"` and the CI workflow becomes the authoritative gate.
+
+**Layer 3 — Bundle gate (Phase 3b, `validate-research-bundle.py`).** Rejects any bundle with: a candidate missing `verified`; a candidate with non-2xx `head_status`; a candidate with non-`image/*` `content_type`; fewer than `min_unique_candidates` distinct URLs; URLs without an image extension and no `direct_cdn: true` flag.
+
+**Layer 4 — Writer contract.** Writers MUST use `src=` values **verbatim** from `image_candidates`. Inventing URLs (even legitimate-looking CDN paths) is forbidden — caught by Phase 7.8 D7.
+
+**Layer 5 — DOM gates (Phase 7.8, `visual-smoke-test.py`).**
+- **D3 page-url-as-image:** any image URL whose path has no recognised image extension fails. Catches the "page URL pasted as `<img src>`" pattern.
+- **D6 duplicate image URLs:** any URL used more than `max_uses_per_url` times (default 1) fails. Enforces the no-duplicate-src rule above mechanically.
+- **D7 unbundled images:** with `--bundle <path>`, every DOM image URL must appear verbatim in `image_candidates`. Catches URLs the writer invented.
+
+**Layer 6 — CI workflow (`.github/workflows/issue-validation.yml`).** Runs all gates on every push and PR in an unrestricted-egress environment. The image-URL HEAD check that degrades to a warning in the sandboxed pipeline runs for real here. On failure, auto-files a GitHub issue labelled `validation-failed`. For full enforcement, branch protection on `main` requires this workflow to pass before merge (one-time UI setup).
+
+This is the complete chain. Each layer is enforced by code, not by writer discipline. Adding a new image-shipping defect class means adding a new layer here.
+
 **Editorial body kit (tier 5 — magazine-spread structure):**
 - `.sp-ground-paper` / `.sp-ground-ink` — alternating-ground wrapper for chapters. Apply to each major section so chapters alternate between paper (cream) and ink (deep) grounds. The shift of value on scroll IS the transition between chapters; no bridge component needed when alternating. Variants: `.sp-ground-warm` (warm cream), `.sp-ground-tint` (rose-tinted paper), `.sp-ground-deep` (pitch black).
 - `.sp-chapter-chrome` — thin top bar inside every chapter: `<span class="sp-roman">III</span><span class="sp-hair"></span><span class="sp-chapter-name">…</span><span class="sp-chapter-slug">…</span>`. Mandatory at the top of every chapter on a special edition. Anchors the bound-magazine feel.

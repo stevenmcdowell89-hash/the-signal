@@ -58,8 +58,10 @@ write_section "$OUT_DIR/global/03-visual-design.md" 552 574
 # 04-markup-contracts.md — lines 850-880 (Markup contracts v8.10.3)
 write_section "$OUT_DIR/global/04-markup-contracts.md" 850 867
 
-# 05-image-integrity.md — lines 650-703 (Image-caption integrity v8.10.3)
-write_section "$OUT_DIR/global/05-image-integrity.md" 650 683
+# 05-image-integrity.md — lines 696-739 (Image-caption integrity v8.10.3 +
+# Image URL verification chain v8.13.7+ unbreakable-rule chain). Re-check
+# range if editorial-spec.md image-integrity sections are extended.
+write_section "$OUT_DIR/global/05-image-integrity.md" 696 739
 
 # 06-ground-discipline.md — lines 839-849 (Ground discipline v8.4)
 write_section "$OUT_DIR/global/06-ground-discipline.md" 839 849
