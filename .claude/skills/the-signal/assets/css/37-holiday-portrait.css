@@ -1,0 +1,376 @@
+/* ============================================================
+   TIER 12 — HOLIDAY IDENTITY: PORTRAIT TABLET (v8.13.1)
+
+   Scope: body.is-special[data-special="countdown"]
+          body.is-special[data-special="field-guide"]
+
+   Target viewports:
+   - Xiaomi Pad 8 portrait (854 x 1280 CSS px)
+   - Generic tablet portrait (720–960 CSS px)
+
+   The existing tier-11 holiday CSS uses 920px and 820px breakpoints.
+   At 854px portrait we sit BETWEEN those breakpoints, which causes
+   three specific failures:
+
+     (A) Cover scrapbook collage (.hol-cover__collage) collapses
+         below 920px to a single column, but its absolutely-
+         positioned children stay anchored to a 480px tall block
+         that no longer has room — items overlap the title.
+     (B) Transit intermission stays full-width 3-col grid down to
+         720px, so its centre card and side meganames cram into
+         300px-wide strips at 854px and the "/" divider effect
+         breaks visually.
+     (C) Half opener tag (.hol-half__opener-tag) is absolute-
+         positioned with margin-left: -260px and translates off-
+         screen at narrow widths; the script-tag flag disappears
+         from view.
+
+   This file addresses all three, plus a battery of polish fixes
+   for portrait reading: tighter padding, body type that scales
+   without cramping, polaroids that center, marquees that don't
+   overhang the viewport edge, anchor badges that don't get
+   clipped, postcards/chalkboards that fit, and touch-driven
+   :focus-within / .is-active hover-equivalents so taps reveal
+   the photos-uncurling-from-rotation moments that mouse users
+   get on :hover.
+
+   The file is SCOPED to the two holiday formats. Nothing in
+   here affects standard weeklies or other specials.
+
+   Tier 37 sits after 36-holiday-identity.css in the cascade so
+   its overrides win without `!important`.
+
+   Reduced-motion: every motion declaration here uses the same
+   guards as tier 11.
+   ============================================================ */
+
+/* ============================================================
+   00 · ACTIVATION GUARDS
+
+   Two breakpoints. 960px is the upper edge so we catch anything
+   between 920px (the tier-11 default) and 854px (Pad 8 portrait).
+   720px keeps phone behaviour untouched — we only re-engineer
+   the middle band.
+   ============================================================ */
+
+/* Portrait tablet band — 721–960px viewport. */
+@media (min-width: 721px) and (max-width: 960px) {
+
+  body.is-special[data-special="countdown"],
+  body.is-special[data-special="field-guide"] {
+
+    /* ============================================================
+       01 · COVER — collage collapse + title balance
+       ============================================================ */
+
+    /* Stack collage UNDER the title block, give it a sensible
+       height for the absolute children, and shorten back-num
+       so it doesn't dominate the smaller viewport. */
+    .hol-cover { padding: 48px 28px 72px; }
+    .hol-cover__layout { gap: 36px; }
+    .hol-cover__collage { min-height: 360px; }
+    .hol-cover__back-num { font-size: clamp(220px, 56vw, 360px); top: -2%; right: -8%; }
+    .hol-cover__back-script { font-size: clamp(110px, 28vw, 200px); }
+    .hol-cover__title { font-size: clamp(58px, 11vw, 110px); }
+    .hol-cover__overline { font-size: clamp(32px, 6vw, 48px); }
+    .hol-cover__dek { font-size: 18px; max-width: 100%; }
+
+    /* Poster cover variant — keep print title readable, scale arch */
+    .hol-cover--poster .hol-cover__title--print {
+      font-size: clamp(60px, 11vw, 120px);
+      text-shadow: 4px 4px 0 var(--hol-ruby);
+    }
+    .hol-cover--poster .hol-cover__inner { padding-top: 16px; }
+    .hol-cover__arch { width: clamp(280px, 60vw, 460px); height: clamp(70px, 11vw, 110px); }
+    .hol-cover__sub { font-size: clamp(26px, 4.4vw, 38px); margin: 8px 0 18px; }
+
+    /* Countdown grid: 4 columns is fine at 854px but the numbers
+       at clamp(48px,9vw,96px) burst the cell padding when 3-digit
+       day counts appear. Tighten the cell padding + number cap. */
+    .hol-countdown { padding: 18px 14px; max-width: 100%; }
+    .hol-countdown__grid { gap: 6px; }
+    .hol-countdown__cell { padding: 14px 4px; }
+    .hol-countdown__num { font-size: clamp(40px, 8.5vw, 68px); }
+
+    /* Sig row gets thin on narrow viewports — wrap with smaller
+       gap so it never breaks across three lines. */
+    .hol-cover__sig { font-size: 10px; letter-spacing: 0.22em; padding-bottom: 12px; }
+    .hol-cover__deck { font-size: 12px; gap: 10px; }
+
+    /* ============================================================
+       02 · MASTHEAD — keep on one line at narrow widths
+       ============================================================ */
+    .hol-masthead { padding: 12px 24px; gap: 14px; }
+    .hol-masthead__title { font-size: 24px; }
+    .hol-masthead__meta { display: none; }   /* re-claim space; date already on cover sig */
+
+    /* ============================================================
+       03 · KICKER STRIP — stack centered on portrait
+       ============================================================ */
+    .hol-kicker-strip { padding: 18px 24px; }
+    .hol-kicker-strip__inner { flex-direction: column; gap: 8px; text-align: center; }
+    .hol-kicker-strip__meta { text-align: center; }
+
+    /* ============================================================
+       04 · HALF OPENER — script tag stays on-page
+       The default rule uses position:absolute + margin-left:-260px
+       to float the script tag over the title's upper-left. At
+       854px that lands ~−260 + 427 (half viewport) = ~167px from
+       left edge, which is fine, but the rotation makes the tail
+       clip the left edge. Anchor it inline so it sits ABOVE the
+       title cleanly on portrait.
+       ============================================================ */
+    .hol-half__opener { padding-top: 8px; margin-bottom: 48px; }
+    .hol-half__opener-tag {
+      position: relative;
+      left: auto;
+      margin-left: 0;
+      transform: rotate(-3deg);
+      display: block;
+      font-size: clamp(36px, 6.5vw, 52px);
+      margin-bottom: 4px;
+    }
+    .hol-half__opener-title { font-size: clamp(72px, 13vw, 130px); }
+    .hol-half__opener-subtitle { font-size: clamp(20px, 3.4vw, 32px); padding: 12px 24px; }
+    .hol-half__opener-pills { font-size: clamp(18px, 3vw, 24px); gap: 10px 18px; margin-top: 22px; }
+
+    /* ============================================================
+       05 · HALF — narrower padding to claim more reading width
+       ============================================================ */
+    .hol-half { padding: 48px 24px 72px; }
+    /* The savannah silhouette band is sized to a 1200px viewBox.
+       At 854px it crops the elephant; shorten its height so the
+       crop reads as deliberate composition not a clipping bug. */
+    .hol-half--two::after { height: 200px; background-size: 1200px 200px; }
+
+    /* ============================================================
+       06 · TRANSIT INTERMISSION — force vertical stack
+       The tier-11 default stacks at 720px. At 854px portrait the
+       three-column layout cramps the meganames into ~280px strips
+       and the centre card overlaps both sides. Stack at this
+       width too, but keep the height punchy.
+       ============================================================ */
+    .hol-transit {
+      grid-template-columns: 1fr;
+      height: auto;
+      padding: 40px 0;
+      gap: 28px;
+    }
+    .hol-transit__side {
+      padding: 0 28px;
+      justify-content: center;
+      text-align: center;
+      min-height: 120px;
+    }
+    .hol-transit__side--left,
+    .hol-transit__side--right { text-align: center; }
+    .hol-transit__side--left .hol-transit__mega-bg,
+    .hol-transit__side--right .hol-transit__mega-bg {
+      justify-content: center;
+      padding: 0;
+      font-size: clamp(100px, 22vw, 160px);
+    }
+    .hol-transit__center { width: auto; height: 0; }
+    .hol-transit__center-card {
+      position: relative;
+      top: auto;
+      left: auto;
+      transform: rotate(-2deg);
+      padding: 14px 28px;
+      font-size: clamp(20px, 3.4vw, 26px);
+    }
+    .hol-transit__hand { font-size: clamp(26px, 4vw, 34px); }
+    .hol-transit__name { font-size: clamp(30px, 4.5vw, 44px); }
+
+    /* ============================================================
+       07 · WONDERS / UNMISSABLE — single column polish
+       Tier 11 stacks these at 920px (correct). The fixes here
+       are about gap, card padding, and image aspect at 854.
+       ============================================================ */
+    .hol-wonders { gap: 56px; padding: 24px 0 48px; }
+    .hol-wonders__intro h2 { font-size: clamp(44px, 9vw, 72px); }
+    .hol-wonder { gap: 20px; }
+    .hol-wonder__photo { aspect-ratio: 16 / 10; transform: rotate(0); }
+    .hol-wonder__card { padding: 28px 24px; }
+    .hol-wonder__title { font-size: clamp(24px, 4vw, 30px); }
+
+    .hol-unmissable,
+    .hol-unmissable--reverse {
+      grid-template-columns: 1fr;
+      direction: ltr;
+      gap: 24px;
+      margin: 40px 0;
+    }
+    .hol-unmissable__photo-wrap { transform: rotate(0); }
+    .hol-unmissable__photo { aspect-ratio: 16 / 10; }
+    .hol-unmissable__card { padding: 28px 24px 24px; }
+
+    /* ============================================================
+       08 · ANCHOR — keep the badge and bottom-note on-canvas
+       At narrow widths the badge (right: -8px, rotate(12deg)) and
+       the script note (right: 60px, bottom: -28px) clip the edge
+       or fall outside the rotated container.
+       ============================================================ */
+    .hol-anchor {
+      grid-template-columns: 1fr;
+      gap: 24px;
+      padding: 24px 0 28px 18px;
+      margin: 32px 0 56px;
+      transform: rotate(0);   /* unrotate at portrait — cleaner read */
+      border-left-width: 8px;
+    }
+    .hol-anchor__photo { box-shadow: 0 24px 40px rgba(0,0,0,.55); }
+    .hol-anchor__title { font-size: clamp(34px, 6.5vw, 56px); }
+    .hol-anchor__dek { font-size: clamp(18px, 3vw, 22px); max-width: 100%; }
+    .hol-anchor__meta { gap: 20px; font-size: 11px; letter-spacing: 0.16em; }
+    .hol-anchor__meta b { font-size: 14px; }
+    .hol-anchor__badge {
+      width: 110px; height: 110px;
+      top: -18px; right: 8px;
+      font-size: 18px;
+      padding: 10px;
+    }
+    .hol-anchor__note {
+      position: relative;
+      bottom: auto; right: auto;
+      display: inline-block;
+      transform: rotate(2deg);
+      margin: 4px 0 0;
+      font-size: clamp(24px, 4vw, 32px);
+    }
+
+    /* ============================================================
+       09 · POLAROID / POSTCARD / STAMP — centred, room to breathe
+       ============================================================ */
+    .hol-polaroid { max-width: 280px; margin-left: auto; margin-right: auto; }
+    .hol-postcard { max-width: 100%; }
+    .hol-postcard__greeting { font-size: 24px; }
+    .hol-postcard__place { font-size: 16px; }
+    .hol-stamp { width: 110px; height: 110px; }
+
+    /* ============================================================
+       10 · DON'T MISS — slab numbers cram into 80px gutter
+       ============================================================ */
+    .hol-dont-miss { padding: 32px 26px 36px; margin: 40px -8px; }
+    .hol-dont-miss__title { font-size: clamp(26px, 5vw, 40px); }
+    .hol-dont-miss__list li {
+      padding: 8px 0 8px 68px;
+      font-size: 17px;
+      min-height: 48px;
+    }
+    .hol-dont-miss__list li::before {
+      font-size: 22px;
+      padding: 6px 8px 4px;
+      min-width: 46px;
+    }
+
+    /* ============================================================
+       11 · MARQUEE — keep within viewport, no clipped tails
+       margin: 32px -3vw on default sets a -3vw bleed each side
+       which at 854px = -25.6px. Fine in principle but combined
+       with the rotate(-1.5deg) the lower-right corner ends up
+       outside the safe area. Tighten the negative margin.
+       ============================================================ */
+    .hol-marquee {
+      margin: 28px -2vw;
+      font-size: clamp(30px, 6.5vw, 56px);
+      padding: 14px 0;
+      transform: rotate(-1deg);
+    }
+
+    /* ============================================================
+       12 · CHALKBOARD — centred, full-width
+       ============================================================ */
+    .hol-chalkboard {
+      max-width: 100%;
+      transform: rotate(1deg);
+      padding: 30px 24px 32px;
+    }
+    .hol-chalkboard__title { font-size: clamp(34px, 7vw, 52px); margin: 14px 0 20px; }
+    .hol-chalkboard__item { font-size: 19px; }
+    .hol-chalkboard__price { font-size: 26px; }
+
+    /* ============================================================
+       13 · MEANWHILE + SUBSCRIBE — stack, scale title
+       Tier 11 stacks at 920px — but the giant-bg watermark stays
+       at clamp(180px, 30vw, 480px) which at 854 ≈ 256px reads
+       fine. The title at clamp(72px, 12vw, 168px) ≈ 102px is OK.
+       Just scale down padding and the giant-bg further.
+       ============================================================ */
+    .hol-meanwhile { padding: 56px 24px 72px; }
+    .hol-meanwhile__inner { gap: 36px; }
+    .hol-meanwhile__giant-bg { font-size: clamp(160px, 32vw, 280px); }
+    .hol-meanwhile__title { font-size: clamp(56px, 14vw, 130px); }
+    .hol-meanwhile__body { font-size: clamp(18px, 3vw, 24px); }
+
+    .hol-subscribe__inner { padding: 36px 28px; }
+    .hol-subscribe__title { font-size: clamp(24px, 4vw, 36px); }
+
+    .hol-footer-row { gap: 18px; padding-top: 22px; margin-top: 40px; }
+    .hol-footer-row__brand { font-size: 30px; }
+    .hol-footer-row__links { font-size: 10px; letter-spacing: 0.24em; gap: 20px; }
+    .hol-footer-row__tagline { font-size: clamp(26px, 4.5vw, 36px); }
+
+    /* ============================================================
+       14 · TOUCH PARITY for hover-driven reveals
+       The hol-* CSS uses :hover to unrotate polaroids / anchor
+       photos / unmissable photo-wraps / wonder photos. On a
+       touch-only tablet the user can't trigger :hover reliably.
+       Add :focus-within and a .is-active class (driven by JS
+       below in script.js) so a tap also unrotates the image —
+       and remove the rotation in the default state so first-
+       impression isn't 'everything is slightly broken'.
+       ============================================================ */
+    .hol-polaroid { transform: rotate(-1.5deg); }
+    .hol-polaroid--right { transform: rotate(2deg); }
+    .hol-polaroid:focus-within,
+    .hol-polaroid.is-active { transform: rotate(0) scale(1.02); }
+
+    .hol-anchor:focus-within .hol-anchor__photo,
+    .hol-anchor.is-active .hol-anchor__photo { transform: scale(1.02) rotate(0.5deg); }
+
+    .hol-unmissable:focus-within .hol-unmissable__photo-wrap,
+    .hol-unmissable.is-active .hol-unmissable__photo-wrap { transform: rotate(0); }
+
+    .hol-wonder:focus-within .hol-wonder__photo,
+    .hol-wonder.is-active .hol-wonder__photo { transform: rotate(0); }
+  }
+}
+
+/* ============================================================
+   01b · ULTRA-NARROW PORTRAIT (≤720px) — additional safety
+   The tier-11 defaults for ≤720 are already good. We only add
+   the touch-parity layer here so tap-to-unrotate also works on
+   smaller tablets and phones.
+   ============================================================ */
+@media (max-width: 720px) {
+  body.is-special[data-special="countdown"] .hol-polaroid:focus-within,
+  body.is-special[data-special="countdown"] .hol-polaroid.is-active,
+  body.is-special[data-special="field-guide"] .hol-polaroid:focus-within,
+  body.is-special[data-special="field-guide"] .hol-polaroid.is-active {
+    transform: rotate(0) scale(1.02);
+  }
+  body.is-special[data-special="countdown"] .hol-unmissable.is-active .hol-unmissable__photo-wrap,
+  body.is-special[data-special="field-guide"] .hol-unmissable.is-active .hol-unmissable__photo-wrap {
+    transform: rotate(0);
+  }
+  body.is-special[data-special="countdown"] .hol-wonder.is-active .hol-wonder__photo,
+  body.is-special[data-special="field-guide"] .hol-wonder.is-active .hol-wonder__photo {
+    transform: rotate(0);
+  }
+}
+
+/* ============================================================
+   02 · LANDSCAPE GUARANTEE
+   The user's brief: "won't lose anything visually from landscape
+   mode". The portrait rules above are scoped behind a max-width
+   media query, so they DO NOT touch landscape (≥961px). This
+   block is documentation-by-CSS — a no-op selector that exists
+   as a build-time marker. Do not remove.
+   ============================================================ */
+@media (min-width: 961px) {
+  body.is-special[data-special="countdown"] .hol-half,
+  body.is-special[data-special="field-guide"] .hol-half {
+    /* intentionally empty — landscape uses tier-11 defaults */
+  }
+}

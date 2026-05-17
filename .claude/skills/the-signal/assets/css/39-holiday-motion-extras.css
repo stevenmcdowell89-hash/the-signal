@@ -1,0 +1,415 @@
+/* ============================================================
+   TIER 14 — HOLIDAY MOTION EXTRAS (v8.13.2)
+
+   Scope: body.is-special[data-special="countdown"]
+          body.is-special[data-special="field-guide"]
+
+   Adds eight extra motion behaviours on top of tier 13. Each is
+   scoped narrowly so it can be disabled by removing one selector
+   block — the rest keep working.
+
+   Behaviours:
+     01 · Half ground crossfade across the transit (temperature shift)
+     02 · Countdown count-up on first view (JS driven)
+     03 · Anchor photo ken-burns on scroll (CSS var driven)
+     04 · Polaroid weight-drop with tape twitch on landing
+     05 · Don't Miss numerals count up from 0 on entry (JS driven)
+     06 · Marquee on-entry speed overshoot (JS toggles class)
+     07 · Cover dek typewriter reveal (JS driven)
+     14 · Half ground parallax at 0.4x scroll rate (CSS var driven)
+
+   Cascade order: 39 → after 36/37/38. Wins without `!important`
+   except where re-overriding a tier-38 transition that would
+   otherwise clobber a new transform.
+
+   Reduced motion: all motion-bearing rules gated at the bottom.
+   ============================================================ */
+
+
+/* ============================================================
+   01 · HALF GROUND CROSSFADE
+   Last 320px of Half I, indigo bleeds through rose-deep into
+   burnt. First 320px of Half II, burnt bleeds through mustard
+   into sand. The transit stays black at its centre, so this
+   reads as a temperature dial turning from cold-night-blue to
+   warm-savannah-day across the cut.
+
+   Implementation: two ::after gradient overlays, opacity driven
+   by a JS-fed --hm-edge custom property (0..1, set on the .hol-half
+   element only while its closing/opening edge is in viewport).
+   No layout change, transform-free, opacity-only — composite-only
+   repaint, cheap on a tablet GPU.
+   ============================================================ */
+
+body.is-special[data-special="countdown"] .hol-half--one,
+body.is-special[data-special="field-guide"] .hol-half--one {
+  /* Default state: edge dial at 0 (no warm bleed) */
+  --hm-edge: 0;
+}
+body.is-special[data-special="countdown"] .hol-half--two,
+body.is-special[data-special="field-guide"] .hol-half--two {
+  /* Default state: edge dial at 0 (no cold bleed) */
+  --hm-edge: 0;
+}
+
+/* Half I closing edge — warm bleed-down from bottom.
+   Implementation note: the ::before in tier 11 paints the star
+   field UNDERNEATH all content. Putting the warm bleed there
+   means it only shows in the dark gutters between blocks —
+   subtle to invisible.
+
+   Instead we paint the crossfade on a NEW ::after pseudo-element
+   on .hol-half--one positioned at the bottom with mix-blend-mode
+   so the warm tint multiplies through the content cards visually.
+   This tints the parchment cream cards and the ruby Don't Miss
+   block with a warm overlay during the handoff — the reader
+   actually sees the temperature shift through the content. */
+body.is-special[data-special="countdown"] .hol-half--one,
+body.is-special[data-special="field-guide"] .hol-half--one {
+  position: relative;
+}
+body.is-special[data-special="countdown"] .hol-half--one .hm-edge-overlay,
+body.is-special[data-special="field-guide"] .hol-half--one .hm-edge-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 580px;
+  pointer-events: none;
+  z-index: 3;   /* above star field (z 0) and content (z 2) */
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(138, 28, 43, calc(var(--hm-edge, 0) * 0.35)) 40%,
+    rgba(178, 83, 97, calc(var(--hm-edge, 0) * 0.50)) 70%,
+    rgba(217, 168, 45, calc(var(--hm-edge, 0) * 0.55)) 100%
+  );
+  mix-blend-mode: multiply;
+  opacity: var(--hm-edge, 0);
+  transition: opacity 120ms linear;
+}
+
+/* Half II opening edge — cool-down bleed from top */
+/* Half II opening edge — same trick, but a cool indigo wash
+   at the TOP of Half II so the savannah cards/opener carry a
+   residual cold-from-indigo tint as the reader emerges from
+   the black transit. */
+body.is-special[data-special="countdown"] .hol-half--two,
+body.is-special[data-special="field-guide"] .hol-half--two {
+  position: relative;
+}
+body.is-special[data-special="countdown"] .hol-half--two .hm-edge-overlay,
+body.is-special[data-special="field-guide"] .hol-half--two .hm-edge-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 480px;
+  pointer-events: none;
+  z-index: 3;
+  background: linear-gradient(
+    180deg,
+    rgba(13, 19, 48, calc(var(--hm-edge, 0) * 0.45)) 0%,
+    rgba(142, 58, 24, calc(var(--hm-edge, 0) * 0.25)) 60%,
+    transparent 100%
+  );
+  mix-blend-mode: multiply;
+  opacity: var(--hm-edge, 0);
+  transition: opacity 120ms linear;
+}
+
+
+/* ============================================================
+   02 · COUNTDOWN COUNT-UP
+   On first viewport entry, the four numerals (.hol-countdown__num)
+   roll up from 0 to their starting value over ~900ms. The live
+   tick controller then takes over for ongoing updates.
+
+   No CSS needed beyond suppressing transition on the count-up
+   target text during the roll (already textContent, so no css
+   transition involved). Reserved here for symmetry. The JS lives
+   in the HOLIDAY MOTION EXTRAS block in script.js.
+   ============================================================ */
+
+
+/* ============================================================
+   03 · ANCHOR PHOTO KEN-BURNS ON SCROLL
+   As the anchor crosses the viewport, the photo scales 1.00 → 1.05
+   and pans 8px down — but unlike the tier-13 entry-only pan, this
+   one is driven by --hm-progress (0..1, written by JS based on the
+   anchor's normalised position relative to viewport centre).
+
+   Continuous breathing motion as you scroll past the photo.
+   ============================================================ */
+
+body.is-special[data-special="countdown"] .hol-anchor .hol-anchor__photo,
+body.is-special[data-special="field-guide"] .hol-anchor .hol-anchor__photo {
+  /* tier 13 sets a one-shot opacity+scale entry transition. Once
+     `.is-in` is added the transform is reset to scale(1) translateY(0).
+     After that, we hand off to --hm-progress for continuous motion. */
+  --hm-progress: 0.5;
+}
+
+body.is-special[data-special="countdown"] .hol-anchor.hm-rise.is-in .hol-anchor__photo,
+body.is-special[data-special="field-guide"] .hol-anchor.hm-rise.is-in .hol-anchor__photo {
+  /* scale 1.00 at progress=0 (top of viewport)
+     scale 1.05 at progress=0.5 (centre of viewport)
+     scale 1.00 at progress=1.0 (bottom of viewport) */
+  --hm-kb-scale: calc(1 + (0.05 * (1 - abs(2 * (var(--hm-progress, 0.5)) - 1))));
+  /* fallback for browsers without abs() in calc */
+  transform: scale(1.03) translate3d(0, calc((var(--hm-progress, 0.5) - 0.5) * 16px), 0);
+  transition: transform 120ms linear;
+  will-change: transform;
+}
+
+/* Modern browsers (Chromium 113+, Firefox 118+) support abs() in calc.
+   For Pad 8 / Comet / mobile Chromium that version range is satisfied. */
+@supports (transform: scale(calc(abs(0)))) {
+  body.is-special[data-special="countdown"] .hol-anchor.hm-rise.is-in .hol-anchor__photo,
+  body.is-special[data-special="field-guide"] .hol-anchor.hm-rise.is-in .hol-anchor__photo {
+    transform:
+      scale(calc(1.02 + (0.04 * (1 - abs(calc(2 * var(--hm-progress, 0.5) - 1))))))
+      translate3d(0, calc((var(--hm-progress, 0.5) - 0.5) * 16px), 0);
+  }
+}
+
+
+/* ============================================================
+   04 · POLAROID WEIGHT-DROP + TAPE TWITCH
+   The polaroid currently fades+rotates in (tier 38). Add a tiny
+   final-frame over-rotate + tape jiggle so the polaroid feels
+   like it's been DROPPED on the page and the tape is settling.
+
+   .hm-landed is added by JS ~640ms after .is-in fires (matching
+   the tier-13 polaroid transition duration). At that moment the
+   tape pseudo-element wiggles via a one-shot keyframe.
+   ============================================================ */
+
+body.is-special[data-special="countdown"] .hol-polaroid.hm-landed .hol-polaroid__tape,
+body.is-special[data-special="field-guide"] .hol-polaroid.hm-landed .hol-polaroid__tape {
+  animation: hm-tape-twitch 380ms ease-out both;
+}
+
+@keyframes hm-tape-twitch {
+  0%   { transform: translateX(-50%) rotate(-3deg); }
+  20%  { transform: translateX(-46%) rotate(-7deg); }
+  45%  { transform: translateX(-52%) rotate(0deg); }
+  70%  { transform: translateX(-49%) rotate(-4deg); }
+  100% { transform: translateX(-50%) rotate(-3deg); }
+}
+
+/* For --right variant, the tape sits at a positive rotation */
+body.is-special[data-special="countdown"] .hol-polaroid--right.hm-landed .hol-polaroid__tape,
+body.is-special[data-special="field-guide"] .hol-polaroid--right.hm-landed .hol-polaroid__tape {
+  animation: hm-tape-twitch-r 380ms ease-out both;
+}
+@keyframes hm-tape-twitch-r {
+  0%   { transform: translateX(-50%) rotate(4deg); }
+  20%  { transform: translateX(-46%) rotate(8deg); }
+  45%  { transform: translateX(-52%) rotate(0deg); }
+  70%  { transform: translateX(-49%) rotate(5deg); }
+  100% { transform: translateX(-50%) rotate(4deg); }
+}
+
+/* Body weight drop — final 80ms of the polaroid entry has a tiny
+   over-rotate beyond the rest state, then settles. We do this by
+   replacing the tier-13 transition with a cubic-bezier that
+   overshoots. */
+body.is-special[data-special="countdown"] .hol-polaroid.hm-rise,
+body.is-special[data-special="field-guide"] .hol-polaroid.hm-rise {
+  transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+
+/* ============================================================
+   05 · DON'T MISS NUMERAL COUNT-UP
+   Tier 13 staggers the li elements in; the slab-chip numerals
+   (rendered by CSS counter, content: counter(dmcount, ...)) just
+   appear with the chip.
+
+   To get the count-up effect with CSS counters we'd have to
+   override counter() with a JS-driven custom property. Easier
+   path: tag each <li> with a data-num attribute that JS animates
+   from 00 to its real value, and use `::before { content: attr(data-num) }`
+   instead of the counter. Tier 11 uses `counter(dmcount, decimal-leading-zero)`
+   which we override here.
+
+   .hol-dont-miss.is-counting toggles this mode so the default
+   counter rendering still works when JS is absent.
+   ============================================================ */
+
+body.is-special[data-special="countdown"] .hol-dont-miss.is-counting .hol-dont-miss__list,
+body.is-special[data-special="field-guide"] .hol-dont-miss.is-counting .hol-dont-miss__list {
+  counter-reset: none;
+}
+body.is-special[data-special="countdown"] .hol-dont-miss.is-counting .hol-dont-miss__list li::before,
+body.is-special[data-special="field-guide"] .hol-dont-miss.is-counting .hol-dont-miss__list li::before {
+  content: attr(data-num);
+  counter-increment: none;
+}
+
+
+/* ============================================================
+   06 · MARQUEE ON-ENTRY OVERSHOOT
+   When the marquee scrolls into view, the track briefly speeds up
+   then settles to the default loop. JS adds .hm-burst for 900ms
+   on first .is-in.
+
+   Default animation: 32s linear infinite. Burst variant runs the
+   same keyframes at 9s linear infinite — three times faster —
+   then the class is removed and the animation reverts. We use a
+   shorter-period animation-duration override; the animation
+   itself never restarts mid-cycle.
+   ============================================================ */
+
+body.is-special[data-special="countdown"] .hol-marquee__track.hm-burst,
+body.is-special[data-special="field-guide"] .hol-marquee__track.hm-burst {
+  animation-duration: 9s;
+}
+
+
+/* ============================================================
+   07 · COVER DEK TYPEWRITER REVEAL
+   The cover dek paragraph ("Forty-four days out and the planning
+   narrows…") reveals letter-by-letter on page load. CSS-only
+   approach: each character wrapped in a span; spans start opacity:0
+   and stagger via CSS animation-delay. JS does the wrapping.
+
+   .hm-typewriter is added to the dek on init; .hm-typed wraps
+   each character. The animation duration scales with character
+   count.
+   ============================================================ */
+
+body.is-special[data-special="countdown"] .hol-cover__dek.hm-typewriter .hm-typed,
+body.is-special[data-special="field-guide"] .hol-cover__dek.hm-typewriter .hm-typed {
+  opacity: 0;
+  animation: hm-typewriter-in 1ms linear forwards;
+  animation-delay: calc(var(--hm-char-index, 0) * 18ms + 200ms);
+  /* Important: 1ms duration so each char snaps on. The reveal
+     velocity is controlled by the per-char delay, not the per-char
+     duration. */
+}
+
+@keyframes hm-typewriter-in {
+  to { opacity: 1; }
+}
+
+/* Caret follows the last revealed character — pure cosmetic.
+   Wrapper span gets .hm-caret added by JS after wrapping. */
+body.is-special[data-special="countdown"] .hol-cover__dek.hm-typewriter::after,
+body.is-special[data-special="field-guide"] .hol-cover__dek.hm-typewriter::after {
+  content: "▌";
+  display: inline-block;
+  margin-left: 2px;
+  color: var(--hol-brass-light);
+  animation: hm-caret-blink 700ms steps(1) infinite;
+}
+@keyframes hm-caret-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+/* Hide the caret once typing is complete. .hm-typed-done is
+   added to the dek by JS after the final character's delay. */
+body.is-special[data-special="countdown"] .hol-cover__dek.hm-typed-done::after,
+body.is-special[data-special="field-guide"] .hol-cover__dek.hm-typed-done::after {
+  display: none;
+}
+
+
+/* ============================================================
+   14 · HALF GROUND PARALLAX AT 0.4x SCROLL
+   The Half I star field (::before) and Half II savannah band
+   (::after) move at 0.4x scroll rate against the foreground.
+
+   --hm-half-scroll is written by JS while the half is in view —
+   it's a px offset normalised against the half's scroll progress
+   so the effect resets between halves.
+
+   `will-change: transform` promotes each pseudo-element to its
+   own GPU layer so we composite the transform instead of
+   repainting the tiled background on every scroll frame.
+
+   Background-attachment: fixed would have done this for free,
+   but it breaks at iframe / Comet / some mobile Chromium quirks
+   and disables on touch scrolling. Transform on a pseudo-element
+   is the reliable mechanism.
+   ============================================================ */
+
+body.is-special[data-special="countdown"] .hol-half,
+body.is-special[data-special="field-guide"] .hol-half {
+  --hm-half-scroll: 0;
+}
+
+body.is-special[data-special="countdown"] .hol-half--one::before,
+body.is-special[data-special="field-guide"] .hol-half--one::before {
+  /* Star field drifts up at 0.4x scroll velocity */
+  transform: translate3d(0, calc(var(--hm-half-scroll, 0) * -0.4), 0);
+  will-change: transform;
+  /* Force own layer */
+  backface-visibility: hidden;
+}
+
+body.is-special[data-special="countdown"] .hol-half--two::after,
+body.is-special[data-special="field-guide"] .hol-half--two::after {
+  /* Savannah band drifts up at 0.4x scroll velocity. The band
+     lives at the bottom; positive translate would pull it off-
+     screen. Negative translate keeps it visible longer as the
+     ground rises past. */
+  transform: translate3d(0, calc(var(--hm-half-scroll, 0) * -0.4), 0);
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* Also the sun rays + radial glow at the top-right of Half II.
+   These live on ::before of .hol-half--two. They drift slightly
+   in the OPPOSITE direction at 0.2x for depth — the sun is a
+   bigger object, further away, moves less. */
+body.is-special[data-special="countdown"] .hol-half--two::before,
+body.is-special[data-special="field-guide"] .hol-half--two::before {
+  transform: translate3d(0, calc(var(--hm-half-scroll, 0) * 0.2), 0);
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+
+/* ============================================================
+   99 · REDUCED MOTION
+   Disable all motion-bearing rules. Tier-13 reduced-motion
+   handles the .hm-rise family; this block disables the new
+   layers added in tier 14.
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  body.is-special[data-special="countdown"] .hol-half--one::before,
+  body.is-special[data-special="field-guide"] .hol-half--one::before,
+  body.is-special[data-special="countdown"] .hol-half--two::before,
+  body.is-special[data-special="field-guide"] .hol-half--two::before,
+  body.is-special[data-special="countdown"] .hol-half--two::after,
+  body.is-special[data-special="field-guide"] .hol-half--two::after {
+    transform: none !important;
+    will-change: auto;
+  }
+  body.is-special[data-special="countdown"] .hol-anchor.hm-rise.is-in .hol-anchor__photo,
+  body.is-special[data-special="field-guide"] .hol-anchor.hm-rise.is-in .hol-anchor__photo {
+    transform: none !important;
+  }
+  body.is-special[data-special="countdown"] .hol-polaroid.hm-landed .hol-polaroid__tape,
+  body.is-special[data-special="countdown"] .hol-polaroid--right.hm-landed .hol-polaroid__tape,
+  body.is-special[data-special="field-guide"] .hol-polaroid.hm-landed .hol-polaroid__tape,
+  body.is-special[data-special="field-guide"] .hol-polaroid--right.hm-landed .hol-polaroid__tape {
+    animation: none !important;
+  }
+  body.is-special[data-special="countdown"] .hol-marquee__track.hm-burst,
+  body.is-special[data-special="field-guide"] .hol-marquee__track.hm-burst {
+    animation-duration: 32s;
+  }
+  body.is-special[data-special="countdown"] .hol-cover__dek.hm-typewriter .hm-typed,
+  body.is-special[data-special="field-guide"] .hol-cover__dek.hm-typewriter .hm-typed {
+    opacity: 1;
+    animation: none;
+  }
+  body.is-special[data-special="countdown"] .hol-cover__dek.hm-typewriter::after,
+  body.is-special[data-special="field-guide"] .hol-cover__dek.hm-typewriter::after {
+    display: none;
+  }
+}

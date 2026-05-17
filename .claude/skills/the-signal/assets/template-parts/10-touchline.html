@@ -1,0 +1,62 @@
+<!-- ══════ THE TOUCHLINE ══════
+  Enhancement 22 options: chapter-chrome at top. Marginalia auto-inverts
+  to paper-on-dark here (dark section). Folio-watermark works in turf tint.
+  See assets/css/22-decorative.css.
+-->
+<hr class="divider dv-football">
+<section class="sec touchline-section" id="football">
+  <div class="sec-watermark">Touchline</div>
+  <span class="section-label">The Touchline</span>
+
+  <!-- DATA FIRST: CL results, Serie A top 6, PL top 6, then narrative -->
+  <h3>Champions League — [Round] Results</h3>
+  <div class="results-strip">
+    <div class="result-card reveal"><span class="teams"><strong>[Team]</strong> vs [Team]</span><span class="score">[X]–[X]</span></div>
+  </div>
+
+  <h3>Serie A — Top 6</h3>
+  <div class="table-wrap"><table class="league-table">
+    <tr><th class="pos">#</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>Pts</th><th></th></tr>
+    <tr class="highlight"><td class="pos">5</td><td>Juventus</td><td></td><td></td><td></td><td></td><td></td><td><span class="pos-change up">▲ 2</span></td></tr>
+    <tr><td class="pos">1</td><td>[Team]</td><td></td><td></td><td></td><td></td><td></td><td><span class="pos-change same">•</span></td></tr>
+  </table></div>
+
+  <!-- Sparkline + mini-bar for form -->
+  <h3>Form — Points Per Match (Last 6)</h3>
+  <div style="margin:12px 0">
+    <span style="font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(255,255,255,.5)">Juventus</span>
+    <span class="sparkline"><svg viewBox="0 0 200 40" preserveAspectRatio="none">
+      <path class="spark-area" d="M0,35 L33,28 L66,15 L100,20 L133,10 L166,5 L200,12 L200,40 L0,40 Z"/>
+      <path class="spark-line" d="M0,35 L33,28 L66,15 L100,20 L133,10 L166,5 L200,12"/>
+      <circle class="spark-dot" cx="200" cy="12" r="3"/>
+    </svg></span>
+    <span class="mini-bar-track"><span class="mini-bar-fill" style="width:72%"></span></span>
+    <span style="font-family:'DM Sans',sans-serif;font-size:11px;color:rgba(255,255,255,.4);margin-left:6px">72%</span>
+  </div>
+
+  <h3>Premier League — Top 6</h3>
+  <div class="table-wrap"><table class="league-table">
+    <tr><th class="pos">#</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>Pts</th><th></th></tr>
+    <tr><td class="pos">1</td><td>[Team]</td><td></td><td></td><td></td><td></td><td></td><td><span class="pos-change same">•</span></td></tr>
+  </table></div>
+
+  <!-- Image montage for match photos -->
+  <div class="img-montage layout-1-2 reveal">
+    <img class="montage-hero" src="[URL]" alt="[desc]">
+    <img src="[URL]" alt="[desc]"><img src="[URL]" alt="[desc]">
+    <div class="caption">[Credits]</div>
+  </div>
+
+  <!-- THEN NARRATIVE -->
+  <h3 class="narrative">[Headline]</h3>
+  <p>[Article body]</p>
+  <div class="pull-quote wide reveal"><p>[Quote]</p><cite>— [Attribution]</cite></div>
+  <div class="sidebar"><div class="sidebar-title">[e.g. "Juve Players Involved"]</div>
+    <ul><li><strong>[Player]</strong> — [Context]</li></ul>
+  </div>
+  <div class="angle reveal"><div class="angle-label">The Take</div><p>[Opinion]</p></div>
+  <div class="also"><div class="also-title">Also on the Pitch</div>
+    <ul class="also-list"><li><strong>[Item]</strong> — [Detail]</li></ul>
+  </div>
+  <div class="read-next">Up next: <a href="#screen">Screen &amp; Sound <span class="arrow">→</span></a> — [teaser]</div>
+</section>

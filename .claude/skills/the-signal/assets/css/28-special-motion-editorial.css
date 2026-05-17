@@ -1,0 +1,441 @@
+/* ============================================================
+   SPECIAL EDITION — EDITORIAL MOTION LAYER (Tier 5.5)
+   Motion vocabulary adapted from landonorris.com:
+   wipe-band reveals, scroll drift, staggered entries,
+   drop-cap pop, decorative SVG line draw, smooth scroll.
+   Translated into editorial idiom.
+
+   Activation:        body.is-special
+   JS hooks:          most controllers in script.js IIFE
+   Reduced motion:    full kill switch at end of file
+   Cascade:           after 26-special-editorial.css; layers
+                      motion onto existing tier-5 components.
+   ============================================================ */
+
+/* =====================================================
+   GLOBAL — smooth scroll on special editions
+   ===================================================== */
+body.is-special { scroll-behavior: smooth; }
+html:has(body.is-special) { scroll-behavior: smooth; }
+
+/* =====================================================
+   .sp-band — THE wipe-band reveal (signature move)
+   Apply to any heading / eyebrow / label that should
+   open with a kinetic moment. JS auto-wraps the inner
+   text into a .sp-band-t span on first observation,
+   then toggles .sp-band-in to play the reveal.
+
+   Pattern:
+     <span class="sp-eyebrow sp-band">Foreword</span>
+   becomes:
+     <span class="sp-eyebrow sp-band sp-band-in">
+       <span class="sp-band-t">Foreword</span>
+     </span>
+   ===================================================== */
+body.is-special .sp-band {
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+  vertical-align: baseline;
+  /* before .sp-band-in: cover the text with an accent band */
+}
+body.is-special .sp-band::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--sp-accent, #E8384F);
+  transform: scaleX(1);
+  transform-origin: left center;
+  transition: transform 720ms cubic-bezier(.7,.05,.2,1);
+  z-index: 2;
+  pointer-events: none;
+}
+body.is-special.sp-motion-ready .sp-band .sp-band-t {
+  display: inline-block;
+  transform: translateY(102%);
+  transition: transform 620ms cubic-bezier(.7,.05,.2,1) 180ms;
+  will-change: transform;
+}
+body.is-special.sp-motion-ready .sp-band.sp-band-in::after {
+  transform: scaleX(0);
+  transform-origin: right center;
+}
+body.is-special.sp-motion-ready .sp-band.sp-band-in .sp-band-t {
+  transform: translateY(0);
+}
+
+/* Thin variant — underline sweep only (text stays visible). */
+body.is-special .sp-band.sp-band-thin { overflow: visible; }
+body.is-special.sp-motion-ready .sp-band.sp-band-thin::after {
+  top: auto;
+  bottom: -3px;
+  height: 1px;
+  background: var(--sp-accent, #E8384F);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 720ms cubic-bezier(.7,.05,.2,1) 200ms;
+}
+body.is-special .sp-band.sp-band-thin .sp-band-t {
+  transform: none;
+  transition: none;
+}
+body.is-special .sp-band.sp-band-thin.sp-band-in::after {
+  transform: scaleX(1);
+}
+
+/* JS-off fallback — without .sp-band-in, content still readable. */
+@supports not (selector(:has(*))) {
+  body.is-special .sp-band::after { transform: scaleX(0); }
+  body.is-special .sp-band .sp-band-t { transform: none; }
+}
+
+/* =====================================================
+   CHAPTER CHROME — sequenced wipe on enter
+   Numeral → hair → name → slug, staggered.
+   JS toggles .sp-chr-in on the chrome element.
+   ===================================================== */
+body.is-special.sp-motion-ready .sp-chapter-chrome > * {
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 420ms ease,
+    transform 540ms cubic-bezier(.2,.7,.2,1);
+}
+body.is-special .sp-chapter-chrome.sp-chr-in > .sp-roman { transition-delay: 0ms; opacity: 1; transform: none; }
+body.is-special .sp-chapter-chrome.sp-chr-in > .sp-hair { transition-delay: 140ms; opacity: 1; transform: none; }
+body.is-special .sp-chapter-chrome.sp-chr-in > .sp-chapter-name { transition-delay: 260ms; opacity: 1; transform: none; }
+body.is-special .sp-chapter-chrome.sp-chr-in > .sp-chapter-slug { transition-delay: 380ms; opacity: 1; transform: none; }
+
+/* JS-off fallback — content readable. */
+@supports not (selector(:has(*))) {
+  body.is-special .sp-chapter-chrome > * { opacity: 1; transform: none; }
+}
+
+/* =====================================================
+   .sp-folio — scroll drift parallax
+   JS sets --sp-folio-y on scroll (±60px range).
+   ===================================================== */
+body.is-special.sp-motion-ready .sp-folio {
+  transform: translateY(var(--sp-folio-y, 0px));
+  transition: transform 80ms linear;
+  will-change: transform;
+}
+
+/* =====================================================
+   .sp-dash — stat dashboard cell stagger
+   JS toggles .sp-dash-in on the dash; cells stagger 90ms.
+   ===================================================== */
+body.is-special.sp-motion-ready .sp-dash .sp-dash-cell {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 540ms ease,
+    transform 720ms cubic-bezier(.2,.7,.2,1);
+}
+body.is-special .sp-dash.sp-dash-in .sp-dash-cell { opacity: 1; transform: none; }
+body.is-special .sp-dash.sp-dash-in .sp-dash-cell:nth-child(1) { transition-delay: 0ms; }
+body.is-special .sp-dash.sp-dash-in .sp-dash-cell:nth-child(2) { transition-delay: 90ms; }
+body.is-special .sp-dash.sp-dash-in .sp-dash-cell:nth-child(3) { transition-delay: 180ms; }
+body.is-special .sp-dash.sp-dash-in .sp-dash-cell:nth-child(4) { transition-delay: 270ms; }
+body.is-special .sp-dash.sp-dash-in .sp-dash-cell:nth-child(5) { transition-delay: 360ms; }
+
+/* =====================================================
+   .sp-timeline — row stagger
+   JS sets --sp-tl-i on each .sp-tl-row, then toggles .sp-tl-in.
+   ===================================================== */
+body.is-special.sp-motion-ready .sp-timeline .sp-tl-row {
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 540ms ease,
+    transform 680ms cubic-bezier(.2,.7,.2,1);
+  transition-delay: calc(var(--sp-tl-i, 0) * 80ms);
+}
+body.is-special .sp-timeline.sp-tl-in .sp-tl-row { opacity: 1; transform: none; }
+
+/* =====================================================
+   .sp-hero-quote — card lift + glyph drift
+   ===================================================== */
+body.is-special.sp-motion-ready .sp-hero-quote {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 620ms ease,
+    transform 800ms cubic-bezier(.2,.7,.2,1);
+}
+body.is-special.sp-motion-ready .sp-hero-quote::before {
+  transform: translate(-8px, 8px) rotate(-4deg);
+  transition: transform 900ms cubic-bezier(.2,.7,.2,1) 200ms;
+}
+body.is-special .sp-hero-quote.sp-hq-in { opacity: 1; transform: none; }
+body.is-special .sp-hero-quote.sp-hq-in::before { transform: none; }
+
+/* =====================================================
+   .sp-brief — slide-in + accent rule scaleY
+   ===================================================== */
+body.is-special.sp-motion-ready .sp-brief {
+  opacity: 0;
+  transform: translateX(-12px);
+  transition:
+    opacity 520ms ease,
+    transform 700ms cubic-bezier(.2,.7,.2,1);
+  position: relative;
+}
+body.is-special.sp-motion-ready .sp-brief::before {
+  /* Animate the accent rule already declared in 26 (border-left).
+     We layer an overlay rule that scales from 0 to 1 on enter. */
+  content: "";
+  position: absolute;
+  left: -1px; top: 0; bottom: 0;
+  width: 4px;
+  background: var(--sp-accent, #E8384F);
+  transform: scaleY(0);
+  transform-origin: top center;
+  transition: transform 720ms cubic-bezier(.2,.7,.2,1) 120ms;
+  pointer-events: none;
+}
+body.is-special .sp-brief.sp-br-in { opacity: 1; transform: none; }
+body.is-special .sp-brief.sp-br-in::before { transform: scaleY(1); }
+
+/* =====================================================
+   .sp-pull-break — corner glyphs scale-in opposite directions
+   The pseudo-element quote marks live in 26 — animate them.
+   ===================================================== */
+body.is-special.sp-motion-ready .sp-pull-break .sp-pull,
+body.is-special.sp-motion-ready .sp-pull-break .sp-pull-attrib {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 700ms ease,
+    transform 900ms cubic-bezier(.2,.7,.2,1);
+}
+body.is-special .sp-pull-break.sp-pb-in .sp-pull { opacity: 1; transform: none; transition-delay: 200ms; }
+body.is-special .sp-pull-break.sp-pb-in .sp-pull-attrib { opacity: 1; transform: none; transition-delay: 360ms; }
+
+body.is-special .sp-pull-break::before,
+body.is-special .sp-pull-break::after {
+  transition: transform 900ms cubic-bezier(.2,.7,.2,1);
+}
+body.is-special.sp-motion-ready .sp-pull-break::before { transform: scale(0.4) translateY(20px); }
+body.is-special.sp-motion-ready .sp-pull-break::after  { transform: scale(0.4) translateY(20px); }
+body.is-special .sp-pull-break.sp-pb-in::before { transform: none; }
+body.is-special .sp-pull-break.sp-pb-in::after  { transform: none; }
+
+/* =====================================================
+   .sp-bridger — three-column stagger
+   ===================================================== */
+body.is-special.sp-motion-ready .sp-bridger > * {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 600ms ease,
+    transform 760ms cubic-bezier(.2,.7,.2,1);
+}
+body.is-special .sp-bridger.sp-bg-in > .sp-bridger-side  { opacity: 1; transform: none; transition-delay: 0ms; }
+body.is-special .sp-bridger.sp-bg-in > .sp-bridger-main  { opacity: 1; transform: none; transition-delay: 140ms; }
+body.is-special .sp-bridger.sp-bg-in > .sp-bridger-aside { opacity: 1; transform: none; transition-delay: 280ms; }
+
+/* =====================================================
+   .sp-spread — rail + margin slide-in from opposite sides
+   ===================================================== */
+body.is-special.sp-motion-ready .sp-spread .sp-rail {
+  opacity: 0;
+  transform: translateX(-14px);
+  transition:
+    opacity 600ms ease,
+    transform 800ms cubic-bezier(.2,.7,.2,1);
+}
+body.is-special.sp-motion-ready .sp-spread .sp-margin {
+  opacity: 0;
+  transform: translateX(14px);
+  transition:
+    opacity 600ms ease,
+    transform 800ms cubic-bezier(.2,.7,.2,1);
+  transition-delay: 120ms;
+}
+body.is-special.sp-motion-ready .sp-spread .sp-spread-body {
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 600ms ease,
+    transform 700ms cubic-bezier(.2,.7,.2,1);
+  transition-delay: 60ms;
+}
+body.is-special .sp-spread.sp-sp-in .sp-rail,
+body.is-special .sp-spread.sp-sp-in .sp-margin,
+body.is-special .sp-spread.sp-sp-in .sp-spread-body { opacity: 1; transform: none; }
+
+/* =====================================================
+   Drop-cap pop — first letter of .sp-spread-body p:first-child
+   ===================================================== */
+body.is-special .sp-spread-body > p:first-of-type::first-letter {
+  display: inline-block;
+  animation: sp-cap-pop 720ms cubic-bezier(.2,.7,.2,1) 600ms both;
+}
+@keyframes sp-cap-pop {
+  0%   { transform: scale(0.6); opacity: 0; }
+  60%  { transform: scale(1.06); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* =====================================================
+   .sp-signoff — scale-in finale
+   ===================================================== */
+body.is-special.sp-motion-ready .sp-signoff {
+  opacity: 0;
+  transform: scale(0.94);
+  transition:
+    opacity 600ms ease,
+    transform 720ms cubic-bezier(.2,.7,.2,1);
+}
+body.is-special .sp-signoff.sp-so-in { opacity: 1; transform: none; }
+
+/* =====================================================
+   .sp-eyebrow standalone — soft slide-up
+   ===================================================== */
+body.is-special.sp-motion-ready .sp-eyebrow {
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 480ms ease,
+    transform 600ms cubic-bezier(.2,.7,.2,1);
+}
+body.is-special .sp-eyebrow.sp-eb-in { opacity: 1; transform: none; }
+/* If the eyebrow IS a .sp-band, the band-in handles visibility
+   so don't double-fade. */
+body.is-special .sp-eyebrow.sp-band { opacity: 1; transform: none; }
+
+/* =====================================================
+   .sp-caption-strip — hairline draw
+   ===================================================== */
+body.is-special .sp-caption-strip {
+  position: relative;
+}
+body.is-special.sp-motion-ready .sp-caption-strip::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.25;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 800ms cubic-bezier(.2,.7,.2,1);
+}
+body.is-special .sp-caption-strip.sp-cs-in::before { transform: scaleX(1); }
+
+/* =====================================================
+   .sp-spine — decorative SVG hairline that draws itself
+   Pattern:
+     <svg class="sp-spine" viewBox="0 0 2 200">
+       <path d="M1 0 V200" />
+     </svg>
+   JS computes path length and toggles .sp-spine-in.
+   ===================================================== */
+body.is-special .sp-spine {
+  display: block;
+  width: 100%;
+  height: 200px;
+  margin: 24px 0;
+  overflow: visible;
+  opacity: 0.55;
+  pointer-events: none;
+}
+body.is-special.sp-motion-ready .sp-spine path {
+  fill: none;
+  stroke: var(--sp-accent, #E8384F);
+  stroke-width: 1;
+  stroke-linecap: round;
+  stroke-dasharray: var(--sp-spine-len, 400);
+  stroke-dashoffset: var(--sp-spine-len, 400);
+  transition: stroke-dashoffset 1600ms cubic-bezier(.2,.7,.2,1);
+}
+body.is-special .sp-spine.sp-spine-in path {
+  stroke-dashoffset: 0;
+}
+
+/* =====================================================
+   In-prose link underline-draw (hover)
+   Apply to any <a> inside body prose on a special edition.
+   ===================================================== */
+body.is-special .sp-spread-body a,
+body.is-special .sp-bridger-main a,
+body.is-special .sp-brief a,
+body.is-special .sp-margin a,
+body.is-special .sp-foreword a,
+body.is-special .sp-manifesto a {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 420ms cubic-bezier(.2,.7,.2,1);
+  text-decoration: none;
+  padding-bottom: 1px;
+}
+body.is-special .sp-spread-body a:hover,
+body.is-special .sp-bridger-main a:hover,
+body.is-special .sp-brief a:hover,
+body.is-special .sp-margin a:hover,
+body.is-special .sp-foreword a:hover,
+body.is-special .sp-manifesto a:hover {
+  background-size: 100% 1px;
+}
+
+/* =====================================================
+   Ground-seam accent hairline — between alternating chapters
+   When a paper section is followed by an ink section (or
+   vice versa), draw a thin accent hairline at the seam.
+   ===================================================== */
+body.is-special .sp-ground-paper + .sp-ground-ink,
+body.is-special .sp-ground-ink + .sp-ground-paper {
+  position: relative;
+}
+body.is-special.sp-motion-ready .sp-ground-paper + .sp-ground-ink::before,
+body.is-special.sp-motion-ready .sp-ground-ink + .sp-ground-paper::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 12%; right: 12%;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent,
+    var(--sp-accent, #E8384F) 50%,
+    transparent);
+  opacity: 0.55;
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* =====================================================
+   REDUCED-MOTION KILL SWITCH
+   All tier-5.5 motion collapses to instant when the user
+   prefers reduced motion. Content remains fully readable.
+   ===================================================== */
+@media (prefers-reduced-motion: reduce) {
+  body.is-special * {
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+  body.is-special .sp-band::after { transform: scaleX(0) !important; }
+  body.is-special .sp-band .sp-band-t { transform: none !important; }
+  body.is-special .sp-folio { transform: none !important; }
+  body.is-special .sp-chapter-chrome > *,
+  body.is-special .sp-dash .sp-dash-cell,
+  body.is-special .sp-timeline .sp-tl-row,
+  body.is-special .sp-hero-quote,
+  body.is-special .sp-brief,
+  body.is-special .sp-pull-break .sp-pull,
+  body.is-special .sp-pull-break .sp-pull-attrib,
+  body.is-special .sp-bridger > *,
+  body.is-special .sp-spread .sp-rail,
+  body.is-special .sp-spread .sp-margin,
+  body.is-special .sp-spread .sp-spread-body,
+  body.is-special .sp-signoff,
+  body.is-special .sp-eyebrow {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  body.is-special .sp-spine path { stroke-dashoffset: 0 !important; }
+  body.is-special .sp-pull-break::before,
+  body.is-special .sp-pull-break::after { transform: none !important; }
+}

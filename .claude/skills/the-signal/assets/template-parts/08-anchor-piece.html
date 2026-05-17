@@ -1,0 +1,14 @@
+<!-- ══════ ANCHOR-PIECE ROTATION (every 4th standard weekly) ══════
+  On the 4th issue of the rotation, one non-World section is promoted to anchor piece.
+  Rotation order: Pixel & Byte → Touchline → Screen & Sound → Shelf → Session → History → (back).
+  State file tracks position under `anchor_rotation.next_anchor_section`.
+
+  What changes on the anchored section:
+    1. Add `is-anchor` to the <section> class list (renders a thin top accent rule)
+    2. Add `is-anchor` to the matching <a class="nav-card …"> in the Navigator (adds "Anchor piece" badge)
+    3. Open with .opener-lead.stat OR .opener-lead.quote (before <h2>) instead of default
+    4. Run 1.5-2× the normal lead article word count
+    5. Include one extra visual component beyond the section's normal allocation
+    6. Mention in the Colophon's "Issue in Numbers" block ("Anchor: [Section Name]")
+  Do NOT: add cover tag, call out in Foreword, or change section order.
+-->

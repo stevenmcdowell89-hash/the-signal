@@ -1,0 +1,620 @@
+/* ============================================================
+   TIER 13 — HOLIDAY IDENTITY: SCROLL MOTION (v8.13.1)
+
+   Scope: body.is-special[data-special="countdown"]
+          body.is-special[data-special="field-guide"]
+
+   Adds scroll-driven motion to the holiday family — Countdown
+   and Field Guide. All motion is themed to the existing palette
+   (brass / ruby / mustard / burnt) and the existing transforms
+   already in tier 11 (rotate, skew, drift), so nothing feels
+   bolted on. Designed for touch-only tablet reading: no hover
+   dependencies, no parallax that requires a mouse, no animation
+   that fights with browser scroll on a finger drag.
+
+   Activation requires TWO conditions both true:
+     1. body.is-special[data-special="countdown"|"field-guide"]
+     2. body.hol-motion-ready (added by script.js once on init)
+
+   If JS never runs, the body class is never added, every animated
+   element defaults to its final state (no opacity:0 surprises).
+   A 2s safety timer in script.js force-sets the class even if the
+   IntersectionObserver path fails — same belt-and-braces pattern
+   tier 28 uses for default specials.
+
+   prefers-reduced-motion: reduce → every animation killed at
+   the bottom of this file.
+
+   Cascade order: 38 → after holiday identity (36) and portrait
+   tuning (37). Wins without `!important` over both.
+   ============================================================ */
+
+
+/* ============================================================
+   00 · ANIMATION TOKENS
+
+   Centralised so individual rules read clean. All durations are
+   short — 500-900ms — because the reader is scrolling, not
+   waiting. Easing is consistent ease-out cubic-bezier so the
+   whole issue moves with the same rhythm.
+   ============================================================ */
+
+body.is-special[data-special="countdown"],
+body.is-special[data-special="field-guide"] {
+  --hm-dur-fast: 480ms;
+  --hm-dur:      720ms;
+  --hm-dur-slow: 900ms;
+  --hm-ease:     cubic-bezier(0.22, 0.61, 0.36, 1);
+  --hm-lift:     28px;     /* default upward translate */
+  --hm-side:     48px;     /* horizontal slide-in distance */
+}
+
+
+/* ============================================================
+   01 · UNIVERSAL ENTRANCE — .hm-rise
+
+   Default fade-up applied via a single utility class. JS marks
+   the major holiday blocks with .hm-rise on init (no template
+   change needed). When the element enters the viewport, JS adds
+   .is-in and the transform clears.
+
+   .hm-rise variants:
+     .hm-rise.from-left
+     .hm-rise.from-right
+     .hm-rise.from-up   (default behaviour — included for symmetry)
+     .hm-rise.delay-1, .delay-2, .delay-3  (50/100/150ms)
+   ============================================================ */
+
+body.is-special[data-special="countdown"] .hm-rise,
+body.is-special[data-special="field-guide"] .hm-rise {
+  opacity: 0;
+  transform: translateY(var(--hm-lift));
+  transition:
+    opacity var(--hm-dur) var(--hm-ease),
+    transform var(--hm-dur) var(--hm-ease);
+  will-change: opacity, transform;
+}
+
+body.is-special[data-special="countdown"] .hm-rise.from-left,
+body.is-special[data-special="field-guide"] .hm-rise.from-left {
+  transform: translate3d(calc(var(--hm-side) * -1), var(--hm-lift), 0);
+}
+
+body.is-special[data-special="countdown"] .hm-rise.from-right,
+body.is-special[data-special="field-guide"] .hm-rise.from-right {
+  transform: translate3d(var(--hm-side), var(--hm-lift), 0);
+}
+
+body.is-special[data-special="countdown"] .hm-rise.is-in,
+body.is-special[data-special="field-guide"] .hm-rise.is-in {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+body.is-special[data-special="countdown"] .hm-rise.delay-1,
+body.is-special[data-special="field-guide"] .hm-rise.delay-1 { transition-delay: 60ms; }
+
+body.is-special[data-special="countdown"] .hm-rise.delay-2,
+body.is-special[data-special="field-guide"] .hm-rise.delay-2 { transition-delay: 120ms; }
+
+body.is-special[data-special="countdown"] .hm-rise.delay-3,
+body.is-special[data-special="field-guide"] .hm-rise.delay-3 { transition-delay: 180ms; }
+
+
+/* No-JS guarantee — if body.hol-motion-ready never lands, every
+   .hm-rise stays fully visible. Same belt-and-braces as tier 28.
+   This rule wins because it lives ABOVE the .hm-rise initial-state
+   rule (which uses `body.is-special[data-special=...] .hm-rise`)
+   in source order — same specificity, later rule wins. So in fact
+   we need the OPPOSITE pattern: the initial opacity:0 should ONLY
+   apply when body.hol-motion-ready is on, otherwise the safety
+   guard kicks in. Override below. */
+body.is-special[data-special="countdown"]:not(.hol-motion-ready) .hm-rise,
+body.is-special[data-special="field-guide"]:not(.hol-motion-ready) .hm-rise,
+body.is-special[data-special="countdown"]:not(.hol-motion-ready) .hm-rise *,
+body.is-special[data-special="field-guide"]:not(.hol-motion-ready) .hm-rise * {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+
+/* ============================================================
+   02 · COVER PARALLAX
+   Cover already has drifting clouds (tier 11). Add a slow
+   vertical parallax to the BACK-NUM and BACK-SCRIPT watermarks
+   so as the reader scrolls past the cover, the giant numerals
+   drift up faster than the foreground text. Driven by CSS
+   custom property --hm-scroll, written by script.js. Falls
+   back to a static position if JS isn't running.
+
+   Scope: only on the cover region, only while the cover is in
+   view. JS unsets --hm-scroll when the cover scrolls past so
+   the watermark settles into its default position.
+   ============================================================ */
+
+body.is-special[data-special="countdown"] .hol-cover__back-num,
+body.is-special[data-special="field-guide"] .hol-cover__back-num {
+  transform: translate3d(0, calc(var(--hm-scroll, 0) * -0.18), 0);
+  transition: transform 60ms linear;
+  will-change: transform;
+}
+
+body.is-special[data-special="countdown"] .hol-cover__back-script,
+body.is-special[data-special="field-guide"] .hol-cover__back-script {
+  transform: translate3d(0, calc(var(--hm-scroll, 0) * 0.10), 0)
+             rotate(-2deg);
+  transition: transform 60ms linear;
+  will-change: transform;
+}
+
+
+/* ============================================================
+   03 · HALF OPENER — title lift on entry
+   The big stacked chapter header (script tag + serif italic
+   mega title + skewed subtitle + pill tagline) is a hero moment
+   that benefits from a coordinated stagger. Each child rises
+   in sequence so it feels composed, not just faded.
+   ============================================================ */
+
+body.is-special[data-special="countdown"] .hol-half__opener .hm-rise,
+body.is-special[data-special="field-guide"] .hol-half__opener .hm-rise {
+  --hm-lift: 36px;
+  transition-duration: var(--hm-dur-slow);
+}
+
+
+/* ============================================================
+   04 · WONDER / UNMISSABLE — alternating slide-in
+
+   .hol-wonder rows alternate sides via .hol-wonder--reverse.
+   Pair the motion with that direction: even rows slide from the
+   left, .hol-wonder--reverse from the right. Same for
+   .hol-unmissable / .hol-unmissable--reverse. Cards always rise.
+
+   This makes scrolling through Wonders feel like the editorial
+   plates are being PASTED IN as you go — matches the scrapbook
+   metaphor that tier 11 already establishes.
+   ============================================================ */
+
+body.is-special[data-special="countdown"] .hol-wonder.hm-rise,
+body.is-special[data-special="field-guide"] .hol-wonder.hm-rise {
+  /* Container: subtle */
+  --hm-lift: 16px;
+}
+
+body.is-special[data-special="countdown"] .hol-wonder.hm-rise .hol-wonder__photo,
+body.is-special[data-special="field-guide"] .hol-wonder.hm-rise .hol-wonder__photo {
+  opacity: 0;
+  transform: translate3d(calc(var(--hm-side) * -1), 0, 0) rotate(1deg);
+  transition: opacity var(--hm-dur) var(--hm-ease),
+              transform var(--hm-dur) var(--hm-ease);
+  transition-delay: 80ms;
+  will-change: opacity, transform;
+}
+
+body.is-special[data-special="countdown"] .hol-wonder--reverse.hm-rise .hol-wonder__photo,
+body.is-special[data-special="field-guide"] .hol-wonder--reverse.hm-rise .hol-wonder__photo {
+  transform: translate3d(var(--hm-side), 0, 0) rotate(-1deg);
+}
+
+body.is-special[data-special="countdown"] .hol-wonder.hm-rise .hol-wonder__card,
+body.is-special[data-special="field-guide"] .hol-wonder.hm-rise .hol-wonder__card {
+  opacity: 0;
+  transform: translate3d(var(--hm-side), 0, 0);
+  transition: opacity var(--hm-dur) var(--hm-ease),
+              transform var(--hm-dur) var(--hm-ease);
+  transition-delay: 200ms;
+  will-change: opacity, transform;
+}
+
+body.is-special[data-special="countdown"] .hol-wonder--reverse.hm-rise .hol-wonder__card,
+body.is-special[data-special="field-guide"] .hol-wonder--reverse.hm-rise .hol-wonder__card {
+  transform: translate3d(calc(var(--hm-side) * -1), 0, 0);
+}
+
+body.is-special[data-special="countdown"] .hol-wonder.hm-rise.is-in .hol-wonder__photo,
+body.is-special[data-special="field-guide"] .hol-wonder.hm-rise.is-in .hol-wonder__photo,
+body.is-special[data-special="countdown"] .hol-wonder.hm-rise.is-in .hol-wonder__card,
+body.is-special[data-special="field-guide"] .hol-wonder.hm-rise.is-in .hol-wonder__card {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) rotate(0);
+}
+
+/* Unmissable mirrors the Wonder pattern */
+body.is-special[data-special="countdown"] .hol-unmissable.hm-rise .hol-unmissable__photo-wrap,
+body.is-special[data-special="field-guide"] .hol-unmissable.hm-rise .hol-unmissable__photo-wrap {
+  opacity: 0;
+  transform: translate3d(calc(var(--hm-side) * -1), 0, 0) rotate(1deg);
+  transition: opacity var(--hm-dur) var(--hm-ease),
+              transform var(--hm-dur) var(--hm-ease);
+  transition-delay: 80ms;
+  will-change: opacity, transform;
+}
+body.is-special[data-special="countdown"] .hol-unmissable--reverse.hm-rise .hol-unmissable__photo-wrap,
+body.is-special[data-special="field-guide"] .hol-unmissable--reverse.hm-rise .hol-unmissable__photo-wrap {
+  transform: translate3d(var(--hm-side), 0, 0) rotate(-1deg);
+}
+
+body.is-special[data-special="countdown"] .hol-unmissable.hm-rise .hol-unmissable__card,
+body.is-special[data-special="field-guide"] .hol-unmissable.hm-rise .hol-unmissable__card {
+  opacity: 0;
+  transform: translate3d(var(--hm-side), 0, 0);
+  transition: opacity var(--hm-dur) var(--hm-ease),
+              transform var(--hm-dur) var(--hm-ease);
+  transition-delay: 200ms;
+  will-change: opacity, transform;
+}
+body.is-special[data-special="countdown"] .hol-unmissable--reverse.hm-rise .hol-unmissable__card,
+body.is-special[data-special="field-guide"] .hol-unmissable--reverse.hm-rise .hol-unmissable__card {
+  transform: translate3d(calc(var(--hm-side) * -1), 0, 0);
+}
+
+body.is-special[data-special="countdown"] .hol-unmissable.hm-rise.is-in .hol-unmissable__photo-wrap,
+body.is-special[data-special="field-guide"] .hol-unmissable.hm-rise.is-in .hol-unmissable__photo-wrap,
+body.is-special[data-special="countdown"] .hol-unmissable.hm-rise.is-in .hol-unmissable__card,
+body.is-special[data-special="field-guide"] .hol-unmissable.hm-rise.is-in .hol-unmissable__card {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) rotate(0);
+}
+
+
+/* ============================================================
+   05 · ANCHOR — feature article block, ken-burns-style photo pan
+   The anchor photo gets a gentle background-position pan as it
+   scrolls through the viewport. Combines with the existing
+   :hover scale to give the photo a sense of life without
+   requiring hover.
+   ============================================================ */
+
+body.is-special[data-special="countdown"] .hol-anchor.hm-rise .hol-anchor__photo,
+body.is-special[data-special="field-guide"] .hol-anchor.hm-rise .hol-anchor__photo {
+  opacity: 0;
+  transform: scale(1.04) translate3d(0, 24px, 0);
+  transition: opacity var(--hm-dur-slow) var(--hm-ease),
+              transform var(--hm-dur-slow) var(--hm-ease);
+  will-change: opacity, transform;
+}
+body.is-special[data-special="countdown"] .hol-anchor.hm-rise.is-in .hol-anchor__photo,
+body.is-special[data-special="field-guide"] .hol-anchor.hm-rise.is-in .hol-anchor__photo {
+  opacity: 1;
+  transform: scale(1) translate3d(0, 0, 0);
+}
+body.is-special[data-special="countdown"] .hol-anchor.hm-rise .hol-anchor__badge,
+body.is-special[data-special="field-guide"] .hol-anchor.hm-rise .hol-anchor__badge {
+  opacity: 0;
+  transform: rotate(40deg) scale(0.6);
+  transition: opacity var(--hm-dur) var(--hm-ease),
+              transform var(--hm-dur) cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition-delay: 360ms;
+}
+body.is-special[data-special="countdown"] .hol-anchor.hm-rise.is-in .hol-anchor__badge,
+body.is-special[data-special="field-guide"] .hol-anchor.hm-rise.is-in .hol-anchor__badge {
+  opacity: 1;
+  transform: rotate(12deg) scale(1);
+}
+
+
+/* ============================================================
+   06 · DON'T MISS — rotated ruby block, slam-in entrance
+   The block is already rotated -1.5deg. On entry, exaggerate
+   the rotation and overshoot, then settle to the rest state.
+   Numerals stagger in after the block lands.
+   ============================================================ */
+
+body.is-special[data-special="countdown"] .hol-dont-miss.hm-rise,
+body.is-special[data-special="field-guide"] .hol-dont-miss.hm-rise {
+  opacity: 0;
+  transform: rotate(-6deg) translate3d(-20px, 30px, 0);
+  transition: opacity var(--hm-dur) var(--hm-ease),
+              transform var(--hm-dur) cubic-bezier(0.34, 1.36, 0.64, 1);
+  will-change: opacity, transform;
+}
+body.is-special[data-special="countdown"] .hol-dont-miss.hm-rise.is-in,
+body.is-special[data-special="field-guide"] .hol-dont-miss.hm-rise.is-in {
+  opacity: 1;
+  transform: rotate(-1.5deg) translate3d(0, 0, 0);
+}
+
+body.is-special[data-special="countdown"] .hol-dont-miss.hm-rise .hol-dont-miss__list li,
+body.is-special[data-special="field-guide"] .hol-dont-miss.hm-rise .hol-dont-miss__list li {
+  opacity: 0;
+  transform: translate3d(-12px, 0, 0);
+  transition: opacity var(--hm-dur-fast) var(--hm-ease),
+              transform var(--hm-dur-fast) var(--hm-ease);
+}
+body.is-special[data-special="countdown"] .hol-dont-miss.hm-rise.is-in .hol-dont-miss__list li,
+body.is-special[data-special="field-guide"] .hol-dont-miss.hm-rise.is-in .hol-dont-miss__list li {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+body.is-special[data-special="countdown"] .hol-dont-miss.hm-rise.is-in .hol-dont-miss__list li:nth-child(1),
+body.is-special[data-special="field-guide"] .hol-dont-miss.hm-rise.is-in .hol-dont-miss__list li:nth-child(1) { transition-delay: 320ms; }
+body.is-special[data-special="countdown"] .hol-dont-miss.hm-rise.is-in .hol-dont-miss__list li:nth-child(2),
+body.is-special[data-special="field-guide"] .hol-dont-miss.hm-rise.is-in .hol-dont-miss__list li:nth-child(2) { transition-delay: 400ms; }
+body.is-special[data-special="countdown"] .hol-dont-miss.hm-rise.is-in .hol-dont-miss__list li:nth-child(3),
+body.is-special[data-special="field-guide"] .hol-dont-miss.hm-rise.is-in .hol-dont-miss__list li:nth-child(3) { transition-delay: 480ms; }
+body.is-special[data-special="countdown"] .hol-dont-miss.hm-rise.is-in .hol-dont-miss__list li:nth-child(4),
+body.is-special[data-special="field-guide"] .hol-dont-miss.hm-rise.is-in .hol-dont-miss__list li:nth-child(4) { transition-delay: 560ms; }
+body.is-special[data-special="countdown"] .hol-dont-miss.hm-rise.is-in .hol-dont-miss__list li:nth-child(n+5),
+body.is-special[data-special="field-guide"] .hol-dont-miss.hm-rise.is-in .hol-dont-miss__list li:nth-child(n+5) { transition-delay: 640ms; }
+
+
+/* ============================================================
+   07 · POLAROID & POSTCARD — drop-in with tape twitch
+   Polaroid arrives slightly rotated, settles, then a small
+   "tape twitch" on the washi-tape ::before strip plays once.
+   ============================================================ */
+
+body.is-special[data-special="countdown"] .hol-polaroid.hm-rise,
+body.is-special[data-special="field-guide"] .hol-polaroid.hm-rise {
+  opacity: 0;
+  transform: rotate(-8deg) translate3d(0, 28px, 0);
+  transition: opacity var(--hm-dur) var(--hm-ease),
+              transform var(--hm-dur) cubic-bezier(0.34, 1.36, 0.64, 1);
+}
+body.is-special[data-special="countdown"] .hol-polaroid--right.hm-rise,
+body.is-special[data-special="field-guide"] .hol-polaroid--right.hm-rise {
+  transform: rotate(10deg) translate3d(0, 28px, 0);
+}
+body.is-special[data-special="countdown"] .hol-polaroid.hm-rise.is-in,
+body.is-special[data-special="field-guide"] .hol-polaroid.hm-rise.is-in {
+  opacity: 1;
+  transform: rotate(-2deg) translate3d(0, 0, 0);
+}
+body.is-special[data-special="countdown"] .hol-polaroid--right.hm-rise.is-in,
+body.is-special[data-special="field-guide"] .hol-polaroid--right.hm-rise.is-in {
+  transform: rotate(3deg) translate3d(0, 0, 0);
+}
+
+/* Postcard: rotates up from a tilt as if dropped on the page */
+body.is-special[data-special="countdown"] .hol-postcard.hm-rise,
+body.is-special[data-special="field-guide"] .hol-postcard.hm-rise {
+  opacity: 0;
+  transform: rotate(-4deg) translate3d(0, 24px, 0);
+  transition: opacity var(--hm-dur) var(--hm-ease),
+              transform var(--hm-dur) var(--hm-ease);
+}
+body.is-special[data-special="countdown"] .hol-postcard.hm-rise.is-in,
+body.is-special[data-special="field-guide"] .hol-postcard.hm-rise.is-in {
+  opacity: 1;
+  transform: rotate(0) translate3d(0, 0, 0);
+}
+
+
+/* ============================================================
+   08 · CHALKBOARD — drops from above with slight wobble
+   ============================================================ */
+
+body.is-special[data-special="countdown"] .hol-chalkboard.hm-rise,
+body.is-special[data-special="field-guide"] .hol-chalkboard.hm-rise {
+  opacity: 0;
+  transform: rotate(6deg) translate3d(0, -28px, 0);
+  transition: opacity var(--hm-dur) var(--hm-ease),
+              transform var(--hm-dur) cubic-bezier(0.34, 1.36, 0.64, 1);
+}
+body.is-special[data-special="countdown"] .hol-chalkboard.hm-rise.is-in,
+body.is-special[data-special="field-guide"] .hol-chalkboard.hm-rise.is-in {
+  opacity: 1;
+  transform: rotate(1.5deg) translate3d(0, 0, 0);
+}
+
+
+/* ============================================================
+   09 · STAMP — wax-seal slam (rotate, scale, settle)
+   ============================================================ */
+
+body.is-special[data-special="countdown"] .hol-stamp.hm-rise,
+body.is-special[data-special="field-guide"] .hol-stamp.hm-rise {
+  opacity: 0;
+  transform: rotate(35deg) scale(0.5);
+  transition: opacity var(--hm-dur) var(--hm-ease),
+              transform var(--hm-dur) cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+body.is-special[data-special="countdown"] .hol-stamp.hm-rise.is-in,
+body.is-special[data-special="field-guide"] .hol-stamp.hm-rise.is-in {
+  opacity: 1;
+  transform: rotate(-8deg) scale(1);
+}
+
+
+/* ============================================================
+   10 · TRANSIT INTERMISSION — black band sweep
+   The transit centre card sweeps in from off-screen; the
+   side meganames cross-fade their letter-tracking.
+   ============================================================ */
+
+body.is-special[data-special="countdown"] .hol-transit.hm-rise .hol-transit__center-card,
+body.is-special[data-special="field-guide"] .hol-transit.hm-rise .hol-transit__center-card {
+  opacity: 0;
+  transform: translate(-50%, -50%) rotate(8deg) scale(0.7);
+  transition: opacity var(--hm-dur) var(--hm-ease),
+              transform var(--hm-dur) cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition-delay: 200ms;
+}
+body.is-special[data-special="countdown"] .hol-transit.hm-rise.is-in .hol-transit__center-card,
+body.is-special[data-special="field-guide"] .hol-transit.hm-rise.is-in .hol-transit__center-card {
+  opacity: 1;
+  transform: translate(-50%, -50%) rotate(0) scale(1);
+}
+
+/* In portrait mode tier 37 changes .hol-transit__center-card to
+   position:relative + rotate(-2deg). Match that resting state. */
+@media (max-width: 960px) {
+  body.is-special[data-special="countdown"] .hol-transit.hm-rise .hol-transit__center-card,
+  body.is-special[data-special="field-guide"] .hol-transit.hm-rise .hol-transit__center-card {
+    transform: rotate(8deg) scale(0.7);
+  }
+  body.is-special[data-special="countdown"] .hol-transit.hm-rise.is-in .hol-transit__center-card,
+  body.is-special[data-special="field-guide"] .hol-transit.hm-rise.is-in .hol-transit__center-card {
+    transform: rotate(-2deg) scale(1);
+  }
+}
+
+body.is-special[data-special="countdown"] .hol-transit.hm-rise .hol-transit__side,
+body.is-special[data-special="field-guide"] .hol-transit.hm-rise .hol-transit__side {
+  opacity: 0;
+  transition: opacity var(--hm-dur-slow) var(--hm-ease);
+}
+body.is-special[data-special="countdown"] .hol-transit.hm-rise.is-in .hol-transit__side,
+body.is-special[data-special="field-guide"] .hol-transit.hm-rise.is-in .hol-transit__side {
+  opacity: 1;
+}
+
+
+/* ============================================================
+   11 · KICKER STRIP — chunky title slides up from below
+   Sits between cover and Half I. Quick, snappy entrance.
+   ============================================================ */
+
+body.is-special[data-special="countdown"] .hol-kicker-strip.hm-rise .hol-kicker-strip__title,
+body.is-special[data-special="field-guide"] .hol-kicker-strip.hm-rise .hol-kicker-strip__title {
+  opacity: 0;
+  transform: translate3d(0, 16px, 0);
+  transition: opacity var(--hm-dur-fast) var(--hm-ease),
+              transform var(--hm-dur-fast) var(--hm-ease);
+}
+body.is-special[data-special="countdown"] .hol-kicker-strip.hm-rise .hol-kicker-strip__sub,
+body.is-special[data-special="field-guide"] .hol-kicker-strip.hm-rise .hol-kicker-strip__sub {
+  opacity: 0;
+  transform: translate3d(0, 16px, 0) rotate(-1.5deg);
+  transition: opacity var(--hm-dur-fast) var(--hm-ease),
+              transform var(--hm-dur-fast) var(--hm-ease);
+  transition-delay: 100ms;
+}
+body.is-special[data-special="countdown"] .hol-kicker-strip.hm-rise.is-in .hol-kicker-strip__title,
+body.is-special[data-special="field-guide"] .hol-kicker-strip.hm-rise.is-in .hol-kicker-strip__title {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+body.is-special[data-special="countdown"] .hol-kicker-strip.hm-rise.is-in .hol-kicker-strip__sub,
+body.is-special[data-special="field-guide"] .hol-kicker-strip.hm-rise.is-in .hol-kicker-strip__sub {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) rotate(-1.5deg);
+}
+
+
+/* ============================================================
+   12 · MARQUEE — pause while finger is dragging
+   On touch the marquee can fight with the user's scroll. JS adds
+   .hm-pause to .hol-marquee__track during active touchmove, then
+   removes it after a 250ms idle. CSS just respects the class.
+   ============================================================ */
+
+body.is-special[data-special="countdown"] .hol-marquee__track.hm-pause,
+body.is-special[data-special="field-guide"] .hol-marquee__track.hm-pause {
+  animation-play-state: paused;
+}
+
+
+/* ============================================================
+   13 · FOLIO BADGE — sticky chapter watermark
+   A small fixed-position roman-numeral badge tracks the current
+   half. Appears on Half I, switches to Half II label after
+   transit. Themed brass-on-indigo / burnt-on-sand to match each
+   half. Driven by --hm-folio (set by JS) and --hm-folio-label.
+   Hidden on small phones.
+   ============================================================ */
+
+body.is-special[data-special="countdown"] .hol-folio-badge,
+body.is-special[data-special="field-guide"] .hol-folio-badge {
+  position: fixed;
+  bottom: clamp(16px, 4vw, 28px);
+  left: clamp(16px, 4vw, 28px);
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  font-family: var(--hol-t-tall);
+  font-size: 22px;
+  letter-spacing: 0.06em;
+  color: var(--hol-brass-light);
+  background: rgba(13, 19, 48, 0.78);
+  border: 1.5px solid var(--hol-brass-light);
+  border-radius: 50%;
+  z-index: 90;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.7);
+  transition:
+    opacity var(--hm-dur-fast) var(--hm-ease),
+    transform var(--hm-dur-fast) var(--hm-ease),
+    background var(--hm-dur-fast) var(--hm-ease),
+    color var(--hm-dur-fast) var(--hm-ease),
+    border-color var(--hm-dur-fast) var(--hm-ease);
+  font-variant-numeric: tabular-nums;
+  text-transform: uppercase;
+}
+body.is-special[data-special="countdown"] .hol-folio-badge.is-on,
+body.is-special[data-special="field-guide"] .hol-folio-badge.is-on {
+  opacity: 0.92;
+  transform: scale(1);
+}
+/* Half II palette swap — JS sets data-half="2" on the badge. */
+body.is-special[data-special="countdown"] .hol-folio-badge[data-half="2"],
+body.is-special[data-special="field-guide"] .hol-folio-badge[data-half="2"] {
+  color: var(--hol-burnt);
+  background: rgba(245, 236, 214, 0.88);
+  border-color: var(--hol-burnt);
+}
+@media (max-width: 600px) {
+  body.is-special[data-special="countdown"] .hol-folio-badge,
+  body.is-special[data-special="field-guide"] .hol-folio-badge {
+    display: none;
+  }
+}
+
+
+/* ============================================================
+   14 · COUNTDOWN GRID — secs cell pulse-glow on tick
+   tier 11 already animates .is-flipping with hol-flip-pop. Add
+   a brass glow ring underneath that pulses on the same beat so
+   the live countdown reads as ACTIVE on tablet even at a glance.
+   ============================================================ */
+
+body.is-special[data-special="countdown"] .hol-countdown__num.is-flipping {
+  text-shadow:
+    0 0 0 rgba(217, 182, 106, 0),
+    0 0 24px rgba(217, 182, 106, 0.55);
+  animation:
+    hol-flip-pop 700ms ease-in-out,
+    hm-pulse-glow 1100ms ease-out;
+}
+@keyframes hm-pulse-glow {
+  0%   { text-shadow: 0 0 0 rgba(217, 182, 106, 0); }
+  30%  { text-shadow: 0 0 28px rgba(217, 182, 106, 0.6); }
+  100% { text-shadow: 0 0 0 rgba(217, 182, 106, 0); }
+}
+
+
+/* ============================================================
+   99 · REDUCED MOTION
+   Every animated property reverts to its rest state immediately.
+   Folio badge stays visible (it's information, not motion).
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  body.is-special[data-special="countdown"] .hm-rise,
+  body.is-special[data-special="field-guide"] .hm-rise,
+  body.is-special[data-special="countdown"] .hm-rise *,
+  body.is-special[data-special="field-guide"] .hm-rise * {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+  }
+  body.is-special[data-special="countdown"] .hol-cover__back-num,
+  body.is-special[data-special="field-guide"] .hol-cover__back-num,
+  body.is-special[data-special="countdown"] .hol-cover__back-script,
+  body.is-special[data-special="field-guide"] .hol-cover__back-script {
+    transform: none !important;
+  }
+  body.is-special[data-special="countdown"] .hol-folio-badge,
+  body.is-special[data-special="field-guide"] .hol-folio-badge {
+    transition: none;
+  }
+  body.is-special[data-special="countdown"] .hol-countdown__num.is-flipping,
+  body.is-special[data-special="field-guide"] .hol-countdown__num.is-flipping {
+    animation: none !important;
+    text-shadow: none !important;
+  }
+}

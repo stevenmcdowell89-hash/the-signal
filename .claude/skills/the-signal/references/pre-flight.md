@@ -1,0 +1,722 @@
+# Pre-Flight — Writer Subagent Checklist
+
+**Every writer subagent MUST read this file before drafting. Researcher and planner read it too.**
+
+---
+
+## 1. Purpose
+
+This file catches the ~12 regression patterns that have appeared in past issues. Read it once, check your chapter against it, and your chapter passes Gate 1 without rework. It is not a summary of the full editorial spec — it is a targeted hit list of the most common failures.
+
+**If you need more detail:** editorial-spec.md (full spec) → compliance-checklist.md (gate greps) → references/spec/global/ (sliced rules by topic).
+
+---
+
+## 2. Twelve Regression Triggers
+
+Each trigger: what it looks like, why it's banned, what to do instead.
+
+---
+
+### RT-1: Reader-Profile Leaks
+
+**What it looks like:**
+- "your son will love this"
+- "perfect for your 10-year-old"
+- "you and your partner"
+- "your tablet", "your watch"
+- "you'll appreciate this because you follow Malazan"
+- "since you're into Juventus"
+- "as a kettlebell fan"
+- "spoiler-free" / "no spoilers in sight" (announces a rule that must be invisible)
+- "It's not bland meal prep food" (defensive justification pattern)
+
+**Why banned:** The reader profile drives research and selection — it must be invisible in the prose. The Signal has 100,000 imaginary readers. If a sentence would only make sense written for one person, it fails.
+
+**Instead:** State facts as venue character or general editorial voice:
+- "family-friendly" not "great for your son"
+- "adult-oriented evening spot" not "you and your partner will love"
+- "For anyone watching the Serie A title race" not "since you follow Serie A"
+- Simply cover the topic — never justify why you selected it.
+
+---
+
+### RT-2: No-Taste Rule (Invented Sensory Prose)
+
+**What it looks like:**
+- "the first bite reveals…"
+- "it smells of cinnamon and…"
+- "warm and buttery", "crisp at the edges"
+- "melt-in-the-mouth", "moreish", "divine"
+- "the room feels intimate"
+- "cooks in striped aprons" (invented atmosphere)
+- "rich and comforting"
+
+**Why banned:** The agent has not tasted, smelled, or visited anything. Invented sensory prose is fabrication. It reads as marketing copy, not editorial.
+
+**Instead:** If a sensory detail is needed, quote a credited source. The photo carries the visual sensory load. Describe factually: "A harissa-style chicken dish with chickpeas and rice" — not "a warming, aromatic bowl that fills the kitchen with scent."
+
+---
+
+### RT-3: Coral Accent Lockdown Violation
+
+**What it looks like:**
+- A pull-quote with coral text or border
+- A brief sidebar with coral kicker
+- A dashboard (`sp-dash`) with coral `strong` elements
+- An eyebrow label in coral
+- A spread `h2` with coral marker
+- Any use of `color: var(--sp-accent-primary)` or `color: #E8384F` outside the allowed list
+
+**Why banned (v8.4 hard rule):** Coral is reserved for three things ONLY: (1) the Roman numeral inside `.sp-chapter-gate`, (2) the Countdown D-day badge, (3) the page progress bar. When coral appears elsewhere, it loses all meaning as a chapter-break signal.
+
+**Allowed exceptions (hype chapters only):** `.sp-number`, `.sp-number-huge`, `.sp-kicker`, `.sp-brief-kicker`, `.unmissables .sp-datum-value`, `.why-its-here` — but ONLY on `[data-sp-chapter].is-hype` chapters, and NEVER on literary formats (Deep Dive, Versus, Rewind, Season Review).
+
+**Instead:** Everywhere coral was previously used, the CSS automatically uses `--sp-accent-secondary` (muted slate on paper, bone on ink). You don't need to set it — just don't override with coral.
+
+---
+
+### RT-4: No-Price-Research Rule (Versus Holiday Subtype)
+
+**What it looks like:**
+- Invented price comparisons: "Venue A costs €X per night vs Venue B at €Y"
+- Round verdicts on value based on estimated or assumed prices
+- "roughly" / "approximately" pricing without citation
+
+**Why banned:** The Versus holiday/destination subtype requires a like-for-like value round with sourced prices. Invented prices produce a false verdict. If exact prices are unavailable, say so explicitly and give proportional gap with citations.
+
+**Instead:** Source real prices for identical parameters (same dates, party size, accommodation tier). Where exact prices are unavailable: "Venue A runs significantly higher for equivalent stays — forum reports from March 2026 suggest a gap of 30–40% for comparable park-access packages (r/Efteling)."
+
+---
+
+### RT-5: Image Source Diversity Violation
+
+**What it looks like:**
+- 8 of 10 images sourced from `upload.wikimedia.org`
+- All hotel images from the official hotel website
+- All park images from one press kit domain
+
+**Why banned (Field Guide / Countdown):** Over-reliance on a single domain signals shallow research. Gate 3 flags any single domain >50% of attributed images.
+
+**Instead:** Mix source types per chapter: official press kit + Wikimedia + credited Flickr CC + tourism board. For any venue, confirm you can name at least 3 independent image domains across the issue.
+
+---
+
+### RT-6: Fabricated Stats / Podcast / Article Content
+
+**What it looks like:**
+- "Drew 7-0" — a scoreline you didn't verify
+- "In episode 412 of Football Weekly, they discussed…" — invented episode content
+- "A 2024 study found that…" — a study you can't link to
+- "According to [article title]…" — article you invented
+
+**Why banned:** Fabrication is a hard fail. It's indistinguishable from real facts to the reader and permanently damages trust.
+
+**Instead:** If you can't verify it, don't include it. For podcasts: link without a summary, or omit. For stats: if unconfirmed, say "unconfirmed reports" or omit. Every scoreline must be verified. Every linked article must exist.
+
+---
+
+### RT-7: Banned Alternate Markup
+
+**What it looks like (all are banned):**
+
+```html
+<!-- BANNED pullquote -->
+<div class="sp-pullquote-huge">...</div>
+<p class="sp-pq-quote">...</p>
+<p class="sp-pq-attrib">...</p>
+
+<!-- BANNED marginalia -->
+<div class="sp-marginalia">...</div>
+<p class="sp-marg-kicker">...</p>
+<p class="sp-marg-label">...</p>
+
+<!-- BANNED pull-break -->
+<blockquote class="sp-pull-break">...</blockquote>
+<h2 class="sp-pull">...</h2>
+
+<!-- BANNED brief sidebar -->
+<aside class="sp-brief">...</aside>
+<h3 class="sp-brief-h">...</h3>
+
+<!-- BANNED hero quote -->
+<blockquote class="sp-hero-quote">...</blockquote>
+
+<!-- BANNED chapter chrome -->
+<header class="sp-chapter-chrome">...</header>
+<!-- (also: missing .sp-hair inside chapter chrome) -->
+```
+
+**Why banned:** The CSS targets specific tag + class combinations. Wrong tags bypass the readability locks and produce contrast bugs — bone-on-cream cards, ink-on-dark bands. This has been the single largest source of v8.x regressions.
+
+**Instead:** Use only the canonical markup in § 3 below.
+
+---
+
+### RT-8: Missing Chapter-Gate Data Attributes
+
+**What it looks like:**
+```html
+<!-- MISSING required attributes -->
+<aside class="sp-chapter-gate">...</aside>
+<section data-sp-chapter>...</section>
+```
+
+**Why banned:** The chapter gate JS driver reads `data-chapter-num`, `data-chapter-title`, and `data-chapter-arc` to build the sticky scroll panel. Missing any of them produces a blank black viewport on scroll.
+
+**Instead:** Every chapter gate and chapter wrapper must carry the full attribute set:
+```html
+<aside class="sp-chapter-gate" data-chapter-num="II"
+      data-chapter-title="Top Attractions"
+      data-chapter-arc="The rides worth your day">
+  <div class="scg-arc">Visual Highlights</div>
+  <div class="scg-numeral">II</div>
+  <div class="scg-title">Top Attractions</div>
+  <div class="scg-deck">The rides worth your day</div>
+</aside>
+<section data-sp-chapter data-chapter-num="2"
+         data-chapter-title="Top Attractions"
+         data-chapter-arc="The rides worth your day"
+         class="sp-ground-paper">
+```
+
+---
+
+### RT-9: Drop-Cap on Hype Picks (Forbidden)
+
+**What it looks like:**
+- A drop-cap (large first letter) on the first paragraph of a pick inside `.unmissables`
+- `::first-letter` styling on any `.unmissable` prose block
+
+**Why banned:** Drop-caps are for literary spreads only — the first letter of body text inside `.sp-spread-body > p:first-of-type`. They are CSS-automated there. On hype picks they look like a formatting bug and break the visual rhythm.
+
+**Instead:** Hype pick prose opens normally. Let the hero image + `.why-its-here` kicker do the visual work.
+
+---
+
+### RT-10: Broken Pull-Break Wrap
+
+**What it looks like:**
+```html
+<!-- BROKEN: pull-break outside its wrapper -->
+<section data-sp-chapter ...>
+  <div class="sp-spread">...</div>
+  <div class="sp-pull-break">...</div>  <!-- WRONG -->
+</section>
+```
+
+**Why banned:** `.sp-pull-break` must be nested inside `.sp-pull-break-wrap`. The wrapper is what provides the full-bleed dark background. A bare `.sp-pull-break` renders without the backdrop, producing floating text on the chapter ground.
+
+**Instead:**
+```html
+<div class="sp-pull-break-wrap sp-ground-deep">
+  <div class="sp-pull-break">
+    <p class="sp-pull">The quote text here</p>
+    <p class="sp-pull-attrib">— Attribution</p>
+  </div>
+</div>
+```
+
+---
+
+### RT-11: Marginalia Outside `.sp-spread`
+
+**What it looks like:**
+```html
+<!-- WRONG: marginalia outside the spread -->
+<section data-sp-chapter ...>
+  <aside class="sp-marginalia">...</aside>
+  <p>Prose continues...</p>
+</section>
+```
+
+**Why banned:** Marginalia (`<aside class="sp-marginalia">`) is only legal inside the three-column spread (`.sp-spread`). The CSS uses a descendant selector that only fires within the spread context. Outside it, the component has no layout anchor and collapses unpredictably.
+
+**Instead:** Either place the marginalia inside a `.sp-spread > .sp-margin` element, or use a `.sp-brief` sidebar instead.
+
+---
+
+### RT-12: Hype Modifiers on Literary Formats
+
+**What it looks like:**
+- `class="sp-chapter-gate is-hype"` on a Deep Dive chapter
+- `[data-sp-chapter].is-hype` on a Versus chapter
+- `.sp-ground-gallery` used in a Rewind or Season Review
+
+**Why banned:** Hype modifiers (`.is-hype`, `.sp-ground-gallery`, `.unmissables`) exist specifically for Countdown and Field Guide. Literary formats (Deep Dive, Versus, Rewind, Season Review) rely on the full default chrome — the extended chapter gate, the full coral lockdown, the paper/ink rhythm — for their voice. Hype chrome on a literary chapter breaks the tonal contract.
+
+**Instead:** Reserve all hype modifiers strictly for:
+- Countdown: Top Attractions, Accommodation, Mood Board, Five Moments, By the Numbers (image-led)
+- Field Guide: The Opening, The Unmissables
+
+---
+
+### RT-13: Holiday Identity — wrong markup vocabulary (v8.12)
+
+**Applies only to:** `data-special="countdown"` and `data-special="field-guide"` issues. On every other format, ignore this trigger entirely.
+
+**What it looks like:**
+- A Countdown or Field Guide issue using `.sp-chapter-gate`, `.sp-spread`, `.sp-pull-break`, `.sp-marginalia`, `.sp-brief`, `.sp-dash`, or `.sp-chapter-chrome`
+- A Countdown or Field Guide issue without any `.hol-*` components
+- A Countdown or Field Guide issue with `.unmissables` / `.unmissable` (default chrome) instead of `.hol-unmissable`
+- A Countdown or Field Guide issue using paper/ink grounds (`.sp-ground-paper`, `.sp-ground-ink`) on the body or on chapter wrappers
+
+**Why banned:** v8.12 introduced a separate visual identity for Countdown and Field Guide (tier 36, `36-holiday-identity.css`). The two formats no longer use the default chapter-gate / spread / paper-ink-ground / coral-lockdown system. Instead they use the holiday vocabulary: `.hol-cover`, `.hol-half`, `.hol-transit`, `.hol-anchor`, `.hol-unmissable`, `.hol-polaroid`, `.hol-postcard`, `.hol-stamp`, `.hol-marquee`, `.hol-dont-miss`, `.hol-chalkboard`, `.hol-meanwhile`, `.hol-subscribe`. Default chrome markup is **hidden** on these issues by tier 36 — a chapter built with default markup would render as a blank stretch.
+
+**Instead:** Use the holiday vocabulary throughout. See `references/spec/specials.md` § holiday-identity for the full component map and `§ 3. Canonical Markup Snippets` below for the snippets. Key swaps:
+
+| If you'd reach for… | Use instead (holiday issue) |
+|---|---|
+| `.sp-chapter-gate` | nothing — holiday issues have no chapter gates |
+| `.sp-spread` body | `.hol-half__inner` plus content components |
+| `.sp-pull-break` | `.hol-marquee` or `.hol-dont-miss` |
+| `.sp-marginalia` | `.hol-stamp` or `.hol-polaroid` |
+| `.sp-brief` | `.hol-anchor` (for a feature) or `.hol-postcard` (for a small aside) |
+| `.sp-dash` | `.hol-countdown` (live grid) or inline big numbers within `.hol-anchor__meta` |
+| `.unmissables` / `.unmissable` | `.hol-unmissable` (alternating left/right rotated photo + parchment card) |
+| `.sp-ground-paper` | nothing on the wrapper; cream grounds happen inside specific components |
+| `.sp-ground-ink` | nothing on the wrapper; indigo is Half I's default ground |
+| `.sp-ground-gallery` | not legal on holiday issues |
+
+**Halves and the transit:** every multi-venue holiday issue uses exactly TWO halves (`.hol-half--one`, `.hol-half--two`) separated by exactly ONE `.hol-transit`. Single-venue issues use ONE `.hol-half--one` with one or two `.hol-marquee` interior breaks. Adding extra transits, omitting the transit on a multi-venue issue, or stacking halves of the same type is a hard fail.
+
+### RT-14: Flat-fill ground on Half II (v8.13)
+
+**Applies only to:** `data-special="countdown"` and `data-special="field-guide"` issues with a `.hol-half--two`. On every other format, ignore.
+
+**What it looks like:**
+- A `.hol-half--two` whose inner content sets `background: var(--hol-terracotta)` (or any flat orange / terracotta) on the wrapper or on a chapter inside it.
+- A `.hol-half--two` with no savannah ambient layer — the section reads as a flat solid block rather than a savannah landscape.
+- Decorative dots, circles, or random lines used as the only ambient layer on a Beekse Bergen / Half II chapter (the giraffe + acacia + elephant SVG band is the canonical recipe; abstract dot grids are not).
+
+**Why banned:** v8.13 replaced the original flat-terracotta-with-mustard-dots Half II ground with a layered savannah recipe (gradient sand-to-khaki sky, conic sun rays from the upper-right, SVG silhouettes of giraffes, acacia trees and an elephant along the bottom). Flat orange fills, abstract dot grids, and random-line ambient layers don't evoke safari — they evoke a generic warning panel. The Half II identity is **savannah cartography**, not coloured rectangle.
+
+**Instead:**
+- Let `.hol-half--two` paint its own ground. Do NOT set `background:` on the wrapper or on inner sections.
+- For one or two chapters add an optional theme class on TOP of the half ground: `.theme-tracks` (paw-print watermark), `.theme-heat-haze` (subtle shimmer ribbon — use ONCE per issue maximum). Both stack cleanly above the existing sun-rays + silhouette layers.
+- For Wonder Hotel and accommodation chapters in Half I, use `.theme-airships` to layer line-drawn hot-air balloons over the indigo ground.
+- For storybook feature chapters in Half I, use `.theme-celestial` (richer star-and-constellation field) and/or `.theme-fairytale` (Anton-Pieck tree silhouettes along the bottom).
+
+**Grep recipe:**
+```bash
+# RT-14: No flat terracotta or orange background-color inline
+grep -oE 'background[^;]*(:|=)[^;]*(c25a2e|terracotta|orange|d97706|f97316)' chapter.html
+# expect: empty inside .hol-half--two
+```
+
+### RT-15: Venue / half mismatch (v8.13)
+
+**Applies only to:** multi-venue Countdown and Field Guide issues. On single-venue issues, ignore.
+
+**What it looks like:**
+- A chapter sitting inside `.hol-half--one` whose subject is Beekse Bergen (safari resort, Tamani, the safari bus, the lakes, Karibu Town, etc.).
+- A chapter sitting inside `.hol-half--two` whose subject is Efteling (Polles Keuken, Wonder Hotel, Symbolica, Aquanura, Het Witte Paard, etc.).
+- A chapter inside Half II using indigo/cream Efteling palette colour overrides, or vice versa.
+
+**Why banned:** the half is the venue. Half I IS Efteling — indigo storybook night sky. Half II IS Beekse Bergen — savannah cartography on cream sand. A chapter on the wrong side of the transit reads to the reader as either a misnamed chapter or a broken issue. The transit intermission is the named structural commitment to the venue change; subverting it confuses the entire navigation logic.
+
+**Instead:** every chapter sits inside the half whose venue it covers. If a chapter is genuinely cross-venue (e.g. a Quick Orientation map showing both venues, or a transit / between-the-parks logistics chapter), it lives OUTSIDE both halves — either after the cover and before Half I, or as the body of the transit intermission card. Never inside the wrong half.
+
+**Grep recipe:**
+```bash
+# RT-15: Beekse Bergen names in Half I, or Efteling names in Half II
+# Run after a stitched build. The script extracts each .hol-half block
+# and checks for venue-name leakage.
+# Quick manual check:
+awk '/class="hol-half hol-half--one/,/<\/section>/' issue.html | grep -iE 'beekse|safari resort|karibu|tamani|safari bus'
+# expect: empty
+awk '/class="hol-half hol-half--two/,/<\/section>/' issue.html | grep -iE 'efteling|kaatsheuvel|polles|wonder hotel|symbolica|aquanura|witte paard'
+# expect: empty
+```
+
+---
+
+## 3. Canonical Markup Snippets
+
+Copy-paste these directly. Do not invent alternates.
+
+### Pullquote (`.sp-pullquote-huge`)
+```html
+<blockquote class="sp-pullquote-huge">
+  <p>The quote text goes here — pull the most resonant line from the chapter.</p>
+  <cite>— Source attribution or chapter context</cite>
+</blockquote>
+```
+
+### Marginalia (inside `.sp-spread` only)
+```html
+<aside class="sp-marginalia" data-side="right">
+  <span class="sp-marginalia-label">Context Note</span>
+  <p>The marginalia body text. A datum, a brief aside, or a quoted fragment.</p>
+</aside>
+```
+
+### Pull-Break
+```html
+<div class="sp-pull-break-wrap sp-ground-deep">
+  <div class="sp-pull-break">
+    <p class="sp-pull">The key sentence from this chapter — the line worth repeating.</p>
+    <p class="sp-pull-attrib">— Attribution or context</p>
+  </div>
+</div>
+```
+
+### Chapter Gate + Section (full attribute set)
+```html
+<!-- Gate must PRECEDE the section -->
+<aside class="sp-chapter-gate" data-chapter-num="III"
+      data-chapter-title="Five Moments Worth the Trip"
+      data-chapter-arc="The memories you'll carry home">
+  <div class="scg-arc">Signature Moments</div>
+  <div class="scg-numeral">III</div>
+  <div class="scg-title">Five Moments Worth the Trip</div>
+  <div class="scg-deck">The memories you'll carry home</div>
+</aside>
+
+<section data-sp-chapter data-chapter-num="3"
+         data-chapter-title="Five Moments Worth the Trip"
+         data-chapter-arc="The memories you'll carry home"
+         class="sp-ground-ink">
+  <!-- chapter content -->
+</section>
+```
+
+**Hype variant** (Countdown / Field Guide only — never literary):
+```html
+<aside class="sp-chapter-gate is-hype" data-chapter-num="II" ...>...</aside>
+<section data-sp-chapter class="sp-ground-paper is-hype" ...>...</section>
+```
+
+### Unmissables (Field Guide — 6–10 picks)
+```html
+<div class="unmissables">
+  <div class="unmissable">
+    <figure>
+      <img src="https://..." alt="Descriptive alt text">
+      <figcaption>What it shows. Credit: Source / License.</figcaption>
+    </figure>
+    <p>Sensory prose (sourced or factual — no invented flavours). Two to four sentences covering the character of this pick.</p>
+    <p class="why-its-here">Why It's Here — one sentence with the sourced reason this pick made the list (frequency / hidden gem / cultural significance / structural uniqueness / theming).</p>
+    <dl>
+      <dt>Price</dt><dd>€X per person / included with entry</dd>
+      <dt>Booking</dt><dd>Walk-in or advance required</dd>
+      <dt>Timing</dt><dd>Best time to visit</dd>
+      <dt>Walk</dt><dd>Distance from nearest gate / station</dd>
+    </dl>
+  </div>
+  <!-- repeat for each pick -->
+</div>
+```
+
+### Brief Sidebar
+```html
+<div class="sp-brief">
+  <p class="sp-brief-kicker">Sidebar label — CONTEXT / ASIDE / NOTE</p>
+  <h4 class="sp-brief-h">Brief sidebar heading</h4>
+  <p>The sidebar body. Factual, concise, 40-80 words.</p>
+  <p class="sp-brief-byline">Source or attribution if needed</p>
+</div>
+```
+
+### Stat Dashboard (`sp-dash`)
+```html
+<div class="sp-dash">
+  <div class="sp-dash-cell">
+    <span class="sp-dash-label">Label</span>
+    <span class="sp-number" data-to="42">42</span>
+    <span class="sp-dash-unit">unit</span>
+  </div>
+  <!-- max 6 cells; max 1 sp-dash per issue -->
+</div>
+```
+
+### Three-Column Spread (`.sp-spread`)
+```html
+<div class="sp-spread">
+  <div class="sp-rail" aria-hidden="true"></div>
+  <aside class="sp-margin">
+    <!-- Marginalia, datum blocks, or small aside content -->
+    <aside class="sp-marginalia" data-side="right">
+      <span class="sp-marginalia-label">Aside</span>
+      <p>Marginalia content.</p>
+    </aside>
+  </aside>
+  <div class="sp-spread-body">
+    <!-- Drop-cap auto-applied to p:first-of-type — do NOT wrap manually -->
+    <p>Opening paragraph of the chapter's literary body...</p>
+    <p>Subsequent paragraphs continue here.</p>
+  </div>
+</div>
+```
+
+---
+
+### Holiday issue scaffold (Countdown + Field Guide only — v8.12)
+
+**Body activation:**
+```html
+<body class="is-special" data-special="countdown"><!-- or data-special="field-guide" -->
+```
+
+**Masthead:**
+```html
+<header class="hol-masthead">
+  <div class="hol-masthead__title">The Signal<span class="stop">.</span></div>
+  <div class="hol-masthead__badge">Special Edition · Countdown</div>
+  <div class="hol-masthead__meta">No. 02 · 16 May 2026 · T-minus 45 days</div>
+</header>
+```
+
+**Cover (with live countdown):**
+```html
+<section class="hol-cover">
+  <svg class="hol-cover__cloud hol-cover__cloud--1" viewBox="0 0 320 90" aria-hidden="true">...</svg>
+  <svg class="hol-cover__cloud hol-cover__cloud--2" viewBox="0 0 320 90" aria-hidden="true">...</svg>
+  <svg class="hol-cover__cloud hol-cover__cloud--3" viewBox="0 0 320 90" aria-hidden="true">...</svg>
+  <div class="hol-cover__back-num">45</div>
+  <div class="hol-cover__back-script">days</div>
+  <div class="hol-cover__inner">
+    <div class="hol-cover__sig"><span>The Signal · Holiday Specials · No. 02</span><span>Saturday · 16 May 2026</span></div>
+    <div class="hol-cover__overline">The countdown begins.</div>
+    <h1 class="hol-cover__title">Forty-five<br>days to <span class="ruby">Efteling</span><br><span class="amp">&amp;</span> <span class="outline">Beekse Bergen</span>.</h1>
+    <p class="hol-cover__dek">Cover dek text — a single paragraph framing the issue.</p>
+    <div class="hol-cover__layout">
+      <div class="hol-countdown" data-target="2026-06-30T09:00:00+02:00">
+        <div class="hol-countdown__grid">
+          <div class="hol-countdown__cell"><div class="hol-countdown__num" data-cd="days">45</div><div class="hol-countdown__unit">days</div></div>
+          <div class="hol-countdown__cell"><div class="hol-countdown__num" data-cd="hours">06</div><div class="hol-countdown__unit">hours</div></div>
+          <div class="hol-countdown__cell"><div class="hol-countdown__num" data-cd="mins">42</div><div class="hol-countdown__unit">minutes</div></div>
+          <div class="hol-countdown__cell"><div class="hol-countdown__num" data-cd="secs">18</div><div class="hol-countdown__unit">seconds</div></div>
+        </div>
+        <div class="hol-countdown__target">target · tuesday 30 jun 2026 · 09:00 cest · kaatsheuvel</div>
+      </div>
+      <div class="hol-cover__collage" aria-hidden="true">
+        <figure class="hol-polaroid" style="top: 0; left: 10%;">
+          <div class="hol-polaroid__tape"></div>
+          <div class="hol-polaroid__photo" style="background-image:url('...');"></div>
+          <figcaption class="hol-polaroid__caption">the floating castle.</figcaption>
+        </figure>
+        <div class="hol-stamp hol-stamp--brass" style="top: 30px; right: 0;"><span>BOOKED<b>JUN 30</b>★ ★ ★</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+```
+
+**Half opener (use at the top of `.hol-half`):**
+```html
+<div class="hol-half__opener">
+  <div class="hol-half__opener-tag">Part One:</div>
+  <h2 class="hol-half__opener-title">Efteling</h2>
+  <div class="hol-half__opener-subtitle"><span>The Floating Castle</span></div>
+  <div class="hol-half__opener-pills">
+    <span>Wondrous Tales</span><span class="dot">•</span>
+    <span>Culinary Magic</span><span class="dot">•</span>
+    <span>Kaatsheuvel</span>
+  </div>
+</div>
+```
+
+**Half wrapper (each half is one section):**
+```html
+<section class="hol-half hol-half--one"><!-- or hol-half--two -->
+  <div class="hol-half__inner">
+    <!-- hol-half__opener, then content components -->
+  </div>
+</section>
+```
+
+**Transit intermission (between Half I and Half II, multi-venue only):**
+```html
+<section class="hol-transit">
+  <div class="hol-transit__side hol-transit__side--left">
+    <div class="hol-transit__mega-bg">EFTELING</div>
+    <div class="hol-transit__label">
+      <span class="hol-transit__hand">Leaving the Castle…</span>
+      <span class="hol-transit__name">PART ONE</span>
+    </div>
+  </div>
+  <div class="hol-transit__center">
+    <div class="hol-transit__center-card">Transit Intermission</div>
+  </div>
+  <div class="hol-transit__side hol-transit__side--right">
+    <div class="hol-transit__mega-bg">SAFARI</div>
+    <div class="hol-transit__label">
+      <span class="hol-transit__hand">Entering the Wild…</span>
+      <span class="hol-transit__name">PART TWO</span>
+    </div>
+  </div>
+</section>
+```
+
+**Holiday unmissable row (alternates left/right — add `hol-unmissable--reverse` to every second row):**
+```html
+<div class="hol-unmissable">
+  <div class="hol-unmissable__photo-wrap">
+    <div class="hol-unmissable__photo" style="background-image:url('...');"></div>
+  </div>
+  <div class="hol-unmissable__card">
+    <div class="hol-unmissable__num-row">
+      <span class="hol-unmissable__num">01</span>
+      <h3 class="hol-unmissable__title">Polles Keuken</h3>
+    </div>
+    <p class="hol-unmissable__quote">"Source-attributed quote here." — source citation.</p>
+    <div class="hol-unmissable__why">Why it's here · source signal type</div>
+    <dl class="hol-unmissable__facts">
+      <div class="row"><dt>Where</dt><dd>…</dd></div>
+      <div class="row"><dt>Order</dt><dd>…</dd></div>
+      <div class="row"><dt>Timing</dt><dd>…</dd></div>
+      <div class="row"><dt>Walk</dt><dd>…</dd></div>
+    </dl>
+  </div>
+</div>
+```
+
+**Anchor feature (use once or twice per half for the headline beat):**
+```html
+<div class="hol-anchor">
+  <div class="hol-anchor__photo" style="background-image:url('...');"></div>
+  <div>
+    <h3 class="hol-anchor__title">RESTAURANT SAGA</h3>
+    <p class="hol-anchor__dek">Italic serif dek text — the case for this feature.</p>
+    <div class="hol-anchor__meta">
+      <div>⏱ TIME<br><b>45 MIN</b></div>
+      <div>★ TIER<br><b>HOT</b></div>
+    </div>
+  </div>
+  <div class="hol-anchor__badge">Seasonal<br>Special</div>
+  <div class="hol-anchor__note">* magic in the air *</div>
+</div>
+```
+
+**Don't Miss block:**
+```html
+<div class="hol-dont-miss">
+  <div class="hol-dont-miss__kicker">don't miss</div>
+  <h3 class="hol-dont-miss__title">Three Efteling bites worth a detour</h3>
+  <ul class="hol-dont-miss__list">
+    <li><b>Stroopwafel cart.</b> Description here.</li>
+    <li><b>Second item.</b> Description.</li>
+    <li><b>Third item.</b> Description.</li>
+  </ul>
+</div>
+```
+
+**Marquee (kinetic section transition):**
+```html
+<div class="hol-marquee" aria-hidden="true">
+  <div class="hol-marquee__track">
+    <span>One repeating phrase</span>
+    <span>Another</span>
+    <span>Third</span>
+    <span>One repeating phrase</span>
+    <span>Another</span>
+    <span>Third</span>
+  </div>
+</div>
+```
+Double the phrase list so the loop is seamless.
+
+**Meanwhile + sign-off (closes the issue):**
+```html
+<section class="hol-meanwhile">
+  <div class="hol-meanwhile__giant-bg">SIGNAL</div>
+  <div class="hol-meanwhile__inner">
+    <div>
+      <h2 class="hol-meanwhile__title">Meanwhile…</h2>
+      <p class="hol-meanwhile__body">Closing serif italic paragraph.</p>
+    </div>
+    <div class="hol-subscribe">
+      <div class="hol-subscribe__inner">
+        <h3 class="hol-subscribe__title">Don't miss the next chapter.</h3>
+        <p class="hol-subscribe__hand">Hand-script tagline.</p>
+      </div>
+    </div>
+  </div>
+  <div class="hol-footer-row">
+    <div class="hol-footer-row__brand">The Signal<span class="stop">.</span></div>
+    <div class="hol-footer-row__links"><span>Holiday Specials</span><span>Archive</span></div>
+    <div class="hol-footer-row__tagline">"Eat well, travel often."</div>
+  </div>
+</section>
+```
+
+---
+
+## 4. Self-Audit Checklist
+
+Run these greps against your chapter HTML before submitting. Every command should return the expected value.
+
+```bash
+# RT-7a: No banned pullquote div
+grep -c '<div class="sp-pullquote-huge"' chapter.html           # expect: 0
+
+# RT-7b: No banned pullquote child classes
+grep -c 'class="sp-pq-quote"' chapter.html                      # expect: 0
+grep -c 'class="sp-pq-attrib"' chapter.html                     # expect: 0
+
+# RT-7c: No banned marginalia div
+grep -c '<div class="sp-marginalia"' chapter.html               # expect: 0
+
+# RT-7d: No banned marginalia label classes
+grep -c 'class="sp-marg-kicker"' chapter.html                   # expect: 0
+grep -c 'class="sp-marg-label"' chapter.html                    # expect: 0
+
+# RT-7e: No banned pull-break blockquote
+grep -c '<blockquote class="sp-pull-break"' chapter.html        # expect: 0
+
+# RT-7f: No banned brief sidebar aside
+grep -c '<aside class="sp-brief"' chapter.html                  # expect: 0
+
+# RT-7g: No banned brief heading level
+grep -cE '<h[123][^>]*class="sp-brief-h"' chapter.html          # expect: 0
+
+# RT-7h: No banned hero quote blockquote
+grep -c '<blockquote class="sp-hero-quote"' chapter.html        # expect: 0
+
+# RT-1: No reader-profile leak phrases
+grep -iE 'your (son|kids|10.year.old|partner|tablet|watch)|you.ll love|perfect for (your|you)|since you|as a.*fan|spoiler.free' chapter.html
+# expect: no output
+
+# RT-8: Chapter gate has all required attributes
+grep 'sp-chapter-gate' chapter.html | grep -v 'data-chapter-num'
+# expect: no output (every gate must have data-chapter-num)
+
+# RT-3: No coral outside allowed elements
+grep -E 'color.*E8384F|color.*sp-accent-primary' chapter.html
+# expect: no output (CSS handles accent; never set coral inline)
+
+# RT-13 (holiday only — Countdown / Field Guide):
+# No default-chrome markup. Run only when data-special="countdown" or "field-guide".
+grep -cE 'class="sp-chapter-gate|class="sp-spread|class="sp-pull-break|class="sp-marginalia|class="sp-brief|class="sp-dash|class="sp-chapter-chrome|class="unmissables|class="unmissable[ "]' chapter.html
+# expect: 0 on holiday issues. Non-zero is a hard fail — use .hol-* vocabulary.
+
+# RT-13b: Every holiday issue uses at least one .hol-half
+grep -c 'class="hol-half ' chapter.html
+# expect: ≥1 on holiday issues. 0 means the issue is missing the structural unit.
+
+# RT-13c: Multi-venue holiday issues have exactly one .hol-transit
+grep -c 'class="hol-transit"' chapter.html
+# expect: 1 on multi-venue holiday issues, 0 on single-venue. Never 2+.
+
+# RT-6: No fabricated URL patterns (bare domains without path)
+grep -oE 'href="https?://[^/"]+/"' chapter.html
+# expect: empty or only known category pages — check each result
+
+# RT-10: Pull-break has wrapper
+grep -n 'sp-pull-break' chapter.html
+# expect: every sp-pull-break line has a sp-pull-break-wrap in context
+```
+
+---
+
+## 5. Lookup Chain
+
+If you need detail beyond what's in this file:
+
+1. **`references/editorial-spec.md`** — full spec (980 lines)
+2. **`references/compliance-checklist.md`** — Gate 1 + Gate 2 + Gate 3 mechanical checks
+3. **`references/spec/global/04-markup-contracts.md`** — full markup contract table (all banned alternates)
+4. **`references/spec/global/07-accent-lockdown.md`** — full accent lockdown rules
+5. **`references/spec/formats/<format>.md`** — format-specific requirements for this issue
+6. **`references/spec/specials/`** — chapter gate, imagery budget, ground discipline in detail

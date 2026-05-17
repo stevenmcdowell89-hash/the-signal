@@ -1,0 +1,1967 @@
+/* ============================================================
+   TIER 11 — HOLIDAY IDENTITY (v8.12)
+
+   A complete alternative visual identity for Countdown and Field
+   Guide special editions. Replaces (not augments) the default
+   special-edition chrome on those two formats.
+
+   ACTIVATION: body.is-special[data-special="countdown"]
+               body.is-special[data-special="field-guide"]
+
+   Defaults are wrapped in a single .hol scope that is auto-added
+   to <body> by script.js when either of the above selectors match.
+   Outside that scope this file is dormant.
+
+   PHILOSOPHY (departure from default chrome):
+   - No sticky chapter gates anywhere in the issue.
+   - The entire structural rhythm is "two halves with one cinematic
+     transit intermission between them". Multi-venue trips get the
+     full two-half treatment; single-venue trips run one half plus a
+     softer interior break.
+   - Coral lockdown is DISABLED. Brass, ruby, rose, emerald, mustard,
+     terracotta all run freely. Coral is not used at all on holiday
+     issues — the issue's identity colour is brass.
+   - Ground discipline is DISABLED inside chapters. Per-block grounds
+     (rotated polaroid on a brass card on a celestial section) are
+     encouraged.
+   - Type personality: Bowlby One + Cinzel italic + Yellowtail +
+     Caveat + Anton + Alfa Slab One. The skill's default Space
+     Grotesk is not used on holiday issues.
+
+   CASCADE: This file is tier 36, alphabetically after every existing
+   tier (00–34). It overrides without `!important` where the cascade
+   alone suffices; it uses `!important` only on the disable-defaults
+   block at the top, which is intentional because tier 31 uses very
+   specific selectors that would otherwise win.
+
+   REDUCED MOTION: Every animation defined here is gated behind
+   `@media (prefers-reduced-motion: reduce)` overrides at the bottom
+   of the file.
+   ============================================================ */
+
+/* ============================================================
+   00 · ACTIVATION SCOPE + TOKENS
+   ============================================================ */
+
+body.is-special[data-special="countdown"],
+body.is-special[data-special="field-guide"] {
+  /* Efteling — fairytale palette (Half I default) */
+  --hol-cream:        #fcf5ed;
+  --hol-cream-deep:   #f3e9d6;
+  --hol-paper:        #f8efe0;
+  --hol-ink:          #1b2244;
+  --hol-ink-deep:     #0d1330;
+  --hol-rose:         #b25361;
+  --hol-rose-deep:    #7a2f3d;
+  --hol-brass:        #b8893a;
+  --hol-brass-light:  #d9b66a;
+  --hol-emerald:      #1f5b48;
+  --hol-ruby:         #8a1c2b;
+
+  /* Beekse Bergen / generic Half II — savannah palette */
+  --hol-sand:         #ede1c8;
+  --hol-bone:         #f5ecd6;
+  --hol-terracotta:   #c25a2e;
+  --hol-burnt:        #8e3a18;
+  --hol-mustard:      #d9a82d;
+  --hol-acacia:       #6b4f2b;
+  --hol-savannah-ink: #1c2613;
+  --hol-sky:          #79a8c2;
+
+  /* Type stacks. Bowlby One + Cinzel + Yellowtail + Caveat + Anton + Alfa Slab One. */
+  --hol-t-chunk:    "Bowlby One", Impact, sans-serif;
+  --hol-t-slab:     "Alfa Slab One", "Roboto Slab", serif;
+  --hol-t-tall:     "Anton", "Bebas Neue", Impact, sans-serif;
+  --hol-t-script:   "Yellowtail", "Pacifico", cursive;
+  --hol-t-hand:     "Caveat", "Kalam", cursive;
+  --hol-t-serif:    "Cinzel", "Playfair Display", serif;
+  --hol-t-body:     "DM Sans", "Inter", system-ui, sans-serif;
+  --hol-t-mono:     "Space Mono", "JetBrains Mono", monospace;
+
+  /* Issue identity colour. Replaces the default --issue-accent rose. */
+  --issue-accent: var(--hol-brass);
+  --issue-accent-ink: var(--hol-ink-deep);
+
+  /* Body register */
+  background: var(--hol-cream);
+  color: var(--hol-ink);
+  font-family: var(--hol-t-body);
+}
+
+/* ============================================================
+   01 · DISABLE DEFAULT SPECIAL-EDITION CHROME
+   These rules neutralise the tiers that conflict with the holiday
+   identity. The default chrome stays available for Deep Dive,
+   Rewind, Versus, Season Review, Blueprint, Starter Kit, Shortlist
+   — every format EXCEPT the two holiday formats.
+   ============================================================ */
+
+/* 1A — Hide sticky chapter gate entirely. The gate is the single
+   biggest piece of default chrome; on holiday issues it's replaced
+   by half openers and the transit intermission. */
+body.is-special[data-special="countdown"] .sp-chapter-gate,
+body.is-special[data-special="field-guide"] .sp-chapter-gate {
+  display: none !important;
+}
+
+/* 1B — Neutralise the gate scroll-track wrapper if writers leave it
+   in place (it provides no value without the gate, and its 110vh
+   spacer would leave a huge blank chunk). */
+body.is-special[data-special="countdown"] .sp-chapter-gate-track,
+body.is-special[data-special="field-guide"] .sp-chapter-gate-track {
+  display: contents !important;
+}
+
+/* 1C — Disable accent lockdown. Tier 31 demotes coral to slate/bone
+   on common components. We restore brass and ruby as legitimate
+   accent colours and let writers paint freely. */
+body.is-special[data-special="countdown"] [data-sp-chapter],
+body.is-special[data-special="field-guide"] [data-sp-chapter] {
+  --sp-accent-primary: var(--hol-brass);
+  --sp-accent-secondary: var(--hol-brass);
+  --sp-accent-secondary-ink: var(--hol-brass-light);
+}
+
+/* 1D — Disable ground discipline. Tier 31 neutralises component-
+   level grounds when nested inside [data-sp-chapter]. Holiday
+   issues want per-block grounds. */
+body.is-special[data-special="countdown"] [data-sp-chapter] .sp-ground-paper,
+body.is-special[data-special="countdown"] [data-sp-chapter] .sp-ground-ink,
+body.is-special[data-special="field-guide"] [data-sp-chapter] .sp-ground-paper,
+body.is-special[data-special="field-guide"] [data-sp-chapter] .sp-ground-ink {
+  background: revert !important;
+  color: revert !important;
+}
+
+/* 1E — Hide the masthead ticker and pre-roll splash. Holiday issues
+   open with a poster cover, not a ticker tape. */
+body.is-special[data-special="countdown"] .mast-ticker,
+body.is-special[data-special="field-guide"] .mast-ticker,
+body.is-special[data-special="countdown"] .sp-splash,
+body.is-special[data-special="field-guide"] .sp-splash {
+  display: none !important;
+}
+
+/* 1F — Hide chapter beads + sticky pin + page fold + horizon. These
+   are the default special-edition ambient layers. Holiday issues
+   have their own (drifting clouds, savannah silhouettes, sun rays). */
+body.is-special[data-special="countdown"] .sp-chapter-beads,
+body.is-special[data-special="field-guide"] .sp-chapter-beads,
+body.is-special[data-special="countdown"] .sp-sticky-pin,
+body.is-special[data-special="field-guide"] .sp-sticky-pin,
+body.is-special[data-special="countdown"] .sp-page-fold,
+body.is-special[data-special="field-guide"] .sp-page-fold,
+body.is-special[data-special="countdown"] .sp-horizon,
+body.is-special[data-special="field-guide"] .sp-horizon {
+  display: none !important;
+}
+
+/* ============================================================
+   02 · MASTHEAD
+   ============================================================ */
+
+body.is-special[data-special="countdown"] .hol-masthead,
+body.is-special[data-special="field-guide"] .hol-masthead {
+  background: var(--hol-ink-deep);
+  color: var(--hol-cream);
+  padding: 14px clamp(20px, 4vw, 56px);
+  border-bottom: 8px solid var(--hol-brass);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 100;
+}
+.hol-masthead__title {
+  font-family: var(--hol-t-chunk);
+  font-size: 28px;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+.hol-masthead__title .stop { color: var(--hol-rose); }
+.hol-masthead__badge {
+  background: var(--hol-brass);
+  color: var(--hol-ink-deep);
+  padding: 6px 12px;
+  font-family: var(--hol-t-mono);
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.hol-masthead__meta {
+  font-family: var(--hol-t-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+/* ============================================================
+   03 · COVER
+   Indigo stage with star field, drifting clouds, mega watermark
+   number, chunky title, optional live countdown grid, optional
+   scrapbook collage on the right.
+   ============================================================ */
+
+.hol-cover {
+  position: relative;
+  background: var(--hol-ink-deep);
+  color: var(--hol-cream);
+  padding: 64px clamp(20px, 4vw, 56px) 96px;
+  overflow: hidden;
+  isolation: isolate;
+}
+.hol-cover::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle 1.5px, var(--hol-brass-light) 100%, transparent 100%),
+    radial-gradient(circle 1px, var(--hol-cream) 100%, transparent 100%);
+  background-size: 84px 84px, 124px 124px;
+  background-position: 14px 22px, 62px 88px;
+  opacity: 0.45;
+}
+.hol-cover__cloud {
+  position: absolute;
+  width: 320px;
+  height: 90px;
+  opacity: 0.12;
+  pointer-events: none;
+  z-index: 0;
+}
+.hol-cover__cloud--1 { top: 10%; left: -10%; animation: hol-drift 42s linear infinite; }
+.hol-cover__cloud--2 { top: 32%; right: -15%; animation: hol-drift-r 58s linear infinite; }
+.hol-cover__cloud--3 { bottom: 20%; left: -8%; animation: hol-drift 72s linear infinite; opacity: 0.08; }
+
+.hol-cover__back-num {
+  position: absolute;
+  top: -3%;
+  right: -4%;
+  font-family: var(--hol-t-chunk);
+  font-size: clamp(280px, 48vw, 720px);
+  line-height: 0.78;
+  letter-spacing: -0.06em;
+  color: var(--hol-ruby);
+  opacity: 0.45;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+  font-variant-numeric: tabular-nums;
+}
+.hol-cover__back-script {
+  position: absolute;
+  bottom: 2%;
+  left: -2%;
+  font-family: var(--hol-t-script);
+  font-size: clamp(140px, 22vw, 320px);
+  line-height: 0.9;
+  color: var(--hol-brass);
+  opacity: 0.18;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hol-cover__inner {
+  position: relative;
+  z-index: 2;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.hol-cover__sig {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--hol-t-mono);
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--hol-brass-light);
+  border-bottom: 1px solid rgba(217, 182, 106, 0.45);
+  padding-bottom: 14px;
+  margin-bottom: 32px;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.hol-cover__overline {
+  font-family: var(--hol-t-script);
+  font-size: clamp(36px, 6vw, 64px);
+  color: var(--hol-brass-light);
+  line-height: 1;
+  transform: rotate(-2deg);
+  display: inline-block;
+  margin-bottom: 4px;
+}
+.hol-cover__title {
+  font-family: var(--hol-t-chunk);
+  font-size: clamp(64px, 12vw, 184px);
+  line-height: 0.82;
+  letter-spacing: -0.03em;
+  margin: 4px 0 16px;
+  color: var(--hol-cream);
+}
+.hol-cover__title .ruby { color: #ff8a99; }
+.hol-cover__title .outline {
+  -webkit-text-stroke: 2.5px var(--hol-cream);
+  color: transparent;
+}
+.hol-cover__title .amp {
+  font-family: var(--hol-t-script);
+  font-size: 0.45em;
+  color: var(--hol-brass-light);
+  letter-spacing: 0;
+  margin: 0 12px;
+  vertical-align: 0.2em;
+  display: inline-block;
+  transform: rotate(-3deg);
+}
+.hol-cover__dek {
+  max-width: 620px;
+  font-size: 19px;
+  line-height: 1.5;
+  margin: 0 0 36px;
+  color: var(--hol-cream);
+}
+
+.hol-cover__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+  margin-top: 24px;
+}
+@media (max-width: 920px) {
+  .hol-cover__layout { grid-template-columns: 1fr; }
+}
+
+/* Cover collage (right side) — absolutely-positioned ephemera */
+.hol-cover__collage {
+  position: relative;
+  min-height: 480px;
+}
+.hol-cover__collage > * {
+  position: absolute;
+}
+
+/* ============================================================
+   03b · COVER POSTER VARIANT (v8.13)
+   70s travel-brochure cover with a silkscreen-print SVG plate
+   (midnight sky gradient, moon-with-face character, scattered stars,
+   distant ridge, offset-overprint castle silhouette, lit brass
+   windows, water reflection), an arch-banner with text-on-path,
+   a print-offset shadow title, Yellowtail subtitle, three-pill deck,
+   and the live countdown grid. Activate by adding .hol-cover--poster
+   to .hol-cover. The base .hol-cover treatment is preserved for
+   issues that want the scrapbook-collage feel.
+   ============================================================ */
+
+.hol-cover--poster {
+  padding: 32px clamp(20px, 4vw, 56px) 56px;
+}
+.hol-cover--poster .hol-cover__illo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+}
+/* Hide the base ::before star grid on the poster variant; the SVG
+   plate already includes its own stars and ridge. */
+.hol-cover--poster::before {
+  display: none;
+}
+/* Halftone print-grain overlay — makes the poster read as offset-
+   printing rather than vector flat. */
+.hol-cover--poster::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background-image: radial-gradient(circle 1px, rgba(255, 255, 255, 0.22) 100%, transparent 100%);
+  background-size: 6px 6px;
+  mix-blend-mode: screen;
+  opacity: 0.35;
+}
+
+/* Arch-banner — SVG text-on-path arc above the title ("★ GREETINGS
+   FROM ★", "★ EAT YOUR WAY THROUGH ★"). */
+.hol-cover__arch {
+  display: block;
+  width: clamp(320px, 50vw, 540px);
+  height: clamp(80px, 12vw, 130px);
+  margin: 0 auto 8px;
+  color: var(--hol-brass-light);
+}
+.hol-cover__arch svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  display: block;
+}
+.hol-cover__arch text {
+  font-family: var(--hol-t-script);
+  fill: currentColor;
+  letter-spacing: 0.12em;
+}
+.hol-half--two .hol-cover__arch { color: var(--hol-mustard); }
+
+/* Print-offset shadow title — chunky Bowlby One with a hard offset
+   shadow that reads as misregistered screen-print. Use inside
+   .hol-cover__title on the poster variant. */
+.hol-cover__title--print {
+  position: relative;
+  display: inline-block;
+  text-align: center;
+  font-family: var(--hol-t-chunk);
+  font-size: clamp(64px, 13vw, 200px);
+  line-height: 0.82;
+  letter-spacing: -0.03em;
+  color: var(--hol-cream);
+  text-shadow: 6px 6px 0 var(--hol-ruby);
+}
+.hol-half--two .hol-cover__title--print {
+  color: var(--hol-savannah-ink);
+  text-shadow: 6px 6px 0 var(--hol-burnt);
+}
+
+/* Yellowtail script subtitle under the title. */
+.hol-cover__sub {
+  font-family: var(--hol-t-script);
+  font-size: clamp(28px, 4vw, 44px);
+  color: var(--hol-brass-light);
+  line-height: 1;
+  margin: 12px 0 24px;
+  text-align: center;
+  transform: rotate(-1.5deg);
+}
+
+/* Three-pill deck row under the subtitle (date · gates · group · trip
+   length, etc.). Mono caps with star dividers. */
+.hol-cover__deck {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  font-family: var(--hol-t-mono);
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--hol-cream);
+  margin: 0 auto 28px;
+}
+.hol-cover__deck b {
+  color: var(--hol-brass-light);
+  font-weight: 700;
+}
+.hol-cover__deck .star {
+  color: var(--hol-brass-light);
+  font-size: 1.1em;
+}
+
+/* Center-stage layout for the poster variant — stacked, centred, with
+   the countdown grid pinned at the bottom of the inner. */
+.hol-cover--poster .hol-cover__inner {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  padding-top: 24px;
+}
+.hol-cover--poster .hol-cover__sig {
+  width: 100%;
+}
+.hol-cover--poster .hol-cover__title { margin: 0 0 4px; }
+.hol-cover--poster .hol-countdown { margin-top: 8px; }
+
+/* ============================================================
+   04 · COUNTDOWN — live digit grid (Countdown format only)
+   The flip-pop seconds animation is preserved from existing
+   31-chapter-gate / 24-special-motion. JS controller in script.js
+   binds to [data-cd] cells.
+   ============================================================ */
+
+.hol-countdown {
+  background: rgba(252, 245, 237, 0.04);
+  border: 2px solid var(--hol-brass-light);
+  padding: 22px 18px;
+  max-width: 720px;
+  text-align: center;
+  position: relative;
+}
+.hol-countdown__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.hol-countdown__cell {
+  border: 1px solid rgba(217, 182, 106, 0.6);
+  padding: 18px 6px;
+  text-align: center;
+}
+.hol-countdown__num {
+  font-family: var(--hol-t-chunk);
+  font-size: clamp(48px, 9vw, 96px);
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--hol-cream);
+  display: block;
+}
+.hol-countdown__unit {
+  font-family: var(--hol-t-mono);
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  margin-top: 6px;
+  color: var(--hol-brass-light);
+}
+.hol-countdown__target {
+  margin-top: 16px;
+  font-family: var(--hol-t-mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--hol-brass-light);
+}
+.hol-countdown__num.is-flipping {
+  animation: hol-flip-pop 600ms ease-out;
+  transform-origin: center;
+}
+
+/* ============================================================
+   05 · KICKER STRIP — promise of the issue, between cover and Half I
+   ============================================================ */
+
+.hol-kicker-strip {
+  background: var(--hol-cream);
+  color: var(--hol-ink-deep);
+  padding: 20px clamp(20px, 4vw, 56px);
+  border-bottom: 3px double var(--hol-ink-deep);
+  text-align: center;
+}
+.hol-kicker-strip__inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.hol-kicker-strip__title {
+  font-family: var(--hol-t-chunk);
+  font-size: clamp(28px, 4.5vw, 48px);
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+.hol-kicker-strip__sub {
+  font-family: var(--hol-t-script);
+  font-size: clamp(22px, 3vw, 32px);
+  color: var(--hol-brass);
+  line-height: 1;
+  transform: rotate(-1.5deg);
+  display: inline-block;
+}
+.hol-kicker-strip__meta {
+  font-family: var(--hol-t-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-align: right;
+  line-height: 1.5;
+}
+
+/* ============================================================
+   06 · HALF — the structural unit. Two per multi-venue issue,
+   one per single-venue issue (with a softer interior break).
+   ============================================================ */
+
+.hol-half {
+  position: relative;
+  padding: 64px clamp(20px, 4vw, 56px) 96px;
+  overflow: hidden;
+  isolation: isolate;
+}
+.hol-half__inner {
+  position: relative;
+  z-index: 2;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* Half I — Efteling default (indigo stage + celestial backdrop) */
+.hol-half--one {
+  background: var(--hol-ink-deep);
+  color: var(--hol-cream);
+}
+.hol-half--one::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle 1.5px, var(--hol-brass-light) 100%, transparent 100%),
+    radial-gradient(circle 1px, var(--hol-cream) 100%, transparent 100%);
+  background-size: 84px 84px, 124px 124px;
+  background-position: 14px 22px, 62px 88px;
+  opacity: 0.45;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Half II — Beekse Bergen default (savannah cartography — gradient sky
+   fading to khaki dust, layered SVG silhouettes of giraffes, acacia trees,
+   and an elephant along the bottom; conic sun rays from the upper-right.
+   No flat orange fill. Static, repeating, tiled — paint cost is amortised
+   across the entire half's scroll. The only animation in Half II is the
+   heat-haze shimmer used on ONE chapter as a deliberate moment — see
+   .theme-heat-haze below. v8.13. */
+.hol-half--two {
+  background:
+    linear-gradient(
+      180deg,
+      var(--hol-sand) 0%,
+      var(--hol-bone) 55%,
+      #d8c190 100%
+    );
+  color: var(--hol-savannah-ink);
+}
+/* Conic sun rays from upper-right + radial brass-orange sun disc.
+   Reads as the savannah morning sun without any animation cost. */
+.hol-half--two::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      circle at 92% 8%,
+      rgba(217, 168, 45, 0.55) 0%,
+      rgba(217, 168, 45, 0.20) 14%,
+      transparent 32%
+    ),
+    repeating-conic-gradient(
+      from -10deg at 92% 8%,
+      rgba(217, 168, 45, 0.14) 0deg 5deg,
+      transparent 5deg 18deg
+    );
+  opacity: 0.9;
+}
+/* Savannah silhouette band — giraffes, acacia trees, elephant, grass tufts,
+   and tiny bird scribbles. Direct lift of the proven recipe from
+   signal-holiday.css .theme-savannah-band. Tiled along the bottom 240px. */
+.hol-half--two::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 240px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 240' preserveAspectRatio='xMidYMax slice'><g fill='%231c2613'><path d='M0,180 Q120,160 280,180 T540,180 T840,180 T1200,180 L1200,240 L0,240 Z'/><g><rect x='120' y='110' width='3' height='70'/><ellipse cx='121' cy='108' rx='34' ry='10'/><ellipse cx='100' cy='100' rx='18' ry='6'/><ellipse cx='142' cy='102' rx='20' ry='8'/><rect x='620' y='130' width='3' height='52'/><ellipse cx='621' cy='128' rx='28' ry='8'/><ellipse cx='604' cy='121' rx='14' ry='5'/><ellipse cx='638' cy='123' rx='15' ry='6'/><rect x='980' y='100' width='3' height='80'/><ellipse cx='981' cy='98' rx='38' ry='12'/><ellipse cx='956' cy='90' rx='20' ry='7'/><ellipse cx='1006' cy='92' rx='22' ry='8'/></g><g transform='translate(380 168)'><rect x='-2' y='0' width='5' height='14'/><rect x='8' y='0' width='5' height='14'/><rect x='18' y='0' width='5' height='14'/><rect x='28' y='0' width='5' height='14'/><ellipse cx='15' cy='0' rx='22' ry='6'/><rect x='28' y='-22' width='3' height='22' transform='rotate(-15 28 -22)'/><ellipse cx='34' cy='-26' rx='6' ry='4'/></g><g transform='translate(820 174)'><ellipse cx='0' cy='0' rx='24' ry='8'/><rect x='-12' y='0' width='5' height='10'/><rect x='-2' y='0' width='5' height='10'/><rect x='8' y='0' width='5' height='10'/><rect x='18' y='0' width='5' height='10'/><ellipse cx='-22' cy='-7' rx='8' ry='7'/></g><g transform='translate(220 180)'><ellipse cx='0' cy='0' rx='20' ry='6'/><rect x='-10' y='0' width='4' height='8'/><rect x='-2' y='0' width='4' height='8'/><rect x='6' y='0' width='4' height='8'/><rect x='14' y='0' width='4' height='8'/><ellipse cx='-18' cy='-6' rx='8' ry='6'/></g><g fill='none' stroke='%231c2613' stroke-width='2' opacity='0.6'><path d='M 460 90 Q 466 84 472 90 Q 478 84 484 90'/><path d='M 540 130 Q 546 124 552 130 Q 558 124 564 130'/><path d='M 720 110 Q 726 104 732 110 Q 738 104 744 110'/></g></g></svg>");
+  background-size: 1200px 240px;
+  background-repeat: repeat-x;
+  background-position: center bottom;
+  opacity: 0.55;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ============================================================
+   06b · OPTIONAL ATMOSPHERIC THEME LAYERS (v8.13)
+   Stack on top of a .hol-half (or any positioned section) to add
+   extra storybook / savannah atmosphere. Each is a single CSS
+   pseudo-element with a tiled SVG — paint cost is amortised by the
+   browser image cache; identical across 1 page or 30 pages of scroll.
+   Usage: <section class="hol-half hol-half--two theme-tracks">...
+   ============================================================ */
+
+/* Storybook trees lifted from signal-holiday.css .theme-fairytale.
+   Apply to a Half I chapter for an Anton-Pieck silhouette band along
+   the bottom edge with brass lantern lights. */
+.theme-fairytale {
+  position: relative;
+  isolation: isolate;
+}
+.theme-fairytale::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 220px;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 220' preserveAspectRatio='xMidYMax slice'><g fill='%230d1330'><path d='M0,200 Q150,180 320,200 T620,200 T920,200 T1200,200 L1200,220 L0,220 Z'/><g><path d='M40,200 Q30,160 38,120 Q22,110 18,90 Q40,80 50,100 Q60,70 78,80 Q82,100 70,120 Q88,140 80,170 Q92,180 88,200 Z'/><path d='M180,200 Q160,150 180,100 Q160,80 165,55 Q190,50 200,80 Q215,55 230,70 Q230,95 215,120 Q240,150 225,180 Q240,195 230,200 Z'/><path d='M340,200 Q320,170 326,140 Q310,130 308,108 Q330,100 342,120 Q352,90 370,98 Q372,120 360,140 Q380,160 370,180 Q380,200 370,200 Z'/><path d='M520,200 Q500,170 506,135 Q488,120 482,98 Q510,90 524,118 Q540,90 558,100 Q560,124 548,144 Q570,168 558,184 Q572,200 558,200 Z'/><path d='M700,200 Q680,160 696,120 Q680,100 684,80 Q706,70 720,98 Q738,72 754,80 Q758,100 744,124 Q768,148 752,180 Q768,200 750,200 Z'/><path d='M880,200 Q860,180 866,150 Q850,138 850,118 Q870,108 884,128 Q900,108 916,118 Q918,140 906,158 Q924,172 916,190 Q926,200 916,200 Z'/><path d='M1040,200 Q1020,170 1028,130 Q1010,118 1010,100 Q1032,90 1048,118 Q1064,90 1080,98 Q1086,120 1072,140 Q1092,164 1082,184 Q1098,200 1080,200 Z'/></g><circle cx='70' cy='110' r='4' fill='%23d9b66a'/><circle cx='210' cy='90' r='3' fill='%23d9b66a'/><circle cx='550' cy='130' r='3.5' fill='%23d9b66a'/><circle cx='730' cy='120' r='3' fill='%23d9b66a'/><circle cx='900' cy='140' r='3' fill='%23d9b66a'/><circle cx='1070' cy='128' r='4' fill='%23d9b66a'/></g></svg>");
+  background-size: 1200px 220px;
+  background-repeat: repeat-x;
+  background-position: center bottom;
+  opacity: 0.6;
+}
+
+/* Anton-Pieck brass filigree corner flourishes. Apply to a Half I
+   chapter opener for ornamental corner brackets. */
+.theme-flourish {
+  position: relative;
+  isolation: isolate;
+}
+.theme-flourish::before,
+.theme-flourish > .theme-flourish__after {
+  content: "";
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  pointer-events: none;
+  z-index: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><g fill='none' stroke='%23b8893a' stroke-width='1.5' opacity='0.6'><path d='M10,10 Q60,10 80,30 Q90,40 90,50 Q90,30 70,20 Q60,15 60,30 Q60,40 70,40 Q90,40 90,60 Q90,90 60,90 Q40,90 30,80 Q20,70 20,60 Q20,40 40,40'/><circle cx='35' cy='35' r='3' fill='%23b8893a'/><circle cx='90' cy='50' r='3' fill='%23b8893a'/><path d='M50,80 L48,72 L52,72 Z' fill='%23b8893a'/></g></svg>");
+  background-size: contain;
+  background-repeat: no-repeat;
+  top: 20px;
+  left: 20px;
+}
+.theme-flourish::after {
+  content: "";
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  top: 20px;
+  right: 20px;
+  pointer-events: none;
+  z-index: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><g fill='none' stroke='%23b8893a' stroke-width='1.5' opacity='0.6'><path d='M10,10 Q60,10 80,30 Q90,40 90,50 Q90,30 70,20 Q60,15 60,30 Q60,40 70,40 Q90,40 90,60 Q90,90 60,90 Q40,90 30,80 Q20,70 20,60 Q20,40 40,40'/><circle cx='35' cy='35' r='3' fill='%23b8893a'/><circle cx='90' cy='50' r='3' fill='%23b8893a'/><path d='M50,80 L48,72 L52,72 Z' fill='%23b8893a'/></g></svg>");
+  background-size: contain;
+  background-repeat: no-repeat;
+  transform: scaleX(-1);
+}
+
+/* Constellation/starfield with connecting lines (Efteling). Richer
+   than the .hol-half--one base star grid — includes constellation
+   lines and four-point sparkle stars. Apply ON TOP of .hol-half--one
+   for a feature chapter; otherwise the base grid is enough. */
+.theme-celestial {
+  position: relative;
+  isolation: isolate;
+}
+.theme-celestial::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600'><g fill='%23d9b66a'><circle cx='40' cy='50' r='1.6'/><circle cx='128' cy='30' r='2.2'/><circle cx='220' cy='80' r='1.2'/><circle cx='304' cy='44' r='1.8'/><circle cx='400' cy='110' r='2.4'/><circle cx='498' cy='60' r='1.4'/><circle cx='584' cy='32' r='2'/><circle cx='680' cy='90' r='1.6'/><circle cx='760' cy='40' r='1.8'/><circle cx='60' cy='200' r='1.2'/><circle cx='160' cy='240' r='2'/><circle cx='260' cy='180' r='1.4'/><circle cx='340' cy='280' r='2.2'/><circle cx='460' cy='200' r='1.6'/><circle cx='580' cy='260' r='1.8'/><circle cx='680' cy='220' r='1.2'/><circle cx='760' cy='280' r='2'/><circle cx='100' cy='420' r='1.4'/><circle cx='200' cy='460' r='2.2'/><circle cx='300' cy='400' r='1.8'/><circle cx='420' cy='460' r='1.4'/><circle cx='520' cy='420' r='2'/><circle cx='620' cy='480' r='1.6'/><circle cx='720' cy='440' r='1.2'/><path d='M40,50 L128,30 L220,80 L304,44 L400,110 M460,200 L580,260 L680,220 L760,280' stroke='%23d9b66a' stroke-width='0.8' opacity='0.35' fill='none'/><path d='M100,420 L200,460 L300,400 L420,460 L520,420' stroke='%23b25361' stroke-width='0.8' opacity='0.3' fill='none'/></g><g fill='%23fcf5ed' opacity='0.6'><path d='M180,140 L184,128 L188,140 L200,144 L188,148 L184,160 L180,148 L168,144 Z'/><path d='M540,360 L544,348 L548,360 L560,364 L548,368 L544,380 L540,368 L528,364 Z'/><path d='M340,520 L344,508 L348,520 L360,524 L348,528 L344,540 L340,528 L328,524 Z'/></g></svg>");
+  background-size: 800px 600px;
+  background-repeat: repeat;
+  opacity: 0.75;
+}
+
+/* Drifting line-drawn hot-air balloons. Reserve for the Wonder Hotel
+   chapter (Half I, accommodation). Lifted from signal-holiday.css
+   .theme-airships. */
+.theme-airships {
+  position: relative;
+  isolation: isolate;
+}
+.theme-airships::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 400'><g><ellipse cx='180' cy='80' rx='80' ry='22' fill='none' stroke='%23d9b66a' stroke-width='1' opacity='0.5'/><line x1='180' y1='102' x2='180' y2='118' stroke='%23d9b66a' opacity='0.5'/><rect x='168' y='118' width='24' height='10' rx='2' fill='none' stroke='%23d9b66a' opacity='0.5'/><ellipse cx='900' cy='220' rx='70' ry='20' fill='none' stroke='%23b25361' stroke-width='1' opacity='0.4'/><line x1='900' y1='240' x2='900' y2='254' stroke='%23b25361' opacity='0.4'/><rect x='890' y='254' width='20' height='9' rx='2' fill='none' stroke='%23b25361' opacity='0.4'/><ellipse cx='540' cy='320' rx='60' ry='18' fill='none' stroke='%23d9b66a' stroke-width='1' opacity='0.3'/><line x1='540' y1='338' x2='540' y2='350' stroke='%23d9b66a' opacity='0.3'/><rect x='532' y='350' width='16' height='8' rx='2' fill='none' stroke='%23d9b66a' opacity='0.3'/></g></svg>");
+  background-size: 1200px 400px;
+  background-repeat: repeat;
+  background-position: center;
+  opacity: 0.7;
+}
+
+/* Animal paw/hoof print trail (Half II). Apply to one or two safari
+   chapters as a low-opacity terracotta watermark. Tiled, static. */
+.theme-tracks {
+  position: relative;
+  isolation: isolate;
+}
+.theme-tracks::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'><g fill='%23c25a2e' opacity='0.20'><g transform='translate(60 80)'><ellipse cx='0' cy='10' rx='8' ry='10'/><circle cx='-8' cy='-2' r='3.5'/><circle cx='8' cy='-2' r='3.5'/><circle cx='-12' cy='6' r='3'/><circle cx='12' cy='6' r='3'/></g><g transform='translate(200 180) rotate(15)'><ellipse cx='0' cy='10' rx='8' ry='10'/><circle cx='-8' cy='-2' r='3.5'/><circle cx='8' cy='-2' r='3.5'/><circle cx='-12' cy='6' r='3'/><circle cx='12' cy='6' r='3'/></g><g transform='translate(420 100) rotate(-10)'><ellipse cx='0' cy='10' rx='8' ry='10'/><circle cx='-8' cy='-2' r='3.5'/><circle cx='8' cy='-2' r='3.5'/><circle cx='-12' cy='6' r='3'/><circle cx='12' cy='6' r='3'/></g><g transform='translate(540 280) rotate(8)'><ellipse cx='0' cy='10' rx='8' ry='10'/><circle cx='-8' cy='-2' r='3.5'/><circle cx='8' cy='-2' r='3.5'/><circle cx='-12' cy='6' r='3'/><circle cx='12' cy='6' r='3'/></g><g transform='translate(120 320) rotate(-22)'><ellipse cx='0' cy='10' rx='8' ry='10'/><circle cx='-8' cy='-2' r='3.5'/><circle cx='8' cy='-2' r='3.5'/><circle cx='-12' cy='6' r='3'/><circle cx='12' cy='6' r='3'/></g></g></svg>");
+  background-size: 600px 400px;
+  background-repeat: repeat;
+}
+
+/* Heat shimmer ribbon (Half II, ONE chapter only). The single moment
+   of animation in Half II. */
+.theme-heat-haze {
+  position: relative;
+  isolation: isolate;
+}
+.theme-heat-haze::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 32%;
+  height: 120px;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(180deg, transparent, rgba(217, 168, 45, 0.16), transparent);
+  filter: blur(8px);
+  animation: hol-shimmer 4s ease-in-out infinite alternate;
+}
+@keyframes hol-shimmer {
+  from { transform: translateY(0) skewX(0); }
+  to   { transform: translateY(8px) skewX(-1deg); }
+}
+
+/* Z-index lift: theme layers sit at z-0; content must rise above. */
+.theme-celestial > *,
+.theme-fairytale > *,
+.theme-flourish > *,
+.theme-airships > *,
+.theme-tracks > *,
+.theme-heat-haze > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Legacy alias kept for back-compat with planners that may emit the
+   old class name. */
+.hol-half--fairytale::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 220px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 220' preserveAspectRatio='xMidYMax slice'><g fill='%230d1330'><path d='M0,200 Q150,180 320,200 T620,200 T920,200 T1200,200 L1200,220 L0,220 Z'/><g><path d='M40,200 Q30,160 38,120 Q22,110 18,90 Q40,80 50,100 Q60,70 78,80 Q82,100 70,120 Q88,140 80,170 Q92,180 88,200 Z'/><path d='M180,200 Q160,150 180,100 Q160,80 165,55 Q190,50 200,80 Q215,55 230,70 Q230,95 215,120 Q240,150 225,180 Q240,195 230,200 Z'/><path d='M340,200 Q320,170 326,140 Q310,130 308,108 Q330,100 342,120 Q352,90 370,98 Q372,120 360,140 Q380,160 370,180 Q380,200 370,200 Z'/><path d='M520,200 Q500,170 506,135 Q488,120 482,98 Q510,90 524,118 Q540,90 558,100 Q560,124 548,144 Q570,168 558,184 Q572,200 558,200 Z'/><path d='M700,200 Q680,160 696,120 Q680,100 684,80 Q706,70 720,98 Q738,72 754,80 Q758,100 744,124 Q768,148 752,180 Q768,200 750,200 Z'/></g><circle cx='70' cy='110' r='4' fill='%23d9b66a'/><circle cx='210' cy='90' r='3' fill='%23d9b66a'/><circle cx='550' cy='130' r='3.5' fill='%23d9b66a'/><circle cx='730' cy='120' r='3' fill='%23d9b66a'/></g></svg>");
+  background-size: 1200px 220px;
+  background-repeat: repeat-x;
+  background-position: center bottom;
+  opacity: 0.55;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ============================================================
+   07 · HALF OPENER — the big stacked chapter header
+   Script tag + serif italic mega title + skewed cream subtitle
+   + pill tagline. Direct lift of code-1.html's part header.
+   ============================================================ */
+
+.hol-half__opener {
+  position: relative;
+  text-align: center;
+  margin-bottom: 64px;
+  padding-top: 32px;
+}
+.hol-half__opener-tag {
+  font-family: var(--hol-t-script);
+  font-size: clamp(40px, 5vw, 60px);
+  color: var(--hol-brass-light);
+  display: inline-block;
+  transform: rotate(-4deg);
+  position: absolute;
+  top: 0;
+  left: 50%;
+  margin-left: -260px;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  line-height: 1;
+}
+.hol-half__opener-title {
+  font-family: var(--hol-t-serif);
+  font-style: italic;
+  font-weight: 900;
+  font-size: clamp(84px, 14vw, 200px);
+  line-height: 0.85;
+  letter-spacing: -0.02em;
+  color: var(--hol-cream);
+  text-transform: uppercase;
+  text-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+  margin: 0;
+}
+.hol-half__opener-subtitle {
+  display: inline-block;
+  background: var(--hol-cream);
+  color: var(--hol-ink-deep);
+  padding: 14px 36px;
+  font-family: var(--hol-t-serif);
+  font-size: clamp(22px, 3.4vw, 40px);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  border-bottom: 6px solid var(--hol-brass);
+  transform: skewX(-6deg);
+  margin-top: 16px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+  position: relative;
+  z-index: 4;
+}
+.hol-half__opener-subtitle span { display: inline-block; transform: skewX(6deg); }
+.hol-half__opener-pills {
+  margin-top: 32px;
+  display: flex;
+  justify-content: center;
+  gap: 14px 24px;
+  flex-wrap: wrap;
+  font-family: var(--hol-t-script);
+  font-size: clamp(20px, 2.6vw, 30px);
+  color: var(--hol-brass-light);
+  font-style: italic;
+}
+.hol-half__opener-pills .dot { color: rgba(252, 245, 237, 0.35); }
+
+/* Half II opener — chunky display, letterpress burnt shadow on light
+   savannah ground. v8.13 — was bone-on-terracotta; now savannah-ink-on-
+   sand to match the new gradient ground. */
+.hol-half--two .hol-half__opener-tag { color: var(--hol-burnt); }
+.hol-half--two .hol-half__opener-title {
+  font-family: var(--hol-t-chunk);
+  font-style: normal;
+  color: var(--hol-savannah-ink);
+  text-shadow: 6px 6px 0 var(--hol-burnt);
+}
+.hol-half--two .hol-half__opener-subtitle {
+  border-bottom-color: var(--hol-burnt);
+  color: var(--hol-savannah-ink);
+}
+.hol-half--two .hol-half__opener-pills { color: var(--hol-burnt); }
+.hol-half--two .hol-half__opener-pills .dot { color: rgba(28, 38, 19, 0.35); }
+
+/* ============================================================
+   08 · TRANSIT INTERMISSION — the only structural break in the issue
+   Full-bleed black band with mega kinetic typography watermarking
+   each side and the divider card pinned centre. Use ONCE per
+   multi-venue Countdown / Field Guide, between Half I and Half II.
+   ============================================================ */
+
+.hol-transit {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  height: 280px;
+  width: 100%;
+  background: #000;
+  border-top: 12px solid #000;
+  border-bottom: 12px solid #000;
+  position: relative;
+  overflow: hidden;
+  z-index: 50;
+}
+.hol-transit__side {
+  position: relative;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding: 0 64px;
+}
+.hol-transit__side--left { justify-content: flex-end; text-align: right; }
+.hol-transit__side--right { justify-content: flex-start; text-align: left; }
+.hol-transit__mega-bg {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  z-index: 1;
+  font-family: var(--hol-t-tall);
+  font-size: clamp(120px, 18vw, 240px);
+  letter-spacing: -0.02em;
+  color: rgba(255, 255, 255, 0.07);
+  text-transform: uppercase;
+  line-height: 0.9;
+  pointer-events: none;
+}
+.hol-transit__side--left .hol-transit__mega-bg { justify-content: flex-end; padding-right: 24px; }
+.hol-transit__side--right .hol-transit__mega-bg { justify-content: flex-start; padding-left: 24px; }
+.hol-transit__label { position: relative; z-index: 2; }
+.hol-transit__hand {
+  font-family: var(--hol-t-script);
+  font-size: clamp(28px, 3.4vw, 42px);
+  color: var(--hol-brass-light);
+  display: block;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.hol-transit__side--right .hol-transit__hand { color: var(--hol-mustard); }
+.hol-transit__name {
+  font-family: var(--hol-t-tall);
+  font-size: clamp(36px, 4vw, 60px);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1;
+}
+.hol-transit__center {
+  position: relative;
+  width: 0;
+  z-index: 60;
+}
+.hol-transit__center-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #000;
+  color: var(--hol-cream);
+  padding: 18px 40px;
+  border: 4px solid var(--hol-cream);
+  font-family: var(--hol-t-chunk);
+  font-size: clamp(20px, 2.4vw, 32px);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9);
+}
+@media (max-width: 720px) {
+  .hol-transit {
+    grid-template-columns: 1fr;
+    height: auto;
+    padding: 32px 0;
+    gap: 24px;
+  }
+  .hol-transit__side { padding: 0 24px; text-align: center; justify-content: center; }
+  .hol-transit__side--left { text-align: center; }
+  .hol-transit__center { width: auto; height: 0; }
+  .hol-transit__center-card { position: relative; transform: none; top: auto; left: auto; }
+}
+
+/* ============================================================
+   09 · POLAROID — rotated photo card with washi tape + caption
+   ============================================================ */
+
+.hol-polaroid {
+  background: var(--hol-paper);
+  padding: 10px 10px 40px;
+  border: 1px solid rgba(27, 34, 68, 0.18);
+  box-shadow: 0 24px 36px -18px rgba(0, 0, 0, 0.7), 0 2px 0 rgba(0, 0, 0, 0.06);
+  max-width: 260px;
+  width: 100%;
+  display: block;
+  position: relative;
+  color: var(--hol-ink);
+  transform: rotate(-2deg);
+  transition: transform 0.4s ease;
+}
+.hol-polaroid--right { transform: rotate(3deg); }
+.hol-polaroid--flat { transform: rotate(0); }
+.hol-polaroid:hover { transform: rotate(0) scale(1.02); }
+.hol-polaroid__photo {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background-color: var(--hol-cream-deep);
+  background-size: cover;
+  background-position: center;
+  border: 1px solid rgba(27, 34, 68, 0.1);
+}
+.hol-polaroid__caption {
+  font-family: var(--hol-t-hand);
+  font-size: 22px;
+  color: var(--hol-ink);
+  text-align: center;
+  margin-top: 8px;
+  line-height: 1;
+}
+.hol-polaroid__tape {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-3deg);
+  width: 90px;
+  height: 22px;
+  background: rgba(217, 182, 106, 0.7);
+  border-left: 1px dashed rgba(255, 255, 255, 0.4);
+  border-right: 1px dashed rgba(255, 255, 255, 0.4);
+  pointer-events: none;
+}
+.hol-polaroid--right .hol-polaroid__tape { transform: translateX(-50%) rotate(4deg); }
+
+/* ============================================================
+   10 · POSTCARD — front (greeting on indigo) + back (handwritten on lined paper)
+   ============================================================ */
+
+.hol-postcard {
+  background: var(--hol-paper);
+  border: 1px solid var(--hol-ink);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  max-width: 380px;
+  width: 100%;
+  min-height: 200px;
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.4);
+  color: var(--hol-ink);
+}
+.hol-postcard__front {
+  background: var(--hol-ink-deep);
+  color: var(--hol-cream);
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.hol-postcard__greeting {
+  font-family: var(--hol-t-script);
+  font-size: 28px;
+  line-height: 0.9;
+  color: var(--hol-brass-light);
+}
+.hol-postcard__place {
+  font-family: var(--hol-t-tall);
+  font-size: 18px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.hol-postcard__back {
+  padding: 16px 16px 16px 14px;
+  font-family: var(--hol-t-hand);
+  font-size: 18px;
+  line-height: 1.25;
+  color: var(--hol-ink);
+  border-left: 1px dashed var(--hol-ink);
+  background-image: repeating-linear-gradient(180deg, transparent 0 22px, rgba(27, 34, 68, 0.16) 22px 23px);
+  background-position: 0 14px;
+}
+
+/* ============================================================
+   11 · STAMP — circular rubber-stamp seal
+   ============================================================ */
+
+.hol-stamp {
+  display: inline-grid;
+  place-items: center;
+  width: 120px;
+  height: 120px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  color: var(--hol-ruby);
+  font-family: var(--hol-t-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 10px;
+  line-height: 1.2;
+  transform: rotate(-8deg);
+  background: rgba(252, 245, 237, 0.06);
+  position: relative;
+}
+.hol-stamp::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+}
+.hol-stamp b {
+  display: block;
+  font-family: var(--hol-t-slab);
+  font-size: 16px;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  margin: 4px 0;
+}
+.hol-stamp--brass { color: var(--hol-brass-light); }
+.hol-stamp--emerald { color: var(--hol-emerald); }
+.hol-stamp--mustard { color: var(--hol-mustard); }
+
+/* ============================================================
+   12 · ANCHOR — feature article block. Tilted border, photo + card,
+   rotated badge + hand-script note overlapping.
+   ============================================================ */
+
+.hol-anchor {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: center;
+  margin: 48px 0 64px;
+  padding: 32px 0 32px 32px;
+  border-left: 10px solid var(--hol-brass);
+  transform: rotate(-1deg);
+}
+@media (max-width: 820px) {
+  .hol-anchor { grid-template-columns: 1fr; padding-left: 24px; }
+}
+.hol-anchor__photo {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background-color: var(--hol-cream-deep);
+  background-size: cover;
+  background-position: center;
+  border: 10px solid rgba(252, 245, 237, 0.08);
+  box-shadow: 0 40px 60px rgba(0, 0, 0, 0.7);
+  transition: transform 0.5s ease;
+}
+.hol-anchor:hover .hol-anchor__photo { transform: scale(1.02) rotate(0.5deg); }
+.hol-anchor__title {
+  font-family: var(--hol-t-serif);
+  font-weight: 900;
+  font-size: clamp(36px, 5vw, 72px);
+  line-height: 0.95;
+  color: var(--hol-brass-light);
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  margin: 0 0 16px;
+  text-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+}
+.hol-anchor__dek {
+  font-family: var(--hol-t-serif);
+  font-style: italic;
+  font-size: clamp(20px, 2.4vw, 28px);
+  line-height: 1.35;
+  color: var(--hol-cream);
+  max-width: 540px;
+  margin: 0 0 28px;
+}
+.hol-anchor__meta {
+  border-top: 1px solid rgba(252, 245, 237, 0.25);
+  padding-top: 18px;
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+  font-family: var(--hol-t-mono);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--hol-brass-light);
+}
+.hol-anchor__meta b {
+  display: block;
+  font-family: var(--hol-t-body);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--hol-cream);
+  margin-top: 4px;
+}
+.hol-anchor__badge {
+  position: absolute;
+  top: -28px;
+  right: -8px;
+  background: var(--hol-cream);
+  color: var(--hol-rose-deep);
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  font-family: var(--hol-t-hand);
+  font-size: 22px;
+  line-height: 1;
+  padding: 14px;
+  transform: rotate(12deg);
+  border: 4px solid var(--hol-brass);
+  box-shadow: 0 30px 50px rgba(0, 0, 0, 0.6);
+  z-index: 4;
+}
+.hol-anchor__note {
+  position: absolute;
+  bottom: -28px;
+  right: 60px;
+  font-family: var(--hol-t-script);
+  font-size: clamp(28px, 3.5vw, 44px);
+  color: var(--hol-brass-light);
+  transform: rotate(4deg);
+  opacity: 0.9;
+  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.7);
+}
+
+/* Half II anchor recolour — ink-on-cream-sand. v8.13. */
+.hol-half--two .hol-anchor { border-left-color: var(--hol-burnt); }
+.hol-half--two .hol-anchor__title { color: var(--hol-burnt); }
+.hol-half--two .hol-anchor__dek { color: var(--hol-savannah-ink); }
+.hol-half--two .hol-anchor__meta { border-top-color: rgba(28, 38, 19, 0.25); color: var(--hol-burnt); }
+.hol-half--two .hol-anchor__meta b { color: var(--hol-savannah-ink); }
+.hol-half--two .hol-anchor__badge { background: var(--hol-mustard); color: var(--hol-savannah-ink); border-color: var(--hol-burnt); }
+.hol-half--two .hol-anchor__note { color: var(--hol-burnt); }
+
+/* ============================================================
+   12b · WONDERS — the code.html editorial zig-zag (v8.13)
+   A chapter-level component for ranked editorial picks (Field Guide
+   Unmissables, Countdown Top Attractions, Top Culinary Wonders).
+   Each row is a rotated hero image with thick white border paired
+   beside a parchment card carrying a numbered chip, serif italic
+   pull-quote lede, and a tight Where/Why meta strip. Rows alternate
+   sides via .hol-wonder--reverse. Designed to sit ON TOP of the
+   indigo + starfield + storybook ground of .hol-half--one — the
+   dark backdrop reads through between rows, making the parchment
+   cards feel like illustrated plates pasted onto the night sky.
+   Use as the canonical Half I chapter structure. Hover-unrotate
+   on the photo is the only motion.
+   ============================================================ */
+
+.hol-wonders {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 80px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 0 64px;
+}
+.hol-wonders__intro {
+  text-align: center;
+  margin-bottom: 16px;
+}
+.hol-wonders__intro h2 {
+  font-family: var(--hol-t-serif);
+  font-style: italic;
+  font-size: clamp(48px, 8vw, 96px);
+  line-height: 1;
+  color: var(--hol-cream);
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+  margin: 0 0 12px;
+}
+.hol-wonders__intro p {
+  font-family: var(--hol-t-mono);
+  font-size: 13px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--hol-brass-light);
+  margin: 0;
+}
+
+.hol-wonder {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 40px;
+  position: relative;
+}
+.hol-wonder--reverse { flex-direction: row-reverse; }
+@media (max-width: 920px) {
+  .hol-wonder,
+  .hol-wonder--reverse { flex-direction: column; gap: 24px; }
+}
+
+.hol-wonder__photo {
+  flex: 0 0 50%;
+  aspect-ratio: 4 / 3;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 12px;
+  border: 4px solid rgba(255, 255, 255, 0.10);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.55);
+  transform: rotate(1deg);
+  transition: transform 500ms ease;
+  overflow: hidden;
+}
+.hol-wonder--reverse .hol-wonder__photo { transform: rotate(-1deg); }
+.hol-wonder:hover .hol-wonder__photo,
+.hol-wonder:focus-within .hol-wonder__photo { transform: rotate(0); }
+@media (max-width: 920px) {
+  .hol-wonder__photo,
+  .hol-wonder--reverse .hol-wonder__photo { flex: 0 0 auto; width: 100%; transform: rotate(0); }
+}
+
+.hol-wonder__card {
+  flex: 0 0 50%;
+  position: relative;
+  background: var(--hol-cream-deep);
+  color: var(--hol-ink-deep);
+  border-radius: 8px;
+  padding: 40px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45);
+}
+@media (max-width: 920px) {
+  .hol-wonder__card { flex: 0 0 auto; width: 100%; padding: 28px; }
+}
+
+.hol-wonder__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.hol-wonder__num {
+  font-family: var(--hol-t-chunk);
+  background: var(--hol-ruby);
+  color: var(--hol-cream);
+  font-size: 14px;
+  letter-spacing: 0;
+  padding: 6px 10px 4px;
+  border-radius: 3px;
+  line-height: 1;
+  display: inline-block;
+  min-width: 36px;
+  text-align: center;
+}
+.hol-wonder__title {
+  font-family: var(--hol-t-serif);
+  font-weight: 700;
+  font-size: clamp(26px, 3vw, 34px);
+  line-height: 1.1;
+  color: var(--hol-ink-deep);
+  margin: 0;
+}
+.hol-wonder__quote {
+  font-family: var(--hol-t-serif);
+  font-style: italic;
+  font-size: 19px;
+  line-height: 1.45;
+  color: var(--hol-ink-deep);
+  margin: 0 0 24px;
+}
+.hol-wonder__meta {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px 14px;
+  align-items: baseline;
+}
+.hol-wonder__meta dt {
+  font-family: var(--hol-t-mono);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--hol-ink-deep);
+  min-width: 56px;
+  margin: 0;
+}
+.hol-wonder__meta dd {
+  font-family: var(--hol-t-body);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--hol-ink-deep);
+  margin: 0;
+}
+
+/* Half II palette swap — burnt num pill, savannah-ink card text */
+.hol-half--two .hol-wonder__card { background: var(--hol-bone); color: var(--hol-savannah-ink); }
+.hol-half--two .hol-wonder__num  { background: var(--hol-burnt); color: var(--hol-bone); }
+.hol-half--two .hol-wonder__title,
+.hol-half--two .hol-wonder__quote,
+.hol-half--two .hol-wonder__meta dt,
+.hol-half--two .hol-wonder__meta dd { color: var(--hol-savannah-ink); }
+.hol-half--two .hol-wonders__intro h2 { color: var(--hol-savannah-ink); text-shadow: 6px 6px 0 var(--hol-burnt); }
+.hol-half--two .hol-wonders__intro p  { color: var(--hol-burnt); }
+
+/* ============================================================
+   13 · UNMISSABLE — alternating left/right rotated photo + parchment card
+   The Field Guide "Unmissables" pattern and the Countdown
+   "Top Attractions" pattern share this layout. The current default
+   .unmissables / .unmissable component vocabulary is preserved for
+   non-holiday formats; the .hol-unmissable here is the holiday
+   visual treatment that REPLACES it inside holiday issues.
+   ============================================================ */
+
+.hol-unmissable {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+  margin: 56px 0;
+}
+.hol-unmissable--reverse {
+  grid-template-columns: 1fr 1fr;
+  direction: rtl;
+}
+.hol-unmissable--reverse > * { direction: ltr; }
+@media (max-width: 820px) {
+  .hol-unmissable,
+  .hol-unmissable--reverse {
+    grid-template-columns: 1fr;
+    direction: ltr;
+  }
+}
+.hol-unmissable__photo-wrap {
+  border: 6px solid rgba(252, 245, 237, 0.1);
+  box-shadow: 0 30px 50px rgba(0, 0, 0, 0.7);
+  transform: rotate(1deg);
+  transition: transform 0.5s ease;
+  overflow: hidden;
+}
+.hol-unmissable--reverse .hol-unmissable__photo-wrap { transform: rotate(-1deg); }
+.hol-unmissable:hover .hol-unmissable__photo-wrap { transform: rotate(0); }
+.hol-unmissable__photo {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background-color: var(--hol-cream-deep);
+  background-size: cover;
+  background-position: center;
+}
+.hol-unmissable__card {
+  background: var(--hol-paper);
+  color: var(--hol-ink);
+  padding: 36px 36px 32px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+  position: relative;
+}
+.hol-unmissable__num-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.hol-unmissable__num {
+  background: var(--hol-rose-deep);
+  color: var(--hol-cream);
+  padding: 4px 10px;
+  font-family: var(--hol-t-chunk);
+  font-size: 22px;
+  line-height: 1;
+}
+.hol-unmissable__title {
+  font-family: var(--hol-t-serif);
+  font-weight: 900;
+  font-size: clamp(26px, 3vw, 36px);
+  line-height: 1;
+  margin: 0;
+  color: var(--hol-ink-deep);
+  letter-spacing: -0.01em;
+  text-transform: none;
+}
+.hol-unmissable__quote {
+  font-family: var(--hol-t-serif);
+  font-style: italic;
+  font-size: 19px;
+  line-height: 1.45;
+  margin: 0 0 22px;
+  color: var(--hol-rose-deep);
+}
+.hol-unmissable__why {
+  display: inline-block;
+  font-family: var(--hol-t-mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--hol-rose-deep);
+  margin-bottom: 10px;
+}
+.hol-unmissable__why::before {
+  content: "★ ";
+  color: var(--hol-brass);
+}
+.hol-unmissable__facts {
+  display: grid;
+  gap: 8px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.hol-unmissable__facts .row {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  gap: 14px;
+}
+.hol-unmissable__facts dt {
+  display: inline-block;
+  font-family: var(--hol-t-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--hol-ink);
+  min-width: 70px;
+}
+.hol-unmissable__facts dd { margin: 0; color: var(--hol-ink); }
+
+/* Half II unmissable recolour */
+.hol-half--two .hol-unmissable__card { background: var(--hol-bone); color: var(--hol-savannah-ink); }
+.hol-half--two .hol-unmissable__num { background: var(--hol-burnt); color: var(--hol-bone); }
+.hol-half--two .hol-unmissable__title { color: var(--hol-savannah-ink); }
+.hol-half--two .hol-unmissable__quote { color: var(--hol-burnt); }
+.hol-half--two .hol-unmissable__why { color: var(--hol-burnt); }
+.hol-half--two .hol-unmissable__why::before { color: var(--hol-mustard); }
+
+/* ============================================================
+   14 · DON'T MISS — rotated ruby block with tilted shadow numerals
+   ============================================================ */
+
+.hol-dont-miss {
+  background: var(--hol-ruby);
+  color: var(--hol-cream);
+  padding: 40px 40px 48px;
+  position: relative;
+  margin: 56px 0;
+  transform: rotate(-1.5deg);
+  box-shadow: 10px 10px 0 var(--hol-ink-deep), 22px 22px 0 var(--hol-brass-light);
+}
+.hol-dont-miss__kicker {
+  font-family: var(--hol-t-script);
+  font-size: clamp(40px, 6vw, 72px);
+  color: var(--hol-brass-light);
+  line-height: 0.9;
+  transform: rotate(-3deg);
+  display: inline-block;
+}
+.hol-dont-miss__title {
+  font-family: var(--hol-t-chunk);
+  font-size: clamp(28px, 4.5vw, 52px);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  text-shadow: 5px 5px 0 var(--hol-ink-deep);
+  margin: 8px 0 24px;
+  max-width: 800px;
+}
+.hol-dont-miss__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 18px;
+  counter-reset: dmcount;
+}
+.hol-dont-miss__list li {
+  padding: 10px 0 10px 80px;
+  position: relative;
+  font-size: 19px;
+  line-height: 1.4;
+  font-weight: 500;
+  counter-increment: dmcount;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+}
+.hol-dont-miss__list li::before {
+  content: counter(dmcount, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%) rotate(-6deg);
+  background: var(--hol-brass-light);
+  color: var(--hol-ruby);
+  font-family: var(--hol-t-chunk);
+  font-size: 26px;
+  padding: 8px 10px 6px;
+  border: 2px solid var(--hol-cream);
+  box-shadow: 3px 3px 0 var(--hol-ink-deep);
+  min-width: 56px;
+  text-align: center;
+}
+.hol-dont-miss__list li:nth-child(2)::before { transform: translateY(-50%) rotate(5deg); }
+.hol-dont-miss__list li:nth-child(3)::before { transform: translateY(-50%) rotate(-3deg); }
+.hol-dont-miss__list li:nth-child(4)::before { transform: translateY(-50%) rotate(7deg); }
+.hol-dont-miss__list li b { color: var(--hol-brass-light); }
+
+/* Half II don't miss recolour */
+.hol-half--two .hol-dont-miss { background: var(--hol-burnt); color: var(--hol-bone); box-shadow: 10px 10px 0 var(--hol-savannah-ink), 22px 22px 0 var(--hol-mustard); }
+.hol-half--two .hol-dont-miss__kicker { color: var(--hol-mustard); }
+.hol-half--two .hol-dont-miss__list li::before {
+  background: var(--hol-mustard);
+  color: var(--hol-burnt);
+  border-color: var(--hol-bone);
+  box-shadow: 3px 3px 0 var(--hol-savannah-ink);
+}
+.hol-half--two .hol-dont-miss__list li b { color: var(--hol-mustard); }
+
+/* ============================================================
+   15 · MARQUEE — kinetic horizontal scroll between major beats
+   ============================================================ */
+
+.hol-marquee {
+  background: var(--hol-brass);
+  color: var(--hol-ink-deep);
+  border-top: 4px solid var(--hol-ink-deep);
+  border-bottom: 4px solid var(--hol-ink-deep);
+  overflow: hidden;
+  font-family: var(--hol-t-chunk);
+  font-size: clamp(36px, 6vw, 72px);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  padding: 16px 0;
+  position: relative;
+  transform: rotate(-1.5deg);
+  margin: 32px -3vw;
+  box-shadow: 0 8px 0 var(--hol-rose-deep);
+}
+.hol-marquee__track {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: hol-marquee 32s linear infinite;
+  gap: 40px;
+  padding-right: 40px;
+}
+.hol-marquee__track > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 32px;
+  flex-shrink: 0;
+  padding-right: 32px;
+}
+.hol-marquee__track > span::after {
+  content: "✸";
+  font-family: var(--hol-t-slab);
+  font-size: 0.7em;
+  color: var(--hol-ruby);
+}
+.hol-half--two .hol-marquee {
+  background: var(--hol-mustard);
+  border-color: var(--hol-savannah-ink);
+  color: var(--hol-savannah-ink);
+  box-shadow: 0 8px 0 var(--hol-burnt);
+}
+.hol-half--two .hol-marquee__track > span::after { color: var(--hol-burnt); }
+
+/* ============================================================
+   16 · CHALKBOARD MENU — Half II / restaurant listings
+   ============================================================ */
+
+.hol-chalkboard {
+  background: rgba(110, 60, 30, 0.7);
+  color: var(--hol-bone);
+  padding: 36px 32px 40px;
+  border: 4px solid rgba(245, 236, 214, 0.25);
+  transform: rotate(1.5deg);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+  max-width: 480px;
+  position: relative;
+}
+.hol-chalkboard__tag {
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--hol-mustard);
+  color: var(--hol-savannah-ink);
+  padding: 6px 18px;
+  font-family: var(--hol-t-mono);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+.hol-chalkboard__title {
+  font-family: var(--hol-t-hand);
+  font-size: clamp(40px, 5vw, 64px);
+  text-align: center;
+  margin: 18px 0 24px;
+  line-height: 0.9;
+}
+.hol-chalkboard__items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 18px;
+}
+.hol-chalkboard__items li {
+  border-bottom: 1px solid rgba(245, 236, 214, 0.15);
+  padding-bottom: 14px;
+}
+.hol-chalkboard__items li:last-child { border-bottom: 0; padding-bottom: 0; }
+.hol-chalkboard__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+.hol-chalkboard__item {
+  font-family: var(--hol-t-tall);
+  font-size: 22px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.hol-chalkboard__price {
+  font-family: var(--hol-t-hand);
+  font-size: 30px;
+  color: var(--hol-bone);
+}
+.hol-chalkboard__note {
+  font-family: var(--hol-t-hand);
+  font-size: 20px;
+  color: rgba(245, 236, 214, 0.75);
+  line-height: 1.2;
+  margin-top: 4px;
+}
+
+/* ============================================================
+   17 · MEANWHILE — closing dark block, mega watermark, subscribe card
+   ============================================================ */
+
+.hol-meanwhile {
+  background: #000;
+  color: var(--hol-cream);
+  padding: 72px clamp(20px, 4vw, 56px) 96px;
+  position: relative;
+  border-top: 20px solid var(--hol-brass);
+  overflow: hidden;
+}
+.hol-meanwhile__giant-bg {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 0;
+  pointer-events: none;
+  font-family: var(--hol-t-tall);
+  font-size: clamp(180px, 30vw, 480px);
+  color: rgba(255, 255, 255, 0.04);
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  line-height: 0.9;
+  white-space: nowrap;
+}
+.hol-meanwhile__inner {
+  position: relative;
+  z-index: 2;
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 56px;
+  align-items: center;
+}
+@media (max-width: 920px) {
+  .hol-meanwhile__inner { grid-template-columns: 1fr; }
+}
+.hol-meanwhile__title {
+  font-family: var(--hol-t-chunk);
+  font-size: clamp(72px, 12vw, 168px);
+  line-height: 0.85;
+  margin: 0 0 28px;
+  color: var(--hol-brass);
+  text-shadow: 0 10px 30px rgba(184, 137, 58, 0.4);
+}
+.hol-meanwhile__body {
+  font-family: var(--hol-t-serif);
+  font-style: italic;
+  font-size: clamp(20px, 2.4vw, 30px);
+  line-height: 1.4;
+  color: rgba(252, 245, 237, 0.9);
+  max-width: 480px;
+}
+
+.hol-subscribe {
+  position: relative;
+}
+.hol-subscribe::before {
+  content: "";
+  position: absolute;
+  inset: -16px;
+  background: var(--hol-brass);
+  transform: rotate(-2deg);
+  z-index: 0;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7);
+}
+.hol-subscribe__inner {
+  position: relative;
+  background: var(--hol-cream);
+  color: var(--hol-ink-deep);
+  padding: 48px 40px;
+  transform: rotate(1deg);
+  z-index: 1;
+}
+.hol-subscribe__title {
+  font-family: var(--hol-t-chunk);
+  font-size: clamp(28px, 3.6vw, 44px);
+  letter-spacing: -0.02em;
+  margin: 0 0 22px;
+}
+.hol-subscribe__form {
+  display: grid;
+  gap: 14px;
+}
+.hol-subscribe__input {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.06);
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  padding: 16px 20px;
+  font-family: var(--hol-t-mono);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--hol-ink-deep);
+}
+.hol-subscribe__btn {
+  background: var(--hol-ink-deep);
+  color: var(--hol-cream);
+  padding: 18px;
+  font-family: var(--hol-t-chunk);
+  font-size: clamp(20px, 2.2vw, 26px);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  border: 0;
+  cursor: pointer;
+  transition: background 0.4s;
+}
+.hol-subscribe__btn:hover { background: var(--hol-brass); color: var(--hol-ink-deep); }
+.hol-subscribe__hand {
+  margin-top: 14px;
+  font-family: var(--hol-t-hand);
+  font-size: 24px;
+  text-align: center;
+  color: var(--hol-rose-deep);
+}
+
+.hol-footer-row {
+  margin-top: 56px;
+  padding-top: 28px;
+  border-top: 2px solid rgba(252, 245, 237, 0.12);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 2;
+}
+.hol-footer-row__brand {
+  font-family: var(--hol-t-chunk);
+  font-size: 36px;
+  color: var(--hol-cream);
+}
+.hol-footer-row__brand .stop { color: var(--hol-brass); }
+.hol-footer-row__links {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+  font-family: var(--hol-t-mono);
+  font-size: 11px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgba(252, 245, 237, 0.6);
+}
+.hol-footer-row__tagline {
+  font-family: var(--hol-t-hand);
+  font-size: clamp(30px, 3.4vw, 40px);
+  color: var(--hol-brass);
+}
+
+/* ============================================================
+   18 · ANIMATIONS
+   ============================================================ */
+
+@keyframes hol-drift {
+  from { transform: translateX(0); }
+  to { transform: translateX(140vw); }
+}
+@keyframes hol-drift-r {
+  from { transform: translateX(0); }
+  to { transform: translateX(-140vw); }
+}
+@keyframes hol-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes hol-flip-pop {
+  0% { transform: scaleY(1); }
+  35% { transform: scaleY(0.1); }
+  60% { transform: scaleY(0.1); }
+  100% { transform: scaleY(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hol-cover__cloud,
+  .hol-marquee__track,
+  .hol-countdown__num.is-flipping {
+    animation: none !important;
+  }
+  .hol-polaroid:hover,
+  .hol-anchor:hover .hol-anchor__photo,
+  .hol-unmissable:hover .hol-unmissable__photo-wrap {
+    transform: none;
+  }
+}

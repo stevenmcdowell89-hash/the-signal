@@ -1,0 +1,56 @@
+:root {
+  --ink: #111119;
+  --paper: #FAFAF8;
+  --warm: #F5F4F0;
+  --rose: #E8384F;
+  --ember: #FF6D3A;
+  --deep: #1B1B2F;
+  --slate: #64697B;
+  --ghost: #A4A8B6;
+  --rule: #E0DED8;
+  --pitch: #0A0E17;
+  --turf: #1A7A4C;
+  --turf-lt: #2BD67B;
+  --screen-bg: #14121E;
+  --neon: #FF2D78;
+  --shelf-bg: #1C1410;
+  --shelf-accent: #D4A03C;
+  --session-bg: #F2F7F4;
+  --session-accent: #D4622B;
+  --hist-bg: #F0EBE0;
+  --hist-accent: #8B6914;
+
+  /* ── Rotating section palettes ── */
+  --pantry-bg: #FAF5F0;
+  --pantry-accent: #C65D3A;
+  --workshop-bg: #F0F1F3;
+  --workshop-accent: #5A6378;
+  --toolkit-bg: #EFF3F6;
+  --toolkit-accent: #1A9AAF;
+  --ledger-bg: #FAF8F2;
+  --ledger-accent: #C48B2C;
+  --longgame-bg: #F0F1F4;
+  --longgame-accent: #2A3A5C;
+  --wallet-bg: #FAFBFC;
+  --wallet-accent: #1A8A7A;
+  --itinerary-bg: #FAF6F0;
+  --itinerary-accent: #D4634B;
+
+  /* ── v8.4 tokens ── */
+  /* Chapter-title typeface: reserved for sp-chapter-gate ONLY. Never used elsewhere. */
+  --sp-chapter-ff: 'Space Grotesk', 'DM Sans', system-ui, sans-serif;
+  /* Accent discipline: primary = chapter-opener only. Secondary = everything else that used to be coral. */
+  --sp-accent-primary: var(--rose);        /* #E8384F — gate numeral + countdown badge + progress only */
+  --sp-accent-secondary: #64697B;          /* muted slate — paper-ground demotion */
+  --sp-accent-secondary-ink: #C9C2B5;      /* bone — ink-ground demotion */
+
+  /* ── Multi-venue Countdown destination palettes (v8.10) ── */
+  /* Efteling — fairy-tale forest: cream paper, deep plum ink, antique gold accent */
+  --eft-paper: #F4ECDC;
+  --eft-ink: #1F1422;
+  --eft-accent: #C9962E;
+  /* Beekse Bergen — savannah safari: warm sand, dark earth ink, terracotta accent */
+  --bee-paper: #EFE3CC;
+  --bee-ink: #2A1A14;
+  --bee-accent: #D4634B;
+}

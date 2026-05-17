@@ -1,0 +1,394 @@
+/* ============================================================
+   SPECIAL EDITION — MOTION SYSTEM
+   Tier 2: layered parallax, stagger reveals, colour-wipes,
+           D-day scrubber, manifesto, gallery, diptych, marquee.
+
+   RULES:
+   - Motion is additive. Remove this file and content renders.
+   - prefers-reduced-motion disables every animation.
+   - All motion uses transform/opacity only (GPU-composited).
+   - Body copy is NEVER animated. Only chrome and openers.
+   - Scroll is never hijacked — effects scrub with native scroll.
+   ============================================================ */
+
+/* =====================================================
+   LAYERED PARALLAX
+   ===================================================== */
+body.is-special .sp-parallax {
+  position: relative;
+  overflow: hidden;
+}
+body.is-special .sp-parallax .p-bg,
+body.is-special .sp-parallax .p-mid,
+body.is-special .sp-parallax .p-fg {
+  will-change: transform;
+  transform: translate3d(0, var(--sp-y, 0), 0);
+}
+body.is-special .sp-parallax .p-bg  { --sp-speed: 0.25; }
+body.is-special .sp-parallax .p-mid { --sp-speed: 0.5; }
+body.is-special .sp-parallax .p-fg  { --sp-speed: 1.3; }
+
+@media (max-width: 1024px) {
+  body.is-special .sp-parallax .p-bg  { --sp-speed: 0.15; }
+  body.is-special .sp-parallax .p-mid { --sp-speed: 0.3; }
+  body.is-special .sp-parallax .p-fg  { --sp-speed: 1.15; }
+}
+
+/* =====================================================
+   STAGGER REVEAL — chrome and section openers only
+   Default state is readable. Stagger is additive polish.
+   ===================================================== */
+body.is-special .sp-stagger .sp-word {
+  display: inline-block;
+  opacity: 1;
+  transform: none;
+  transition: opacity 260ms ease, transform 260ms cubic-bezier(.2,.7,.2,1);
+}
+body.is-special .sp-stagger:not(.sp-in) .sp-word {
+  opacity: 0;
+  transform: translateY(14px);
+}
+body.is-special .sp-stagger.sp-in .sp-word {
+  transition-delay: calc(var(--sp-i, 0) * 40ms);
+}
+/* Safety: if JS never fires, content is always visible */
+body.is-special .sp-stagger.sp-no-anim .sp-word {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* =====================================================
+   COLOUR-WIPE SECTION TRANSITION
+   ===================================================== */
+/* Colour-wipe: a contained decorative band between sections.
+   Must NEVER extend past container width or cause layout shift.
+   Parent .sp-wipe is the clipping + containment boundary. */
+body.is-special .sp-wipe {
+  position: relative;
+  height: 90px;
+  margin: 0;
+  pointer-events: none;
+  overflow: hidden;           /* clip overshoot */
+  contain: layout paint;      /* isolate from surrounding columns */
+  isolation: isolate;
+}
+@media (max-width: 820px) { body.is-special .sp-wipe { height: 64px; } }
+
+body.is-special .sp-wipe-layer {
+  position: absolute;
+  inset: 0;                    /* stay inside the wipe container */
+  background: var(--sp-wipe-color, var(--issue-accent));
+  transform-origin: left center;
+  transform: scaleX(0);
+  will-change: transform;
+}
+body.is-special .sp-wipe-layer.l1 { transition: transform 420ms cubic-bezier(.83,0,.17,1) 0ms; }
+body.is-special .sp-wipe-layer.l2 { transition: transform 420ms cubic-bezier(.83,0,.17,1) 60ms;  opacity: 0.6; mix-blend-mode: multiply; }
+body.is-special .sp-wipe-layer.l3 { transition: transform 420ms cubic-bezier(.83,0,.17,1) 120ms; opacity: 0.35; mix-blend-mode: multiply; }
+body.is-special .sp-wipe.sp-in .sp-wipe-layer { transform: scaleX(1); }
+
+/* Spacer is now redundant — the wipe itself is the spacer. Kept for back-compat. */
+body.is-special .sp-wipe-spacer { height: 0; }
+
+/* =====================================================
+   D-DAY FLOATING BADGE
+   ===================================================== */
+/* D-day badge: a LIVE countdown to the trip date, not a scroll scrubber.
+   Updated once on load from data-trip-date (YYYY-MM-DD) on <body>.
+   Placed top-LEFT so it never collides with the wax-stamp seal on the right. */
+body.is-special[data-special="countdown"] .sp-dday {
+  position: fixed;
+  top: 88px;
+  left: 18px;
+  z-index: 46;               /* below masthead (50), below seal (45)? seal is 45 so stay below seal too */
+  background: var(--issue-accent);
+  color: var(--paper);
+  padding: 10px 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  line-height: 1;
+  border-radius: 4px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 350ms ease 200ms, transform 350ms ease 200ms;
+}
+body.is-special[data-special="countdown"].sp-dday-visible .sp-dday {
+  opacity: 1;
+  transform: translateY(0);
+}
+body.is-special .sp-dday-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+body.is-special .sp-dday-label { font-size: 8px; opacity: 0.85; white-space: nowrap; }
+
+@media (max-width: 820px) {
+  body.is-special[data-special="countdown"] .sp-dday {
+    top: auto;
+    bottom: 80px;
+    left: 10px;
+    padding: 8px 10px;
+  }
+  body.is-special .sp-dday-num { font-size: 22px; }
+}
+
+/* =====================================================
+   MANIFESTO — oversized foreword
+   ===================================================== */
+body.is-special .sp-manifesto {
+  padding: 120px 0 100px;
+  text-align: center;
+  position: relative;
+}
+body.is-special .sp-manifesto-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(30px, 5vw, 64px);
+  line-height: 1.1;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  max-width: 20ch;
+  margin: 0 auto;
+  color: var(--ink);
+}
+body.is-special .sp-manifesto-text b {
+  font-weight: 600;
+  color: var(--issue-accent);
+  font-style: italic;
+}
+
+/* =====================================================
+   BIG NUMBER — standalone dramatic stat
+   ===================================================== */
+body.is-special .sp-bignum {
+  text-align: center;
+  padding: 60px 0;
+  font-family: 'Cormorant Garamond', serif;
+  line-height: 0.85;
+}
+body.is-special .sp-bignum-num {
+  font-size: clamp(120px, 22vw, 320px);
+  font-weight: 700;
+  color: var(--issue-accent);
+  letter-spacing: -0.04em;
+  display: block;
+}
+body.is-special .sp-bignum-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--slate);
+  margin-top: 20px;
+}
+
+/* =====================================================
+   BROKEN GALLERY
+   ===================================================== */
+body.is-special .sp-gallery {
+  position: relative;
+  padding: 60px 0 80px;
+}
+body.is-special .sp-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-auto-rows: 72px;
+  gap: 14px;
+}
+body.is-special .sp-g-item {
+  overflow: hidden;
+  position: relative;
+  border-radius: 4px;
+  background: var(--rule);
+}
+body.is-special .sp-g-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  will-change: transform;
+}
+body.is-special .sp-g-item.size-a { grid-column: 1 / 6;  grid-row: span 5; transform: translateY(30px); }
+body.is-special .sp-g-item.size-b { grid-column: 6 / 10; grid-row: span 4; transform: translateY(-16px); }
+body.is-special .sp-g-item.size-c { grid-column: 10 / 13; grid-row: span 3; transform: translateY(50px); }
+body.is-special .sp-g-item.size-d { grid-column: 2 / 5;  grid-row: span 4; transform: translateY(70px); }
+body.is-special .sp-g-item.size-e { grid-column: 5 / 9;  grid-row: span 4; transform: translateY(20px); }
+body.is-special .sp-g-item.size-f { grid-column: 9 / 13; grid-row: span 5; transform: translateY(0); }
+
+body.is-special .sp-g-caption {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(17,17,25,0.85);
+  color: var(--paper);
+  padding: 3px 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 820px) {
+  body.is-special .sp-gallery-grid {
+    grid-template-columns: repeat(6, 1fr);
+    grid-auto-rows: 56px;
+    gap: 10px;
+  }
+  body.is-special .sp-g-item.size-a { grid-column: 1 / 5; grid-row: span 4; transform: none; }
+  body.is-special .sp-g-item.size-b { grid-column: 3 / 7; grid-row: span 3; transform: none; }
+  body.is-special .sp-g-item.size-c { grid-column: 1 / 4; grid-row: span 3; transform: none; }
+  body.is-special .sp-g-item.size-d { grid-column: 4 / 7; grid-row: span 4; transform: none; }
+  body.is-special .sp-g-item.size-e { grid-column: 1 / 7; grid-row: span 4; transform: none; }
+  body.is-special .sp-g-item.size-f { grid-column: 1 / 7; grid-row: span 3; transform: none; }
+}
+
+/* =====================================================
+   DIPTYCH
+   ===================================================== */
+body.is-special .sp-diptych {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 70vh;
+  overflow: hidden;
+  margin: 60px 0;
+}
+body.is-special .sp-diptych-side {
+  position: relative;
+  padding: 60px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 70vh;
+}
+body.is-special .sp-diptych-side.left  { background: var(--issue-accent); color: var(--paper); }
+body.is-special .sp-diptych-side.right { background: var(--ink); color: var(--paper); }
+body.is-special .sp-diptych-img {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.55;
+  will-change: transform;
+  z-index: 1;
+}
+body.is-special .sp-diptych-side::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.6), transparent 60%);
+  z-index: 2;
+  pointer-events: none;
+}
+body.is-special .sp-diptych-kicker,
+body.is-special .sp-diptych-h,
+body.is-special .sp-diptych-body {
+  position: relative;
+  z-index: 3;
+  color: var(--paper);
+}
+body.is-special .sp-diptych-kicker {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  opacity: 0.9;
+  margin-bottom: 10px;
+}
+body.is-special .sp-diptych-h {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(36px, 5vw, 72px);
+  line-height: 0.95;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 10px;
+}
+body.is-special .sp-diptych-body {
+  font-size: 15px;
+  line-height: 1.55;
+  max-width: 32ch;
+  opacity: 0.92;
+}
+
+@media (max-width: 820px) {
+  body.is-special .sp-diptych {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+  body.is-special .sp-diptych-side { min-height: 48vh; }
+}
+
+/* =====================================================
+   SOURCE / SPONSOR MARQUEE
+   ===================================================== */
+body.is-special .sp-marquee {
+  overflow: hidden;
+  background: transparent;
+  padding: 18px 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  white-space: nowrap;
+}
+body.is-special .sp-marquee-track {
+  display: inline-block;
+  padding-left: 100%;
+  animation: sp-ticker 70s linear infinite;
+  color: var(--slate);
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 17px;
+  will-change: transform;
+}
+body.is-special .sp-marquee-track > * {
+  display: inline-block;
+  margin-right: 52px;
+}
+body.is-special .sp-marquee-track > *::after {
+  content: '·';
+  margin-left: 52px;
+  color: var(--ghost);
+}
+
+/* =====================================================
+   REDUCED MOTION
+   ===================================================== */
+@media (prefers-reduced-motion: reduce) {
+  body.is-special .sp-parallax .p-bg,
+  body.is-special .sp-parallax .p-mid,
+  body.is-special .sp-parallax .p-fg { transform: none !important; }
+
+  body.is-special .sp-stagger .sp-word { opacity: 1 !important; transform: none !important; transition: none !important; }
+
+  body.is-special .sp-wipe-layer { transition: none; transform: scaleX(0); }
+  body.is-special .sp-wipe-spacer { height: 48px; }
+
+  body.is-special .sp-g-item { transform: none !important; }
+
+  body.is-special .sp-marquee-track { animation: none; padding-left: 0; }
+
+  body.is-special[data-special="countdown"] .sp-dday { transition: none; }
+}
+
+/* =====================================================
+   TABLET COLUMN-WIDTH FIX
+   On tablet (601–1024px), `clamp()` font-sizes sit at
+   their mid-scale (~5vw of 800px ≈ 40px). Combined with
+   `max-width: 20ch` that produces a ~360px-wide column
+   marooned in the middle of an 800px viewport. Widen the
+   measure for these centred display blocks so the text
+   actually uses the tablet width.
+   ===================================================== */
+@media (min-width: 601px) and (max-width: 1024px) {
+  body.is-special .sp-manifesto { padding: 80px 32px 64px; }
+  body.is-special .sp-manifesto-text { max-width: min(90vw, 640px); }
+  body.is-special .sp-diptych-body { max-width: none; }
+}

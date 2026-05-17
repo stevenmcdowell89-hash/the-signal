@@ -52,4 +52,390 @@ There is NO separate "lightweight" path. Standard weeklies run the full pipeline
 
 ---
 
-STUB - actual content is in /tmp/the-signal/.claude/skills/the-signal/SKILL.md - need direct file streaming.
+## Phase 0 — Read state + Decide format
+
+This phase runs first every Sunday and decides what kind of issue today's run produces. It is mechanical wherever possible — calendar arithmetic and state lookups, not editorial judgement. Once it commits a format, the rest of the pipeline runs the same shape.
+
+### 0a. Clone repo + read state + spec (mechanical)
+
+**Clone the repo first.** State lives in the GitHub repo, not in the ephemeral container. The repo is the single source of truth.
+
+```bash
+cd /tmp && rm -rf the-signal && git clone https://github.com/stevenmcdowell89-hash/the-signal.git --depth 1
+```
+
+If `git clone` fails (network or auth), fall back to reading specific files with the `mcp__github__get_file_contents` tool against `stevenmcdowell89-hash/the-signal`.
+
+Then read `/tmp/the-signal/state/signal-state.json` (full state). Read `references/editorial-spec.md` (full spec, from this skill). Do NOT yet read `references/sections.md`, `references/compliance-checklist.md`, or any file under `assets/css/`/`assets/script.js` — those load later by role.
+
+**Legacy note:** the historical path `/home/user/workspace/signal-state.json` is no longer authoritative. The cloned repo at `/tmp/the-signal/state/signal-state.json` is the only state.
+
+### 0b. P1 calendar check (mechanical, no web search)
+P1 triggers are calendar-fixed. They always win. Compute against today's date and the state file:
+
+- **Field Guide:** today is the Sunday closest to (`upcoming_trips[0].start` minus 6 weeks). Window: ±3 days.
+- **Countdown:** today is the Sunday closest to (`upcoming_trips[0].start` minus 2-3 weeks). Window: ±3 days. If both Field Guide and Countdown could fire on the same Sunday, Field Guide wins (earlier in the trip arc).
+- **Half-year Rewind:** today is the last Sunday of June. **Defer rule:** if `upcoming_trips[0]` overlaps that Sunday or the following week, defer to the first Sunday at least 5 days after the trip ends.
+- **Year-end Rewind:** today is the last Sunday of December.
+- **Season Review:** Serie A or PL closing weekend has just concluded (the league has played its final matchday in the last 7 days) AND no Season Review fired for that league this season.
+
+If ANY P1 fires, commit to that format immediately. **Skip 0c, 0d, 0e.** Continue at Phase 3.
+
+If multiple P1s fire on the same Sunday (rare): Field Guide > Countdown > Season Review > Rewind.
+
+### 0c. P1-corridor lockout for P3 (mechanical)
+If no P1 fires today, compute whether today sits inside a P1 corridor: any Sunday within 4 weeks before OR 4 weeks after a P1-eligible Sunday counts as inside the corridor.
+
+If today is inside a P1 corridor, set `p3_locked = true`. P3 cannot fire this Sunday — the schedule is already booked. (P2 can still fire on a genuinely big event — that override is independent of P3 cadence.)
+
+If today is outside every P1 corridor, set `p3_locked = false`.
+
+### 0d. P2 event-driven scout (light web search)
+Run 2–4 targeted searches for major events that could warrant a special this week:
+- Major game/film release that warrants a Versus or Deep Dive (Switch 2 anniversary, blockbuster sequel, AAA game launch with cultural noise)
+- League/tournament conclusion that the rotation hasn't covered yet (e.g. an early Season Review for a finished European league)
+- A topic that has accumulated enough running coverage to deserve a Deep Dive in its own right
+
+**P2 trigger criteria:** the event must be (a) genuinely big, (b) audience-aligned with the reader profile, (c) NOT just a news beat that fits in a standard weekly's World/Touchline/Pixel & Byte sections. The bar is high — most weeks no P2 fires. When in doubt, default to standard weekly and cover the event as a section lead.
+
+If a P2 fires, commit to that format and continue at Phase 3. Skip 0e.
+
+### 0e. P3 cadence safety net (mechanical)
+If no P1 or P2 fired AND `p3_locked = false`:
+- Compute weeks since `last_special_date` from state.
+- If ≥ 5 weeks, P3 fires.
+- Pick the next format from the P3 rotation (Shortlist, Starter Kit, Blueprint, Versus, Deep Dive on a non-trip topic). Read `recent_special_formats` from state — pick the format that has not appeared in the last 6 specials. If multiple formats tie, pick the one with the strongest topic surfaced during 0d.
+- Commit that format and continue at Phase 3.
+
+If no P1, no P2, and (P3 is locked OR < 5 weeks since last special), commit to standard weekly (`format_committed = weekly`).
+
+### 0f. News-of-the-week scout (weekly only, optional)
+If the committed format is `weekly`, run a quick news scout now to surface trigger context that the researcher subagent will pick up in Phase 3a. **Group 1 News & Geopolitics scout MUST explicitly check:** (a) UK/Irish/Scottish/Welsh/European elections in past 7 days, (b) live PM or opposition-leader leadership challenges, (c) Cabinet-level resignations or sackings, (d) major government policy or headline legal rulings. See the UK / national politics rule in editorial-spec.md. Pass any landscape-shift findings to the researcher in Phase 3a as priority leads.
+
+This scout is optional — the researcher subagent in Phase 3 will do its own news pass. The 0f scout exists so the main loop knows whether the issue is shaping up around a landscape-shift story (which influences cover headline framing and rotating-section selection).
+
+### 0g. Route
+Every format — weekly or any special — continues at **Phase 3** below. There is no second path.
+
+---
+
+## Phase 3 — Derive execution mode
+
+From the committed format, derive `execution_mode`:
+- **Parallel mode** (Countdown, Field Guide, Shortlist, Starter Kit, Blueprint, weekly): writer subagents in Phase 5 spawn in one batch.
+- **Sequential mode** (Deep Dive, Versus, Rewind, Season Review): writer subagents in Phase 5 spawn one at a time, each reading its predecessor's output to maintain throughline.
+
+### Phase 3a — Researcher subagent
+Spawn an `Agent` with `subagent_type: "Explore"` and `model: "sonnet"` (fallback `"haiku"`). In the prompt, tell it to read `references/spec/global.md` (sections `key-rules` and `image-integrity`), `references/spec/triggers.md` (full file — short), and the matching format section in `references/spec/formats.md` (H2 anchor for the issue's format). Pass committed format + state snapshot inline. The subagent does all web research and writes `/tmp/signal-build/research-bundle.json` (sources, key facts, image candidates with attribution, ongoing-story status, training-phase context).
+
+**Cost log:** after the researcher returns, run `bash scripts/log-call.sh researcher <model> <issue_id> - 0 ok` (one call). See § Cost Logging.
+
+### Phase 4 — Planner subagent + validator gate
+Spawn an `Agent` with `subagent_type: "general-purpose"` and `model: "opus"` (fallback `"sonnet"`). Pass the path to `research-bundle.json`. In the prompt, tell it to read `references/chapter-plan-schema.md`, `references/pre-flight.md`, and the planner's spec slice: `references/spec/global.md` sections `identity`, `key-rules`, `markup-contracts`, `accent-lockdown`, `stat-budget`; plus the format's H2 anchor in `references/spec/formats.md`; plus `references/spec/specials.md` section `overview` if special edition. The subagent writes `/tmp/signal-build/chapter-plan.json`.
+
+Run `python scripts/validate-chapter-plan.py`. **If invalid:** re-spawn planner with the validator's error report (max 2 retries). After 2 retries, advance the planner fallback chain (Opus → Sonnet) and try once at the next tier.
+
+**Cost log:** after each planner attempt, run `bash scripts/log-call.sh planner <model> <issue_id> - <retry_count> <outcome>`. Outcome is `validator_fail` if validator rejected and another retry is coming, `ok` if the plan passed, `escalated` if the fallback chain ran out. See § Cost Logging.
+
+### Phase 5 — Writer subagents (format-aware)
+Read `chapter-plan.json`. For each chapter, spawn an `Agent` with `subagent_type: "general-purpose"` and `model: "sonnet"` (fallback `"haiku"`). In the prompt, pass: the pre-flight.md path, the chapter brief (one chapter object from the plan), the research-bundle.json path, plus the H2 anchor reference for the issue's format inside `references/spec/formats.md`. Writers also read `references/spec/global.md` sections `markup-contracts`, `ground-discipline`, `accent-lockdown`. **HOLIDAY FORMATS ONLY (`countdown`, `field_guide`):** writers MUST ALSO read `references/spec/specials.md` § `holiday-identity` for the `.hol-*` component map and § `hype-chapter-visuals` if any chapter is hype-flagged. The default `sp-*` vocabulary (`.sp-chapter-gate`, `.sp-spread`, `.sp-pull-break`, `.sp-marginalia`, `.sp-brief`, `.sp-dash`, `.sp-chapter-chrome`, `.unmissables`/`.unmissable`) is HIDDEN by tier 11 (`36-holiday-identity.css`) on holiday issues — chapters using it render as blank stretches. Writers use `.hol-cover`, `.hol-half`, `.hol-transit`, `.hol-anchor`, `.hol-unmissable`, `.hol-polaroid`, `.hol-postcard`, `.hol-stamp`, `.hol-marquee`, `.hol-dont-miss`, `.hol-chalkboard`, `.hol-meanwhile`, `.hol-subscribe`, `.hol-footer-row`. Each writer outputs `/tmp/signal-build/chapters/<chapter_id>.html` (chapter-only, no scaffold).
+
+- **Parallel mode** (Countdown, Field Guide, Shortlist, Starter Kit, Blueprint, weekly): spawn all writers in one batch — issue every `Agent` call in a single message.
+- **Sequential mode** (Deep Dive, Versus, Rewind, Season Review): spawn writers one at a time. After each chapter completes, the next writer reads its predecessor's output to maintain throughline.
+
+**Cost log:** after each writer returns, run `bash scripts/log-call.sh writer <model> <issue_id> <chapter_id> 0 ok`. One call per chapter. See § Cost Logging.
+
+### Phase 6 — Stitch
+Run `bash scripts/stitch-issue.sh --plan /tmp/signal-build/chapter-plan.json --out signal_<format>_<date>.html`. Stitcher concatenates chapters, wraps in scaffold, injects CSS (alphabetical cascade) and JS deterministically. **v8.13.3:** for `countdown` and `field_guide` formats, stitch-issue.sh auto-rewrites the `<body>` tag to `<body class="is-special" data-special="<format>">` (the activation that switches on tier 11/12/13/14 CSS + JS), runs a banned-vocabulary grep gate (`sp-chapter-gate`/`sp-spread`/`sp-pull-break`/`sp-marginalia`/`sp-brief`/`sp-dash`/`sp-chapter-chrome`/`unmissables`/`unmissable`) and exits non-zero if any are found, and runs a positive-structure check that fails the stitch if no `.hol-half` is present. Writers cannot accidentally ship a holiday issue without the Holiday Identity activation.
+
+### Phase 7 — Per-chapter Gate 1 (during pipeline)
+Each chapter has already self-audited via pre-flight.md. Now grep-scan every chapter HTML for the Gate 1 hard-fail patterns from `references/compliance-checklist.md` (1A reader-profile leaks, 1B fabrication markers, 1C staleness, 1E markup contracts, 1F image-caption integrity). Any failure → enter repair flow.
+
+### Phase 7.5 — Release-date sanity check (mandatory before publish)
+Run `bash scripts/check-release-dates.sh <stitched-html-path>`. The script extracts every claim of a date or relative-time phrase adjacent to a media name (TV, film, game, book, album), plus any line that mentions a locked-register entry (Andor, Tales of the [Jedi/Empire/Underworld], Skeleton Crew, Acolyte, Maul: Shadow Lord, Mandalorian and Grogu). Output is written to `/tmp/signal-date-claims.txt`.
+
+The agent then walks the report. For each surfaced claim:
+1. If it matches a locked-register entry in `references/compliance-checklist.md` (1B), verify the date in the HTML matches the locked date exactly. Mismatches are automatic FAIL.
+2. If it does not match the register, run a quick web search (`<show name> release date` is sufficient for a single check) and verify YEAR. Wrong year or already-aired-when-framed-as-upcoming is automatic FAIL.
+3. If a relative-time phrase is used ("last September", "this summer", "coming next month") without explicit year context, treat as suspect by default — verify or rewrite.
+
+Fix every FAIL before proceeding to Phase 8. The release-date class of error is the single most-cited fabrication category in reader feedback (Andor S2 framed as current; Tales of the Underworld framed as upcoming when it aired in 2025; Andor S2 end-date wrong by months). This phase is non-skippable.
+
+### Phase 8 — Stitched-issue Gate (Gate 3)
+Cross-chapter checks: image-source diversity, no two consecutive sections same component pattern, accent lockdown across chapters, link health, ongoing-story consistency. Plus Gate 2 editorial/visual quality. Fix any failures.
+
+### Phase 9 — Repair (if needed)
+Max 3 rounds. Each round: identify failing chapter, spawn ONE repair `Agent` (`subagent_type: "general-purpose"`, `model: "sonnet"`) with the chapter HTML + the specific failure report, re-write that chapter, re-stitch, re-inject, re-grep. After 3 failed rounds: escalate to the reader.
+
+**Cost log:** after each repair attempt, run `bash scripts/log-call.sh repair <model> <issue_id> <chapter_id> <round_number> <outcome>`. Outcome is `gate_fail` if the gate still fails and another round is coming, `ok` if the chapter now passes, `escalated` if all 3 rounds exhausted. See § Cost Logging.
+
+### Phase 10 — Deliver + publish
+
+**Stage the final HTML** to scratch first. Filename: `signal_weekly_YYYY-MM-DD.html` for standard weeklies, `signal_<format>_YYYY-MM-DD.html` for specials (e.g. `signal_countdown_2026-06-07.html`). The scratch copy is `/tmp/signal-build/<filename>`; the durable copy lives in the repo (step 2 below).
+
+**Update state file at `/tmp/the-signal/state/signal-state.json`** per the State Tracking section: increment `last_issue_number` (standard weekly only), update `last_issue_date`, `last_issue_format`, `section_topics_recently`, rotating `last_appeared` fields, ongoing-stories status, training-phase if a block boundary crossed, `recent_facts`, `recent_next_week_themes`. For specials: also update `last_special_date`, `last_special_format`, `consecutive_specials_count`, and append to `recent_special_formats` (then trim to last 6).
+
+**Publish to GitHub Pages.** Repository: `stevenmcdowell89-hash/the-signal`. Live site: https://stevenmcdowell89-hash.github.io/the-signal/. The repo was already cloned in Phase 0a; do not re-clone.
+
+1. Copy the issue HTML into `/tmp/the-signal/issues/<filename>.html`.
+2. Update `/tmp/the-signal/index.html` archive list: insert a new `<li>` at the top of `<ul class="issue-list">`. Format for standard weeklies: `<div class="issue-title">Issue <span class="issue-accent">#N — Standard Weekly</span></div>` followed by a `<div class="issue-meta">` summary line (date range · 5–7 short headline fragments). Format for specials: `<div class="issue-title"><Format> <span class="issue-accent">— <Topic></span></div>` and `<div class="issue-meta">Special edition · <date> · <one-line summary></div>` — no issue number.
+3. Confirm `/tmp/the-signal/state/signal-state.json` reflects the updates above. The state file is committed alongside the issue HTML and archive index.
+4. **Push via the GitHub MCP server** (preferred — works without git auth in this environment):
+   - Call `mcp__github__push_files` with `owner: "stevenmcdowell89-hash"`, `repo: "the-signal"`, `branch: "main"`, the commit `message` (see below), and `files` listing every changed path with its contents read from disk. Three files in a standard run: `issues/<filename>.html`, `index.html`, `state/signal-state.json`. Plus the cost log if it lives in the repo (`state/cost-log.jsonl`).
+   - **Commit message format:** `Issue #N — <date range>: <headlines>` for standard weeklies; `<Format> — <Topic>: <date>` for specials.
+   - If MCP push fails, fall back to plain `git push` from inside the cloned repo — credentials may be configured.
+5. Confirm publication by stating the GitHub Pages URL for the new issue in the closing summary.
+
+**Why state lives in the repo.** Claude Code on the web runs in an ephemeral container that is reclaimed when the session ends. The repo is the only path that's visible from every session, and it gives you version history of every state change for free.
+
+**The deliverable is the published GitHub Pages URL**, not a workspace file. The reader receives the URL in the closing summary.
+
+## Cost Logging
+
+Every subagent call in the pipeline appends one line to the cost log via `scripts/log-call.sh`. This lets us answer "what did this issue actually cost?" after the fact, without instrumenting the subagent itself.
+
+**Where the log lives.** Default path is `/tmp/the-signal/state/cost-log.jsonl` (committed to the repo alongside `signal-state.json`). Override via the `SIGNAL_COST_LOG` environment variable if running outside the cloned repo.
+
+**Schema** (one JSON object per line):
+```json
+{"ts":"2026-05-03T08:14:22Z","role":"writer","model":"sonnet","issue_id":"weekly-2026-05-03","chapter_id":"world","retry":0,"outcome":"ok"}
+```
+
+**Fields:**
+- `role`: `researcher` | `planner` | `writer` | `repair`
+- `model`: the actual model identifier used (`opus` / `sonnet` / `haiku` — matters when fallback chains kicked in)
+- `issue_id`: slug for the issue (e.g. `weekly-2026-05-03`, `countdown-efteling`)
+- `chapter_id`: chapter slug for writer/repair calls; `-` otherwise
+- `retry`: 0 for first call, 1+ for subsequent attempts
+- `outcome`: `ok` | `validator_fail` | `gate_fail` | `escalated`
+
+**Where to log:** the main loop calls `bash scripts/log-call.sh <role> <model> <issue_id> <chapter_id_or_dash> <retry> <outcome>` immediately after each subagent returns. Logging is fire-and-forget — errors never block the pipeline.
+
+**Reviewing the log:**
+- All issues: `bash scripts/cost-summary.sh`
+- Single issue: `bash scripts/cost-summary.sh --issue weekly-2026-05-03`
+- Date floor: `bash scripts/cost-summary.sh --since 2026-05-01`
+
+The summary breaks calls down per issue by role and model, flags retries, and surfaces validator/gate failures + escalations across the fleet. After 4–6 real issues we'll have enough data to (a) confirm whether the role-intent fallback chains are sized right, (b) see which formats trigger the most repair rounds, (c) decide if any role should drop to a cheaper model or graduate to a more expensive one.
+
+## State Tracking
+
+### Issue Numbering
+
+**Standard weeklies** use sequential numbering. Issue #1 was 15-21 March 2026. Each subsequent Sunday standard weekly increments `last_issue_number` by 1.
+
+**Specials are NOT numbered.** They are referenced by format and topic only. Examples:
+- "The Countdown -- Efteling & Beekse Bergen"
+- "Field Guide -- Eating at Efteling"
+- "Versus -- The Lyss Method vs Ibex Training"
+- "Starter Kit -- Switch 2 Co-Op Games"
+- "Shortlist -- Solo Games for Switch 2"
+
+When a special edition runs, do NOT increment `last_issue_number`. The cover, footer, masthead, and wax seal of a special should display its format name and topic, never an issue number. The standard-weekly counter is preserved across specials.
+
+When archiving in the GitHub Pages `index.html`:
+- Standard weeklies: `Issue <#N> -- Standard Weekly`
+- Specials: `<Format> -- <Topic>` with `Special edition -- <date or context>` in the meta line. No issue number.
+
+The state file at `/tmp/the-signal/state/signal-state.json` has this shape:
+
+```json
+{
+  "last_issue_number": 1,
+  "last_issue_date": "2026-03-29",
+  "last_issue_format": "weekly",
+  "last_cover_lead": "World news topic",
+  "topics_covered_recently": [],
+  "section_topics_recently": {
+    "world_leads": [],
+    "session": [],
+    "pantry": [],
+    "pixel_byte_lead": [],
+    "screen_sound_lead": []
+  },
+  "rotating_sections": {
+    "the_shelf": { "last_appeared": null, "cadence_weeks": [2, 3] },
+    "this_week_in_history": { "last_appeared": null, "cadence_weeks": [2, 3] },
+    "the_pantry": { "last_appeared": null, "cadence_weeks": [2, 3] },
+    "the_workshop": { "last_appeared": null, "cadence_weeks": [3, 4] },
+    "the_toolkit": { "last_appeared": null, "cadence_weeks": [3, 4] },
+    "the_ledger": { "last_appeared": null, "cadence_weeks": [3, 4] },
+    "the_long_game": { "last_appeared": null, "cadence_weeks": [4, 4] },
+    "the_wallet": { "last_appeared": null, "cadence_weeks": [3, 4] },
+    "the_itinerary": { "last_appeared": null, "cadence_weeks": [3, 4] }
+  },
+  "down_the_rabbit_hole": { "last_appeared": null, "cadence_weeks": [3, 4] },
+  "training_phase": {
+    "current_block": "Block 1: Race Prep + Fat Loss",
+    "block_dates": "April 4 - May 3",
+    "next_block": "Block 2: Fat Loss + Hypertrophy (May 4 - June 30)",
+    "key_event": "10k race May 3",
+    "focus": "concurrent training (4 lifts + 3 runs/week), hypertrophy in deficit, race prep",
+    "post_june30": "hypertrophy at maintenance/surplus"
+  },
+  "ongoing_stories": [
+    { "topic": "Iran War", "section": "world", "weeks_as_lead": 4, "weeks_as_ongoing": 0, "last_status": "lead" }
+  ],
+  "upcoming_trips": [
+    {
+      "destination": "Efteling + Beekse Bergen, Netherlands",
+      "start": "2026-06-30",
+      "end": "2026-07-07",
+      "legs": [
+        { "place": "Efteling", "start": "2026-06-30", "end": "2026-07-02", "nights": 2 },
+        { "place": "Beekse Bergen Safari Resort", "start": "2026-07-02", "end": "2026-07-07", "nights": 5 }
+      ],
+      "access_constraints": {
+        "excluded_modes": ["car"],
+        "allowed_modes": ["plane", "public_transport", "walking", "taxi"],
+        "notes": "Travelling by plane + public transport. Anything car-dependent should not be featured (mention only in passing). Walkability and station/bus access are first-class facts in every pick."
+      },
+      "field_guide_due": true,
+      "countdown_due": true
+    }
+  ],
+  "last_special_date": null,
+  "last_special_format": null,
+  "consecutive_specials_count": 0,
+  "editorial_picks_used": [],
+  "recent_facts": [],
+  "recent_next_week_themes": [],
+  "recent_special_formats": []
+}
+```
+
+**`recent_facts`** — array of short tags (max 12) for the closing colophon "A Fact". Before writing each issue, read this list and pick a fact whose topic, era, and angle don't overlap with any of the last 12. After writing, append the new tag and trim to last 12. Example tags: `"Anglo-Zanzibar war"`, `"shortest filibuster"`, `"Roman calendar reform"`.
+
+**`recent_next_week_themes`** — array of short tags (max 4) for the closing "Next Week" line. Before writing, read this list and avoid repeating phrasing patterns. After writing, append and trim to last 4.
+
+**`recent_special_formats`** — array of recent specials (max 6 entries) tracking which P3 rotation formats have been used. Each entry: `{ "date": "YYYY-MM-DD", "format": "versus", "topic": "Sanguli vs Clodia" }`. Used by Phase 0e to pick the next P3 format — prefer formats not in the last 6. Append after every special edition (P1, P2, or P3 trigger), then trim to last 6. P1 specials (Field Guide, Countdown, Rewind, Season Review) are recorded but don't influence P3 rotation — they're calendar-driven, not rotation-driven; P3 picks among the rotation-eligible formats (Shortlist, Starter Kit, Blueprint, Versus, Deep Dive).
+
+**Per-trip `access_constraints` (optional).** Each `upcoming_trips` entry may include an `access_constraints` block describing how the reader will travel. Fields:
+- `excluded_modes` — array of transport modes the reader explicitly will not use on this trip (e.g. `["car"]`). Picks that effectively require any of these are removed from rankings, not flagged.
+- `allowed_modes` — array of transport modes the reader is using. The Field Guide and Countdown elevate access by these modes (walkability, station distance, bus routes) into Quick Stats sidebars and pick footers.
+- `notes` — free-text. Anything not captured by the structured fields (e.g. "prefer to avoid trains over 90min", "will rent bikes at the resort").
+
+When this block is present, both the Field Guide and the Countdown honour it strictly per the editorial spec rule "Access constraints — read the trip entry". Constraints are per-trip, not per-reader — set them fresh on each new trip entry. Omit the block entirely if the reader has not specified.
+
+When generating an issue:
+1. Read state file at start
+2. Evaluate auto-trigger logic (Priority 1 → 2 → 3) and guardrails
+3. If standard weekly: select 2-3 rotating sections based on cadence priority (most overdue first)
+4. Research accordingly (full groups for weekly, topic + light news pass for specials)
+5. After generation, update:
+   - `last_issue_date` (always)
+   - `last_issue_format` (always)
+   - `last_issue_number` (ONLY increment for standard weeklies; do NOT increment for specials)
+   - `last_appeared` for each rotating section that appeared (standard weekly only)
+   - `section_topics_recently` (always) -- append a short tag for each section's main topic this week (e.g. `session: ["race-day pacing"]`, `world_leads: ["Pope Africa visit", "$166bn tariff reversal"]`). Keep the last 4 entries per section. Before generating, the agent MUST read these and pick a different angle for any section that's running a related topic for 2+ consecutive weeks.
+   - `down_the_rabbit_hole.last_appeared` (if it appeared as a sidebar)
+   - `last_special_date` and `last_special_format` (if special edition)
+   - `consecutive_specials_count` (increment if special, reset to 0 if weekly)
+   - `editorial_picks_used` (append topic if Priority 3 was used)
+   - `recent_facts` (always) — append the closing fact's short tag, trim to last 12
+   - `recent_next_week_themes` (always) — append the closing "Next Week" line's short tag, trim to last 4
+   - `ongoing_stories` — update weeks_as_lead/weeks_as_ongoing counts, promote/demote/drop stories as needed, add new entries if a topic has now led for 2 consecutive weeks
+   - `training_phase` — update if the current date has crossed a block boundary (Block 1 ends May 3, Block 2 ends June 30, post-holiday starts July)
+
+## Scheduling
+
+This skill is invoked manually by typing `/the-signal` (or by description match — e.g. "run the signal", "generate this week's Signal"). Claude Code on the web doesn't have a built-in cron equivalent that lives inside a skill. To run it automatically every Sunday morning, wire an external scheduler — a GitHub Actions workflow on `schedule: cron: '0 8 * * SUN'` that opens a Claude Code on the web session against this repo is the recommended pattern. Each manual or scheduled run follows the full workflow above. State file read at start, updated at end. Over a month, every interest cluster gets meaningful coverage at least twice.
+
+## Asset Map (for editing sessions, not generation runs)
+
+When the reader asks to tweak styling or structure rather than generate an issue, go directly to the right file — don't read the whole skill.
+
+**CSS** — split across `assets/css/` in cascade order. Edit one file, don't read the whole directory. The build script concatenates alphabetically.
+
+| File | Contains |
+|---|---|
+| `00-tokens.css` | `:root` custom properties (colours, section palettes) |
+| `01-base.css` | reset, progress bar, back-to-top, utility classes |
+| `02-cover.css` | cover header + ambient animation + grain |
+| `03-navigator.css` | nav grid, nav cards, nav icons |
+| `04-layout-sections.css` | foreword, dividers, generic section, watermark, gradient overlay |
+| `05-components-stats.css` | stat bar, big number, display stat |
+| `06-components-editorial.css` | angle box, pull quote, DYK, sidebar, also-list/cards |
+| `07-components-layout.css` | dual-col, varied columns, hero, image montage, offset image |
+| `08-section-world.css` | world section |
+| `09-section-touchline.css` | touchline + sparkline + league tables + results |
+| `10-section-screen.css` | screen & sound + card stack + rating dots |
+| `11-section-shelf.css` | the shelf |
+| `12-section-session.css` | the session |
+| `13-section-history.css` | this week in history |
+| `14-section-rotating.css` | pantry, workshop, toolkit, ledger, long game, wallet, itinerary |
+| `15-components-extras.css` | timelines, compact takes, margin notes, section icons, collapsibles, read-next |
+| `16-animations.css` | scroll-triggered reveal, count-up |
+| `17-section-longshelf-radar-footer.css` | long shelf, on the radar, footer |
+| `18-components-entries.css` | entry patterns, breather bands, also-list tiers, compare panels, sidebar-float |
+| `19-phase2-typography.css` | drop-cap, section opener variants, anchor piece flagging, colophon |
+| `20-responsive.css` | `@media` queries |
+| `21-chrome.css` | persistent masthead, full-bleed editorial cover, wax-stamp seal |
+| `22-decorative.css` | Enhancement 22 — grain overlay, chapter-chrome, folio-watermark, pull-break, marginalia (all section-aware) |
+| `23-special-chrome.css` | **Special editions only** — splash, ticker masthead, kinetic cover title, format badge, arc-notch footer card. See `editorial-spec.md` § Special Editions. |
+| `24-special-motion.css` | **Special editions only** — layered parallax, stagger reveal, colour-wipe transitions, live D-day badge, manifesto, bignum, broken gallery, diptych, source marquee. See `editorial-spec.md` § Special Editions. |
+| `25-special-body.css` | **Special editions only, tier 4** — body-embedded components (sp-scroll-image, sp-inline-figure, sp-image-strip, sp-pullquote-huge, sp-number/-huge, sp-marginalia, sp-kicker, sp-image-quote, sp-curtain, sp-chapter-number). Lives INSIDE article sections. See `editorial-spec.md` § Imagery Budget. |
+| `26-special-editorial.css` | **Special editions only, tier 5** — editorial body kit (magazine-spread structure). Ground-aware tokens, alternating-ground wrappers (sp-ground-paper / sp-ground-ink), chapter chrome strip, folio watermarks, three-column feature spread (sp-spread + sp-rail + sp-margin), brief sidebar, hero-quote card, stat dashboard (sp-dash), editorial timeline (sp-timeline), full-bleed pull-break, three-column bridger, caption-strip, signoff, eyebrow, `.sp-island` readability lock. Portrait spread uses hybrid layout at ≤980px (rail absolute, margin reparented + floated right). See `editorial-spec.md` § Editorial body kit. |
+| `28-special-motion-editorial.css` | **Tier 5.5** — editorial motion layer animating the tier-5 components. Wipe-band reveal, sequenced chapter-chrome entrance, folio scroll drift, stat-dash cell stagger, timeline row stagger, hero-quote lift, brief slide-in, pull-break corner-quote reveal, bridger stagger, spread rail+margin slide-in from opposite sides, drop-cap pop, spine SVG line draw, caption-strip hairline draw, underline-draw on in-prose links, ground-seam accent hairlines, reduced-motion kill switch. Mobile safety: every `opacity:0`/`translate` initial state is gated behind `body.sp-motion-ready` — JS adds the class on init plus a 2.5s safety timer. |
+| `29-signature-moments.css` | **Tier 6** — format-specific signature moments: `sp-sand-clock` (Countdown), `sp-memory-wall` (Rewind), `sp-fault-line` (Versus), `sp-form-tape` (Season Review), `sp-thread-pull` (Deep Dive), `sp-build-meter` (Blueprint), `sp-cold-start` (Starter Kit), `sp-deck-reveal` (Shortlist), `sp-pinboard` (Field Guide). Each gated by `body.is-special[data-special="<format>"]`. Plus `sp-sticky-pin` (v8.3, format-agnostic) with `--portrait`/`--quote`/`--left` variants, max one per issue. |
+| `30-transitions-ambient.css` | **Tier 6** — format-agnostic chapter transitions and ambient layers. `sp-stat-curtain` (full-viewport hero stat overlay) and `sp-page-fold` (3D rotateX page-curl at paper↔ink boundaries) are special-edition-only. `sp-chapter-beads` is UNIVERSAL (v8.3) — works on standard weekly AND every special edition; auto-discovers chapters from `[data-sp-chapter]` or `.mag > section.sec` fallback. `sp-horizon` stays special-edition-only. |
+| `31-chapter-gate.css` | **Tier 7 (v8.7.1) — MANDATORY per-chapter opener (sticky scroll model + seam close) + ground discipline + accent lockdown.** `.sp-chapter-gate` is a 110vh scroll track (100vh sticky hold + 10vh tail) containing a `position: sticky` full-bleed black panel that locks for ~1 screen height of scroll. Reveal thresholds: arc 0.00–0.06, numeral 0.02–0.10, title 0.06–0.14, deck 0.10–0.20 — all four layers solid by 20% of the sticky hold. v8.6 seam close: `section[data-sp-chapter]` and `.sp-pull-break-wrap` get `display: flow-root` to contain block margins. Enforces ground discipline (sp-ground-paper/ink neutralised on components nested inside [data-sp-chapter]) and accent lockdown (coral demoted to slate on paper, bone on ink). |
+| `32-hype-variants.css` | **Tier 8 (v8.9.1) — OPT-IN modifiers for hype-forward chapters** (Countdown hype chapters and Field Guide's Opening + Unmissables). (A) `.sp-chapter-gate.is-hype` — compact gate variant, track 60vh / sticky 40vh, layers solid by progress 0.08, numeral one size smaller. (B) `[data-sp-chapter].is-hype` — narrowly re-permits coral on `.sp-number`, `.sp-number-huge`, `.sp-kicker`, `.sp-brief-kicker`, `.unmissables .sp-datum-value`, `.why-its-here`. (C) `.sp-ground-gallery` — third ground type, neutral slate #1A1E27, legal only on image-first chapters. (D) `.unmissables`/`.unmissable` — Field Guide Unmissables pattern: 6–10 full-width editorial beats, hero image + sensory prose + "Why It's Here" coral kicker + mono `<dl>` practical footer. Drop-cap forbidden on picks. Never apply any of the four to literary formats. |
+| `33-countdown-destinations.css` | **Tier 9 (v8.10) — Multi-venue Countdown destination theming.** OPT-IN, additive layer activated by `body[data-special="countdown"][data-multi-venue="true"]` and per-chapter `data-venue="efteling"`/`"beekse-bergen"`. Provides per-venue grounds, per-venue accent (kicker, brief-kicker, datum-value, eyebrow, dashboard strong, pull-quote cite, spread h2 marker repainted), decorative venue glyph as ::after mask-image watermark, `.sp-venue-tag` inline pill. No `isolation: isolate`, no `> *` resets, no animation overrides. `prefers-reduced-motion` guard. Glyphs stored inline. Source SVGs at `assets/glyphs/` with `ATTRIBUTION.md`. |
+| `34-readability-locks.css` | **Tier 10 (v8.10.3) — Bug-fix layer for the contrast cascade.** Re-locks each self-painting component to a fixed bg+text pair regardless of chapter ground: `.sp-marginalia` always cream-bg + ink-text; `.sp-pull-break` always dark-bg + bone-text (Tier 7's `background: initial; color: initial` reset overridden); `.sp-pullquote-huge` text colour explicit per chapter ground. Plus defence-in-depth fallbacks for non-spec markup classes (`.sp-pq-quote`, `.sp-pq-attrib`, `.sp-marg-kicker`, `<div class="sp-pullquote-huge">`). Numeric prefix `34-` ensures last-in-cascade. |
+| `36-holiday-identity.css` | **Tier 11 (v8.12) — Separate visual identity for Countdown + Field Guide.** Activates on `body.is-special[data-special="countdown"]` and `body.is-special[data-special="field-guide"]`. Dormant on every other format. Replaces (not augments) the default special-edition chrome on these two formats: hides `.sp-chapter-gate`, `.mast-ticker`, `.sp-splash`, `.sp-chapter-beads`, `.sp-sticky-pin`, `.sp-page-fold`, `.sp-horizon`; disables the coral accent lockdown and ground discipline inside `[data-sp-chapter]`. Installs the full `.hol-*` vocabulary. Six type stacks: Bowlby One, Cinzel italic, Yellowtail, Caveat, Anton, Alfa Slab One. Loaded conditionally via `<!-- HOLIDAY-FONTS-OPEN -->` block in `00-head-open.html`. Compatible with tier 9 multi-venue theming. |
+| `37-holiday-portrait.css` | **Tier 12 (v8.13.1) — Portrait-tablet optimisations for the Holiday Identity layer.** Targets the 721–960px viewport band (Xiaomi Pad 8 portrait sits at 854px). Re-engineers components that fail in that gap: cover collage min-height, half-opener script tag becomes inline, transit intermission forced into vertical stack, anchor badge re-anchored inside rotated container, marquee negative-margin tightened, polaroid/postcard/chalkboard centred and width-capped, don't-miss numeral gutter compressed, meanwhile + subscribe stacked, savannah silhouette band height shortened. Touch-parity layer adds `:focus-within` and `.is-active` rules mirroring every `:hover` rotate-reset. |
+| `38-holiday-motion.css` | **Tier 13 (v8.13.1) — Scroll-driven motion for the Holiday Identity layer.** Pairs with the HOLIDAY MOTION CONTROLLER in `script.js`. Single utility class `.hm-rise` (with `.from-left`/`.from-right`/`.delay-1..3` variants) auto-applied by JS to every major `.hol-*` block. Behaviours: `.hm-rise` fade-up + slide-in; cover parallax via `--hm-scroll`; `.hol-wonder`/`.hol-unmissable` slide photo and card in from opposite sides (mirrored for `--reverse`); `.hol-anchor` ken-burns + badge spring-rotate; `.hol-dont-miss` slam-in with overshoot; polaroid/postcard/stamp/chalkboard drop-in; transit center-card spring-in; marquee touch-drag pause; flip-pop on countdown seconds; folio-badge palette swap on Half I → Half II crossing. Safety guard `:not(.hol-motion-ready)` keeps everything visible if JS fails. |
+| `39-holiday-motion-extras.css` | **Tier 14 (v8.13.2) — Extra motion layer for Countdown + Field Guide.** Eight extras on top of tier 13: edge crossfade between Half I and Half II via `--hm-edge`; countdown count-up on first viewport entry; anchor ken-burns on scroll via `--hm-progress`; polaroid tape-twitch keyframe at `.hm-landed`; Don't Miss numerals from CSS counter() to `attr(data-num)` for JS-driven count-up; marquee burst at first entry; typewriter reveal on `.hol-cover__dek`; half-ground parallax via `--hm-half-scroll`. Single rAF loop in script.js for efficiency; one-shot `.dataset.hm*` flags prevent re-firing. All motion gated behind `prefers-reduced-motion: reduce`. |
+
+**Template** — split across `assets/template-parts/` by issue section. Each file is the HTML skeleton for that section, read-only reference.
+
+| File | Contains |
+|---|---|
+| `00-head-open.html` | doctype, head, fonts, `<!-- INJECT:CSS -->`, `<body>`, progress bar |
+| `01-masthead.html` | persistent masthead bar |
+| `02-wax-seal.html` | rotating wax-stamp seal |
+| `03-cover.html` | full-bleed editorial cover |
+| `04-navigator.html` | navigator grid (default) |
+| `04-navigator-toc.html` | navigator grid — TOC-style variant (Enhancement 22F, opt-in) |
+| `05-foreword.html` | foreword block |
+| `06-long-shelf.html` | the long shelf |
+| `07-world.html` | the world this week (plus ongoing-story tracker patterns) |
+| `08-anchor-piece.html` | anchor-piece rotation patterns (every 4th issue) |
+| `09-pixel-byte.html` | pixel & byte |
+| `10-touchline.html` | the touchline |
+| `11-breather-band.html` | breather band separator |
+| `12-screen-sound.html` | screen & sound |
+| `13-shelf.html` | the shelf |
+| `14-session.html` | the session |
+| `15-history.html` | this week in history |
+| `16-on-the-radar.html` | on the radar |
+| `17-colophon.html` | end-of-issue colophon |
+| `18-footer.html` | footer |
+| `19-closing.html` | `.mag` close, back-to-top, `<!-- INJECT:JS -->`, `</body></html>` |
+
+**Pipeline scripts and references** (v8.11.0+):
+
+| Path | Purpose |
+|---|---|
+| `references/pre-flight.md` | Every writer subagent reads this before drafting. 12 regression triggers + canonical markup snippets + self-audit checklist. The primary defence — most failures are caught upstream here. |
+| `references/chapter-plan-schema.md` | JSON Schema for the planner's output. Closed vocabulary for format and chapter_type. Documents the contract between planner and writers. |
+| `references/spec/` | Sliced editorial-spec.md for tight per-role context. Five flat files: `global.md`, `weekly.md`, `specials.md`, `formats.md`, `triggers.md`. Each former subdir-file is now an H2 (`## <anchor>`) inside the consolidated file. `README.md` documents reading order per role and the H2 anchor index. |
+| `scripts/slice-spec.sh` | Deterministic slicer. Re-runs idempotently after editorial-spec.md edits to refresh the sliced spec. |
+| `scripts/validate-chapter-plan.py` | Mandatory gate between Phase 4 and Phase 5. Catches malformed plans, missing fields, broken cross-refs. |
+| `scripts/stitch-issue.sh` | Deterministic chapter concatenation + scaffold wrap + CSS/JS inject. Replaces inject-assets.sh in the pipeline. |
+| `scripts/inject-assets.sh` | Legacy single-file CSS/JS injector. Kept for ad-hoc edits outside the pipeline. |
+| `scripts/check-release-dates.sh` | Phase 7.5 release-date sanity check. Surfaces every claim of a date/relative-time near a media name in the stitched HTML, plus any locked-register entry. Output written to `/tmp/signal-date-claims.txt`. The agent walks the report and verifies each claim against the locked register or a web search before publish. |
+| `scripts/log-call.sh` | Fire-and-forget logger — main loop calls this after each subagent returns. Appends one JSON line to the cost log (default `/tmp/the-signal/state/cost-log.jsonl`, override via `SIGNAL_COST_LOG`). Errors are silent so logging never blocks the pipeline. |
+| `scripts/cost-summary.sh` | Reads the cost log and prints a per-issue and aggregate breakdown (calls per role, model usage, retry rate, validator/gate failures, escalations). Run after a few issues to validate the model fallback chains. |
+
+**Rules for CSS edits:**
+- Never reorder or rename files — alphabetical order is the cascade.
+- A new component fits into an existing file if the category matches; otherwise add a new file with a numeric prefix that slots it in the right cascade position.
+- After any CSS edit, you can verify the build still works by running `bash scripts/inject-assets.sh` on a dummy HTML file with the two placeholder comments.
+
+**`assets/script.js`** — single file, four logical regions:
+1. **Universal base controllers** (lines 1–~445): progress bar, back-to-top, count-up, reveal observer, wax-stamp chapter numeral tracker, chapter beads (v8.3, every issue, auto-discovers chapters), sticky pin (v8.3, scroll progress driver, max-one-per-issue enforcer), chapter gate (v8.5, auto-builds from `data-chapter-num`/`-title`/`-arc`, rAF scroll-progress loop, IntersectionObserver-gated, reduced-motion + 2.5s safety backstop). Run on every issue.
+2. **Special-edition motion controller** (~line 375+): parallax, stagger words, colour-wipes, D-day live countdown, sp-stat-curtain, sp-page-fold, sp-horizon piggyback, per-format signature moments. IIFE-wrapped, short-circuits unless `body.is-special` and `prefers-reduced-motion` is not set.
+3. **Holiday Identity countdown controller** (v8.12, end of file): live tick on `.hol-countdown` cells (`[data-cd="days|hours|mins|secs"]`) driven by ISO `data-target` on the wrapper. Runs only on `body.is-special` AND `data-special` ∈ `{countdown, field-guide}`.
+4. **Holiday Motion controller + Motion Extras controller** (v8.13.1 / v8.13.2, end of file): scroll-driven motion paired with `38-/39-holiday-motion*.css`. Tags every major `.hol-*` block with `.hm-rise`, opts in stagger delays, releases CSS safety guard via `body.hol-motion-ready`, installs IntersectionObserver reveal + rAF parallax + touch-tap unrotate + marquee touch-drag pause + folio-badge palette swap, plus eight extras (edge crossfade, count-up, ken-burns, tape-twitch, Don't Miss count-up, marquee burst, typewriter, half-ground parallax). 2.4s safety backstop force-sets `.is-in` on every `.hm-rise` if observers fail. Reduced-motion safe.
