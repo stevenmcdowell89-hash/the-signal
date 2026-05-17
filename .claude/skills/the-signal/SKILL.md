@@ -44,13 +44,13 @@ The Signal runs as a multi-subagent pipeline. Each role has different reasoning 
 
 The Signal runs ONE pipeline for every issue — standard weekly or special edition. The format is decided in Phase 0; Phases 3–10 then run for every format. The format only changes WHICH chapters get written and HOW writers are sequenced (parallel vs sequential), not WHICH phases run.
 
-The pipeline: Phase 0 (decide format) → Phase 3 (researcher subagent) → Phase 3b (research-bundle validator) → Phase 4 (planner subagent + validator) → Phase 5 (writer subagents, parallel or sequential) → Phase 6 (stitch) → Phase 7 (per-chapter Gate 1) → Phase 7.5 (release-date check) → **Phase 7.6 (structural + asset validator — `validate-issue.py`)** → Phase 7.7 (image-source diversity — `check-image-diversity.sh`) → Phase 8 (stitched-issue Gate) → Phase 9 (repair if needed) → Phase 10 (deliver + publish).
+The pipeline: Phase 0 (decide format) → Phase 3 (researcher subagent) → Phase 3b (research-bundle validator) → Phase 4 (planner subagent + validator) → Phase 5 (writer subagents, parallel or sequential) → Phase 6 (stitch) → Phase 7 (per-chapter Gate 1) → Phase 7.5 (release-date check) → **Phase 7.6 (structural + asset validator — `validate-issue.py`)** → Phase 7.7 (image-source diversity — `check-image-diversity.sh`) → **Phase 7.8 (DOM visual smoke test — `visual-smoke-test.py`)** → Phase 8 (stitched-issue Gate) → Phase 9 (repair if needed) → Phase 10 (deliver + publish).
 
 There is NO separate "lightweight" path. Standard weeklies run the full pipeline same as specials. Build dir is `/tmp/signal-build/`, cleared at the start of every run.
 
 > **Environment note.** Claude Code on the web runs in an ephemeral container that is reclaimed when the session ends. The repository at `stevenmcdowell89-hash/the-signal` is the only durable store — state, issues, and the cost log all live there. Per-session paths like `/tmp/signal-build/` are scratch only.
 
-> **Gate discipline (MANDATORY).** Every script-backed gate in this workflow — `validate-chapter-plan.py`, `validate-research-bundle.py`, `stitch-issue.sh` (which embeds the holiday-activation rewrite + banned-vocabulary scan), `check-release-dates.sh`, `validate-issue.py`, and `check-image-diversity.sh` — is **run by the orchestrator itself**, not delegated to a subagent. The gate's verdict is its **exit code**, full stop. A subagent claiming "gate X passed" is not acceptable evidence — the orchestrator must invoke the script via `bash` or `python3`, read the printed report, and read the exit code before advancing. If a subagent reports success but the orchestrator did not run the gate, the orchestrator runs it now. This rule exists because subagents have been observed reporting "gate passed" for gates they never invoked.
+> **Gate discipline (MANDATORY).** Every script-backed gate in this workflow — `validate-chapter-plan.py`, `validate-research-bundle.py`, `stitch-issue.sh` (which embeds the holiday-activation rewrite + banned-vocabulary scan + holiday scaffold override + holiday half-wrap reorganisation), `check-release-dates.sh`, `validate-issue.py`, `check-image-diversity.sh`, and `visual-smoke-test.py` — is **run by the orchestrator itself**, not delegated to a subagent. The gate's verdict is its **exit code**, full stop. A subagent claiming "gate X passed" is not acceptable evidence — the orchestrator must invoke the script via `bash` or `python3`, read the printed report, and read the exit code before advancing. If a subagent reports success but the orchestrator did not run the gate, the orchestrator runs it now. This rule exists because subagents have been observed reporting "gate passed" for gates they never invoked.
 
 ---
 
@@ -215,6 +215,19 @@ Unknown domains (not in the lookup) trigger an advisory rather than a hard fail 
 **Non-zero exit code = the issue is not shippable.** Identify the over-represented domain, swap entries to under-represented source types (typically by extending research to press kits / government Flickr / archive hosts), update `research-bundle.json`, re-run the affected writer(s), re-stitch. **The orchestrator runs this script directly and reads the exit code** — gate-discipline rule applies.
 
 This gate exists as a downstream catch for what Phase 3b missed — writers omitting some bundle images and skewing the final ratio, or new domains slipping in via writer prose that weren't in the bundle. The upstream validator (Phase 3b) is the primary defence; this is defence in depth.
+
+### Phase 7.8 — DOM visual smoke test (mandatory before publish)
+Run `python3 scripts/visual-smoke-test.py <stitched-html-path> --format <format> [--multi-venue]`. A pure-Python DOM analyser that catches five shipping-defect classes the earlier gates miss because they check structure or HTTP status, not what would render:
+
+- **D1 duplicate chrome** — both the legacy `header.cover` / `div.mast` / `footer.footer` AND the holiday `.hol-cover` / `.hol-masthead` / `.hol-footer-row` present in the same DOM (the viewer sees a duplicate title page / footer). Already prevented at stitch time by the holiday scaffold override, this is the defence-in-depth check.
+- **D2 un-wrapped venue chapters** — on holiday + multi-venue issues, venue chapters (sections with `data-venue="X"`) that are NOT DOM-descendants of the matching `.hol-half--N` wrapper. Those chapters render against the body default with no venue ground.
+- **D3 page-url-as-image** — any `<img src>` or `background-image:url(...)` whose URL has no recognised image extension (and isn't a `data:` URI). Almost always a writer pasted a brand-site page URL where a CDN image URL was expected.
+- **D4 orphan holiday elements** — a multi-venue holiday issue with NO `.hol-half` blocks at all.
+- **D5 empty hero bands** — `.hol-cover` or `.hol-half__opener` containing no visible text.
+
+Runs without network, so it works in every environment (including the egress-restricted managed runtime where Phase 7.6's image-URL HEAD check degrades to a warning). **The orchestrator runs this script directly and reads the exit code** — non-zero = issue NOT shippable.
+
+This is the "browser-eye QA" replacement for environments without headless-Chromium. It's deliberately conservative — false negatives are possible, but the five detectors target the recurring failure modes that have shipped or nearly shipped in prior runs.
 
 ### Phase 8 — Stitched-issue Gate (Gate 3)
 Cross-chapter checks: no two consecutive sections same component pattern, accent lockdown across chapters, link health, ongoing-story consistency. Plus Gate 2 editorial/visual quality. (Image-source diversity is enforced by Phase 7.7.) Fix any failures.
