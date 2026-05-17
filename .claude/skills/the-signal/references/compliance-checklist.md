@@ -4,6 +4,22 @@ Two gates. Gate 1 is a mechanical text scan — run it BEFORE reading Gate 2. If
 
 **v8.11.0 update:** Gate 1 now runs **per chapter during the pipeline** (Phase 7), not just at end of run. Each writer self-audits via `references/pre-flight.md` before submission. The main loop then grep-scans every chapter against this gate before stitching. Most regressions are caught upstream by pre-flight; this file catches what slipped through.
 
+**v8.13.4 update — what is now MECHANIZED vs what remains MANUAL.**
+- **Mechanized** (run by the orchestrator as scripts, exit-code gated):
+  - `scripts/validate-chapter-plan.py` — Phase 4 plan validity.
+  - `scripts/stitch-issue.sh` — Phase 6 holiday-activation rewrite + banned-vocabulary scan (`sp-*` tokens on holiday formats) + positive `.hol-half` presence.
+  - `scripts/check-release-dates.sh` — Phase 7.5 date/release-fact surface.
+  - `scripts/validate-issue.py` — Phase 7.6 structural well-formedness, banned literal placeholders in DOM, holiday-identity body activation (real `<body>` after `</head>`, not example in comment), required holiday components (`.hol-masthead` / `.hol-cover` / `.hol-half`), multi-venue body flag + two distinct `data-venue` values, and image-URL HEAD-checks.
+- **Manual** (still requires a reading pass — no script can judge prose):
+  - **1A Reader-profile leaks** below.
+  - **1B Fabrication** of facts, dates, quotes, attribution (date register is partially mechanized via `check-release-dates.sh`; the agent still walks the surface).
+  - **1C Staleness** (rotating-section topics not in spec, ongoing-stories continuity).
+  - **1D Link health** (only structural URL reachability is mechanized; relevance is not).
+  - **1E Markup contract** (partially mechanized via the stitch-time grep gate; spot-check anything novel).
+  - **1F Image-caption integrity** (whether the caption matches the image is still a human/agent judgement).
+
+If a check in this file is duplicated by a mechanized gate, the mechanized gate is authoritative and the prose here is a reading aid only.
+
 Gate 1 has six sections: 1A reader-profile leaks, 1B fabrication, 1C staleness, 1D links, **1E markup contract compliance** (special editions only), **1F image-caption integrity**. Sections 1E and 1F are bash grep recipes — run them, every command must return the expected value before proceeding.
 
 ---

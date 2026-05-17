@@ -301,13 +301,30 @@ HOLIDAY_FORMATS = {"countdown", "field-guide"}
 
 if issue_format_early in HOLIDAY_FORMATS:
     # Activation rewrite — stamp the body tag deterministically.
-    body_re = re.compile(r'<body\b[^>]*>', re.IGNORECASE)
-    desired_body = f'<body class="is-special" data-special="{issue_format_early}">'
-    html, n_replaced = body_re.subn(desired_body, html, count=1)
-    if n_replaced == 0:
-        print("ERROR: No <body> tag found in scaffold — cannot activate holiday identity")
+    #
+    # CRITICAL: anchor to </head>. The scaffold (00-head-open.html) contains
+    # an HTML comment with an example body tag string ('<body class="is-special"
+    # data-special="countdown"> (or field-guide).'). A naive `<body\b[^>]*>`
+    # regex with count=1 matches that comment example FIRST and leaves the
+    # real <body> bare. We find </head> first, then the next <body> after it.
+    head_end_match = re.search(r'</head\s*>', html, re.IGNORECASE)
+    if not head_end_match:
+        print("ERROR: No </head> tag found in scaffold — cannot locate real <body>")
         sys.exit(1)
-    print(f"ACTIVATION: rewrote <body> to is-special + data-special={issue_format_early}")
+    body_search = re.search(r'<body\b[^>]*>', html[head_end_match.end():], re.IGNORECASE)
+    if not body_search:
+        print("ERROR: No <body> tag after </head> — cannot activate holiday identity")
+        sys.exit(1)
+    body_abs_start = head_end_match.end() + body_search.start()
+    body_abs_end   = head_end_match.end() + body_search.end()
+    multi_venue_flag = bool(issue_meta_early.get("multi_venue", False))
+    body_attrs = f'class="is-special" data-special="{issue_format_early}"'
+    if multi_venue_flag:
+        body_attrs += ' data-multi-venue="true"'
+    desired_body = f'<body {body_attrs}>'
+    html = html[:body_abs_start] + desired_body + html[body_abs_end:]
+    mv_note = " + data-multi-venue=true" if multi_venue_flag else ""
+    print(f"ACTIVATION: rewrote real <body> (after </head>) to is-special + data-special={issue_format_early}{mv_note}")
 
     # Build the gate scan target: ONLY the concatenated chapter bodies.
     # Scaffolds (00-head-open.html / 19-closing.html) are clean by spec.

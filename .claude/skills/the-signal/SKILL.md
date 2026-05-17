@@ -44,11 +44,13 @@ The Signal runs as a multi-subagent pipeline. Each role has different reasoning 
 
 The Signal runs ONE pipeline for every issue — standard weekly or special edition. The format is decided in Phase 0; Phases 3–10 then run for every format. The format only changes WHICH chapters get written and HOW writers are sequenced (parallel vs sequential), not WHICH phases run.
 
-The pipeline: Phase 0 (decide format) → Phase 3 (researcher subagent) → Phase 4 (planner subagent + validator) → Phase 5 (writer subagents, parallel or sequential) → Phase 6 (stitch) → Phase 7 (per-chapter Gate 1) → Phase 7.5 (release-date check) → Phase 8 (stitched-issue Gate) → Phase 9 (repair if needed) → Phase 10 (deliver + publish).
+The pipeline: Phase 0 (decide format) → Phase 3 (researcher subagent) → Phase 4 (planner subagent + validator) → Phase 5 (writer subagents, parallel or sequential) → Phase 6 (stitch) → Phase 7 (per-chapter Gate 1) → Phase 7.5 (release-date check) → **Phase 7.6 (structural + asset validator — `validate-issue.py`)** → Phase 8 (stitched-issue Gate) → Phase 9 (repair if needed) → Phase 10 (deliver + publish).
 
 There is NO separate "lightweight" path. Standard weeklies run the full pipeline same as specials. Build dir is `/tmp/signal-build/`, cleared at the start of every run.
 
 > **Environment note.** Claude Code on the web runs in an ephemeral container that is reclaimed when the session ends. The repository at `stevenmcdowell89-hash/the-signal` is the only durable store — state, issues, and the cost log all live there. Per-session paths like `/tmp/signal-build/` are scratch only.
+
+> **Gate discipline (MANDATORY).** Every script-backed gate in this workflow — `validate-chapter-plan.py`, `stitch-issue.sh` (which embeds the holiday-activation rewrite + banned-vocabulary scan), `check-release-dates.sh`, and `validate-issue.py` — is **run by the orchestrator itself**, not delegated to a subagent. The gate's verdict is its **exit code**, full stop. A subagent claiming "gate X passed" is not acceptable evidence — the orchestrator must invoke the script via `bash` or `python3`, read the printed report, and read the exit code before advancing. If a subagent reports success but the orchestrator did not run the gate, the orchestrator runs it now. This rule exists because subagents have been observed reporting "gate passed" for gates they never invoked.
 
 ---
 
@@ -148,6 +150,10 @@ Read `chapter-plan.json`. For each chapter, spawn an `Agent` with `subagent_type
 ### Phase 6 — Stitch
 Run `bash scripts/stitch-issue.sh --plan /tmp/signal-build/chapter-plan.json --out signal_<format>_<date>.html`. Stitcher concatenates chapters, wraps in scaffold, injects CSS (alphabetical cascade) and JS deterministically. **v8.13.3:** for `countdown` and `field_guide` formats, stitch-issue.sh auto-rewrites the `<body>` tag to `<body class="is-special" data-special="<format>">` (the activation that switches on tier 11/12/13/14 CSS + JS), runs a banned-vocabulary grep gate (`sp-chapter-gate`/`sp-spread`/`sp-pull-break`/`sp-marginalia`/`sp-brief`/`sp-dash`/`sp-chapter-chrome`/`unmissables`/`unmissable`) and exits non-zero if any are found, and runs a positive-structure check that fails the stitch if no `.hol-half` is present. Writers cannot accidentally ship a holiday issue without the Holiday Identity activation.
 
+**v8.13.4 fix:** the body-rewrite regex is now anchored to `</head>` (not the first `<body>` in the document). The scaffold `00-head-open.html` contains a documentation comment with an example body tag (`<body class="is-special" data-special="countdown"> (or field-guide).`), and a naive `count=1` regex matches that example FIRST and silently leaves the real `<body>` bare. Anchoring to `</head>` guarantees we rewrite the real DOM tag. If you edit stitch-issue.sh, preserve this anchoring.
+
+**Plan-level multi-venue flag.** If `issue_meta.multi_venue` is `true` in chapter-plan.json, the stitcher additionally stamps `data-multi-venue="true"` on the rewritten body. This activates tier-9 per-venue scoping for Countdown (and is harmless on Field Guide, which uses the `.hol-half--one`/`--two` structure instead). The planner sets this flag for issues with two named venues; do not set it manually.
+
 ### Phase 7 — Per-chapter Gate 1 (during pipeline)
 Each chapter has already self-audited via pre-flight.md. Now grep-scan every chapter HTML for the Gate 1 hard-fail patterns from `references/compliance-checklist.md` (1A reader-profile leaks, 1B fabrication markers, 1C staleness, 1E markup contracts, 1F image-caption integrity). Any failure → enter repair flow.
 
@@ -160,6 +166,30 @@ The agent then walks the report. For each surfaced claim:
 3. If a relative-time phrase is used ("last September", "this summer", "coming next month") without explicit year context, treat as suspect by default — verify or rewrite.
 
 Fix every FAIL before proceeding to Phase 8. The release-date class of error is the single most-cited fabrication category in reader feedback (Andor S2 framed as current; Tales of the Underworld framed as upcoming when it aired in 2025; Andor S2 end-date wrong by months). This phase is non-skippable.
+
+### Phase 7.6 — Structural + asset validator (mandatory before publish)
+
+Run `python3 scripts/validate-issue.py <stitched-html-path> --format <format>` and, when applicable, add `--multi-venue` for issues with two or more named venues.
+
+The script performs four classes of check:
+
+1. **Structural well-formedness** — doctype, `</html>`, `</body>` present.
+2. **Banned literal placeholders** in the rendered DOM (NOT inside `<style>`/`<script>`/`<!-- -->`): `src="..."`, `src="…"`, `href="#TODO"`, `[PLACEHOLDER]`, `[TODO]`, `[DATE RANGE]`, `[YEAR]`, `PASTE contents of`, `See assets/script.js`, `<!-- INJECT:CSS -->`, `<!-- INJECT:JS -->`. These ship invisibly through other gates if not checked.
+3. **Holiday activation** (for `countdown` / `field-guide`): the real `<body>` tag (the one after `</head>`, not an example in a comment) must carry `class="is-special"` and `data-special="<format>"`. The required holiday components (`.hol-masthead`, `.hol-cover`, `.hol-half`) must be present at least once each (BEM child classes count: `hol-masthead__title` implies the masthead block exists). For multi-venue issues, `data-multi-venue="true"` must be on the body and at least two distinct `data-venue=` attributes must be present.
+4. **Image URL HEAD-checks** — every `<img src="…">` and inline `background-image: url(…)` URL in the DOM is HEAD-requested in parallel (5s timeout, accepts 2xx/3xx, falls back to range-GET for servers that reject HEAD with 403/405/501). Fail-list any 4xx/5xx/timeout/DNS. URLs inside `<style>` (the inlined stylesheet) are intentionally NOT checked — those are skill-controlled, not writer-introduced.
+
+Non-zero exit code = the issue is **not shippable**. Fix the underlying defect (re-spawn the relevant writer with the failure report) and re-run from Phase 6. **The orchestrator runs this script directly and reads the exit code.** Subagent self-reports of "validate-issue passed" are not acceptable — the orchestrator runs `python3 scripts/validate-issue.py` itself.
+
+Use `--skip-image-urls` ONLY when offline or when the entire issue is hand-curated (rare). Use `--strict` to promote warnings (CSS-class sanity, etc.) to failures.
+
+**Egress-restricted environments.** Claude Code on the web runs in a managed container with a curated outbound-HTTPS allowlist (`x-deny-reason: host_not_allowed` for unlisted hosts). When every image URL fails identically with that signature, the validator degrades the image-urls check to a WARN with a "re-run elsewhere" note rather than a hard fail. Structural and activation checks are unaffected. The recommended pattern: let the orchestrator run `validate-issue.py` here for structural checks; before clicking "publish," run the validator once more from your local machine (or wire it into a GitHub Actions check on the issues directory) to get the real image-URL verdict.
+
+This phase replaces what was previously an implicit "browse the issue manually" step that the orchestrator was skipping. The most common failure modes it catches:
+
+- **Bare `<body>` tag** — root cause of "no background, no holiday styling" bugs. Even if `stitch-issue.sh` claims it rewrote the body, this gate re-verifies the result.
+- **Missing `.hol-masthead` band** — a writer omitted the masthead snippet from the cover/kicker chapter.
+- **Hallucinated image URLs** — a researcher subagent guessed plausible-looking CDN paths instead of fetching candidates.
+- **Unreplaced writer placeholders** — `src="..."` slots a writer left in for "fill in later" but never filled.
 
 ### Phase 8 — Stitched-issue Gate (Gate 3)
 Cross-chapter checks: image-source diversity, no two consecutive sections same component pattern, accent lockdown across chapters, link health, ongoing-story consistency. Plus Gate 2 editorial/visual quality. Fix any failures.
@@ -426,6 +456,7 @@ When the reader asks to tweak styling or structure rather than generate an issue
 | `scripts/stitch-issue.sh` | Deterministic chapter concatenation + scaffold wrap + CSS/JS inject. Replaces inject-assets.sh in the pipeline. |
 | `scripts/inject-assets.sh` | Legacy single-file CSS/JS injector. Kept for ad-hoc edits outside the pipeline. |
 | `scripts/check-release-dates.sh` | Phase 7.5 release-date sanity check. Surfaces every claim of a date/relative-time near a media name in the stitched HTML, plus any locked-register entry. Output written to `/tmp/signal-date-claims.txt`. The agent walks the report and verifies each claim against the locked register or a web search before publish. |
+| `scripts/validate-issue.py` | **Phase 7.6 mandatory post-stitch gate.** Verifies structural well-formedness, banned-placeholder absence, holiday activation (body class + `data-special` + `.hol-masthead`/`.hol-cover`/`.hol-half` presence), and image-URL reachability (HEAD requests in parallel). Exits non-zero on any failure. The orchestrator runs this directly and reads the exit code — subagent self-reports of "passed" are not acceptable. See Phase 7.6 in the workflow above. |
 | `scripts/log-call.sh` | Fire-and-forget logger — main loop calls this after each subagent returns. Appends one JSON line to the cost log (default `/tmp/the-signal/state/cost-log.jsonl`, override via `SIGNAL_COST_LOG`). Errors are silent so logging never blocks the pipeline. |
 | `scripts/cost-summary.sh` | Reads the cost log and prints a per-issue and aggregate breakdown (calls per role, model usage, retry rate, validator/gate failures, escalations). Run after a few issues to validate the model fallback chains. |
 
