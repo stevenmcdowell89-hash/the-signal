@@ -44,7 +44,7 @@ The Signal runs as a multi-subagent pipeline. Each role has different reasoning 
 
 The Signal runs ONE pipeline for every issue — standard weekly or special edition. The format is decided in Phase 0; Phases 3–10 then run for every format. The format only changes WHICH chapters get written and HOW writers are sequenced (parallel vs sequential), not WHICH phases run.
 
-The pipeline: Phase 0 (decide format) → Phase 3 (researcher subagent) → Phase 4 (planner subagent + validator) → Phase 5 (writer subagents, parallel or sequential) → Phase 6 (stitch) → Phase 7 (per-chapter Gate 1) → Phase 7.5 (release-date check) → Phase 7.6 (image-URL liveness check) → Phase 8 (stitched-issue Gate) → Phase 9 (repair if needed) → Phase 10 (deliver + publish).
+The pipeline: Phase 0 (decide format) → Phase 3 (researcher subagent) → Phase 3b (research-bundle validator) → Phase 4 (planner subagent + validator) → Phase 5 (writer subagents, parallel or sequential) → Phase 6 (stitch) → Phase 7 (per-chapter Gate 1) → Phase 7.5 (release-date check) → Phase 7.6 (image-URL liveness check) → Phase 7.7 (image-source diversity check) → Phase 8 (stitched-issue Gate) → Phase 9 (repair if needed) → Phase 10 (deliver + publish).
 
 There is NO separate "lightweight" path. Standard weeklies run the full pipeline same as specials. Build dir is `/tmp/signal-build/`, cleared at the start of every run.
 
@@ -130,6 +130,18 @@ Spawn an `Agent` with `subagent_type: "Explore"` and `model: "sonnet"` (fallback
 
 **Cost log:** after the researcher returns, run `bash scripts/log-call.sh researcher <model> <issue_id> - 0 ok` (one call). See § Cost Logging.
 
+### Phase 3b — Research-bundle validator (mandatory before planner spawns)
+Run `python3 scripts/validate-research-bundle.py /tmp/signal-build/research-bundle.json`. The script validates `image_candidates` against the rules in `references/spec/global.md` image-integrity:
+
+- Every `url_or_keyword` must be a real `http(s)://` URL — keywords are rejected (they force writers to invent URLs, the RT-16 trap).
+- At least 3 of the 5 source types must be represented (see `references/image-source-types.json`).
+- Wikimedia entries capped at 4 or 30% of total (whichever is smaller). Single domain capped at 50% (RT-5 hard fail).
+- Domains not in the lookup table are flagged as `unknown` (warning, not fail) — add recurring sources to the lookup file.
+
+**If invalid:** re-spawn the researcher with the validator's failure report inlined into the prompt. The researcher uses WebSearch / WebFetch to find verified URLs from the under-represented source types and rewrites `image_candidates`. Re-validate. Max 2 retries before escalating to the reader.
+
+This gate exists because the 17 May test issue shipped with 14 fabricated image URLs (writers constructed URLs because the bundle gave them keywords). Catching it upstream costs one extra script run; catching it downstream (Phase 7.6/7.7) costs a full writer re-run.
+
 ### Phase 4 — Planner subagent + validator gate
 Spawn an `Agent` with `subagent_type: "general-purpose"` and `model: "opus"` (fallback `"sonnet"`). Pass the path to `research-bundle.json`. In the prompt, tell it to read `references/chapter-plan-schema.md`, `references/pre-flight.md`, and the planner's spec slice: `references/spec/global.md` sections `identity`, `key-rules`, `markup-contracts`, `accent-lockdown`, `stat-budget`; plus the format's H2 anchor in `references/spec/formats.md`; plus `references/spec/specials.md` section `overview` if special edition. The subagent writes `/tmp/signal-build/chapter-plan.json`.
 
@@ -169,6 +181,19 @@ The script auto-detects egress-blocked sandboxes — if every probe returns the 
 **This gate exists because** writer subagents have a confirmed history of fabricating image URLs by domain pattern-matching (invented Wikimedia hash prefixes, page slugs treated as image assets, typo'd file names, guessed JPL PIA numbers). The systemic fix is upstream — see RT-16 in `references/pre-flight.md` and the URL-provenance section of `references/spec/global.md` `image-integrity`. Researchers must provide direct URLs (preferably `Special:FilePath`); writers must use them verbatim. Phase 7.6 is the backstop, not the only line.
 
 If FAIL: identify which `image_candidates` entry is the source of each bad URL, either correct the URL in `research-bundle.json` and re-run the affected writer, or substitute a verified URL via WebSearch and re-stitch.
+
+### Phase 7.7 — Image-source diversity check (mandatory before publish)
+Run `bash scripts/check-image-diversity.sh <stitched-html-path>`. The script classifies every `<img src>` and `background-image` URL via `references/image-source-types.json` and enforces the diversity rules from `references/spec/global.md` image-integrity:
+
+- No single domain > 50% of images (RT-5 hard fail)
+- Wikimedia ≤ 30% of images AND ≤ 4 entries (whichever is smaller)
+- ≥ 3 distinct source types from the 5-type menu (press_kit, government, archive, news_cdn, wikimedia)
+
+Unknown domains (not in the lookup) trigger an advisory rather than a hard fail — extend `references/image-source-types.json` when a new recurring source appears.
+
+**This gate exists** as a downstream catch for what Phase 3b missed — writers omitting some bundle images and skewing the final ratio, or a new domain slipping in. The upstream validator (Phase 3b) is the primary defence; this is defence in depth.
+
+If FAIL: identify the over-represented domain, swap entries to under-represented source types (typically by extending research to press kits / government Flickr / archive hosts), update `research-bundle.json`, re-run the affected writer(s), re-stitch.
 
 ### Phase 8 — Stitched-issue Gate (Gate 3)
 Cross-chapter checks: image-source diversity, no two consecutive sections same component pattern, accent lockdown across chapters, link health, ongoing-story consistency. Plus Gate 2 editorial/visual quality. Fix any failures.
@@ -436,6 +461,9 @@ When the reader asks to tweak styling or structure rather than generate an issue
 | `scripts/inject-assets.sh` | Legacy single-file CSS/JS injector. Kept for ad-hoc edits outside the pipeline. |
 | `scripts/check-release-dates.sh` | Phase 7.5 release-date sanity check. Surfaces every claim of a date/relative-time near a media name in the stitched HTML, plus any locked-register entry. Output written to `/tmp/signal-date-claims.txt`. The agent walks the report and verifies each claim against the locked register or a web search before publish. |
 | `scripts/check-image-urls.sh` | Phase 7.6 image-URL liveness gate. Probes every `<img src>` and `background-image: url(...)` in the stitched HTML with a browser-like UA. Exits 1 on any 4xx/5xx, auto-bails with advisory in egress-blocked sandboxes (uniform-failure heuristic). Catches the writer-fabrication regression for image URLs (see RT-16). |
+| `scripts/validate-research-bundle.py` | Phase 3b upstream gate. Reads `research-bundle.json` and enforces image_candidates rules (real URLs not keywords, ≥3 source types, Wikimedia ≤30%/≤4, RT-5 single-domain ≤50%). Blocks the planner from spawning until research is corrected — the strongest prevention against the URL-fabrication / mono-sourcing regression chain. Uses `references/image-source-types.json` for domain → source-type classification. |
+| `scripts/check-image-diversity.sh` | Phase 7.7 downstream gate. Classifies every image domain in the stitched HTML via the lookup table and enforces the same diversity rules as Phase 3b. Defence in depth — catches writers omitting bundle images and skewing the final ratio, or new domains slipping in. |
+| `references/image-source-types.json` | Lookup table mapping domain → source type (press_kit / government / archive / news_cdn / wikimedia) plus the threshold values. Edit when a new recurring source appears in research. |
 | `scripts/log-call.sh` | Fire-and-forget logger — main loop calls this after each subagent returns. Appends one JSON line to the cost log (default `/tmp/the-signal/state/cost-log.jsonl`, override via `SIGNAL_COST_LOG`). Errors are silent so logging never blocks the pipeline. |
 | `scripts/cost-summary.sh` | Reads the cost log and prints a per-issue and aggregate breakdown (calls per role, model usage, retry rate, validator/gate failures, escalations). Run after a few issues to validate the model fallback chains. |
 
