@@ -7594,6 +7594,235 @@ div.sp-pullquote-huge {
    ========================================================================== */
 
 /* ============================================================
+   TIER 10.5 — HOLIDAY MEAL-SLOT COMPONENT (v8.13.4)
+
+   Scope: body.is-special[data-special="countdown"]
+          body.is-special[data-special="field-guide"]
+
+   The .hol-meal-slot component pattern is used by Field Guides
+   after the Unmissable rows to deliver ranked meal-slot coverage
+   (breakfast / lunch / dinner / snacks / coffee + dessert). It
+   sits inside .hol-half--one (Efteling, indigo) or .hol-half--two
+   (Beekse Bergen, savannah) and must read cleanly against both
+   grounds.
+
+   Recipe: a parchment-cream card on indigo, a darker burnt-tinted
+   card on savannah. Brass numerals, slab-serif item names, mono
+   meta strip. Same visual language as the rest of the holiday
+   identity, but a list pattern rather than the alternating photo+
+   card grid of .hol-unmissable.
+
+   Numbered prefix 35 places it before 36-holiday-identity.css?
+   Actually 35 < 36 so 36 would override. Use prefix 40+ to sit
+   AFTER tier 11 in the cascade. Renamed accordingly.
+   ============================================================ */
+
+body.is-special[data-special="countdown"] .hol-meal-slot,
+body.is-special[data-special="field-guide"] .hol-meal-slot {
+  background: var(--hol-cream, #F5ECD6);
+  color: var(--hol-ink-deep, #0D1330);
+  border-radius: 6px;
+  padding: 36px 32px 32px;
+  margin: 48px 0;
+  box-shadow:
+    0 2px 0 var(--hol-brass-light, #D9B66A),
+    0 18px 32px rgba(0, 0, 0, 0.32);
+  position: relative;
+  border-left: 6px solid var(--hol-ruby, #8A1C2B);
+}
+
+body.is-special[data-special="countdown"] .hol-meal-slot__kicker,
+body.is-special[data-special="field-guide"] .hol-meal-slot__kicker {
+  font-family: var(--hol-t-script, 'Yellowtail'), cursive;
+  color: var(--hol-ruby, #8A1C2B);
+  font-size: clamp(22px, 3.4vw, 28px);
+  margin-bottom: 4px;
+  line-height: 1;
+}
+
+body.is-special[data-special="countdown"] .hol-meal-slot__title,
+body.is-special[data-special="field-guide"] .hol-meal-slot__title {
+  font-family: var(--hol-t-slab, 'Alfa Slab One'), serif;
+  font-weight: 400;
+  font-size: clamp(28px, 4.4vw, 40px);
+  line-height: 1.05;
+  margin: 0 0 16px;
+  color: var(--hol-ink-deep, #0D1330);
+}
+
+body.is-special[data-special="countdown"] .hol-meal-slot__intro,
+body.is-special[data-special="field-guide"] .hol-meal-slot__intro {
+  font-family: var(--hol-t-serif, 'Cinzel'), serif;
+  font-style: italic;
+  font-size: clamp(15px, 1.9vw, 18px);
+  line-height: 1.5;
+  color: var(--hol-ink-deep, #0D1330);
+  opacity: 0.78;
+  margin: 0 0 24px;
+  max-width: 70ch;
+}
+
+body.is-special[data-special="countdown"] .hol-meal-slot__list,
+body.is-special[data-special="field-guide"] .hol-meal-slot__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  counter-reset: meal-slot-pick;
+}
+
+body.is-special[data-special="countdown"] .hol-meal-slot__pick,
+body.is-special[data-special="field-guide"] .hol-meal-slot__pick {
+  padding: 16px 18px 14px;
+  background: rgba(13, 19, 48, 0.04);
+  border-left: 3px solid var(--hol-brass-light, #D9B66A);
+  border-radius: 3px;
+}
+
+body.is-special[data-special="countdown"] .hol-meal-slot__pick.tier-hot,
+body.is-special[data-special="field-guide"] .hol-meal-slot__pick.tier-hot {
+  border-left-color: var(--hol-ruby, #8A1C2B);
+  background: rgba(138, 28, 43, 0.05);
+}
+
+body.is-special[data-special="countdown"] .hol-meal-slot__pick.tier-warm,
+body.is-special[data-special="field-guide"] .hol-meal-slot__pick.tier-warm {
+  border-left-color: var(--hol-brass-light, #D9B66A);
+}
+
+body.is-special[data-special="countdown"] .hol-meal-slot__pick.tier-note,
+body.is-special[data-special="field-guide"] .hol-meal-slot__pick.tier-note {
+  border-left-color: var(--hol-ink-deep, #0D1330);
+  opacity: 0.85;
+}
+
+body.is-special[data-special="countdown"] .hol-meal-slot__pick-head,
+body.is-special[data-special="field-guide"] .hol-meal-slot__pick-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+body.is-special[data-special="countdown"] .hol-meal-slot__pick-num,
+body.is-special[data-special="field-guide"] .hol-meal-slot__pick-num {
+  font-family: var(--hol-t-slab, 'Alfa Slab One'), serif;
+  font-size: clamp(20px, 2.6vw, 26px);
+  color: var(--hol-ruby, #8A1C2B);
+  line-height: 1;
+  min-width: 28px;
+}
+
+body.is-special[data-special="countdown"] .hol-meal-slot__pick-name,
+body.is-special[data-special="field-guide"] .hol-meal-slot__pick-name {
+  font-family: var(--hol-t-slab, 'Alfa Slab One'), serif;
+  font-size: clamp(17px, 2.2vw, 21px);
+  color: var(--hol-ink-deep, #0D1330);
+  flex: 1 1 auto;
+  line-height: 1.15;
+}
+
+body.is-special[data-special="countdown"] .hol-meal-slot__pick-tier,
+body.is-special[data-special="field-guide"] .hol-meal-slot__pick-tier {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  padding: 4px 8px 3px;
+  border-radius: 2px;
+  background: var(--hol-ink-deep, #0D1330);
+  color: var(--hol-cream, #F5ECD6);
+}
+
+body.is-special[data-special="countdown"] .hol-meal-slot__pick.tier-hot .hol-meal-slot__pick-tier,
+body.is-special[data-special="field-guide"] .hol-meal-slot__pick.tier-hot .hol-meal-slot__pick-tier {
+  background: var(--hol-ruby, #8A1C2B);
+}
+
+body.is-special[data-special="countdown"] .hol-meal-slot__pick.tier-warm .hol-meal-slot__pick-tier,
+body.is-special[data-special="field-guide"] .hol-meal-slot__pick.tier-warm .hol-meal-slot__pick-tier {
+  background: var(--hol-brass-light, #D9B66A);
+  color: var(--hol-ink-deep, #0D1330);
+}
+
+body.is-special[data-special="countdown"] .hol-meal-slot__pick-body,
+body.is-special[data-special="field-guide"] .hol-meal-slot__pick-body {
+  margin: 0 0 8px;
+  font-family: var(--hol-t-body, 'DM Sans'), sans-serif;
+  font-size: clamp(15px, 1.85vw, 17px);
+  line-height: 1.55;
+  color: var(--hol-ink-deep, #0D1330);
+}
+
+body.is-special[data-special="countdown"] .hol-meal-slot__pick-meta,
+body.is-special[data-special="field-guide"] .hol-meal-slot__pick-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--hol-ink-deep, #0D1330);
+  opacity: 0.75;
+  margin: 4px 0 0;
+}
+
+body.is-special[data-special="countdown"] .hol-meal-slot__pick-meta b,
+body.is-special[data-special="field-guide"] .hol-meal-slot__pick-meta b {
+  font-weight: 700;
+  color: var(--hol-ruby, #8A1C2B);
+  opacity: 1;
+}
+
+/* Links inside picks: ruby underlines that read against cream */
+body.is-special[data-special="countdown"] .hol-meal-slot a,
+body.is-special[data-special="field-guide"] .hol-meal-slot a {
+  color: var(--hol-ruby, #8A1C2B);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+/* HALF II ground variant — meal-slot card adapts to the savannah palette */
+body.is-special[data-special="countdown"] .hol-half--two .hol-meal-slot,
+body.is-special[data-special="field-guide"] .hol-half--two .hol-meal-slot {
+  background: var(--hol-bone, #FCF5ED);
+  border-left-color: var(--hol-burnt, #8E3A18);
+  box-shadow:
+    0 2px 0 var(--hol-burnt, #8E3A18),
+    0 18px 32px rgba(0, 0, 0, 0.22);
+}
+body.is-special[data-special="countdown"] .hol-half--two .hol-meal-slot__kicker,
+body.is-special[data-special="field-guide"] .hol-half--two .hol-meal-slot__kicker {
+  color: var(--hol-burnt, #8E3A18);
+}
+body.is-special[data-special="countdown"] .hol-half--two .hol-meal-slot__pick-num,
+body.is-special[data-special="field-guide"] .hol-half--two .hol-meal-slot__pick-num {
+  color: var(--hol-burnt, #8E3A18);
+}
+body.is-special[data-special="countdown"] .hol-half--two .hol-meal-slot__pick.tier-hot,
+body.is-special[data-special="field-guide"] .hol-half--two .hol-meal-slot__pick.tier-hot {
+  border-left-color: var(--hol-burnt, #8E3A18);
+  background: rgba(142, 58, 24, 0.06);
+}
+body.is-special[data-special="countdown"] .hol-half--two .hol-meal-slot__pick.tier-hot .hol-meal-slot__pick-tier,
+body.is-special[data-special="field-guide"] .hol-half--two .hol-meal-slot__pick.tier-hot .hol-meal-slot__pick-tier {
+  background: var(--hol-burnt, #8E3A18);
+}
+
+/* Portrait (tablet) — tighter padding */
+@media (max-width: 960px) {
+  body.is-special[data-special="countdown"] .hol-meal-slot,
+  body.is-special[data-special="field-guide"] .hol-meal-slot {
+    padding: 28px 22px 24px;
+    margin: 36px 0;
+  }
+  body.is-special[data-special="countdown"] .hol-meal-slot__list,
+  body.is-special[data-special="field-guide"] .hol-meal-slot__list {
+    gap: 16px;
+  }
+}
+
+/* ============================================================
    TIER 11 — HOLIDAY IDENTITY (v8.12)
 
    A complete alternative visual identity for Countdown and Field
