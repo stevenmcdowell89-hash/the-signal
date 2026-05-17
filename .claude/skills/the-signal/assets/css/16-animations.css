@@ -1,0 +1,30 @@
+/* ═══════════ Enhancement 5: SCROLL-TRIGGERED ANIMATIONS ═══════════ */
+/* Mobile-safe: elements are visible by default. Animation only on viewports
+   wide enough that IntersectionObserver thresholds work reliably.
+   NEVER apply .reveal to <section> elements or large containers
+   (split-60-40, split-40-60, dual-col, also-cards) — only to small
+   leaf elements: images, angles, pull-quotes, individual cards. */
+.reveal {
+  opacity: 1;
+  transform: none;
+}
+@media (min-width: 601px) {
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* Staggered children (desktop only) */
+@media (min-width: 601px) {
+  .reveal-group .reveal:nth-child(1) { transition-delay: 0ms; }
+  .reveal-group .reveal:nth-child(2) { transition-delay: 80ms; }
+  .reveal-group .reveal:nth-child(3) { transition-delay: 160ms; }
+  .reveal-group .reveal:nth-child(4) { transition-delay: 240ms; }
+  .reveal-group .reveal:nth-child(5) { transition-delay: 320ms; }
+  .reveal-group .reveal:nth-child(6) { transition-delay: 400ms; }
+}

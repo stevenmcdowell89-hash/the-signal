@@ -1,0 +1,28 @@
+<!-- ══════ COVER (Enhancement 19B — full-bleed editorial) ══════
+  82vh full-bleed opener. Headline anchors to the bottom of the middle
+  row; the giant italic serial number bleeds off the lower-right; the
+  ruled foot gives a scroll cue. Keep 6-10 topic tags.
+-->
+<header class="cover" id="top">
+  <div class="cover-noise"></div>
+  <div class="cover-grain"></div>
+  <div class="cover-issue" style="position:relative;z-index:2">[DATE RANGE] · Issue #[N] · Sunday Edition</div>
+  <!-- Use <span class="brand-period"> for the ember-coloured period (22G) instead of a bare <span>. -->
+  <div class="cover-brand">The Signal<span class="brand-period">.</span></div>
+  <div class="cover-headline">[One-sentence editorial hook]</div>
+  <div class="cover-tags">
+    <span class="tag">[Topic 1]</span><span class="tag">[Topic 2]</span><span class="tag">[Topic 3]</span>
+    <span class="tag">[Topic 4]</span><span class="tag">[Topic 5]</span><span class="tag">[Topic 6]</span>
+    <!-- 6-10 tags -->
+  </div>
+
+  <!-- Giant tilted serial number — swap [NNN] for padded issue no. e.g. 003 -->
+  <div class="cover-serial">[NNN]</div>
+
+  <!-- Ruled foot with scroll cue -->
+  <div class="cover-foot">
+    <div class="left">[N] Chapters · One Sitting</div>
+    <div class="scroll-cue"><span>Scroll</span><span class="arrow"></span><span>to begin</span></div>
+    <div class="right">Hand-set · Long-form · Sunday Morning</div>
+  </div>
+</header>

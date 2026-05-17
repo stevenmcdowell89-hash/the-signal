@@ -1,0 +1,323 @@
+/* ════════════════════════════════════════════════════════════════════
+   ENHANCEMENT 22 — DECORATIVE CHROME (adopted from signal-weekly-v2)
+
+   Five optional decorative pieces that give any issue a bound-magazine
+   feel. All are opt-in — they only render when the template part uses
+   the matching markup. Every piece respects The Signal's per-section
+   palettes by reading the section's accent / background colour.
+
+   22A  .grain-overlay      — full-viewport SVG film grain
+   22B  .chapter-chrome     — eyebrow / hair-rule / roman-numeral head
+   22C  .folio-watermark    — giant italic numeral bleeding off corner
+   22D  .pull-break         — dark-band pulled quote (World-only flourish)
+   22E  .marginalia         — sidebar card with datum blocks, quote, list
+
+   Naming was chosen to avoid collisions with existing skill classes
+   (.chrome is used elsewhere, .folio would conflict, etc.).
+   ════════════════════════════════════════════════════════════════════ */
+
+
+/* ── 22A · FILM GRAIN OVERLAY ────────────────────────────────────────
+   Subtle SVG-noise overlay pinned to the viewport. Prototype used 0.35
+   which is too harsh against The Signal's warm paper (#FAFAF8). We use
+   0.18 which is visible on dark sections, invisible on light ones.
+   Placed in the body once, before .mag.
+*/
+.grain-overlay {
+  position: fixed; inset: 0; pointer-events: none; z-index: 9999;
+  opacity: 0.18;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.1 0 0 0 0 0.12 0 0 0 0.55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+@media (prefers-reduced-motion: reduce) {
+  /* keep grain static; already is — placeholder for future animated variants */
+}
+@media print {
+  .grain-overlay { display: none; }
+}
+
+
+/* ── 22B · CHAPTER CHROME ────────────────────────────────────────────
+   Eyebrow · hair-rule · roman-numeral line that sits at the top of a
+   section. Opt-in — section templates include it inside the section's
+   inner container. Colour inherits the section's accent via a local
+   --chrome-accent variable that each section variant sets below.
+*/
+.chapter-chrome {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 24px;
+  align-items: center;
+  padding: 0 0 28px;
+  margin-bottom: 32px;
+  --chrome-accent: var(--rose);
+}
+.chapter-chrome .eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase;
+  color: var(--chrome-accent);
+}
+.chapter-chrome .hair {
+  height: 1px;
+  background: currentColor;
+  opacity: 0.22;
+}
+.chapter-chrome .roman {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic; font-weight: 500;
+  font-size: 26px;
+  color: var(--chrome-accent);
+  line-height: 1;
+}
+/* simpler variant for minor sections */
+.chapter-chrome.simple { padding: 0 0 20px; margin-bottom: 24px; }
+.chapter-chrome.simple .roman { font-size: 18px; }
+
+/* Section-aware accent — maps The Signal's palette tokens */
+.world-section    .chapter-chrome { --chrome-accent: var(--rose); }
+.tech-section     .chapter-chrome { --chrome-accent: var(--ember); }
+.touchline-section .chapter-chrome { --chrome-accent: var(--turf-lt); }
+.screen-section   .chapter-chrome { --chrome-accent: var(--neon); }
+.shelf-section    .chapter-chrome { --chrome-accent: var(--shelf-accent); }
+.session-section  .chapter-chrome { --chrome-accent: var(--session-accent); }
+.history-section  .chapter-chrome { --chrome-accent: var(--hist-accent); }
+.pantry-section   .chapter-chrome { --chrome-accent: var(--pantry-accent); }
+.workshop-section .chapter-chrome { --chrome-accent: var(--workshop-accent); }
+.toolkit-section  .chapter-chrome { --chrome-accent: var(--toolkit-accent); }
+.ledger-section   .chapter-chrome { --chrome-accent: var(--ledger-accent); }
+.longgame-section .chapter-chrome { --chrome-accent: var(--longgame-accent); }
+.wallet-section   .chapter-chrome { --chrome-accent: var(--wallet-accent); }
+.itinerary-section .chapter-chrome { --chrome-accent: var(--itinerary-accent); }
+
+
+/* ── 22C · FOLIO WATERMARK ───────────────────────────────────────────
+   Giant italic numeral bleeding off the bottom-right of a section.
+   Coexists with .sec-watermark (top-left, 140px word) — folio sits
+   bottom-right, much larger, roman numeral in display italic.
+   Opacity kept low so body copy remains readable.
+*/
+.folio-watermark {
+  position: absolute;
+  bottom: -6vh; right: -2vw;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic; font-weight: 500;
+  font-size: clamp(200px, 38vw, 560px);
+  line-height: 0.8;
+  color: currentColor;
+  opacity: 0.035;
+  letter-spacing: -0.02em;
+}
+/* Dark-section variant: slightly higher opacity to show through */
+.screen-section .folio-watermark,
+.shelf-section .folio-watermark,
+.touchline-section .folio-watermark {
+  opacity: 0.05;
+}
+
+
+/* ── 22D · PULL-BREAK BAND ───────────────────────────────────────────
+   Full-width dark band with a large pull quote, book-ended by giant
+   italic quotation marks. World-only flourish by design — reserved
+   for anchor-piece issues. Uses the deep navy + rose signature combo.
+*/
+.pull-break {
+  background: var(--deep);
+  color: var(--paper);
+  padding: 80px 60px;
+  margin: 48px -60px;        /* full-bleed inside .sec */
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  border-top: 1px solid rgba(250,250,248,0.14);
+  border-bottom: 1px solid rgba(250,250,248,0.14);
+}
+.pull-break::before,
+.pull-break::after {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: 320px;
+  line-height: 1;
+  color: var(--rose);
+  opacity: 0.35;
+  position: absolute;
+  pointer-events: none;
+}
+.pull-break::before { content: "\201C"; left: 4vw; top: -40px; }
+.pull-break::after  { content: "\201D"; right: 4vw; bottom: -160px; }
+.pull-break .pull {
+  position: relative;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(32px, 4.4vw, 64px);
+  line-height: 1.08;
+  color: var(--paper);
+  margin: 0 auto;
+  max-width: 22ch;
+  text-wrap: balance;
+}
+.pull-break .pull em {
+  color: var(--rose);
+  font-style: italic;
+}
+.pull-break .attrib {
+  position: relative;
+  margin-top: 28px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(250,250,248,0.7);
+}
+
+
+/* ── 22E · MARGINALIA ────────────────────────────────────────────────
+   Sidebar panel typically floated alongside long-form prose. Contains
+   a label, an italic pull quote, optional data blocks, and an
+   optional bulleted list. Colour derives from the section accent.
+   Background is a very light tint of the accent over paper.
+*/
+.marginalia {
+  padding: 44px 28px 40px;
+  border-left: 1px solid var(--rule);
+  background: rgba(232, 56, 79, 0.05);  /* default rose tint — overridden per section */
+  display: grid;
+  gap: 22px;
+  align-content: start;
+  --marg-accent: var(--rose);
+  --marg-ink: var(--ink);
+}
+.marginalia h4 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase;
+  color: var(--marg-accent);
+  margin: 0;
+  font-weight: 600;
+}
+.marginalia .quote {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic; font-weight: 400;
+  font-size: 24px; line-height: 1.18;
+  color: var(--marg-ink);
+  margin: 0;
+  text-wrap: balance;
+}
+.marginalia .quote em { color: var(--marg-accent); font-style: italic; }
+.marginalia .attrib {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: color-mix(in oklab, var(--marg-ink) 60%, transparent);
+  margin: 0;
+}
+.marginalia .datum {
+  border-top: 1px solid var(--rule);
+  padding-top: 14px;
+  display: grid;
+  gap: 4px;
+}
+.marginalia .datum .n {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic; font-weight: 500;
+  font-size: 64px; line-height: 0.85;
+  color: var(--marg-accent);
+  letter-spacing: -0.02em;
+}
+.marginalia .datum .l {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--marg-ink);
+}
+.marginalia ul {
+  font-family: 'DM Sans', sans-serif;
+  padding-left: 1.1em;
+  margin: 0;
+  font-size: 14px; line-height: 1.5;
+  color: var(--marg-ink);
+}
+.marginalia ul li { margin-bottom: 0.5em; }
+.marginalia ul li strong { color: var(--marg-accent); font-weight: 600; }
+
+/* Section-aware marginalia — tints and accent derive from palette */
+.world-section .marginalia {
+  --marg-accent: var(--rose);
+  background: rgba(232, 56, 79, 0.05);
+}
+.tech-section .marginalia {
+  --marg-accent: var(--ember);
+  background: rgba(255, 109, 58, 0.05);
+}
+.touchline-section .marginalia {
+  --marg-accent: var(--turf-lt);
+  --marg-ink: var(--paper);
+  background: rgba(26, 122, 76, 0.22);
+  border-left-color: rgba(250,250,248,0.14);
+  color: var(--paper);
+}
+.touchline-section .marginalia .attrib,
+.touchline-section .marginalia .datum .l,
+.touchline-section .marginalia ul { color: rgba(250,250,248,0.78); }
+.touchline-section .marginalia .datum { border-top-color: rgba(250,250,248,0.14); }
+
+.screen-section .marginalia {
+  --marg-accent: var(--neon);
+  --marg-ink: var(--paper);
+  background: rgba(255, 45, 120, 0.08);
+  border-left-color: rgba(250,250,248,0.14);
+  color: var(--paper);
+}
+.screen-section .marginalia .attrib,
+.screen-section .marginalia .datum .l,
+.screen-section .marginalia ul { color: rgba(250,250,248,0.78); }
+.screen-section .marginalia .datum { border-top-color: rgba(250,250,248,0.14); }
+
+.shelf-section .marginalia {
+  --marg-accent: var(--shelf-accent);
+  --marg-ink: var(--paper);
+  background: rgba(212, 160, 60, 0.08);
+  border-left-color: rgba(250,250,248,0.14);
+  color: var(--paper);
+}
+.shelf-section .marginalia .attrib,
+.shelf-section .marginalia .datum .l,
+.shelf-section .marginalia ul { color: rgba(250,250,248,0.78); }
+.shelf-section .marginalia .datum { border-top-color: rgba(250,250,248,0.14); }
+
+.session-section .marginalia {
+  --marg-accent: var(--session-accent);
+  background: rgba(212, 98, 43, 0.06);
+}
+.history-section .marginalia {
+  --marg-accent: var(--hist-accent);
+  background: rgba(139, 105, 20, 0.06);
+}
+.pantry-section .marginalia {
+  --marg-accent: var(--pantry-accent);
+  background: rgba(198, 93, 58, 0.06);
+}
+.workshop-section .marginalia {
+  --marg-accent: var(--workshop-accent);
+  background: rgba(90, 99, 120, 0.06);
+}
+.toolkit-section .marginalia {
+  --marg-accent: var(--toolkit-accent);
+  background: rgba(26, 154, 175, 0.06);
+}
+.ledger-section .marginalia {
+  --marg-accent: var(--ledger-accent);
+  background: rgba(196, 139, 44, 0.06);
+}
+.longgame-section .marginalia {
+  --marg-accent: var(--longgame-accent);
+  background: rgba(42, 58, 92, 0.06);
+}
+.wallet-section .marginalia {
+  --marg-accent: var(--wallet-accent);
+  background: rgba(26, 138, 122, 0.06);
+}
+.itinerary-section .marginalia {
+  --marg-accent: var(--itinerary-accent);
+  background: rgba(212, 99, 75, 0.06);
+}
+

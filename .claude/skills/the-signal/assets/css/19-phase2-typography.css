@@ -1,0 +1,251 @@
+/* ═══════════ PHASE 2: DROP-CAP + LEAD-IN ═══════════ */
+/* Generalised drop-cap: first letter of the paragraph lifts to 72px in the
+   section's accent colour. Only apply to a lead paragraph. One per section max. */
+.dropcap::first-letter {
+  float: left;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 700;
+  font-size: 72px;
+  line-height: 0.85;
+  padding: 6px 10px 0 0;
+  color: var(--rose);
+}
+/* Section-aware drop-cap colours */
+.tech-section .dropcap::first-letter { color: var(--ember); }
+.touchline-section .dropcap::first-letter { color: var(--turf-lt); }
+.screen-section .dropcap::first-letter { color: var(--neon); }
+.shelf-section .dropcap::first-letter { color: var(--shelf-accent); }
+.session-section .dropcap::first-letter { color: var(--session-accent); }
+.history-section .dropcap::first-letter { color: var(--hist-accent); }
+/* On dark sections the rest of the paragraph is already white-ish */
+.touchline-section .dropcap,
+.screen-section .dropcap,
+.shelf-section .dropcap { color: rgba(255,255,255,.85); }
+
+/* Small-caps DM Sans lead-in for the first 3–6 words of a lead paragraph */
+.lead-in {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 0.85em;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-right: 6px;
+}
+.touchline-section .lead-in,
+.screen-section .lead-in,
+.shelf-section .lead-in { color: rgba(255,255,255,.9); }
+
+/* ═══════════ PHASE 2: SECTION OPENER VARIANTS ═══════════ */
+/* Stat-led and quote-led openers appear BEFORE the section's <h2>.
+   World is always photo-led (default). 1–2 other sections per issue may
+   promote to stat-led or quote-led — most commonly the anchor piece. */
+.opener-lead {
+  margin: 0 0 24px 0;
+}
+.opener-lead.stat {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 24px;
+  padding: 20px 0 24px 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+.opener-lead.stat .stat-unit { }
+.opener-lead.stat .stat-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 700;
+  font-size: 64px;
+  line-height: 1;
+  color: var(--rose);
+  letter-spacing: -1px;
+}
+.opener-lead.stat .stat-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--slate);
+  margin-top: 8px;
+}
+/* Section-aware stat-led colour */
+.tech-section .opener-lead.stat .stat-num { color: var(--ember); }
+.touchline-section .opener-lead.stat .stat-num { color: var(--turf-lt); }
+.touchline-section .opener-lead.stat .stat-label { color: rgba(255,255,255,.55); }
+.touchline-section .opener-lead.stat { border-color: rgba(255,255,255,.15); }
+.screen-section .opener-lead.stat .stat-num { color: var(--neon); }
+.screen-section .opener-lead.stat .stat-label { color: rgba(255,255,255,.55); }
+.screen-section .opener-lead.stat { border-color: rgba(255,255,255,.15); }
+.shelf-section .opener-lead.stat .stat-num { color: var(--shelf-accent); }
+.shelf-section .opener-lead.stat .stat-label { color: rgba(255,255,255,.55); }
+.shelf-section .opener-lead.stat { border-color: rgba(255,255,255,.15); }
+.session-section .opener-lead.stat .stat-num { color: var(--session-accent); }
+.history-section .opener-lead.stat .stat-num { color: var(--hist-accent); }
+
+/* Quote-led opener */
+.opener-lead.quote {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 30px;
+  line-height: 1.35;
+  color: var(--ink);
+  padding: 4px 0 4px 20px;
+  border-left: 3px solid var(--rose);
+}
+.opener-lead.quote cite {
+  display: block;
+  font-family: 'DM Sans', sans-serif;
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--slate);
+  margin-top: 12px;
+}
+.tech-section .opener-lead.quote { border-left-color: var(--ember); }
+.touchline-section .opener-lead.quote { border-left-color: var(--turf-lt); color: rgba(255,255,255,.9); }
+.touchline-section .opener-lead.quote cite { color: rgba(255,255,255,.55); }
+.screen-section .opener-lead.quote { border-left-color: var(--neon); color: rgba(255,255,255,.9); }
+.screen-section .opener-lead.quote cite { color: rgba(255,255,255,.55); }
+.shelf-section .opener-lead.quote { border-left-color: var(--shelf-accent); color: rgba(255,255,255,.9); }
+.shelf-section .opener-lead.quote cite { color: rgba(255,255,255,.55); }
+.session-section .opener-lead.quote { border-left-color: var(--session-accent); }
+.history-section .opener-lead.quote { border-left-color: var(--hist-accent); }
+
+/* ═══════════ PHASE 2: ANCHOR PIECE FLAGGING ═══════════ */
+/* Subtle flagging only: a thin accent rule at the top of the section and a
+   small "Anchor piece" badge beneath the kicker in the Navigator row. No
+   cover fanfare, no Foreword callout. */
+.sec.is-anchor {
+  position: relative;
+}
+.sec.is-anchor::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 64px;
+  height: 2px;
+  background: var(--rose);
+  opacity: 0.85;
+}
+.tech-section.is-anchor::before { background: var(--ember); }
+.touchline-section.is-anchor::before { background: var(--turf-lt); }
+.screen-section.is-anchor::before { background: var(--neon); }
+.shelf-section.is-anchor::before { background: var(--shelf-accent); }
+.session-section.is-anchor::before { background: var(--session-accent); }
+.history-section.is-anchor::before { background: var(--hist-accent); }
+
+/* Navigator row badge for the anchor piece */
+.nav-card.is-anchor .nav-card-tag::after {
+  content: "Anchor piece";
+  display: inline-block;
+  margin-left: 10px;
+  padding: 2px 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--rose);
+  background: rgba(232, 56, 79, 0.08);
+  border-radius: 3px;
+  vertical-align: middle;
+}
+.nav-card.tech.is-anchor .nav-card-tag::after { color: var(--ember); background: rgba(255, 109, 58, 0.10); }
+.nav-card.football.is-anchor .nav-card-tag::after { color: var(--turf); background: rgba(16, 88, 56, 0.10); }
+.nav-card.screen.is-anchor .nav-card-tag::after { color: var(--neon); background: rgba(179, 140, 255, 0.12); }
+.nav-card.shelf.is-anchor .nav-card-tag::after { color: var(--shelf-accent); background: rgba(212, 163, 115, 0.12); }
+.nav-card.session.is-anchor .nav-card-tag::after { color: var(--session-accent); background: rgba(93, 138, 102, 0.12); }
+.nav-card.history.is-anchor .nav-card-tag::after { color: var(--hist-accent); background: rgba(139, 105, 20, 0.10); }
+
+/* ═══════════ PHASE 2: END-OF-ISSUE COLOPHON ═══════════ */
+/* Sign-off block between On the Radar and Footer. Paper background, three
+   blocks in a grid: Issue in Numbers / Next Week / A Fact. */
+.colophon {
+  max-width: 960px;
+  margin: 48px auto 0 auto;
+  padding: 56px 60px 48px 60px;
+  background: var(--paper);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  position: relative;
+}
+.colophon-mast {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 1;
+  color: var(--ink);
+  letter-spacing: -0.5px;
+}
+.colophon-mast span { color: var(--rose); }
+.colophon-sub {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--slate);
+  margin-top: 10px;
+  margin-bottom: 32px;
+}
+.colophon-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1.2fr;
+  gap: 40px;
+  padding-top: 28px;
+  border-top: 1px solid var(--rule);
+}
+.colophon-block { }
+.colophon-block-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--rose);
+  margin-bottom: 14px;
+}
+.colophon-stats {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--ink);
+}
+.colophon-stats li { }
+.colophon-stats strong {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--rose);
+  margin-right: 6px;
+}
+.colophon-next p,
+.colophon-fact p {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--ink);
+  margin: 0;
+}
+.colophon-fact p {
+  font-style: italic;
+}
+.colophon-sign {
+  margin-top: 36px;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--slate);
+  text-align: center;
+}

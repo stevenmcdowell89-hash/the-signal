@@ -1,0 +1,655 @@
+/* ============================================================
+   29-signature-moments.css
+   Per-format signature moment for each special edition.
+   One component per format — never mix formats.
+
+   Activation: body.is-special[data-special="<format>"]
+   All components are content-first: they enhance, never block.
+   Reduced-motion fallbacks are mandatory.
+   ============================================================ */
+
+/* ---------- Shared tokens for signature moments ---------- */
+.sp-sig {
+  --sig-accent: var(--sp-accent, #c2410c);
+  --sig-ink: var(--sp-ink, #111);
+  --sig-paper: var(--sp-paper, #f5f1e8);
+  --sig-mute: rgba(17, 17, 17, 0.18);
+}
+body.sp-ground-ink .sp-sig {
+  --sig-ink: var(--sp-paper, #f5f1e8);
+  --sig-paper: var(--sp-ink, #111);
+  --sig-mute: rgba(245, 241, 232, 0.22);
+}
+
+/* ============================================================
+   1. sp-sand-clock  (Countdown)
+   SVG hourglass; arc shows fraction elapsed; particles pour
+   when scrolled into view. Lives in the cover.
+   ============================================================ */
+body.is-special[data-special="countdown"] .sp-sand-clock {
+  --hg-w: min(58vw, 360px);
+  --hg-h: calc(var(--hg-w) * 1.32);
+  position: relative;
+  width: var(--hg-w);
+  height: var(--hg-h);
+  margin: 2.4rem auto 1.6rem;
+  display: block;
+}
+.sp-sand-clock svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+.sp-sand-clock .hg-frame {
+  fill: none;
+  stroke: var(--sig-ink, #111);
+  stroke-width: 1.5;
+  opacity: 0.85;
+}
+.sp-sand-clock .hg-arc {
+  fill: none;
+  stroke: var(--sig-accent);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  /* --elapsed-fraction is set inline (0..1). dasharray = arc length 220. */
+  stroke-dasharray: 220;
+  stroke-dashoffset: calc(220 * (1 - var(--elapsed-fraction, 0)));
+  transition: stroke-dashoffset 1.2s ease-out;
+}
+.sp-sand-clock .hg-num {
+  font-family: var(--ff-display, Georgia, serif);
+  font-weight: 700;
+  font-size: clamp(48px, 12vw, 96px);
+  fill: var(--sig-ink, #111);
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+.sp-sand-clock .hg-label {
+  font-family: var(--ff-sans, system-ui, sans-serif);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  fill: var(--sig-ink, #111);
+  text-anchor: middle;
+  opacity: 0.7;
+}
+.sp-sand-clock .hg-grain-top,
+.sp-sand-clock .hg-grain-bot {
+  fill: var(--sig-accent);
+  opacity: 0.85;
+}
+.sp-sand-clock .hg-particle {
+  fill: var(--sig-accent);
+  opacity: 0;
+}
+.sp-sand-clock.is-pouring .hg-particle {
+  animation: sp-sand-fall 1.6s cubic-bezier(0.4, 0.0, 0.2, 1) forwards;
+  animation-delay: calc(var(--i, 0) * 110ms);
+}
+@keyframes sp-sand-fall {
+  0%   { opacity: 0; transform: translateY(0); }
+  18%  { opacity: 1; }
+  100% { opacity: 0; transform: translateY(var(--fall, 80px)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sp-sand-clock .hg-arc { transition: none; }
+  .sp-sand-clock .hg-particle { display: none; }
+}
+
+/* ============================================================
+   2. sp-memory-wall  (Rewind)
+   Margin mosaic: greyscale cells flip to colour as their
+   prose section enters view.
+   ============================================================ */
+body.is-special[data-special="rewind"] .sp-memory-wall {
+  position: fixed;
+  top: 84px;
+  right: 18px;
+  width: 132px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  z-index: 6;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 600ms ease;
+}
+body.is-special[data-special="rewind"].sp-mw-ready .sp-memory-wall {
+  opacity: 1;
+}
+.sp-memory-wall .mw-cell {
+  aspect-ratio: 1 / 1;
+  background-size: cover;
+  background-position: center;
+  border-radius: 2px;
+  filter: grayscale(1) contrast(0.92);
+  opacity: 0.38;
+  transition: filter 420ms ease, opacity 420ms ease, transform 420ms ease;
+}
+.sp-memory-wall .mw-cell.lit {
+  filter: grayscale(0) contrast(1);
+  opacity: 1;
+  transform: scale(1.04);
+}
+@media (max-width: 900px) {
+  body.is-special[data-special="rewind"] .sp-memory-wall {
+    position: relative;
+    top: auto;
+    right: auto;
+    width: auto;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 3px;
+    margin: 0 0 1.4rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sp-memory-wall .mw-cell { filter: none; opacity: 1; transition: none; }
+  .sp-memory-wall .mw-cell.lit { transform: none; }
+}
+
+/* ============================================================
+   3. sp-fault-line  (Versus)
+   Sticky 2px line drifts left/right with running data-lean sum.
+   ============================================================ */
+body.is-special[data-special="versus"] .sp-fault-wrap {
+  position: relative;
+}
+.sp-fault-line {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 2px;
+  margin: 0 auto;
+  background: var(--sig-accent);
+  transform: translateX(var(--fl-shift, 0px));
+  transition: transform 800ms cubic-bezier(0.22, 0.61, 0.36, 1), background 600ms ease;
+  z-index: 1;
+  pointer-events: none;
+  /* glow halo */
+  box-shadow: 0 0 0 0.5px var(--sig-accent), 0 0 24px -4px var(--sig-accent);
+}
+.sp-fault-labels {
+  position: sticky;
+  top: 12px;
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--ff-sans, system-ui);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  padding: 0 8px;
+  z-index: 2;
+  pointer-events: none;
+}
+.sp-fault-labels .fl-a { text-align: left; }
+.sp-fault-labels .fl-b { text-align: right; }
+
+/* Verdict snap — final commitment */
+.sp-fault-line.verdict-a { transform: translateX(calc(-1 * var(--fl-max, 90px))); }
+.sp-fault-line.verdict-b { transform: translateX(var(--fl-max, 90px)); }
+
+@media (prefers-reduced-motion: reduce) {
+  .sp-fault-line { transition: none; transform: none; }
+}
+
+/* ============================================================
+   4. sp-form-tape  (Season Review)
+   Strip of result pills colour in chapter by chapter.
+   ============================================================ */
+body.is-special[data-special="season-review"] .sp-form-tape {
+  display: flex;
+  gap: 4px;
+  padding: 14px 0;
+  margin: 1.2rem 0 1.6rem;
+  border-top: 1px solid var(--sig-mute);
+  border-bottom: 1px solid var(--sig-mute);
+  overflow: hidden;
+}
+.sp-form-tape .ft-pill {
+  flex: 1 1 0;
+  min-width: 8px;
+  height: 22px;
+  background: var(--sig-mute);
+  border-radius: 2px;
+  transition: background 480ms ease, transform 480ms ease;
+}
+.sp-form-tape .ft-pill.lit {
+  transition-delay: calc(var(--i, 0) * 35ms);
+  transform: scaleY(1.08);
+}
+.sp-form-tape .ft-pill.lit[data-r="W"] { background: #2f7d3e; }
+.sp-form-tape .ft-pill.lit[data-r="D"] { background: #b48a2c; }
+.sp-form-tape .ft-pill.lit[data-r="L"] { background: #a83232; }
+.sp-form-tape .ft-pill.lit[data-r="X"] { background: var(--sig-accent); }
+
+@media (prefers-reduced-motion: reduce) {
+  .sp-form-tape .ft-pill { transition: none; transform: none; }
+  .sp-form-tape .ft-pill { background: var(--sig-mute); }
+  /* Static colour state still applied via .lit */
+}
+
+/* ============================================================
+   5. sp-thread-pull  (Deep Dive)
+   SVG vertical thread drawn down by scroll, with concept nodes.
+   ============================================================ */
+body.is-special[data-special="deep-dive"] .sp-thread-pull {
+  position: fixed;
+  top: 80px;
+  left: max(12px, calc(50% - 540px));
+  width: 60px;
+  height: calc(100vh - 120px);
+  pointer-events: none;
+  z-index: 4;
+  opacity: 0;
+  transition: opacity 600ms ease;
+}
+body.is-special[data-special="deep-dive"].sp-tp-ready .sp-thread-pull {
+  opacity: 1;
+}
+.sp-thread-pull svg { width: 100%; height: 100%; overflow: visible; }
+.sp-thread-pull .tp-spine {
+  fill: none;
+  stroke: var(--sig-accent);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  /* progress 0..1 from JS */
+  stroke-dasharray: 1000;
+  stroke-dashoffset: calc(1000 * (1 - var(--tp-progress, 0)));
+  transition: stroke-dashoffset 200ms linear;
+}
+.sp-thread-pull .tp-branch {
+  fill: none;
+  stroke: var(--sig-accent);
+  stroke-width: 1;
+  opacity: 0;
+  transition: opacity 400ms ease;
+}
+.sp-thread-pull .tp-node {
+  fill: var(--sig-accent);
+  opacity: 0;
+  transition: opacity 400ms ease;
+}
+.sp-thread-pull .tp-label {
+  font-family: var(--ff-sans, system-ui);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  fill: var(--sig-ink);
+  opacity: 0;
+  transition: opacity 400ms ease;
+}
+.sp-thread-pull .tp-marker.passed .tp-branch,
+.sp-thread-pull .tp-marker.passed .tp-node,
+.sp-thread-pull .tp-marker.passed .tp-label {
+  opacity: 1;
+}
+@media (max-width: 1100px) {
+  body.is-special[data-special="deep-dive"] .sp-thread-pull { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sp-thread-pull .tp-spine { stroke-dashoffset: 0; transition: none; }
+  .sp-thread-pull .tp-branch,
+  .sp-thread-pull .tp-node,
+  .sp-thread-pull .tp-label { opacity: 1; transition: none; }
+}
+
+/* ============================================================
+   6. sp-build-meter  (Blueprint)
+   Sticky segmented bar; phases wipe in via clip-path.
+   ============================================================ */
+body.is-special[data-special="blueprint"] .sp-build-meter {
+  position: sticky;
+  top: 48px;
+  z-index: 5;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 2px;
+  background: var(--sig-paper);
+  padding: 8px 12px 10px;
+  border-bottom: 1px solid var(--sig-mute);
+  margin-bottom: 1.2rem;
+}
+.sp-build-meter .bm-seg {
+  position: relative;
+  height: 22px;
+  background: var(--sig-mute);
+  overflow: hidden;
+}
+.sp-build-meter .bm-seg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--sig-accent);
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 600ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.sp-build-meter .bm-seg.active::before {
+  clip-path: inset(0 0% 0 0);
+}
+.sp-build-meter .bm-label {
+  display: block;
+  font-family: var(--ff-sans, system-ui);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-top: 4px;
+  opacity: 0.55;
+  transition: opacity 400ms ease, font-weight 400ms ease;
+  font-weight: 400;
+  text-align: center;
+}
+.sp-build-meter .bm-cell.active .bm-label {
+  opacity: 1;
+  font-weight: 700;
+}
+.sp-build-meter .bm-cell { display: flex; flex-direction: column; }
+@media (prefers-reduced-motion: reduce) {
+  .sp-build-meter .bm-seg::before { transition: none; }
+}
+
+/* ============================================================
+   7. sp-cold-start  (Starter Kit)
+   18vw subject word fills letter-by-letter; gates prose.
+   ============================================================ */
+body.is-special[data-special="starter-kit"] .sp-cold-start {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 78vh;
+  padding: 2rem 1rem;
+  text-align: center;
+}
+.sp-cold-start .cs-word {
+  display: flex;
+  flex-wrap: nowrap;
+  font-family: var(--ff-display, Georgia, serif);
+  font-weight: 800;
+  font-size: clamp(64px, 18vw, 220px);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  margin: 0 0 1.4rem;
+}
+.sp-cold-start .cs-letter {
+  color: var(--sig-mute);
+  transition: color 360ms ease;
+  animation: sp-cs-fill 0.72s ease forwards;
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+@keyframes sp-cs-fill {
+  to { color: var(--sig-ink); }
+}
+.sp-cold-start .cs-tag {
+  font-family: var(--ff-sans, system-ui);
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  opacity: 0.75;
+  max-width: 28ch;
+}
+body.is-special[data-special="starter-kit"] .sp-cs-after {
+  opacity: 0;
+  transition: opacity 600ms ease 200ms;
+}
+body.is-special[data-special="starter-kit"].sp-cs-started .sp-cs-after {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sp-cold-start .cs-letter { color: var(--sig-ink); animation: none; }
+  body.is-special[data-special="starter-kit"] .sp-cs-after { opacity: 1; transition: none; }
+}
+
+/* ============================================================
+   8. sp-deck-reveal  (Shortlist)
+   Stacked cards; top card peels with rotation on scroll.
+   ============================================================ */
+body.is-special[data-special="shortlist"] .sp-deck {
+  position: relative;
+  width: min(560px, 92vw);
+  height: min(640px, 110vw);
+  margin: 2rem auto 3rem;
+  perspective: 1200px;
+}
+.sp-deck .dk-card {
+  position: absolute;
+  inset: 0;
+  background: var(--sig-paper);
+  border: 1px solid var(--sig-mute);
+  box-shadow: 0 6px 22px -10px rgba(0,0,0,0.35), 0 1px 0 rgba(0,0,0,0.06);
+  border-radius: 6px;
+  padding: 22px 22px 26px;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(calc(var(--i, 0) * 4px)) rotate(calc(var(--i, 0) * -1deg));
+  transform-origin: 50% 100%;
+  transition: transform 520ms cubic-bezier(0.4, 0, 0.2, 1), opacity 380ms ease;
+  z-index: calc(100 - var(--i, 0));
+}
+.sp-deck .dk-card.peeled {
+  transform: translateY(-118%) rotate(-6deg);
+  opacity: 0;
+  pointer-events: none;
+}
+.sp-deck .dk-cover {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background-size: cover;
+  background-position: center;
+  border-radius: 3px;
+  margin-bottom: 14px;
+}
+.sp-deck .dk-title {
+  font-family: var(--ff-display, Georgia, serif);
+  font-weight: 700;
+  font-size: clamp(22px, 4vw, 32px);
+  line-height: 1.1;
+  margin: 0 0 6px;
+}
+.sp-deck .dk-pull {
+  font-family: var(--ff-serif, Georgia, serif);
+  font-size: 15px;
+  line-height: 1.45;
+  opacity: 0.85;
+  margin: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sp-deck .dk-card { transition: opacity 240ms ease; transform: none; }
+  .sp-deck .dk-card.peeled { transform: none; opacity: 0; }
+}
+
+/* ============================================================
+   9. sp-pinboard  (Field Guide)
+   Sticky destination image; spring-pop pins on scroll-in.
+   ============================================================ */
+body.is-special[data-special="field-guide"] .sp-pinboard {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  margin-bottom: 1.4rem;
+}
+.sp-pinboard .pb-stage {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  z-index: -1;
+}
+.sp-pinboard .pb-pin {
+  position: absolute;
+  left: var(--x, 50%);
+  top: var(--y, 50%);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--sig-accent);
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.85), 0 4px 10px rgba(0,0,0,0.25);
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  transition: transform 540ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 320ms ease;
+}
+.sp-pinboard.is-shown .pb-pin {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  transition-delay: calc(var(--i, 0) * 90ms);
+}
+.sp-pinboard .pb-pin.pulse {
+  animation: sp-pb-pulse 0.7s ease;
+}
+.sp-pinboard .pb-label {
+  position: absolute;
+  left: calc(var(--x, 50%) + 12px);
+  top: var(--y, 50%);
+  transform: translateY(-50%);
+  font-family: var(--ff-sans, system-ui);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: rgba(255,255,255,0.92);
+  color: #111;
+  padding: 3px 7px;
+  border-radius: 2px;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 380ms ease;
+}
+.sp-pinboard.is-shown .pb-label {
+  opacity: 0.96;
+  transition-delay: calc(var(--i, 0) * 90ms + 200ms);
+}
+@keyframes sp-pb-pulse {
+  0%   { box-shadow: 0 0 0 3px rgba(255,255,255,0.85), 0 4px 10px rgba(0,0,0,0.25); }
+  50%  { box-shadow: 0 0 0 8px rgba(255,255,255,0.55), 0 4px 14px rgba(0,0,0,0.25); }
+  100% { box-shadow: 0 0 0 3px rgba(255,255,255,0.85), 0 4px 10px rgba(0,0,0,0.25); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sp-pinboard .pb-pin,
+  .sp-pinboard .pb-label { transition: none; opacity: 1; }
+  .sp-pinboard .pb-pin { transform: translate(-50%, -50%) scale(1); }
+  .sp-pinboard .pb-pin.pulse { animation: none; }
+}
+
+/* ============================================================
+   M10. sp-sticky-pin  (v8.3)
+   Editorial "held attention" moment. One image or pull-quote
+   pins to the column side for ~1.5 viewports of scroll while
+   the prose flows past, then releases. A thin accent rule on
+   the pinned card grows as a progress indicator while held.
+
+   USAGE RULES (enforced in editorial-spec):
+   - Max ONE per issue.
+   - Never in a section that also uses .sp-parallax or .sp-scroll-image.
+   - Only on sections with 1.5+ viewports of surrounding prose.
+   - Mobile (≤ 820px): collapses to an inline figure; no stick.
+   - Best for: single portrait during an interview, or a pull
+     quote that watches over an unfolding argument.
+
+   Markup:
+     <aside class="sp-sticky-pin sp-sticky-pin--portrait">
+       <div class="spin-inner">
+         <img src="…" alt="…">
+         <figcaption class="spin-cap">Caption.</figcaption>
+         <div class="spin-rule" aria-hidden="true"></div>
+       </div>
+     </aside>
+   Or use sp-sticky-pin--quote for a pull quote variant.
+   Parent container should have enough height (≥ 150vh of prose)
+   otherwise the sticky behaviour is imperceptible.
+   ============================================================ */
+.sp-sticky-pin {
+  --spin-accent: var(--sp-accent, var(--accent, #c2410c));
+  float: right;
+  width: clamp(220px, 28vw, 320px);
+  margin: 0 0 1.2rem 1.6rem;
+  position: sticky;
+  top: calc(var(--masthead-h, 56px) + 24px);
+  align-self: flex-start;
+  z-index: 3;
+}
+.sp-sticky-pin .spin-inner {
+  position: relative;
+  background: var(--sp-paper, var(--paper, #f5f1e8));
+  padding: 10px 10px 14px;
+  box-shadow: 0 6px 18px -8px rgba(0,0,0,0.22);
+  border-radius: 2px;
+}
+.sp-sticky-pin img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 1px;
+}
+.sp-sticky-pin .spin-cap {
+  font-family: var(--ff-sans, system-ui);
+  font-size: 11px;
+  line-height: 1.4;
+  letter-spacing: 0.04em;
+  color: var(--sp-ink, var(--ink, #111));
+  opacity: 0.78;
+  margin-top: 8px;
+}
+.sp-sticky-pin .spin-rule {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: calc(var(--spin-progress, 0) * 100%);
+  background: var(--spin-accent);
+  transition: width 160ms linear;
+  opacity: 0.9;
+}
+
+/* Quote variant — no image, just a pinned pull quote */
+.sp-sticky-pin--quote .spin-inner {
+  padding: 20px 18px 22px;
+  background: transparent;
+  box-shadow: none;
+  border-left: 2px solid var(--spin-accent);
+}
+.sp-sticky-pin--quote blockquote {
+  margin: 0;
+  font-family: var(--ff-display, Georgia, serif);
+  font-size: clamp(18px, 1.6vw, 22px);
+  line-height: 1.3;
+  font-weight: 500;
+  color: var(--sp-ink, var(--ink, #111));
+}
+.sp-sticky-pin--quote cite {
+  display: block;
+  margin-top: 10px;
+  font-family: var(--ff-sans, system-ui);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-style: normal;
+  opacity: 0.7;
+}
+
+/* Left-float variant (pinned to the left margin instead) */
+.sp-sticky-pin--left {
+  float: left;
+  margin: 0 1.6rem 1.2rem 0;
+}
+
+/* Mobile: collapse to inline figure, no stick, no shadow */
+@media (max-width: 820px) {
+  .sp-sticky-pin {
+    float: none;
+    width: 100%;
+    margin: 1.4rem 0;
+    position: static;
+  }
+  .sp-sticky-pin .spin-inner {
+    box-shadow: none;
+    padding: 0;
+    background: transparent;
+  }
+  .sp-sticky-pin .spin-rule { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sp-sticky-pin .spin-rule { transition: none; }
+}

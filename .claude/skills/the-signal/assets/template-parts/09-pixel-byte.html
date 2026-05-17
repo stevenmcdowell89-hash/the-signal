@@ -1,0 +1,57 @@
+<!-- ══════ PIXEL & BYTE ══════
+  Enhancement 22 options: chapter-chrome at top, marginalia sidebar
+  (auto-inherits ember tint), folio-watermark bottom-right.
+  See assets/css/22-decorative.css.
+-->
+<hr class="divider dv-tech">
+<!-- When Pixel & Byte is the anchor piece this rotation, use: <section class="sec tech-section is-anchor" id="tech"> -->
+<section class="sec tech-section" id="tech">
+  <div class="sec-watermark">Pixel</div>
+  <div class="sec-gradient-overlay"></div>
+  <span class="section-label" style="color:var(--ember)">Pixel &amp; Byte</span>
+
+  <!-- Use compact-grid, dual-col, compact-take, sidebar, sidebar-float, compare-panel, also-cards etc. -->
+  <!-- Use entry patterns (.entry-stat, .entry-quote, .entry-bullets, .entry-question) to vary article openings -->
+  <!-- ── OPENER VARIANTS (use one of these BEFORE the <h3>/<h2> when this section is anchored,
+       or occasionally on a non-anchor non-World section for variety. Never use on more than
+       3 sections in a single issue.) ── -->
+  <!--
+    Stat-led (anchor pieces, occasional promotions):
+    <div class="opener-lead stat">
+      <div class="stat-unit"><div class="stat-num">47%</div><div class="stat-label">Market share</div></div>
+      <div class="stat-unit"><div class="stat-num">£2.4bn</div><div class="stat-label">Q1 revenue</div></div>
+      <div class="stat-unit"><div class="stat-num">3.2m</div><div class="stat-label">Units shipped</div></div>
+    </div>
+
+    Quote-led:
+    <div class="opener-lead quote">
+      "We underestimated how quickly the market would shift — and how much the shift would hurt."
+      <cite>— [Source]</cite>
+    </div>
+  -->
+
+  <h3>[Feature headline]</h3>
+  <p>[Article body]</p>
+
+  <!-- COMPARE PANEL: natural for tech specs, console comparisons, etc. -->
+  <div class="compare-panel">
+    <div class="compare-side left">
+      <h4>[Device/Option A]</h4>
+      <ul><li>[Spec]</li><li>[Spec]</li><li>[Price]</li></ul>
+    </div>
+    <div class="compare-side right">
+      <h4>[Device/Option B]</h4>
+      <ul><li>[Spec]</li><li>[Spec]</li><li>[Price]</li></ul>
+    </div>
+  </div>
+
+  <div class="sidebar"><div class="sidebar-title">[e.g. "Family Picks"]</div>
+    <ul><li><strong>[Item]</strong> — [Detail]</li></ul>
+  </div>
+  <div class="also"><div class="also-title">Also in Tech &amp; Gaming</div>
+    <div class="also-cards">
+      <div class="also-card"><h4>[Headline]</h4><p>[One line]</p><span class="badge">[Source]</span></div>
+    </div>
+  </div>
+  <div class="read-next">Up next: <a href="#football">The Touchline <span class="arrow">→</span></a> — [teaser]</div>
+</section>

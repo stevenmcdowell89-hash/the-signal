@@ -1,0 +1,67 @@
+<!-- ══════ SCREEN & SOUND ══════
+  Enhancement 22 options: chapter-chrome at top (neon accent). Marginalia
+  auto-inverts to paper-on-dark here. See assets/css/22-decorative.css.
+-->
+<hr class="divider dv-screen">
+<section class="sec screen-section" id="screen">
+  <div class="sec-watermark">Screen</div>
+  <span class="section-label">Screen &amp; Sound</span>
+  <h2>[Lead feature headline]</h2>
+
+  <!-- SIDEBAR-FLOAT: text wraps around naturally, more editorial than .split-60-40 -->
+  <div class="sidebar-float">
+    <div class="sidebar-title">[e.g. "Quick Take"]</div>
+    <ul>
+      <li><strong>[Item]</strong> — [Detail]</li>
+      <li><strong>[Item]</strong> — [Detail]</li>
+    </ul>
+  </div>
+  <p>[Feature article with opinion — prose wraps around the floated sidebar...]</p>
+
+  <!-- Rating dots: .dot.filled for filled, .dot for empty -->
+  <div style="margin:12px 0">
+    <span style="font-family:'DM Sans',sans-serif;font-size:12px;color:rgba(255,255,255,.5);margin-right:8px">[Title]</span>
+    <span class="rating"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span></span>
+  </div>
+
+  <!-- Card stack for quick reviews -->
+  <h3>Quick Reviews</h3>
+  <div class="card-stack">
+    <div class="stack-card">
+      <img class="stack-card-img" src="[URL]" alt="[title]">
+      <div class="stack-card-body">
+        <div class="stack-card-title">[Title]</div>
+        <div class="stack-card-verdict">[One-line verdict]</div>
+        <span class="rating"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span></span>
+        <span class="platform-badge">[Platform]</span>
+      </div>
+    </div>
+    <!-- More stack-cards -->
+  </div>
+
+  <!-- Collapsible: <details class="collapsible"><summary>[Title]</summary><div class="collapsible-content">...</div></details> -->
+
+  <h3>Star Wars</h3>
+  <p>[Star Wars news/feature]</p>
+
+  <!-- THE RELEASE RADAR — 15-20+ items across ALL categories -->
+  <h3>The Release Radar</h3>
+  <div class="radar-grid">
+    <h3 style="margin-top:8px">Now Showing / Just Dropped</h3>
+    <div class="radar-row"><span class="radar-date">[Date]</span><div><span class="radar-cat film"></span><strong>[Title]</strong> — [Hook] <span class="radar-platform">[Platform]</span></div></div>
+    <!-- Category dots: .radar-cat.film .game .tv .lego .tech .book .music -->
+    <h3>Coming Soon</h3>
+    <div class="radar-row"><span class="radar-date">[Date]</span><div><span class="radar-cat tv"></span><strong>[Title]</strong> — [Hook]</div></div>
+    <h3>Leaving Soon</h3>
+    <div class="radar-row leaving"><span class="radar-date">[Date]</span><div><span class="radar-cat film"></span><strong>[Title]</strong> — [Hook]</div></div>
+    <h3>Also Streaming This Month</h3>
+    <div class="radar-row"><span class="radar-date">[Platform]</span><div><strong>[Title]</strong> — [Hook]</div></div>
+  </div>
+  <div class="sidebar"><div class="sidebar-title">[e.g. "For the Kids"]</div>
+    <ul><li><strong>[Title]</strong> — [Why]</li></ul>
+  </div>
+  <div class="also"><div class="also-title">Also in Film &amp; TV</div>
+    <ul class="also-list"><li><strong>[Title]</strong> — [Detail]</li></ul>
+  </div>
+  <div class="read-next">Up next: <a href="#shelf">The Shelf <span class="arrow">→</span></a> — [teaser]</div>
+</section>

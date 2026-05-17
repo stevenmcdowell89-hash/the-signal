@@ -1,0 +1,160 @@
+<!-- ══════ THE WORLD THIS WEEK ══════
+
+  ENHANCEMENT 22 decorative pieces (all opt-in, use sparingly):
+
+  Chapter chrome — drop just inside the <section>, before the lead image:
+    <div class="chapter-chrome">
+      <span class="eyebrow">The World This Week · III</span>
+      <span class="hair"></span>
+      <span class="roman">III</span>
+    </div>
+
+  Folio watermark — giant italic numeral bleeding off bottom-right.
+  Safe to sit alongside .sec-watermark (top-left) — different corners:
+    <div class="folio-watermark">III</div>
+
+  Pull-break band — WORLD-ONLY flourish, max one per issue, typically
+  between the lead story and the ongoing-story tracker:
+    <div class="pull-break">
+      <p class="pull">[Quote with <em>one</em> italic word].</p>
+      <div class="attrib">— [attribution]</div>
+    </div>
+
+  Marginalia — floated sidebar with datum blocks + quote + list. Works
+  inside a two-column grid beside the main prose. Auto-inherits the
+  section accent (rose here). See assets/css/22-decorative.css.
+-->
+<hr class="divider dv-world">
+<section class="sec world-section sec-opener" id="world">
+  <div class="sec-watermark">World</div>
+  <div class="opener-band"></div>
+  <div class="sec-gradient-overlay"></div>
+  <span class="section-label" style="color:var(--rose)">The World This Week</span>
+  <h2>[Lead headline]</h2>
+  <img class="hero-img reveal" src="[URL]" alt="[description]">
+  <div class="caption">[Credit]</div>
+
+  <!-- AVAILABLE COMPONENTS (use as needed, rotate per issue):
+    .margin-note         — Tufte-style side annotation (1-3 per issue, long-form only)
+    .stat-bar > .stat    — Row of stats with .count-up on .stat-num
+    .big-number          — Single dramatic stat (.num.count-up + .num-label)
+    .big-number-row      — 2-3 big numbers in a row
+    .split-60-40         — Asymmetric 2-col (text + image/sidebar)
+    .split-40-60         — Reverse direction
+    .angle               — "The Angle" callout box
+    .pull-quote          — Left-bordered quote (+.centered, +.wide variants)
+    .timeline            — Vertical timeline (.timeline-node > .timeline-date + .timeline-content)
+    .dyk                 — Did You Know box (section-aware colours)
+    .compact-take        — Card-format short news item
+    .compact-grid        — Two compact-takes side by side
+    .collapsible         — <details>/<summary> accordion
+    .img-montage         — Grid of 2-4 images (.layout-1-2)
+    .img-offset          — 60% width image pushed to side, text wraps
+    .also-list           — Simple bold+description list
+    .also-cards          — 2-col card grid for 4+ items
+    .read-next           — "Up next: [Section] →" connector
+    .sidebar-float       — Floated inset sidebar, text wraps around it
+    .compare-panel       — Side-by-side comparison (specs, stats, recs)
+    ENTRY PATTERNS       — .entry-stat, .entry-quote, .entry-bullets, .entry-question (no two adjacent articles open the same way)
+    BREATHER BANDS       — .breather (.breather-stat, .breather-context, .breather-teaser) — 1-2 per issue between dense sections
+    ALSO-LIST TIERS      — .tier-hot, .tier-warm, .tier-note on <li>
+    OPENER VARIANTS      — .opener-lead.stat / .opener-lead.quote BEFORE <h2> (World stays photo-led; 1-2 other sections per issue may promote)
+    DROP-CAP + LEAD-IN   — .dropcap on <p> (first letter 72px in section colour) + .lead-in <span> on first 3-6 words (small-caps DM Sans bold). One per section max, lead paragraph only.
+  -->
+
+  <!-- ── ENTRY PATTERN EXAMPLES (rotate — no two adjacent articles open the same way) ── -->
+  <!--
+    Stat-first entry:
+    <div class="entry-stat">74%</div>
+    <div class="entry-stat-context">of global trade routes now pass through contested waters</div>
+    <p>[Article body continues here...]</p>
+
+    Quote-first entry:
+    <div class="entry-quote">
+      <p>"We are not prepared for what comes next."</p>
+      <cite>— [Attribution]</cite>
+    </div>
+    <p>[Article body continues here...]</p>
+
+    Bullets-first entry:
+    <ul class="entry-bullets">
+      <li>[Key fact one]</li>
+      <li>[Key fact two]</li>
+      <li>[Key fact three]</li>
+    </ul>
+    <p>[Article body continues here...]</p>
+
+    Question-first entry:
+    <div class="entry-question">What happens when a ceasefire holds for exactly one week?</div>
+    <p>[Article body continues here...]</p>
+  -->
+
+  <!-- ── SIDEBAR-FLOAT EXAMPLE (text wraps around naturally) ── -->
+  <!--
+    <div class="sidebar-float">
+      <div class="sidebar-title">[e.g. "Key Players"]</div>
+      <ul>
+        <li><strong>[Name]</strong> — [Detail]</li>
+        <li><strong>[Name]</strong> — [Detail]</li>
+      </ul>
+    </div>
+    <p>[Prose that wraps around the floated sidebar...]</p>
+  -->
+
+  <!-- ── COMPARE-PANEL EXAMPLE (side-by-side) ── -->
+  <!--
+    <div class="compare-panel">
+      <div class="compare-side left">
+        <h4>[Option A]</h4>
+        <ul><li>[Detail]</li><li>[Detail]</li></ul>
+      </div>
+      <div class="compare-side right">
+        <h4>[Option B]</h4>
+        <ul><li>[Detail]</li><li>[Detail]</li></ul>
+      </div>
+    </div>
+  -->
+
+  <!-- ── DROP-CAP + LEAD-IN EXAMPLE (lead paragraph of a long-form article) ── -->
+  <!--
+    <p class="dropcap"><span class="lead-in">The first three to six</span> words sit in small-caps DM Sans bold, while the very first letter lifts to 72px in the section's accent colour. Use only on a lead paragraph, one per section.</p>
+  -->
+
+  <!-- ── MARGIN NOTE EXAMPLE (floats right on desktop, stacks inline below 820px) ── -->
+  <!--
+    <aside class="margin-note">[Tufte-style aside — a useful observation, source note, or tangent. 15-40 words. Never inside compact tables, also-cards, compare panels, or timelines.]</aside>
+    <p>[Prose continues — the margin note floats into the right margin.]</p>
+  -->
+
+  <p class="dropcap"><span class="lead-in">In the kind of</span> week where the news writes itself, pay attention to the bit that doesn't. [Article body continues here — the drop-cap and lead-in only apply to this opening paragraph.]</p>
+  <p>[Article body]</p>
+  <div class="angle reveal"><div class="angle-label">The Angle</div><p>[Deeper point]</p></div>
+  <div class="src"><a href="[URL]">[Source]</a></div>
+  <div class="also"><div class="also-title">Also This Week</div>
+    <!-- TIERED ALSO-LIST: add .tier-hot / .tier-warm / .tier-note to <li> for visual weight -->
+    <ul class="also-list">
+      <li class="tier-hot"><strong>[Major headline]</strong> — [One sentence]</li>
+      <li class="tier-warm"><strong>[Notable headline]</strong> — [One sentence]</li>
+      <li class="tier-note"><strong>[Brief note]</strong> — [One sentence]</li>
+      <li><strong>[Standard item]</strong> — [One sentence — no tier class = default]</li>
+    </ul>
+  </div>
+  <div class="read-next">Up next: <a href="#tech">Pixel &amp; Byte <span class="arrow">→</span></a> — [teaser]</div>
+</section>
+
+<!-- ── BREATHER BAND (place between dense sections for breathing room) ── -->
+<!--
+  Light breather (between light/warm sections):
+  <div class="breather">
+    <div class="breather-stat">[Stat or number]</div>
+    <div class="breather-context">[One-line context]</div>
+    <div class="breather-teaser">[Teaser for next section]</div>
+  </div>
+
+  Dark breather (between dark sections):
+  <div class="breather dark">
+    <div class="breather-stat">[Stat or number]</div>
+    <div class="breather-context">[One-line context]</div>
+    <div class="breather-teaser">[Teaser for next section]</div>
+  </div>
+-->

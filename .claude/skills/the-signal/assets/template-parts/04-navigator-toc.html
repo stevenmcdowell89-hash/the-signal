@@ -1,0 +1,111 @@
+<!-- ══════ NAVIGATOR — TOC-STYLE VARIANT (Enhancement 22F) ══════
+  Alternate layout for the navigator, adopted from the signal-weekly-v2
+  prototype. Drop this in INSTEAD OF 04-navigator.html when an issue
+  warrants a more literary, table-of-contents feel (long reads,
+  special editions, deep dives). Default is still 04-navigator.html.
+
+  The .toc-style class switches on the entire variant. All TOC CSS is
+  scoped under .nav-section.toc-style — no risk of leaking into other
+  tables, lists, or the default nav grid.
+
+  Each row uses a colour-tagging class to pick up the section accent:
+    world | tech | screen | touchline | session | shelf | history |
+    radar | shelf-accent | long-shelf
+  (Colour defaults to rose if no tag is set.)
+
+  Rows: keep to 3-6. Roman numerals run iii onward (i = masthead,
+  ii = this navigator itself).
+-->
+<section class="nav-section toc-style" id="nav">
+  <h2>What's Inside</h2>
+
+  <div class="toc-head">
+    <div>
+      <div class="eyebrow">The Order · II</div>
+      <h3>What's <em>inside.</em></h3>
+    </div>
+    <div></div>
+    <div class="meta">[N] chapters<br/>~[NN] minutes<br/>One sitting</div>
+  </div>
+
+  <div class="toc-list">
+
+    <a class="toc-row world" href="#world">
+      <div class="toc-roman">iii</div>
+      <div>
+        <div class="toc-kicker">The World · Lead</div>
+        <div class="toc-title">[Headline for world lead, with <em>one</em> italic word].</div>
+      </div>
+      <div class="toc-dek">[One-line dek describing the story's angle.]</div>
+      <div class="toc-read">[N] min</div>
+      <div class="toc-arrow">→</div>
+    </a>
+
+    <a class="toc-row tech" href="#tech">
+      <div class="toc-roman">iv</div>
+      <div>
+        <div class="toc-kicker">Pixel &amp; Byte</div>
+        <div class="toc-title">[Tech section headline].</div>
+      </div>
+      <div class="toc-dek">[Dek].</div>
+      <div class="toc-read">[N] min</div>
+      <div class="toc-arrow">→</div>
+    </a>
+
+    <a class="toc-row touchline" href="#touchline">
+      <div class="toc-roman">v</div>
+      <div>
+        <div class="toc-kicker">The Touchline</div>
+        <div class="toc-title">[Sport headline].</div>
+      </div>
+      <div class="toc-dek">[Dek].</div>
+      <div class="toc-read">[N] min</div>
+      <div class="toc-arrow">→</div>
+    </a>
+
+    <a class="toc-row screen" href="#screen">
+      <div class="toc-roman">vi</div>
+      <div>
+        <div class="toc-kicker">Screen &amp; Sound</div>
+        <div class="toc-title">[Culture headline].</div>
+      </div>
+      <div class="toc-dek">[Dek].</div>
+      <div class="toc-read">[N] min</div>
+      <div class="toc-arrow">→</div>
+    </a>
+
+    <a class="toc-row shelf" href="#shelf">
+      <div class="toc-roman">vii</div>
+      <div>
+        <div class="toc-kicker">The Shelf</div>
+        <div class="toc-title">[Books headline].</div>
+      </div>
+      <div class="toc-dek">[Dek].</div>
+      <div class="toc-read">[N] min</div>
+      <div class="toc-arrow">→</div>
+    </a>
+
+    <a class="toc-row session" href="#session">
+      <div class="toc-roman">viii</div>
+      <div>
+        <div class="toc-kicker">The Session</div>
+        <div class="toc-title">[Session headline].</div>
+      </div>
+      <div class="toc-dek">[Dek].</div>
+      <div class="toc-read">[N] min</div>
+      <div class="toc-arrow">→</div>
+    </a>
+
+    <a class="toc-row history" href="#history">
+      <div class="toc-roman">ix</div>
+      <div>
+        <div class="toc-kicker">This Week in History</div>
+        <div class="toc-title">[History headline].</div>
+      </div>
+      <div class="toc-dek">[Dek].</div>
+      <div class="toc-read">[N] min</div>
+      <div class="toc-arrow">→</div>
+    </a>
+
+  </div>
+</section>
