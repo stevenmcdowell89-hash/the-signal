@@ -125,6 +125,23 @@ These are editorial principles. The compliance checklist (Gate 1 + Gate 2) handl
 
 ## image-integrity
 
+### URL provenance — MANDATORY (v8.13.4)
+
+The pipeline has confirmed prior fabrications: writer subagents constructed plausible-looking image URLs from domain pattern-matching (invented Wikimedia hash prefixes, page slugs treated as image assets, typo'd filenames, guessed JPL PIA numbers). Phase 7.6 (`scripts/check-image-urls.sh`) now probes every `<img src>` URL for liveness, but the systemic fix is upstream:
+
+1. **Researcher contract.** Every `image_candidates[i].url_or_keyword` in `research-bundle.json` MUST be a direct URL, never a keyword. Use one of:
+   - `https://commons.wikimedia.org/wiki/Special:FilePath/<Exact_File_Name>?width=N` — the redirect resolves any verified Wikimedia file by canonical name (no hash needed). Confirm the file exists via WebSearch (`site:commons.wikimedia.org "File:..."`) before listing it.
+   - A direct CDN URL the researcher has explicitly fetched OR seen in a prior published issue (Lucasfilm Lumiere, NASA JPL Photojournal direct jpegs, gaming-cdn product screenshots, official press kit URLs that are *image* paths not page slugs).
+   - `null` when no verified image is available — writers will skip the `<img>` cleanly rather than guess.
+
+2. **Writer contract.** Writers MUST use `src=` values verbatim from the research bundle. Constructing a URL by domain-pattern is forbidden (RT-16). If a writer needs an image not in the bundle, the chapter ships without it.
+
+3. **Wikimedia is the default.** `Special:FilePath` is reliable, license-clean, and works across re-renders without rot. Prefer it over upload.wikimedia.org thumbnails with hash prefixes — those break the moment the filename changes.
+
+4. **Source diversity (RT-5) still applies.** No single domain may exceed 50% of images in any issue. The Special:FilePath redirects all resolve to `upload.wikimedia.org`, so a Wikimedia-heavy issue still trips RT-5 — mix in CDN + press-kit sources.
+
+### Markup components
+
 - `.sp-parallax` with `.p-bg` / `.p-mid` / `.p-fg` layers — layered parallax on hero and section openers
 - `.sp-stagger` with `.sp-word` children — word-by-word reveal on h2 openers (400ms cap)
 - `.sp-wipe` with three `.sp-wipe-layer` children (l1/l2/l3) — contained colour-wipe transitions between sections. The wipe container is `overflow: hidden` and `contain: layout paint` — it never extends past content width and cannot push surrounding columns during transition.

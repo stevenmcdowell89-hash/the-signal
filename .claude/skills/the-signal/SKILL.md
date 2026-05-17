@@ -44,7 +44,7 @@ The Signal runs as a multi-subagent pipeline. Each role has different reasoning 
 
 The Signal runs ONE pipeline for every issue — standard weekly or special edition. The format is decided in Phase 0; Phases 3–10 then run for every format. The format only changes WHICH chapters get written and HOW writers are sequenced (parallel vs sequential), not WHICH phases run.
 
-The pipeline: Phase 0 (decide format) → Phase 3 (researcher subagent) → Phase 4 (planner subagent + validator) → Phase 5 (writer subagents, parallel or sequential) → Phase 6 (stitch) → Phase 7 (per-chapter Gate 1) → Phase 7.5 (release-date check) → Phase 8 (stitched-issue Gate) → Phase 9 (repair if needed) → Phase 10 (deliver + publish).
+The pipeline: Phase 0 (decide format) → Phase 3 (researcher subagent) → Phase 4 (planner subagent + validator) → Phase 5 (writer subagents, parallel or sequential) → Phase 6 (stitch) → Phase 7 (per-chapter Gate 1) → Phase 7.5 (release-date check) → Phase 7.6 (image-URL liveness check) → Phase 8 (stitched-issue Gate) → Phase 9 (repair if needed) → Phase 10 (deliver + publish).
 
 There is NO separate "lightweight" path. Standard weeklies run the full pipeline same as specials. Build dir is `/tmp/signal-build/`, cleared at the start of every run.
 
@@ -159,7 +159,16 @@ The agent then walks the report. For each surfaced claim:
 2. If it does not match the register, run a quick web search (`<show name> release date` is sufficient for a single check) and verify YEAR. Wrong year or already-aired-when-framed-as-upcoming is automatic FAIL.
 3. If a relative-time phrase is used ("last September", "this summer", "coming next month") without explicit year context, treat as suspect by default — verify or rewrite.
 
-Fix every FAIL before proceeding to Phase 8. The release-date class of error is the single most-cited fabrication category in reader feedback (Andor S2 framed as current; Tales of the Underworld framed as upcoming when it aired in 2025; Andor S2 end-date wrong by months). This phase is non-skippable.
+Fix every FAIL before proceeding to Phase 7.6. The release-date class of error is the single most-cited fabrication category in reader feedback (Andor S2 framed as current; Tales of the Underworld framed as upcoming when it aired in 2025; Andor S2 end-date wrong by months). This phase is non-skippable.
+
+### Phase 7.6 — Image-URL liveness check (mandatory before publish)
+Run `bash scripts/check-image-urls.sh <stitched-html-path>`. The script extracts every `<img src>` and `background-image: url(...)` from the stitched HTML, then probes each URL with a browser-like User-Agent and a 15s timeout. Any 4xx/5xx/timeout response (other than 301/302 redirects) is a FAIL.
+
+The script auto-detects egress-blocked sandboxes — if every probe returns the same status code (000 connection-refused, or uniform 403) it exits 0 with an advisory rather than hard-failing. In that case the runtime JS onerror fallback in `assets/script.js` is the safety net: any image that 404s at viewing time is hidden along with its caption.
+
+**This gate exists because** writer subagents have a confirmed history of fabricating image URLs by domain pattern-matching (invented Wikimedia hash prefixes, page slugs treated as image assets, typo'd file names, guessed JPL PIA numbers). The systemic fix is upstream — see RT-16 in `references/pre-flight.md` and the URL-provenance section of `references/spec/global.md` `image-integrity`. Researchers must provide direct URLs (preferably `Special:FilePath`); writers must use them verbatim. Phase 7.6 is the backstop, not the only line.
+
+If FAIL: identify which `image_candidates` entry is the source of each bad URL, either correct the URL in `research-bundle.json` and re-run the affected writer, or substitute a verified URL via WebSearch and re-stitch.
 
 ### Phase 8 — Stitched-issue Gate (Gate 3)
 Cross-chapter checks: image-source diversity, no two consecutive sections same component pattern, accent lockdown across chapters, link health, ongoing-story consistency. Plus Gate 2 editorial/visual quality. Fix any failures.
@@ -426,6 +435,7 @@ When the reader asks to tweak styling or structure rather than generate an issue
 | `scripts/stitch-issue.sh` | Deterministic chapter concatenation + scaffold wrap + CSS/JS inject. Replaces inject-assets.sh in the pipeline. |
 | `scripts/inject-assets.sh` | Legacy single-file CSS/JS injector. Kept for ad-hoc edits outside the pipeline. |
 | `scripts/check-release-dates.sh` | Phase 7.5 release-date sanity check. Surfaces every claim of a date/relative-time near a media name in the stitched HTML, plus any locked-register entry. Output written to `/tmp/signal-date-claims.txt`. The agent walks the report and verifies each claim against the locked register or a web search before publish. |
+| `scripts/check-image-urls.sh` | Phase 7.6 image-URL liveness gate. Probes every `<img src>` and `background-image: url(...)` in the stitched HTML with a browser-like UA. Exits 1 on any 4xx/5xx, auto-bails with advisory in egress-blocked sandboxes (uniform-failure heuristic). Catches the writer-fabrication regression for image URLs (see RT-16). |
 | `scripts/log-call.sh` | Fire-and-forget logger — main loop calls this after each subagent returns. Appends one JSON line to the cost log (default `/tmp/the-signal/state/cost-log.jsonl`, override via `SIGNAL_COST_LOG`). Errors are silent so logging never blocks the pipeline. |
 | `scripts/cost-summary.sh` | Reads the cost log and prints a per-issue and aggregate breakdown (calls per role, model usage, retry rate, validator/gate failures, escalations). Run after a few issues to validate the model fallback chains. |
 

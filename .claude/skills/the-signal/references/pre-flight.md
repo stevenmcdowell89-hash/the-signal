@@ -331,6 +331,56 @@ awk '/class="hol-half hol-half--two/,/<\/section>/' issue.html | grep -iE 'eftel
 
 ---
 
+### RT-16: Fabricated image URL (v8.13.4)
+
+**The trap.** Writer subagents construct plausible-looking `src=` URLs by pattern-matching against domains seen in research (`upload.wikimedia.org/wikipedia/commons/X/XY/Name.jpg`, `press.bethesda.net/game/...`, `lumiere-a.akamaihd.net/v1/images/...`). The Wikimedia path requires the actual MD5 hash prefix of the filename; the press-kit URLs are pages not assets; the Lumiere file slugs differ per asset. Guessing produces a 404 that the pipeline does not currently detect — the issue ships with broken-image icons.
+
+**Confirmed prior fabrications (the 17 May 2026 test issue):**
+- `upload.wikimedia.org/.../0/08/Pálinkás_Ferenc_Stadion_2.jpg` — "Pálinkás" is Hungarian fruit brandy; the stadium is Puskás
+- `press.bethesda.net/game/indiana-jones-and-the-great-circle` — page slug, not image asset
+- `www.starwars.com/press-assets/the-mandalorian-and-grogu/key-art` — invented URL pattern
+- `photojournal.jpl.nasa.gov/jpeg/PIA26178.jpg` — guessed PIA number
+- `upload.wikimedia.org/.../9/94/Cloudflare_Logo.png` — guessed hash prefix
+- 9 more in the same issue
+
+**The rule.**
+
+1. **Writers MUST NOT construct image URLs.** Every `src=` value must come verbatim from `research-bundle.json` → `image_candidates[i].url_or_keyword`. If that field is a keyword rather than a URL (legacy bundles), OMIT the `<img>` tag entirely and let the caption stand alone — never guess.
+
+2. **Researchers MUST provide URLs, not keywords.** `image_candidates[i].url_or_keyword` must be either:
+   - A `https://commons.wikimedia.org/wiki/Special:FilePath/<Filename>` URL (resolves any verified file by canonical name without needing the hash prefix), confirmed via WebSearch against `site:commons.wikimedia.org "File:..."`
+   - A direct URL on a public CDN (Lucasfilm Lumiere, NASA JPL, gaming-cdn, press kits) that the researcher has explicitly fetched or seen referenced in prior published issues
+   - `null` if no verified image is available — writers will skip the `<img>` cleanly
+
+3. **Wikimedia Special:FilePath is the default pattern.** Format:
+   ```
+   https://commons.wikimedia.org/wiki/Special:FilePath/Exact_File_Name.jpg?width=1280
+   ```
+   This redirects to the actual `upload.wikimedia.org/wikipedia/commons/X/XY/...` URL automatically. Use it for every Wikimedia image — never construct the hashed URL manually.
+
+4. **Phase 7.6 (`scripts/check-image-urls.sh`) probes every `<img src>` for 200/301/302.** Any failure blocks publish. The script auto-detects egress-blocked sandboxes (uniform 4xx across every probe) and exits 0 with an advisory — in those environments the JS onerror fallback in `script.js` is the runtime safety net.
+
+**Self-audit grep:**
+```bash
+# Reject any src= that doesn't appear in research-bundle.json
+python3 -c "
+import json, re
+bundle = json.load(open('/tmp/signal-build/research-bundle.json'))
+allowed = set()
+for c in bundle.get('image_candidates', []):
+    u = c.get('url_or_keyword', '')
+    if u.startswith('http'):
+        allowed.add(u)
+html = open('chapters/MY-CHAPTER.html').read()
+for src in re.findall(r'<img[^>]+src=\"([^\"]+)\"', html):
+    if src not in allowed:
+        print(f'FABRICATED: {src}')
+"
+# expect: empty
+```
+
+---
+
 ## 3. Canonical Markup Snippets
 
 Copy-paste these directly. Do not invent alternates.
