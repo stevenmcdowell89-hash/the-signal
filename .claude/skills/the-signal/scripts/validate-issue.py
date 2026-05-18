@@ -408,17 +408,36 @@ def static_image_url_check(html: str, report: Report) -> bool:
     return False
 
 
-def check_image_urls(html: str, timeout: float, workers: int, report: Report) -> None:
+def check_image_urls(html: str, timeout: float, workers: int, report: Report, html_path: Path | None = None) -> None:
     urls = extract_image_urls(html)
     if not urls:
         report.warn("image-urls", "no <img src> or background-image URLs found")
         return
 
+    # Partition local in-repo paths (e.g. /assets/cached/<hash>.jpg added by
+    # the image-mirroring step) from remote URLs. Local paths are verified
+    # by checking the file exists on disk relative to the repo root; HEAD
+    # over HTTP would fail with "unknown url type" on a root-absolute path.
+    repo_root = html_path.parent.parent if html_path else Path.cwd()
+    local_urls = [u for u in urls if u.startswith("/")]
+    remote_urls = [u for u in urls if not u.startswith("/")]
+
     results: list[tuple[str, int | str]] = []
-    with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as pool:
-        futures = [pool.submit(head_check_one, u, timeout) for u in urls]
-        for fut in concurrent.futures.as_completed(futures):
-            results.append(fut.result())
+
+    # Local: file-existence check.
+    for u in local_urls:
+        candidate = repo_root / u.lstrip("/")
+        if candidate.is_file():
+            results.append((u, 200))
+        else:
+            results.append((u, f"failed:local file missing ({candidate})"))
+
+    # Remote: parallel HEAD checks as before.
+    if remote_urls:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as pool:
+            futures = [pool.submit(head_check_one, u, timeout) for u in remote_urls]
+            for fut in concurrent.futures.as_completed(futures):
+                results.append(fut.result())
 
     ok_urls, bad_urls = [], []
     for u, status in results:
@@ -573,7 +592,7 @@ def main(argv: list[str]) -> int:
     if args.skip_image_urls:
         report.warn("image-urls", "skipped per --skip-image-urls")
     else:
-        check_image_urls(html, args.image_timeout, args.workers, report)
+        check_image_urls(html, args.image_timeout, args.workers, report, path)
 
     return report.render()
 
