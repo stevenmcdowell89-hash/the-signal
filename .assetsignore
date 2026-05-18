@@ -1,0 +1,23 @@
+# Files and directories that should NOT be bundled into the Cloudflare
+# Workers Static Assets deployment. Uses gitignore-style syntax.
+#
+# Without this file, wrangler auto-detects "directory": "." (the whole
+# repo) and tries to serve everything, including .git/ — which can blow
+# past the 25 MiB per-file limit once git packs grow.
+
+# Git internals — never serve these
+.git/
+
+# CI / dev tooling — not part of the published site
+.github/
+.claude/
+scripts/
+
+# Orchestration state — repo-resident for pipeline durability, but not
+# meant to be public on the workers.dev URL
+state/
+
+# Root-level dev files
+.gitignore
+.assetsignore
+*.md
