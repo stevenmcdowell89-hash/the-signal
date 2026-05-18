@@ -1848,6 +1848,21 @@ p:last-child { margin-bottom: 0; }
 }
 
 </style>
+<!-- the-signal:pwa -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#E94560">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png">
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('/sw.js').catch(function (err) {
+        console.warn('SW registration failed:', err);
+      });
+    });
+  }
+</script>
+<!-- /the-signal:pwa -->
 </head>
 <body>
 <div class="progress-bar" id="progressBar"></div>
@@ -1888,7 +1903,7 @@ p:last-child { margin-bottom: 0; }
         <p>US-Israeli strikes on Iran are reshaping global oil, NATO, and the rules of deterrence — and it's only Week 6.</p>
         <div class="read-time">9 min read</div>
       </div>
-      <div class="nav-card-thumb" style="background-image:url('https://assets.cfr.org/images/w_1920/t_cfr_3_2/f_auto/v1772464933/IranWar_DB_03022026_A/IranWar_DB_03022026_A.jpg')"></div>
+      <div class="nav-card-thumb" style="background-image:url('/assets/cached/0bd88db73c98.jpg')"></div>
     </a>
 
     <a href="#tech" class="nav-card tech" style="text-decoration:none">
@@ -2030,7 +2045,7 @@ p:last-child { margin-bottom: 0; }
   <div class="sec-gradient-overlay"></div>
   <span class="section-label" style="color:var(--rose)">The World This Week</span>
   <h2>The War That Broke Everything's Assumptions</h2>
-  <img class="hero-img reveal" src="https://assets.cfr.org/images/w_1920/t_cfr_3_2/f_auto/v1772464933/IranWar_DB_03022026_A/IranWar_DB_03022026_A.jpg" alt="Map showing the spread of US-Israel-Iran conflict across the Middle East">
+  <img class="hero-img reveal" src="/assets/cached/0bd88db73c98.jpg" alt="Map showing the spread of US-Israel-Iran conflict across the Middle East">
   <div class="caption">The Iran war's geographic footprint — Council on Foreign Relations</div>
 
   <div class="stat-bar reveal">
@@ -2319,9 +2334,9 @@ p:last-child { margin-bottom: 0; }
   <p>Juventus host Genoa tonight at the Allianz Stadium (kick-off 17:00 BST). Juve arrive in decent form — Kenan Yildiz has been the standout player of their campaign with 10 goals and 6 assists — and will be heavy favourites against a Genoa side sitting 15th. The historical H2H is one-sided: Juve 21 wins, Genoa 4, 6 draws across all meetings. This is a game Juventus simply need to win. Inter's lead at the top is 15 points with eight games left — the title is functionally gone, but fourth place in the Champions League spots is the real prize now, and Juve's grip on that is comfortable but not unassailable.</p>
 
   <div class="img-montage layout-1-2 reveal">
-    <img class="montage-hero" src="https://www.stadiumguide.com/wp-content/uploads/juventusstadium_top.jpg" alt="Allianz Stadium, Turin" style="max-height:220px;object-fit:cover">
-    <img src="https://www.juventus.com/images/image/private/t_editorial_landscape_12_desktop/f_auto/dev/n7srmfcckurfsc7a31u8.jpg" alt="Juventus Season 2025-26" style="max-height:110px;object-fit:cover">
-    <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/32/19/e6/70/caption.jpg?w=1100&h=1100&s=1" alt="Allianz Stadium interior" style="max-height:110px;object-fit:cover">
+    <img class="montage-hero" src="/assets/cached/b30c03403269.jpg" alt="Allianz Stadium, Turin" style="max-height:220px;object-fit:cover">
+    <img src="/assets/cached/7c9c910d706c.jpg" alt="Juventus Season 2025-26" style="max-height:110px;object-fit:cover">
+    <img src="/assets/cached/285a898949f4.jpg" alt="Allianz Stadium interior" style="max-height:110px;object-fit:cover">
     <div class="caption">Allianz Stadium, Turin — The Stadium Guide / Tripadvisor</div>
   </div>
 
@@ -2409,7 +2424,7 @@ p:last-child { margin-bottom: 0; }
   <span class="section-label" style="color:var(--neon)">Screen &amp; Sound</span>
   <h2>Star Wars Returns. Tonight.</h2>
 
-  <img class="hero-img reveal" src="https://i.ytimg.com/vi/rjJC_QAQjJU/maxresdefault.jpg" alt="Star Wars: Maul - Shadow Lord animated series key art">
+  <img class="hero-img reveal" src="/assets/cached/2174ff309a26.jpg" alt="Star Wars: Maul - Shadow Lord animated series key art">
   <div class="caption">Star Wars: Maul – Shadow Lord premieres on Disney+ tonight, 6 April 2026</div>
 
   <div class="entry-question">What happens when the franchise's most visually compelling villain finally gets his own show?</div>
@@ -2433,7 +2448,7 @@ p:last-child { margin-bottom: 0; }
   <h3>Quick Reviews</h3>
   <div class="card-stack">
     <div class="stack-card">
-      <img class="stack-card-img" src="https://i5.walmartimages.com/seo/Nintendo-Switch-2-System_68fa1297-c7c9-4026-acfc-7e709cab0d8c.af0a22882bc21cefa5bd0fe4d8c71799.png?odnHeight=768&odnWidth=768&odnBg=FFFFFF" alt="Super Mario Galaxy Movie">
+      <img class="stack-card-img" src="/assets/cached/b5f8201e4a22.png" alt="Super Mario Galaxy Movie">
       <div class="stack-card-body">
         <div class="stack-card-title">The Super Mario Galaxy Movie</div>
         <div class="stack-card-verdict">Better than the first Mario film — more cosmic scale, better writing, same voice cast. A genuinely good animated movie that earns its space aesthetic. Perfect for a 10-year-old and perfectly watchable for adults.</div>
@@ -2605,7 +2620,7 @@ p:last-child { margin-bottom: 0; }
   <span class="section-label" style="color:var(--session-accent)">The Session</span>
   <h2>You Can Lift and Run. The Science Says Stop Worrying.</h2>
 
-  <img class="hero-img reveal" src="https://www.barbellmedicine.com/wp-content/uploads/2025/11/CAP-Featured-Image.png" alt="Concurrent training - lifting and cardio research">
+  <img class="hero-img reveal" src="/assets/cached/358c6c732bcb.png" alt="Concurrent training - lifting and cardio research">
   <div class="caption">Concurrent training research — Barbell Medicine</div>
 
   <p>The "interference effect" is one of fitness's most persistent myths: the idea that combining strength training and cardio will blunt your gains. It has enough truth in it to sound credible, but not enough to make it a practical concern for most people training for health and body composition rather than elite performance.</p>
@@ -2670,7 +2685,7 @@ p:last-child { margin-bottom: 0; }
   <span class="section-label" style="color:var(--hist-accent)">This Week in History</span>
   <h2>6 April 1453: The Cannons Open on Constantinople</h2>
 
-  <img class="img-offset" src="https://cdn.britannica.com/25/285425-050-08791D48/2026-iran-conflict-map.jpg" alt="Ottoman siege map" style="background:#F0EBE0">
+  <img class="img-offset" src="/assets/cached/ba0634c11543.jpg" alt="Ottoman siege map" style="background:#F0EBE0">
 
   <div class="big-number" style="text-align:left;display:inline-block;margin:0 24px 8px 0">
     <div class="num" style="color:var(--hist-accent);font-size:64px">55</div>

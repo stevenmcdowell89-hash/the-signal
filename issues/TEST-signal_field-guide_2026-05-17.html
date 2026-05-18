@@ -11205,6 +11205,21 @@ body.is-special[data-special="field-guide"] .hol-half--two::before {
 }
 
 </style>
+<!-- the-signal:pwa -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#E94560">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png">
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('/sw.js').catch(function (err) {
+        console.warn('SW registration failed:', err);
+      });
+    });
+  }
+</script>
+<!-- /the-signal:pwa -->
 </head>
 <body class="is-special" data-special="field-guide">
 <div class="progress-bar" id="progressBar"></div>
@@ -11288,7 +11303,7 @@ body.is-special[data-special="field-guide"] .hol-half--two::before {
         <!-- Polaroid 1: Efteling — Polles Keuken storybook kitchen -->
         <figure class="hol-polaroid" style="top: 0; left: 8%;">
           <div class="hol-polaroid__tape"></div>
-          <div class="hol-polaroid__photo" style="background-image: url('https://cdn.libemaweb.com/f/151320/2560x1708/88dcc9a161/vrouw-spar-supermarkt-lake-resort-beekse-bergen.jpg');"></div>
+          <div class="hol-polaroid__photo" style="background-image: url('/assets/cached/c264e667664e.jpg');"></div>
           <figcaption class="hol-polaroid__caption">spar · lake resort.
             <!-- Credit: Beekse Bergen / Libema press (Arno Hoogwerf) -->
           </figcaption>
@@ -11297,7 +11312,7 @@ body.is-special[data-special="field-guide"] .hol-half--two::before {
         <!-- Polaroid 2: Beekse Bergen — Jaaba Counter / Lake Resort fries -->
         <figure class="hol-polaroid hol-polaroid--right" style="top: 48%; right: 4%;">
           <div class="hol-polaroid__tape"></div>
-          <div class="hol-polaroid__photo" style="background-image: url('https://cdn.libemaweb.com/f/151320/2560x1707/5de7fde521/koppel-stel-frietjes-patat-man-vrouw-jaaba-counter-lake-resort-beekse-bergen.jpg');"></div>
+          <div class="hol-polaroid__photo" style="background-image: url('/assets/cached/1dab6f0603b7.jpg');"></div>
           <figcaption class="hol-polaroid__caption">jaaba · safari resort.
             <!-- Credit: Beekse Bergen official press kit / press-shot basis -->
           </figcaption>
@@ -11336,7 +11351,7 @@ body.is-special[data-special="field-guide"] .hol-half--two::before {
 
       <figure class="hol-polaroid">
         <div class="hol-polaroid__tape"></div>
-        <div class="hol-polaroid__photo" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/8/88/Polles_Keuken_Efteling.JPG');" role="img" aria-label="Polles Keuken interior with spinning stove show at Efteling, photographed by Sophie Pearce / Third Eye Traveller"></div>
+        <div class="hol-polaroid__photo" style="background-image: url('/assets/cached/7a7cf139e0b4.jpg');" role="img" aria-label="Polles Keuken interior with spinning stove show at Efteling, photographed by Sophie Pearce / Third Eye Traveller"></div>
         <figcaption class="hol-polaroid__caption">polles keuken. the spinning stove, every 15 mins. Credit: <a href="https://thirdeyetraveller.com/efteling-polles-keuken-restaurant/">Sophie Pearce / Third Eye Traveller</a>.</figcaption>
       </figure>
 
@@ -11382,7 +11397,7 @@ body.is-special[data-special="field-guide"] .hol-half--two::before {
 
     <!-- ANCHOR — Polles Keuken -->
     <div class="hol-anchor">
-      <div class="hol-anchor__photo" style="background-image:url('https://content.presspage.com/uploads/1877/1920_20120131polleskeukenpancakerestaurantinterior.jpg');" role="img" aria-label="Interior of Polles Keuken — the enchanted kitchen pancake restaurant. Photo: Efteling press kit / presspage."></div>
+      <div class="hol-anchor__photo" style="background-image:url('/assets/cached/c0d6c819089f.jpg');" role="img" aria-label="Interior of Polles Keuken — the enchanted kitchen pancake restaurant. Photo: Efteling press kit / presspage."></div>
       <div>
         <h3 class="hol-anchor__title">POLLES KEUKEN</h3>
         <p class="hol-anchor__dek"><em>The enchanted kitchen with a spinning stove — Efteling's most-recommended restaurant, themed to Symbolica's sorcerer and open after the park closes.</em></p>
@@ -11441,7 +11456,7 @@ body.is-special[data-special="field-guide"] .hol-half--two::before {
     <!-- UNMISSABLE 02 — De Gebrande Boon (reverse) -->
     <div class="hol-unmissable hol-unmissable--reverse">
       <div class="hol-unmissable__photo-wrap">
-        <div class="hol-unmissable__photo" style="background-image:url('https://aegtte.weebly.com/uploads/8/2/8/9/8289017/20170827-200616-1717_orig.jpg');" role="img" aria-label="Speciality coffee drinks at De Gebrande Boon. Photo: Disney Food Blog."></div>
+        <div class="hol-unmissable__photo" style="background-image:url('/assets/cached/5874f88e806e.jpg');" role="img" aria-label="Speciality coffee drinks at De Gebrande Boon. Photo: Disney Food Blog."></div>
       </div>
       <div class="hol-unmissable__card">
         <div class="hol-unmissable__num-row">
@@ -11484,7 +11499,7 @@ body.is-special[data-special="field-guide"] .hol-half--two::before {
     <!-- UNMISSABLE 03 — Smulpaap (normal) -->
     <div class="hol-unmissable">
       <div class="hol-unmissable__photo-wrap">
-        <div class="hol-unmissable__photo" style="background-image:url('https://eftelinguk.com/wp-content/uploads/2011/10/smulpaap.jpg');" role="img" aria-label="Smulpaap snack kiosk counter at Anton Pieck Plein. Photo: Englishmen's Guide to Efteling (fan blog)."></div>
+        <div class="hol-unmissable__photo" style="background-image:url('/assets/cached/deb5e7c851b3.jpg');" role="img" aria-label="Smulpaap snack kiosk counter at Anton Pieck Plein. Photo: Englishmen's Guide to Efteling (fan blog)."></div>
       </div>
       <div class="hol-unmissable__card">
         <div class="hol-unmissable__num-row">
@@ -11510,7 +11525,7 @@ body.is-special[data-special="field-guide"] .hol-half--two::before {
     <!-- VARIETY BREAK: Frikandel polaroid (between Smulpaap and De Meermin) -->
     <figure class="hol-polaroid hol-polaroid--right" style="margin: 1.5rem auto 1rem; display:block; width:fit-content;">
       <div class="hol-polaroid__tape"></div>
-      <div class="hol-polaroid__photo" style="background-image:url('https://upload.wikimedia.org/wikipedia/commons/2/2e/Frikandel.jpg');" role="img" aria-label="Frikandel — Dutch deep-fried minced-meat snack served with patat. Photo: Wikimedia Commons CC BY-SA."></div>
+      <div class="hol-polaroid__photo" style="background-image:url('/assets/cached/4c12fe96ab7e.jpg');" role="img" aria-label="Frikandel — Dutch deep-fried minced-meat snack served with patat. Photo: Wikimedia Commons CC BY-SA."></div>
       <figcaption class="hol-polaroid__caption">frikandel speciaal. €2.25 at Smulpaap.<br>Credit: Wikimedia Commons CC BY-SA.</figcaption>
     </figure>
 
@@ -11554,7 +11569,7 @@ body.is-special[data-special="field-guide"] .hol-half--two::before {
     <!-- UNMISSABLE 05 — 't Poffertje (normal) -->
     <div class="hol-unmissable">
       <div class="hol-unmissable__photo-wrap">
-        <div class="hol-unmissable__photo" style="background-image:url('https://www.efteling.com/en/-/media/images/nieuw-park/park/horeca/t-poffertje/1024x576-poffertje-gallery-3.jpg');" role="img" aria-label="Plate of poffertjes dusted with icing sugar. Photo: The Travelista / Jessica Ruth Gibson."></div>
+        <div class="hol-unmissable__photo" style="background-image:url('/assets/cached/790ab230d7dc.jpg');" role="img" aria-label="Plate of poffertjes dusted with icing sugar. Photo: The Travelista / Jessica Ruth Gibson."></div>
       </div>
       <div class="hol-unmissable__card">
         <div class="hol-unmissable__num-row">
@@ -11601,7 +11616,7 @@ body.is-special[data-special="field-guide"] .hol-half--two::before {
     <!-- UNMISSABLE 06 — Het Witte Paard (reverse) -->
     <div class="hol-unmissable hol-unmissable--reverse">
       <div class="hol-unmissable__photo-wrap">
-        <div class="hol-unmissable__photo" style="background-image:url('https://www.efteling.com/nl/-/media/images/app/detailview/horeca/hs-witte-paard/1024x576-het-witte-paard-detail-view-3.jpg');" role="img" aria-label="Counter area and lunch spread at Het Witte Paard. Photo: The Travelista / Jessica Ruth Gibson."></div>
+        <div class="hol-unmissable__photo" style="background-image:url('/assets/cached/9f7cd3ae2757.jpg');" role="img" aria-label="Counter area and lunch spread at Het Witte Paard. Photo: The Travelista / Jessica Ruth Gibson."></div>
       </div>
       <div class="hol-unmissable__card">
         <div class="hol-unmissable__num-row">
@@ -12061,7 +12076,7 @@ body.is-special[data-special="field-guide"] .hol-half--two::before {
          ANCHOR — Amma Breakfast Buffet
     ═══════════════════════════════════════════════════════ -->
     <div class="hol-anchor">
-      <div class="hol-anchor__photo" style="background-image:url('https://cdn.libemaweb.com/f/151320/2560x1707/788567bd6c/gezin-ontbijten-kameel-safari-resort-beekse-bergen.jpg');" role="img" aria-label="Family at breakfast on the Safari Resort terrace as camels and giraffes pass nearby — the Amma morning context. Photo: Beekse Bergen press.">
+      <div class="hol-anchor__photo" style="background-image:url('/assets/cached/08aec18f3bea.jpg');" role="img" aria-label="Family at breakfast on the Safari Resort terrace as camels and giraffes pass nearby — the Amma morning context. Photo: Beekse Bergen press.">
         <figure style="margin:0;padding:0;position:absolute;bottom:0.5rem;right:0.75rem;">
           <figcaption style="font-size:0.6rem;color:rgba(255,255,255,0.7);font-family:var(--hol-t-mono);">Beekse Bergen official press · press-shot</figcaption>
         </figure>
@@ -12089,7 +12104,7 @@ body.is-special[data-special="field-guide"] .hol-half--two::before {
     <!-- polaroid decorative -->
     <figure class="hol-polaroid" style="margin:0.5rem auto 0.5rem 5%;" aria-hidden="true">
       <div class="hol-polaroid__tape"></div>
-      <div class="hol-polaroid__photo" style="background-image:url('https://little-clogs-holidays.co.uk/wp-content/uploads/2023/05/buffet-breakfast-Beekse-Bergen-Safari-Hotel-1.jpg');background-size:cover;background-position:center;"></div>
+      <div class="hol-polaroid__photo" style="background-image:url('/assets/cached/2874ec5b8838.jpg');background-size:cover;background-position:center;"></div>
       <figcaption class="hol-polaroid__caption">morning light, hogon house.</figcaption>
     </figure>
 
@@ -12120,7 +12135,7 @@ body.is-special[data-special="field-guide"] .hol-half--two::before {
     <!-- 01 — Amma -->
     <div class="hol-unmissable">
       <div class="hol-unmissable__photo-wrap">
-        <div class="hol-unmissable__photo" style="background-image:url('https://a.storyblok.com/f/151320/2560x1707/5089d58f44/ontbijtbuffet-restaurant-amma-safari-hotel-beekse-bergen.jpg');background-size:cover;background-position:center;" role="img" aria-label="Amma restaurant breakfast room, Beekse Bergen Safari Hotel — savannah panorama through floor-to-ceiling windows">
+        <div class="hol-unmissable__photo" style="background-image:url('/assets/cached/cf8f2638895b.jpg');background-size:cover;background-position:center;" role="img" aria-label="Amma restaurant breakfast room, Beekse Bergen Safari Hotel — savannah panorama through floor-to-ceiling windows">
           <figure style="margin:0;padding:0;position:absolute;bottom:0.4rem;left:0.5rem;">
             <figcaption style="font-size:0.58rem;color:rgba(255,255,255,0.75);font-family:var(--hol-t-mono);">Beekse Bergen official · press-shot</figcaption>
           </figure>
@@ -12148,14 +12163,14 @@ body.is-special[data-special="field-guide"] .hol-half--two::before {
     <!-- VARIETY BREAK: Polaroid (between BB Unmissable 01 and 02) -->
     <figure class="hol-polaroid hol-polaroid--right" style="margin: 1.5rem auto 1rem; display:block; width:fit-content;">
       <div class="hol-polaroid__tape"></div>
-      <div class="hol-polaroid__photo" style="background-image:url('https://cdn.libemaweb.com/f/151320/2560x1707/74a5c9804e/chefkok-gerecht-fine-dining-restaurant-nommos-safari-hotel-beekse-bergen.jpg');" role="img" aria-label="Nommos chef plating a fine-dining course at Safari Hotel. Photo: Arno Hoogwerf / Beekse Bergen press."></div>
+      <div class="hol-polaroid__photo" style="background-image:url('/assets/cached/99a2c7e6bddb.jpg');" role="img" aria-label="Nommos chef plating a fine-dining course at Safari Hotel. Photo: Arno Hoogwerf / Beekse Bergen press."></div>
       <figcaption class="hol-polaroid__caption">nommos. five-course tasting. book months out.<br>Credit: Arno Hoogwerf · Beekse Bergen press.</figcaption>
     </figure>
 
     <!-- 02 — Moto (--reverse) -->
     <div class="hol-unmissable hol-unmissable--reverse">
       <div class="hol-unmissable__photo-wrap">
-        <div class="hol-unmissable__photo" style="background-image:url('https://cdn.libemaweb.com/f/151320/2560x1707/6ff5a8cd5b/chefkok-grillen-restaurant-moto-safari-resort-beekse-bergen.jpg');background-size:cover;background-position:center;" role="img" aria-label="Moto grill restaurant at Beekse Bergen Safari Resort — open fire, safari décor and savannah-view terrace">
+        <div class="hol-unmissable__photo" style="background-image:url('/assets/cached/b0ced54b732c.jpg');background-size:cover;background-position:center;" role="img" aria-label="Moto grill restaurant at Beekse Bergen Safari Resort — open fire, safari décor and savannah-view terrace">
           <figure style="margin:0;padding:0;position:absolute;bottom:0.4rem;left:0.5rem;">
             <figcaption style="font-size:0.58rem;color:rgba(255,255,255,0.75);font-family:var(--hol-t-mono);">Beekse Bergen official · press-shot</figcaption>
           </figure>
@@ -12201,7 +12216,7 @@ body.is-special[data-special="field-guide"] .hol-half--two::before {
     <!-- 03 — Wanyama Pancake Restaurant -->
     <div class="hol-unmissable">
       <div class="hol-unmissable__photo-wrap">
-        <div class="hol-unmissable__photo" style="background-image:url('https://a.storyblok.com/f/151320/2560x1707/1ea35b1375/restaurant-wanyama-overdekt-terras-safaripark-beekse-bergen.jpg');background-size:cover;background-position:center;" role="img" aria-label="Wanyama Pancake Restaurant at Safari Square inside Beekse Bergen safari park — gorilla enclosure visible from the terrace">
+        <div class="hol-unmissable__photo" style="background-image:url('/assets/cached/623fa2f18e67.jpg');background-size:cover;background-position:center;" role="img" aria-label="Wanyama Pancake Restaurant at Safari Square inside Beekse Bergen safari park — gorilla enclosure visible from the terrace">
           <figure style="margin:0;padding:0;position:absolute;bottom:0.4rem;left:0.5rem;">
             <figcaption style="font-size:0.58rem;color:rgba(255,255,255,0.75);font-family:var(--hol-t-mono);">Beekse Bergen official · press-shot</figcaption>
           </figure>
@@ -12240,7 +12255,7 @@ body.is-special[data-special="field-guide"] .hol-half--two::before {
     <!-- 04 — Nommos (--reverse) -->
     <div class="hol-unmissable hol-unmissable--reverse">
       <div class="hol-unmissable__photo-wrap">
-        <div class="hol-unmissable__photo" style="background-image:url('https://cdn.libemaweb.com/f/151320/2560x1707/b5737b08eb/interieur-restaurant-nommos.JPG');background-size:cover;background-position:center;" role="img" aria-label="Nommos fine dining restaurant at Beekse Bergen Safari Hotel — deep blue interior with open kitchen and glass wall overlooking savannah with giraffes">
+        <div class="hol-unmissable__photo" style="background-image:url('/assets/cached/0b70090b884a.jpg');background-size:cover;background-position:center;" role="img" aria-label="Nommos fine dining restaurant at Beekse Bergen Safari Hotel — deep blue interior with open kitchen and glass wall overlooking savannah with giraffes">
           <figure style="margin:0;padding:0;position:absolute;bottom:0.4rem;left:0.5rem;">
             <figcaption style="font-size:0.58rem;color:rgba(255,255,255,0.75);font-family:var(--hol-t-mono);">Beekse Bergen official press · press-shot</figcaption>
           </figure>
@@ -12271,14 +12286,14 @@ body.is-special[data-special="field-guide"] .hol-half--two::before {
     </div>
     <figure class="hol-polaroid" style="margin: 0.5rem auto 1.5rem; display:block; width:fit-content; transform: rotate(-1.5deg);">
       <div class="hol-polaroid__tape"></div>
-      <div class="hol-polaroid__photo" style="background-image:url('https://cdn.libemaweb.com/f/151320/2953x1969/aa1ac87714/diner-pasta-tomaat-restaurant-labadi-lake-resort-beekse-bergen.jpg');" role="img" aria-label="Pasta dish at Labadi, Beekse Bergen Lake Resort. Photo: Beekse Bergen press."></div>
+      <div class="hol-polaroid__photo" style="background-image:url('/assets/cached/db72b3fa09ef.jpg');" role="img" aria-label="Pasta dish at Labadi, Beekse Bergen Lake Resort. Photo: Beekse Bergen press."></div>
       <figcaption class="hol-polaroid__caption">labadi · lake resort.<br>Credit: Beekse Bergen press.</figcaption>
     </figure>
 
     <!-- 05 — Hogon Bar & Lounge -->
     <div class="hol-unmissable">
       <div class="hol-unmissable__photo-wrap">
-        <div class="hol-unmissable__photo" style="background-image:url('https://cdn.libemaweb.com/f/151320/2560x1708/1e3e56e051/gezin-lunch-hogon-bar-lounge-safari-hotel-beekse-bergen.jpg');background-size:cover;background-position:center;" role="img" aria-label="Hogon Bar and Lounge terrace at Beekse Bergen Safari Hotel — comfortable seating with savannah panorama">
+        <div class="hol-unmissable__photo" style="background-image:url('/assets/cached/6418b291ed78.jpg');background-size:cover;background-position:center;" role="img" aria-label="Hogon Bar and Lounge terrace at Beekse Bergen Safari Hotel — comfortable seating with savannah panorama">
           <figure style="margin:0;padding:0;position:absolute;bottom:0.4rem;left:0.5rem;">
             <figcaption style="font-size:0.58rem;color:rgba(255,255,255,0.75);font-family:var(--hol-t-mono);">Beekse Bergen official · press-shot</figcaption>
           </figure>
@@ -12329,7 +12344,7 @@ body.is-special[data-special="field-guide"] .hol-half--two::before {
     <!-- 06 — Mugunda (--reverse) -->
     <div class="hol-unmissable hol-unmissable--reverse">
       <div class="hol-unmissable__photo-wrap">
-        <div class="hol-unmissable__photo" style="background-image:url('https://a.storyblok.com/f/151320/2560x1444/b446e23bb1/afrikadorp-outdoor-buitenaanzicht-restaurant-mugunda-safaripark-beekse-bergen.jpg');background-size:cover;background-position:center;" role="img" aria-label="Mugunda restaurant covered terrace in Africa Village at Beekse Bergen safari park, elephant and rhino enclosure in view">
+        <div class="hol-unmissable__photo" style="background-image:url('/assets/cached/c83044fdbba8.jpg');background-size:cover;background-position:center;" role="img" aria-label="Mugunda restaurant covered terrace in Africa Village at Beekse Bergen safari park, elephant and rhino enclosure in view">
           <figure style="margin:0;padding:0;position:absolute;bottom:0.4rem;left:0.5rem;">
             <figcaption style="font-size:0.58rem;color:rgba(255,255,255,0.75);font-family:var(--hol-t-mono);">Beekse Bergen official · press-shot</figcaption>
           </figure>

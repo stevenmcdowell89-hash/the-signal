@@ -667,6 +667,21 @@ p:last-child { margin-bottom: 0; }
   .back-to-top { bottom: 16px; right: 16px; width: 40px; height: 40px; }
 }
 </style>
+<!-- the-signal:pwa -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#E94560">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png">
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('/sw.js').catch(function (err) {
+        console.warn('SW registration failed:', err);
+      });
+    });
+  }
+</script>
+<!-- /the-signal:pwa -->
 </head>
 <body>
 <div class="progress-bar" id="progressBar"></div>
@@ -702,7 +717,7 @@ p:last-child { margin-bottom: 0; }
         <p>Hormuz closes, oil spikes past $113, and the 1970s come calling.</p>
         <div class="read-time">8 min read</div>
       </div>
-      <div class="nav-card-thumb" style="background-image:url('https://d3i6fh83elv35t.cloudfront.net/static/2026/03/2026-03-18T123331Z_1241937115_RC2M5KAWR5QS_RTRMADP_3_IRAN-CRISIS-LPG-INDIA-1024x683.jpg')"></div>
+      <div class="nav-card-thumb" style="background-image:url('/assets/cached/61aac2156d95.jpg')"></div>
     </a>
     <a href="#world" class="nav-card lead world" style="text-decoration:none">
       <div class="nav-card-content">
@@ -841,7 +856,7 @@ p:last-child { margin-bottom: 0; }
   <span class="section-label" style="color: var(--rose)">The World This Week</span>
   <h2>The Iran War Reaches Its Energy Tipping Point</h2>
 
-  <img class="hero-img" src="https://d3i6fh83elv35t.cloudfront.net/static/2026/03/2026-03-18T123331Z_1241937115_RC2M5KAWR5QS_RTRMADP_3_IRAN-CRISIS-LPG-INDIA-1024x683.jpg" alt="Oil tanker in the Strait of Hormuz during the Iran crisis">
+  <img class="hero-img" src="/assets/cached/61aac2156d95.jpg" alt="Oil tanker in the Strait of Hormuz during the Iran crisis">
   <div class="caption">An oil tanker navigates restricted waters near the Strait of Hormuz. Credit: Reuters via PBS</div>
 
   <div class="stat-bar">
@@ -928,7 +943,7 @@ p:last-child { margin-bottom: 0; }
 
   <h2>Crimson Desert Sells 3 Million — After Nearly Dying on Launch Day</h2>
 
-  <img class="hero-img" src="https://cdn.mos.cms.futurecdn.net/TuM6ixxcREGKe5V5uuVZiB.jpg" alt="Crimson Desert gameplay screenshot showing open-world combat">
+  <img class="hero-img" src="/assets/cached/7e56a242c2bb.jpg" alt="Crimson Desert gameplay screenshot showing open-world combat">
   <div class="caption">Crimson Desert — Pearl Abyss's open-world action RPG. Credit: Windows Central</div>
 
   <p>Pearl Abyss's long-gestating open-world action game launched on March 19 to 2 million sales in 24 hours, 250,000 concurrent Steam players — and a devastating 51% positive review score. <a href="https://www.ign.com/articles/crimson-desert-review">IGN called it "extremely ambitious" and "both incredibly cool and gobsmackingly infuriating in almost equal measure."</a> Clunky controls, unbalanced bosses, and poor visual sharpness were the recurring complaints.</p>
@@ -978,7 +993,7 @@ p:last-child { margin-bottom: 0; }
   <!-- LEGO section -->
   <h3>LEGO × Nike Air Max 95 — Dropping March 28</h3>
 
-  <img class="inline-img" src="https://sneakernews.com/wp-content/uploads/2026/03/nike-air-max-95-neon-lego-set-release-date-5.jpg" alt="LEGO Nike Air Max 95 brick-built set with display stand" style="width: 60%; margin: 20px auto;">
+  <img class="inline-img" src="/assets/cached/c901aad4a6ff.jpg" alt="LEGO Nike Air Max 95 brick-built set with display stand" style="width: 60%; margin: 20px auto;">
   <div class="caption" style="text-align: center;">The LEGO Nike Air Max 95 set — 1,213 pieces. Credit: SneakerNews</div>
 
   <p><a href="https://www.lego.com/en-us/aboutus/news/2026/march/nike-air-max-95-x-lego-collection">LEGO and Nike announced Set #43025</a>: a 1,213-piece brick-form recreation of the Air Max 95, complete with a display stand, bubble logo sculpture, a customisable minifigure wearing its own tiny Air Max 95s, and a hidden drawer in the base. At $99.99, it's priced as a serious display build. The minifigure detail — it wears the same shoes as the set it sits in — is a genuinely clever bit of design. Releasing globally March 28, timed to Air Max Day (March 26).</p>
@@ -1220,7 +1235,7 @@ p:last-child { margin-bottom: 0; }
   <h3>Books</h3>
   <h3 class="feature-title">March Brings Grimdark Home — Three Books for the Deep Reader</h3>
 
-  <img class="inline-img" src="https://www.risingshadow.net/images/book-84520/daughter-of-crows-mark-lawrence.webp" alt="Daughter of Crows book cover by Mark Lawrence" style="width: 220px; margin: 20px 0;">
+  <img class="inline-img" src="/assets/cached/fb499a288f3a.svg" alt="Daughter of Crows book cover by Mark Lawrence" style="width: 220px; margin: 20px 0;">
   <div class="caption">Daughter of Crows — Mark Lawrence. Credit: Rising Shadow</div>
 
   <p>March 2026 is a strong month for fantasy. Three titles sit squarely in the wheelhouse, all releasing within days of each other and all carrying genuine weight. If you read one book this month, make it the Lawrence. If you read two, add the Morgan. If you're feeling ambitious, Swan's industrial horror will reward you.</p>
@@ -1289,7 +1304,7 @@ p:last-child { margin-bottom: 0; }
   <span class="section-label" style="color: var(--session-accent)">The Session</span>
   <h2>All Roads Lead to the Kettlebell Snatch Test</h2>
 
-  <img class="inline-img" src="https://www.strongfirst.com/wordpress/wp-content/uploads/2026/02/snatch-lockout-featured.jpg" alt="Kettlebell snatch lockout position" style="width: 55%; margin: 20px auto; display: block;">
+  <img class="inline-img" src="/assets/cached/ca1345602c9c.jpg" alt="Kettlebell snatch lockout position" style="width: 55%; margin: 20px auto; display: block;">
   <div class="caption" style="text-align: center;">The lockout position — the moment that matters. Credit: StrongFirst</div>
 
   <p><a href="https://www.strongfirst.com/all-roads-lead-to-the-kettlebell-snatch-test/">Kenneth Bolyard's latest for StrongFirst</a> uses the SFG I certification snatch test (100 snatches in 5 minutes, or 50 in 3 minutes for seniors) as a programming framework that's useful even if you never plan to certify. He maps four variables to assess: technical proficiency, conditioning (build an anti-glycolytic base before peaking), grip strength endurance, and switching technique.</p>
@@ -1331,7 +1346,7 @@ p:last-child { margin-bottom: 0; }
   <h2>The Day the Factory Locked Its Doors</h2>
   <p style="font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--hist-accent); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px;">March 25, 1911 — Triangle Shirtwaist Factory Fire, New York City</p>
 
-  <img class="hero-img" src="https://upload.wikimedia.org/wikipedia/commons/8/87/Image_of_Triangle_Shirtwaist_Factory_fire_on_March_25_-_1911.jpg" alt="Historic photograph of the Triangle Shirtwaist Factory fire, 1911" style="aspect-ratio: 16/9;">
+  <img class="hero-img" src="/assets/cached/cebd31866b9e.jpg" alt="Historic photograph of the Triangle Shirtwaist Factory fire, 1911" style="aspect-ratio: 16/9;">
   <div class="caption">The Triangle Shirtwaist Factory fire, March 25, 1911. Credit: Wikipedia / Public Domain</div>
 
   <p>It was a Saturday afternoon, nearly closing time. Around 500 workers — mostly young immigrant women, Italian and Jewish, many of them teenagers — were finishing their shifts on the 8th, 9th, and 10th floors of the Asch Building in Greenwich Village. Someone, probably a cutter sneaking a cigarette, dropped a lit match into a scrap bin packed with two months' worth of fabric offcuts. Within minutes, the building was an inferno.</p>

@@ -1849,6 +1849,21 @@ p:last-child { margin-bottom: 0; }
 }
 
 </style>
+<!-- the-signal:pwa -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#E94560">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png">
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('/sw.js').catch(function (err) {
+        console.warn('SW registration failed:', err);
+      });
+    });
+  }
+</script>
+<!-- /the-signal:pwa -->
 </head>
 <body>
 
@@ -2073,7 +2088,7 @@ p:last-child { margin-bottom: 0; }
       </div>
     </div>
     <div>
-      <img class="reveal" src="https://www.co-optimus.com/images/upload/image/TMNT-Splintered-Fate-local-co-op-press-screenshot.jpg" alt="TMNT: Splintered Fate co-op screenshot" style="border-radius:6px;width:100%;margin-bottom:16px;">
+      <img class="reveal" src="/assets/cached/975d0347ef07.jpg" alt="TMNT: Splintered Fate co-op screenshot" style="border-radius:6px;width:100%;margin-bottom:16px;">
       <div class="sidebar" style="margin-top:0;">
         <div class="sidebar-title">Stats at a Glance</div>
         <ul>
@@ -2173,7 +2188,7 @@ p:last-child { margin-bottom: 0; }
       </div>
     </div>
     <div>
-      <img class="reveal" src="https://cdn.arstechnica.net/wp-content/uploads/2025/04/20250415204242_1-Large.jpeg" alt="Sunderfolk tactical RPG screenshot" style="border-radius:6px;width:100%;margin-bottom:16px;">
+      <img class="reveal" src="/assets/cached/b3466fba8aaa.jpg" alt="Sunderfolk tactical RPG screenshot" style="border-radius:6px;width:100%;margin-bottom:16px;">
       <div class="sidebar" style="margin-top:0;">
         <div class="sidebar-title">Requires</div>
         <ul>
@@ -2212,7 +2227,7 @@ p:last-child { margin-bottom: 0; }
       </div>
     </div>
     <div>
-      <img class="reveal" src="https://gamingbolt.com/wp-content/uploads/2025/05/Hyrule-Warriors-Age-of-Imprisonment-scaled.jpg" alt="Hyrule Warriors Age of Imprisonment" style="border-radius:6px;width:100%;margin-bottom:16px;">
+      <img class="reveal" src="/assets/cached/b5742be8a21f.jpg" alt="Hyrule Warriors Age of Imprisonment" style="border-radius:6px;width:100%;margin-bottom:16px;">
       <div class="sidebar" style="margin-top:0;">
         <div class="sidebar-title">Stats at a Glance</div>
         <ul>
