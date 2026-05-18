@@ -12153,6 +12153,231 @@ body.is-special[data-special="field-guide"] .hol-countdown__num {
   }
 }
 
+/* ============================================================
+   TIER 44 — HOLIDAY MID-ISSUE SPRINKLES (v8.13)
+
+   Adds scattered visual touches that punctuate the middle and back
+   of the issue, so visual moments don't all cluster at the top:
+
+     .hol-dropcap          — Editorial drop-cap initial for chapter prose
+     .hol-fleuron          — Ornamental SVG divider between sections
+     .hol-fleuron--brass   — Brass-tone variant for ink chapters
+     .hol-margin-mark      — Brass marginal asterisk anchor for key phrases
+     .hol-ribbon-tab       — Hanging ribbon tab badge (decorative anchor)
+
+   ACTIVATION:
+     body.is-special[data-special="field-guide"]
+     body.is-special[data-special="countdown"]
+
+   These elements are typographic + SVG — zero image dependencies,
+   safe to scatter freely across the body of long chapters.
+   ============================================================ */
+
+/* ─────────────────────────────────────────────────────────────
+   DROP CAP — for the opening paragraph of a chapter or section
+   ───────────────────────────────────────────────────────────── */
+body.is-special[data-special="field-guide"] .hol-dropcap::first-letter,
+body.is-special[data-special="countdown"] .hol-dropcap::first-letter {
+  float: left;
+  font-family: var(--hol-t-display, "Cormorant Garamond", serif);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 4.2rem;
+  line-height: 0.85;
+  padding: 0.3rem 0.55rem 0 0;
+  margin: 0.15rem 0.1rem -0.1rem 0;
+  color: var(--hol-brass);
+  text-shadow: 2px 2px 0 color-mix(in srgb, var(--hol-ink-deep) 35%, transparent);
+}
+
+/* Half II (savannah) drop-cap variant — terracotta/burnt */
+.hol-half--two .hol-dropcap::first-letter,
+[data-venue="beekse-bergen"] .hol-dropcap::first-letter {
+  color: var(--hol-burnt);
+  text-shadow: 2px 2px 0 color-mix(in srgb, var(--hol-savannah-ink) 30%, transparent);
+}
+
+/* Paper ground (light) drop-cap variant — deep ruby */
+.sp-ground-paper .hol-dropcap::first-letter,
+.hol-opening .hol-dropcap::first-letter {
+  color: var(--hol-ruby);
+  text-shadow: 2px 2px 0 color-mix(in srgb, var(--hol-rose-deep) 25%, transparent);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   FLEURON — ornamental section divider (SVG inline-block)
+   ───────────────────────────────────────────────────────────── */
+body.is-special[data-special="field-guide"] .hol-fleuron,
+body.is-special[data-special="countdown"] .hol-fleuron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin: 2.5rem auto;
+  max-width: 480px;
+  color: var(--hol-brass);
+  opacity: 0.85;
+}
+
+body.is-special[data-special="field-guide"] .hol-fleuron::before,
+body.is-special[data-special="field-guide"] .hol-fleuron::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.4;
+}
+
+body.is-special[data-special="field-guide"] .hol-fleuron__glyph {
+  flex-shrink: 0;
+  font-family: var(--hol-t-display, "Cormorant Garamond", serif);
+  font-size: 1.3rem;
+  letter-spacing: 0.4em;
+  font-style: italic;
+}
+
+/* SVG fleuron variant — a stylized vine / curl ornament */
+body.is-special[data-special="field-guide"] .hol-fleuron--svg::before,
+body.is-special[data-special="field-guide"] .hol-fleuron--svg::after {
+  content: none;
+}
+
+body.is-special[data-special="field-guide"] .hol-fleuron--svg {
+  display: block;
+  text-align: center;
+  margin: 2rem auto;
+}
+
+body.is-special[data-special="field-guide"] .hol-fleuron--svg svg {
+  width: 180px;
+  height: auto;
+  color: currentColor;
+}
+
+/* Half II savannah palette */
+.hol-half--two .hol-fleuron,
+[data-venue="beekse-bergen"] .hol-fleuron {
+  color: var(--hol-burnt);
+}
+
+/* Paper ground (light) — deep ruby */
+.hol-opening .hol-fleuron {
+  color: var(--hol-ruby);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   MARGIN MARK — small brass asterisk in the gutter for anchor moments
+   ───────────────────────────────────────────────────────────── */
+body.is-special[data-special="field-guide"] .hol-margin-mark {
+  display: inline-block;
+  vertical-align: super;
+  font-size: 0.75em;
+  color: var(--hol-brass);
+  margin: 0 0.15em;
+  text-shadow: 0 0 8px color-mix(in srgb, var(--hol-brass-light) 50%, transparent);
+}
+
+.hol-half--two .hol-margin-mark,
+[data-venue="beekse-bergen"] .hol-margin-mark {
+  color: var(--hol-mustard);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   RIBBON TAB — decorative anchor badge hanging from a section
+   ───────────────────────────────────────────────────────────── */
+body.is-special[data-special="field-guide"] .hol-ribbon-tab {
+  display: inline-block;
+  background: linear-gradient(180deg,
+    var(--hol-ruby) 0%,
+    var(--hol-rose-deep) 100%);
+  color: var(--hol-cream);
+  padding: 0.35rem 1rem 0.3rem;
+  font-family: var(--hol-t-chunk, "Bowlby One", sans-serif);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  position: relative;
+  clip-path: polygon(0 0, 100% 0, 95% 50%, 100% 100%, 0 100%, 5% 50%);
+  margin: 0 0.5rem;
+}
+
+.hol-half--two .hol-ribbon-tab,
+[data-venue="beekse-bergen"] .hol-ribbon-tab {
+  background: linear-gradient(180deg,
+    var(--hol-burnt) 0%,
+    var(--hol-acacia) 100%);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   ADDITIONAL PULL-QUOTE — bigger / more dramatic variant for use
+   sparingly mid-pick to break up a wall of prose
+   ───────────────────────────────────────────────────────────── */
+body.is-special[data-special="field-guide"] .hol-pull--big {
+  font-family: var(--hol-t-display, "Cormorant Garamond", serif);
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(1.4rem, 2.8vw, 2rem);
+  line-height: 1.25;
+  text-align: center;
+  max-width: 640px;
+  margin: 2rem auto;
+  padding: 1.5rem 2rem;
+  border-top: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+  color: var(--hol-ink);
+  position: relative;
+}
+
+body.is-special[data-special="field-guide"] .hol-pull--big::before,
+body.is-special[data-special="field-guide"] .hol-pull--big::after {
+  position: absolute;
+  font-family: var(--hol-t-display, "Cormorant Garamond", serif);
+  font-style: italic;
+  font-size: 3rem;
+  line-height: 1;
+  color: var(--hol-brass);
+  opacity: 0.75;
+}
+
+body.is-special[data-special="field-guide"] .hol-pull--big::before {
+  content: "\201C";
+  top: -0.2rem;
+  left: 0.5rem;
+}
+
+body.is-special[data-special="field-guide"] .hol-pull--big::after {
+  content: "\201D";
+  bottom: -0.8rem;
+  right: 0.5rem;
+}
+
+/* Dark-ground (ink) variant of big pull */
+.hol-half--one .hol-pull--big,
+[data-venue="efteling"][data-sp-chapter*="unmissables"] .hol-pull--big {
+  color: var(--hol-cream);
+}
+
+/* Savannah variant */
+.hol-half--two .hol-pull--big {
+  color: var(--hol-savannah-ink);
+}
+
+.hol-half--two .hol-pull--big::before,
+.hol-half--two .hol-pull--big::after {
+  color: var(--hol-burnt);
+}
+
+body.is-special[data-special="field-guide"] .hol-pull--big__cite {
+  display: block;
+  margin-top: 0.75rem;
+  font-family: var(--hol-t-mono, "JetBrains Mono", monospace);
+  font-style: normal;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
 </style>
 </head>
 <body class="is-special" data-special="field-guide">
@@ -12301,7 +12526,7 @@ body.is-special[data-special="field-guide"] .hol-countdown__num {
 
     <div class="hol-opening__prose">
 
-      <p>Pannenkoek predates the Dutch Republic. The oldest known Dutch cookbook, <em>Een notabel boecxken van cokeryen</em> (1514), already carried pancake recipes — and food historian Ken Albala has identified 17th-century Dutch cooks as among the earliest to produce what would now be called a modern pancake. The format that survived into the 21st century is its own category: up to a foot in diameter, thicker than a crêpe but thinner than the American stacked version, and traditionally served as a dinner dish rather than a breakfast one. That last point matters at Efteling, where Polles Keuken serves pannenkoek through the late afternoon and into the evening — one of the very few park restaurants that stays open after the official close. The Kookstoof (a giant stove at the restaurant's centre) runs a kinetic light-and-sound show every fifteen minutes, which is why reviewers keep reaching for the word "magical" even when they're trying not to. <a href="https://thirdeyetraveller.com/efteling-polles-keuken-restaurant/">Sophie Pearce at Third Eye Traveller</a> put it plainly: <q>It was easily my favourite restaurant at Efteling for the magical atmosphere and scrumptious food. Theme park food can be hit and miss but Polles Keuken was surprisingly good.</q> The same tradition shows up at Beekse Bergen's Wanyama restaurant, inside the Safaripark itself — the only sit-down table-service option inside the park, with a terrace that overlooks gorilla and lion enclosures. Same dish, entirely different context.</p>
+      <p class="hol-dropcap">Pannenkoek predates the Dutch Republic. The oldest known Dutch cookbook, <em>Een notabel boecxken van cokeryen</em> (1514), already carried pancake recipes — and food historian Ken Albala has identified 17th-century Dutch cooks as among the earliest to produce what would now be called a modern pancake. The format that survived into the 21st century is its own category: up to a foot in diameter, thicker than a crêpe but thinner than the American stacked version, and traditionally served as a dinner dish rather than a breakfast one. That last point matters at Efteling, where Polles Keuken serves pannenkoek through the late afternoon and into the evening — one of the very few park restaurants that stays open after the official close. The Kookstoof (a giant stove at the restaurant's centre) runs a kinetic light-and-sound show every fifteen minutes, which is why reviewers keep reaching for the word "magical" even when they're trying not to. <a href="https://thirdeyetraveller.com/efteling-polles-keuken-restaurant/">Sophie Pearce at Third Eye Traveller</a> put it plainly: <q>It was easily my favourite restaurant at Efteling for the magical atmosphere and scrumptious food. Theme park food can be hit and miss but Polles Keuken was surprisingly good.</q> The same tradition shows up at Beekse Bergen's Wanyama restaurant, inside the Safaripark itself — the only sit-down table-service option inside the park, with a terrace that overlooks gorilla and lion enclosures. Same dish, entirely different context.</p>
 
       <figure class="hol-polaroid">
         <div class="hol-polaroid__tape"></div>
@@ -12334,6 +12559,10 @@ body.is-special[data-special="field-guide"] .hol-countdown__num {
 
       <p>The automatiek — the Dutch heated snack wall — is harder to explain in abstract than it is to encounter. The concept dates to the 1940s: a wall of individual locked compartments, each containing one hot snack, each opened by coin or card. The format is specifically and persistently Dutch; no equivalent survived in the same form elsewhere in Europe. FEBO, the Amsterdam chain that standardised the format nationally, made it an urban institution. Efteling runs a version of this at De Smulpaap on Anton Pieckplein: frikandel speciaal (minced meat sausage with curry ketchup, raw onion, and mayonnaise), kroket (ragout-filled fried croquette), and kaassouffle (cheese soufflé) from a hot-compartment wall, served on one of the park's most atmospheric squares. The frikandel speciaal is the Netherlands' best-selling individual fast-food item by volume. Buying one from a wall rather than a counter is, as Efteling officially frames it, the Dutch way of doing it.</p>
 
+      <!-- FLEURON DIVIDER — closes the food-culture primer, leads into Half I -->
+      <div class="hol-fleuron" aria-hidden="true">
+        <span class="hol-fleuron__glyph">❦ &nbsp; ❦ &nbsp; ❦</span>
+      </div>
     </div>
   </div>
 </section>
@@ -12498,6 +12727,12 @@ body.is-special[data-special="field-guide"] .hol-countdown__num {
     <p style="font-family:var(--hol-t-body);font-size:1rem;line-height:1.75;max-width:680px;margin:0.75rem auto 2rem;padding:0 1.5rem;">
       The outdoor terrace on Anton Pieckplein is one of the most atmospheric places to eat in the park — the medieval square architecture and gas lamps make this feel genuinely unlike a theme-park snack stop. Queue tactics: arrive before noon or after 3pm. The snack wall typically has shorter waits than the fries counter throughout the day.
     </p>
+
+    <!-- BIG PULL QUOTE — sets the bar for the rest of the chapter, mid-flow -->
+    <blockquote class="hol-pull--big">
+      "Specialty coffees that had no right to be that good at a theme park — Efteling's quick-service game lands on par with Disneyland's grab-and-go."
+      <cite class="hol-pull--big__cite">— Lauren Writtenberry, Disney Food Blog · April 2026</cite>
+    </blockquote>
 
     <!-- ═══════════════════════════════════════════
          ATMOSPHERIC POSTCARD — PANNENKOEK (between 02 and 03)
@@ -13087,6 +13322,11 @@ body.is-special[data-special="field-guide"] .hol-countdown__num {
       <figcaption class="hol-polaroid__caption">Kashba's Moroccan interior, opened April 2023 in the former Panorama building — the most visually distinctive coffee room in the park. Credit: Perry Tak / meteorry, Flickr.</figcaption>
     </figure>
 
+    <!-- FLEURON DIVIDER — between Snacks and Coffee slots -->
+    <div class="hol-fleuron" aria-hidden="true">
+      <span class="hol-fleuron__glyph">❦ &nbsp; ❦ &nbsp; ❦</span>
+    </div>
+
     <!-- ATMOSPHERIC POLAROID — Iced pistachio coffee, De Gebrande Boon (the second signature drink) -->
     <figure class="hol-polaroid hol-polaroid--flat" style="max-width:260px;margin:1.5rem auto;">
       <div class="hol-polaroid__tape"></div>
@@ -13114,6 +13354,17 @@ body.is-special[data-special="field-guide"] .hol-countdown__num {
         <li><b>The automatiek snack wall at De Smulpaap.</b> A heated-compartment vending wall selling frikandel speciaal, kroket, and kaassouffle — the Dutch equivalent of FEBO, operating inside a theme park. Efteling frames it explicitly: <a href="https://www.efteling.com/en/specials/typically-dutch">"At Efteling you can buy a snack — frikandel, cheese soufflé or croquette — from a wall: a typically Dutch thing, with many small compartments with tasty treats behind each window."</a> Items price at €2.50–€4.50. On Anton Pieckplein; the longest queues run 12:00–2:00pm. After 3pm, walk straight up. The wall itself — not the loaded fries — is the cultural experience worth a minute of attention.</li>
       </ul>
     </div>
+
+    <!-- FLEURON DIVIDER — closes the chapter before transit -->
+    <div class="hol-fleuron" aria-hidden="true">
+      <span class="hol-fleuron__glyph">✦ &nbsp; ✦ &nbsp; ✦</span>
+    </div>
+
+    <!-- T-MINUS HYPE BANNER — symmetrical anchor with the BB-meal-slots close -->
+    <aside class="hol-tminus" aria-label="Trip countdown anchor — Half I close">
+      <span class="hol-tminus__label">T <span style="opacity:0.6;">–</span> 44 DAYS</span>
+      <span class="hol-tminus__msg">half one complete · across the border to the savannah next.</span>
+    </aside>
 
   </div>
 </section>
@@ -13181,7 +13432,7 @@ body.is-special[data-special="field-guide"] .hol-countdown__num {
     </div>
 
     <!-- ANCHOR PROSE PARAGRAPHS -->
-    <p style="font-family:var(--hol-t-body);font-size:1rem;line-height:1.75;max-width:680px;margin:1.5rem auto;padding:0 1.5rem;">
+    <p class="hol-dropcap" style="font-family:var(--hol-t-body);font-size:1rem;line-height:1.75;max-width:680px;margin:1.5rem auto;padding:0 1.5rem;">
       Restaurant Amma sits inside the Safari Hotel's central Hogon House complex — a light-filled dining room whose floor-to-ceiling windows look directly out over the Wongo savannah. Breakfast is included in Safari Hotel rates, which gives it a structural weight across a five-night stay that no other venue on the estate can match: it is the meal that happens every day, and it sets the rhythm for everything that follows. The official Beekse Bergen description frames it as "countless flavours at buffet-live cooking — sample multiple flavours with unique views over the savannahs," and the layout delivers on that framing. Pastries, cold cuts, cheeses, cereals, yoghurts, hot dishes, and fresh fruit all make the spread; advance reservations for dinner service are handled online or at the Guest Service desk for those staying off the Safari Hotel who want to join.
     </p>
     <p style="font-family:var(--hol-t-body);font-size:1rem;line-height:1.75;max-width:680px;margin:0.75rem auto;padding:0 1.5rem;">
@@ -13365,6 +13616,11 @@ body.is-special[data-special="field-guide"] .hol-countdown__num {
       </div>
     </div>
 
+    <!-- FLEURON DIVIDER — mid-chapter punctuation between Wanyama and Hogon -->
+    <div class="hol-fleuron" aria-hidden="true">
+      <span class="hol-fleuron__glyph">✦ &nbsp; ✦ &nbsp; ✦</span>
+    </div>
+
     <!-- UNMISSABLE 04 — Hogon Bar & Lounge (--reverse, even) -->
     <div class="hol-unmissable hol-unmissable--reverse">
       <div class="hol-unmissable__photo-wrap">
@@ -13427,6 +13683,12 @@ body.is-special[data-special="field-guide"] .hol-countdown__num {
         <span>MUGUNDA<b>AFRIKADORP</b>★ ELEPHANT VIEW ★</span>
       </div>
     </div>
+
+    <!-- BIG PULL QUOTE — mid-chapter punctuation around the Hogon → Mugunda transition -->
+    <blockquote class="hol-pull--big">
+      "Hogon House is the heart of Safari Hotel with bar, lounge and terrace — good for lunch, excellent for cocktails in the evening with savannah views."
+      <cite class="hol-pull--big__cite">— Vakantie-met-kinderen.com · Dutch family-travel review</cite>
+    </blockquote>
 
     <!-- UNMISSABLE 05 — Mugunda (no --reverse, odd) -->
     <div class="hol-unmissable">
@@ -13739,6 +14001,11 @@ body.is-special[data-special="field-guide"] .hol-countdown__num {
         </div>
 
       </div>
+    </div>
+
+    <!-- FLEURON DIVIDER — mid-chapter punctuation between Lunch and Dinner -->
+    <div class="hol-fleuron" aria-hidden="true">
+      <span class="hol-fleuron__glyph">❦ &nbsp; ❦ &nbsp; ❦</span>
     </div>
 
     <!-- AMMA SOUP — bridging from lunch to dinner, food close-up -->
@@ -14062,7 +14329,7 @@ body.is-special[data-special="field-guide"] .hol-countdown__num {
   <div class="hol-meanwhile__inner">
     <div>
       <h2 class="hol-meanwhile__title">Meanwhile…</h2>
-      <p class="hol-meanwhile__body">The country heading to this summer is one actively renegotiating what it puts on a plate. In April 2026, the Dutch Nutrition Centre published a revised national Food Wheel that cuts the recommended weekly meat intake from roughly 500g to 300g — a 40 percent reduction — and caps red meat specifically at 100g per week. The update arrived days before Amsterdam made international headlines by becoming the first European capital to ban meat advertising on public transport and city billboards, a measure that came into force on 1 May. Neither move emerged in a vacuum: the Netherlands already records the highest flexitarian rate in continental Europe, at 15.3 percent of the adult population in 2025, up from 12.9 percent in 2020. As <a href="https://euroweeklynews.com/2026/04/11/only-300g-of-meat-per-week-the-netherlands-is-slashing-national-diet-rules-in-2026/" target="_blank" rel="noopener">EuroWeekly News reported in April</a>, the revision is less a public-health shock than the formal acknowledgement of a shift that Dutch supermarkets, canteens, and restaurant menus have been reflecting quietly for several years. It is, in other words, a country that has already changed its eating habits and is now letting its institutions catch up.</p>
+      <p class="hol-meanwhile__body hol-dropcap">The country heading to this summer is one actively renegotiating what it puts on a plate. In April 2026, the Dutch Nutrition Centre published a revised national Food Wheel that cuts the recommended weekly meat intake from roughly 500g to 300g — a 40 percent reduction — and caps red meat specifically at 100g per week. The update arrived days before Amsterdam made international headlines by becoming the first European capital to ban meat advertising on public transport and city billboards, a measure that came into force on 1 May. Neither move emerged in a vacuum: the Netherlands already records the highest flexitarian rate in continental Europe, at 15.3 percent of the adult population in 2025, up from 12.9 percent in 2020. As <a href="https://euroweeklynews.com/2026/04/11/only-300g-of-meat-per-week-the-netherlands-is-slashing-national-diet-rules-in-2026/" target="_blank" rel="noopener">EuroWeekly News reported in April</a>, the revision is less a public-health shock than the formal acknowledgement of a shift that Dutch supermarkets, canteens, and restaurant menus have been reflecting quietly for several years. It is, in other words, a country that has already changed its eating habits and is now letting its institutions catch up.</p>
       <p class="hol-meanwhile__body">Elsewhere in the Dutch food economy, appetite is running in the opposite direction — toward more, and more varied. Amsterdam added over a hundred new restaurants in the first quarter of 2026 alone, with openings dominated by diaspora cuisines: Spanish, Indonesian, Korean, West African, Japanese, and Mexican. The Netherlands' foodservice market, tracked by Mordor Intelligence, is projected to grow from USD 23.27 billion in 2025 to USD 26.61 billion in 2026 — growth that reflects genuine consumer enthusiasm rather than simply population expansion, and that <a href="https://www.iamexpat.nl/lifestyle/lifestyle-news/7-restaurants-netherlands-honoured-new-michelin-stars" target="_blank" rel="noopener">iamexpat.nl has linked to both immigrant entrepreneurship and the broadening of Dutch palates</a> across a younger urban demographic. The Michelin Guide Nederland 2025 — announced last October — registered the same turn. Seven new starred restaurants brought the national total to 119 with Michelin recognition, and inspectors flagged three trends as defining the country's dining direction in 2026: <a href="https://guide.michelin.com/nl/nl/article/michelin-guide-ceremony/de-volledige-lijst-van-de-sterren-in-de-michelin-gids-nederland-2025" target="_blank" rel="noopener">open-flame grill cookery, preserved and fermented flavours, and the return of tableside service</a>. All three land with particular resonance when set against the theme-park context of this guide. Restaurant Moto at Beekse Bergen is built around a live-fire grill as both cooking method and dining spectacle; Nommos, the Safari Hotel's fine-dining room, has anchored its tasting menus to seasonal, globally-inflected sourcing since it opened in 2023. The Michelin inspectors were, it turns out, describing a country already in active negotiation with what it eats — and two of the estates in this guide are part of that conversation.</p>
     </div>
   </div>
