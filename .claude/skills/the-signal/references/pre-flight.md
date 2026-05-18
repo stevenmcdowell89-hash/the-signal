@@ -375,6 +375,78 @@ for src in re.findall(r'<img[^>]+src=\"([^\"]+)\"', html):
 
 ---
 
+### RT-17: Holiday-issue visual regressions (v8.14)
+
+Three failure modes that emerged during the May 2026 multi-venue Field Guide rebuild. All apply equally to Countdown — both formats render under the Holiday Identity layer.
+
+**The traps.**
+
+1. **Stock-photo dominance.** Brand press kits (especially hotel/resort CDNs) over-index on "smiling family at table", "barman pouring for a delighted guest", "child eating cake", "couple toasting on a terrace". These shots are designed to sell an accommodation product, not to document the food, the room, or the venue's character. When the researcher uncritically harvests every press-kit URL, the issue reads as a sponsored deck.
+
+2. **Sub-50% domain compliance + same-context duplication.** A bundle can satisfy RT-5 (no single domain >50%) and still ship with the SAME image used as the hero of an Unmissable AND as the header of the matching meal-slot. The validator allows this; the reader notices.
+
+3. **Front-loaded visual moments.** Decorative anchors — Trip-in-Numbers, T-MINUS banners, hype marquees, big pull-quotes, drop-caps — all sprinkled into the first chapter and forgotten thereafter. The opening reads strong; the back of the issue reads as a wall of paragraphs.
+
+**Confirmed regressions in the 17 May 2026 rebuild:**
+- BB Unmissables initially shipped with `gezin-bowlen-pamoja-lounge` (family-bowling press shot) as the Pamoja hero, `barman-cocktails-vrouw-hogon-house` (barman + customer) as the Hogon hero, and `saladebar-diner-amma` (diners at the salad bar) as the Amma atmospheric. Reader rejected all three as stock-coded.
+- Same rebuild then shipped Trip-in-Numbers + T-MINUS banner + pulsing countdown all in the first third; the middle and back of the issue had no decorative anchors. Reader caught the clustering on inspection.
+- Brasserie 7 (Efteling Grand Hotel) was used as cover-collage polaroid AND breakfast-slot header AND dinner-slot header — three uses of two near-identical images, each visually prominent.
+
+**The rules.**
+
+1. **Subject hierarchy for image candidates (researcher + writer).** Preferred subject order, in priority:
+   - Food close-up (dish on plate, drink in cup, ingredient detail) — strongest.
+   - Architecture / theming / interior / exterior — second.
+   - Chef-at-work / kitchen action (people-as-craft) — third.
+   - Patrons-as-subject (diners, family-at-table) — last resort, often skip.
+   When a press kit offers (a) a dish close-up and (b) "happy family eating that dish", select (a). Surface (b) only if it's the only image available for that venue AND the framing makes the people incidental.
+
+2. **Per-pick image floor: 2 minimum.** Every Unmissable / Top Attraction / Accommodation pick gets a hero AND at least one inline secondary image (food close-up, detail shot, architecture, theming). A pick that ships with one hero + four paragraphs of prose is under-illustrated.
+
+3. **Per-slot header floor: 1 minimum.** Every meal-slot section in a meal-slots chapter (Field Guide) or equivalent ranked-list section in a Countdown gets a wide header band image under the slot title and intro paragraph. Five slots = five headers.
+
+4. **Same-image-different-context cap: max 2 issue-wide, max 1 per chapter.** A URL may appear at most twice across the entire issue, and at most once per chapter (the `visual-smoke-test.py` D6 gate enforces this; the `--max-uses-per-url 2` flag is the upper limit for deliberate cross-context use like a cover collage + later full-size hero). Same-context duplicates (pick hero + same-venue slot header in the same chapter) are a regression — swap to the venue's secondary image or to a different venue's bundle entry.
+
+5. **Visual scatter across the issue.** Every chapter carries at least one decorative anchor (drop-cap, fleuron divider, pull-quote, ribbon tab, T-MINUS banner, Trip-in-Numbers, hype marquee). For multi-venue issues, decorative anchors at each half's close are mandatory — the half boundaries are the strongest hype-punch positions in the layout.
+
+**Self-audit grep:**
+```bash
+# 1. Stock-photo dominance check (subject heuristic — manual review of captions
+#    in research-bundle.json is the surest test, but a regex flags obvious cases)
+python3 -c "
+import json
+bundle = json.load(open('/tmp/signal-build/research-bundle.json'))
+stock_signals = ['gezin', 'family', 'kinderen-aan-tafel', 'vrouw-met', 'barman-met',
+                 'koppel', 'couple', 'smiling', 'child-eating']
+candidates = bundle.get('image_candidates', [])
+flags = [c for c in candidates if any(s in (c.get('url_or_keyword','') + c.get('subject','')).lower() for s in stock_signals)]
+print(f'{len(flags)} candidates match staged-people signals (of {len(candidates)} total)')
+for c in flags[:5]:
+    print(f'  - {c.get(\"url_or_keyword\",\"\")[:80]}')
+"
+
+# 2. Same-image-different-context check (per-chapter, post-stitch)
+python3 -c "
+import re
+from collections import Counter
+html = open('/tmp/signal-build/signal_*.html').read()
+imgs = re.findall(r'https?://[^\s\"<>]+\.(?:jpg|jpeg|png|JPG)', html)
+dupes = {u: n for u, n in Counter(imgs).items() if n > 2}
+print(f'{len(dupes)} URLs appear >2x:')
+for u, n in dupes.items():
+    print(f'  {n}x {u.split(\"/\")[-1][:60]}')
+"
+
+# 3. Visual-scatter check (count decorative anchors per chapter file)
+for f in /tmp/signal-build/chapters/*.html; do
+  echo -n "$(basename $f): "
+  grep -cE 'hol-dropcap|hol-fleuron|hol-pull|hol-tminus|hol-trip-numbers|hol-ribbon-tab|hol-hype-marquee' "$f"
+done
+# expect: every chapter ≥1 (except transit/footer where typographic-only bands suffice)
+```
+
+---
+
 ## 3. Canonical Markup Snippets
 
 Copy-paste these directly. Do not invent alternates.

@@ -427,6 +427,65 @@ Apply on:
 
 ---
 
+## holiday-identity-extensions
+
+Applies to both Holiday Identity formats — **Countdown** and **Field Guide** — and to any future format that adopts the `.hol-*` vocabulary. Lessons that emerged in 2026 from the multi-venue food Field Guide and that should carry forward to the next Countdown. **The food specifics in some examples are illustrative; the rules themselves are subject-agnostic.**
+
+### Tier register (v8.14)
+
+The Holiday Identity layer now spans CSS tiers 36 → 44. All load alphabetically via `scripts/stitch-issue.sh` after the 00-34 base. Tiers 40+ are the v8.14 additions:
+
+| Tier | File | Provides |
+|---|---|---|
+| 36 | `36-holiday-identity.css` | Base palette, `.hol-cover`, `.hol-half`, `.hol-half--one` (ink fairytale), `.hol-half--two` (sand savannah base), `.hol-anchor`, `.hol-unmissable`, `.hol-polaroid`, `.hol-postcard`, `.hol-stamp`, `.hol-marquee`, `.hol-transit`, `.hol-meanwhile`, `.hol-subscribe`, `.hol-footer-row`, `.hol-masthead`, `.hol-kicker-strip`, `.hol-countdown` |
+| 37 | `37-holiday-portrait.css` | Responsive ≤980px breakpoints for holiday components |
+| 38 | `38-holiday-motion.css` | Cover cloud drift, countdown tick, decorative motion |
+| 39 | `39-holiday-motion-extras.css` | Marquee scroll, ambient secondary motion |
+| 40 | `40-holiday-meal-slot.css` | `.hol-meal-slot` ranked-entry card system: `__title`, `__list`, `__item`/`__entry`, `__entry-header`, `__rank` (chunky number chip), `__name` (venue title), `__tier` (HOT/WARM/NOTE pill), `__facts` (micro `<dl>`). Half I = cream-on-ink; Half II = bone-on-sand. |
+| 41 | `41-holiday-decorations-extras.css` | `.hol-pull` pull-quotes, `.hol-coaster` circular callouts, `.hol-ticket` booking-stub, `.hol-banner-strip` chunky section banners, additional stamp colour variants |
+| 42 | `42-holiday-savannah-half.css` | Half II savannah background scene: warm sand→bone→terracotta gradient base, inline-SVG acacia silhouette horizon, drifting dust-mote particle layer, paper-grain overlay, terracotta accents on anchor + meal-slot cards, decorative typographic ribbon under the half opener. Replaces the bare star-field that Tier 36 inherits. |
+| 43 | `43-holiday-hype.css` | `.hol-trip-numbers` (by-the-numbers stat band on ink), `.hol-tminus` (T-MINUS countdown anchor banner — palette-switches for each half), `.hol-hype-marquee` (brass-tinted scrolling banner variant), `.hol-sparkle` (decorative SVG anchor), countdown numeral pulse |
+| 44 | `44-holiday-sprinkles.css` | `.hol-dropcap` (editorial drop-cap, palette-aware), `.hol-fleuron` (ornamental section divider — Cormorant italic glyph between rule lines, also `--svg` variant), `.hol-margin-mark` (brass marginal asterisk), `.hol-ribbon-tab` (decorative anchor badge), `.hol-pull--big` (dramatic mid-flow pull-quote with stylized quotation marks) |
+
+When a new component lands, document the vocabulary here and add a tier file rather than monkey-patching `36-holiday-identity.css`. The 36 base must stay readable; tier-on-tier composition is the contract.
+
+### Imagery rules (subject-agnostic)
+
+These rules tighten what was previously a soft target. They apply to every Holiday Identity issue regardless of subject:
+
+1. **Per-pick image floor — 2 minimum.** Every Unmissable / Top Attraction / Accommodation / Five-Moments entry gets a hero image AND at least one inline secondary image (food close-up, detail shot, architecture, theming). One hero + a wall of prose reads as press release. Two images per pick = magazine register.
+2. **Meal-slot / ranked-list headers — 1 minimum per slot.** Every `.hol-meal-slot` (Field Guide) or equivalent ranked-list section in a Countdown gets a wide header band image (720px @ ~200px tall) under the slot title and intro paragraph, before the `<ol>` list. Five slots = five headers. Without this the slot reads as a wall of `<li>` items.
+3. **Staged-people press shots are demoted, not banned.** Press kits routinely lead with "smiling family at table", "barman pouring for a delighted guest", "child eating cake" — they are designed to sell an accommodation product, not to document the food or the room. These shots are **never the hero of an Unmissable**. They may appear as atmospheric ephemera (polaroid / postcard) if the bundle has nothing better and the framing makes the people incidental, but the default preference is:
+   - **Food close-ups** (dish on plate, drink in cup, ingredients in hand) — strongest.
+   - **Architecture / theming** (interior, exterior, distinctive built environment) — second-strongest.
+   - **Chef-at-work / kitchen-in-action** (people-as-craft, not people-as-customer) — third.
+   - **Patrons-as-subject** — last resort, often skip.
+4. **Source-domain diversity — every issue.** The same RT-5 cap (no single domain >50% of attributed images) applies. The Field Guide that triggered this rule had 8 distinct domains: a brand CDN, the venue's own `/-/media/`, a press-release distributor, Wikimedia, Flickr, a hospitality trade journal, a family-travel blog, and a chef/food blog. That breadth is the target.
+5. **Per-venue image density on multi-venue trips.** Each headline venue carries enough images to fill its half. The Field Guide rebuild shipped with venue parity at 18/15 (Efteling/Beekse). Skews wider than 60/40 mean one venue is under-photographed and the issue feels unbalanced.
+
+### Editorial structure rules
+
+1. **No two consecutive same-pattern blocks.** Inside an Unmissables chapter the pattern is: `.hol-unmissable → ephemera → .hol-unmissable → different ephemera → .hol-unmissable …`. Never two `.hol-unmissable` blocks in direct succession. The ephemera vocabulary (`.hol-polaroid`, `.hol-postcard`, `.hol-stamp`, `.hol-marquee`, `.hol-chalkboard`, `.hol-pull`, `.hol-pull--big`, `.hol-fleuron`) provides the rhythm. Same rule for meal-slot chapters: no two `.hol-meal-slot` cards without a variety break between them.
+2. **Marquee picks belong in their slot rankings AND in Unmissables.** A pick that is the marquee lunch (e.g. Polles Keuken) must appear both (a) as a full Unmissable entry earlier in the issue AND (b) at the top of the relevant meal-slot ranking with a one-paragraph slot-fit summary that points back to the Unmissable. Strict anti-overlap (Unmissables-only, no slot mention) leaves slot rankings missing their own best venue — the editorial gap shows.
+3. **Multi-venue trips default to comprehensive both-half treatment when both venues are substantial.** Where both venues have substantive food/attraction landscapes and substantial overnight stays, the default is FULL Unmissables + full meal-slot / equivalent treatment for each. The earlier "primary/secondary asymmetry" rule (see formats.md § field-guide rule 7) applies only when one venue is a brief stopover relative to the other. The reader call is content guidance; absent that, comprehensive both-half is the default.
+4. **Visual moments scatter front-to-back — they do not cluster at the start.** Anticipation anchors, decorative dividers, drop-caps, pull-quotes, T-MINUS banners must be distributed across the whole issue. A common failure mode: ship a Trip-in-Numbers band, hype animation, and big pull-quote all in the first chapter, then leave the back half visually flat. Counter-mode: at least one decorative anchor in every chapter; mid-chapter pull-quotes inside long picks (5+ paragraphs); fleuron dividers between major sections; symmetrical T-MINUS banners at each half's close, not just one.
+5. **Drop-cap placement.** Reserve `.hol-dropcap` for chapter intro paragraphs in **prose chapters** (Opening, Half II anchor body, Meanwhile, Foreword). Never on Unmissable picks (see formats.md rule 3 — drop-cap forbidden on picks) or on practical ranked lists.
+
+### Trip-in-Numbers and T-MINUS placement
+
+- `.hol-trip-numbers` belongs at the **top of the Opening** (Field Guide) or directly after the Foreword (Countdown). 4-5 brass stat cells: days-to-go, scale figures (nights, venues, picks), and one structural fact ("0 off-estate picks", "5 zones", "12 attractions").
+- `.hol-tminus` belongs at **the close of each half** for a multi-venue trip, so each half lands on a countdown punch. Single-venue trips get one T-MINUS, just before Meanwhile / On the Radar. Use palette-aware text — Half II savannah palette auto-applies via the `.hol-half--two` ancestor selector.
+
+### What a Countdown gets that a Field Guide does not
+
+Most of the above is shared. The exceptions:
+
+- A Countdown does NOT use `.hol-meal-slot` cards (no meal-slot ranking). It uses the equivalent ranked patterns: `.unmissables`-style "Top Attractions", "Mood Board" gallery, "Five Moments". The header-image and per-pick floor rules from the Imagery Rules section above apply to those equivalents — every ranked entry gets ≥2 images; every ranked-list chapter gets a header image.
+- The "marquee in both Unmissables and rankings" rule (Editorial 2) doesn't apply directly because a Countdown has fewer overlap surfaces. Its analogue: a marquee attraction must appear in BOTH Top Attractions AND Five Moments if it earns both — not be siloed in one.
+
+
+---
+
 ## readability-locks
 
 
