@@ -19,7 +19,7 @@
  * way. Old caches are deleted on activate.
  */
 
-const CACHE_VERSION = "v1";
+const CACHE_VERSION = "v2";
 const SHELL_CACHE = `signal-shell-${CACHE_VERSION}`;
 const ISSUE_CACHE = `signal-issues-${CACHE_VERSION}`;
 const IMAGE_CACHE = `signal-images-${CACHE_VERSION}`;
@@ -95,32 +95,49 @@ self.addEventListener("fetch", (event) => {
 });
 
 // --- Strategies -------------------------------------------------------------
+// Match options: ignoreVary because Cloudflare sets `Vary: Accept-Encoding`,
+// which causes default match() to miss cached entries when the browser's
+// negotiated encoding differs between online and offline contexts. Without
+// this, navigation requests cached online don't satisfy offline navigations.
+const MATCH_OPTS = { ignoreVary: true };
+
 async function cacheFirst(req, cacheName, opts = {}) {
   const cache = await caches.open(cacheName);
-  const cached = await cache.match(req);
+  const cached = await cache.match(req, MATCH_OPTS);
   if (cached) return cached;
 
   try {
     const fetchOpts = opts.allowOpaque ? { mode: "no-cors", credentials: "omit" } : {};
     const resp = await fetch(req, fetchOpts);
     if (resp && (resp.ok || resp.type === "opaque")) {
-      cache.put(req, resp.clone()).catch(() => {});
+      // Store under the request URL stripped of any query string so cache hits
+      // are insensitive to ?cb=... / ?v=... cache-bust suffixes.
+      const cacheKey = new Request(req.url.split("?")[0], { method: "GET" });
+      cache.put(cacheKey, resp.clone()).catch(() => {});
     }
     return resp;
   } catch (err) {
-    // Last-resort: try a cached match on a URL-without-query variant.
-    const fallback = await cache.match(req.url.split("?")[0]);
+    // Network failed — try cache fallback on the normalised URL.
+    const fallback = await cache.match(req.url.split("?")[0], MATCH_OPTS);
     if (fallback) return fallback;
+    // For navigation requests, fall back to the cached index so the user
+    // sees the archive instead of Chrome's offline error page.
+    if (req.mode === "navigate") {
+      const indexCache = await caches.open(SHELL_CACHE);
+      const index = (await indexCache.match("/", MATCH_OPTS)) || (await indexCache.match("/index.html", MATCH_OPTS));
+      if (index) return index;
+    }
     throw err;
   }
 }
 
 async function staleWhileRevalidate(req, cacheName) {
   const cache = await caches.open(cacheName);
-  const cached = await cache.match(req);
+  const cached = await cache.match(req, MATCH_OPTS);
+  const cacheKey = new Request(req.url.split("?")[0], { method: "GET" });
   const fetchPromise = fetch(req)
     .then((resp) => {
-      if (resp && resp.ok) cache.put(req, resp.clone()).catch(() => {});
+      if (resp && resp.ok) cache.put(cacheKey, resp.clone()).catch(() => {});
       return resp;
     })
     .catch(() => cached);
