@@ -1,0 +1,278 @@
+/* ============================================================
+   TIER 43 — HOLIDAY HYPE ELEMENTS (v8.13)
+
+   Adds typographic + decorative components that build anticipation
+   without relying on more image assets:
+
+     .hol-trip-numbers    — By-the-numbers stat band (4-5 brass figures)
+     .hol-tminus          — Chunky T-MINUS countdown banner
+     .hol-hype-marquee    — Bigger marquee variant with brass tint
+     .hol-sparkle         — Decorative SVG sparkle anchor
+     .hol-day-beats       — Sequential "day beats" hype strip
+
+   ACTIVATION:
+     body.is-special[data-special="field-guide"]
+     body.is-special[data-special="countdown"]
+
+   These components are typographic-first — no image dependencies,
+   no editorial sourcing burden. They build hype through chunky type,
+   brass accents, and decorative flourish.
+   ============================================================ */
+
+/* ─────────────────────────────────────────────────────────────
+   TRIP IN NUMBERS — by-the-numbers brass stat band
+   ───────────────────────────────────────────────────────────── */
+body.is-special[data-special="field-guide"] .hol-trip-numbers,
+body.is-special[data-special="countdown"] .hol-trip-numbers {
+  max-width: 880px;
+  margin: 2.5rem auto;
+  padding: 2rem 1.5rem 2.25rem;
+  background:
+    linear-gradient(135deg,
+      var(--hol-ink-deep) 0%,
+      color-mix(in srgb, var(--hol-ink) 92%, var(--hol-ruby) 8%) 100%);
+  color: var(--hol-cream);
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 24px 48px -24px rgba(0,0,0,0.6),
+    0 1px 0 rgba(255,255,255,0.06) inset;
+}
+
+body.is-special[data-special="field-guide"] .hol-trip-numbers::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle 1.5px, var(--hol-brass-light) 50%, transparent 70%),
+    radial-gradient(circle 1px, var(--hol-cream) 50%, transparent 70%);
+  background-size: 60px 60px, 80px 80px;
+  background-position: 20px 30px, 50px 60px;
+  opacity: 0.18;
+  pointer-events: none;
+}
+
+body.is-special[data-special="field-guide"] .hol-trip-numbers__kicker {
+  display: block;
+  text-align: center;
+  font-family: var(--hol-t-mono, "JetBrains Mono", monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--hol-brass-light);
+  margin-bottom: 0.4rem;
+  position: relative;
+}
+
+body.is-special[data-special="field-guide"] .hol-trip-numbers__title {
+  display: block;
+  text-align: center;
+  font-family: var(--hol-t-chunk, "Bowlby One", sans-serif);
+  font-size: clamp(2rem, 4.5vw, 3rem);
+  letter-spacing: -0.01em;
+  line-height: 1;
+  margin: 0 0 1.5rem;
+  text-shadow: 4px 4px 0 var(--hol-ruby-deep, #4a0f1a);
+  position: relative;
+}
+
+body.is-special[data-special="field-guide"] .hol-trip-numbers__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1.25rem;
+  position: relative;
+}
+
+body.is-special[data-special="field-guide"] .hol-trip-numbers__cell {
+  text-align: center;
+  padding: 0.5rem 0.75rem;
+  border-left: 1px solid color-mix(in srgb, var(--hol-brass) 35%, transparent);
+}
+
+body.is-special[data-special="field-guide"] .hol-trip-numbers__cell:first-child {
+  border-left: none;
+}
+
+body.is-special[data-special="field-guide"] .hol-trip-numbers__num {
+  display: block;
+  font-family: var(--hol-t-chunk, "Bowlby One", sans-serif);
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  line-height: 1;
+  color: var(--hol-brass-light);
+  text-shadow:
+    3px 3px 0 var(--hol-ink-deep),
+    3px 3px 0 1px var(--hol-brass);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.35rem;
+}
+
+body.is-special[data-special="field-guide"] .hol-trip-numbers__label {
+  display: block;
+  font-family: var(--hol-t-mono, "JetBrains Mono", monospace);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--hol-cream);
+  opacity: 0.78;
+  line-height: 1.3;
+}
+
+body.is-special[data-special="field-guide"] .hol-trip-numbers__sub {
+  display: block;
+  font-family: var(--hol-t-body, "DM Sans", sans-serif);
+  font-size: 0.7rem;
+  color: var(--hol-brass-light);
+  opacity: 0.6;
+  margin-top: 0.15rem;
+  font-style: italic;
+}
+
+@media (max-width: 540px) {
+  body.is-special[data-special="field-guide"] .hol-trip-numbers__cell {
+    border-left: none;
+    border-top: 1px solid color-mix(in srgb, var(--hol-brass) 25%, transparent);
+    padding-top: 1rem;
+  }
+  body.is-special[data-special="field-guide"] .hol-trip-numbers__cell:first-child {
+    border-top: none;
+    padding-top: 0;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   T-MINUS BANNER — countdown anchor strip
+   ───────────────────────────────────────────────────────────── */
+body.is-special[data-special="field-guide"] .hol-tminus,
+body.is-special[data-special="countdown"] .hol-tminus {
+  max-width: 760px;
+  margin: 2.5rem auto;
+  padding: 1.1rem 1.5rem;
+  background: var(--hol-ink-deep);
+  color: var(--hol-cream);
+  border-top: 2px solid var(--hol-brass);
+  border-bottom: 2px solid var(--hol-brass);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+body.is-special[data-special="field-guide"] .hol-tminus::before,
+body.is-special[data-special="field-guide"] .hol-tminus::after {
+  content: "★";
+  font-size: 1.2rem;
+  color: var(--hol-brass-light);
+}
+
+body.is-special[data-special="field-guide"] .hol-tminus__label {
+  font-family: var(--hol-t-chunk, "Bowlby One", sans-serif);
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  color: var(--hol-brass-light);
+  letter-spacing: 0.02em;
+  line-height: 1;
+  text-shadow: 3px 3px 0 var(--hol-ruby-deep, #4a0f1a);
+}
+
+body.is-special[data-special="field-guide"] .hol-tminus__msg {
+  font-family: var(--hol-t-display, "Cormorant Garamond", serif);
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--hol-cream);
+  opacity: 0.92;
+  letter-spacing: 0.01em;
+}
+
+/* Half II savannah-palette T-MINUS variant */
+.hol-half--two .hol-tminus,
+[data-venue="beekse-bergen"] .hol-tminus {
+  background: var(--hol-savannah-ink);
+  border-top-color: var(--hol-mustard);
+  border-bottom-color: var(--hol-mustard);
+  color: var(--hol-bone);
+}
+
+.hol-half--two .hol-tminus__label,
+[data-venue="beekse-bergen"] .hol-tminus__label {
+  color: var(--hol-mustard);
+  text-shadow: 3px 3px 0 var(--hol-burnt);
+}
+
+.hol-half--two .hol-tminus__msg,
+[data-venue="beekse-bergen"] .hol-tminus__msg {
+  color: var(--hol-bone);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   HYPE MARQUEE — bigger, brass-tinted scrolling banner
+   ───────────────────────────────────────────────────────────── */
+body.is-special[data-special="field-guide"] .hol-hype-marquee {
+  margin: 2.5rem 0;
+  padding: 1.25rem 0;
+  background: linear-gradient(180deg, var(--hol-brass) 0%, var(--hol-brass-light) 50%, var(--hol-brass) 100%);
+  color: var(--hol-ink-deep);
+  overflow: hidden;
+  border-top: 1px solid color-mix(in srgb, var(--hol-ink-deep) 25%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--hol-ink-deep) 25%, transparent);
+  position: relative;
+}
+
+body.is-special[data-special="field-guide"] .hol-hype-marquee__track {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  font-family: var(--hol-t-chunk, "Bowlby One", sans-serif);
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  animation: hol-hype-scroll 28s linear infinite;
+  width: max-content;
+}
+
+body.is-special[data-special="field-guide"] .hol-hype-marquee__track > * {
+  flex-shrink: 0;
+}
+
+@keyframes hol-hype-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.is-special[data-special="field-guide"] .hol-hype-marquee__track {
+    animation: none;
+    justify-content: center;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SPARKLE SVG anchors — decorative gold stars on ink chapters
+   ───────────────────────────────────────────────────────────── */
+body.is-special[data-special="field-guide"] .hol-sparkle {
+  display: inline-block;
+  width: 1.2em;
+  height: 1.2em;
+  vertical-align: -0.15em;
+  color: var(--hol-brass-light);
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--hol-brass-light) 50%, transparent));
+}
+
+/* ─────────────────────────────────────────────────────────────
+   COUNTDOWN PULSE — subtle motion on the cover countdown
+   ───────────────────────────────────────────────────────────── */
+body.is-special[data-special="field-guide"] .hol-countdown__num {
+  animation: hol-countdown-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes hol-countdown-pulse {
+  0%, 100% { text-shadow: 0 0 0 transparent; }
+  50%      { text-shadow: 0 0 18px color-mix(in srgb, var(--hol-brass-light) 50%, transparent); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.is-special[data-special="field-guide"] .hol-countdown__num {
+    animation: none;
+  }
+}
