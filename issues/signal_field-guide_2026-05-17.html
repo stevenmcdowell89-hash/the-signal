@@ -10975,6 +10975,319 @@ body.is-special[data-special="field-guide"] .hol-half--two::before {
   }
 }
 
+/* ============================================================
+   TIER 40 — HOLIDAY MEAL-SLOT CARDS (v8.13)
+
+   Styles the .hol-meal-slot block + the ranked-entry vocabulary
+   that Field Guide writers emit:
+
+     .hol-meal-slot           — outer block (one per slot)
+     .hol-meal-slot__title    — slot heading (e.g. "Breakfast at Efteling.")
+     .hol-meal-slot__list     — <ol> wrapper
+     .hol-meal-slot__item     — <li> (some writers use this)
+     .hol-meal-slot__entry    — alt card (some writers use this directly)
+     .hol-meal-slot__entry-header
+     .hol-meal-slot__rank     — chip with 01/02/03 numerals
+     .hol-meal-slot__name     — venue title within entry header
+     .hol-meal-slot__tier     — pill badge (HOT / WARM / NOTE)
+     .hol-meal-slot__facts    — micro <dl> at the foot of an entry
+
+   ACTIVATION: body.is-special[data-special="field-guide"]
+   Half I (--one) inherits ink-deep palette; Half II (--two) sand.
+
+   Cascade: tier 40 is the highest holiday tier — wins cleanly.
+   ============================================================ */
+
+body.is-special[data-special="field-guide"] .hol-meal-slot,
+body.is-special[data-special="countdown"] .hol-meal-slot {
+  --slot-card-bg:       var(--hol-cream);
+  --slot-card-border:   color-mix(in srgb, var(--hol-ink) 18%, transparent);
+  --slot-card-fg:       var(--hol-ink);
+  --slot-card-muted:    color-mix(in srgb, var(--hol-ink) 60%, transparent);
+  --slot-accent:        var(--hol-brass);
+  --slot-rank-bg:       var(--hol-ink-deep);
+  --slot-rank-fg:       var(--hol-cream);
+  margin: 2.5rem auto;
+  max-width: 720px;
+  padding: 1.75rem 1.5rem 1.5rem;
+  background: var(--slot-card-bg);
+  border: 1px solid var(--slot-card-border);
+  border-radius: 4px;
+  position: relative;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.4) inset,
+    0 18px 32px -22px rgba(0,0,0,0.35),
+    0 2px 4px -2px rgba(0,0,0,0.15);
+}
+
+/* Half II savannah palette — sand card on bone ground */
+.hol-half--two .hol-meal-slot,
+body.is-special[data-special="field-guide"] [data-venue="beekse-bergen"] .hol-meal-slot,
+body.is-special[data-special="field-guide"] section[data-sp-chapter*="beekse-bergen"] .hol-meal-slot {
+  --slot-card-bg:       var(--hol-bone);
+  --slot-card-border:   color-mix(in srgb, var(--hol-savannah-ink) 18%, transparent);
+  --slot-card-fg:       var(--hol-savannah-ink);
+  --slot-card-muted:    color-mix(in srgb, var(--hol-savannah-ink) 60%, transparent);
+  --slot-accent:        var(--hol-burnt);
+  --slot-rank-bg:       var(--hol-savannah-ink);
+  --slot-rank-fg:       var(--hol-bone);
+}
+
+/* Decorative band on left edge keyed to the accent */
+body.is-special[data-special="field-guide"] .hol-meal-slot::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 1.75rem; bottom: 1.5rem;
+  width: 4px;
+  background: var(--slot-accent);
+  border-radius: 2px;
+}
+
+/* Slot title */
+body.is-special[data-special="field-guide"] .hol-meal-slot__title,
+body.is-special[data-special="countdown"] .hol-meal-slot__title {
+  font-family: var(--hol-t-display, "Cormorant Garamond", serif);
+  font-size: clamp(1.4rem, 2.6vw, 1.75rem);
+  font-weight: 700;
+  font-style: italic;
+  color: var(--slot-card-fg);
+  margin: 0 0 0.35rem;
+  letter-spacing: -0.005em;
+  padding-left: 0.5rem;
+}
+body.is-special[data-special="field-guide"] .hol-meal-slot > p:first-of-type {
+  color: var(--slot-card-muted);
+  font-family: var(--hol-t-body, "DM Sans", sans-serif);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0 0 1.25rem;
+  padding-left: 0.5rem;
+  font-style: italic;
+}
+
+/* Ordered list reset */
+body.is-special[data-special="field-guide"] .hol-meal-slot__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  counter-reset: meal-slot-rank;
+}
+
+/* Entry card — used both as <li class="hol-meal-slot__item"> and as
+   <div class="hol-meal-slot__entry"> by different writers. Style both. */
+body.is-special[data-special="field-guide"] .hol-meal-slot__item,
+body.is-special[data-special="field-guide"] .hol-meal-slot__entry,
+body.is-special[data-special="countdown"] .hol-meal-slot__item,
+body.is-special[data-special="countdown"] .hol-meal-slot__entry {
+  background: color-mix(in srgb, var(--slot-card-bg) 60%, white);
+  border: 1px solid color-mix(in srgb, var(--slot-card-fg) 12%, transparent);
+  border-left: 3px solid var(--slot-accent);
+  padding: 0.95rem 1.1rem;
+  border-radius: 3px;
+  position: relative;
+  counter-increment: meal-slot-rank;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+body.is-special[data-special="field-guide"] .hol-meal-slot__item:hover,
+body.is-special[data-special="field-guide"] .hol-meal-slot__entry:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px -4px rgba(0,0,0,0.18);
+}
+
+/* Auto-rank from counter if no explicit __rank chip provided */
+body.is-special[data-special="field-guide"] .hol-meal-slot__item > h4:first-child::before {
+  content: counter(meal-slot-rank, decimal-leading-zero) " · ";
+  font-family: var(--hol-t-mono, "JetBrains Mono", monospace);
+  font-size: 0.78em;
+  font-weight: 700;
+  color: var(--slot-accent);
+  letter-spacing: 0.04em;
+}
+
+/* Entry header row (rank chip + name + tier badge) */
+body.is-special[data-special="field-guide"] .hol-meal-slot__entry-header,
+body.is-special[data-special="countdown"] .hol-meal-slot__entry-header {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.45rem;
+}
+
+/* Rank chip — chunky number */
+body.is-special[data-special="field-guide"] .hol-meal-slot__rank,
+body.is-special[data-special="countdown"] .hol-meal-slot__rank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.85rem;
+  height: 1.85rem;
+  padding: 0 0.45rem;
+  background: var(--slot-rank-bg);
+  color: var(--slot-rank-fg);
+  font-family: var(--hol-t-chunk, "Bowlby One", sans-serif);
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* Venue name — bigger than slot title's body text */
+body.is-special[data-special="field-guide"] .hol-meal-slot__name,
+body.is-special[data-special="countdown"] .hol-meal-slot__name,
+body.is-special[data-special="field-guide"] .hol-meal-slot__item > h4,
+body.is-special[data-special="field-guide"] .hol-meal-slot__entry > h4 {
+  font-family: var(--hol-t-display, "Cormorant Garamond", serif);
+  font-size: 1.18rem;
+  font-weight: 700;
+  color: var(--slot-card-fg);
+  margin: 0;
+  line-height: 1.25;
+  flex: 1 1 auto;
+}
+
+/* Tier pill — HOT / WARM / NOTE colour-coded */
+body.is-special[data-special="field-guide"] .hol-meal-slot__tier,
+body.is-special[data-special="countdown"] .hol-meal-slot__tier {
+  display: inline-block;
+  padding: 0.18rem 0.55rem 0.16rem;
+  font-family: var(--hol-t-mono, "JetBrains Mono", monospace);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 2px;
+  background: var(--hol-acacia, #6b4f2b);
+  color: var(--hol-bone, #f5ecd6);
+  flex-shrink: 0;
+  align-self: center;
+}
+body.is-special[data-special="field-guide"] .hol-meal-slot__tier.tier-hot {
+  background: var(--hol-ruby, #8a1c2b);
+  color: var(--hol-bone);
+}
+body.is-special[data-special="field-guide"] .hol-meal-slot__tier.tier-warm {
+  background: var(--hol-mustard, #d9a82d);
+  color: var(--hol-savannah-ink, #1c2613);
+}
+body.is-special[data-special="field-guide"] .hol-meal-slot__tier.tier-note {
+  background: var(--hol-acacia, #6b4f2b);
+  color: var(--hol-bone);
+}
+
+/* Body text inside entry */
+body.is-special[data-special="field-guide"] .hol-meal-slot__item > p,
+body.is-special[data-special="field-guide"] .hol-meal-slot__entry > p {
+  margin: 0.3rem 0 0;
+  font-family: var(--hol-t-body, "DM Sans", sans-serif);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--slot-card-fg) 88%, transparent);
+}
+body.is-special[data-special="field-guide"] .hol-meal-slot__item > p a,
+body.is-special[data-special="field-guide"] .hol-meal-slot__entry > p a {
+  color: var(--slot-accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+/* Micro facts <dl> at entry foot */
+body.is-special[data-special="field-guide"] .hol-meal-slot__facts,
+body.is-special[data-special="countdown"] .hol-meal-slot__facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 0.65rem;
+  row-gap: 0.18rem;
+  margin: 0.7rem 0 0;
+  padding: 0.5rem 0 0;
+  border-top: 1px dashed color-mix(in srgb, var(--slot-card-fg) 15%, transparent);
+  font-family: var(--hol-t-mono, "JetBrains Mono", monospace);
+  font-size: 0.7rem;
+  line-height: 1.4;
+}
+body.is-special[data-special="field-guide"] .hol-meal-slot__facts dt {
+  color: var(--slot-card-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+}
+body.is-special[data-special="field-guide"] .hol-meal-slot__facts dd {
+  color: var(--slot-card-fg);
+  margin: 0;
+}
+
+/* Title strip header (writers' optional .hol-meal-slots-header above the
+   first slot). Treat it as the chapter intro band. */
+body.is-special[data-special="field-guide"] .hol-meal-slots-header {
+  max-width: 720px;
+  margin: 2rem auto 0;
+  padding: 1.25rem 1.5rem;
+  text-align: center;
+}
+body.is-special[data-special="field-guide"] .hol-meal-slots-header h2 {
+  font-family: var(--hol-t-chunk, "Bowlby One", sans-serif);
+  font-size: clamp(1.6rem, 3.2vw, 2.25rem);
+  margin: 0 0 0.4rem;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+}
+body.is-special[data-special="field-guide"] .hol-meal-slots-header p {
+  font-family: var(--hol-t-body, "DM Sans", sans-serif);
+  font-size: 0.95rem;
+  line-height: 1.55;
+  margin: 0 auto;
+  max-width: 540px;
+  opacity: 0.78;
+  font-style: italic;
+}
+
+/* Half I (ink-deep) header text becomes cream */
+.hol-half--one .hol-meal-slots-header h2,
+.hol-half--one .hol-meal-slots-header p {
+  color: var(--hol-cream);
+}
+/* Half II savannah palette */
+.hol-half--two .hol-meal-slots-header h2 {
+  color: var(--hol-savannah-ink);
+  text-shadow: 4px 4px 0 var(--hol-burnt);
+}
+.hol-half--two .hol-meal-slots-header p {
+  color: var(--hol-savannah-ink);
+}
+
+/* Reduced-motion safety net */
+@media (prefers-reduced-motion: reduce) {
+  body.is-special[data-special="field-guide"] .hol-meal-slot__item,
+  body.is-special[data-special="field-guide"] .hol-meal-slot__entry {
+    transition: none;
+  }
+  body.is-special[data-special="field-guide"] .hol-meal-slot__item:hover,
+  body.is-special[data-special="field-guide"] .hol-meal-slot__entry:hover {
+    transform: none;
+  }
+}
+
+/* Small-screen tightening */
+@media (max-width: 640px) {
+  body.is-special[data-special="field-guide"] .hol-meal-slot {
+    margin: 1.5rem 1rem;
+    padding: 1.25rem 1rem 1rem;
+  }
+  body.is-special[data-special="field-guide"] .hol-meal-slot__entry-header {
+    gap: 0.5rem;
+  }
+  body.is-special[data-special="field-guide"] .hol-meal-slot__rank {
+    min-width: 1.65rem;
+    height: 1.65rem;
+    font-size: 0.78rem;
+  }
+}
+
 </style>
 </head>
 <body class="is-special" data-special="field-guide">
