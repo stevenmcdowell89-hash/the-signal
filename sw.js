@@ -16,7 +16,7 @@
  *                 the phone to verify what's actually cached.
  */
 
-const CACHE_VERSION = "v4";
+const CACHE_VERSION = "v5";
 const SHELL_CACHE = `signal-shell-${CACHE_VERSION}`;
 const ISSUE_CACHE = `signal-issues-${CACHE_VERSION}`;
 const IMAGE_CACHE = `signal-images-${CACHE_VERSION}`;
@@ -66,7 +66,16 @@ self.addEventListener("install", (event) => {
       ),
     ),
   );
-  self.skipWaiting();
+  // Don't auto-skipWaiting here. The page checks for a previous controller
+  // and posts SKIP_WAITING explicitly — either immediately (first install,
+  // no controller) or after the user taps the update banner's Refresh.
+});
+
+// --- Message handler: skip waiting on demand -------------------------------
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
 });
 
 // --- Activate: clean up old caches -----------------------------------------

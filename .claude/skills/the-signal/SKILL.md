@@ -291,8 +291,40 @@ If gates STILL fail after auto-repair (or fail in non-image ways — release-dat
 **Publish to GitHub Pages.** Repository: `stevenmcdowell89-hash/the-signal`. Live site: https://stevenmcdowell89-hash.github.io/the-signal/. The repo was already cloned in Phase 0a; do not re-clone.
 
 1. Copy the issue HTML into `/tmp/the-signal/issues/<filename>.html`.
-1a. **Mirror external images into the local cache** (offline-PWA support). Run `bash scripts/post-publish.sh issues/<filename>.html` from the repo root. The script downloads every external image referenced by the new issue into `/assets/cached/<hash>.<ext>` and rewrites the issue HTML to reference the local copies. Idempotent — re-running is safe. Failed downloads (404, bot-block 403, etc.) leave the original URL intact so the issue still works online. Add any new files under `/assets/cached/` to the publish push list. The PWA snippet itself (manifest link, theme-color, sw registration) is already baked into `template-parts/00-head-open.html`, so no injection step is needed per-issue.
-2. Update `/tmp/the-signal/index.html` archive list: insert a new `<li>` at the top of `<ul class="issue-list">`. Format for standard weeklies: `<div class="issue-title">Issue <span class="issue-accent">#N — Standard Weekly</span></div>` followed by a `<div class="issue-meta">` summary line (date range · 5–7 short headline fragments). Format for specials: `<div class="issue-title"><Format> <span class="issue-accent">— <Topic></span></div>` and `<div class="issue-meta">Special edition · <date> · <one-line summary></div>` — no issue number.
+1a. **Mirror images + generate cover** (offline-PWA + archive thumbnail). Run `bash scripts/post-publish.sh issues/<filename>.html` from the repo root. The script (a) downloads every external image referenced by the new issue into `/assets/cached/<hash>.<ext>` and rewrites the issue HTML to reference the local copies, and (b) extracts a cover thumbnail at `/assets/covers/<slug>.jpg` for the archive page. Idempotent. Failed image downloads leave the original URL intact so the issue still works online. Add any new files under `/assets/cached/` and `/assets/covers/` to the publish push list. The PWA snippet and reading-progress tracker are already baked into `template-parts/` so no per-issue injection is needed.
+2. Update `/tmp/the-signal/index.html` — two changes:
+
+   **(a) Promote the new issue to the hero slot.** Move whatever is currently in the `.hero` section (the `<a class="hero-card">`) down into the archive grid as its own `<li>` at the top of `<ul class="grid">`, converting its markup from hero-card to card. Then replace the hero with the new issue. The hero markup is:
+
+   ```html
+   <a class="hero-card" href="issues/<filename>" data-cover-slug="<slug>">
+     <div class="hero-cover"></div>
+     <div class="hero-body">
+       <div class="hero-format">Issue #N · Standard Weekly</div>   <!-- or "<Format>" for specials -->
+       <div class="hero-title"><date range or topic></div>
+       <div class="hero-summary"><5-7 short headline fragments joined by commas></div>
+       <div class="hero-cta">Read this issue</div>
+     </div>
+   </a>
+   ```
+
+   **(b) Card markup for the demoted previous issue** (added to the top of `<ul class="grid">`):
+
+   ```html
+   <li>
+     <a class="card" href="issues/<filename>" data-cover-slug="<slug>">
+       <div class="card-cover"></div>
+       <div class="card-body">
+         <div class="card-format">Issue #N · Standard Weekly</div>  <!-- or "<Format>" for specials -->
+         <div class="card-title"><date range or topic></div>
+         <div class="card-summary"><1-3 sentence summary></div>
+         <div class="card-date"><start date> [· Special]</div>
+       </div>
+     </a>
+   </li>
+   ```
+
+   Slug = the issue filename without `.html`. Cover images and reading-progress all flow from `data-cover-slug` automatically — no other markup needed.
 3. Confirm `/tmp/the-signal/state/signal-state.json` reflects the updates above. The state file is committed alongside the issue HTML and archive index.
 4. **Push via the GitHub MCP server** (preferred — works without git auth in this environment):
    - Call `mcp__github__push_files` with `owner: "stevenmcdowell89-hash"`, `repo: "the-signal"`, `branch: "main"`, the commit `message` (see below), and `files` listing every changed path with its contents read from disk. Three files in a standard run: `issues/<filename>.html`, `index.html`, `state/signal-state.json`. Plus the cost log if it lives in the repo (`state/cost-log.jsonl`).
