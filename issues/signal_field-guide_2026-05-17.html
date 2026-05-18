@@ -11288,6 +11288,430 @@ body.is-special[data-special="field-guide"] .hol-meal-slots-header p {
   }
 }
 
+/* ============================================================
+   TIER 41 — HOLIDAY DECORATIONS EXTRAS (v8.13)
+
+   Additive vocabulary for visual variation on Countdown + Field
+   Guide issues. Does not modify base .hol-* tokens; extends with:
+
+   NEW STAMP COLOURS — .hol-stamp--ruby, --rose, --terracotta,
+                       --savannah-ink, --ink, --acacia
+   NEW POLAROID VARIANTS — .hol-polaroid--reverse (tilt left),
+                            .hol-polaroid--small (compact),
+                            .hol-polaroid--tinted (sepia wash)
+   NEW POSTCARD VARIANT — .hol-postcard--airmail (red/blue stripes)
+   NEW ELEMENT — .hol-ticket  (perforated ticket stub for callouts)
+   NEW ELEMENT — .hol-coaster (circular center-text, drinks/cocktails)
+   NEW ELEMENT — .hol-banner-strip (chunky full-width Bowlby band)
+   NEW ELEMENT — .hol-pull (oversized italic pull quote)
+
+   ACTIVATION: body.is-special[data-special="countdown"]
+               body.is-special[data-special="field-guide"]
+
+   All variants colour-key to existing --hol-* tokens.
+   Cascade: tier 41 — sits above 36 holiday-identity and 40 meal-slot.
+   ============================================================ */
+
+/* ============================================================
+   STAMP COLOUR VARIANTS — extend the palette beyond brass/mustard/emerald
+   ============================================================ */
+body.is-special[data-special="field-guide"] .hol-stamp--ruby,
+body.is-special[data-special="countdown"] .hol-stamp--ruby {
+  background: var(--hol-ruby);
+  color: var(--hol-bone);
+  border-color: var(--hol-ruby);
+}
+body.is-special[data-special="field-guide"] .hol-stamp--rose,
+body.is-special[data-special="countdown"] .hol-stamp--rose {
+  background: var(--hol-rose);
+  color: var(--hol-bone);
+  border-color: var(--hol-rose-deep);
+}
+body.is-special[data-special="field-guide"] .hol-stamp--terracotta,
+body.is-special[data-special="countdown"] .hol-stamp--terracotta {
+  background: var(--hol-terracotta);
+  color: var(--hol-bone);
+  border-color: var(--hol-burnt);
+}
+body.is-special[data-special="field-guide"] .hol-stamp--savannah-ink,
+body.is-special[data-special="countdown"] .hol-stamp--savannah-ink {
+  background: var(--hol-savannah-ink);
+  color: var(--hol-mustard);
+  border-color: var(--hol-acacia);
+}
+body.is-special[data-special="field-guide"] .hol-stamp--ink,
+body.is-special[data-special="countdown"] .hol-stamp--ink {
+  background: var(--hol-ink-deep);
+  color: var(--hol-cream);
+  border-color: var(--hol-ink);
+}
+body.is-special[data-special="field-guide"] .hol-stamp--acacia,
+body.is-special[data-special="countdown"] .hol-stamp--acacia {
+  background: var(--hol-acacia);
+  color: var(--hol-bone);
+  border-color: var(--hol-savannah-ink);
+}
+body.is-special[data-special="field-guide"] .hol-stamp--burnt,
+body.is-special[data-special="countdown"] .hol-stamp--burnt {
+  background: var(--hol-burnt);
+  color: var(--hol-bone);
+  border-color: var(--hol-savannah-ink);
+}
+
+/* ============================================================
+   POLAROID VARIANTS — tilt direction, size, tint
+   ============================================================ */
+body.is-special[data-special="field-guide"] .hol-polaroid--reverse,
+body.is-special[data-special="countdown"] .hol-polaroid--reverse {
+  transform: rotate(-3.5deg);
+}
+body.is-special[data-special="field-guide"] .hol-polaroid--reverse:hover,
+body.is-special[data-special="countdown"] .hol-polaroid--reverse:hover {
+  transform: rotate(-1deg) translateY(-3px);
+}
+
+body.is-special[data-special="field-guide"] .hol-polaroid--small,
+body.is-special[data-special="countdown"] .hol-polaroid--small {
+  max-width: 200px;
+  padding: 0.55rem 0.55rem 0.85rem;
+}
+body.is-special[data-special="field-guide"] .hol-polaroid--small .hol-polaroid__photo {
+  height: 140px;
+}
+body.is-special[data-special="field-guide"] .hol-polaroid--small .hol-polaroid__caption {
+  font-size: 0.7rem;
+  line-height: 1.3;
+}
+
+body.is-special[data-special="field-guide"] .hol-polaroid--tinted .hol-polaroid__photo,
+body.is-special[data-special="countdown"] .hol-polaroid--tinted .hol-polaroid__photo {
+  filter: sepia(0.35) saturate(1.1) contrast(1.05);
+  box-shadow: inset 0 0 0 9999px rgba(184, 137, 58, 0.08);
+}
+
+/* ============================================================
+   POSTCARD — airmail variant (red/blue striped border)
+   ============================================================ */
+body.is-special[data-special="field-guide"] .hol-postcard--airmail,
+body.is-special[data-special="countdown"] .hol-postcard--airmail {
+  position: relative;
+  padding: 6px;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--hol-ruby) 0 12px,
+    transparent 12px 18px,
+    var(--hol-ink-deep) 18px 30px,
+    transparent 30px 36px
+  );
+  background-clip: padding-box;
+  border-radius: 2px;
+}
+body.is-special[data-special="field-guide"] .hol-postcard--airmail::before {
+  content: "PAR AVION";
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  font-family: var(--hol-t-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--hol-ruby);
+  background: var(--hol-bone);
+  padding: 0.18rem 0.45rem;
+  border: 1px solid var(--hol-ruby);
+  z-index: 2;
+}
+
+/* ============================================================
+   NEW: .hol-ticket — perforated ticket stub
+   Use: <div class="hol-ticket hol-ticket--ruby">
+          <div class="hol-ticket__stub">ADMIT</div>
+          <div class="hol-ticket__body">
+            <h4>Polles Keuken</h4>
+            <p>book ahead · 4-min wait at 11:30am · €18</p>
+          </div>
+          <div class="hol-ticket__no">№ 01</div>
+        </div>
+   ============================================================ */
+body.is-special[data-special="field-guide"] .hol-ticket,
+body.is-special[data-special="countdown"] .hol-ticket {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: stretch;
+  max-width: 480px;
+  margin: 1.5rem auto;
+  background: var(--hol-cream);
+  color: var(--hol-ink);
+  border: 1px solid color-mix(in srgb, var(--hol-ink) 30%, transparent);
+  border-radius: 3px;
+  position: relative;
+  font-family: var(--hol-t-body);
+  box-shadow: 0 8px 18px -12px rgba(0,0,0,0.4);
+}
+body.is-special[data-special="field-guide"] .hol-ticket::before,
+body.is-special[data-special="field-guide"] .hol-ticket::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  background: inherit;
+  border-radius: 50%;
+  transform: translateY(-50%);
+}
+body.is-special[data-special="field-guide"] .hol-ticket::before { left: -6px; box-shadow: 0 0 0 1px color-mix(in srgb, var(--hol-ink) 30%, transparent); }
+body.is-special[data-special="field-guide"] .hol-ticket::after  { right: -6px; box-shadow: 0 0 0 1px color-mix(in srgb, var(--hol-ink) 30%, transparent); }
+body.is-special[data-special="field-guide"] .hol-ticket__stub {
+  display: flex; align-items: center; justify-content: center;
+  padding: 0.7rem 0.6rem;
+  background: var(--hol-ink-deep);
+  color: var(--hol-cream);
+  font-family: var(--hol-t-chunk);
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  border-right: 1px dashed color-mix(in srgb, var(--hol-cream) 40%, transparent);
+}
+body.is-special[data-special="field-guide"] .hol-ticket__body {
+  padding: 0.8rem 1rem;
+  border-left: 1px dashed color-mix(in srgb, var(--hol-ink) 30%, transparent);
+  border-right: 1px dashed color-mix(in srgb, var(--hol-ink) 30%, transparent);
+}
+body.is-special[data-special="field-guide"] .hol-ticket__body h4 {
+  font-family: var(--hol-t-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin: 0 0 0.25rem;
+  line-height: 1.15;
+}
+body.is-special[data-special="field-guide"] .hol-ticket__body p {
+  font-family: var(--hol-t-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+  margin: 0;
+  color: color-mix(in srgb, var(--hol-ink) 70%, transparent);
+}
+body.is-special[data-special="field-guide"] .hol-ticket__no {
+  display: flex; align-items: center; justify-content: center;
+  padding: 0.7rem 0.85rem;
+  font-family: var(--hol-t-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: color-mix(in srgb, var(--hol-ink) 65%, transparent);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Ticket colour variants */
+body.is-special[data-special="field-guide"] .hol-ticket--ruby .hol-ticket__stub { background: var(--hol-ruby); }
+body.is-special[data-special="field-guide"] .hol-ticket--brass .hol-ticket__stub { background: var(--hol-brass); color: var(--hol-ink-deep); }
+body.is-special[data-special="field-guide"] .hol-ticket--emerald .hol-ticket__stub { background: var(--hol-emerald); }
+body.is-special[data-special="field-guide"] .hol-ticket--terracotta .hol-ticket__stub { background: var(--hol-terracotta); }
+body.is-special[data-special="field-guide"] .hol-ticket--savannah .hol-ticket__stub { background: var(--hol-savannah-ink); color: var(--hol-mustard); }
+
+/* Half II savannah background — flip ticket to bone/sand */
+.hol-half--two .hol-ticket,
+[data-venue="beekse-bergen"] .hol-ticket {
+  background: var(--hol-bone);
+  color: var(--hol-savannah-ink);
+  border-color: color-mix(in srgb, var(--hol-savannah-ink) 30%, transparent);
+}
+.hol-half--two .hol-ticket__body p,
+[data-venue="beekse-bergen"] .hol-ticket__body p {
+  color: color-mix(in srgb, var(--hol-savannah-ink) 70%, transparent);
+}
+
+/* ============================================================
+   NEW: .hol-coaster — circular center-text element
+   Use: <div class="hol-coaster hol-coaster--emerald">
+          <span>De Gebrande Boon · pistachio coffee · €5.85</span>
+        </div>
+   ============================================================ */
+body.is-special[data-special="field-guide"] .hol-coaster,
+body.is-special[data-special="countdown"] .hol-coaster {
+  display: flex; align-items: center; justify-content: center;
+  width: 180px; height: 180px;
+  margin: 1.5rem auto;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center, transparent 56%, rgba(0,0,0,0.05) 58%, transparent 60%),
+    var(--hol-cream);
+  border: 1.5px solid color-mix(in srgb, var(--hol-ink) 35%, transparent);
+  color: var(--hol-ink-deep);
+  position: relative;
+  box-shadow:
+    0 0 0 6px rgba(255,255,255,0.5),
+    0 6px 16px -8px rgba(0,0,0,0.35);
+  transform: rotate(-4deg);
+}
+body.is-special[data-special="field-guide"] .hol-coaster::before {
+  content: "";
+  position: absolute; inset: 14px;
+  border-radius: 50%;
+  border: 1px dashed color-mix(in srgb, var(--hol-ink) 30%, transparent);
+}
+body.is-special[data-special="field-guide"] .hol-coaster span,
+body.is-special[data-special="countdown"] .hol-coaster span {
+  display: block;
+  font-family: var(--hol-t-display);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.2;
+  text-align: center;
+  padding: 0 1.5rem;
+  max-width: 150px;
+}
+
+/* Coaster colour variants */
+body.is-special[data-special="field-guide"] .hol-coaster--emerald { background: var(--hol-emerald); color: var(--hol-bone); border-color: var(--hol-emerald); }
+body.is-special[data-special="field-guide"] .hol-coaster--ruby { background: var(--hol-ruby); color: var(--hol-bone); border-color: var(--hol-ruby); }
+body.is-special[data-special="field-guide"] .hol-coaster--brass { background: var(--hol-brass); color: var(--hol-ink-deep); border-color: var(--hol-brass); }
+body.is-special[data-special="field-guide"] .hol-coaster--mustard { background: var(--hol-mustard); color: var(--hol-savannah-ink); border-color: var(--hol-mustard); }
+body.is-special[data-special="field-guide"] .hol-coaster--terracotta { background: var(--hol-terracotta); color: var(--hol-bone); border-color: var(--hol-terracotta); }
+body.is-special[data-special="field-guide"] .hol-coaster--ink { background: var(--hol-ink-deep); color: var(--hol-cream); border-color: var(--hol-ink-deep); }
+
+body.is-special[data-special="field-guide"] .hol-coaster--emerald::before,
+body.is-special[data-special="field-guide"] .hol-coaster--ruby::before,
+body.is-special[data-special="field-guide"] .hol-coaster--ink::before {
+  border-color: color-mix(in srgb, var(--hol-bone) 35%, transparent);
+}
+
+/* ============================================================
+   NEW: .hol-banner-strip — chunky full-width Bowlby band
+   Use: <div class="hol-banner-strip hol-banner-strip--brass">
+          <span>EAT THE ESTATE · ONE WEEK · NO CAR · SEVEN MEALS A DAY</span>
+        </div>
+   ============================================================ */
+body.is-special[data-special="field-guide"] .hol-banner-strip,
+body.is-special[data-special="countdown"] .hol-banner-strip {
+  display: flex; align-items: center; justify-content: center;
+  margin: 2rem 0;
+  padding: 1.1rem 1rem;
+  background: var(--hol-ink-deep);
+  color: var(--hol-cream);
+  border-top: 3px solid var(--hol-brass);
+  border-bottom: 3px solid var(--hol-brass);
+  font-family: var(--hol-t-chunk);
+  font-size: clamp(1.05rem, 2vw, 1.45rem);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.1;
+}
+body.is-special[data-special="field-guide"] .hol-banner-strip--brass { background: var(--hol-brass); color: var(--hol-ink-deep); border-color: var(--hol-ink-deep); }
+body.is-special[data-special="field-guide"] .hol-banner-strip--ruby { background: var(--hol-ruby); color: var(--hol-bone); border-color: var(--hol-rose-deep); }
+body.is-special[data-special="field-guide"] .hol-banner-strip--savannah { background: var(--hol-savannah-ink); color: var(--hol-mustard); border-color: var(--hol-burnt); }
+body.is-special[data-special="field-guide"] .hol-banner-strip--mustard { background: var(--hol-mustard); color: var(--hol-savannah-ink); border-color: var(--hol-burnt); }
+body.is-special[data-special="field-guide"] .hol-banner-strip--terracotta { background: var(--hol-terracotta); color: var(--hol-bone); border-color: var(--hol-burnt); }
+
+/* ============================================================
+   NEW: .hol-pull — oversized italic pull quote
+   Use: <blockquote class="hol-pull hol-pull--brass">
+          <p>"There was nothing on the menu I hadn't ordered four times."</p>
+          <cite>— Lauren Writtenberry, Disney Food Blog</cite>
+        </blockquote>
+   ============================================================ */
+body.is-special[data-special="field-guide"] .hol-pull,
+body.is-special[data-special="countdown"] .hol-pull {
+  max-width: 640px;
+  margin: 2rem auto;
+  padding: 1.5rem 2rem 1.25rem;
+  border-left: 4px solid var(--hol-brass);
+  position: relative;
+}
+body.is-special[data-special="field-guide"] .hol-pull::before {
+  content: "\201C";
+  position: absolute;
+  top: -0.4rem; left: 0.8rem;
+  font-family: var(--hol-t-display);
+  font-style: italic;
+  font-size: 4.5rem;
+  line-height: 1;
+  color: color-mix(in srgb, var(--hol-brass) 35%, transparent);
+  pointer-events: none;
+}
+body.is-special[data-special="field-guide"] .hol-pull p,
+body.is-special[data-special="countdown"] .hol-pull p {
+  font-family: var(--hol-t-display);
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(1.2rem, 2.4vw, 1.6rem);
+  line-height: 1.3;
+  margin: 0 0 0.7rem;
+  color: var(--hol-ink-deep);
+}
+body.is-special[data-special="field-guide"] .hol-pull cite,
+body.is-special[data-special="countdown"] .hol-pull cite {
+  display: block;
+  font-family: var(--hol-t-mono);
+  font-size: 0.78rem;
+  font-style: normal;
+  letter-spacing: 0.05em;
+  color: color-mix(in srgb, var(--hol-ink) 65%, transparent);
+}
+
+/* Pull colour + theme variants */
+body.is-special[data-special="field-guide"] .hol-pull--ruby { border-left-color: var(--hol-ruby); }
+body.is-special[data-special="field-guide"] .hol-pull--ruby::before { color: color-mix(in srgb, var(--hol-ruby) 30%, transparent); }
+body.is-special[data-special="field-guide"] .hol-pull--emerald { border-left-color: var(--hol-emerald); }
+body.is-special[data-special="field-guide"] .hol-pull--emerald::before { color: color-mix(in srgb, var(--hol-emerald) 30%, transparent); }
+body.is-special[data-special="field-guide"] .hol-pull--savannah {
+  border-left-color: var(--hol-burnt);
+}
+body.is-special[data-special="field-guide"] .hol-pull--savannah::before { color: color-mix(in srgb, var(--hol-burnt) 30%, transparent); }
+body.is-special[data-special="field-guide"] .hol-pull--savannah p { color: var(--hol-savannah-ink); }
+
+/* Half II / BB venue: pull-quote text shifts to savannah-ink palette */
+.hol-half--two .hol-pull p,
+[data-venue="beekse-bergen"] .hol-pull p {
+  color: var(--hol-savannah-ink);
+}
+.hol-half--two .hol-pull cite,
+[data-venue="beekse-bergen"] .hol-pull cite {
+  color: color-mix(in srgb, var(--hol-savannah-ink) 65%, transparent);
+}
+
+/* ============================================================
+   Reduced-motion safety net
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  body.is-special[data-special="field-guide"] .hol-coaster,
+  body.is-special[data-special="field-guide"] .hol-polaroid--reverse {
+    transform: none;
+  }
+  body.is-special[data-special="field-guide"] .hol-polaroid--reverse:hover {
+    transform: none;
+  }
+}
+
+/* ============================================================
+   Mobile — tighten tickets, scale banner type
+   ============================================================ */
+@media (max-width: 640px) {
+  body.is-special[data-special="field-guide"] .hol-ticket {
+    margin: 1rem 0.75rem;
+  }
+  body.is-special[data-special="field-guide"] .hol-ticket__stub {
+    padding: 0.6rem 0.45rem;
+    font-size: 0.72rem;
+  }
+  body.is-special[data-special="field-guide"] .hol-coaster {
+    width: 150px; height: 150px;
+  }
+  body.is-special[data-special="field-guide"] .hol-coaster span {
+    font-size: 0.82rem;
+    max-width: 120px;
+  }
+  body.is-special[data-special="field-guide"] .hol-banner-strip {
+    padding: 0.85rem 0.75rem;
+    font-size: 1rem;
+  }
+}
+
 </style>
 </head>
 <body class="is-special" data-special="field-guide">
@@ -11411,7 +11835,14 @@ body.is-special[data-special="field-guide"] .hol-meal-slots-header p {
         <figcaption class="hol-polaroid__caption">Hartige pannenkoek · the savoury Dutch pancake at Wanyama, Beekse Bergen. Credit: Beekse Bergen press kit.</figcaption>
       </figure>
 
-      <p>The stroopwafel has an origin story unusual in Dutch food culture: a specific inventor, a specific city, a specific decade. Baker Gerard Kamphuisen of Gouda made the first known batch around 1810, pressing two thin waffle discs around a layer of caramel syrup as a way to use leftover crumbs and off-cuts. The format worked. Two centuries later, KLM serves stroopwafels on every flight as the national sweet export — the instruction printed on the packet (balance the stroopwafel on top of a hot cup of coffee or tea so the steam warms the caramel just-soft from the inside) is the traditionally correct method, not a serving suggestion. At Efteling, De Gebrande Boon inverts the tradition: the iced stroopwafel coffee at their kiosk on Pardoes Promenade runs the pairing cold. <a href="https://www.disneyfoodblog.com/2026/04/20/the-food-was-just-as-weird-and-incredible-as-the-theme-park-a-full-review-of-everything-we-ate-at-efteling/">Lauren Writtenberry at the Disney Food Blog</a> described the De Gebrande Boon coffee programme in April 2026 as offering <q>specialty coffees that had no right to be that good at a theme park — Efteling's quick-service game lands on par with Disneyland's grab-and-go.</q> The iced pistachio coffee from the same counter was ordered four times in a single visit.</p>
+      <p>The stroopwafel has an origin story unusual in Dutch food culture: a specific inventor, a specific city, a specific decade. Baker Gerard Kamphuisen of Gouda made the first known batch around 1810, pressing two thin waffle discs around a layer of caramel syrup as a way to use leftover crumbs and off-cuts. The format worked. Two centuries later, KLM serves stroopwafels on every flight as the national sweet export — the instruction printed on the packet (balance the stroopwafel on top of a hot cup of coffee or tea so the steam warms the caramel just-soft from the inside) is the traditionally correct method, not a serving suggestion. At Efteling, De Gebrande Boon inverts the tradition: the iced stroopwafel coffee at their kiosk on Pardoes Promenade runs the pairing cold.</p>
+
+      <blockquote class="hol-pull hol-pull--brass">
+        <p>"Specialty coffees that had no right to be that good at a theme park — Efteling's quick-service game lands on par with Disneyland's grab-and-go."</p>
+        <cite>— <a href="https://www.disneyfoodblog.com/2026/04/20/the-food-was-just-as-weird-and-incredible-as-the-theme-park-a-full-review-of-everything-we-ate-at-efteling/" rel="noopener noreferrer">Lauren Writtenberry, Disney Food Blog</a> · April 2026, on De Gebrande Boon</cite>
+      </blockquote>
+
+      <p>The iced pistachio coffee from that same counter was ordered four times in a single visit — a small data point that says everything about how the kiosk has displaced expectations for what theme-park coffee can be.</p>
 
       <div class="hol-postcard">
         <div class="hol-postcard__front">
@@ -11700,7 +12131,7 @@ body.is-special[data-special="field-guide"] .hol-meal-slots-header p {
     <!-- ═══════════════════════════════════════════
          ATMOSPHERIC STAMP — KIBBELING (between 04 and 05)
     ════════════════════════════════════════════ -->
-    <div class="hol-stamp hol-stamp--brass" style="margin:1.5rem auto;display:block;max-width:360px;text-align:center;">
+    <div class="hol-stamp hol-stamp--ruby" style="margin:1.5rem auto;display:block;max-width:360px;text-align:center;">
       <figure style="margin:0;">
         <div style="background-image:url('https://upload.wikimedia.org/wikipedia/commons/d/db/Kibbeling_met_saus.jpg');background-size:cover;background-position:center;height:220px;border-radius:4px;" role="img" aria-label="Kibbeling met saus — Dutch fried fish bites with dipping sauce, illustrative of what has been served at De Meermin since 1996. Photo: Dhdewit, CC BY-SA 4.0, via Wikimedia Commons."></div>
         <figcaption style="font-size:0.75rem;margin-top:0.5rem;opacity:0.7;">Illustrative — kibbeling as served at De Meermin since 1996. Credit: Dhdewit, CC BY-SA 4.0, Wikimedia Commons.</figcaption>
@@ -12041,6 +12472,16 @@ body.is-special[data-special="field-guide"] .hol-meal-slots-header p {
     <div class="hol-dont-miss">
       <div class="hol-dont-miss__kicker">don't miss</div>
       <h3 class="hol-dont-miss__title">Three small Efteling moments most visitors walk past.</h3>
+
+      <div style="display:flex;justify-content:center;gap:1.5rem;flex-wrap:wrap;align-items:center;margin:1.5rem auto 0.5rem;">
+        <div class="hol-coaster hol-coaster--brass" aria-label="The iced stroopwafel coffee at De Gebrande Boon — €5.85, the standout quick-service drink at Efteling">
+          <span>iced stroopwafel coffee · €5.85</span>
+        </div>
+        <div class="hol-coaster hol-coaster--ruby" aria-label="The giant pickled gherkin at Hollandsche Gebakkraam — €2.00, the surprise of the Disney Food Blog visit">
+          <span>giant gherkin · €2.00</span>
+        </div>
+      </div>
+
       <ul class="hol-dont-miss__list">
         <li><b>The iced stroopwafel coffee at De Gebrande Boon.</b> €5.85 — and the Disney Food Blog's team ordered it four times in a single visit. The full account: <a href="https://www.disneyfoodblog.com/2026/04/20/the-food-was-just-as-weird-and-incredible-as-the-theme-park-a-full-review-of-everything-we-ate-at-efteling/">"specialty coffees that had no right to be that good at a theme park."</a> The counter is on the south side of the Polles Keuken building on Pardoes Promenade — easy to miss if entering from the park's northern gates. Oat milk available. Queue is short outside the 11:30am–2:30pm peak.</li>
         <li><b>The giant pickled gherkin at Hollandsche Gebakkraam.</b> €2.00. The Disney Food Blog flagged it as the surprise of their full Efteling food day: <a href="https://www.disneyfoodblog.com/2026/04/20/the-food-was-just-as-weird-and-incredible-as-the-theme-park-a-full-review-of-everything-we-ate-at-efteling/">"huge, juicy… sweet-street-snack status."</a> The stand sits near the fairytale forest entrance — order the stroopwafel at the same stop. One of the cheapest food experiences on the estate; routinely overlooked in favour of the headline Dutch pancake and potato dishes.</li>
@@ -12115,6 +12556,12 @@ body.is-special[data-special="field-guide"] .hol-meal-slots-header p {
       For the dinner buffet, Amma runs live-cooking stations with a broader international range — the salad bar expands significantly, and the advance reservation note matters more at peak summer. Non-hotel guests can book dinner access separately (approx €28–35 per adult for the buffet, based on regional hotel pricing norms). The dinner experience is distinct from breakfast in register: the savannah views shift from morning brightness to dusk light, and the live-cooking stations become the focal point. For Safari Hotel guests, this is the room that opens and closes the safari day — and across five nights, that adds up to a relationship with a venue, not just a meal.
     </p>
 
+    <!-- PULL QUOTE — savannah register, sets register before the Nommos pick -->
+    <blockquote class="hol-pull hol-pull--savannah" style="margin:2rem auto 1.5rem;">
+      <p>"A fantastic breakfast buffet — a huge selection to choose from, including pastries, cold cuts, cheeses, cereals, yoghurts, hot food, plenty of delicious fruits and of course poffertjes."</p>
+      <cite>— <a href="https://little-clogs-holidays.co.uk/blog/reviews/review-beekse-bergen-safari-hotel-the-ultimate-room-with-a-view/" rel="noopener noreferrer">Laura · Little Clogs Holidays</a>, on the Amma anchor at first light</cite>
+    </blockquote>
+
     <!-- UNMISSABLE 01 — Nommos Fine Dining (no --reverse, odd) -->
     <div class="hol-unmissable">
       <div class="hol-unmissable__photo-wrap">
@@ -12148,6 +12595,16 @@ body.is-special[data-special="field-guide"] .hol-meal-slots-header p {
     <p style="font-family:var(--hol-t-body);font-size:1rem;line-height:1.75;max-width:680px;margin:0.75rem auto;padding:0 1.5rem;">
       Booking ahead is essential — this is reservation-only, dinner-only, with wine pairings available alongside the set-menu courses. For a five-night stay at Beekse Bergen, the question is usually which evening, not whether. One dinner at Nommos occupies the premium tier; the rest of the week runs on Moto, Amma's dinner buffet, Labadi, or lodge cooking. Notify dietary requirements 48 hours in advance — the kitchen builds menus around the reservation list.
     </p>
+
+    <!-- TICKET — Nommos reservation callout (savannah variant) -->
+    <div class="hol-ticket hol-ticket--savannah">
+      <div class="hol-ticket__stub">RESERVE</div>
+      <div class="hol-ticket__body">
+        <h4>Restaurant Nommos — one evening of the five</h4>
+        <p>3 / 4 / 5 courses · €59 / €72 / €85 · wine pairing +€32 · 48-hr dietary notice</p>
+      </div>
+      <div class="hol-ticket__no">№ 01</div>
+    </div>
 
     <!-- POLAROID EPHEMERA between picks 1 and 2 -->
     <figure class="hol-polaroid" style="margin:2rem auto;display:block;max-width:340px;">
@@ -12295,6 +12752,11 @@ body.is-special[data-special="field-guide"] .hol-meal-slots-header p {
       One planning note: Hogon Bar operates as Safari Hotel guests only. That access boundary matters across a five-night stay if accommodation is split across the estate's zones. For Lodge or Lake Resort guests, the equivalent post-dinner gap fills differently — Pamoja Lounge at Karibu Town, or the Moto bar, or the lodge itself. Hogon Bar is a Safari Hotel story.
     </p>
 
+    <!-- COASTER — Hogon cocktail callout, mustard for savannah register -->
+    <div class="hol-coaster hol-coaster--mustard" role="img" aria-label="Hogon Bar &amp; Lounge — cocktail and mocktail programme, espresso from 10am, savannah terrace, longest hours on the estate">
+      <span>Hogon Bar · 10am — 11pm · savannah terrace</span>
+    </div>
+
     <!-- STAMP EPHEMERA between picks 4 and 5 -->
     <div style="display:flex;justify-content:center;margin:2rem auto;gap:1.5rem;flex-wrap:wrap;align-items:center;">
       <div class="hol-stamp hol-stamp--mustard" style="font-size:0.7rem;">
@@ -12308,7 +12770,7 @@ body.is-special[data-special="field-guide"] .hol-meal-slots-header p {
              aria-label="Dutch stroopwafels — two thin waffle discs sandwiching a caramel syrup layer, a traditional Netherlands snack that appears at both Efteling and Beekse Bergen"></div>
         <figcaption class="hol-polaroid__caption">both estates, one thread. — the stroopwafel runs through it all.</figcaption>
       </figure>
-      <div class="hol-stamp hol-stamp--brass" style="font-size:0.7rem;">
+      <div class="hol-stamp hol-stamp--terracotta" style="font-size:0.7rem;">
         <span>MUGUNDA<b>AFRIKADORP</b>★ ELEPHANT VIEW ★</span>
       </div>
     </div>
@@ -12457,6 +12919,11 @@ body.is-special[data-special="field-guide"] .hol-meal-slots-header p {
     <div class="hol-meal-slots-header">
       <h2>Beekse Bergen, by meal slot</h2>
       <p>Five-night stay-side coverage — every dining beat from morning rolls to sundowner, ranked across Safari Hotel, Safari Resort, Lake Resort, and Safaripark.</p>
+    </div>
+
+    <!-- BANNER STRIP — chunky savannah header band -->
+    <div class="hol-banner-strip hol-banner-strip--savannah">
+      <span>FIVE NIGHTS · FOUR ZONES · TWENTY-SIX MEAL SLOTS · ONE ESTATE</span>
     </div>
 
     <!-- SLOT 1: BREAKFAST -->
@@ -12859,7 +13326,7 @@ body.is-special[data-special="field-guide"] .hol-meal-slots-header p {
     </div>
 
     <!-- STAMP -->
-    <div class="hol-stamp hol-stamp--mustard">
+    <div class="hol-stamp hol-stamp--burnt">
       <span>SAVANNAH<b>DINING</b>★ ★ ★</span>
     </div>
 

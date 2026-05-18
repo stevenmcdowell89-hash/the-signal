@@ -1,0 +1,423 @@
+/* ============================================================
+   TIER 41 — HOLIDAY DECORATIONS EXTRAS (v8.13)
+
+   Additive vocabulary for visual variation on Countdown + Field
+   Guide issues. Does not modify base .hol-* tokens; extends with:
+
+   NEW STAMP COLOURS — .hol-stamp--ruby, --rose, --terracotta,
+                       --savannah-ink, --ink, --acacia
+   NEW POLAROID VARIANTS — .hol-polaroid--reverse (tilt left),
+                            .hol-polaroid--small (compact),
+                            .hol-polaroid--tinted (sepia wash)
+   NEW POSTCARD VARIANT — .hol-postcard--airmail (red/blue stripes)
+   NEW ELEMENT — .hol-ticket  (perforated ticket stub for callouts)
+   NEW ELEMENT — .hol-coaster (circular center-text, drinks/cocktails)
+   NEW ELEMENT — .hol-banner-strip (chunky full-width Bowlby band)
+   NEW ELEMENT — .hol-pull (oversized italic pull quote)
+
+   ACTIVATION: body.is-special[data-special="countdown"]
+               body.is-special[data-special="field-guide"]
+
+   All variants colour-key to existing --hol-* tokens.
+   Cascade: tier 41 — sits above 36 holiday-identity and 40 meal-slot.
+   ============================================================ */
+
+/* ============================================================
+   STAMP COLOUR VARIANTS — extend the palette beyond brass/mustard/emerald
+   ============================================================ */
+body.is-special[data-special="field-guide"] .hol-stamp--ruby,
+body.is-special[data-special="countdown"] .hol-stamp--ruby {
+  background: var(--hol-ruby);
+  color: var(--hol-bone);
+  border-color: var(--hol-ruby);
+}
+body.is-special[data-special="field-guide"] .hol-stamp--rose,
+body.is-special[data-special="countdown"] .hol-stamp--rose {
+  background: var(--hol-rose);
+  color: var(--hol-bone);
+  border-color: var(--hol-rose-deep);
+}
+body.is-special[data-special="field-guide"] .hol-stamp--terracotta,
+body.is-special[data-special="countdown"] .hol-stamp--terracotta {
+  background: var(--hol-terracotta);
+  color: var(--hol-bone);
+  border-color: var(--hol-burnt);
+}
+body.is-special[data-special="field-guide"] .hol-stamp--savannah-ink,
+body.is-special[data-special="countdown"] .hol-stamp--savannah-ink {
+  background: var(--hol-savannah-ink);
+  color: var(--hol-mustard);
+  border-color: var(--hol-acacia);
+}
+body.is-special[data-special="field-guide"] .hol-stamp--ink,
+body.is-special[data-special="countdown"] .hol-stamp--ink {
+  background: var(--hol-ink-deep);
+  color: var(--hol-cream);
+  border-color: var(--hol-ink);
+}
+body.is-special[data-special="field-guide"] .hol-stamp--acacia,
+body.is-special[data-special="countdown"] .hol-stamp--acacia {
+  background: var(--hol-acacia);
+  color: var(--hol-bone);
+  border-color: var(--hol-savannah-ink);
+}
+body.is-special[data-special="field-guide"] .hol-stamp--burnt,
+body.is-special[data-special="countdown"] .hol-stamp--burnt {
+  background: var(--hol-burnt);
+  color: var(--hol-bone);
+  border-color: var(--hol-savannah-ink);
+}
+
+/* ============================================================
+   POLAROID VARIANTS — tilt direction, size, tint
+   ============================================================ */
+body.is-special[data-special="field-guide"] .hol-polaroid--reverse,
+body.is-special[data-special="countdown"] .hol-polaroid--reverse {
+  transform: rotate(-3.5deg);
+}
+body.is-special[data-special="field-guide"] .hol-polaroid--reverse:hover,
+body.is-special[data-special="countdown"] .hol-polaroid--reverse:hover {
+  transform: rotate(-1deg) translateY(-3px);
+}
+
+body.is-special[data-special="field-guide"] .hol-polaroid--small,
+body.is-special[data-special="countdown"] .hol-polaroid--small {
+  max-width: 200px;
+  padding: 0.55rem 0.55rem 0.85rem;
+}
+body.is-special[data-special="field-guide"] .hol-polaroid--small .hol-polaroid__photo {
+  height: 140px;
+}
+body.is-special[data-special="field-guide"] .hol-polaroid--small .hol-polaroid__caption {
+  font-size: 0.7rem;
+  line-height: 1.3;
+}
+
+body.is-special[data-special="field-guide"] .hol-polaroid--tinted .hol-polaroid__photo,
+body.is-special[data-special="countdown"] .hol-polaroid--tinted .hol-polaroid__photo {
+  filter: sepia(0.35) saturate(1.1) contrast(1.05);
+  box-shadow: inset 0 0 0 9999px rgba(184, 137, 58, 0.08);
+}
+
+/* ============================================================
+   POSTCARD — airmail variant (red/blue striped border)
+   ============================================================ */
+body.is-special[data-special="field-guide"] .hol-postcard--airmail,
+body.is-special[data-special="countdown"] .hol-postcard--airmail {
+  position: relative;
+  padding: 6px;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--hol-ruby) 0 12px,
+    transparent 12px 18px,
+    var(--hol-ink-deep) 18px 30px,
+    transparent 30px 36px
+  );
+  background-clip: padding-box;
+  border-radius: 2px;
+}
+body.is-special[data-special="field-guide"] .hol-postcard--airmail::before {
+  content: "PAR AVION";
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  font-family: var(--hol-t-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--hol-ruby);
+  background: var(--hol-bone);
+  padding: 0.18rem 0.45rem;
+  border: 1px solid var(--hol-ruby);
+  z-index: 2;
+}
+
+/* ============================================================
+   NEW: .hol-ticket — perforated ticket stub
+   Use: <div class="hol-ticket hol-ticket--ruby">
+          <div class="hol-ticket__stub">ADMIT</div>
+          <div class="hol-ticket__body">
+            <h4>Polles Keuken</h4>
+            <p>book ahead · 4-min wait at 11:30am · €18</p>
+          </div>
+          <div class="hol-ticket__no">№ 01</div>
+        </div>
+   ============================================================ */
+body.is-special[data-special="field-guide"] .hol-ticket,
+body.is-special[data-special="countdown"] .hol-ticket {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: stretch;
+  max-width: 480px;
+  margin: 1.5rem auto;
+  background: var(--hol-cream);
+  color: var(--hol-ink);
+  border: 1px solid color-mix(in srgb, var(--hol-ink) 30%, transparent);
+  border-radius: 3px;
+  position: relative;
+  font-family: var(--hol-t-body);
+  box-shadow: 0 8px 18px -12px rgba(0,0,0,0.4);
+}
+body.is-special[data-special="field-guide"] .hol-ticket::before,
+body.is-special[data-special="field-guide"] .hol-ticket::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  background: inherit;
+  border-radius: 50%;
+  transform: translateY(-50%);
+}
+body.is-special[data-special="field-guide"] .hol-ticket::before { left: -6px; box-shadow: 0 0 0 1px color-mix(in srgb, var(--hol-ink) 30%, transparent); }
+body.is-special[data-special="field-guide"] .hol-ticket::after  { right: -6px; box-shadow: 0 0 0 1px color-mix(in srgb, var(--hol-ink) 30%, transparent); }
+body.is-special[data-special="field-guide"] .hol-ticket__stub {
+  display: flex; align-items: center; justify-content: center;
+  padding: 0.7rem 0.6rem;
+  background: var(--hol-ink-deep);
+  color: var(--hol-cream);
+  font-family: var(--hol-t-chunk);
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  border-right: 1px dashed color-mix(in srgb, var(--hol-cream) 40%, transparent);
+}
+body.is-special[data-special="field-guide"] .hol-ticket__body {
+  padding: 0.8rem 1rem;
+  border-left: 1px dashed color-mix(in srgb, var(--hol-ink) 30%, transparent);
+  border-right: 1px dashed color-mix(in srgb, var(--hol-ink) 30%, transparent);
+}
+body.is-special[data-special="field-guide"] .hol-ticket__body h4 {
+  font-family: var(--hol-t-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin: 0 0 0.25rem;
+  line-height: 1.15;
+}
+body.is-special[data-special="field-guide"] .hol-ticket__body p {
+  font-family: var(--hol-t-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+  margin: 0;
+  color: color-mix(in srgb, var(--hol-ink) 70%, transparent);
+}
+body.is-special[data-special="field-guide"] .hol-ticket__no {
+  display: flex; align-items: center; justify-content: center;
+  padding: 0.7rem 0.85rem;
+  font-family: var(--hol-t-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: color-mix(in srgb, var(--hol-ink) 65%, transparent);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Ticket colour variants */
+body.is-special[data-special="field-guide"] .hol-ticket--ruby .hol-ticket__stub { background: var(--hol-ruby); }
+body.is-special[data-special="field-guide"] .hol-ticket--brass .hol-ticket__stub { background: var(--hol-brass); color: var(--hol-ink-deep); }
+body.is-special[data-special="field-guide"] .hol-ticket--emerald .hol-ticket__stub { background: var(--hol-emerald); }
+body.is-special[data-special="field-guide"] .hol-ticket--terracotta .hol-ticket__stub { background: var(--hol-terracotta); }
+body.is-special[data-special="field-guide"] .hol-ticket--savannah .hol-ticket__stub { background: var(--hol-savannah-ink); color: var(--hol-mustard); }
+
+/* Half II savannah background — flip ticket to bone/sand */
+.hol-half--two .hol-ticket,
+[data-venue="beekse-bergen"] .hol-ticket {
+  background: var(--hol-bone);
+  color: var(--hol-savannah-ink);
+  border-color: color-mix(in srgb, var(--hol-savannah-ink) 30%, transparent);
+}
+.hol-half--two .hol-ticket__body p,
+[data-venue="beekse-bergen"] .hol-ticket__body p {
+  color: color-mix(in srgb, var(--hol-savannah-ink) 70%, transparent);
+}
+
+/* ============================================================
+   NEW: .hol-coaster — circular center-text element
+   Use: <div class="hol-coaster hol-coaster--emerald">
+          <span>De Gebrande Boon · pistachio coffee · €5.85</span>
+        </div>
+   ============================================================ */
+body.is-special[data-special="field-guide"] .hol-coaster,
+body.is-special[data-special="countdown"] .hol-coaster {
+  display: flex; align-items: center; justify-content: center;
+  width: 180px; height: 180px;
+  margin: 1.5rem auto;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center, transparent 56%, rgba(0,0,0,0.05) 58%, transparent 60%),
+    var(--hol-cream);
+  border: 1.5px solid color-mix(in srgb, var(--hol-ink) 35%, transparent);
+  color: var(--hol-ink-deep);
+  position: relative;
+  box-shadow:
+    0 0 0 6px rgba(255,255,255,0.5),
+    0 6px 16px -8px rgba(0,0,0,0.35);
+  transform: rotate(-4deg);
+}
+body.is-special[data-special="field-guide"] .hol-coaster::before {
+  content: "";
+  position: absolute; inset: 14px;
+  border-radius: 50%;
+  border: 1px dashed color-mix(in srgb, var(--hol-ink) 30%, transparent);
+}
+body.is-special[data-special="field-guide"] .hol-coaster span,
+body.is-special[data-special="countdown"] .hol-coaster span {
+  display: block;
+  font-family: var(--hol-t-display);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.2;
+  text-align: center;
+  padding: 0 1.5rem;
+  max-width: 150px;
+}
+
+/* Coaster colour variants */
+body.is-special[data-special="field-guide"] .hol-coaster--emerald { background: var(--hol-emerald); color: var(--hol-bone); border-color: var(--hol-emerald); }
+body.is-special[data-special="field-guide"] .hol-coaster--ruby { background: var(--hol-ruby); color: var(--hol-bone); border-color: var(--hol-ruby); }
+body.is-special[data-special="field-guide"] .hol-coaster--brass { background: var(--hol-brass); color: var(--hol-ink-deep); border-color: var(--hol-brass); }
+body.is-special[data-special="field-guide"] .hol-coaster--mustard { background: var(--hol-mustard); color: var(--hol-savannah-ink); border-color: var(--hol-mustard); }
+body.is-special[data-special="field-guide"] .hol-coaster--terracotta { background: var(--hol-terracotta); color: var(--hol-bone); border-color: var(--hol-terracotta); }
+body.is-special[data-special="field-guide"] .hol-coaster--ink { background: var(--hol-ink-deep); color: var(--hol-cream); border-color: var(--hol-ink-deep); }
+
+body.is-special[data-special="field-guide"] .hol-coaster--emerald::before,
+body.is-special[data-special="field-guide"] .hol-coaster--ruby::before,
+body.is-special[data-special="field-guide"] .hol-coaster--ink::before {
+  border-color: color-mix(in srgb, var(--hol-bone) 35%, transparent);
+}
+
+/* ============================================================
+   NEW: .hol-banner-strip — chunky full-width Bowlby band
+   Use: <div class="hol-banner-strip hol-banner-strip--brass">
+          <span>EAT THE ESTATE · ONE WEEK · NO CAR · SEVEN MEALS A DAY</span>
+        </div>
+   ============================================================ */
+body.is-special[data-special="field-guide"] .hol-banner-strip,
+body.is-special[data-special="countdown"] .hol-banner-strip {
+  display: flex; align-items: center; justify-content: center;
+  margin: 2rem 0;
+  padding: 1.1rem 1rem;
+  background: var(--hol-ink-deep);
+  color: var(--hol-cream);
+  border-top: 3px solid var(--hol-brass);
+  border-bottom: 3px solid var(--hol-brass);
+  font-family: var(--hol-t-chunk);
+  font-size: clamp(1.05rem, 2vw, 1.45rem);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.1;
+}
+body.is-special[data-special="field-guide"] .hol-banner-strip--brass { background: var(--hol-brass); color: var(--hol-ink-deep); border-color: var(--hol-ink-deep); }
+body.is-special[data-special="field-guide"] .hol-banner-strip--ruby { background: var(--hol-ruby); color: var(--hol-bone); border-color: var(--hol-rose-deep); }
+body.is-special[data-special="field-guide"] .hol-banner-strip--savannah { background: var(--hol-savannah-ink); color: var(--hol-mustard); border-color: var(--hol-burnt); }
+body.is-special[data-special="field-guide"] .hol-banner-strip--mustard { background: var(--hol-mustard); color: var(--hol-savannah-ink); border-color: var(--hol-burnt); }
+body.is-special[data-special="field-guide"] .hol-banner-strip--terracotta { background: var(--hol-terracotta); color: var(--hol-bone); border-color: var(--hol-burnt); }
+
+/* ============================================================
+   NEW: .hol-pull — oversized italic pull quote
+   Use: <blockquote class="hol-pull hol-pull--brass">
+          <p>"There was nothing on the menu I hadn't ordered four times."</p>
+          <cite>— Lauren Writtenberry, Disney Food Blog</cite>
+        </blockquote>
+   ============================================================ */
+body.is-special[data-special="field-guide"] .hol-pull,
+body.is-special[data-special="countdown"] .hol-pull {
+  max-width: 640px;
+  margin: 2rem auto;
+  padding: 1.5rem 2rem 1.25rem;
+  border-left: 4px solid var(--hol-brass);
+  position: relative;
+}
+body.is-special[data-special="field-guide"] .hol-pull::before {
+  content: "\201C";
+  position: absolute;
+  top: -0.4rem; left: 0.8rem;
+  font-family: var(--hol-t-display);
+  font-style: italic;
+  font-size: 4.5rem;
+  line-height: 1;
+  color: color-mix(in srgb, var(--hol-brass) 35%, transparent);
+  pointer-events: none;
+}
+body.is-special[data-special="field-guide"] .hol-pull p,
+body.is-special[data-special="countdown"] .hol-pull p {
+  font-family: var(--hol-t-display);
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(1.2rem, 2.4vw, 1.6rem);
+  line-height: 1.3;
+  margin: 0 0 0.7rem;
+  color: var(--hol-ink-deep);
+}
+body.is-special[data-special="field-guide"] .hol-pull cite,
+body.is-special[data-special="countdown"] .hol-pull cite {
+  display: block;
+  font-family: var(--hol-t-mono);
+  font-size: 0.78rem;
+  font-style: normal;
+  letter-spacing: 0.05em;
+  color: color-mix(in srgb, var(--hol-ink) 65%, transparent);
+}
+
+/* Pull colour + theme variants */
+body.is-special[data-special="field-guide"] .hol-pull--ruby { border-left-color: var(--hol-ruby); }
+body.is-special[data-special="field-guide"] .hol-pull--ruby::before { color: color-mix(in srgb, var(--hol-ruby) 30%, transparent); }
+body.is-special[data-special="field-guide"] .hol-pull--emerald { border-left-color: var(--hol-emerald); }
+body.is-special[data-special="field-guide"] .hol-pull--emerald::before { color: color-mix(in srgb, var(--hol-emerald) 30%, transparent); }
+body.is-special[data-special="field-guide"] .hol-pull--savannah {
+  border-left-color: var(--hol-burnt);
+}
+body.is-special[data-special="field-guide"] .hol-pull--savannah::before { color: color-mix(in srgb, var(--hol-burnt) 30%, transparent); }
+body.is-special[data-special="field-guide"] .hol-pull--savannah p { color: var(--hol-savannah-ink); }
+
+/* Half II / BB venue: pull-quote text shifts to savannah-ink palette */
+.hol-half--two .hol-pull p,
+[data-venue="beekse-bergen"] .hol-pull p {
+  color: var(--hol-savannah-ink);
+}
+.hol-half--two .hol-pull cite,
+[data-venue="beekse-bergen"] .hol-pull cite {
+  color: color-mix(in srgb, var(--hol-savannah-ink) 65%, transparent);
+}
+
+/* ============================================================
+   Reduced-motion safety net
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  body.is-special[data-special="field-guide"] .hol-coaster,
+  body.is-special[data-special="field-guide"] .hol-polaroid--reverse {
+    transform: none;
+  }
+  body.is-special[data-special="field-guide"] .hol-polaroid--reverse:hover {
+    transform: none;
+  }
+}
+
+/* ============================================================
+   Mobile — tighten tickets, scale banner type
+   ============================================================ */
+@media (max-width: 640px) {
+  body.is-special[data-special="field-guide"] .hol-ticket {
+    margin: 1rem 0.75rem;
+  }
+  body.is-special[data-special="field-guide"] .hol-ticket__stub {
+    padding: 0.6rem 0.45rem;
+    font-size: 0.72rem;
+  }
+  body.is-special[data-special="field-guide"] .hol-coaster {
+    width: 150px; height: 150px;
+  }
+  body.is-special[data-special="field-guide"] .hol-coaster span {
+    font-size: 0.82rem;
+    max-width: 120px;
+  }
+  body.is-special[data-special="field-guide"] .hol-banner-strip {
+    padding: 0.85rem 0.75rem;
+    font-size: 1rem;
+  }
+}
