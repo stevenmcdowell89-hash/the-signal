@@ -16,6 +16,7 @@ Usage:
 """
 
 import argparse
+import re
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -49,6 +50,7 @@ SNIPPET = f"""{MARKER}
       }} catch (_) {{}}
     }}
 
+    // ---- Save: debounced on scroll, plus key page lifecycle events ----
     var t = null;
     function debounced() {{
       if (t) clearTimeout(t);
@@ -61,25 +63,71 @@ SNIPPET = f"""{MARKER}
     }});
     // Save once after initial paint so even no-scroll opens register a visit.
     setTimeout(save, 3000);
+
+    // ---- Resume: when arriving via the archive's Continue Reading card ----
+    if (window.location.hash === '#continue') {{
+      // Strip the hash so a refresh later doesn't re-trigger the jump.
+      try {{ history.replaceState(null, '', window.location.pathname); }} catch (_) {{}}
+      try {{
+        var stored = localStorage.getItem(key);
+        if (!stored) return;
+        var v = JSON.parse(stored);
+        if (typeof v.pct !== 'number') return;
+        function jump(attemptsLeft) {{
+          var doc = document.documentElement;
+          var max = Math.max(0, doc.scrollHeight - window.innerHeight);
+          var target = Math.round((v.pct / 100) * max);
+          window.scrollTo(0, target);
+          // Lazy-loaded images can change scrollHeight after first paint —
+          // retry a few times until we land near the saved position.
+          if (attemptsLeft > 0 && Math.abs(window.scrollY - target) > 50) {{
+            setTimeout(function () {{ jump(attemptsLeft - 1); }}, 400);
+          }}
+        }}
+        // Wait for the load event so fonts and primary images are in.
+        if (document.readyState === 'complete') {{
+          setTimeout(function () {{ jump(6); }}, 100);
+        }} else {{
+          window.addEventListener('load', function () {{
+            setTimeout(function () {{ jump(6); }}, 100);
+          }});
+        }}
+      }} catch (_) {{}}
+    }}
   }} catch (_) {{}}
 }})();
 </script>
 <!-- /the-signal:progress -->"""
 
 
+_BLOCK_RE = re.compile(
+    r"<!-- the-signal:progress -->.*?<!-- /the-signal:progress -->\n?",
+    re.DOTALL,
+)
+
+
 def inject(html_path: Path) -> bool:
-    content = html_path.read_text(encoding="utf-8")
-    if MARKER in content:
-        return False
-    # Use the LAST occurrence of </body>, not the first. Some issue templates
-    # contain literal "</body>" text inside HTML comments in <head> (agent
-    # instructions, paste-here notes); replacing the first </body> would
-    # corrupt the comment and break the page.
-    idx = content.rfind("</body>")
+    """Inject the progress block, replacing any existing block in place.
+
+    Always strips an existing block before injecting — this lets the
+    snippet evolve (e.g. resume-on-#continue logic added later) without
+    needing a special update mode.
+
+    Returns True if the file content changed.
+    """
+    original = html_path.read_text(encoding="utf-8")
+    stripped, _ = _BLOCK_RE.subn("", original)
+
+    # Use the LAST occurrence of </body>. Some issue templates contain a
+    # literal "</body>" inside an HTML comment in <head>; matching the first
+    # would corrupt the comment.
+    idx = stripped.rfind("</body>")
     if idx < 0:
         print(f"  ! {html_path.name}: no </body> found, skipping")
         return False
-    new = content[:idx] + SNIPPET + "\n" + content[idx:]
+    new = stripped[:idx] + SNIPPET + "\n" + stripped[idx:]
+    if new == original:
+        return False
     html_path.write_text(new, encoding="utf-8")
     return True
 

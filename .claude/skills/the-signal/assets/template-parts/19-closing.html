@@ -38,6 +38,7 @@
       } catch (_) {}
     }
 
+    // ---- Save: debounced on scroll, plus key page lifecycle events ----
     var t = null;
     function debounced() {
       if (t) clearTimeout(t);
@@ -49,6 +50,33 @@
       if (document.visibilityState === 'hidden') save();
     });
     setTimeout(save, 3000);
+
+    // ---- Resume: when arriving via the archive's Continue Reading card ----
+    if (window.location.hash === '#continue') {
+      try { history.replaceState(null, '', window.location.pathname); } catch (_) {}
+      try {
+        var stored = localStorage.getItem(key);
+        if (!stored) return;
+        var v = JSON.parse(stored);
+        if (typeof v.pct !== 'number') return;
+        function jump(attemptsLeft) {
+          var doc = document.documentElement;
+          var max = Math.max(0, doc.scrollHeight - window.innerHeight);
+          var target = Math.round((v.pct / 100) * max);
+          window.scrollTo(0, target);
+          if (attemptsLeft > 0 && Math.abs(window.scrollY - target) > 50) {
+            setTimeout(function () { jump(attemptsLeft - 1); }, 400);
+          }
+        }
+        if (document.readyState === 'complete') {
+          setTimeout(function () { jump(6); }, 100);
+        } else {
+          window.addEventListener('load', function () {
+            setTimeout(function () { jump(6); }, 100);
+          });
+        }
+      } catch (_) {}
+    }
   } catch (_) {}
 })();
 </script>
