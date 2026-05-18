@@ -338,5 +338,60 @@
       "reset week (post Maul, post Daredevil)",
       "Mandalorian and Grogu cinema 22 May (mixed reactions)"
     ]
-  }
+  },
+  "deep_dive_schedule": {
+    "cadence_weeks": [12, 14],
+    "next_due": "2026-08-30",
+    "rationale": "Quarterly-ish cadence with conflict avoidance. The Phase 0 trigger fires a Deep Dive on the next eligible Sunday that satisfies ALL of: (a) at least cadence_weeks[0] weeks since last_fired (or since the schedule was created); (b) no P1 special is due that Sunday (Field Guide / Countdown / Season Review take priority); (c) Sunday is not inside a trip window from upcoming_trips; (d) the backlog is non-empty. If a candidate Sunday fails any check, defer one week. 2026-08-30 is the first clear Sunday after the Efteling/Beekse Bergen trip window (30 Jun - 7 Jul) and the post-trip recovery weeks, giving the format room to breathe in before the autumn news cadence picks up. Manual trigger always available — running /signal with 'deep dive on [topic]' pulls forward and resets the clock.",
+    "last_fired": null,
+    "skip_if_no_backlog": true
+  },
+  "deep_dive_backlog": [
+    {
+      "topic": "The history of AI",
+      "scope": "From McCulloch-Pitts (1943) and the Dartmouth Summer Research Project (1956) through the symbolic-AI winters, expert systems boom, statistical-learning turn (1990s), the deep-learning revolution (2012, AlexNet), the transformer era (2017 onward), and the consumer-facing inflection (ChatGPT 2022 forward). Treat as intellectual history: ideas, key labs, key figures, why each wave broke. Mark contested interpretive frames (scaling-is-all-you-need vs structure-matters; safety/doom debate). Visual taxonomy must include: timeline of seminal papers/launches, chart of compute-per-model over time, diagram of transformer architecture, photography of key figures and lab spaces.",
+      "added": "2026-05-18",
+      "priority": 1,
+      "expanded_scope": true,
+      "expanded_scope_rationale": "80 years of intellectual history with multiple ideologies and inflection points. Each era (symbolic / statistical / deep / transformer) deserves a full chapter of ~2000 words. Estimated 15-18k words."
+    },
+    {
+      "topic": "The rise and fall of Napoleon",
+      "scope": "Toulon to St Helena, 1793-1821. Treat as biographical narrative not academic treatise. Weight Russia and Waterloo as turning points. Cover military campaigns, political consolidation, and the imperial project. Include primary-source quotes where credited (Napoleon's letters, contemporary observers — Bourrienne, Mme de Remusat, Wellington). Visual taxonomy must include: timeline of campaigns, map of the 1812 Russia campaign (and Europe-in-1812 territory map), chart of Grande Armee strength across campaigns, painting selection (David, Goya, Gericault) with annotated detail, primary-source quote panels. Skip the reading-paths navigator if it doesn't suit a continuous biographical arc.",
+      "added": "2026-05-18",
+      "priority": 2,
+      "expanded_scope": true,
+      "expanded_scope_rationale": "Twenty-eight years of continuous military and political activity across multiple distinct eras (revolutionary general, First Consul, Emperor, exile, return, exile). 12k words leaves each chapter ~1200 words and Russia in particular needs more. Estimated 15-17k."
+    },
+    {
+      "topic": "A history of Europe",
+      "scope": "REQUIRES SHARPENING before commissioning. 'A history of Europe' is too wide for even an expanded Deep Dive. Possible angles to choose from at trigger time: (a) the long peace and its end (1815-1914, Congress of Vienna to outbreak of WWI); (b) the making of Europe (Carolingian to Westphalian, 800-1648); (c) Europe in the long twentieth century (1914-1991, two wars and a cold one); (d) the European project (1945-present, ECSC / EEC / EU / Brexit, the integration story). Pick one when commissioning. The other three become future backlog entries.",
+      "added": "2026-05-18",
+      "priority": 3,
+      "needs_sharpening": true
+    },
+    {
+      "topic": "The making of Star Wars",
+      "scope": "George Lucas's New Hope through the Disney era. Cover: Lucas's USC years and the THX-1138 / American Graffiti precursors; the desperate production of A New Hope and the unexpected success; Empire and Jedi; the Special Editions; the prequels and their critical-vs-commercial split; the EU / Legends purge; the Disney acquisition and the sequel trilogy; Andor / Mandalorian / the streaming era. Treat as production history and cultural history together. Visual taxonomy must include: timeline of releases (films, TV, key behind-the-scenes events); behind-the-scenes photography (concept art, set photos, miniatures); annotated stills; chart of box office adjusted for inflation; comparison table of trilogies on critical / commercial reception; primary-source quotes from Lucas, Kennedy, Johnson, Filoni. NOTE: Star Wars is locked-register for The Signal (no spoiler-leaking from current ongoing shows beyond what the spec already permits).",
+      "added": "2026-05-18",
+      "priority": 4,
+      "expanded_scope": false,
+      "expanded_scope_rationale": "Fits comfortably in the 8-12k band. ~50 years, ~12 chapters, ~1k words each."
+    },
+    {
+      "topic": "The history of Nintendo",
+      "scope": "From hanafuda card production in Kyoto (1889) through pachinko, taxi services, love hotels (the often-forgotten experimental decades), into video games via the Magnavox Odyssey deal, the Game & Watch / Donkey Kong / Famicom rise, the Yamauchi-Iwata succession, the GameCube wilderness, the Wii / DS pivot to casual audiences, the Wii U failure, the Switch resurrection, and Switch 2. Treat as business and cultural history together. Centre Iwata's leadership and design philosophy (lateral-thinking-with-withered-technology). Visual taxonomy must include: timeline of consoles and key games, photography of consoles and Kyoto HQ, comparison table of console-generation unit sales, chart of Nintendo financials across the decades, primary-source quotes from Yamauchi / Iwata / Miyamoto / Furukawa.",
+      "added": "2026-05-18",
+      "priority": 5,
+      "expanded_scope": false
+    },
+    {
+      "topic": "The science of strength training",
+      "scope": "The evidence-based revolution. Trace strength training science from early Russian and East German sports science through the muscle confusion / bro-science era, into the modern hypertrophy literature (Schoenfeld, Helms, Israetel, the MRV/MEV/MAV framework, volume-vs-intensity debates, frequency optimisation, proximity to failure, mind-muscle connection). End with where the consensus actually is in 2026 and where it isn't. Treat as scientific intellectual history with practical relevance. Apply interpretive-diversity rule: surface ongoing disagreements (e.g., Mike Israetel's high-volume position vs Greg Nuckols' moderate-volume reading of the same data). Visual taxonomy must include: timeline of seminal studies, diagrams of muscle hypertrophy mechanisms (mechanical tension / metabolic stress / muscle damage models), charts of dose-response curves from real meta-analyses, comparison table of MRV/MEV/MAV thresholds across major muscle groups, primary-source quotes from researchers. NOTE: Apply Gate 1A — write for any reader, not for the reader's specific Ibex programme. Programmes can be named as character (e.g. 'the Lyss Method emphasises X'); never addressed at the reader.",
+      "added": "2026-05-18",
+      "priority": 6,
+      "expanded_scope": false,
+      "expanded_scope_rationale": "Fits comfortably in 8-12k. Tight subject with clear scope."
+    }
+  ]
 }

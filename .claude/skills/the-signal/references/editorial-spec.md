@@ -252,7 +252,30 @@ Use 10-14 different types per standard issue. No two consecutive sections should
 The full Sunday edition. **6,000-8,000 words, 20-30 pages.** Section order as listed above.
 
 ### Deep Dive
-Single-topic deep exploration. **8,000-12,000 words, 25-40 pages.** Manual trigger: "Run a Deep Dive on [topic]." Cover → Foreword → Reading paths (2/10/30 min) → Full story → On the Radar → Footer. Use 10-14 component types. Best for: a single subject that deserves 10x the space it would get in the weekly. The longer length must be earned with visual variety — more component rotation, not more prose.
+Single-topic deep exploration. **8,000-12,000 words default; flex to 18,000-20,000 for inherently large topics.** Manual trigger ("Run a Deep Dive on [topic]") or quarterly auto-trigger from the backlog. Cover → Foreword → Reading paths (2/10/30 min) → Full story → On the Radar → Footer. Use 10-14 component types. Best for: a single subject that deserves 10x the space it would get in the weekly.
+
+**Word-count flex rule.** The 8-12k band is the default. For inherently scope-rich topics (the Napoleonic Wars, the 2008 financial crisis, a century of computing) the chapter plan may declare `expanded_scope: true` with explicit rationale, raising the ceiling to 18-20k. Stripping the ceiling entirely is not allowed — open-ended budgets invite bloat. **Chapter-length floor:** if the average chapter would drop below 1,000 words to fit the budget, expand the budget rather than pad. Vague topics never qualify for the flex — vagueness is fixed by sharpening the scope at planner stage, not by writing more words. A vague topic at 18k is twice the disappointment of a vague topic at 8k.
+
+**Interpretive diversity (mandatory for contested topics).** Where the subject has competing scholarly, political, or analytical frames — economics, recent political history, public health, contested wars, technology debates, climate policy — the researcher must surface at least two substantive interpretive frameworks and the writer must give them parallel treatment. The dominant journalistic narrative is the *spine*. Alternative academic, expert, or revisionist frames form the *body*. A Deep Dive that traces only the most popular framing is structurally under-researched, regardless of word count. When in doubt, name the disagreement explicitly ("Most accounts emphasise X; a smaller body of work argues Y") — that is honest writing, not weasel writing.
+
+  This rule **applies** to: 2008 financial crisis, contemporary wars, Brexit, climate policy, AI safety/doom debates, vaccine policy, Israel-Palestine, the Reagan years, Thatcher's economic legacy, the early internet's privatisation, and any topic where popular journalism and academic consensus diverge meaningfully. It **does not apply** to: Napoleon (largely settled history), the Anglo-Zanzibar War (single accepted account), most cultural-history Deep Dives (Disney animation, Star Wars production), most technical Deep Dives where the science is uncontested. When in doubt, apply the rule rather than skip it — naming a disagreement that turns out to be small is preferable to ignoring one that turns out to be large.
+
+**Visual taxonomy (mandatory mix).** The longer length must be earned with visual variety. *Photographs alone do not explain a topic.* Three state portraits of Napoleon do not serve the Russia campaign — a map does. The Deep Dive must include at least **5 of the 8 visual types below**, with no single type exceeding **40% of total visual elements**. The exact mix serves the subject — military history leans maps + timelines, financial history leans diagrams + charts, cultural history leans photography + timelines + primary-source quotes.
+
+  1. **Photography / archival imagery** — paintings, photos, posters, props, screenshots
+  2. **Maps** — geographical (campaigns, contagion spread, trade routes, network of influence) or schematic
+  3. **Timelines** — vertical or horizontal, dated events with annotations. **Mandatory for biographical or chronological Deep Dives.**
+  4. **Charts / graphs** — time series, comparisons, distributions, against real sourced data. Use `.sp-dash` and `.sp-number-huge` family components; SVG line/bar charts inline.
+  5. **Diagrams** — explanatory schematics. How an MBS chain worked, how a tariff transmits through supply chains, the imperial governance structure. **Mandatory for technical / economic Deep Dives.**
+  6. **Comparison tables** — head-to-head data, multi-row multi-column
+  7. **Quote panels** — primary-source quotes treated as visual elements (not inline prose), with attribution and source links
+  8. **Annotated images** — images with callouts pointing to specific features (a painting with annotated detail, a chart with key dates marked, a map with route overlays)
+
+  **Mandatory by subject type:** timeline for any chronological/biographical Deep Dive; diagram for any technical/economic Deep Dive; map for any Deep Dive with significant geographical content. These are required *additions* to the 5-of-8 mix, not substitutes.
+
+**Visualization research (Phase 3 enhancement).** Alongside the standard image-candidates list in `research-bundle.json`, the researcher must produce a `visualization_candidates` block proposing concrete timeline event lists, chart data series with sources, diagram structures, and map subjects. Writers consume these alongside the image bundle. A Deep Dive bundle that lacks visualization candidates is incomplete and should be bounced back to the researcher.
+
+**Pipeline note.** Validators do not yet enforce the visual-taxonomy mix automatically — the planner is responsible for honouring it in the chapter plan, and the orchestrator should reject plans that show fewer than 5 of the 8 types or any single type over 40%. Validator enforcement is a future enhancement.
 
 ### The Countdown
 Pre-event build-up. **5,000-7,000 words, 18-25 pages.** Manual trigger: "Run a Countdown for [event/trip]." Best for: trips, launches, tournaments, any event worth building anticipation for.

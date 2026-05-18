@@ -80,10 +80,11 @@ P1 triggers are calendar-fixed. They always win. Compute against today's date an
 - **Half-year Rewind:** today is the last Sunday of June. **Defer rule:** if `upcoming_trips[0]` overlaps that Sunday or the following week, defer to the first Sunday at least 5 days after the trip ends.
 - **Year-end Rewind:** today is the last Sunday of December.
 - **Season Review:** Serie A or PL closing weekend has just concluded (the league has played its final matchday in the last 7 days) AND no Season Review fired for that league this season.
+- **Deep Dive (scheduled):** ALL of these must hold: (1) `deep_dive_schedule.next_due` is today or earlier; (2) `deep_dive_backlog` is non-empty; (3) no other P1 fires today; (4) today is not inside a trip window from `upcoming_trips`. If all four hold, pop the top non-`needs_sharpening` entry from `deep_dive_backlog`, commit to Deep Dive with that topic, set `deep_dive_schedule.last_fired = today`, advance `next_due` by `cadence_weeks[0]` weeks. If the top entry has `needs_sharpening: true`, skip it and try the next; if every remaining entry is `needs_sharpening`, fall back to a standard weekly and leave `next_due` unchanged so the user can resolve the sharpening on a manual pass.
 
 If ANY P1 fires, commit to that format immediately. **Skip 0c, 0d, 0e.** Continue at Phase 3.
 
-If multiple P1s fire on the same Sunday (rare): Field Guide > Countdown > Season Review > Rewind.
+If multiple P1s fire on the same Sunday (rare): Field Guide > Countdown > Season Review > Rewind > Deep Dive.
 
 ### 0c. P1-corridor lockout for P3 (mechanical)
 If no P1 fires today, compute whether today sits inside a P1 corridor: any Sunday within 4 weeks before OR 4 weeks after a P1-eligible Sunday counts as inside the corridor.
@@ -468,6 +469,13 @@ The state file at `/tmp/the-signal/state/signal-state.json` has this shape:
 **`recent_next_week_themes`** — array of short tags (max 4) for the closing "Next Week" line. Before writing, read this list and avoid repeating phrasing patterns. After writing, append and trim to last 4.
 
 **`recent_special_formats`** — array of recent specials (max 6 entries) tracking which P3 rotation formats have been used. Each entry: `{ "date": "YYYY-MM-DD", "format": "versus", "topic": "Sanguli vs Clodia" }`. Used by Phase 0e to pick the next P3 format — prefer formats not in the last 6. Append after every special edition (P1, P2, or P3 trigger), then trim to last 6. P1 specials (Field Guide, Countdown, Rewind, Season Review) are recorded but don't influence P3 rotation — they're calendar-driven, not rotation-driven; P3 picks among the rotation-eligible formats (Shortlist, Starter Kit, Blueprint, Versus, Deep Dive).
+
+**`deep_dive_schedule` and `deep_dive_backlog`** (Deep Dive as a P1 trigger). Deep Dive runs on an approximately-quarterly cadence driven by a backlog. Schema:
+
+- `deep_dive_schedule`: `{ cadence_weeks: [min, max], next_due: "YYYY-MM-DD", last_fired: "YYYY-MM-DD"|null, skip_if_no_backlog: true, rationale: "..." }`. Phase 0b checks `next_due` against today; if the date is reached and the trigger conditions hold (backlog non-empty, no other P1, not inside a trip window), a Deep Dive fires. After firing, set `last_fired = today` and `next_due = today + cadence_weeks[0]` weeks. If conditions don't hold on a Sunday where `next_due` has passed, defer one week — do NOT advance `next_due` until a Deep Dive actually fires.
+- `deep_dive_backlog`: array of topic entries. Each entry: `{ topic, scope, added, priority, expanded_scope?, expanded_scope_rationale?, needs_sharpening? }`. `topic` is short ("The rise and fall of Napoleon"). `scope` is a 2-4 sentence brief describing what the Deep Dive should cover, what interpretive frames to surface, and what visual taxonomy is mandatory for this subject. `expanded_scope: true` raises the word ceiling per the spec's flex rule. `needs_sharpening: true` marks entries that are too vague to commission and must be resolved before the trigger picks them — Phase 0b skips those and tries the next.
+
+Manual Deep Dives ("Run a Deep Dive on [topic]") are always available and bypass the schedule. After a manual Deep Dive, update `last_fired` and `next_due` as if it had been scheduled.
 
 **Per-trip `access_constraints` (optional).** Each `upcoming_trips` entry may include an `access_constraints` block describing how the reader will travel. Fields:
 - `excluded_modes` — array of transport modes the reader explicitly will not use on this trip (e.g. `["car"]`). Picks that effectively require any of these are removed from rankings, not flagged.
