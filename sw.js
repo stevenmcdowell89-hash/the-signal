@@ -16,7 +16,7 @@
  *                 the phone to verify what's actually cached.
  */
 
-const CACHE_VERSION = "v3";
+const CACHE_VERSION = "v4";
 const SHELL_CACHE = `signal-shell-${CACHE_VERSION}`;
 const ISSUE_CACHE = `signal-issues-${CACHE_VERSION}`;
 const IMAGE_CACHE = `signal-images-${CACHE_VERSION}`;
@@ -28,6 +28,19 @@ const EXTERNAL_CACHE = `signal-external-${CACHE_VERSION}`;
 //                 encoding negotiation differs from the cached value.
 //   ignoreSearch — query-string drift (?cb=…, ?v=…) doesn't break matches.
 const MATCH_OPTS = { ignoreVary: true, ignoreSearch: true };
+
+// URL normalization: with html_handling="none" in wrangler.jsonc, Cloudflare
+// no longer redirects /foo.html → /foo. But to be robust against any
+// historical inconsistency (and against re-introducing a redirect later),
+// canonicalize URLs by stripping a trailing .html before using them as
+// cache keys or match keys. /foo and /foo.html become the same cache entry.
+function canonicalUrl(req) {
+  const u = new URL(req.url);
+  u.search = "";
+  u.hash = "";
+  if (u.pathname.endsWith(".html")) u.pathname = u.pathname.slice(0, -5);
+  return u.toString();
+}
 
 const SHELL_ASSETS = [
   "/",
@@ -106,7 +119,10 @@ self.addEventListener("fetch", (event) => {
 
 async function cacheFirst(req, cacheName, opts = {}) {
   const cache = await caches.open(cacheName);
-  const cached = await cache.match(req, MATCH_OPTS);
+  const canonical = canonicalUrl(req);
+  // Look up under both the canonical (no .html) and the request URL forms.
+  let cached = await cache.match(canonical, MATCH_OPTS);
+  if (!cached) cached = await cache.match(req, MATCH_OPTS);
   if (cached) return cached;
 
   try {
@@ -118,7 +134,9 @@ async function cacheFirst(req, cacheName, opts = {}) {
     return resp;
   } catch (err) {
     // Network failed — last-resort attempts.
-    const fallback = await cache.match(req, MATCH_OPTS);
+    const fallback =
+      (await cache.match(canonical, MATCH_OPTS)) ||
+      (await cache.match(req, MATCH_OPTS));
     if (fallback) return fallback;
     if (req.mode === "navigate") {
       const indexCache = await caches.open(SHELL_CACHE);
@@ -151,17 +169,19 @@ async function staleWhileRevalidate(req, cacheName) {
 // We try the original Request first, then fall back to a clean URL-string
 // key, then record the failure into a debug cache so /sw-status can show it.
 async function putInCache(cache, req, resp) {
-  const url = req.url.split("?")[0];
+  // Always key by the canonical URL so /foo.html and /foo (after a
+  // Cloudflare redirect, or if it ever comes back) share one cache entry.
+  const canonical = canonicalUrl(req);
   const respClone = resp.clone();
 
   try {
-    await cache.put(req, respClone);
+    const canonicalReq = new Request(canonical, { method: "GET", mode: "same-origin", credentials: "same-origin" });
+    await cache.put(canonicalReq, respClone);
     return;
   } catch (err1) {
-    // Original Request rejected — try a synthetic same-origin GET Request.
+    // Synthetic Request rejected — fall back to the original.
     try {
-      const synthetic = new Request(url, { method: "GET", mode: "same-origin", credentials: "same-origin" });
-      await cache.put(synthetic, resp.clone());
+      await cache.put(req, resp.clone());
       return;
     } catch (err2) {
       // Both failed — log to debug cache (visible via /sw-status).
