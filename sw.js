@@ -7,23 +7,27 @@
  *   - Per-issue HTML (under /issues/) — cache-first with network fallback.
  *       Once an issue has been read online, it's available offline forever.
  *   - Cached images (under /assets/cached/) — cache-first.
- *       These are same-origin after the image-mirroring backfill, so caching
- *       is efficient (no opaque-response quota cost).
- *   - The archive index — stale-while-revalidate, so new issues appear when
- *       online without blocking the offline read.
- *   - External images (Google Fonts, anything still on a third-party host)
- *       — runtime cached as opaque responses. Still works offline; counts
- *       toward quota but the volume is small after the backfill.
+ *   - The archive index — stale-while-revalidate.
+ *   - External images (fonts, anything still on a third-party host) —
+ *       runtime cached as opaque responses.
  *
- * Versioning: bump CACHE_VERSION when shared assets change in a breaking
- * way. Old caches are deleted on activate.
+ * Diagnostic endpoint:
+ *   /sw-status  → JSON report of SW version + cache contents. Visit from
+ *                 the phone to verify what's actually cached.
  */
 
-const CACHE_VERSION = "v2";
+const CACHE_VERSION = "v3";
 const SHELL_CACHE = `signal-shell-${CACHE_VERSION}`;
 const ISSUE_CACHE = `signal-issues-${CACHE_VERSION}`;
 const IMAGE_CACHE = `signal-images-${CACHE_VERSION}`;
 const EXTERNAL_CACHE = `signal-external-${CACHE_VERSION}`;
+
+// Match options: needed for Cloudflare-served content.
+//   ignoreVary  — Cloudflare sets `Vary: Accept-Encoding`, which makes
+//                 default match() miss when the offline browser's
+//                 encoding negotiation differs from the cached value.
+//   ignoreSearch — query-string drift (?cb=…, ?v=…) doesn't break matches.
+const MATCH_OPTS = { ignoreVary: true, ignoreSearch: true };
 
 const SHELL_ASSETS = [
   "/",
@@ -40,8 +44,6 @@ const SHELL_ASSETS = [
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(SHELL_CACHE).then((cache) =>
-      // Use addAll with a tolerant fallback — if one shell asset is missing,
-      // don't fail the whole install.
       Promise.all(
         SHELL_ASSETS.map((url) =>
           cache.add(url).catch((err) => {
@@ -73,6 +75,12 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(req.url);
   const sameOrigin = url.origin === self.location.origin;
 
+  // Diagnostic endpoint
+  if (sameOrigin && url.pathname === "/sw-status") {
+    event.respondWith(buildStatusResponse());
+    return;
+  }
+
   if (sameOrigin && url.pathname.startsWith("/issues/")) {
     event.respondWith(cacheFirst(req, ISSUE_CACHE));
     return;
@@ -95,11 +103,6 @@ self.addEventListener("fetch", (event) => {
 });
 
 // --- Strategies -------------------------------------------------------------
-// Match options: ignoreVary because Cloudflare sets `Vary: Accept-Encoding`,
-// which causes default match() to miss cached entries when the browser's
-// negotiated encoding differs between online and offline contexts. Without
-// this, navigation requests cached online don't satisfy offline navigations.
-const MATCH_OPTS = { ignoreVary: true };
 
 async function cacheFirst(req, cacheName, opts = {}) {
   const cache = await caches.open(cacheName);
@@ -110,21 +113,18 @@ async function cacheFirst(req, cacheName, opts = {}) {
     const fetchOpts = opts.allowOpaque ? { mode: "no-cors", credentials: "omit" } : {};
     const resp = await fetch(req, fetchOpts);
     if (resp && (resp.ok || resp.type === "opaque")) {
-      // Store under the request URL stripped of any query string so cache hits
-      // are insensitive to ?cb=... / ?v=... cache-bust suffixes.
-      const cacheKey = new Request(req.url.split("?")[0], { method: "GET" });
-      cache.put(cacheKey, resp.clone()).catch(() => {});
+      await putInCache(cache, req, resp);
     }
     return resp;
   } catch (err) {
-    // Network failed — try cache fallback on the normalised URL.
-    const fallback = await cache.match(req.url.split("?")[0], MATCH_OPTS);
+    // Network failed — last-resort attempts.
+    const fallback = await cache.match(req, MATCH_OPTS);
     if (fallback) return fallback;
-    // For navigation requests, fall back to the cached index so the user
-    // sees the archive instead of Chrome's offline error page.
     if (req.mode === "navigate") {
       const indexCache = await caches.open(SHELL_CACHE);
-      const index = (await indexCache.match("/", MATCH_OPTS)) || (await indexCache.match("/index.html", MATCH_OPTS));
+      const index =
+        (await indexCache.match("/", MATCH_OPTS)) ||
+        (await indexCache.match("/index.html", MATCH_OPTS));
       if (index) return index;
     }
     throw err;
@@ -134,12 +134,96 @@ async function cacheFirst(req, cacheName, opts = {}) {
 async function staleWhileRevalidate(req, cacheName) {
   const cache = await caches.open(cacheName);
   const cached = await cache.match(req, MATCH_OPTS);
-  const cacheKey = new Request(req.url.split("?")[0], { method: "GET" });
   const fetchPromise = fetch(req)
     .then((resp) => {
-      if (resp && resp.ok) cache.put(cacheKey, resp.clone()).catch(() => {});
+      if (resp && resp.ok) putInCache(cache, req, resp);
       return resp;
     })
     .catch(() => cached);
   return cached || fetchPromise;
+}
+
+// --- Cache write with robust fallback --------------------------------------
+// cache.put() can fail for several reasons that don't surface clearly:
+//   - response has forbidden headers (Set-Cookie, etc.)
+//   - request is a "navigate" mode request and the implementation rejects it
+//   - storage quota exceeded
+// We try the original Request first, then fall back to a clean URL-string
+// key, then record the failure into a debug cache so /sw-status can show it.
+async function putInCache(cache, req, resp) {
+  const url = req.url.split("?")[0];
+  const respClone = resp.clone();
+
+  try {
+    await cache.put(req, respClone);
+    return;
+  } catch (err1) {
+    // Original Request rejected — try a synthetic same-origin GET Request.
+    try {
+      const synthetic = new Request(url, { method: "GET", mode: "same-origin", credentials: "same-origin" });
+      await cache.put(synthetic, resp.clone());
+      return;
+    } catch (err2) {
+      // Both failed — log to debug cache (visible via /sw-status).
+      try {
+        const debugCache = await caches.open("signal-debug");
+        const entry = new Response(
+          JSON.stringify({
+            ts: new Date().toISOString(),
+            url,
+            err1: String(err1 && err1.message),
+            err2: String(err2 && err2.message),
+            reqMode: req.mode,
+            respStatus: resp.status,
+            respHeaders: [...resp.headers.entries()].slice(0, 20),
+          }),
+          { headers: { "Content-Type": "application/json" } },
+        );
+        await debugCache.put(`/_debug/${Date.now()}_${encodeURIComponent(url)}`, entry);
+      } catch (_) {}
+    }
+  }
+}
+
+// --- /sw-status diagnostic endpoint ----------------------------------------
+async function buildStatusResponse() {
+  const cacheNames = await caches.keys();
+  const buckets = {};
+  for (const name of cacheNames) {
+    const cache = await caches.open(name);
+    const keys = await cache.keys();
+    buckets[name] = {
+      count: keys.length,
+      sample: keys.slice(0, 30).map((r) => r.url),
+    };
+  }
+
+  // Surface any debug-cache entries (failed cache.put attempts)
+  const failures = [];
+  try {
+    const debugCache = await caches.open("signal-debug");
+    const debugKeys = await debugCache.keys();
+    for (const k of debugKeys.slice(0, 20)) {
+      const r = await debugCache.match(k);
+      if (r) failures.push(await r.json());
+    }
+  } catch (_) {}
+
+  const body = JSON.stringify(
+    {
+      sw_version: CACHE_VERSION,
+      ts: new Date().toISOString(),
+      caches: buckets,
+      put_failures: failures,
+    },
+    null,
+    2,
+  );
+
+  return new Response(body, {
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "no-store",
+    },
+  });
 }
