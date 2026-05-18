@@ -191,6 +191,57 @@
         "returning_visitors": "Not a first visit. The reader stayed 4 nights at Beekse Bergen last year and visited Efteling for a single day on the same trip. This Countdown is framed as a return, with more time at both venues -- two nights at Efteling (vs. one day previously) and five nights at Beekse Bergen (vs. four). The emotional centre is 'going back, with more time', not 'introducing a place'. Foreword and Mood Board can lean on revisit cues; Top Attractions / Safari chapters can credit the asymmetry (rides and experiences missed last time, evening park atmosphere that requires an overnight, etc.).",
         "no_plan_by_design": "The reader has no fixed day-by-day plan beyond meal bookings (which are covered in the Field Guide, not this Countdown). The unstructured shape is intentional and suits the trip. Omit the day-by-day itinerary chapter entirely per the Itinerary rule; do not invent one.",
         "accommodation_surprise": "The family is staying in themed suites at the Wonder Hotel at Efteling for both nights, but the specific suite themes are a surprise the reader is keeping from his wife and 10-year-old son. The Accommodation chapter MUST cover the Wonder Hotel in full (rooms, dining, facilities, why it's worth staying inside the gates) and treat the themed-suite range as a CATEGORY (Sprookjessuite, Anton Pieck, Volk van Laaf, Roodkapje, Symbolica, Raveleijn, etc.) without naming or visually indicating which specific suite has been booked. Do not include any photographs that would obviously identify the booked suite. The chapter should read as 'a themed suite at the Wonder' from the family's perspective, with the actual identity preserved as a surprise."
+      },
+      "countdown_chapter_additions": {
+        "lore_and_legend": {
+          "venue": "efteling",
+          "half": "one",
+          "word_target": "600-900",
+          "framing": "Mythology as world-building, the way you would read about a city before visiting. Sprookjesbos, Pardoes, Holle Bolle Gijs, the Fabula universe as a LIVING universe. NOT a history of the park, NOT an Anton Pieck biography -- those are post-trip Deep Dive material. Hype frame: 'a universe you can step into', not 'facts about a theme park'. Carries .hol-anchor as the host block with .hol-fleuron dividers and a .hol-pull--big quote from one of the fairy tales or Fabula lore.",
+          "balance_pairing": "conservation_stories"
+        },
+        "conservation_stories": {
+          "venue": "beekse_bergen",
+          "half": "two",
+          "word_target": "600-900",
+          "framing": "Real-world counterweight to Efteling's mythology -- Beekse Bergen's serious work on cheetah breeding, white rhino conservation, African painted dogs, EAZA breeding programmes. Read as narrative not corporate -- real animals with names where named individuals exist. NOT a tour of facilities -- stories. Required to satisfy the 60/40 hype-weight rule once Lore & Legend lands on the Efteling side. Carries .hol-anchor with .hol-polaroid imagery of the animals where credited photos exist.",
+          "balance_pairing": "lore_and_legend"
+        },
+        "readers_eye_chorus": {
+          "venue": "both",
+          "placement": "Threaded as .hol-postcard ephemera between major blocks in EACH HALF (8-15 quotes per half), plus a closing 4-6 quote chorus inside .hol-meanwhile drawing from both venues. NOT a single discrete chapter -- woven through the issue as rhythm breaks per spec rule 'no two consecutive same-pattern blocks'.",
+          "framing": "Curated quotes from r/Efteling, r/themeparks, r/Beekse Bergen, TripAdvisor, Google reviews, Dutch YouTube vlog comments, Instagram captions. Every quote attributed by handle/username and source. Third-person chorus -- NEVER framed as 'fellow visitors say' or any reader-instruction phrasing per Gate 1A. Lean into unguarded, specific descriptions -- sensory beats, complaints, vlogger quips. Real voices, lightly edited for length only.",
+          "components": ".hol-postcard primary; .hol-pull / .hol-pull--big for the emphasis quotes inside Meanwhile"
+        },
+        "coaster_dataviz": {
+          "venue": "efteling",
+          "half": "one",
+          "placement": "Inside or adjacent to the Top Attractions chapter in Half I",
+          "type": "Height-and-drop chart of every Efteling coaster -- Baron 1898, Python, Joris en de Draak (two duelling tracks), Vogel Rok, Max & Moritz, Vliegende Hollander, De Vliegende Hollander. Honest dataviz with sourced numbers. ONE figure, custom inline SVG. Not a feature.",
+          "balance_note": "Beekse Bergen has no coaster equivalent. Do NOT add a second dataviz to Half II for symmetry -- the 'pick one' principle. Compensate visually in Half II via Mood Board lean (skew the Mood Board image count slightly toward BB to keep total imagery within the 60/40 split)."
+        },
+        "weather_seasonality_note": {
+          "venue": "both",
+          "placement": "Before You Go coda inside .hol-meanwhile",
+          "scope": "One paragraph, 50-100 words",
+          "framing": "Late June / early July in Brabant has real range -- heatwaves vs. thundery 19C days. Frame as RANGE not forecast. Note how heat changes which animals are visible (cats and elephants retreat to shade past 28C) and which queues lengthen. Fits comfortably under the 400-word logistics cap."
+        },
+        "closing_dday_mirror": {
+          "venue": "both",
+          "placement": "Closing footer area inside .hol-meanwhile or just before .hol-footer-row",
+          "scope": "Mirror the cover's .hol-countdown / D-day badge with alternate copy ('X sleeps' or equivalent), same numeric value as the opening badge -- the issue opens and closes on the same beat. Pure design grace note."
+        },
+        "structural_change_moodboard_position": {
+          "change": "Per-half Mood Board placement is SECOND BLOCK in each half (immediately after the half opener, before Event in Depth / Top Attractions / deeper chapters). Departure from the canonical Countdown order in editorial-spec.md (where Mood Board sits at position 7, after Top Attractions and Accommodation).",
+          "rationale": "The canonical order front-loads text-heavy pages before any pure-visual breath. Moving Mood Board to position 2 in each half gives the reader the FEEL of the place before the FACTS of it -- hype-over-homework expressed structurally. Rankings-after-atmosphere reads as informed enthusiasm; rankings-before-atmosphere reads as list. Applies per half because of the two-halves architecture.",
+          "scope_per_half": "Half I (Efteling): Opener -> Mood Board (Efteling) -> Event in Depth -> Top Attractions + coaster dataviz -> Lore & Legend -> Accommodation Wonder Hotel -> T-MINUS. Half II (Beekse Bergen): Opener -> Mood Board (BB) -> Event in Depth -> The Safari, Ranked -> Conservation Stories -> Accommodation Safari Resort -> T-MINUS."
+        },
+        "skipped_suggestions": {
+          "childs_eye_chapter": "REJECTED. Hard collision with Gate 1A reader-profile invisibility rule -- exposes family composition. Reframable only as venue character observations inside ranking voice ('the Fairytale Forest rewards slowing down to a child's pace'), which is just good ranking voice, not a separate chapter.",
+          "open_questions_diary": "REJECTED. Hard collision with Gate 1A -- first-person diary entry violates the invisibility rule. No 'I' or 'we' anywhere in the magazine per the Five Moments rule.",
+          "packing_list": "REJECTED. Duplicates the Before You Go coda and breaks the 400-word logistics cap.",
+          "anton_pieck_history": "REJECTED for this Countdown. Too homework-y for a hype issue. Save for a post-trip Deep Dive."
+        }
       }
     }
   ],
