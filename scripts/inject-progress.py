@@ -71,10 +71,15 @@ def inject(html_path: Path) -> bool:
     content = html_path.read_text(encoding="utf-8")
     if MARKER in content:
         return False
-    if "</body>" not in content:
+    # Use the LAST occurrence of </body>, not the first. Some issue templates
+    # contain literal "</body>" text inside HTML comments in <head> (agent
+    # instructions, paste-here notes); replacing the first </body> would
+    # corrupt the comment and break the page.
+    idx = content.rfind("</body>")
+    if idx < 0:
         print(f"  ! {html_path.name}: no </body> found, skipping")
         return False
-    new = content.replace("</body>", SNIPPET + "\n</body>", 1)
+    new = content[:idx] + SNIPPET + "\n" + content[idx:]
     html_path.write_text(new, encoding="utf-8")
     return True
 
