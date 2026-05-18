@@ -672,7 +672,8 @@
         var fill = document.getElementById('continue-fill');
         var pct = document.getElementById('continue-pct');
 
-        card.href = 'issues/' + top.slug + '.html';
+        // #continue triggers the issue page's scroll-restore logic.
+        card.href = 'issues/' + top.slug + '.html#continue';
         cover.style.setProperty('--cover', 'url("/assets/covers/' + top.slug + '.jpg")');
         title.textContent = top.title || top.slug;
         fill.style.width = Math.round(top.pct) + '%';
