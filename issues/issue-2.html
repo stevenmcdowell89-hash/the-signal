@@ -1699,6 +1699,21 @@ p:last-child { margin-bottom: 0; }
 }
 
 </style>
+<!-- the-signal:pwa -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#E94560">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png">
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('/sw.js').catch(function (err) {
+        console.warn('SW registration failed:', err);
+      });
+    });
+  }
+</script>
+<!-- /the-signal:pwa -->
 </head>
 <body>
 <div class="progress-bar" id="progressBar"></div>
@@ -1739,7 +1754,7 @@ p:last-child { margin-bottom: 0; }
         <p>US–Israel vs Iran enters its fifth week. The Strait of Hormuz is partially blocked, Europe is fractured, and Ukraine peace talks are dead in the water.</p>
         <div class="read-time">9 min read</div>
       </div>
-      <div class="nav-card-thumb" style="background-image:url('https://media.cnn.com/api/v1/images/stellar/prod/c-2026-03-24t180754z-1426962173-rc2vakah4ifr-rtrmadp-3-iran-crisis-pause.jpg?c=original&q=w_1041,c_fill')"></div>
+      <div class="nav-card-thumb" style="background-image:url('/assets/cached/06b0380c0fde.jpg')"></div>
     </a>
     <a href="#tech" class="nav-card tech" style="text-decoration:none">
       <div class="nav-card-tag">
@@ -1876,7 +1891,7 @@ p:last-child { margin-bottom: 0; }
   <div class="sec-gradient-overlay"></div>
   <span class="section-label" style="color:var(--rose)">The World This Week</span>
   <h2>One Month of War: The Strait of Hormuz and the Fracture No One Planned</h2>
-  <img class="hero-img reveal" src="https://media.cnn.com/api/v1/images/stellar/prod/c-2026-03-24t180754z-1426962173-rc2vakah4ifr-rtrmadp-3-iran-crisis-pause.jpg?c=original&q=w_1041,c_fill" alt="US-Israel-Iran conflict, March 2026">
+  <img class="hero-img reveal" src="/assets/cached/06b0380c0fde.jpg" alt="US-Israel-Iran conflict, March 2026">
   <div class="caption">The conflict in its fourth week. US Marines have deployed to the Gulf region. — CNN / Reuters</div>
 
   <div class="entry-stat">Day 29</div>
@@ -1958,7 +1973,7 @@ p:last-child { margin-bottom: 0; }
     <li>The $450 price point and tariff uncertainty are the prime suspects</li>
   </div>
 
-  <img class="inline-img reveal" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Nintendo_Switch_2_20250605_HOF4954_RAW-Export.png/500px-Nintendo_Switch_2_20250605_HOF4954_RAW-Export.png" alt="Nintendo Switch 2" style="border-radius:8px; margin:20px 0; max-height:280px; object-fit:contain;">
+  <img class="inline-img reveal" src="/assets/cached/bdb1c471ed3e.png" alt="Nintendo Switch 2" style="border-radius:8px; margin:20px 0; max-height:280px; object-fit:contain;">
   <div class="caption">The Nintendo Switch 2 — the console that sold out on launch but is now being overproduced relative to actual demand. — Wikipedia Commons</div>
 
   <p>Let's be precise about what <a href="https://www.bloomberg.com/news/articles/2026-03-24/nintendo-cuts-switch-2-output-by-over-30-on-weak-holiday-sales">Bloomberg's reporting</a> actually says, because this story has been slightly misrepresented in some quarters: Nintendo is cutting production because demand in the US specifically underperformed holiday-season projections. It is not a global flop. It is not a repeat of the Wii U. But the $450 price tag — a full $150 more than the original Switch launched at — is clearly proving sticky in a market where tariff uncertainty and inflation are making discretionary spending more cautious.</p>
@@ -2233,7 +2248,7 @@ p:last-child { margin-bottom: 0; }
 
   <p>The evidence suggests yes — tentatively. The creative team has explicitly learned from recent misfires: tight episode count, single narrative focus, high production values, and a protagonist with genuine menace. The two-episode premiere format is unusual but smart — it functions as a feature-length story that can be watched in one sitting. If you've been meaning to re-engage with Star Wars animation, this is the entry point. The official trailer — <a href="https://www.imdb.com/title/tt36594331/">now on Disney+</a> — is worth the 2 minutes.</p>
 
-  <img class="inline-img reveal" src="https://lumiere-a.akamaihd.net/v1/images/star-wars-maul-shadow-lord-swcj-hero-container-mobile_81561452.jpeg?region=0,50,1600,800" alt="Star Wars: Maul – Shadow Lord" style="border-radius:8px;">
+  <img class="inline-img reveal" src="/assets/cached/a23e6bb9c1f2.jpg" alt="Star Wars: Maul – Shadow Lord" style="border-radius:8px;">
   <div class="caption">Star Wars: Maul – Shadow Lord. Premieres April 6, Disney+. — StarWars.com / Lucasfilm</div>
 
   <p>This week also saw a flurry of March Star Wars comic releases: <em>The High Republic Adventures – Pathfinders 1</em>, <em>Hyperspace Stories: Codebreaker</em> (trade paperback), and the second volume of <em>Legacy of Vader: The Reign of Kylo Ren</em> drops on March 31. The Star Wars publishing machine is in full swing building narrative bridges between animated shows and comics in a way that actually rewards the attentive reader.</p>
@@ -2241,7 +2256,7 @@ p:last-child { margin-bottom: 0; }
   <h3>Quick Reviews</h3>
   <div class="card-stack">
     <div class="stack-card">
-      <img class="stack-card-img" src="https://i.ytimg.com/vi/DkVepshZhGc/maxresdefault.jpg" alt="Maul: Shadow Lord">
+      <img class="stack-card-img" src="/assets/cached/14a6116f79f2.jpg" alt="Maul: Shadow Lord">
       <div class="stack-card-body">
         <div class="stack-card-title">Maul: Shadow Lord (Preview)</div>
         <div class="stack-card-verdict">Every sign points to the tightest, most focused Star Wars content since Andor. Don't miss the two-episode premiere.</div>
@@ -2423,7 +2438,7 @@ p:last-child { margin-bottom: 0; }
   <span class="section-label" style="color:var(--hist-accent)">This Week in History</span>
   <h2>Easter Sunday, 845 AD: When Ragnar Sailed 120 Ships Up the Seine and Took Paris for Silver</h2>
 
-  <img class="img-offset reveal" src="https://upload.wikimedia.org/wikipedia/commons/c/c2/Viking_Siege_of_Paris.jpg" alt="Viking Siege of Paris 845 AD" style="border-radius:8px; width:50%; max-width:340px;">
+  <img class="img-offset reveal" src="/assets/cached/57b134e856e5.jpg" alt="Viking Siege of Paris 845 AD" style="border-radius:8px; width:50%; max-width:340px;">
 
   <p>On this day in 845 AD — Easter Sunday — a fleet of 120 Viking longships carrying more than 5,000 warriors reached the city of Paris. They entered. They plundered it. And then, when Frankish King Charles the Bald offered them 2,570 kilograms of gold and silver to leave, they left.</p>
 

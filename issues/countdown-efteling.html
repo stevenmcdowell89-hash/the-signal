@@ -79,7 +79,7 @@ p:last-child { margin-bottom: 0; }
 .cover {
   background: var(--deep);
   background-image:
-    url('https://www.netherlands-tourism.com/wp-content/uploads/2013/11/Efteling-By-night-Lavenlaar.jpg');
+    url('/assets/cached/7b0681520f3e.jpg');
   background-size: cover;
   background-position: center 40%;
   padding: 80px 60px 60px;
@@ -566,6 +566,21 @@ p:last-child { margin-bottom: 0; }
   .radar-row { grid-template-columns: 80px 1fr; }
 }
 </style>
+<!-- the-signal:pwa -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#E94560">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png">
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('/sw.js').catch(function (err) {
+        console.warn('SW registration failed:', err);
+      });
+    });
+  }
+</script>
+<!-- /the-signal:pwa -->
 </head>
 <body>
 <div class="mag">
@@ -717,7 +732,7 @@ p:last-child { margin-bottom: 0; }
   <span class="section-label">Efteling — The Fairy-Tale Kingdom</span>
   <h2>Older Than Disneyland, and Twice the Size</h2>
 
-  <img class="hero-img" src="https://content.presspage.com/uploads/1877/0cb9e438-880b-49da-bc70-2a1b509b485c/1920_efteling-deprinsesopdeerwt-paviljoentje.jpg?10000" alt="The Princess and the Pea fairy tale scene in Efteling's enchanted Fairytale Forest">
+  <img class="hero-img" src="/assets/cached/a512646eedf5.jpg" alt="The Princess and the Pea fairy tale scene in Efteling's enchanted Fairytale Forest">
   <div class="caption">The Princess and the Pea pavilion in the Fairytale Forest — Efteling's 31st fairy tale, opened May 2025. <a href="https://www.efteling.com/en/press/how-fairy-tales-made-a-difference-to-efteling-theme-park-as-early-as-1952/">Efteling Press</a></div>
 
   <p>The story of Efteling begins not with fairy tales but with football. In 1933, two clergymen in the small North Brabant town of Kaatsheuvel proposed building a sports park. By 1950, the Efteling Nature Park Foundation had been established with a more ambitious goal: attract tourists. The mayor's wife, Betty Perquin, proposed the idea that changed everything — a garden of real fairy tales, brought to life in the forest.</p>
@@ -741,7 +756,7 @@ p:last-child { margin-bottom: 0; }
   <h3>The Fairytale Forest</h3>
   <h3 class="feature-title">Thirty-One Stories in Fifteen Acres of Woodland</h3>
 
-  <img class="inline-img" src="https://www.efteling.com/en/-/media/images/social-open-graph/1200x628-roodkapje-sprookjesbos-lente.jpg" alt="Little Red Riding Hood scene in Efteling's Fairytale Forest in springtime" style="width:100%; border-radius:8px;">
+  <img class="inline-img" src="/assets/cached/a1ba86351c4f.jpg" alt="Little Red Riding Hood scene in Efteling's Fairytale Forest in springtime" style="width:100%; border-radius:8px;">
   <div class="caption">Little Red Riding Hood in the Sprookjesbos. <a href="https://www.efteling.com/en">Efteling</a></div>
 
   <p>The heart of Efteling is the <em>Sprookjesbos</em> — 15 acres of ancient woodland containing 31 fairy-tale dioramas. Every scene uses animatronics, sound design, and obsessive craftsmanship to bring the stories to life. Ten scenes are from the <strong>Brothers Grimm</strong> (Snow White, Sleeping Beauty, Rapunzel, Hansel and Gretel, Rumpelstiltskin, and more), five from <strong>Hans Christian Andersen</strong> (including The Little Mermaid and The Chinese Nightingale), and three from <strong>Charles Perrault</strong> (Little Red Riding Hood, Tom Thumb, Cinderella). (<a href="https://en.wikipedia.org/wiki/Fairytale_Forest">Wikipedia</a>)</p>
@@ -751,7 +766,7 @@ p:last-child { margin-bottom: 0; }
   <h3>The Rides</h3>
   <h3 class="feature-title">From Gentle Dark Rides to a 90 km/h Dive Coaster</h3>
 
-  <img class="inline-img" src="https://www.efteling.com/en/-/media/images/nieuw-park/park/attractions/symbolica/1024x576-symbolica-exterieur.jpg" alt="Symbolica: Palace of Fantasy exterior at Efteling" style="width:100%; border-radius:8px;">
+  <img class="inline-img" src="/assets/cached/c728f802eb12.jpg" alt="Symbolica: Palace of Fantasy exterior at Efteling" style="width:100%; border-radius:8px;">
   <div class="caption">Symbolica — Efteling's €35 million trackless dark ride, widely considered one of the finest in the world. <a href="https://www.efteling.com/en">Efteling</a></div>
 
   <p>A 10-year-old at typical height (135–140 cm) can access almost every ride listed here. Efteling's genius is that its best attractions aren't just thrill rides — they're stories you sit inside.</p>
@@ -937,7 +952,7 @@ p:last-child { margin-bottom: 0; }
   <span class="section-label" style="color: var(--rose)">Accommodation — Nights 1 &amp; 2</span>
   <h2>The Wonder Hotel</h2>
 
-  <img class="hero-img" src="https://content.presspage.com/uploads/1877/08e8e886-8f92-4f0d-8eae-69752d3db155/1920_eftelingwonderhotelimpression.jpg?10000" alt="Efteling Wonder Hotel architectural impression showing the enchanting themed exterior">
+  <img class="hero-img" src="/assets/cached/9c2b2174e1e0.jpg" alt="Efteling Wonder Hotel architectural impression showing the enchanting themed exterior">
   <div class="caption">The Efteling Wonder Hotel — your fairy-tale castle base for two nights. <a href="https://www.efteling.com/en/wonder-hotel">Efteling</a></div>
 
   <p>Originally opened in 1992 as the Efteling Hotel, fully renovated and relaunched as the <strong>Wonder Hotel</strong> in April 2025. Designed as a "castle in the clouds" with four distinctive towers, 124 rooms and suites, and subtle fairy-tale references hidden throughout — mice in the walls, Red Shoes in the cupboard, story Easter eggs in the room design. (<a href="https://www.efteling.com/en/press/efteling-wonder-hotel-reopens-following-renovations/">Efteling Press</a>)</p>
@@ -1059,7 +1074,7 @@ p:last-child { margin-bottom: 0; }
   <span class="section-label" style="color: var(--safari-accent)">Accommodation — Nights 3–7</span>
   <h2>Safari Hotel &amp; Speelland</h2>
 
-  <img class="hero-img" src="https://a.storyblok.com/f/151320/2560x1707/23eb286b7e/gezin-zomer-savanne-lodge-giraffe-safari-resort-beekse-bergen.jpg" alt="Family watching a giraffe from their lodge terrace at Safari Resort Beekse Bergen">
+  <img class="hero-img" src="/assets/cached/9fd8171ea4a1.jpg" alt="Family watching a giraffe from their lodge terrace at Safari Resort Beekse Bergen">
   <div class="caption">Waking up to giraffes from your room at the Safari Hotel. <a href="https://www.beeksebergen.nl/en/stay-the-night/hotel-resorts/safari-hotel">Beekse Bergen</a></div>
 
   <p>The <strong>Safari Hotel Beekse Bergen</strong> is an African lodge-style hotel set directly on the park's Wongo savannahs. From your room window, you watch zebras, giraffes, and rhinos move past at dawn. The aesthetic is warm earth tones, textured fabrics, and African-inspired artwork — "upmarket game lodge" rather than gimmick. The hotel carries a 9.8/10 rating on Expedia. (<a href="https://www.beeksebergen.nl/en/stay-the-night/hotel-resorts/safari-hotel">Beekse Bergen Safari Hotel</a>)</p>
@@ -1177,7 +1192,7 @@ p:last-child { margin-bottom: 0; }
     <p>Noord-Brabant's signature treat. A cream puff the size of a small planet, entirely glazed in dark chocolate. Originates from Bakkerij Royal on Visstraat in Den Bosch — 25 minutes from Beekse Bergen. Non-negotiable day-trip food goal.</p>
   </div>
 
-  <img class="inline-img" src="https://www.toineskitchen.com/wp-content/uploads/2024/05/IMG_3421-scaled.jpeg" alt="Bossche Bollen — giant chocolate-glazed cream puffs from 's-Hertogenbosch" style="width:100%; border-radius:8px;">
+  <img class="inline-img" src="/assets/cached/f524dd05c6ce.jpg" alt="Bossche Bollen — giant chocolate-glazed cream puffs from 's-Hertogenbosch" style="width:100%; border-radius:8px;">
   <div class="caption" style="color: rgba(255,255,255,.4);">Bossche Bollen — reason enough for a day trip to Den Bosch. <a href="https://www.toineskitchen.com">Toine's Kitchen</a></div>
 
   <div class="food-card">
@@ -1218,7 +1233,7 @@ p:last-child { margin-bottom: 0; }
 
   <p><strong>Duingoed Kaas:</strong> Prize-winning cheese from the Loon and Drunen Dunes area, right next to Efteling. (<a href="https://www.visitbrabant.com/en/tips/12-north-brabant-local-products-and-specialities">VisitBrabant</a>)</p>
 
-  <img class="inline-img" src="https://tarasmulticulturaltable.com/wp-content/uploads/2017/02/Stroopwafels-Dutch-Syrup-Filled-Waffle-Cookies-4-of-6.jpg" alt="Freshly made Dutch stroopwafels" style="width:100%; border-radius:8px;">
+  <img class="inline-img" src="/assets/cached/9f361c4b7d75.jpg" alt="Freshly made Dutch stroopwafels" style="width:100%; border-radius:8px;">
   <div class="caption" style="color: rgba(255,255,255,.4);">Stroopwafels — buy them fresh. The packaged version is a lie. <a href="https://tarasmulticulturaltable.com">Tara's Multicultural Table</a></div>
 
   <div class="src"><a href="https://www.visitbrabant.com/en/tips/12-north-brabant-local-products-and-specialities">VisitBrabant</a> · <a href="https://www.tripadvisor.com/RestaurantsNear-g188584-d262610-Efteling-Kaatsheuvel_North_Brabant_Province.html">TripAdvisor</a> · <a href="https://thetravelista.net/travel/the-ultimate-efteling-guide-top-tips-for-visiting-in-2025/">Travelista</a></div>

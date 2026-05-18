@@ -1848,6 +1848,21 @@ p:last-child { margin-bottom: 0; }
 }
 
 </style>
+<!-- the-signal:pwa -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#E94560">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png">
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('/sw.js').catch(function (err) {
+        console.warn('SW registration failed:', err);
+      });
+    });
+  }
+</script>
+<!-- /the-signal:pwa -->
 </head>
 <body>
 <div class="progress-bar" id="progressBar"></div>
@@ -1881,7 +1896,7 @@ p:last-child { margin-bottom: 0; }
         <p>Sixteen years of unbroken power, one deeply personal challenger, and polls suggesting Europe's most entrenched leader might finally be vulnerable. Hungary votes today.</p>
         <div class="read-time">9 min read</div>
       </div>
-      <div class="nav-card-thumb" style="background-image:url('https://npr.brightspotcdn.com/dims3/default/strip/false/crop/3000x1993+0+0/resize/1100/quality/50/format/jpeg/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2Fe8%2F70%2F228ea2804ef593dc24c677c7d909%2Fgettyimages-2269669965.jpg')"></div>
+      <div class="nav-card-thumb" style="background-image:url('/assets/cached/052fc5671633.jpg')"></div>
     </a>
     <a href="#tech" class="nav-card tech" style="text-decoration:none">
       <div class="nav-card-tag">
@@ -1994,7 +2009,7 @@ p:last-child { margin-bottom: 0; }
   <div class="sec-gradient-overlay"></div>
   <span class="section-label" style="color:var(--rose)">The World This Week</span>
   <h2>The Orbán Era on Trial</h2>
-  <img class="hero-img reveal" src="https://npr.brightspotcdn.com/dims3/default/strip/false/crop/3000x1993+0+0/resize/1100/quality/50/format/jpeg/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2Fe8%2F70%2F228ea2804ef593dc24c677c7d909%2Fgettyimages-2269669965.jpg" alt="Hungarian voters heading to the polls in April 2026">
+  <img class="hero-img reveal" src="/assets/cached/052fc5671633.jpg" alt="Hungarian voters heading to the polls in April 2026">
   <div class="caption">Hungarian parliamentary elections, April 12, 2026 — the tightest race Orbán has faced in 16 years. (Getty Images via NPR)</div>
 
   <ul class="entry-bullets">
@@ -2079,7 +2094,7 @@ p:last-child { margin-bottom: 0; }
   <div class="entry-stat">17M</div>
   <div class="entry-stat-context">Switch 2 units sold worldwide — and April is only making the argument stronger</div>
 
-  <img class="hero-img reveal" src="https://assets.nintendo.eu/image/private/f_auto/q_auto/v1766963644/sxoh0qjaww0ydtkawinv.jpg" alt="Nintendo Switch 2 April 2026 game lineup">
+  <img class="hero-img reveal" src="/assets/cached/cb4e615fa133.jpg" alt="Nintendo Switch 2 April 2026 game lineup">
   <div class="caption">Nintendo's April 2026 lineup for Switch 2. (Nintendo)</div>
 
   <h3>Pokémon Champions Arrives — and It's Not What You Expected</h3>
@@ -2434,7 +2449,7 @@ p:last-child { margin-bottom: 0; }
   <span class="section-label" style="color:var(--session-accent)">The Session</span>
   <h2>The Taper Paradox: Do Less, Run Faster</h2>
 
-  <img class="hero-img reveal" src="https://brand.assets.adidas.com/image/upload/v1728421080/edi_fw24_trainingfor10k_blog_image_02_9984d125e3.jpg" alt="Runner at the start line of a 10k race">
+  <img class="hero-img reveal" src="/assets/cached/33ffba50d00d.jpg" alt="Runner at the start line of a 10k race">
   <div class="caption">Taper week is the most misunderstood part of race preparation. (Adidas Running)</div>
 
   <div class="entry-stat">2.6%</div>
@@ -2486,7 +2501,7 @@ p:last-child { margin-bottom: 0; }
 
   <h3>Build It Right: Home Gym Gear Worth Knowing About in 2026</h3>
 
-  <img class="hero-img reveal" src="https://repfitness.com/cdn/shop/articles/WMAres-Masked_c28267a4-cbfa-4a49-9881-14bfbb9eb7fa.jpg?v=1774371119&width=1100" alt="REP Fitness home gym setup with power rack and cable attachment">
+  <img class="hero-img reveal" src="/assets/cached/0fcc46fc59d1.jpg" alt="REP Fitness home gym setup with power rack and cable attachment">
   <div class="caption">REP Fitness Ares 2.0 cable attachment — Garage Gym Reviews' top-rated home gym system for 2026. (REP Fitness)</div>
 
   <div class="entry-bullets">

@@ -3516,7 +3516,7 @@ body.is-special .sp-marquee-track > *::after {
    Usage:
      <figure class="sp-scroll-image">
        <div class="sp-scroll-image-frame">
-         <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Milan_san_siro_stadium.jpg" alt="San Siro stadium, Milan"/>
+         <img src="/assets/cached/ab50eb117f1d.jpg" alt="San Siro stadium, Milan"/>
        </div>
        <figcaption>Caption text. <cite>Credit</cite></figcaption>
      </figure>
@@ -3923,7 +3923,7 @@ body.is-special .sp-kicker.sp-no-anim {
    Great for "what people say about..." breakouts.
    Usage:
      <figure class="sp-image-quote">
-       <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Pope_Leo_XIV_on_the_loggia.jpg" alt="Pope Leo XIV"/>
+       <img src="/assets/cached/66777e13f476.jpg" alt="Pope Leo XIV"/>
        <blockquote>
          <p>"Quote text."</p>
          <cite>Attribution</cite>
@@ -6186,7 +6186,7 @@ body.is-special[data-special="field-guide"] .sp-pinboard {
    Markup:
      <aside class="sp-sticky-pin sp-sticky-pin--portrait">
        <div class="spin-inner">
-         <img src="https://upload.wikimedia.org/wikipedia/commons/6/6e/Pagode_Efteling.jpg" alt="Pagode attraction at Efteling theme park">
+         <img src="/assets/cached/4d8b0f10c878.jpg" alt="Pagode attraction at Efteling theme park">
          <figcaption class="spin-cap">Caption.</figcaption>
          <div class="spin-rule" aria-hidden="true"></div>
        </div>
@@ -7069,7 +7069,7 @@ body.is-special [data-sp-chapter].sp-ground-gallery .sp-ground-ink {
        <div class="unmissables">
          <article class="unmissable">
            <figure class="unmissable-hero">
-             <img src="https://upload.wikimedia.org/wikipedia/commons/8/8d/Pardoes_%26_Pardijn_Efteling.jpg" alt="Pardoes and Pardijn mascots at Efteling">
+             <img src="/assets/cached/b6d4b2db36c4.jpg" alt="Pardoes and Pardijn mascots at Efteling">
              <figcaption>...</figcaption>
            </figure>
            <div class="unmissable-body">
@@ -7396,6 +7396,21 @@ body[data-special="countdown"][data-multi-venue="true"] section[data-sp-chapter]
 }
 
 </style>
+<!-- the-signal:pwa -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#E94560">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png">
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('/sw.js').catch(function (err) {
+        console.warn('SW registration failed:', err);
+      });
+    });
+  }
+</script>
+<!-- /the-signal:pwa -->
 </head>
 <body>
 <!-- PERSISTENT MASTHEAD -->
@@ -7452,7 +7467,7 @@ body[data-special="countdown"][data-multi-venue="true"] section[data-sp-chapter]
         <p>Two big stories shape the week: Leo XIV lands in Rome from a landmark Africa trip, while the US opens a $166 billion refund portal for invalidated trade levies.</p>
         <div class="read-time">10 min read</div>
       </div>
-      <div class="nav-card-thumb" style="background-image:url('https://d3i6fh83elv35t.cloudfront.net/static/2026/04/2026-04-22T191142Z_1804611870_RC2HUKAXULJ4_RTRMADP_3_POPE-AFRICA-EQUATORIAL.jpg')"></div>
+      <div class="nav-card-thumb" style="background-image:url('/assets/cached/231321257bde.jpg')"></div>
     </a>
     <a href="#tech" class="nav-card tech" style="text-decoration:none">
       <div class="nav-card-tag">
@@ -7575,7 +7590,7 @@ body[data-special="countdown"][data-multi-venue="true"] section[data-sp-chapter]
   <span class="section-label" style="color:var(--rose)">The World This Week</span>
 
   <h2>Leo Returns — and Sets the Record Straight</h2>
-  <img class="hero-img reveal" src="https://d3i6fh83elv35t.cloudfront.net/static/2026/04/2026-04-22T191142Z_1804611870_RC2HUKAXULJ4_RTRMADP_3_POPE-AFRICA-EQUATORIAL.jpg" alt="Pope Leo XIV greeted by crowds in Equatorial Guinea during his Africa apostolic trip, April 2026" loading="lazy">
+  <img class="hero-img reveal" src="/assets/cached/231321257bde.jpg" alt="Pope Leo XIV greeted by crowds in Equatorial Guinea during his Africa apostolic trip, April 2026" loading="lazy">
   <div class="caption">Pope Leo XIV in Equatorial Guinea, April 2026 — Reuters / PBS NewsHour</div>
 
   <div class="stat-bar reveal">
@@ -7759,7 +7774,7 @@ body[data-special="countdown"][data-multi-venue="true"] section[data-sp-chapter]
   <span class="section-label" style="color:var(--green)">The Touchline</span>
   <h2>San Siro Sunday: What Tonight's Derby Actually Means</h2>
 
-  <img class="hero-img reveal" src="https://upload.wikimedia.org/wikipedia/commons/0/08/Milan_san_siro_stadium.jpg" alt="San Siro stadium in Milan" loading="lazy">
+  <img class="hero-img reveal" src="/assets/cached/ab50eb117f1d.jpg" alt="San Siro stadium in Milan" loading="lazy">
   <div class="caption">San Siro / Stadio Giuseppe Meazza — Wikimedia Commons</div>
 
   <p class="dropcap"><span class="lead-in">The Serie A title race</span> is, for all practical purposes, over. Inter sit on 78 points after 33 games — 12 points clear with five to play, and tonight they face Torino at the Olympic stadium in Turin while below them the real drama unfolds at San Siro.</p>
@@ -7846,7 +7861,7 @@ body[data-special="countdown"][data-multi-venue="true"] section[data-sp-chapter]
   <span class="section-label" style="color:var(--neon)">Screen &amp; Sound</span>
   <h2>Maul at the Midpoint — and a Stranger Things Surprise</h2>
 
-  <img class="hero-img reveal" src="https://lumiere-a.akamaihd.net/v1/images/star-wars-maul-shadow-lord-making-of-janix-feature_a21426a8.jpeg?region=0,0,1280,720" alt="Star Wars: Maul — Shadow Lord — the planet Janix, official art from Lucasfilm Animation" loading="lazy">
+  <img class="hero-img reveal" src="/assets/cached/deaa27ff6d8d.jpg" alt="Star Wars: Maul — Shadow Lord — the planet Janix, official art from Lucasfilm Animation" loading="lazy">
 
   <div class="entry-quote">
     <p>"Tales from '85 manages to recapture much of the early magic of the original series — something I haven't felt from Stranger Things since 2019."</p>

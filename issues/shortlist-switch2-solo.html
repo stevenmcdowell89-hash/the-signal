@@ -2041,6 +2041,21 @@ p:last-child { margin-bottom: 0; }
   max-width: 60%;
 }
 </style>
+<!-- the-signal:pwa -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#E94560">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png">
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('/sw.js').catch(function (err) {
+        console.warn('SW registration failed:', err);
+      });
+    });
+  }
+</script>
+<!-- /the-signal:pwa -->
 </head>
 <body>
 <div class="progress-bar" id="progressBar"></div>
@@ -2075,7 +2090,7 @@ p:last-child { margin-bottom: 0; }
         <p>Caves of Qud, Inscryption, Outer Wilds and four more picks that deserve your time</p>
         <div class="read-time">12 min read</div>
       </div>
-      <div class="nav-card-thumb" style="background-image:url('https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/333640/f1b42d35e0d87f7166960372af32db43c2a5b310/capsule_616x353.jpg?t=1775742814')"></div>
+      <div class="nav-card-thumb" style="background-image:url('/assets/cached/ba1d71ff42c1.jpg')"></div>
     </a>
     <!-- The Lens -->
     <a href="#lens" class="nav-card tech" style="text-decoration:none">
@@ -2194,7 +2209,7 @@ p:last-child { margin-bottom: 0; }
       <p class="src">Sources: <a href="https://www.nintendolife.com" target="_blank">Nintendo Life review (8/10)</a> · <a href="https://www.gamecritix.com" target="_blank">Game Critix</a></p>
     </div>
     <div>
-      <img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/333640/f1b42d35e0d87f7166960372af32db43c2a5b310/capsule_616x353.jpg?t=1775742814" alt="Caves of Qud" class="inline-img" style="border-radius:6px;width:100%">
+      <img src="/assets/cached/ba1d71ff42c1.jpg" alt="Caves of Qud" class="inline-img" style="border-radius:6px;width:100%">
       <div class="sidebar" style="margin-top:16px">
         <div class="sidebar-title">Quick Stats</div>
         <div class="stat-row">
@@ -2257,7 +2272,7 @@ p:last-child { margin-bottom: 0; }
       <p class="src">Sources: <a href="https://www.nintendoworldreport.com" target="_blank">Nintendo World Report</a> · <a href="https://qualbert.com" target="_blank">Qualbert review</a></p>
     </div>
     <div>
-      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1092790/ss_79a146c36a3f0b728a8e0085327cec8c7fba82d6.jpg" alt="Inscryption" class="inline-img" style="border-radius:6px;width:100%">
+      <img src="/assets/cached/8e5320a63d28.jpg" alt="Inscryption" class="inline-img" style="border-radius:6px;width:100%">
       <div class="sidebar" style="margin-top:16px">
         <div class="sidebar-title">Quick Stats</div>
         <div class="stat-row">
@@ -2402,7 +2417,7 @@ p:last-child { margin-bottom: 0; }
       <p class="src">Sources: <a href="https://www.nintendolife.com" target="_blank">Nintendo Life (Recommended)</a> · <a href="https://www.gamespot.com" target="_blank">GameSpot review</a></p>
     </div>
     <div>
-      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1265820/capsule_616x353.jpg?t=1774909410" alt="Fights in Tight Spaces" class="inline-img" style="border-radius:6px;width:100%">
+      <img src="/assets/cached/30ae9191e1dc.jpg" alt="Fights in Tight Spaces" class="inline-img" style="border-radius:6px;width:100%">
       <div class="sidebar" style="margin-top:16px">
         <div class="sidebar-title">Quick Stats</div>
         <div class="stat-row">
