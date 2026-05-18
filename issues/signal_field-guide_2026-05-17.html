@@ -11712,6 +11712,168 @@ body.is-special[data-special="field-guide"] .hol-pull--savannah p { color: var(-
   }
 }
 
+/* ============================================================
+   TIER 42 — HOLIDAY HALF-II SAVANNAH BACKGROUND (v8.13)
+
+   Lifts the Beekse Bergen (Half II) chapter background from plain
+   sand/bone to a layered savannah scene:
+
+     · Warm gradient base (sand → bone → terracotta wash)
+     · Acacia silhouette horizon along the lower edge
+     · Drifting dust-mote particles in the upper canopy
+     · Subtle paper grain at high zoom
+
+   ACTIVATION:
+     body.is-special[data-special="field-guide"] .hol-half--two
+     body.is-special[data-special="countdown"]   .hol-half--two
+
+   Tier 36 already defines .hol-half--two base palette + a starfield
+   ::before (which we override here). This tier adds the savannah
+   decoration on top.
+
+   Reduced-motion: dust motes don't animate; static placement only.
+   ============================================================ */
+
+body.is-special[data-special="field-guide"] .hol-half--two,
+body.is-special[data-special="countdown"] .hol-half--two {
+  /* Warmer gradient base — sand → bone with a hint of terracotta wash */
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 100%,
+      color-mix(in srgb, var(--hol-terracotta) 18%, transparent) 0%,
+      transparent 70%),
+    linear-gradient(180deg,
+      var(--hol-sand) 0%,
+      var(--hol-bone) 35%,
+      color-mix(in srgb, var(--hol-bone) 85%, var(--hol-sand) 15%) 70%,
+      color-mix(in srgb, var(--hol-sand) 80%, var(--hol-acacia) 8%) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* OVERRIDE the tier-36 ::before starfield (Half I leftover that
+   was inadvertently inherited) — replace with subtle paper-grain. */
+body.is-special[data-special="field-guide"] .hol-half--two::before,
+body.is-special[data-special="countdown"] .hol-half--two::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    radial-gradient(circle 1px at 20% 30%, rgba(110,75,40,0.06) 100%, transparent 100%),
+    radial-gradient(circle 0.5px at 70% 60%, rgba(110,75,40,0.05) 100%, transparent 100%),
+    radial-gradient(circle 0.5px at 40% 80%, rgba(110,75,40,0.04) 100%, transparent 100%);
+  background-size: 220px 220px, 180px 180px, 260px 260px;
+  background-position: 0 0, 80px 60px, 140px 120px;
+  opacity: 0.6;
+}
+
+/* Acacia horizon — a low silhouette band along the bottom 18%.
+   Built from inline SVG via background-image. The silhouettes are
+   stylized — five acacia umbrella trees + low brush — keyed in
+   savannah-ink for the deepest contrast against the sand ground. */
+body.is-special[data-special="field-guide"] .hol-half--two::after,
+body.is-special[data-special="countdown"] .hol-half--two::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 22%;
+  pointer-events: none;
+  z-index: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 240' preserveAspectRatio='xMidYEnd slice'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%231c2613' stop-opacity='0'/><stop offset='1' stop-color='%231c2613' stop-opacity='0.5'/></linearGradient></defs><rect width='1600' height='240' fill='url(%23g)'/><g fill='%231c2613' opacity='0.75'><path d='M0 230 L1600 230 L1600 240 L0 240 Z'/><path d='M60 230 C 60 195, 30 195, 30 180 C 0 180, 0 160, 30 160 C 30 130, 70 130, 70 160 C 100 160, 100 180, 70 180 C 70 195, 60 230, 60 230 Z'/><path d='M250 230 C 250 190, 215 188, 215 170 C 180 170, 180 145, 215 145 C 215 110, 270 110, 270 145 C 305 145, 305 170, 270 170 C 270 188, 250 230, 250 230 Z'/><path d='M520 230 C 520 195, 490 193, 490 178 C 460 178, 460 158, 490 158 C 490 128, 540 128, 540 158 C 570 158, 570 178, 540 178 C 540 193, 520 230, 520 230 Z'/><path d='M820 230 C 820 185, 780 182, 780 165 C 740 165, 740 138, 780 138 C 780 100, 855 100, 855 138 C 895 138, 895 165, 855 165 C 855 182, 820 230, 820 230 Z'/><path d='M1080 230 C 1080 200, 1055 198, 1055 184 C 1030 184, 1030 167, 1055 167 C 1055 140, 1100 140, 1100 167 C 1125 167, 1125 184, 1100 184 C 1100 198, 1080 230, 1080 230 Z'/><path d='M1320 230 C 1320 195, 1290 193, 1290 178 C 1260 178, 1260 158, 1290 158 C 1290 125, 1345 125, 1345 158 C 1375 158, 1375 178, 1345 178 C 1345 193, 1320 230, 1320 230 Z'/><path d='M1520 230 C 1520 200, 1500 199, 1500 188 C 1480 188, 1480 175, 1500 175 C 1500 155, 1535 155, 1535 175 C 1555 175, 1555 188, 1535 188 C 1535 199, 1520 230, 1520 230 Z'/></g><g fill='%231c2613' opacity='0.45'><ellipse cx='150' cy='225' rx='40' ry='4'/><ellipse cx='400' cy='228' rx='55' ry='4'/><ellipse cx='670' cy='225' rx='38' ry='4'/><ellipse cx='950' cy='228' rx='62' ry='4'/><ellipse cx='1200' cy='225' rx='45' ry='4'/><ellipse cx='1450' cy='227' rx='40' ry='4'/></g></svg>");
+  background-repeat: no-repeat;
+  background-position: bottom center;
+  background-size: 100% 100%;
+  opacity: 0.85;
+}
+
+/* Drifting dust motes — a layer of warm-toned particles above
+   the horizon, between content and the acacia band. */
+body.is-special[data-special="field-guide"] .hol-half--two .hol-half__inner,
+body.is-special[data-special="countdown"] .hol-half--two .hol-half__inner {
+  position: relative;
+  z-index: 1;
+}
+
+body.is-special[data-special="field-guide"] .hol-half--two .hol-half__inner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background-image:
+    radial-gradient(circle 2px, color-mix(in srgb, var(--hol-mustard) 60%, transparent) 50%, transparent 70%),
+    radial-gradient(circle 1.5px, color-mix(in srgb, var(--hol-brass-light) 55%, transparent) 50%, transparent 70%),
+    radial-gradient(circle 1px, color-mix(in srgb, var(--hol-terracotta) 45%, transparent) 50%, transparent 70%);
+  background-size: 380px 380px, 280px 280px, 320px 320px;
+  background-position: 60px 40px, 200px 160px, 100px 280px;
+  opacity: 0.55;
+  animation: hol-dust-drift 32s linear infinite;
+}
+
+@keyframes hol-dust-drift {
+  0%   { transform: translate3d(0, 0, 0); }
+  50%  { transform: translate3d(40px, -20px, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.is-special[data-special="field-guide"] .hol-half--two .hol-half__inner::before {
+    animation: none;
+  }
+}
+
+/* Visual heft for chapter-opener block on Half II — chunky type-shadow
+   with the burnt accent so the title sits against the savannah scene. */
+body.is-special[data-special="field-guide"] .hol-half--two .hol-half__opener,
+body.is-special[data-special="countdown"] .hol-half--two .hol-half__opener {
+  position: relative;
+  padding: 2.5rem 1.5rem 2rem;
+  margin-top: 1rem;
+}
+
+body.is-special[data-special="field-guide"] .hol-half--two .hol-half__opener::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0.5rem;
+  transform: translateX(-50%);
+  width: 240px;
+  height: 8px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 8'><path d='M0 4 L100 4 M140 4 L240 4' stroke='%238e3a18' stroke-width='1.5'/><circle cx='120' cy='4' r='3.5' fill='%238e3a18'/><circle cx='120' cy='4' r='1.5' fill='%23ede1c8'/></svg>");
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.7;
+}
+
+/* Subtle terracotta block-quote accent on Half II prose */
+body.is-special[data-special="field-guide"] .hol-half--two blockquote,
+body.is-special[data-special="field-guide"] [data-venue="beekse-bergen"] blockquote {
+  border-left-color: var(--hol-burnt);
+  background: color-mix(in srgb, var(--hol-burnt) 6%, var(--hol-bone));
+}
+
+/* Anchor card background on Half II — sand → bone gradient with
+   warmth on the bottom-left corner where the photo sits */
+body.is-special[data-special="field-guide"] .hol-half--two .hol-anchor,
+body.is-special[data-special="countdown"] .hol-half--two .hol-anchor {
+  background:
+    radial-gradient(ellipse 100% 80% at 0% 100%,
+      color-mix(in srgb, var(--hol-terracotta) 14%, transparent) 0%,
+      transparent 60%),
+    linear-gradient(135deg,
+      var(--hol-bone) 0%,
+      color-mix(in srgb, var(--hol-bone) 92%, var(--hol-sand)) 100%);
+}
+
+/* Meal-slot cards inside Half II get a warmer terracotta left-edge accent */
+body.is-special[data-special="field-guide"] .hol-half--two .hol-meal-slot::before,
+body.is-special[data-special="countdown"] .hol-half--two .hol-meal-slot::before {
+  background: linear-gradient(180deg, var(--hol-burnt) 0%, var(--hol-terracotta) 100%);
+}
+
 </style>
 </head>
 <body class="is-special" data-special="field-guide">
@@ -11956,6 +12118,11 @@ body.is-special[data-special="field-guide"] .hol-pull--savannah p { color: var(-
     </div>
 
     <p style="font-family:var(--hol-t-body);font-size:1rem;line-height:1.75;max-width:680px;margin:1.5rem auto;padding:0 1.5rem;">
+      <figure class="hol-polaroid hol-polaroid--flat" style="float:left;width:240px;margin:0 1.5rem 1rem 0;">
+        <div class="hol-polaroid__tape"></div>
+        <div class="hol-polaroid__photo" style="background-image:url('https://www.disneyfoodblog.com/wp-content/uploads/2026/04/EFTELING-Iced-Stroopwafel-Coffee-700x539.jpg');height:150px;background-size:cover;background-position:center;"></div>
+        <figcaption class="hol-polaroid__caption">Iced stroopwafel coffee · the €5.85 signature, four-times ordered in Disney Food Blog's full Efteling visit. Credit: Disney Food Blog, April 2026.</figcaption>
+      </figure>
       De Gebrande Boon (The Roasted Bean) occupies the southern counter of the Polles Keuken building on Pardoes Promenade — the same structure, a few steps from the pancake restaurant's entrance. The April 2026 Disney Food Blog report, one of the most thorough independent food reviews published of Efteling, documented an Iced Pistachio Coffee ordered on four separate occasions during a single visit: <em>"Nutty flavor, topped with pistachio cookie crumble and high-quality whipped cream... specialty coffees that had no right to be that good."</em> AllEars.Net's 2026 Efteling piece independently found <em>"shockingly good coffee and specialty coffees that made reviewers stop mid-sentence and keep drinking."</em>
     </p>
     <p style="font-family:var(--hol-t-body);font-size:1rem;line-height:1.75;max-width:680px;margin:0.75rem auto;padding:0 1.5rem;">
@@ -12006,6 +12173,11 @@ body.is-special[data-special="field-guide"] .hol-pull--savannah p { color: var(-
     </div>
 
     <p style="font-family:var(--hol-t-body);font-size:1rem;line-height:1.75;max-width:680px;margin:1.5rem auto;padding:0 1.5rem;">
+      <figure class="hol-polaroid hol-polaroid--flat" style="float:right;width:240px;margin:0 0 1rem 1.5rem;">
+        <div class="hol-polaroid__tape"></div>
+        <div class="hol-polaroid__photo" style="background-image:url('https://www.disneyfoodblog.com/wp-content/uploads/2026/04/EFTELING-Dutch-style-Loaded-Fries-snack-700x509.jpg');height:150px;background-size:cover;background-position:center;"></div>
+        <figcaption class="hol-polaroid__caption">Dutch-style loaded fries · beef stew and red onion over patatje, the Smulpaap signature. Credit: Disney Food Blog, April 2026.</figcaption>
+      </figure>
       De Smulpaap sits on Anton Pieckplein — the gas-lamp cobblestone square that forms the visual heart of Marerijk — and operates two parallel things at once: a loaded-fries counter and a working automatiek snack wall. The loaded fries earned their place in the food conversation when the Disney Food Blog's April 2026 team ate across the entire park and concluded the Dutch-style loaded fries were <em>"the best meal we had at any quick-service counter in the park"</em> — Dutch beef stew, fries, powerful onion flavour, under €8. <a href="https://www.eftelingtickets.com/food-restaurant-guide" rel="noopener noreferrer">Eftelingtickets.com's food guide</a> independently reached the same conclusion: <em>"the best meal of the Efteling."</em> Efteling published the loaded-fries recipe on their own blog in 2021, which is unusual transparency for a park dish and suggests confidence in the product.
     </p>
     <p style="font-family:var(--hol-t-body);font-size:1rem;line-height:1.75;max-width:680px;margin:0.75rem auto;padding:0 1.5rem;">
@@ -12059,6 +12231,11 @@ body.is-special[data-special="field-guide"] .hol-pull--savannah p { color: var(-
     </div>
 
     <p style="font-family:var(--hol-t-body);font-size:1rem;line-height:1.75;max-width:680px;margin:1.5rem auto;padding:0 1.5rem;">
+      <figure class="hol-polaroid hol-polaroid--flat" style="float:left;width:240px;margin:0 1.5rem 1rem 0;">
+        <div class="hol-polaroid__tape"></div>
+        <div class="hol-polaroid__photo" style="background-image:url('https://www.efteling.com/-/media/images/nieuw-park/park/horeca/t-poffertje/1024x576-poffertje-gallery-5.jpg');height:150px;background-size:cover;background-position:center;"></div>
+        <figcaption class="hol-polaroid__caption">A heap of warm poffertjes, powdered-sugar and butter — the Dutch mini-pancake at its source format. Credit: Efteling press kit.</figcaption>
+      </figure>
       'T Poffertje is the most direct form of Dutch street-fair food in the park: a circus-tent kiosk in Marerijk serving poffertjes — small, yeasted Dutch mini-pancakes cooked on a special cast-iron plate with shallow indentations, traditionally served with powdered sugar and a knob of butter. The Dutch Themepark Network positions it as essential within the park's Dutch food map: <em>"Poffertjes are soft, fluffy pancakes with powdered sugar and butter — a must at the circus-tent restaurant across from the steam carousel."</em> The open kitchen means the cooking process is visible to visitors, which is part of the draw — the rows of poffertjes bubbling in the hot pan are a consistent draw for crowds walking past.
     </p>
     <p style="font-family:var(--hol-t-body);font-size:1rem;line-height:1.75;max-width:680px;margin:0.75rem auto;padding:0 1.5rem;">
@@ -12119,6 +12296,11 @@ body.is-special[data-special="field-guide"] .hol-pull--savannah p { color: var(-
     </div>
 
     <p style="font-family:var(--hol-t-body);font-size:1rem;line-height:1.75;max-width:680px;margin:1.5rem auto;padding:0 1.5rem;">
+      <figure class="hol-polaroid hol-polaroid--flat" style="float:right;width:240px;margin:0 0 1rem 1.5rem;">
+        <div class="hol-polaroid__tape"></div>
+        <div class="hol-polaroid__photo" style="background-image:url('https://www.disneyfoodblog.com/wp-content/uploads/2026/04/EFTELING-Crushi-sushi-salmon-with-soy-sauce-pearls-and-sriracha-mayonnaise--700x525.jpg');height:150px;background-size:cover;background-position:center;"></div>
+        <figcaption class="hol-polaroid__caption">Crushi · the 2026 crispy-salmon sushi with sriracha mayo and soy pearls (€12.50). Credit: Disney Food Blog, April 2026.</figcaption>
+      </figure>
       De Meermin (The Mermaid) has served kibbeling — Dutch fried fish bites, a food tradition originating in 19th-century port cities — from this nautical-themed counter in Ruigrijk since 1996. That 28-year continuous run makes it one of the longest-operating food outlets in the park, and the multiple independent sources that converge on it confirm it still earns the visit. The <a href="https://aegtte.weebly.com/de-meermin-the-mermaid.html" rel="noopener noreferrer">An Englishman's Guide to the Efteling</a> describes the setting plainly: <em>"De Meermin is decorated to make you feel like you're at the sea side — a fish and chips establishment with outside seating since 1996."</em> The Dutch Themepark Network singles out the haring (raw herring served with onions and pickles) as the most culturally specific item: classic Dutch street food moved inside the park.
     </p>
     <p style="font-family:var(--hol-t-body);font-size:1rem;line-height:1.75;max-width:680px;margin:0.75rem auto;padding:0 1.5rem;">
@@ -12210,6 +12392,11 @@ body.is-special[data-special="field-guide"] .hol-pull--savannah p { color: var(-
     </div>
 
     <p style="font-family:var(--hol-t-body);font-size:1rem;line-height:1.75;max-width:680px;margin:1.5rem auto;padding:0 1.5rem;">
+      <figure class="hol-polaroid hol-polaroid--flat" style="float:right;width:240px;margin:0 0 1rem 1.5rem;">
+        <div class="hol-polaroid__tape"></div>
+        <div class="hol-polaroid__photo" style="background-image:url('https://www.disneyfoodblog.com/wp-content/uploads/2026/04/EFTELING-Giant-Gherkin-700x527.jpg');height:150px;background-size:cover;background-position:center;"></div>
+        <figcaption class="hol-polaroid__caption">The €2 giant gherkin — flagged by Disney Food Blog as the day's surprise; sweet-street-snack status. Credit: Disney Food Blog, April 2026.</figcaption>
+      </figure>
       Hollandsche Gebakkraam is a traditional Dutch pastry kiosk near the fairytale forest — the type of cash-in-hand street-fair stand that defines Dutch kermis (funfair) culture. The warm stroopwafel here is cited across multiple independent sources as the canonical Efteling stroopwafel moment: <a href="https://www.dutchthemeparknetwork.com/efteling/efteling-food/2055352_a-taste-of-dutch-tradition-food-and-snacks-at-efteling" rel="noopener noreferrer">Dutch Themepark Network</a> describes it as <em>"two thin dough layers with caramel syrup filling. The authentic way: warm, just made, not the supermarket-packaged variety."</em> <a href="https://www.eftelingtickets.com/food-restaurant-guide" rel="noopener noreferrer">Eftelingtickets.com</a> names it <em>"the canonical Efteling sweet moment"</em> — a fresh waffle cookie sliced and filled with caramel syrup in front of the visitor.
     </p>
     <p style="font-family:var(--hol-t-body);font-size:1rem;line-height:1.75;max-width:680px;margin:0.75rem auto;padding:0 1.5rem;">
@@ -12326,6 +12513,18 @@ body.is-special[data-special="field-guide"] .hol-pull--savannah p { color: var(-
       <p>The park's marquee lunch options are covered in Unmissables: the loaded fries and snack wall at De Smulpaap (Anton Pieckplein), the kibbeling and fish counter at De Meermin (Ruigrijk), and the self-service hot meals at Het Witte Paard (Sint Nicolaasplein). The ranked options below are the reference-tier venues for a lunch that doesn't require planning around a reservation or peak-hour queue management.</p>
       <ol class="hol-meal-slot__list">
         <li class="hol-meal-slot__item">
+          <h4>Polles Keuken — Symbolica / Pardoes Promenade <span class="hol-meal-slot__tier tier-hot">UNMISSABLE</span></h4>
+          <p>Tops the slot for the same reason it anchors the Unmissables chapter: the estate's only table-service pancake restaurant inside the park, with a mechanical-stove show every fifteen minutes and reservations free via the Efteling app. Arrive by 11:30 opening or after 2pm to dodge the peak queue. The full pick — sources, quotes, queue-management notes — sits earlier in the issue; this is the slot-fit summary.</p>
+        </li>
+        <li class="hol-meal-slot__item">
+          <h4>Het Witte Paard — Sint Nicolaasplein <span class="hol-meal-slot__tier tier-hot">UNMISSABLE</span></h4>
+          <p>The best self-service hot lunch in the park, anchored on the historic Anton Pieck square. Beef stew, fresh sandwiches, vegan-friendly pasta, and the regional Bossche Bol — all at below-park-average pricing. The Anton Pieck zone keeps midday queues shorter than Marerijk's central plaza. Full pick covered earlier.</p>
+        </li>
+        <li class="hol-meal-slot__item">
+          <h4>De Meermin — Ruigrijk near Python <span class="hol-meal-slot__tier tier-hot">UNMISSABLE</span></h4>
+          <p>The fish counter that doubles as a thrill-zone lunch venue: kibbeling and chips €10, crushi sushi €12.50, the €2 giant gherkin. The Ruigrijk plaza location makes it the geographically natural lunch stop for any morning circuit that started at Python or Joris en de Draak. Full pick covered earlier.</p>
+        </li>
+        <li class="hol-meal-slot__item">
           <h4>Kashba — Sindbad's World</h4>
           <p>The quietest mid-range lunch in the park. Opened April 2023 in the former Panorama building — one of Efteling's most architecturally detailed spaces — Kashba runs a Moroccan-style self-service counter with lentil soup, falafel rolls, erwtensoep (Dutch pea soup), and hot Oriental-spiced mains. An Englishman's Guide to the Efteling specifically recommends the pairing: <a href="https://aegtte.weebly.com/kashba.html">"In restaurant Kashba, visitors can get a lentil soup with a falafel roll — recommended for a lighter, cheaper lunch break."</a> The official Efteling page notes <a href="https://www.efteling.com/en/park/restaurants/kashba">"sandwiches, salads, hot meals, dishes from the World of Sindbad."</a> Soups run €4.50–€5.50; falafel rolls and sandwiches €5.50–€7.50; hot mains €12–€15. Walk-in; the Sindbad zone location keeps queues shorter than the Marerijk or Pardoes Promenade options at peak midday.</p>
         </li>
@@ -12376,6 +12575,10 @@ body.is-special[data-special="field-guide"] .hol-pull--savannah p { color: var(-
       <p>Dinner at Efteling is where the estate shows its depth. Polles Keuken — covered in Unmissables — is the marquee evening option, running after park close until approximately 9pm on summer nights and bookable for free via the Efteling app. Below Polles Keuken, the two hotels provide genuinely different dinner registers, from the atmosphere-first Brasserie 7 terrace to Restaurant Saga's small-plates format.</p>
       <ol class="hol-meal-slot__list">
         <li class="hol-meal-slot__item">
+          <h4>Polles Keuken — Symbolica / Pardoes Promenade <span class="hol-meal-slot__tier tier-hot">UNMISSABLE</span></h4>
+          <p>The dinner anchor for any visitor staying past park close. Continues serving until approximately 9pm on summer nights — one of only two venues on the estate that extends past official closing. Free reservations via the Efteling app; family-pancake format scales well for groups. Full pick covered earlier; this is the slot-fit summary.</p>
+        </li>
+        <li class="hol-meal-slot__item">
           <h4>Brasserie 7 — Efteling Grand Hotel</h4>
           <p>The structural reason to eat here is the terrace, positioned directly facing Aquanura — Efteling's evening water-and-light show. A Nationalworld.com reviewer described the experience: <a href="https://www.nationalworld.com/travel/travel-advice/efteling-grand-hotel-review-sheer-opulence-amid-a-brilliantly-bonkers-theme-park-5264914">"The restaurant has a warm atmosphere, especially when the Aquanura fountain show is happening just outside — you can step onto the balcony with a glass of wine and watch the lights."</a> The official press frames the menu as classics with seven fairy-tale ingredients: <a href="https://hotelvak.eu/en/food-beverage/culinary-magic-in-efteling-grand-hotel/">"from dragon's breath to fairy dust — 300 seats inside, 250 on the terrace."</a> Dinner mains run approximately €18–€28. The caveat is genuine: TripAdvisor reviewers note <a href="https://www.tripadvisor.com/ShowUserReviews-g188584-d33442950-r1027202380-Brasserie_7_The_Grand_Hotel_Efteling-Kaatsheuvel_North_Brabant_Province.html">"small portions and inconsistent quality"</a> on execution. Rank it for the terrace-and-show combination; manage expectations on the plates. Reservations recommended for dinner; walk-in for lunch.</p>
         </li>
@@ -12414,6 +12617,22 @@ body.is-special[data-special="field-guide"] .hol-pull--savannah p { color: var(-
       <p>The estate's snack infrastructure runs five deep before reaching the reference tier: the Unmissables chapter covers the spiral potato at De Eigenheymer (four park-wide locations, €6), the poffertjes at 't Poffertje (Marerijk), and the warm stroopwafel and giant gherkin at Hollandsche Gebakkraam. The ranked options below cover the snack estate one tier down — still worth knowing for the moments between those headliners.</p>
       <ol class="hol-meal-slot__list">
         <li class="hol-meal-slot__item">
+          <h4>De Eigenheymer — four park-wide locations <span class="hol-meal-slot__tier tier-hot">UNMISSABLE</span></h4>
+          <p>The estate's most distinctive snack: spiral-cut potato on a stick, €6, available at four locations spread across the park. The structural pick for anyone wanting something hot, walkable, and unmistakably Efteling. Full pick covered earlier.</p>
+        </li>
+        <li class="hol-meal-slot__item">
+          <h4>De Smulpaap — Anton Pieckplein <span class="hol-meal-slot__tier tier-hot">UNMISSABLE</span></h4>
+          <p>Loaded fries with frikandel or kroket (€7.50), plus the heated-compartment snack wall — the Dutch automatiek format inside a theme park. The cultural snack stop, anchored on the historic Anton Pieck square. Full pick covered earlier.</p>
+        </li>
+        <li class="hol-meal-slot__item">
+          <h4>'t Poffertje — Marerijk Stoomcarrousel <span class="hol-meal-slot__tier tier-hot">UNMISSABLE</span></h4>
+          <p>The only dedicated poffertjes stop in the park: tiny Dutch mini-pancakes served warm with powdered sugar and butter, positioned opposite the historic Stoomcarrousel. The street-fair register the Marerijk zone is built on. Full pick covered earlier.</p>
+        </li>
+        <li class="hol-meal-slot__item">
+          <h4>De Meermin — Ruigrijk near Python <span class="hol-meal-slot__tier tier-warm">UNMISSABLE</span></h4>
+          <p>If the kibbeling counter already handled lunch, it still pulls double-duty as the afternoon snack stop in the thrill zone — fish bites, the €2 giant gherkin, mid-circuit. Lower than the three above because it ranks higher in Lunch; here for completeness. Full pick covered earlier.</p>
+        </li>
+        <li class="hol-meal-slot__item">
           <h4>Den Suykerbuyk / De Vorstelijke Vrieskamer — ice cream mid-park</h4>
           <p>Two of the park's dedicated ice cream parlours, covering different zones. De Vorstelijke Vrieskamer (the Royal Ice Cream Chamber) operates on the fairy-tale theming register with its winter-palace styling; Den Suykerbuyk (the Sugar Pot) is positioned in a separate park zone. Both are listed in the Efteling's own food overview and flagged in the eftelingtickets.com food guide as the estate's primary ice cream options for a mid-afternoon park stop. The grab-and-go format and park-hours operation make them the fastest sweet fix in their respective zones — shorter waits than the dessert counter queues at the central Marerijk venues. Check the park app for which parlour is closest to the current route.</p>
         </li>
@@ -12427,6 +12646,13 @@ body.is-special[data-special="field-guide"] .hol-pull--savannah p { color: var(-
         </li>
       </ol>
     </div>
+
+    <!-- ATMOSPHERIC POLAROID — Spanish-style loaded fries at De Smulpaap, bridges snacks to coffee -->
+    <figure class="hol-polaroid hol-polaroid--right" style="max-width:280px;margin:1.5rem auto;">
+      <div class="hol-polaroid__tape"></div>
+      <div class="hol-polaroid__photo" style="background-image:url('https://www.disneyfoodblog.com/wp-content/uploads/2026/04/EFTELING-Spanish-style-Loaded-Fries-snack-700x527.jpg');"></div>
+      <figcaption class="hol-polaroid__caption">The Spanish-style loaded fries at De Smulpaap — chorizo, peppers, parmesan. The second register on the Smulpaap menu, on Anton Pieckplein. Credit: Disney Food Blog.</figcaption>
+    </figure>
 
     <!-- VARIETY BREAK 4: STAMP — Restaurant-Bar Mystique, Grand Hotel -->
     <div class="hol-stamp hol-stamp--brass" style="display:block; margin: 2rem auto; text-align:center; max-width:480px;">
@@ -12447,6 +12673,14 @@ body.is-special[data-special="field-guide"] .hol-pull--savannah p { color: var(-
       <p>De Gebrande Boon — covered in Unmissables — is the non-negotiable coffee stop on Pardoes Promenade: iced stroopwafel coffee (€5.85) or iced pistachio coffee (€5.85), espresso from €2.60, and the exclusive Hartenkoek biscuit. The Bossche Bol (the cream-filled, chocolate-coated Noord-Brabant pastry, ~€4.50) is a regional speciality worth knowing for the afternoon dessert moment — available at the self-service counter on Sint Nicolaasplein. The ranked options below cover the rest of the coffee-and-dessert estate.</p>
       <ol class="hol-meal-slot__list">
         <li class="hol-meal-slot__item">
+          <h4>De Gebrande Boon — Pardoes Promenade <span class="hol-meal-slot__tier tier-hot">UNMISSABLE</span></h4>
+          <p>The non-negotiable coffee stop. Iced stroopwafel coffee or iced pistachio coffee at €5.85, espresso from €2.60, the exclusive Hartenkoek biscuit. The south counter of the Polles Keuken building. Disney Food Blog ordered the iced pistachio four times in a single visit. Full pick covered earlier.</p>
+        </li>
+        <li class="hol-meal-slot__item">
+          <h4>Hollandsche Gebakkraam — fairytale forest entrance <span class="hol-meal-slot__tier tier-hot">UNMISSABLE</span></h4>
+          <p>The estate's traditional pastry stand: warm stroopwafels (~€4), the regional Bossche Bol, and the €2 giant pickled gherkin that Disney Food Blog flagged as the day's surprise. Strongest baked-goods queue under €5 in the park. Full pick covered earlier.</p>
+        </li>
+        <li class="hol-meal-slot__item">
           <h4>Ijssalon La Dame Blanche</h4>
           <p>The estate's dedicated ice cream parlour with the widest selection among the park's dessert stops. Named in the Efteling food overview and flagged in the eftelingtickets.com guide as the park's primary ice cream venue. The Dutch Themepark Network includes it in the sweet-stop itinerary for a full park day: <a href="https://www.dutchthemeparknetwork.com/efteling/efteling-food/2055352_a-taste-of-dutch-tradition-food-and-snacks-at-efteling">"ice cream and frozen desserts, multiple flavours and sundae formats."</a> Walk-in; location within the park makes it a natural stop between the Marerijk and Symbolica zones. Check the park app for current flavours and seasonal specials.</p>
         </li>
@@ -12466,6 +12700,13 @@ body.is-special[data-special="field-guide"] .hol-pull--savannah p { color: var(-
       <div class="hol-polaroid__tape"></div>
       <div class="hol-polaroid__photo" style="background-image:url('https://live.staticflickr.com/65535/52864505721_eeaeb054e2.jpg');"></div>
       <figcaption class="hol-polaroid__caption">Kashba's Moroccan interior, opened April 2023 in the former Panorama building — the most visually distinctive coffee room in the park. Credit: Perry Tak / meteorry, Flickr.</figcaption>
+    </figure>
+
+    <!-- ATMOSPHERIC POLAROID — Iced pistachio coffee, De Gebrande Boon (the second signature drink) -->
+    <figure class="hol-polaroid hol-polaroid--flat" style="max-width:260px;margin:1.5rem auto;">
+      <div class="hol-polaroid__tape"></div>
+      <div class="hol-polaroid__photo" style="background-image:url('https://www.disneyfoodblog.com/wp-content/uploads/2026/04/EFTELING-Pistachio-Coffee--700x559.jpg');"></div>
+      <figcaption class="hol-polaroid__caption">Iced pistachio coffee · the De Gebrande Boon companion to the stroopwafel iced. €5.85, Pardoes Promenade. Credit: Disney Food Blog.</figcaption>
     </figure>
 
     <!-- DON'T MISS BLOCK -->
@@ -12649,6 +12890,12 @@ body.is-special[data-special="field-guide"] .hol-pull--savannah p { color: var(-
       </div>
     </div>
 
+    <figure class="hol-polaroid hol-polaroid--flat" style="float:left;width:240px;margin:0.5rem 1.5rem 1rem 1.5rem;">
+      <div class="hol-polaroid__tape"></div>
+      <div class="hol-polaroid__photo" style="background-image:url('https://cdn.libemaweb.com/f/151320/2560x1707/4900371f08/gegrilde-groente-wokken-restaurant-moto-safari-resort-beekse-bergen.jpg');height:150px;background-size:cover;background-position:center;"></div>
+      <figcaption class="hol-polaroid__caption">Grilled vegetables in the wok — Moto's open-fire kitchen. Credit: Beekse Bergen press kit.</figcaption>
+    </figure>
+
     <p style="font-family:var(--hol-t-body);font-size:1rem;line-height:1.75;max-width:680px;margin:1.5rem auto;padding:0 1.5rem;">
       Moto is the evening anchor for guests staying in the Safari Resort's lodge accommodation — the side of the estate that does not have the Safari Hotel's Nommos or Amma within easy reach. It is an open-fire grill restaurant with a savannah terrace, and it fills the gap between a self-catering dinner in the lodge and a full-service hotel experience. <a href="https://www.holiday-park-guide.com/blog/Review-of-Safari-Resort-Beekse-Bergen" rel="noopener noreferrer">Holiday Park Guide</a> reviewed the Safari Resort's eating facilities and gave them 9/10, specifically mentioning "Restaurant Moto has a cozy atmosphere with African decorations and offers both indoor and outdoor seating."
     </p>
@@ -12705,6 +12952,12 @@ body.is-special[data-special="field-guide"] .hol-pull--savannah p { color: var(-
       </div>
     </div>
 
+    <figure class="hol-polaroid hol-polaroid--flat" style="float:right;width:240px;margin:0.5rem 1.5rem 1rem 1.5rem;">
+      <div class="hol-polaroid__tape"></div>
+      <div class="hol-polaroid__photo" style="background-image:url('https://cdn.libemaweb.com/f/151320/2560x1707/9dc8bd4012/hartige-pannenkoek-kaas-champignon-ui-wanyama-safaripark-beekse-bergen.jpg');height:150px;background-size:cover;background-position:center;"></div>
+      <figcaption class="hol-polaroid__caption">The savoury format — Wanyama's hartige pannenkoek with cheese, mushroom, and onion. Credit: Beekse Bergen press kit.</figcaption>
+    </figure>
+
     <p style="font-family:var(--hol-t-body);font-size:1rem;line-height:1.75;max-width:680px;margin:1.5rem auto;padding:0 1.5rem;">
       The pannenkoeken thread that runs through the Efteling half of this guide — from Polles Keuken's fairy-tale kitchen to the poffertjes at Amma's breakfast buffet — finds its wildlife-backdrop expression here. Wanyama is a table-service pannenkoeken restaurant sitting on the Safariplein inside the park itself, with a covered terrace that looks directly at the gorilla and lion enclosures. The 2023 renovation brought a new menu visual and QR-code ordering; the format is walk-in, sit-down, no reservation required.
     </p>
@@ -12750,6 +13003,12 @@ body.is-special[data-special="field-guide"] .hol-pull--savannah p { color: var(-
         </dl>
       </div>
     </div>
+
+    <figure class="hol-polaroid hol-polaroid--flat" style="float:left;width:240px;margin:0.5rem 1.5rem 1rem 1.5rem;">
+      <div class="hol-polaroid__tape"></div>
+      <div class="hol-polaroid__photo" style="background-image:url('https://cdn.libemaweb.com/f/151320/2560x1707/e317c71f9a/wijn-rood-wit-restaurant-moto-safari-resort-beekse-bergen.jpg');height:150px;background-size:cover;background-position:center;"></div>
+      <figcaption class="hol-polaroid__caption">Boschendal Sauvignon Blanc + Merlot — the South African list that runs across Hogon, Moto, and the Safari Hotel. Credit: Beekse Bergen press kit.</figcaption>
+    </figure>
 
     <p style="font-family:var(--hol-t-body);font-size:1rem;line-height:1.75;max-width:680px;margin:1.5rem auto;padding:0 1.5rem;">
       Every estate has a gap between meals — the two hours after the Safaripark closes but before dinner is ready, the morning coffee moment before the day starts, the post-dinner place that isn't the room. At the Safari Hotel, that gap is filled by the Hogon Bar. It opens at 10am and runs to 11pm, which makes it the longest-trading venue on the estate by a meaningful margin. The espresso bar starts at 10, the light lunch runs noon to 3, and from the afternoon onward it shifts into a cocktail-and-snack-board lounge with the savannah terrace still in view.
@@ -12808,6 +13067,12 @@ body.is-special[data-special="field-guide"] .hol-pull--savannah p { color: var(-
       </div>
     </div>
 
+    <figure class="hol-polaroid hol-polaroid--flat" style="float:right;width:240px;margin:0.5rem 1.5rem 1rem 1.5rem;">
+      <div class="hol-polaroid__tape"></div>
+      <div class="hol-polaroid__photo" style="background-image:url('https://cdn.libemaweb.com/f/151320/2560x1707/d465a19447/pinsa-ham-gerecht-restaurant-mugunda-afrikadorp-safaripark-beekse-bergen.jpg');height:150px;background-size:cover;background-position:center;"></div>
+      <figcaption class="hol-polaroid__caption">Pinsa with ham — Mugunda's Italian flatbread, the menu's second register beside the African bowls. Credit: Beekse Bergen press kit.</figcaption>
+    </figure>
+
     <p style="font-family:var(--hol-t-body);font-size:1rem;line-height:1.75;max-width:680px;margin:1.5rem auto;padding:0 1.5rem;">
       Where Wanyama sits at the front of the Safaripark with gorilla and lion views, Mugunda sits mid-park at the Afrikadorp — the Africa Village section — with its terrace angled toward the elephant and rhino enclosures. It is the second of the Safaripark's two substantive lunch venues, and it serves a different format: self-service via an order kiosk, no table-service wait, and a menu built around African bowls, Italian-inspired pinsas, and pasta rather than pancakes.
     </p>
@@ -12864,6 +13129,12 @@ body.is-special[data-special="field-guide"] .hol-pull--savannah p { color: var(-
         </dl>
       </div>
     </div>
+
+    <figure class="hol-polaroid hol-polaroid--flat" style="float:left;width:240px;margin:0.5rem 1.5rem 1rem 1.5rem;">
+      <div class="hol-polaroid__tape"></div>
+      <div class="hol-polaroid__photo" style="background-image:url('https://cdn.libemaweb.com/f/151320/2560x1706/08e305bc83/voorgerechten-meloen-feta-piri-piri-garnalen-lake-resort-beekse-bergen.jpg');height:150px;background-size:cover;background-position:center;"></div>
+      <figcaption class="hol-polaroid__caption">Piri-piri prawns with watermelon-feta salad — Labadi's Lake Resort opener, beach-Ghanaian register. Credit: Beekse Bergen press kit.</figcaption>
+    </figure>
 
     <p style="font-family:var(--hol-t-body);font-size:1rem;line-height:1.75;max-width:680px;margin:1.5rem auto;padding:0 1.5rem;">
       Labadi exists because the Lake Resort — the side of the estate housing bungalows, jungalows, and camping accommodation alongside Lake Victoria — needs a sit-down restaurant of its own. It is, structurally, the Lake Resort's Moto equivalent: the only full table-service venue on that side, covering all three meal periods and functioning as the on-site dining anchor for guests who are not staying at the Safari Hotel or Safari Resort. The <a href="https://www.beeksebergen.nl/en/stay-the-night/practical-info/facilities-activities/food-drinks/restaurant-labadi" rel="noopener noreferrer">Beekse Bergen official Labadi page</a> confirms the dual register: "Enjoy a delicious lunch in the afternoon and pizzas and pastas in the evening, while the sun slowly sets."
