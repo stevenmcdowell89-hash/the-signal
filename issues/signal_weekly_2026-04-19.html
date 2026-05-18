@@ -2722,5 +2722,47 @@ p:last-child { margin-bottom: 0; }
 })();
 
 </script>
+<!-- the-signal:progress -->
+<script>
+(function () {
+  if (!('localStorage' in window)) return;
+  try {
+    var path = window.location.pathname;
+    var slug = (path.split('/').pop() || '').replace(/\.html$/, '');
+    if (!slug) return;
+    var titleEl = document.querySelector('h1') || document.querySelector('title');
+    var title = (titleEl ? titleEl.textContent : slug).trim().slice(0, 140);
+    var key = 'signal-progress-' + slug;
+
+    function pct() {
+      var doc = document.documentElement;
+      var scrolled = window.scrollY || doc.scrollTop || 0;
+      var max = Math.max(1, doc.scrollHeight - window.innerHeight);
+      return Math.max(0, Math.min(100, (scrolled / max) * 100));
+    }
+    function save() {
+      try {
+        localStorage.setItem(key, JSON.stringify({
+          slug: slug, title: title, pct: pct(), ts: Date.now()
+        }));
+      } catch (_) {}
+    }
+
+    var t = null;
+    function debounced() {
+      if (t) clearTimeout(t);
+      t = setTimeout(save, 1500);
+    }
+    window.addEventListener('scroll', debounced, { passive: true });
+    window.addEventListener('beforeunload', save);
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'hidden') save();
+    });
+    // Save once after initial paint so even no-scroll opens register a visit.
+    setTimeout(save, 3000);
+  } catch (_) {}
+})();
+</script>
+<!-- /the-signal:progress -->
 </body>
 </html>
