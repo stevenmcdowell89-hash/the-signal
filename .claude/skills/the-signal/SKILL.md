@@ -442,7 +442,14 @@ The state file at `/tmp/the-signal/state/signal-state.json` has this shape:
     "post_june30": "hypertrophy at maintenance/surplus"
   },
   "ongoing_stories": [
-    { "topic": "Iran War", "section": "world", "weeks_as_lead": 4, "weeks_as_ongoing": 0, "last_status": "lead" }
+    {
+      "topic": "Iran War",
+      "section": "world",
+      "weeks_as_lead": 4,
+      "weeks_as_ongoing": 0,
+      "last_status": "lead",
+      "lead_history": ["2026-03-15", "2026-03-22", "2026-04-05", "2026-04-19", "2026-05-03"]
+    }
   ],
   "upcoming_trips": [
     {
@@ -509,7 +516,7 @@ When generating an issue:
    - `editorial_picks_used` (append topic if Priority 3 was used)
    - `recent_facts` (always) — append the closing fact's short tag, trim to last 12
    - `recent_next_week_themes` (always) — append the closing "Next Week" line's short tag, trim to last 4
-   - `ongoing_stories` — update weeks_as_lead/weeks_as_ongoing counts, promote/demote/drop stories as needed, add new entries if a topic has now led for 2 consecutive weeks
+   - `ongoing_stories` — update weeks_as_lead/weeks_as_ongoing counts, promote/demote/drop stories as needed, add new entries if a topic has now led for 2 consecutive weeks. **v8.18:** if a topic anchored any fixed section's Lead this issue, append the issue date to its `lead_history` array. `lead_history` is never trimmed — entries age out of the sliding window automatically when the planner computes `recent_leads` (count within last 26 weeks).
    - `training_phase` — update if the current date has crossed a block boundary (Block 1 ends May 3, Block 2 ends June 30, post-holiday starts July)
 
 ## Scheduling

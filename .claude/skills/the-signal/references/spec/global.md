@@ -103,6 +103,112 @@ These are editorial principles. The compliance checklist (Gate 1 + Gate 2) handl
 
 ---
 
+## 02a-article-structure
+
+## Article Structure: Lead + Companion
+
+Every fixed section in a standard weekly runs a **Lead piece** AND a **Companion piece**, both substantial, on **distinct topic families**. The Lead is the section's centrepiece; the Companion is not a footnote — it's a second proper article. Tail content (also-lists, quick reviews, tables, sub-sections like the AI block in Pixel & Byte or Release Radar in Screen & Sound) is in addition to Lead + Companion, not instead of it.
+
+### Word count band
+
+| Piece | Floor | Typical | Ceiling |
+|---|---|---|---|
+| Lead | 300 words | 400–700 words | 1,000+ on a genuinely massive week |
+| Companion | 200 words | 250–450 words | 600 words |
+
+The Companion never compresses below 200 words. If research can't support a 200-word companion, the planner must broaden the section's scope — not shrink the piece into a one-liner.
+
+### Topic-family discipline
+
+The Lead and the Companion in the same section MUST be on different `topic_family` values. The closed enumeration of topic families lives in `references/chapter-plan-schema.md`. A planner-side validator rejects any chapter plan where Lead.topic_family == Companion.topic_family within a section.
+
+Tail items (also-lists, quick reviews) are not subject to this rule — they can repeat the lead's topic family. But the Lead and Companion always anchor different ground.
+
+### Sections exempted from Lead + Companion
+
+- **Cover, Navigator, Foreword, Footer, Colophon** — chrome / framing, single-piece by design.
+- **The Long Shelf** — already structurally varied (6–8 items with 2 wildcards). Keep its existing shape.
+- **On the Radar** — compact date-grid format. Keep its existing shape (but see § On the Radar update below for the "why it matters" half-line addition).
+
+### Sections covered by Lead + Companion (mandatory)
+
+- **The World This Week** — Lead + Companion on distinct topic families. Ongoing-story tracker boxes are in addition.
+- **Pixel & Byte** — Lead + Companion. If Lead is gaming, Companion is non-gaming consumer tech (or vice versa).
+- **The Touchline** — Lead + Companion. **The Companion must be a non-football sport** when the Lead is football. If the Lead is a Priority-2/3 non-football story (per existing Touchline hierarchy), the Companion may be football.
+- **Screen & Sound** — Lead + Companion. **Companion cannot be the same franchise as the Lead** (so a Star Wars Lead requires a non-Star-Wars Companion; an MCU Lead requires non-MCU; etc.).
+- **The Session** — Lead piece + a "Companion deep note" of 200–250 words on a different training-topic cluster (see clusters list in sections.md). The Companion can be lighter than other sections' companions but must still be substantive.
+
+Rotating sections use their existing single-feature shape — they don't need Lead + Companion because they already provide variety by rotating in and out across issues.
+
+---
+
+
+
+---
+
+## 02b-topic-lock
+
+## Topic Lock: Recent Leads & Sliding-Window Cap
+
+Re-promoting an ongoing story to the Lead slot is gated by a **sliding-window frequency cap**. The cap tightens with the topic's recent lead history and decays as that history ages, so a story that has been in heavy rotation cools off automatically without needing editorial override.
+
+### State-file shape per `ongoing_stories` entry
+
+- `lead_history` (array of ISO date strings) — every date this topic anchored any fixed section's Lead. Example: `["2026-03-15", "2026-03-22", "2026-04-19", "2026-05-03"]`. Append each new lead date; never trim (entries age out of the window automatically).
+- `weeks_since_last_lead` (int, derived) — ticks +1 each weekly the topic is NOT the lead; resets to 0 when it is. The planner can compute this from `lead_history` or read a cached value.
+
+### The recent-leads window
+
+`recent_leads` = count of entries in `lead_history` with date within the last **26 weeks** (6 months) of the issue date. Older entries are ignored for cap purposes.
+
+### Planner enforcement
+
+A topic with `recent_leads >= 3` cannot anchor the Lead unless `weeks_since_last_lead >= recent_leads × 2`.
+
+**Worked example.** Iran has 5 leads in the last 26 weeks. Re-promoting Iran to Lead requires 10 weeks of not-leading first. Until then, Iran lives in the tracker box.
+
+**Decay in action.** Six months after Iran's last lead in the active window, every one of those 5 leads has aged out. `recent_leads` falls to 0. The cap no longer fires. Iran becomes promotable again without needing a new escalation — but the magazine has been forced to give every other story breathing room in the meantime.
+
+A topic that broke out, dominated for a few weeks, then settled into the tracker will naturally re-emerge in the Lead rotation once enough time has passed; a topic in sustained active coverage will hit the cap hard and stay in the tracker.
+
+### Topics this rule applies to
+
+`ongoing_stories` is not limited to World This Week — it's a tracking concept for any topic that has anchored any section's Lead. Track:
+
+- World This Week: Iran War, Ukraine, US-China trade, etc.
+- Pixel & Byte: Switch 2 ecosystem, Steam Deck, consumer AI launches
+- Touchline: Serie A title race, Champions League knockout, WC qualifying campaign
+- Screen & Sound: long-running show arcs (Star Wars: Maul, Daredevil, House of the Dragon, etc.)
+- Session: running-race build-up, hypertrophy block, etc.
+
+### Gate 1 grep check
+
+After generation, scan each fixed section's Lead H2 + first paragraph for the topic's named entities. If `recent_leads >= 3` for any tracked topic AND that topic's named entities appear in the Lead (≥3 mentions or in H2), Gate 1 fails with reason "topic-lock: <topic> exceeds recent-leads bar". Re-plan the Lead.
+
+### Tuning
+
+The 26-week window is the single knob. Shorter window (e.g. 13 weeks) → topics return more easily; cap feels light. Longer window (e.g. 52 weeks) → strong forcing function; topics blocked for years. 26 weeks chosen as the editorial sweet spot: "a story can't be in the Lead rotation more than ~5 times in any 6-month period." Adjust here if real-world runs show the window is wrong.
+
+---
+
+
+
+---
+
+## 02c-per-section-discipline
+
+## Per-section discipline rules
+
+- **The Toolkit (rotating)** — Same app cannot anchor two consecutive Toolkit appearances. Track `last_toolkit_app` in state file (slug like `todoist`, `obsidian`, `perplexity`).
+- **The Session** — State-file `last_session_topic` tracks the cluster (running_science / concurrent_training / hypertrophy / kettlebells / gymnastics_rings / recovery_mobility / wearable_data / nutrition_recomp / landmine_training / home_gym_programming). Same cluster cannot anchor two consecutive Session Leads.
+- **The Long Game ↔ The Session boundary** — The Long Game is **finance only** (ISAs, pensions, savings, investing, market trends, UK personal-finance reads). Fitness deep-dives belong in The Session. Misclassification = Gate 2 hard fail (compliance-checklist).
+
+---
+
+
+
+---
+
 ## visual-design
 
 ## Visual Design
