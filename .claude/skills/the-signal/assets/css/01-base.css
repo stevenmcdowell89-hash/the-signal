@@ -57,6 +57,19 @@ p:last-child { margin-bottom: 0; }
   letter-spacing: 3px; text-transform: uppercase;
   margin-bottom: 12px; display: block;
 }
+/* v8.17 — Sub-format tag, opt-in chip rendered inline within .section-label
+   when Screen & Sound runs Director's Cut or History runs A Closer Look. */
+.sub-format-tag {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  padding: 2px 8px;
+  border: 1px solid currentColor;
+  margin-left: 12px;
+  vertical-align: middle;
+  opacity: 0.7;
+}
 /* Secondary labels use DM Sans — for sub-headers within sections */
 .sub-label {
   font-family: 'DM Sans', sans-serif;

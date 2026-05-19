@@ -281,6 +281,10 @@ Only proceed here after Gate 1 passes clean.
 - [ ] Navigator only shows sections present in this issue
 - [ ] Down the Rabbit Hole included as sidebar if due (3-4 weeks)
 
+### Sub-formats (v8.17)
+- [ ] If Screen & Sound's chapter plan was Director's Cut (`sub_format: "directors_cut"`), the rendered Lead reads as an essay (not a current-week news beat), is 550+ words, and the Companion carries a substantive distinct topic. `last_directors_cut_date` is updated post-publish.
+- [ ] If This Week in History was A Closer Look (`sub_format: "closer_look"`), the rendered section is a single 600-800 word narrative on one event/figure, no also-this-weeks timeline, Wikipedia link present. `last_closer_look_date` is updated post-publish.
+
 ### Ongoing Stories
 - [ ] Ongoing trackers are factual, not editorial — situation report tone
 - [ ] Ongoing trackers have proper space — scaled to the week's developments

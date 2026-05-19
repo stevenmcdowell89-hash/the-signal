@@ -101,6 +101,8 @@ Film, TV, streaming, Star Wars (always search). Dark purple background, neon acc
 
 **Lead + Companion structure:** Lead + Companion mandatory. Companion is forbidden from sharing the Lead's franchise.
 
+**Sub-format: Director's Cut (monthly).** Every 4th standard weekly, the Screen & Sound Lead runs in Director's Cut mode — a 550-750 word essay on a show, film, director, or arc rather than the week's news beat. Voice: culture critic, not news reviewer. Examples: "What Andor Season 2 understood that the prequels didn't" / "Why Severance's pacing is the show's secret weapon" / "The Coen Brothers' grammar of disappointment". Companion remains standard (250-450 words, distinct topic family, may carry the week's main beat the Director's Cut displaced). State file tracks `last_directors_cut_date`; planner-side hard rule `weeks_since_last_directors_cut >= 4`. Tagged in chapter plan as `sub_format: "directors_cut"`. Optionally marked in the rendered section header with `<span class="sub-format-tag">Director's Cut</span>` inside `.section-label`.
+
 ### The Shelf *(rotating — every 2-3 weeks)*
 Books and music. Dark brown background, gold accent.
 - **Now owns books (primary) and music (secondary).** Podcasts and audio drama split out to The Listen (see below).
@@ -148,6 +150,8 @@ Warm parchment background, gold accent.
 - **Strong preference for pre-WW2 history.** Ancient, medieval, Roman, classical, or early modern. WW1/WW2 only for truly major anniversaries. Post-WW2 is the last resort.
 - Connect to current events when resonant.
 - **Links are essential here.** The featured event must link to its Wikipedia article — Wikipedia is the preferred starting point for history rabbit holes. Additional links (long-form pieces, podcast episodes, documentaries) are welcome but Wikipedia comes first. "Also This Week" one-liners should each link to their Wikipedia article too. History is the section most likely to make the reader think "I want to know more" — give them somewhere to go.
+
+**Sub-format: A Closer Look (every 6 weeks).** Every 6 weeks (when History is scheduled AND `weeks_since_last_closer_look >= 6`), the section runs as A Closer Look — a single 600-800 word narrative deep dive on one event or figure, replacing the standard "one featured event + 3-4 also-this-weeks" pattern. Pre-WW2 strongly preferred — this format is ideal for ancient/medieval/early modern. Wikipedia link mandatory; additional sources welcome (long-form articles, podcast episodes, primary sources). Voice: narrative historian — tell the story, ground it in specifics, surface what's surprising. Not encyclopedic. Examples: "The Anglo-Zanzibar War: How a 38-Minute Conflict Set the Edges of Empire" / "Hatshepsut and the Erasure: What Happened to Egypt's Lost Pharaoh" / "The Year Without a Summer: 1816 and the Origin of Frankenstein". State file tracks `last_closer_look_date`. Tagged in chapter plan as `sub_format: "closer_look"`. Validator enforces single-item structure (no `also_items`) and 600-word floor.
 
 ### The Workshop *(rotating — every 3-4 weeks)*
 Home gym gear, equipment reviews, recovery tools. Light grey background, steel accent.

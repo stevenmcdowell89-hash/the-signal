@@ -89,6 +89,19 @@ FIXED_SECTION_CHAPTER_IDS = {
 # v8.15 — chapter ID that requires the `items` array with wildcard discipline
 LONG_SHELF_CHAPTER_IDS = {"long_shelf", "long-shelf", "long_shelf", "shelf"}
 
+# v8.17 — sub-format mapping: chapter_id -> allowed sub_format values
+SCREEN_SOUND_CHAPTER_IDS = {"screen_sound", "screen-sound", "screen"}
+HISTORY_CHAPTER_IDS = {"history", "this_week_in_history", "this-week-in-history"}
+SUB_FORMAT_BY_CHAPTER = {
+    "screen_sound": "directors_cut",
+    "history": "closer_look",
+}
+# v8.17 — sub-format word-count floors (Lead piece for directors_cut; featured_item for closer_look)
+SUB_FORMAT_LEAD_FLOOR = {
+    "directors_cut": 550,
+    "closer_look": 600,
+}
+
 # v8.15 — per-role minimum word-count floor (spec § Article Structure)
 PIECE_MIN_FLOOR = {"lead": 300, "companion": 200}
 
@@ -330,6 +343,74 @@ def check_long_shelf_items(ch, cpath):
         err(f"[ITEMS] {cpath}: long_shelf needs >=2 items with wildcard=true. Found {wildcard_count} (v8.15 wildcard discipline).")
 
 
+def check_sub_format(ch, cpath, ch_id):
+    """v8.17: validate optional sub_format field.
+
+    Rules:
+      - sub_format must be one of {null, "directors_cut", "closer_look"} when present.
+      - "directors_cut" is only legal on screen_sound chapters.
+      - "closer_look" is only legal on history chapters.
+      - When sub_format="directors_cut": Lead piece's word_count_target.min must be >= 550.
+      - When sub_format="closer_look": chapter must have a featured_item (single deep-dive)
+        with word_count_target.min >= 600, and MUST NOT have items/also_items arrays.
+    """
+    sub_format = ch.get("sub_format")
+    if sub_format is None:
+        # featured_item is forbidden when sub_format is null (only valid for closer_look)
+        if ch.get("featured_item") is not None:
+            err(f"[SUB_FORMAT] {cpath}: 'featured_item' is only allowed when sub_format='closer_look'.")
+        return
+
+    allowed_values = {None, "directors_cut", "closer_look"}
+    if sub_format not in allowed_values:
+        err(f"[SUB_FORMAT] {cpath}.sub_format='{sub_format}' must be one of {sorted(v for v in allowed_values if v is not None)} or null (v8.17).")
+        return
+
+    # Chapter-binding: directors_cut on screen_sound only, closer_look on history only
+    if sub_format == "directors_cut" and ch_id not in SCREEN_SOUND_CHAPTER_IDS:
+        err(f"[SUB_FORMAT] {cpath}: sub_format='directors_cut' is only legal on screen_sound chapter (v8.17). Chapter id='{ch_id}'.")
+        return
+    if sub_format == "closer_look" and ch_id not in HISTORY_CHAPTER_IDS:
+        err(f"[SUB_FORMAT] {cpath}: sub_format='closer_look' is only legal on history chapter (v8.17). Chapter id='{ch_id}'.")
+        return
+
+    if sub_format == "directors_cut":
+        # Lead word floor raised to 550
+        pieces = ch.get("pieces") or []
+        lead = next((p for p in pieces if isinstance(p, dict) and p.get("role") == "lead"), None)
+        if lead is None:
+            # check_pieces already errors on missing lead; don't duplicate
+            return
+        wct = lead.get("word_count_target") or {}
+        wmin = wct.get("min")
+        if isinstance(wmin, int) and wmin < SUB_FORMAT_LEAD_FLOOR["directors_cut"]:
+            err(f"[SUB_FORMAT] {cpath}: sub_format='directors_cut' requires Lead.word_count_target.min >= {SUB_FORMAT_LEAD_FLOOR['directors_cut']}. Found {wmin} (v8.17).")
+
+    if sub_format == "closer_look":
+        # Single featured_item, no items/also_items array
+        if ch.get("items") is not None:
+            err(f"[SUB_FORMAT] {cpath}: sub_format='closer_look' forbids 'items' array — A Closer Look is a single narrative (v8.17).")
+        if ch.get("also_items") is not None:
+            err(f"[SUB_FORMAT] {cpath}: sub_format='closer_look' forbids 'also_items' — A Closer Look replaces the standard event-plus-timeline pattern with a single 600-800 word narrative (v8.17).")
+        feat = ch.get("featured_item")
+        if feat is None:
+            err(f"[SUB_FORMAT] {cpath}: sub_format='closer_look' requires 'featured_item' object (v8.17).")
+            return
+        if not isinstance(feat, dict):
+            err(f"[SUB_FORMAT] {cpath}.featured_item must be an object.")
+            return
+        for key in ("topic_family", "word_count_target", "headline_hint", "link_targets"):
+            if key not in feat:
+                err(f"[SUB_FORMAT] {cpath}.featured_item: missing required field '{key}'.")
+        tf = feat.get("topic_family")
+        if tf is not None and tf not in TOPIC_FAMILIES:
+            err(f"[SUB_FORMAT] {cpath}.featured_item.topic_family='{tf}' is not in the closed enumeration.")
+        wct = feat.get("word_count_target") or {}
+        wmin = wct.get("min")
+        if isinstance(wmin, int) and wmin < SUB_FORMAT_LEAD_FLOOR["closer_look"]:
+            err(f"[SUB_FORMAT] {cpath}: sub_format='closer_look' requires featured_item.word_count_target.min >= {SUB_FORMAT_LEAD_FLOOR['closer_look']}. Found {wmin} (v8.17).")
+
+
 def check_chapters(chapters, issue_meta):
     """Check 5–12: chapter field presence, uniqueness, ordering, cross-refs, grounds, types, is_hype."""
     if not isinstance(chapters, list) or len(chapters) == 0:
@@ -405,6 +486,10 @@ def check_chapters(chapters, issue_meta):
         # 14. v8.15 — long_shelf `items` array with wildcard discipline (weekly format only)
         if fmt == "weekly" and ch_id in LONG_SHELF_CHAPTER_IDS:
             check_long_shelf_items(ch, cpath)
+
+        # 15. v8.17 — optional sub_format field (Director's Cut on screen_sound, A Closer Look on history)
+        if fmt == "weekly" and ("sub_format" in ch or "featured_item" in ch):
+            check_sub_format(ch, cpath, ch_id)
 
     # 7. chapter_num is 1..N, no gaps
     if chapter_nums:
@@ -1104,6 +1189,125 @@ def run_inline_tests():
             "the_workshop": {"last_appeared": None, "cadence_weeks": [3, 4]}
         }
     ), expect_pass=True)
+
+    # ── v8.17 sub-format cases ──
+
+    dc_lead = [
+        {"role": "lead", "topic_family": "star_wars", "word_count_target": {"min": 600, "max": 750}, "headline_hint": "Maul retrospective", "link_targets": ["https://example.com"]},
+        {"role": "companion", "topic_family": "audio_dramas", "word_count_target": {"min": 250, "max": 450}, "headline_hint": "BBC drama pick", "link_targets": ["https://example.com"]}
+    ]
+
+    # PASS: valid Director's Cut on screen_sound with Lead >= 550
+    run_test("valid directors_cut on screen_sound", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[
+            weekly_fixed_chapter("screen_sound", pieces=dc_lead, extra={"sub_format": "directors_cut"}),
+        ]
+    ), expect_pass=True)
+
+    # FAIL: directors_cut with Lead word floor below 550
+    dc_lead_low = [
+        {"role": "lead", "topic_family": "star_wars", "word_count_target": {"min": 400, "max": 700}, "headline_hint": "x", "link_targets": ["https://example.com"]},
+        {"role": "companion", "topic_family": "audio_dramas", "word_count_target": {"min": 250, "max": 450}, "headline_hint": "y", "link_targets": ["https://example.com"]}
+    ]
+    run_test("directors_cut Lead word floor below 550", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[
+            weekly_fixed_chapter("screen_sound", pieces=dc_lead_low, extra={"sub_format": "directors_cut"}),
+        ]
+    ), expect_pass=False)
+
+    # FAIL: directors_cut on a non-screen_sound chapter
+    run_test("directors_cut on wrong chapter (world)", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[
+            weekly_fixed_chapter("world", pieces=valid_pieces, extra={"sub_format": "directors_cut"}),
+        ]
+    ), expect_pass=False)
+
+    # FAIL: invalid sub_format value
+    run_test("invalid sub_format value", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[
+            weekly_fixed_chapter("screen_sound", pieces=dc_lead, extra={"sub_format": "bogus_mode"}),
+        ]
+    ), expect_pass=False)
+
+    # PASS: valid A Closer Look on history with featured_item >= 600
+    closer_look_chapter = weekly_fixed_chapter("history", extra={
+        "sub_format": "closer_look",
+        "featured_item": {
+            "topic_family": "books_history",
+            "word_count_target": {"min": 600, "max": 800},
+            "headline_hint": "The Anglo-Zanzibar War",
+            "link_targets": ["https://en.wikipedia.org/wiki/Anglo-Zanzibar_War"]
+        }
+    })
+    run_test("valid closer_look on history", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[closer_look_chapter]
+    ), expect_pass=True)
+
+    # FAIL: closer_look featured_item below 600 floor
+    closer_look_low = weekly_fixed_chapter("history", extra={
+        "sub_format": "closer_look",
+        "featured_item": {
+            "topic_family": "books_history",
+            "word_count_target": {"min": 400, "max": 600},
+            "headline_hint": "x",
+            "link_targets": ["https://en.wikipedia.org/wiki/Test"]
+        }
+    })
+    run_test("closer_look featured_item below 600", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[closer_look_low]
+    ), expect_pass=False)
+
+    # FAIL: closer_look with also_items present (forbidden)
+    closer_look_with_items = weekly_fixed_chapter("history", extra={
+        "sub_format": "closer_look",
+        "featured_item": {
+            "topic_family": "books_history",
+            "word_count_target": {"min": 600, "max": 800},
+            "headline_hint": "ok",
+            "link_targets": ["https://en.wikipedia.org/wiki/Test"]
+        },
+        "also_items": [{"title": "x", "link": "https://example.com"}]
+    })
+    run_test("closer_look forbids also_items", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[closer_look_with_items]
+    ), expect_pass=False)
+
+    # FAIL: closer_look on wrong chapter
+    run_test("closer_look on wrong chapter (screen_sound)", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[
+            weekly_fixed_chapter("screen_sound", pieces=dc_lead, extra={
+                "sub_format": "closer_look",
+                "featured_item": {
+                    "topic_family": "books_history",
+                    "word_count_target": {"min": 600, "max": 800},
+                    "headline_hint": "x",
+                    "link_targets": ["https://en.wikipedia.org/wiki/Test"]
+                }
+            }),
+        ]
+    ), expect_pass=False)
+
+    # FAIL: featured_item present but sub_format is null
+    orphan_featured = weekly_fixed_chapter("history", extra={
+        "featured_item": {
+            "topic_family": "books_history",
+            "word_count_target": {"min": 600, "max": 800},
+            "headline_hint": "x",
+            "link_targets": ["https://en.wikipedia.org/wiki/Test"]
+        }
+    })
+    run_test("featured_item without closer_look sub_format", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[orphan_featured]
+    ), expect_pass=False)
 
     # ── Summary ──
     print("\n=== INLINE TEST RESULTS ===")
