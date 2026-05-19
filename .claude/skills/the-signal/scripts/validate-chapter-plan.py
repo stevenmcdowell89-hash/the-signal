@@ -71,7 +71,57 @@ VALID_CHAPTER_TYPES = {
     "closer",
 }
 
-KEBAB_RE = re.compile(r'^[a-z0-9]+(-[a-z0-9]+)*$')
+# v8.15 — fixed-section chapter IDs that REQUIRE the Lead + Companion `pieces` array.
+# Accept both the underscored convention (spec) and existing single-word / kebab variants
+# observed in real issue markup (id="world", id="tech", id="football", id="screen").
+FIXED_SECTION_CHAPTER_IDS = {
+    "world", "world-this-week",
+    "pixel_byte", "pixel-byte", "tech",
+    "touchline", "football",
+    "screen_sound", "screen-sound", "screen",
+    "session",
+}
+
+# v8.15 — chapter ID that requires the `items` array with wildcard discipline
+LONG_SHELF_CHAPTER_IDS = {"long_shelf", "long-shelf", "long_shelf", "shelf"}
+
+# v8.15 — per-role minimum word-count floor (spec § Article Structure)
+PIECE_MIN_FLOOR = {"lead": 300, "companion": 200}
+
+# v8.15 — closed topic-family enumeration. See references/chapter-plan-schema.md.
+TOPIC_FAMILIES = {
+    # news_geopolitics
+    "iran_war", "ukraine", "russia", "china_geopolitics", "us_politics",
+    "uk_politics", "eu_politics", "africa", "middle_east_non_iran",
+    "asia_pacific", "climate_environment", "space_exploration",
+    "pandemics_health", "ni_politics",
+    # tech_gaming
+    "switch_2", "playstation", "xbox", "nintendo_other", "pc_gaming",
+    "steam_deck", "geforce_now", "consumer_ai", "generative_ai_consumer",
+    "ai_search", "tablets_phones", "wearables_consumer", "e_readers",
+    "lego", "streaming_tech", "smart_home",
+    # sport
+    "serie_a", "premier_league", "champions_league", "europa_league",
+    "wc_qualifiers", "wc_finals", "euros", "golf_majors", "golf_ryder_cup",
+    "golf_tours", "f1", "tennis_slams", "tennis_other", "rugby_six_nations",
+    "rugby_world_cup", "olympics", "cricket", "snooker", "sport_governance",
+    # screen_culture
+    "star_wars", "mcu", "dc", "disney_other", "apple_tv", "netflix",
+    "prime_video", "nowtv_hbo", "cinema_releases", "film_classics",
+    "music_synthwave", "music_general", "audio_dramas", "podcasts_critical",
+    "podcasts_history",
+    # fitness
+    "running_science", "concurrent_training", "hypertrophy", "kettlebells",
+    "gymnastics_rings", "recovery_mobility", "wearable_data",
+    "nutrition_recomp", "landmine_training", "home_gym_programming",
+    "race_prep",
+    # other
+    "ni_local", "travel_european", "theme_parks", "books_fantasy_scifi",
+    "books_history", "books_other", "ukpf_fintech", "ukpf_investing",
+    "etsy_side_hustle", "productivity_workflows",
+}
+
+KEBAB_RE = re.compile(r'^[a-z0-9]+([-_][a-z0-9]+)*$')  # v8.15: underscores allowed alongside hyphens (e.g. pixel_byte, screen_sound, long_shelf)
 DATE_RE  = re.compile(r'^\d{4}-\d{2}-\d{2}$')
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -132,6 +182,106 @@ def check_issue_meta(meta):
                     f"(parallel formats: countdown, field_guide, shortlist, starter_kit, blueprint, weekly; "
                     f"sequential: deep_dive, versus, rewind, season_review)"
                 )
+
+
+def check_pieces(ch, cpath):
+    """v8.15: fixed-section chapters require a `pieces` array (Lead + Companion).
+
+    Rules:
+      - Exactly 2 entries.
+      - One role='lead', one role='companion'.
+      - Each piece has topic_family (in TOPIC_FAMILIES), word_count_target.min meeting
+        the per-role floor (lead>=300, companion>=200).
+      - Lead.topic_family != Companion.topic_family.
+    """
+    pieces = ch.get("pieces")
+    if pieces is None:
+        err(f"[PIECES] {cpath}: fixed-section chapter '{ch.get('chapter_id')}' is missing required 'pieces' array (v8.15 Lead + Companion).")
+        return
+    if not isinstance(pieces, list):
+        err(f"[PIECES] {cpath}.pieces must be an array.")
+        return
+    if len(pieces) != 2:
+        err(f"[PIECES] {cpath}.pieces must contain exactly 2 entries (lead + companion). Found {len(pieces)}.")
+        return
+
+    roles_seen = []
+    topic_families_seen = []
+    for j, p in enumerate(pieces):
+        ppath = f"{cpath}.pieces[{j}]"
+        if not isinstance(p, dict):
+            err(f"[PIECES] {ppath} must be an object.")
+            continue
+        role = p.get("role")
+        if role not in ("lead", "companion"):
+            err(f"[PIECES] {ppath}.role='{role}' must be 'lead' or 'companion'.")
+        else:
+            roles_seen.append(role)
+
+        tf = p.get("topic_family")
+        if tf is None:
+            err(f"[PIECES] {ppath}: missing required field 'topic_family'.")
+        elif tf not in TOPIC_FAMILIES:
+            err(f"[PIECES] {ppath}.topic_family='{tf}' is not in the closed enumeration (see references/chapter-plan-schema.md § Topic Family Enumeration).")
+        else:
+            topic_families_seen.append(tf)
+
+        wct = p.get("word_count_target")
+        if wct is None:
+            err(f"[PIECES] {ppath}: missing required field 'word_count_target'.")
+        elif not isinstance(wct, dict):
+            err(f"[PIECES] {ppath}.word_count_target must be an object with min and max.")
+        else:
+            wmin = wct.get("min")
+            wmax = wct.get("max")
+            if not isinstance(wmin, int):
+                err(f"[PIECES] {ppath}.word_count_target.min must be an integer.")
+            elif role in PIECE_MIN_FLOOR and wmin < PIECE_MIN_FLOOR[role]:
+                err(f"[PIECES] {ppath}.word_count_target.min={wmin} below spec floor of {PIECE_MIN_FLOOR[role]} for role '{role}'.")
+            if not isinstance(wmax, int):
+                err(f"[PIECES] {ppath}.word_count_target.max must be an integer.")
+            elif isinstance(wmin, int) and wmax < wmin:
+                err(f"[PIECES] {ppath}.word_count_target.max={wmax} must be >= min={wmin}.")
+
+        for key in ("headline_hint", "link_targets"):
+            if key not in p:
+                err(f"[PIECES] {ppath}: missing required field '{key}'.")
+
+    # Role coverage: one lead + one companion
+    if sorted(roles_seen) != ["companion", "lead"]:
+        err(f"[PIECES] {cpath}.pieces must contain exactly one 'lead' and one 'companion'. Found roles: {roles_seen}.")
+
+    # Distinct topic families
+    if len(topic_families_seen) == 2 and topic_families_seen[0] == topic_families_seen[1]:
+        err(f"[PIECES] {cpath}: Lead.topic_family and Companion.topic_family are both '{topic_families_seen[0]}'. They MUST differ within a section (v8.15 topic-family discipline).")
+
+
+def check_long_shelf_items(ch, cpath):
+    """v8.15: long_shelf chapter requires an `items` array of 6-8 entries with >=2 wildcards."""
+    items = ch.get("items")
+    if items is None:
+        err(f"[ITEMS] {cpath}: long_shelf chapter is missing required 'items' array (v8.15).")
+        return
+    if not isinstance(items, list):
+        err(f"[ITEMS] {cpath}.items must be an array.")
+        return
+    if not (6 <= len(items) <= 8):
+        err(f"[ITEMS] {cpath}.items must contain 6-8 entries. Found {len(items)}.")
+
+    wildcard_count = 0
+    for j, it in enumerate(items):
+        ipath = f"{cpath}.items[{j}]"
+        if not isinstance(it, dict):
+            err(f"[ITEMS] {ipath} must be an object.")
+            continue
+        for key in ("title", "source", "link", "hook", "wildcard"):
+            if key not in it:
+                err(f"[ITEMS] {ipath}: missing required field '{key}'.")
+        if it.get("wildcard") is True:
+            wildcard_count += 1
+
+    if wildcard_count < 2:
+        err(f"[ITEMS] {cpath}: long_shelf needs >=2 items with wildcard=true. Found {wildcard_count} (v8.15 wildcard discipline).")
 
 
 def check_chapters(chapters, issue_meta):
@@ -201,6 +351,14 @@ def check_chapters(chapters, issue_meta):
                 )
             # (if fmt not in HYPE_ALLOWED_FORMATS but also not banned, allow with no error
             #  to be permissive for weekly/blueprint/shortlist/starter_kit if planner chooses)
+
+        # 13. v8.15 — fixed-section Lead + Companion `pieces` array (weekly format only)
+        if fmt == "weekly" and ch_id in FIXED_SECTION_CHAPTER_IDS:
+            check_pieces(ch, cpath)
+
+        # 14. v8.15 — long_shelf `items` array with wildcard discipline (weekly format only)
+        if fmt == "weekly" and ch_id in LONG_SHELF_CHAPTER_IDS:
+            check_long_shelf_items(ch, cpath)
 
     # 7. chapter_num is 1..N, no gaps
     if chapter_nums:
@@ -493,6 +651,110 @@ def run_inline_tests():
 
     bad_date = make_plan(issue_meta={**make_plan()["issue_meta"], "date": "15-06-2026"})
     run_test("invalid date format", bad_date, expect_pass=False)
+
+    # ── v8.15 Lead + Companion + Long Shelf cases ──
+
+    def weekly_fixed_chapter(chapter_id, pieces=None, items=None, extra=None):
+        ch = {
+            "chapter_id": chapter_id,
+            "chapter_num": 1,
+            "chapter_type": "opener",
+            "chapter_title": chapter_id,
+            "chapter_arc": "arc",
+            "ground": "paper",
+            "is_hype": False,
+            "data_venue": None,
+            "target_word_count": 800,
+            "images_needed": [],
+            "key_facts": [],
+            "forbidden_topics": [],
+            "cross_refs": []
+        }
+        if pieces is not None: ch["pieces"] = pieces
+        if items is not None: ch["items"] = items
+        if extra: ch.update(extra)
+        return ch
+
+    weekly_meta = {"format": "weekly", "date": "2026-06-15", "topic": "weekly", "special_id": None, "execution_mode": "parallel"}
+
+    valid_pieces = [
+        {"role": "lead", "topic_family": "us_politics", "word_count_target": {"min": 400, "max": 700}, "headline_hint": "x", "link_targets": ["https://example.com"]},
+        {"role": "companion", "topic_family": "climate_environment", "word_count_target": {"min": 250, "max": 450}, "headline_hint": "y", "link_targets": ["https://example.com"]}
+    ]
+
+    valid_long_shelf_items = [
+        {"title": f"Item {i}", "source": "Src", "link": "https://example.com", "hook": "Hook.", "wildcard": (i >= 7)}
+        for i in range(1, 9)
+    ]
+
+    # PASS: valid weekly with world chapter and long_shelf
+    run_test("valid weekly with Lead + Companion world + long_shelf wildcards", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[
+            weekly_fixed_chapter("world", pieces=valid_pieces),
+            weekly_fixed_chapter("long_shelf", items=valid_long_shelf_items, extra={"chapter_num": 2})
+        ]
+    ), expect_pass=True)
+
+    # FAIL: world chapter missing pieces
+    run_test("weekly world chapter missing pieces", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[weekly_fixed_chapter("world")]
+    ), expect_pass=False)
+
+    # FAIL: Lead and Companion share topic_family
+    same_family_pieces = [
+        {"role": "lead", "topic_family": "iran_war", "word_count_target": {"min": 400, "max": 700}, "headline_hint": "x", "link_targets": []},
+        {"role": "companion", "topic_family": "iran_war", "word_count_target": {"min": 250, "max": 450}, "headline_hint": "y", "link_targets": []}
+    ]
+    run_test("pieces share topic_family", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[weekly_fixed_chapter("world", pieces=same_family_pieces)]
+    ), expect_pass=False)
+
+    # FAIL: topic_family not in enumeration
+    bad_family_pieces = [
+        {"role": "lead", "topic_family": "made_up_family", "word_count_target": {"min": 400, "max": 700}, "headline_hint": "x", "link_targets": []},
+        {"role": "companion", "topic_family": "climate_environment", "word_count_target": {"min": 250, "max": 450}, "headline_hint": "y", "link_targets": []}
+    ]
+    run_test("topic_family not in enumeration", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[weekly_fixed_chapter("world", pieces=bad_family_pieces)]
+    ), expect_pass=False)
+
+    # FAIL: Companion word_count_target.min below 200
+    low_companion_pieces = [
+        {"role": "lead", "topic_family": "us_politics", "word_count_target": {"min": 400, "max": 700}, "headline_hint": "x", "link_targets": []},
+        {"role": "companion", "topic_family": "climate_environment", "word_count_target": {"min": 100, "max": 200}, "headline_hint": "y", "link_targets": []}
+    ]
+    run_test("companion word_count floor below 200", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[weekly_fixed_chapter("world", pieces=low_companion_pieces)]
+    ), expect_pass=False)
+
+    # FAIL: long_shelf with fewer than 2 wildcards
+    no_wildcard_items = [
+        {"title": f"Item {i}", "source": "Src", "link": "https://example.com", "hook": "Hook.", "wildcard": False}
+        for i in range(1, 9)
+    ]
+    run_test("long_shelf with <2 wildcards", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[weekly_fixed_chapter("long_shelf", items=no_wildcard_items)]
+    ), expect_pass=False)
+
+    # FAIL: long_shelf with too few items
+    short_items = [
+        {"title": f"Item {i}", "source": "Src", "link": "https://example.com", "hook": "Hook.", "wildcard": (i >= 4)}
+        for i in range(1, 6)
+    ]
+    run_test("long_shelf with only 5 items", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[weekly_fixed_chapter("long_shelf", items=short_items)]
+    ), expect_pass=False)
+
+    # PASS: non-weekly formats are not bound by the Lead+Companion rule
+    run_test("countdown chapter without pieces (not bound by Lead+Companion)",
+             make_plan(), expect_pass=True)
 
     # ── Summary ──
     print("\n=== INLINE TEST RESULTS ===")
