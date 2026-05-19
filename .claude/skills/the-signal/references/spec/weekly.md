@@ -7,10 +7,8 @@ _This file consolidates the weekly/ subdir into one file. Each former file becom
 
 ## overview
 
-## Issue Formats
-
 ### Standard Weekly (default)
-The full Sunday edition. **6,500+ words with no hard ceiling, 20-30+ pages.** Section order as listed above. Per-section depth floors hold (no fixed-section piece below 200 words); every fixed section runs a Lead + Companion of 200–700 words each. See editorial-spec.md § Article Structure: Lead + Companion for the full structural contract.
+The full Sunday edition. **6,000-8,000 words, 20-30 pages.** Section order as listed above.
 
 
 
@@ -20,13 +18,15 @@ The full Sunday edition. **6,500+ words with no hard ceiling, 20-30+ pages.** Se
 
 ## Section Structure (Standard Weekly)
 
-Sections are divided into **fixed** (appear every issue) and **rotating** (appear on a cadence, selected per issue). Each issue includes all fixed sections plus 2-3 rotating sections. The Navigator adapts to show only the sections present in that issue. The issue ends with a Colophon (sign-off block) before the Footer — see § End-of-Issue Colophon.
+Sections are divided into **fixed** (appear every issue) and **rotating** (appear on a cadence, selected per issue). Each issue includes all fixed sections plus 3-4 rotating sections. The Navigator adapts to show only the sections present in that issue. The issue ends with a Colophon (sign-off block) before the Footer — see § End-of-Issue Colophon.
+
+> **Why 3-4 rotating slots (v8.16).** The roster grew from 9 rotating sections to 14 in v8.16. With per-section cadence targets ranging from every 2-3 weeks (Shelf, History) to every 6 weeks (Saga, Channel), each issue needs 3-4 slots to keep every section near its target cadence.
 
 ### Fixed vs Rotating
 
 **Fixed (every issue):** Cover, Navigator, Foreword, The Long Shelf, The World This Week, Pixel & Byte, The Touchline, Screen & Sound (with Release Radar), The Session (omit if nothing found), On the Radar, Footer.
 
-**Rotating (cadence-based):** The Shelf, This Week in History, The Pantry, The Workshop, The Toolkit, The Ledger, The Long Game, The Wallet, The Itinerary.
+**Rotating (cadence-based):** The Shelf, The Listen, This Week in History, The Workshop, The Toolkit, The Ledger, The Long Game, The Wallet, The Itinerary, The Local, The Brickyard, The Saga, The Lab, The Channel.
 
 See **Rotation Mechanics** below for scheduling rules.
 
@@ -34,103 +34,7 @@ See **Rotation Mechanics** below for scheduling rules.
 For individual section content rules, voice notes, and research guidance, see `references/sections.md`. Only read sections appearing in this issue.
 
 
-## Anchor-Piece Rotation (deprecated v8.15)
 
-Removed. Replaced by the Lead + Companion structure (see § Article Structure). The anchor-piece rotation was unenforced across 8 weekly issues; the new two-anchor structure subsumes its purpose of giving every issue a second centre of gravity.
-
----
-
-## End-of-Issue Colophon
-
-Every issue ends with a **Colophon** — a sign-off block between On the Radar and the Footer. It's a single full-width `<section class="colophon">` on paper background, visually distinct from both the editorial sections and the footer. Three blocks in a grid:
-
-### Block 1 — Issue in Numbers
-
-A small stat grid summarising the issue itself: word count, number of sections, number of links, articles read, images. If an anchor piece ran, include "Anchor: [section name]". 4-6 stats, quietly pleasing rather than boastful.
-
-### Block 2 — Next Week
-
-One or two sentences teasing what's coming: a tracked ongoing story, a rotating section due, an event on the horizon. Written by the editor, not generated from the state file alone — should feel like a human note, not a changelog. Keep it short; don't promise specifics that might not hold.
-
-### Block 3 — A Fact
-
-The standing feature. **One curious fact, unrelated to any story in this issue.** 20-40 words. The tone is Snapple-cap-meets-QI: surprising, verifiable, and genuinely interesting to a curious generalist. Rotate weekly — never repeat a fact within a 12-issue window. Source from Wikipedia curiosities, reference books, or a fact you came across during research and couldn't fit anywhere.
-
-The Colophon closes with a small sign-off line (`.colophon-sign`) — issue number, date, and the standing tagline.
-
----
-
-## Article Structure: Lead + Companion
-
-Every fixed section in a standard weekly runs a **Lead piece** AND a **Companion piece**, both substantial, on **distinct topic families**. The Lead is the section's centrepiece; the Companion is not a footnote — it's a second proper article. Tail content (also-lists, quick reviews, tables, sub-sections like the AI block in Pixel & Byte or Release Radar in Screen & Sound) is in addition to Lead + Companion, not instead of it.
-
-### Word count band
-
-| Piece | Floor | Typical | Ceiling |
-|---|---|---|---|
-| Lead | 300 words | 400–700 words | 1,000+ on a genuinely massive week |
-| Companion | 200 words | 250–450 words | 600 words |
-
-The Companion never compresses below 200 words. If research can't support a 200-word companion, the planner must broaden the section's scope — not shrink the piece into a one-liner.
-
-### Topic-family discipline
-
-The Lead and the Companion in the same section MUST be on different `topic_family` values. The closed enumeration of topic families lives in `references/chapter-plan-schema.md`. A planner-side validator rejects any chapter plan where Lead.topic_family == Companion.topic_family within a section.
-
-Tail items (also-lists, quick reviews) are not subject to this rule — they can repeat the lead's topic family. But the Lead and Companion always anchor different ground.
-
-### Sections exempted from Lead + Companion
-
-- **Cover, Navigator, Foreword, Footer, Colophon** — chrome / framing, single-piece by design.
-- **The Long Shelf** — already structurally varied (6–8 items with 2 wildcards). Keep its existing shape.
-- **On the Radar** — compact date-grid format. Keep its existing shape (but see § On the Radar update below for the "why it matters" half-line addition).
-
-### Sections covered by Lead + Companion (mandatory)
-
-- **The World This Week** — Lead + Companion on distinct topic families. Ongoing-story tracker boxes are in addition.
-- **Pixel & Byte** — Lead + Companion. If Lead is gaming, Companion is non-gaming consumer tech (or vice versa).
-- **The Touchline** — Lead + Companion. **The Companion must be a non-football sport** when the Lead is football. If the Lead is a Priority-2/3 non-football story (per existing Touchline hierarchy), the Companion may be football.
-- **Screen & Sound** — Lead + Companion. **Companion cannot be the same franchise as the Lead** (so a Star Wars Lead requires a non-Star-Wars Companion; an MCU Lead requires non-MCU; etc.).
-- **The Session** — Lead piece + a "Companion deep note" of 200–250 words on a different training-topic cluster (see clusters list in sections.md). The Companion can be lighter than other sections' companions but must still be substantive.
-
-Rotating sections use their existing single-feature shape — they don't need Lead + Companion because they already provide variety by rotating in and out across issues.
-
----
-
-## Topic Lock: Lifetime Leads & Escalating Bar
-
-The spec's "bar rises exponentially" rule for re-promoting ongoing stories needs mechanical enforcement. Two new state-file fields on each entry in `ongoing_stories`:
-
-- `lifetime_leads` (int) — incremented every time this topic anchors any fixed section Lead (not just World). Counts across the topic's entire lifetime.
-- `weeks_since_last_lead` (int) — ticks +1 each weekly the topic is NOT the lead; resets to 0 when it is.
-
-### Planner enforcement
-
-A topic with `lifetime_leads >= 3` cannot anchor the Lead unless `weeks_since_last_lead >= lifetime_leads * 2`.
-
-Worked example: Iran has had 5 lifetime leads. Re-promoting Iran to Lead requires 10 weeks of not-leading first. Until then, Iran lives in the tracker box.
-
-### Topics this rule applies to
-
-`ongoing_stories` is not limited to World This Week — it's a tracking concept for any topic that has anchored any section's Lead. Track:
-
-- World This Week: Iran War, Ukraine, US-China trade, etc.
-- Pixel & Byte: Switch 2 ecosystem, Steam Deck, consumer AI launches
-- Touchline: Serie A title race, Champions League knockout, WC qualifying campaign
-- Screen & Sound: long-running show arcs (Star Wars: Maul, Daredevil, House of the Dragon, etc.)
-- Session: running-race build-up, hypertrophy block, etc.
-
-### Gate 1 grep check
-
-After generation, scan each fixed section's Lead H2 + first paragraph for the topic's named entities. If `lifetime_leads >= 3` for any tracked topic AND that topic's named entities appear in the Lead (≥3 mentions or in H2), Gate 1 fails with reason "topic-lock: <topic> exceeds lifetime-leads bar". Re-plan the Lead.
-
----
-
-## Per-section discipline rules
-
-- **The Toolkit (rotating)** — Same app cannot anchor two consecutive Toolkit appearances. Track `last_toolkit_app` in state file (slug like `todoist`, `obsidian`, `perplexity`).
-- **The Session** — State-file `last_session_topic` tracks the cluster (running_science / concurrent_training / hypertrophy / kettlebells / gymnastics_rings / recovery_mobility / wearable_data / nutrition_recomp / landmine_training / home_gym_programming). Same cluster cannot anchor two consecutive Session Leads.
-- **The Long Game ↔ The Session boundary** — The Long Game is **finance only** (ISAs, pensions, savings, investing, market trends, UK personal-finance reads). Fitness deep-dives belong in The Session. Misclassification = Gate 2 hard fail (compliance-checklist).
 
 ---
 
@@ -138,7 +42,7 @@ After generation, scan each fixed section's Lead H2 + first paragraph for the to
 
 ## Rotation Mechanics
 
-Each issue includes **all fixed sections** plus **2-3 rotating sections** selected based on cadence and editorial judgement.
+Each issue includes **all fixed sections** plus **3-4 rotating sections** selected based on cadence and editorial judgement.
 
 ### Cadence Table
 
@@ -146,22 +50,32 @@ Each issue includes **all fixed sections** plus **2-3 rotating sections** select
 |---|---|---|---|
 | The Shelf | Every 2-3 weeks | Since last appearance | Catch-up rule: covers full gap |
 | This Week in History | Every 2-3 weeks | Current week | History is date-bound |
-| The Pantry | Every 2-3 weeks | Since last appearance | One recipe per appearance |
+| The Listen | Every 3-4 weeks | Since last appearance | Podcasts + audio drama; episodic + retrospective |
 | The Workshop | Every 3-4 weeks | Since last appearance | Home gym, gear, recovery tools |
 | The Toolkit | Every 3-4 weeks | Since last appearance | Apps, productivity, workflows |
 | The Ledger | Every 3-4 weeks | Since last appearance | Side hustle, Etsy, templates |
 | The Long Game | Monthly (~every 4 weeks) | Since last appearance | Personal finance, investing |
 | The Wallet | Every 3-4 weeks | Since last appearance | Consumer fintech, banking apps |
-| The Itinerary | Every 3-4 weeks (more near trips) | Since last appearance + forward 2-4 weeks for events | Travel, parks, NI hidden gems |
+| The Itinerary | Every 3-4 weeks (more near trips) | Since last appearance + forward 2-4 weeks for events | European travel + theme parks |
+| The Local | Every 3-4 weeks | Since last appearance + forward 2-4 weeks for events | NI hidden gems + unusual family events |
+| The Brickyard | Every 4-6 weeks | Since last appearance | LEGO sets, builds, MOCs, availability |
+| The Saga | Every 6 weeks | Since last appearance | Star Wars + fantasy lore deep dives (no spoilers) |
+| The Lab | Monthly (~every 4 weeks) | Since last appearance | Training-science deep dive, slower than The Session |
+| The Channel | Every 6 weeks | Since last appearance | Music — synthwave, soundtracks, retro listening |
 
 ### Selection Rules
 
 1. **Check the state file** (`signal-state.json`) for `rotating_sections` — each entry has `last_appeared` date.
 2. **Pick the most overdue sections first.** If The Shelf last appeared 3 weeks ago and The Wallet 2 weeks ago, The Shelf has priority.
-3. **Cap at 2-3 rotating sections per issue** to maintain pacing. Rotating sections should be substantive (300-600 words each, except The Shelf which can be longer). The 6,500+ word target is met primarily by the fixed sections' Lead + Companion structure; rotating sections add variety on top, not bulk.
+3. **Cap at 3-4 rotating sections per issue** to maintain pacing. Rotating sections should be substantive (300-600 words each, except The Shelf which can be longer). The 6,500+ word target is met primarily by the fixed sections' Lead + Companion structure; rotating sections add variety on top, not bulk.
 4. **The Itinerary overrides normal cadence** when a trip is approaching — it appears every issue or every other issue in the lead-up. Check state file for `upcoming_trips`.
 5. **Don't force it.** If research for a rotating section turns up nothing worthwhile, skip it even if it's overdue. The cadence is a guide, not a mandate.
-6. **Ensure variety across a month.** Over any 4-issue stretch, aim for every rotating section to appear at least once (except The Long Game, which is monthly, and The Itinerary, which is event-driven).
+6. **Ensure variety across a month.** Over any 4-issue stretch, aim for every rotating section to appear at least once (except The Long Game / The Lab, which are monthly, and The Itinerary, which is event-driven, and The Saga / The Channel, which run on a 6-week cadence).
+7. **Hard cadence floor (planner-enforced).** A rotating section CANNOT be scheduled unless `weeks_since_last_appeared >= cadence_low` (the lower bound of its cadence band). The planner-side validator rejects any chapter plan that schedules a section inside its floor. Override: if no other rotating section is eligible (rare; only happens when most of the roster is too-soon AND the issue still needs slots), the planner picks the most-overdue section and the validator emits a warning instead of a hard fail.
+
+8. **Deficit promotion (mandatory force-include).** A rotating section with `weeks_since_last_appeared >= 2 * cadence_high` is force-included in the next eligible issue, regardless of editorial preference. The planner must include it; the validator rejects any plan that leaves a deficit-eligible section out without an explicit reason field (`"deficit_override_reason"`). Prevents the Ledger / Wallet droughts seen in early v8.x.
+
+9. **Default research window when `last_appeared` is null.** When a rotating section appears for the first time after a state file reset (or first-ever appearance), its research window defaults to "past 4 weeks" — NOT open-ended. Prevents the first appearance of a section from surfacing months-old news (e.g. the Revolut-from-March bug). Override via explicit `initial_research_window_weeks` field in state if the editor wants different.
 
 ### Placement: Interleave, Don't Stack
 
@@ -169,17 +83,22 @@ Each issue includes **all fixed sections** plus **2-3 rotating sections** select
 
 | Rotating Section | Preferred Slot | Reasoning |
 |---|---|---|
-| The Pantry | Between Pixel & Byte and The Touchline | Palate cleanser between tech and sport; warm tone bridges the gap |
-| The Shelf | Between Screen & Sound and The Session (original position) | Natural flow from entertainment to books/podcasts |
+| The Shelf | Between Screen & Sound and The Session (original position) | Natural flow from entertainment to books |
+| The Listen | Between Screen & Sound and The Session | Pairs with entertainment, breaks before fitness |
 | The Workshop | Between The Session and the next section | Gear/gym pairs naturally with fitness |
 | The Toolkit | Between The World This Week and Pixel & Byte | Productivity/apps feel at home near the tech section |
 | The Ledger | Between The Touchline and Screen & Sound | Change of pace between sport and entertainment |
 | The Long Game | Between The Touchline and Screen & Sound | Finance as a breather between dense sections |
 | The Wallet | Between Pixel & Byte and The Touchline | Fintech pairs with the tech section |
 | The Itinerary | Between The Session and On the Radar | Travel/events naturally leads into the calendar |
+| The Local | Between The Session and On the Radar | NI events lead naturally into the calendar |
+| The Brickyard | Between Pixel & Byte and Screen & Sound | Sits in the "play" cluster |
+| The Saga | Between Screen & Sound and The Shelf | Sits in the "story" cluster |
+| The Lab | Between The Session and the next section | Pairs with fitness; deeper than the weekly Session |
+| The Channel | Between Screen & Sound and The Shelf | Sits in the "listen" cluster (or before The Listen if both present) |
 | This Week in History | Between The Session and On the Radar (original position) | Reflective close before the forward-looking calendar |
 
-**When 2-3 rotating sections appear in the same issue:**
+**When 3-4 rotating sections appear in the same issue:**
 - Spread them across different slots — never place two rotating sections back-to-back.
 - If two sections share a preferred slot, move one to its alternate position.
 - The read-next connectors chain naturally through whatever sections are present.
@@ -198,13 +117,18 @@ Only research topics for the rotating sections selected for this issue. This sav
 ---
 
 
+
 ---
 
 ## anchor-piece
 
 ## Anchor-Piece Rotation (deprecated v8.15)
 
-Removed. Replaced by the Lead + Companion structure (see § Article Structure: Lead + Companion above). The anchor-piece rotation was unenforced across 8 weekly issues; the new two-anchor structure subsumes its purpose of giving every issue a second centre of gravity.
+Removed. Replaced by the Lead + Companion structure (see § Article Structure). The anchor-piece rotation was unenforced across 8 weekly issues; the new two-anchor structure subsumes its purpose of giving every issue a second centre of gravity.
+
+---
+
+
 
 ---
 
@@ -235,6 +159,7 @@ Run the **core groups** every issue. Run **rotating groups** only when that sect
 Search groups for rotating sections are in `references/sections.md`. Only search the groups for sections appearing in this issue.
 
 ---
+
 
 
 ---
@@ -304,4 +229,5 @@ Use 10-14 different types per standard issue. No two consecutive sections should
 **Rotation rule:** no 3+ screen-heights of unbroken prose anywhere. Vary which sections use split layouts, where pull quotes appear, whether history uses timeline or bullets, which also-lists use card variant. Use entry patterns to vary article openings. Use sidebar-float as an alternative to split layouts. Use compare panels where a natural comparison exists.
 
 ---
+
 

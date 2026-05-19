@@ -7,25 +7,15 @@ _This file consolidates the specials/ subdir into one file. Each former file bec
 
 ## overview
 
-
-  **Lead-grade (cover this fully — often as a lead, never less than substantial Also coverage):**
-  - General election campaigns and results
-  - Council / Senedd / Holyrood / NI Assembly election RESULTS at the aggregate level when they shift the national picture (a Reform breakthrough; Labour losing 1,500 councillors; first head of devolved government to lose their seat in post; the two-party system fragmenting)
-  - Live PM / opposition-leader leadership challenges (MPs publicly calling for resignation, union withdrawal of support, named challengers emerging, vote-of-confidence threats)
-  - Major government policy with national impact (Budget, NHS structural reform, immigration policy with measurable change, major tariff/trade decisions, headline legal rulings against the government)
-  - Party-leadership changes at the top of any major party (Labour, Conservative, Reform, Lib Dem, Green, SNP, Plaid)
-  - Cabinet-level resignations or sackings
-  - Constitutional and devolution shifts (e.g. credible second Scottish independence referendum, NI border-poll motion progressing)
-
-  **Parish-pump (exclude or one-line in Also at most):**
-  - Individual constituency by-elections (Bromley-tier)
-  - Ward-by-ward council results, named candidates, individual mayoralty wins/losses unless they touch a Lead-grade story (e.g. "Camden Labour leader lost seat to Greens" matters because it's Starmer's own borough during a leadership crisis — covered as a beat inside the leadership story, not as its own item)
-  - Individual MP scandals that aren't government-shaking
-  - NI Assembly party-on-party arguments that don't change policy: DUP-vs-Alliance street-name disputes, parade-route arguments, language-act flag arguments, identity-politics theatre with no legislative outcome
-  - Westminster process stories: committee reshuffles, whip rows, Speaker rulings, parliamentary procedure disputes
-  - Polling-only stories without an event behind them ("Reform 5 points ahead" with no election trigger)
-
-  **The test:** is this a moment where the political landscape shifts, or is this routine politics? The Bromley by-election is routine even when it's surprising. "Reform takes 1,453 council seats" is a landscape shift. "30 Labour MPs calling on the PM to resign" is a landscape shift. "DUP threatens to walk over street name" is theatre. When the landscape shifts, lead with it. The same logic applies to Irish, Scottish, Welsh and broader European national politics — the threshold is "does the shape of national politics actually change?"
+### Content-first contract (non-negotiable)
+Every motion component below obeys these rules. Never ship a special edition that violates any of them:
+- **No scroll hijacking, ever.** Native scroll speed and direction are untouched.
+- **No motion on body copy.** Only chrome, openers, and decorative layers animate. Prose is always static.
+- **Stagger reveals cap at 400ms total.** Word-level reveals use 40ms delays and stop after ~10 words.
+- **`prefers-reduced-motion` disables every decorative animation.** The controller short-circuits after the splash cleanup.
+- **JS-off still renders a complete issue.** All motion is additive — the issue must be fully readable with scripts disabled.
+- **Word counts and section depth are not reduced to make room for motion.** Motion sits around content, not in place of it.
+- **Format-variable intensity.** Countdown / Versus / Rewind go loud. Deep Dive / Blueprint / Field Guide stay quiet (splash + ticker + manifesto only).
 
 
 
@@ -33,68 +23,54 @@ _This file consolidates the specials/ subdir into one file. Each former file bec
 
 ## cover
 
----
+### Authoring a special edition
+1. On `<body>`, add `is-special` and `data-special="<format>"` where format is one of: `countdown`, `rewind`, `versus`, `season-review`, `deep-dive`, `blueprint`, `starter-kit`, `shortlist`, `field-guide`.
+2. **For Countdown only:** add `data-dday-start="N"` on `<body>` where N is the number of days between the issue date (today, when generating) and the event. The D-day badge displays this authored value statically — a magazine issue is a snapshot and the badge must agree with the prose, forever. Compute N at generation time as `(trip_date - today)` in days. The Countdown auto-trigger fires 2-3 weeks before a trip, so N is typically 14-21. If generating a prototype or back-dated issue, use the fictional issue-date reference. (Optional: also add `data-trip-date="YYYY-MM-DD"` for human reference, but it does NOT drive a live countdown at runtime.) The previous scroll-scrubbing pattern (`data-dday-start` + `data-dday-end` interpolated by scroll percentage) has been removed — a scroll-driven countdown is nonsensical.
+3. Include the components from the component list below as appropriate for the format. Each component has a documented HTML contract in `component-contracts.md` (or inline in the CSS).
+4. Inject assets with `scripts/inject-assets.sh` as normal.
 
-## Visual Design
 
-**The template parts in `assets/template-parts/` are the authoritative structure reference.** Each file holds one logical section (cover, navigator, world, touchline, etc.). Use their class names and component patterns exactly. Read only the parts this issue uses.
+### Component list
+**Chrome (tier 1 — all special editions):**
+- `.sp-splash` — full-bleed pre-roll wash with format glyph, self-dismisses after 2.2s
+- `.mast-ticker` — horizontal marquee masthead replacing the static masthead
+- `.sp-format-badge` — rotated ◆ format label, fixed top-right
+- `.sp-footer-card` with arc notch + ◆ seal — closing card
 
-**CSS/JS injection:** Do NOT read or paste any file from `assets/css/` or `assets/script.js` into context. Instead, place `<!-- INJECT:CSS -->` in the `<head>` and `<!-- INJECT:JS -->` before `</body>`. After generation, run `scripts/inject-assets.sh` to inject the full CSS and JS automatically. This saves significant context for research.
+**Scroll motion (tier 2 — loud formats):**
+- `.sp-parallax` with `.p-bg` / `.p-mid` / `.p-fg` layers — layered parallax on hero and section openers
+- `.sp-stagger` with `.sp-word` children — word-by-word reveal on h2 openers (400ms cap)
+- `.sp-wipe` with three `.sp-wipe-layer` children (l1/l2/l3) — contained colour-wipe transitions between sections. The wipe container is `overflow: hidden` and `contain: layout paint` — it never extends past content width and cannot push surrounding columns during transition.
+- `.sp-dday` — Countdown-only live days-to-go badge, top-left, reads `data-trip-date` from `<body>`, does NOT scrub with scroll
 
-**Fonts:** Cormorant Garamond (headlines, body), DM Sans (UI, tags, labels), JetBrains Mono (section labels, dates).
+**Layout breakouts (tier 3 — loud formats):**
+- `.sp-manifesto` — oversized foreword
+- `.sp-bignum` — full-width statement number
+- `.sp-gallery` — broken editorial gallery
+- `.sp-diptych` — split-screen contrast layout
+- `.sp-marquee` — source-strip marquee at end of issue
 
-**Section backgrounds:** World = `--paper` (light), Pixel & Byte = `--warm`, Touchline = `--pitch` (near-black), Screen & Sound = `--screen-bg` (dark purple), Shelf = `--shelf-bg` (dark brown), Session = `--session-bg` (light green), History = `--hist-bg` (parchment). **Rotating section backgrounds:** Pantry = light warm/terracotta accent, Workshop = light grey/steel accent, Toolkit = light blue-grey/cyan accent, Ledger = warm cream/amber accent, Long Game = cool grey/navy accent, Wallet = clean white/teal accent, Itinerary = warm sand/coral accent. New rotating sections should use CSS custom properties following the same pattern as existing sections.
+**Cover kinetic (opt-in):**
+- `.cover-kinetic` with `.k-bold` / `.k-italic` / `.k-outline` — three overlapping title layers that collide on arrival
 
-**Dark sections:** body text uses `rgba(255,255,255,.8)`. DYK boxes adapt to section palette.
+**Body-embedded components (tier 4 — inside article sections, not between them):**
+- `.sp-scroll-image` (+ `.is-fullbleed` variant) — hero image that can drop into any section mid-article. Image has subtle parallax (±20px) within its frame as it scrolls through viewport. Supports `<figcaption>` with `<cite>` for credit.
+- `.sp-inline-figure` (+ `.is-left` / default right) — half-width floating figure alongside body copy. Reveals with fade + 20px slide when scrolled into view. Collapses to full-width at ≤820px.
+- `.sp-image-strip` with `.sp-strip-track` — 3-image horizontal strip that drifts sideways as the page scrolls vertically. Echoes the landonorris.com horizontal-in-vertical motion.
+- `.sp-pullquote-huge` — oversized full-column italic pull quote with ornamental quote mark, top+bottom rules. Breaks up long prose blocks. Contains `<p>` and optional `<cite>`.
+- `.sp-number` (inline) and `.sp-number-block` / `.sp-number-huge` (block) — count-up stat callouts. Add `data-to="N"` (with optional comma formatting) to trigger the animation when scrolled into view. Can be used inline in prose: `<span class="sp-number" data-to="74">74</span>`.
+- `.sp-marginalia` (with `data-side="left|right"`) — fact/stat chip that floats in from the margin. Parent must be `position: relative` (all sections already are). Falls back to inline breakout at ≤1200px.
+- `.sp-kicker` — class for h3/h4 sub-headings inside long articles. Reveals with 10px slide + fade when entering view. Keeps body reading flow intact.
+- `.sp-image-quote` — photo with overlaid italic pull quote. For "what people say about X" breakouts. Image is darkened (brightness 0.55) so text sits over it cleanly.
+- `.sp-curtain` with `.sp-curtain-panel` — vertical curtain-drop transition between sections. Half the height of `.sp-wipe` (60px). Drops, then retracts 700ms later. Use sparingly for rhythm variety.
+- `.sp-chapter-number` with `.sp-chapter-num` + `.sp-chapter-label` — oversized roman/arabic numeral that precedes a long section. Adds typographic weight without needing imagery. Good opener for internal chapters.
 
-**Output:** single HTML file, CSS and JS injected via build script, responsive (960px max-width, breakpoints at 820px and 600px). Reader's primary device is a Xiaomi Pad 8 tablet (~800px portrait), which sits BETWEEN the 820px and 600px breakpoints — always sanity-check tablet rendering, not just desktop and phone.
 
-**Tablet column-width rule (special editions):** Centred display blocks that use `max-width: <N>ch` (manifesto, huge pull quotes, image-quote blockquotes, diptych body) must have a tablet override at `@media (min-width: 601px) and (max-width: 1024px)` that widens the measure with `min(<pct>%, <px>)` instead. At tablet, `clamp()` font sizes sit at their mid-scale (~5vw of 800px ≈ 40px) and a 20ch limit collapses to ~360px — a narrow column marooned in the middle of the viewport. Always widen to at least 90% of the viewport up to a sensible px cap. The same logic applies if you add any new centred component bound by `ch` measure: include the tablet override in the same patch.
-
-**Cover height rule (all formats):** `.cover` must fill the full viewport on first load — no next-section chrome (chapter gate, first headline, ground colour) should peek up from below the fold. Implementation: `min-height: 100vh; min-height: 100dvh; box-sizing: border-box` on the base rule, and the same full-height on the mobile override at `@media (max-width: 720px)`. **Do not regress to `82vh` / `72vh`** — those were from an earlier pre-tablet version and leave the cover shorter than a modern phone or tablet viewport. `100dvh` ensures the cover stretches to the full window whether the mobile URL bar is shown or hidden. The scroll-cue inside the cover foot is the reader's sole cue to keep scrolling; nothing from the next section should compete with it. If you add a new component inside `.cover`, use `grid-row: auto` and let the existing `auto 1fr auto` track layout anchor it — don't set a fixed cover height that shorter than the viewport.
-
-**Tablet ground-level gutter rule (special editions):** `.sp-ground-paper` and `.sp-ground-ink` chapter wrappers are full-bleed by design — the background tone reaches the viewport edge. Their CONTENT is given a horizontal gutter on tablet and mobile by `26-special-editorial.css` (28px tablet / 20px mobile, with `env(safe-area-inset-*)` floors). When you add a NEW component inside a chapter that should also be full-bleed (like `.sp-pull-break`, `.sp-folio`, `.sp-gallery`, `.sp-image-strip`, `.sp-scroll-image.is-fullbleed`), you MUST add it to the `:not(...)` exemption list in that media query — otherwise it'll inherit the gutter and look misaligned against the other full-bleed components.
-
-**Navigator variants:** default grid (`04-navigator.html`) for most issues; TOC-style (`04-navigator-toc.html`) for longer, more literary issues — special editions, deep dives, field guides. The TOC variant reads like a bound-magazine contents page and is opt-in per issue.
-
----
-
-## Special Editions — Maximalist Motion System
-
-Special editions (Countdown, Rewind, Versus, Season Review, Deep Dive, Blueprint, Starter Kit, Shortlist, Field Guide) opt into an additive motion + chrome layer on top of the standard Signal identity. This layer is defined in `assets/css/23-special-chrome.css`, `assets/css/24-special-motion.css`, and the special-edition block at the bottom of `assets/script.js`. It activates only when `<body>` has `class="mag-body is-special"`.
-
-### Content-first contract (non-negotiable)
-Every motion component below obeys these rules. Never ship a special edition that violates any of them:
-- **No scroll hijacking, ever.** Native scroll speed and direction are untouched.
-- **No motion on body copy.** Only chrome, openers, and decorative layers animate. Prose is always static.
-- **Stagger reveals cap at 400ms total.** Word-level reveals use 40ms delays and stop after ~10 words.
 
 
 ---
 
 ## meanwhile
-
-  - **Opinions are reported, not held.** Strong claims like "skip this one", "worth the wait", "tourist trap" are allowed — but each one must be **a paraphrase of converging source signal**, not the agent's verdict. Surface it as such: "reviewers consistently warn it's a tourist trap", "the consensus across blogs and Reddit is it's worth the wait for the dragon-themed dessert". The voice has a spine because the sources do; if the sources disagree, say that too ("opinions split: Reddit rates it highly, TripAdvisor doesn't"). Never hedge invented opinion as fake-strong opinion.
-  - **Insider moments delivered as gifts.** Timing tips ("reviewers suggest 11:30 to beat the rush"), off-menu asks, hidden seating, the second-floor nobody knows about — surface these inside the prose, not just in sidebars. Every one must trace to a real source; if it can't, cut it.
-  - **Theming and atmosphere as equal citizens to food quality.** When sources note a mediocre meal in an incredible room, say that. When they note a great kitchen in a soulless space, say that too. Theming/atmosphere claims still need source backing — a blog photo, a quoted line, a Reddit comment.
-  - **Energy in the prose, not the punctuation.** No exclamation-mark spam. No "you won't believe what's at #3" listicle voice. No "trust me, you'll love it". The excitement comes from sounding like an editor who has done the reading — not like someone who has been there themselves.
-  - **Practical backbone stays intact.** Prices, booking notes, dietary flags, kid-friendly callouts, queue tactics — all still there. They're just delivered inside prose that sounds excited to share them, not a database dump.
-  - Field Guide lands around 45/55 hype-to-practical, front-loaded with hype. The Countdown (2-3 weeks out) does the pure anticipation work with zero homework. These voice rules sharpen every section — both the Unmissables up front and the ranked practical chapters that follow.
-- **Multiple options, always.** The reader is there for multiple days and wants choice. Every meal slot (breakfast, lunch, dinner, snacks, desserts, drinks/coffee) should have 3-5+ options ranked or categorised. Include: what to order, price range where findable, atmosphere/theming notes, whether it's table-service or grab-and-go, and any booking requirements. Practical detail lives **inside** the prose where possible, not only in sidebars — the reader is reading for pleasure, not scanning a database.
-- **Cover the full spectrum.** Fine dining with amazing theming → solid family meals → quick bites when you're knackered → unique treats you can't get anywhere else → best coffee spots → "we just want a burger and chips" fallbacks. The reader wants to know about the dragon-shaped dessert AND the reliable burger joint.
-- **Theming and experience matter.** If a restaurant has incredible theming worth seeing even if you don't eat there, say so. If a place has an atmosphere that makes a mediocre meal worthwhile, say so. If a café is the best stroopwafel in the park, say so.
-- **Multi-venue trips:** If the trip covers multiple parks/resorts (e.g. Efteling + Beekse Bergen), the primary destination gets the full treatment. Secondary venues get a shorter but still practical section — key dining options, standouts, and practical notes.
-- **Research depth matters.** This format lives or dies on completeness. Source from: official park/resort websites and menus (source-of-truth for what exists today, prices, opening hours), TripAdvisor and Google reviews, travel blogs (DFBguide, TravelMamas, park-specific forums, family-travel and solo-travel blogs), Reddit (r/Efteling, r/themeparks, r/foodtravel, destination-specific subs), YouTube food tours and vlogs, Instagram and TikTok location tags, food-blogger Substacks, and any Dutch/regional-language sources where relevant. Cross-reference at least three source types per major venue to catch seasonal menus, recently closed spots, new openings, and the gap between marketing copy and what diners actually report. **Imagery follows the same diversity rule:** traveller photos from blogs, Reddit photo threads, well-credited Flickr/Instagram posts, and food-tour video stills are all in scope alongside official press shots — quality and credit are the bar, not source pedigree. **The photo carries the sensory load that the prose does not** — see the Factual write-up rule. A specific, well-credited shot of the actual dish on the actual plate does work the writing must not attempt.
-- **Audience callouts — stated as venue character, never as reader instruction.** A sidebar or icon system can flag places by their general character: "family-friendly", "adult-oriented evening spot", "buggy-friendly", "late-night", "walk-in welcome", "booking essential". These are facts about the venue, not directions to the reader. Banned: "perfect for your son", "your 10-year-old will love", "great for the kids" — the reader's family composition is invisible per Gate 1A. The reader can apply venue character to their own circumstances; the magazine never does it for them.
-- **Tone is conversational, not instructional.** Phrases like "worth building an evening around", "the pick when you want something quiet after a loud day", "the kind of place that rewards a long lunch" frame venues by their general character without addressing the reader directly. Banned: "one for each of you", "you and your partner", "take the kids", "if you've been waiting for…" — these all violate Gate 1A. Write as if any reader of the magazine might be heading to this trip; the warmth comes from venue-level specificity, not from second-person address.
-- **Images do heavy lifting.** Food photography isn't supporting content — it's the reason to turn the page. Every Unmissable gets a strong image. Major meal-slot sections get at least one. Lean toward bigger images, less whitespace, more visual momentum. The reader is scrolling on a tablet with coffee — make it a pleasure to look at.
-- Use `.also-cards` for option grids, `.compare-panel` for head-to-head comparisons (e.g. two similar restaurants), `.stat-bar` for price ranges, `.sidebar` for tips ("book 2 weeks ahead" / "queue is shortest at 11:30"), `.big-number` for standout stats, `.dyk` for food trivia, `.tier-hot`/`.tier-warm`/`.tier-note` for ranking tiers.
-- Use 10-14 component types. Images are critical — food photography sells the recommendations.
-- Best for: theme park food guides, city eating guides, resort dining guides — any trip where finding the right places to eat is a meaningful part of the experience.
-
-All special editions use the same design system and component library. Use sidebars, stat bars, DYK boxes, card stacks, collapsible sections generously — a special edition with no visual furniture is a wall of prose.
-
----
 
 ## Auto-Triggered Specials
 
@@ -139,11 +115,153 @@ If no Priority 1 or 2 trigger has fired in the last 5 weeks, the editor picks a 
 
 | Format | Example Topics |
 |---|---|---|
+| Starter Kit | Getting into Malazan, Specialty coffee from scratch, Fantasy Premier League for beginners, Home kettlebell training, Starting on Etsy |
+| Deep Dive | The history of a favourite game franchise, A deep look at a training methodology, The state of e-readers in 2026, Serie A tactical evolution |
+| Versus | V60 vs AeroPress, Two fitness approaches, Two e-readers, Two budget tablets |
+| Blueprint | Home gym next phase, 10k training plan options, Etsy store growth paths |
+
+**The editorial picks pool ensures there's always a viable special available.** The editor selects the most timely or interesting option from the pool. Over time, used topics are tracked in the state file to avoid repeats.
+
+### Guardrails
+
+- **Target frequency: one special every 4-6 weeks on average.** Not a hard rule, but if 6+ weeks pass without a special, Priority 3 must fire. If two natural triggers cluster in consecutive weeks, that's fine — but never three specials in a row.
+- **Never more than 2 consecutive specials.** If two specials ran back-to-back, the next issue must be a standard weekly regardless of triggers.
+- **The standard weekly is the backbone.** Specials are seasoning, not the main course. Most Sundays should be the standard weekly with rotating sections.
+- **Manual triggers always override.** If the reader requests a specific format, that takes priority over any auto-trigger.
+- **Track in state file:** `last_special_date`, `last_special_format`, `consecutive_specials_count`, `editorial_picks_used`.
+
+### Trip-Aware Scheduling
+
+Trips create a dense window where multiple triggers compete. These rules prevent collisions:
+
+- **Issues still run during trips.** The reader wants something to read on the plane, at the pool, or watching giraffes. Standard weeklies and specials generate as normal even when the reader is away.
+- **Defer Rewinds that clash with trips.** If a Rewind trigger (half-year or year-end) falls within 7 days of a trip start, defer it to the first Sunday after the reader returns. A Rewind is better as a "welcome back" issue than something competing with pre-trip excitement. All other formats (standard weekly, Season Review, etc.) run on schedule.
+- **Field Guide before Countdown.** The Field Guide fires at ~6 weeks out; the Countdown fires at 2-3 weeks out. They should never collide. If they somehow would (very short trip lead time), the Countdown takes priority — the Field Guide is only useful with enough lead time to plan.
+- **Season Reviews are patient.** A Season Review can't run until the week after the season ends (results need to be final). It has a 6-week window from there -- after that, drop it. Don't force it at the 6-week mark either; if other specials or strong standard weeklies have filled the calendar, that's fine. A Season Review that never runs is better than one shoehorned in when the moment has passed. If it does run, a combined review covering both Serie A and PL in one issue is fine when they end the same weekend.
+- **Trip priority order for a typical trip window:** Field Guide (6wk) → standard weeklies / Season Reviews → Countdown (3wk) → standard weeklies → deferred Rewind (first Sunday back if clashing).
+
+---
+
 
 
 ---
 
 ## chapter-gate
+
+### Chapter gate (MANDATORY for every chapter on every special edition — v8.5, sticky scroll model)
+
+**The chapter gate is the single most important element in a special edition.** It is the digital equivalent of turning a page in a real magazine — a viewport-locking moment that unambiguously says *"a new chapter starts here"*. It is the permanent, unmissable signal the reader can spot at any scroll speed.
+
+**Mandatory on:** every `[data-sp-chapter]` in every special edition. If a chapter does not open with `.sp-chapter-gate`, the issue fails Gate 2.
+
+**Structure:**
+```
+<aside class="sp-chapter-gate"
+       data-chapter-num="V"
+       data-chapter-title="BEEKSE BERGEN"
+       data-chapter-arc="Act III — the wild">
+  <p class="scg-deck">Five days inside Europe's largest safari park, and a hotel where the lions wake you up.</p>
+</aside>
+```
+Place the gate **immediately before** the chapter section's opening `<section data-sp-chapter="…">` tag. The controller auto-builds the black panel and drives the scroll-progress reveal.
+
+**How it behaves (v8.5 sticky scroll model):**
+- The gate is a 160vh scroll track containing a `position: sticky` full-bleed black panel (`#0A0E17`) that locks to the viewport for ~1 screen-height of scroll.
+- As the reader scrolls *through* the gate, a `--scg-progress` CSS variable runs 0 → 1. The four text layers are revealed in sequence:
+  - **0.10 → 0.30** arc label fades in
+  - **0.25 → 0.55** Roman numeral scales + fades in (coral)
+  - **0.45 → 0.70** chapter title fades in (reserved typeface)
+  - **0.65 → 0.88** deck line fades in (italic, on the black)
+- When scroll passes the end of the track, the panel unsticks and the next chapter is revealed underneath.
+- **No cream "breath" zones before or after.** The previous chapter butts straight up against the black cover; the next chapter appears straight out of it. The pause is *time* (scroll-hold), not *whitespace*.
+- **Reduced-motion / no-JS fallback:** panel collapses to a static full-bleed black band (~52vh) with all four text layers fully visible. No sticky, no progress driver. Same visual anchor, no motion.
+
+**Four text layers, all live inside the black panel (v8.5):**
+1. **Arc label** — italic, small, muted bone (e.g. "Act III — the wild")
+2. **Roman numeral** — display size (72–180px), coral, reserved typeface
+3. **Chapter title** — medium, letter-spaced caps, bone, reserved typeface
+4. **Deck line** — italic, dim bone, one sentence (mandatory)
+
+**Three elements reserved exclusively for the gate (never used elsewhere):**
+1. The **full-bleed black panel** (`.scg-strip`). If you see one, it means "new chapter". Nothing else in the magazine uses this.
+2. The **chapter-title typeface** (`var(--sp-chapter-ff)` — Space Grotesk). Banned from pull-quotes, kickers, stats, sidebars, covers, navigators.
+3. **Display-size Roman numerals** (72–180px). The wax seal's small ornamental numeral is the only other Roman numeral permitted.
+
+**Required attributes:**
+- `data-chapter-num` — Roman numeral (I, II, III…). Required.
+- `data-chapter-title` — chapter name in CAPS (e.g. `BEEKSE BERGEN`). Required.
+- `data-chapter-arc` — the narrative-arc label. Required on Countdown, Deep Dive, Rewind, Season Review. Optional on Versus / Starter Kit / Blueprint / Shortlist / Field Guide.
+- `<p class="scg-deck">…</p>` — **mandatory one-line deck**. A sentence that tells the reader *what this chapter will do for them*. Not a subtitle, not a description — a promise. See deck-writing rules below.
+
+**The deck line — what makes it good:**
+- One sentence. Italic. Max ~20 words.
+- Answers: *"why should I read this chapter?"* not *"what is this chapter?"*
+- Concrete, not abstract. "Five days inside Europe's largest safari park" > "An overview of our stay".
+- Never restates the chapter title.
+
+**Examples (good):**
+- *By the Numbers* → "The trip in eleven figures — before the prose starts."
+- *Logistics* → "Everything you need to stop thinking about once you land."
+- *Facts & Folklore* → "The stories the locals tell, and the ones the guidebooks don't."
+- *Wonder Hotel* → "Sleeping inside the fairy tale — what two nights in room 312 is really like."
+- *Mood Board* → "Five images that tell you what a week here actually looks like."
+
+**Narrative-arc labels (required on long-form specials):**
+- **Countdown** (typically 9–11 chapters): Act I (hype setup — By the Numbers, Event in Depth) → Act II (centrepiece hype — Top Attractions, Accommodation, Mood Board) → Act III (softer hype — What to Watch/Read/Play, Five Moments Worth the Trip) → Coda (Before You Go: compressed logistics + surprising facts + On the Radar)
+- **Deep Dive** (8–10 chapters): Premise → Evidence I → Evidence II → Counterargument → Verdict
+- **Rewind** (chronological): Year-by-year or phase-by-phase labels
+- **Season Review**: Opening Acts → Mid-Season → Finale → Verdict
+Map every chapter to its arc beat and put the label in `data-chapter-arc`. This is how the reader keeps orientation through ten chapters.
+
+
+
+---
+
+## imagery-budget
+
+### Imagery budget — MANDATORY for loud special editions
+
+A Countdown / Versus / Rewind issue **must not** have entire sections that are walls of text. The previous pattern (front-loaded imagery in the opening then plain prose for the rest) is banned. Apply the following rule at generation time:
+
+**Every major body section (Foreword excepted) must include at least ONE of:**
+- A `.sp-scroll-image`, `.sp-inline-figure`, `.sp-image-quote`, or `.sp-image-strip` (imagery)
+- A `.sp-number-block`, `.sp-pullquote-huge`, `.sp-bignum`, or `.sp-chapter-number` (high-impact typographic component)
+- A `.sp-gallery` or `.sp-diptych` (multi-image layout)
+
+**In addition, across the whole issue:**
+- At least **2 sections** use a multi-image component (gallery, diptych, or image-strip)
+- At least **3 sections** use `.sp-scroll-image` or `.sp-inline-figure` for embedded imagery
+- At least **2 sections** use `.sp-pullquote-huge` to break up prose
+- Long prose sections (>500 words) include `.sp-kicker` on h3/h4 headings
+- Long prose sections include at least one `.sp-marginalia` or inline `.sp-number` callout
+- Section transitions alternate between `.sp-wipe` and `.sp-curtain` for rhythm variety — don't use the same transition twice in a row
+
+These are minimums — more is fine. Research images for EVERY major section, not just the cover topic.
+
+
+
+---
+
+## editorial-body-kit
+
+### Editorial body kit — MANDATORY rules for loud special editions
+
+The tier-4 imagery budget addresses *what's in* each chapter. The tier-5 editorial body kit addresses *how each chapter is structured*. Both apply.
+
+**Per-chapter:**
+- Every chapter wrapper carries `.sp-ground-paper` or `.sp-ground-ink`. Chapters alternate ground value — never two paper chapters in a row, never two ink chapters in a row. The shift IS the transition; this replaces the need for a `.sp-wipe` or `.sp-curtain` between alternating-ground chapters (use those between same-ground chapters or for rhythm variety only).
+- Every chapter opens with a `.sp-chapter-chrome` strip carrying its roman numeral, name, and slug.
+- Every chapter contains at least one `.sp-folio` watermark for typographic depth.
+- Any chapter ≥800 words MUST use a `.sp-spread` layout (rail + body + margin). Shorter chapters may use a single-column body but still need at least one `.sp-brief`, `.sp-hero-quote`, or `.sp-dash` mid-prose.
+- Every chapter ends with a `.sp-signoff` line.
+
+**Across the issue:**
+- At least 1 `.sp-pull-break` for a major rhythm break (typically between the second and third chapter)
+- At least 1 `.sp-bridger` interlude inside a long chapter
+- At least 1 `.sp-dash` instead of an italicised list of stats anywhere stats are presented
+- Section headings inside `.sp-spread-body` use the `§` section mark automatically (built into the CSS)
+- First paragraph of each `.sp-spread-body` gets a 110px italic accent drop cap automatically (built into the CSS) — do not manually wrap the first letter
+
 
 ### Editorial motion layer (tier 5.5) — MANDATORY for loud special editions
 
@@ -174,6 +292,13 @@ The tier-5 body kit gives the magazine its structure. The tier-5.5 motion layer 
 
 **Reduced-motion:** All tier-5.5 motion is wrapped in a `@media (prefers-reduced-motion: reduce)` kill switch — animations collapse to instant, transforms reset, decorative drift disabled. Content-readable state always reachable without motion.
 
+
+
+
+---
+
+## signature-moments
+
 ### Signature moments — ONE per format (mandatory)
 
 Each special edition format has exactly one signature moment — a single visual element readers will remember and describe to someone else. They are not interchangeable. Including a Countdown's hourglass in a Versus issue would dilute both. Use the prescribed component for the format and no other.
@@ -197,6 +322,12 @@ Each special edition format has exactly one signature moment — a single visual
 - **Mobile gating:** `sp-thread-pull` hides below 1100px; `sp-memory-wall` collapses to a horizontal strip below 900px; everything else adapts.
 - **No content sacrificed.** If the moment doesn't fit the issue's content shape (e.g. a Versus issue with no clear A/B paragraphs), skip the moment rather than force the structure.
 
+
+
+---
+
+## chapter-transitions
+
 ### Chapter transitions + ambient (format-agnostic)
 
 These components compose with the existing `.sp-wipe`, `.sp-curtain`, ground alternation, and chrome — they are punctuation, not replacements. Available to every special edition format.
@@ -211,108 +342,10 @@ These components compose with the existing `.sp-wipe`, `.sp-curtain`, ground alt
 - **`.sp-chapter-beads`** — fixed right-gutter bead strip, one per chapter, with within-chapter progress connector. **Universal: works on standard weekly AND every special edition.** Markup: a single `<aside class="sp-chapter-beads" aria-hidden="true"></aside>` near the end of `<body>` (already included in `template-parts/19-closing.html`). **Chapter discovery order:** (1) elements with `[data-sp-chapter]` — typical for specials; (2) fallback to `.mag > section.sec` — used by every standard-weekly section. **Title resolution:** `[data-sp-chapter-title]` → first `<h2>` text → section `id` (title-cased) → `Chapter N`. Accent colour auto-cascades: `--sp-accent` on specials, `--accent` on standards. **Mobile (≤ 820px):** collapses to a thin vertical line with no labels. Click a bead to scroll to that chapter.
 - **`.sp-horizon`** — bottom-edge strip bleeds the next chapter's ground colour upward as within-chapter progress nears 100%. Markup: a single `<div class="sp-horizon" aria-hidden="true"></div>` near the end of `<body>`. Each chapter element must carry `data-sp-chapter` AND `data-sp-ground-color="#hex"` so the next chapter's colour is known.
 
-
----
-
-## imagery-budget
-
-- **`prefers-reduced-motion` disables every decorative animation.** The controller short-circuits after the splash cleanup.
-- **JS-off still renders a complete issue.** All motion is additive — the issue must be fully readable with scripts disabled.
-- **Word counts and section depth are not reduced to make room for motion.** Motion sits around content, not in place of it.
-- **Format-variable intensity.** Countdown / Versus / Rewind go loud. Deep Dive / Blueprint / Field Guide stay quiet (splash + ticker + manifesto only).
-
-### Authoring a special edition
-1. On `<body>`, add `is-special` and `data-special="<format>"` where format is one of: `countdown`, `rewind`, `versus`, `season-review`, `deep-dive`, `blueprint`, `starter-kit`, `shortlist`, `field-guide`.
-2. **For Countdown only:** add `data-dday-start="N"` on `<body>` where N is the number of days between the issue date (today, when generating) and the event. The D-day badge displays this authored value statically — a magazine issue is a snapshot and the badge must agree with the prose, forever. Compute N at generation time as `(trip_date - today)` in days. The Countdown auto-trigger fires 2-3 weeks before a trip, so N is typically 14-21. If generating a prototype or back-dated issue, use the fictional issue-date reference. (Optional: also add `data-trip-date="YYYY-MM-DD"` for human reference, but it does NOT drive a live countdown at runtime.) The previous scroll-scrubbing pattern (`data-dday-start` + `data-dday-end` interpolated by scroll percentage) has been removed — a scroll-driven countdown is nonsensical.
-3. Include the components from the component list below as appropriate for the format. Each component has a documented HTML contract in `component-contracts.md` (or inline in the CSS).
-4. Inject assets with `scripts/inject-assets.sh` as normal.
-
-### Component list
-**Chrome (tier 1 — all special editions):**
-- `.sp-splash` — full-bleed pre-roll wash with format glyph, self-dismisses after 2.2s
-- `.mast-ticker` — horizontal marquee masthead replacing the static masthead
-- `.sp-format-badge` — rotated ◆ format label, fixed top-right
-- `.sp-footer-card` with arc notch + ◆ seal — closing card
-
-**Scroll motion (tier 2 — loud formats):**
-
-
----
-
-## editorial-body-kit
-
-
-**In addition, across the whole issue:**
-- At least **2 sections** use a multi-image component (gallery, diptych, or image-strip)
-- At least **3 sections** use `.sp-scroll-image` or `.sp-inline-figure` for embedded imagery
-- At least **2 sections** use `.sp-pullquote-huge` to break up prose
-- Long prose sections (>500 words) include `.sp-kicker` on h3/h4 headings
-- Long prose sections include at least one `.sp-marginalia` or inline `.sp-number` callout
-- Section transitions alternate between `.sp-wipe` and `.sp-curtain` for rhythm variety — don't use the same transition twice in a row
-
-These are minimums — more is fine. Research images for EVERY major section, not just the cover topic.
-
-### Image-caption integrity (v8.10.3 — hard rule)
-
-A wrong image with a confident caption is worse than no image at all. Three failure modes have been observed in past issues; all are forbidden, all are mechanically scannable in Gate 1F.
-
-**1. No duplicate `src` URLs in one issue.**
-Every `<img src="…">` in the rendered HTML must point to a unique URL. Re-using the same image with two different captions is a fabrication: at least one caption is lying. If the same image genuinely belongs in two places, redesign — find a second source for the second placement, or cut one of the placements. The most common variant of this bug is the same YouTube thumbnail used twice with contradictory subjects (e.g. `i.ytimg.com/vi/<id>/maxresdefault.jpg` captioned as Venue A's pools in chapter III and Venue B's harbour in chapter VII). Banned without exception.
-
-**2. YouTube thumbnail subject must match the video.**
-
-
----
-
-## signature-moments
-
-- **D3 page-url-as-image:** any image URL whose path has no recognised image extension fails. Catches the "page URL pasted as `<img src>`" pattern.
-- **D6 duplicate image URLs:** any URL used more than `max_uses_per_url` times (default 1) fails. Enforces the no-duplicate-src rule above mechanically.
-- **D7 unbundled images:** with `--bundle <path>`, every DOM image URL must appear verbatim in `image_candidates`. Catches URLs the writer invented.
-
-**Layer 6 — CI workflow (`.github/workflows/issue-validation.yml`).** Runs all gates on every push and PR in an unrestricted-egress environment. The image-URL HEAD check that degrades to a warning in the sandboxed pipeline runs for real here. On failure, auto-files a GitHub issue labelled `validation-failed`. For full enforcement, branch protection on `main` requires this workflow to pass before merge (one-time UI setup).
-
-This is the complete chain. Each layer is enforced by code, not by writer discipline. Adding a new image-shipping defect class means adding a new layer here.
-
-**Editorial body kit (tier 5 — magazine-spread structure):**
-- `.sp-ground-paper` / `.sp-ground-ink` — alternating-ground wrapper for chapters. Apply to each major section so chapters alternate between paper (cream) and ink (deep) grounds. The shift of value on scroll IS the transition between chapters; no bridge component needed when alternating. Variants: `.sp-ground-warm` (warm cream), `.sp-ground-tint` (rose-tinted paper), `.sp-ground-deep` (pitch black).
-- `.sp-chapter-chrome` — thin top bar inside every chapter: `<span class="sp-roman">III</span><span class="sp-hair"></span><span class="sp-chapter-name">…</span><span class="sp-chapter-slug">…</span>`. Mandatory at the top of every chapter on a special edition. Anchors the bound-magazine feel.
-- `.sp-folio` — giant background numeral behind chapter content (300-700px, ~5% opacity). Position with `.sp-folio-tl/-tr/-bl` variants. Place inside a chapter wrapper that has its own positioning context.
-- `.sp-spread` with `.sp-rail` + `.sp-spread-body` + `.sp-margin` — three-column feature-spread pattern. Narrow ink rail (oversized italic numeral, vertical spine label, act/section name) | body prose with proper drop cap and § section marks | tinted right margin column carrying marginalia and datums. Mandatory for any chapter ≥800 words. Collapses to single column ≤980px.
-  - Inside `.sp-margin`: use `.sp-margin-kicker`, `.sp-margin-quote` (with `.sp-margin-attrib`), and one or more `.sp-datum` (each containing `.sp-datum-n` + `.sp-datum-l`).
-- `.sp-brief` — sidebar card with thick accent left rule. `<div class="sp-brief"><p class="sp-brief-kicker">…</p><h4 class="sp-brief-h">…</h4><p>…</p><p class="sp-brief-byline">…</p></div>`.
-- `.sp-hero-quote` — bordered card with oversized translucent “ peeking above the top edge. `.sp-hero-quote-q` for the quote, `.sp-hero-quote-at` for attribution.
-- `.sp-dash` — stat dashboard band: 3-4 `.sp-dash-cell`s, soft tinted background, oversized italic numerals (`.sp-dash-n`) + mono labels (`.sp-dash-l`) + accent kickers (`.sp-dash-hint`). Use this instead of italicised stat lists.
-- `.sp-timeline` — editorial two-column timeline. Each `.sp-tl-row` contains `.sp-tl-when` (large italic date with optional `.sp-tl-tag`) and `.sp-tl-what` (with `<strong>` lede + serif body, accent dot on rule). Perfect for day-by-day plans.
-- `.sp-pull-break` — full-bleed dark band with two giant translucent quote marks in opposite corners and centred pull (`.sp-pull` + `.sp-pull-attrib`). Much more dramatic than a normal pull quote; use 1-2 per issue.
-- `.sp-bridger` — three-column interlude inside a section: numeral marker (`.sp-bridger-side` with `.sp-bridger-num`) | prose (`.sp-bridger-main`) | sidebar/quote (`.sp-bridger-aside`). Sits on warm-cream ground, breaks body rhythm.
-- `.sp-caption-strip` — richer photo caption with hairline rule + `.sp-cap-loc` mono location chip on the right.
-- `.sp-signoff` — italic display sigil with hairline accent rule, marking the end of a chapter.
-- `.sp-eyebrow` — tiny mono kicker in accent colour, used above any major heading or component title.
-
-
----
-
-## chapter-transitions
-
-
-### Editorial body kit — MANDATORY rules for loud special editions
-
-The tier-4 imagery budget addresses *what's in* each chapter. The tier-5 editorial body kit addresses *how each chapter is structured*. Both apply.
-
-**Per-chapter:**
-- Every chapter wrapper carries `.sp-ground-paper` or `.sp-ground-ink`. Chapters alternate ground value — never two paper chapters in a row, never two ink chapters in a row. The shift IS the transition; this replaces the need for a `.sp-wipe` or `.sp-curtain` between alternating-ground chapters (use those between same-ground chapters or for rhythm variety only).
-- Every chapter opens with a `.sp-chapter-chrome` strip carrying its roman numeral, name, and slug.
-- Every chapter contains at least one `.sp-folio` watermark for typographic depth.
-- Any chapter ≥800 words MUST use a `.sp-spread` layout (rail + body + margin). Shorter chapters may use a single-column body but still need at least one `.sp-brief`, `.sp-hero-quote`, or `.sp-dash` mid-prose.
-- Every chapter ends with a `.sp-signoff` line.
-
-**Across the issue:**
-- At least 1 `.sp-pull-break` for a major rhythm break (typically between the second and third chapter)
-- At least 1 `.sp-bridger` interlude inside a long chapter
-- At least 1 `.sp-dash` instead of an italicised list of stats anywhere stats are presented
-- Section headings inside `.sp-spread-body` use the `§` section mark automatically (built into the CSS)
-- First paragraph of each `.sp-spread-body` gets a 110px italic accent drop cap automatically (built into the CSS) — do not manually wrap the first letter
+**Authoring contract for ambient:**
+- Both ambient components share the same per-chapter progress calculation (one rAF loop, zero duplicated work). Adding `.sp-horizon` for free if you've already added `.sp-chapter-beads`.
+- Both require chapters to be marked with `data-sp-chapter` on the section root and `data-sp-chapter-title` for tooltips (specials). **Standard editions need no mark-up** — beads auto-discover from `<section class="sec">`. `data-sp-ground-color` is required only if you use `.sp-horizon` (special editions only).
+- Reduced-motion: beads stay (active state only, no fill animation); horizon collapses to a static 2vh strip near chapter end.
 
 
 
@@ -320,73 +353,19 @@ The tier-4 imagery budget addresses *what's in* each chapter. The tier-5 editori
 
 ## multi-venue
 
-### The Countdown
-Pre-event build-up. **5,000-7,000 words, 18-25 pages.** Manual trigger: "Run a Countdown for [event/trip]." Best for: trips, launches, tournaments, any event worth building anticipation for.
 
-**Canonical chapter order:** Cover → Foreword → By the Numbers → Event in Depth → Top Attractions (or equivalent venue-specific hype chapter) → Accommodation → Mood Board → What to Watch / Read / Play → Five Moments Worth the Trip → [Day-by-day plan — only if reader supplied one] → Before You Go (merged coda: surprising facts + essential logistics) → On the Radar → Footer.
+> See `formats/countdown.md` for the full Countdown spec; this file is a cross-format summary of multi-venue rules that live inside that section.
 
-**Hype over homework — the defining principle.** A Countdown exists to build anticipation, not to plan the trip. Logistics are compressed into a short coda near the end; the issue's weight sits in the chapters that make the reader *want to go*: the ranked attractions, the accommodation, the mood board, the moments worth the trip. If a chapter reads as a checklist or a how-to, it's in the wrong format — send that content to a Field Guide instead.
+Multi-venue trips (e.g. Efteling + Beekse Bergen) get parallel treatment:
+- Equal hype weight: words and images per venue sit within a 60/40 split.
+- Each venue's full estate is researched, not just the marquee feature.
+- A `data-multi-venue="true"` body flag activates per-venue palette tokens.
+- Tier 33 (`33-countdown-destinations.css`) provides Efteling and Beekse Bergen
+  palettes; Tier 36 (`36-holiday-identity.css`) provides the two-half + transit
+  structural rhythm. The two layers compose.
 
-**Hype-chapter visuals — opt-in modifiers (v8.9.1).** The default special-edition chrome (full-viewport chapter gate, coral accent lockdown, paper/ink grounds) is tuned for literary formats like Deep Dive and Rewind. On hype chapters it dampens the exact pages that should amplify. Four opt-in modifiers exist in `32-hype-variants.css` to dial the chrome back where excitement is the job. Use on Countdown hype chapters (Top Attractions, Accommodation, Mood Board, Five Moments Worth the Trip, and By the Numbers when image-led) and on Field Guide's The Opening + The Unmissables. Never use on literary chapters — Deep Dive, Rewind, Season Review, Versus keep the full default chrome.
-
-- **`.sp-chapter-gate.is-hype`** — compact gate variant. Same markup, same four text layers; track collapses to 60vh (was 110vh), sticky hold to 40vh (was 100vh), all layers fully revealed by progress 0.08 (was 0.20). The gate still announces the chapter; it no longer dwells.
-- **`[data-sp-chapter].is-hype`** — attribute on the chapter wrapper that narrowly re-permits coral on `.sp-number`, `.sp-number-huge`, `.sp-kicker`, `.sp-brief-kicker`, `.unmissables .sp-datum-value`, and `.why-its-here`. Everything else (pull-quotes, briefs, dashboard strong, spread h2, eyebrow) stays demoted per the global accent lockdown. Coral stays rare — just not absent on the elements meant to shout.
-- **`.sp-ground-gallery`** — third ground type alongside paper and ink. Neutral slate (#1A1E27), not pitch. Legal only on image-first chapters: Mood Board (primary use), Field Guide's The Opening when run image-led, optional for Five Moments Worth the Trip when the moment images are the point. Full-bleed image walls read as photography on a gallery wall instead of captioned content in a magazine spread.
-- **`.unmissables` / `.unmissable`** — Field Guide Unmissables pattern. 6–10 picks, each a full-width editorial beat (NOT a card grid). Per pick: hero image with captioned credit rule, **factual write-up** (what it is, what's good about it, what to order — anchored in attributed quotes from reviewers/diners/bloggers, never invented sensory description), “Why It's Here” coral kicker line, practical footer strip (price / booking / timing / walk) as a mono `<dl>` under a muted rule. Practical detail lives INSIDE the pick — that's the 45/55 Field Guide rule made structural. Drop-cap forbidden on picks (reserved for chapter openings).
-
-**When to apply them.** If a chapter's primary job is anticipation and it opens with imagery or a count-up stat, it's hype — add `.is-hype` to both the `sp-chapter-gate` and the chapter wrapper, and consider `.sp-ground-gallery` if the chapter is image-first. If the chapter's primary job is reflection or argument, it's literary — leave all four modifiers off. When in doubt, default to literary; the chrome is expensive-looking and holds up on its own. The modifiers are cheap to add and free to remove.
-
-**Visuals-first or cut.** Every chapter in a Countdown must be able to carry its own imagery. Minimums by chapter type:
-- **Narrative chapters** (Event in Depth, Top Attractions, Accommodation, Watch/Read/Play, Five Moments Worth the Trip): 3+ real, well-credited images — cut or reshape the chapter if it can't hit this.
-- **Visual-led chapters** (Mood Board): 8–12 images, captions only.
-- **Stat-led and coda chapters** (By the Numbers, Before You Go): 1+ image minimum — a stat dashboard doesn't need to be visually dense, but it still needs at least one establishing image to anchor it.
-- **Five Moments Worth the Trip**: one strong image per moment (so five minimum). If a moment can't be illustrated, replace it with one that can.
-
-All images must be real and credited (official venue media, Wikimedia, reputable travel press, the property's own site). No AI-generated imagery, no uncredited stock filler.
-
-**Equal hype weight for multi-venue trips.** When a trip has two or more headline venues, every venue gets equal hype weight across the issue — but the *shape* of the hype can differ to match what each venue actually is. A theme park earns a "Top 5 Attractions" chapter; a safari resort earns "Top 5 Animal Encounters" or "The Safari, Ranked" — same job, different shape. The test is not "did I mirror the structure" but **"did I give both places equal hype weight and equal visual presence?"** Measured mechanically: total words per venue and total images per venue across the issue must sit within a 60/40 split. If one venue genuinely warrants a chapter the other doesn't (e.g. one has 70 years of history worth a chapter, the other doesn't), the other venue gets an extra chapter of equivalent weight elsewhere to rebalance. Never 8 chapters on venue A and a single history paragraph on venue B.
-
-**Multi-venue destination theming (v8.10).** When a Countdown covers two or more headline venues, opt into per-venue theming so the reader's eye registers "a different place" the moment they hit a different chapter — without the issue fragmenting into two designs glued together. Activated by adding `data-multi-venue="true"` to `<body>` alongside the standard `data-special="countdown"`, then tagging each venue chapter section with `data-venue="efteling"` or `data-venue="beekse-bergen"` (use kebab-case venue identifiers). Defined in `33-countdown-destinations.css`. What the layer changes:
-- **Per-venue ground.** `.sp-ground-paper` and `.sp-ground-ink` adopt the venue's paper/ink tokens (`--eft-paper` / `--eft-ink` / `--bee-paper` / `--bee-ink`). Cream + plum for Efteling; warm sand + dark earth for Beekse Bergen.
-- **Per-venue accent.** Demoted secondary accents (kicker, brief-kicker, datum value, eyebrow, dashboard strong, pull-quote cite, spread h2 marker) repaint with the venue accent (`--eft-accent` antique gold, `--bee-accent` terracotta). Coral primary stays exclusive to gate numeral / D-day badge / progress bar; venue accents replace slate/bone, never primary.
-- **Decorative venue glyph.** A faint mask-image watermark sits in the bottom-right of each venue chapter — a twisting vine + crown finial for Efteling, a giraffe silhouette (PhyloPic CC0) for Beekse Bergen. 0.06 opacity on paper, 0.08 on ink. `pointer-events: none`. No stacking-context changes — sticky pin, page-fold, chapter beads all unaffected.
-- **Inline venue tag.** Authors can drop `<span class="sp-venue-tag">Efteling</span>` or `<span class="sp-venue-tag">Beekse Bergen</span>` inside a chapter (e.g. above the kicker on the chapter's first spread) for a tiny pill that labels the venue inline, painted in the venue accent.
-
-The layer is purely additive: removing `data-multi-venue="true"` strips all theming and the issue renders identically to a single-venue Countdown. Wax seal stays giraffe-facing-right and standard rotation — one seal per issue, by design. Hype-variant chapters (`.is-hype`) keep their coral re-permission untouched; venue accent only fires on non-hype venue chapters where the global lockdown would otherwise apply. Galleries (`.sp-ground-gallery`) stay neutral slate and are explicitly preserved. Reduced-motion users get the same static glyph with no transitions. Cascade order matters: `33-countdown-destinations.css` must load AFTER `32-hype-variants.css` (alphabetical sort enforces this).
-
-**Top Attractions (or equivalent) — mandatory when a venue has headline draws.** A ranked 5–7 item chapter with opinion. Each item: one strong image (ideally `.sp-scroll-image` or `.sp-image-quote`), a short take on *why* it's worth the queue / the early morning / the detour, and a one-line practical note (best time, height requirement, fast-pass eligibility, feeding times, whatever applies). Scales to multi-venue trips as parallel ranked chapters (one per venue), each with 5–7 items. For non-theme-park venues, reshape the chapter to fit: "Top 5 Animal Encounters," "The Safari, Ranked," "Five Corners of the Resort," "The Stages, Ranked" — whatever the venue is actually *about*. If the venue has no obvious ranking surface, skip this chapter for that venue and rebalance with an extra chapter elsewhere.
-
-**Mood Board — mandatory.** A dense visual-only chapter: 8–12 images arranged in `.sp-image-strip`, `.sp-gallery`, or an image montage component. Captions only, no prose block. Pure atmosphere — what a week there actually *looks* like. For multi-venue trips, either split the board 50/50 between venues (labelled sub-sections within one chapter) or run two separate Mood Boards (one per venue). Never one board that skews to the more photogenic site.
-
-**By the Numbers — a chapter, not just a stat block.** "The trip in eleven figures — before the prose starts." Uses `.sp-dash` plus one or two `.sp-number-huge` count-ups. Every venue represented in the numbers. Reads as hype because every stat is a brag: acres, coaster counts, animals, nights booked, miles from home, expected step count. Place early — right after Foreword — as the hype opener.
-
-**Five Moments Worth the Trip — mandatory, third-person editorial voice.** A short chapter (~400–600 words) naming five specific *moments* (not attractions — moments) the reader should anticipate, with one image per moment. Written in the magazine's standard third-person voice, never first-person (no "I" or "we" — that breaks the reader-profile invisibility rule). Each moment is specific and opinionated: "The first sight of the Fairytale Forest at dusk, when the lanterns come on." "Breakfast on the safari resort terrace while the giraffes walk past the fence." For multi-venue trips, at least two moments from each venue. No all-one-venue lists.
-
-**Title rule — use the reader's name for the trip.** The cover title and recurring chapter chrome must use the destination(s) the reader actually associates with the trip — the names they use when they talk about it — not the geographic locator that happens to host them. "Efteling & Beekse Bergen" not "Kaatsheuvel." "Walt Disney World" not "Lake Buena Vista." "Center Parcs Longleat" not "Warminster." If the reader has named the trip in their request ("the Efteling trip"), use that name verbatim. If they haven't, lead with the marquee venue(s) and only fall back to a city/region name when the trip has no anchor venue (e.g. a touring city break). The locator can appear once, lower down, as supporting context ("in the Brabant province of the Netherlands") — never on the cover or in the running chapter chrome. **The same name carries through the issue:** masthead ticker, navigator, foreword opening, and footer all use the reader's trip name. The locator is information; the trip name is identity.
-
-**Itinerary rule — do not invent a day-by-day plan.** Only include a day-by-day / hour-by-hour itinerary when the reader has explicitly supplied one in their trigger or in conversation. If they haven't, drop the day-by-day chapter entirely and lean harder on the other chapters (event in depth, logistics, what to watch/read/play, surprising facts). A guessed itinerary reads as filler and undersells the trip — e.g. suggesting a half-day return to a venue the reader has already spent two nights at. When in doubt, omit. The Countdown is build-up, not a plan; planning is the reader's job.
-
-**No filler chapters generally.** If a chapter doesn't have genuine content to fill it (real research, real opinions, real images, the reader's own plans), cut it. A tighter five-chapter Countdown that respects the reader's intelligence beats a padded seven-chapter one with invented schedules and obvious filler. The word-count band (5,000–7,000) is a target, not a floor.
-
-**Logistics demoted to a coda.** The old standalone Logistics chapter is gone. Essential logistics (flights, parking, transfers, what-to-pack, currency, timezone, anything genuinely practical) are compressed into the "Before You Go" coda near the end of the issue, merged with Surprising Facts. Cap: ~400 words of logistics content total. Anything longer is either planning (belongs in a Field Guide) or filler (cut it). Logistics are homework; homework does not lead a Countdown.
-
-**Accommodation chapter — mandatory when the reader has booked a hotel/lodge/resort.** A trip is judged at least as much by where you sleep as where you go during the day. If the reader has named the accommodation in their request or in conversation, the Countdown MUST include a dedicated accommodation chapter (positioned mid-issue, after Top Attractions and before Mood Board per the canonical order). Cover for each property: rooms (configurations, capacity, what makes them distinct), dining options on-site (every restaurant + bar + grab-and-go, with what to expect), facilities and activities included in the stay (pool, kids' club, animal encounters, water play, themed evening events), what's near it on-foot, and — critically — what makes it worth the premium over staying off-site. Multiple properties get parallel treatment: same structure for each, then a short "choosing between them" or "the order in which you'll see them" beat. **This chapter leans heavily visual** — hotels are some of the most photogenic content in the issue. Aim for 4–6 images per property: exterior/setting, room interior, signature dining space, signature facility/activity. Use `.sp-scroll-image`, `.sp-inline-figure`, and `.sp-gallery` aggressively here. Source from official property sites, the parent group's media library, well-credited Flickr/Wikimedia uploads, and reputable review blogs with image rights. Never AI-generated.
-
-**A diptych or transition section is NOT an accommodation chapter.** A chapter labelled with a hotel/resort name in its gate (e.g. "WONDER HOTEL") must contain actual coverage of that property — rooms, dining, facilities, images — not a two-park contrast or a short pivot paragraph. If research on the named accommodation is thin, either (a) do more research before committing to the chapter, or (b) relabel the chapter to what it actually covers ("Two Temperaments", "Between the Parks") and move the accommodation coverage into a properly named chapter later. Never ship a chapter whose title writes a cheque the body can't cash — the gate is a promise to the reader. Mandatory minimum for an accommodation chapter: 400–600 words per property, at least 4 images per property, and at least one `.sp-gallery` or `.sp-image-strip`. If you can't hit the minimum, it isn't an accommodation chapter.
-
-**Source diversity — beyond the official channels.** A Countdown's job is to make the reader feel the place. Official sites alone produce a sanitised, corporate-feeling issue. Research must draw from a mix: official venue/resort sites and menus for the source-of-truth facts; **plus** TripAdvisor/Google review threads, travel blogs (DFBguide, TravelMamas, themed-entertainment blogs, family-travel and solo-travel blogs alike), Reddit communities (r/Efteling, r/themeparks, r/solotravel, destination-specific subs), YouTube vlogs and food-tour videos, Instagram and TikTok location tags, and Dutch/regional-language sources where the trip warrants it. The reader's gut sense of "what's it actually like" comes from the unofficial layer; the official layer is just the spine. Cross-reference across at least three source types per major chapter. If everything in a chapter traces back to one website, the chapter is under-researched.
-
-**Access constraints — read the trip entry.** Each `upcoming_trips` entry may carry an `access_constraints` block (e.g. `excluded_modes: ["car"]`, `allowed_modes: ["plane", "public_transport", "walking"]`, plus free-text notes). When present, **honour them strictly**: any attraction, restaurant, hotel, day-trip, or moment that effectively requires an excluded mode is removed from rankings and recommendations, not just flagged. Car-dependent options, where car is excluded, may appear *in passing* (one-line context — "there are also out-of-town outlets along the A65 that we'll skip") but never as picks. Conversely, walkability, station-distance, and bus/tram access become first-class facts in every Quick Stats sidebar, datum row, and Mood Board caption when public transport is the constraint. Field Guide picks and Countdown attractions/accommodation chapters all inherit this — the reader's mode of travel changes which chapters are worth writing.
-
-**Research the whole estate, not the headline.** Many venues are larger than their marquee feature, and default searches will only surface the marquee. Beekse Bergen is a safari park *and* a Speelland adventure/water-play area (nearly the same size) *and* the Safari Resort hotel (with its own restaurants, pools, bowling, themed facilities) *and* Lake Beekse Bergen (beaches, water sports). Center Parcs is lodges *and* the Subtropical Swimming Paradise *and* the activity programme *and* the restaurant village. Disneyland Paris is two parks *and* Disney Village *and* the hotel estate. Before writing any chapter about a venue, map the full estate: read the official site's site-map / "what's on" / "things to do" pages in full, not just the first landing page. List every zone, every restaurant, every activity, every facility. Coverage must reflect what the venue actually *is*, not what its name suggests. A Beekse Bergen chapter that only covers "you can drive round the animals" is structurally wrong, regardless of word count. Rule of thumb: if you can summarise a venue's estate in one sentence, you haven't researched it yet.
-
-**Imagery rule for travel Countdowns.** A reader preparing for a holiday wants to *see* the place, not just read its history. Travel Countdowns must show, not just tell. Apply on top of the standard tier-4 imagery budget:
-- **Every chapter that describes a venue, room, ride, restaurant, animal experience, or pool** carries at least 2 images (hero + detail) and ideally a `.sp-gallery` or `.sp-image-strip` if more are available.
-- **Across the whole issue, target 25–40 images** — most travel Countdowns will skew to the upper end. Hotels alone should contribute 8–12.
-- **Caption every image** with a one-line `.sp-caption-strip` or `<figcaption>` saying what the reader is looking at, where it is, and the credit. “Exterior of the X hotel at dusk” beats no caption every time — the reader is orienting themselves.
-- **Mix establishing shots with detail shots.** Don't show only wide exteriors; show the room, the breakfast spread, the kid feeding a giraffe from the window. Detail shots sell the place more than vistas do.
-- **Sources, in order of preference, but cast a wide net.** Start with Wikimedia, official press kits, and credited Flickr — theme parks and resort groups (Efteling/Libema/Disney/Universal/Center Parcs/etc.) maintain extensive press image libraries that are free to use editorially with credit. **Then go beyond the official channels.** Well-shot traveller photography from travel blogs, Reddit photo threads (r/Efteling, r/themeparks, r/solotravel etc.), Flickr's wider pool, Instagram posts with clear credit, and forum trip reports are all in scope — they often capture detail (queue energy, food on a real plate, a room actually lived in) that press kits never will. The bar is quality and credit, not source pedigree: only use images that are sharp, well-composed, and large enough to render at the layout's native size; always credit the photographer/blog/handle + licence or permission basis. **Never AI-generated, never uncredited stock filler.**
-
+For Field Guides, multi-venue rules live in `formats/field-guide.md`
+(headline rule 7 — multi-venue balance).
 
 
 ---
@@ -412,76 +391,6 @@ Apply on:
 2. **`[data-sp-chapter].is-hype`** — re-permits coral on `.sp-number`, `.sp-number-huge`, `.sp-kicker`, `.sp-brief-kicker`, `.unmissables .sp-datum-value`, `.why-its-here`. All global lockdown elements unchanged.
 3. **`.sp-ground-gallery`** — neutral slate ground (#1A1E27) for image-first chapters (Mood Board primary, optionally Field Guide Opening). NOT pitch black.
 4. **`.unmissables` / `.unmissable`** — Field Guide Unmissables pattern: 6-10 full-width editorial beats, each = hero image + sensory prose + "Why It's Here" coral kicker + mono `<dl>` practical footer. Drop-cap forbidden on picks.
-
-## Markup reminder
-
-```html
-<!-- Hype chapter gate -->
-<div class="sp-chapter-gate is-hype" data-chapter-num="II" ...>...</div>
-
-<!-- Hype chapter wrapper -->
-<section data-sp-chapter data-chapter-num="2" data-chapter-title="Top Attractions"
-         data-chapter-arc="The rides worth your day" class="is-hype">
-```
-
-
----
-
-## holiday-identity-extensions
-
-Applies to both Holiday Identity formats — **Countdown** and **Field Guide** — and to any future format that adopts the `.hol-*` vocabulary. Lessons that emerged in 2026 from the multi-venue food Field Guide and that should carry forward to the next Countdown. **The food specifics in some examples are illustrative; the rules themselves are subject-agnostic.**
-
-### Tier register (v8.14)
-
-The Holiday Identity layer now spans CSS tiers 36 → 44. All load alphabetically via `scripts/stitch-issue.sh` after the 00-34 base. Tiers 40+ are the v8.14 additions:
-
-| Tier | File | Provides |
-|---|---|---|
-| 36 | `36-holiday-identity.css` | Base palette, `.hol-cover`, `.hol-half`, `.hol-half--one` (ink fairytale), `.hol-half--two` (sand savannah base), `.hol-anchor`, `.hol-unmissable`, `.hol-polaroid`, `.hol-postcard`, `.hol-stamp`, `.hol-marquee`, `.hol-transit`, `.hol-meanwhile`, `.hol-subscribe`, `.hol-footer-row`, `.hol-masthead`, `.hol-kicker-strip`, `.hol-countdown` |
-| 37 | `37-holiday-portrait.css` | Responsive ≤980px breakpoints for holiday components |
-| 38 | `38-holiday-motion.css` | Cover cloud drift, countdown tick, decorative motion |
-| 39 | `39-holiday-motion-extras.css` | Marquee scroll, ambient secondary motion |
-| 40 | `40-holiday-meal-slot.css` | `.hol-meal-slot` ranked-entry card system: `__title`, `__list`, `__item`/`__entry`, `__entry-header`, `__rank` (chunky number chip), `__name` (venue title), `__tier` (HOT/WARM/NOTE pill), `__facts` (micro `<dl>`). Half I = cream-on-ink; Half II = bone-on-sand. |
-| 41 | `41-holiday-decorations-extras.css` | `.hol-pull` pull-quotes, `.hol-coaster` circular callouts, `.hol-ticket` booking-stub, `.hol-banner-strip` chunky section banners, additional stamp colour variants |
-| 42 | `42-holiday-savannah-half.css` | Half II savannah background scene: warm sand→bone→terracotta gradient base, inline-SVG acacia silhouette horizon, drifting dust-mote particle layer, paper-grain overlay, terracotta accents on anchor + meal-slot cards, decorative typographic ribbon under the half opener. Replaces the bare star-field that Tier 36 inherits. |
-| 43 | `43-holiday-hype.css` | `.hol-trip-numbers` (by-the-numbers stat band on ink), `.hol-tminus` (T-MINUS countdown anchor banner — palette-switches for each half), `.hol-hype-marquee` (brass-tinted scrolling banner variant), `.hol-sparkle` (decorative SVG anchor), countdown numeral pulse |
-| 44 | `44-holiday-sprinkles.css` | `.hol-dropcap` (editorial drop-cap, palette-aware), `.hol-fleuron` (ornamental section divider — Cormorant italic glyph between rule lines, also `--svg` variant), `.hol-margin-mark` (brass marginal asterisk), `.hol-ribbon-tab` (decorative anchor badge), `.hol-pull--big` (dramatic mid-flow pull-quote with stylized quotation marks) |
-
-When a new component lands, document the vocabulary here and add a tier file rather than monkey-patching `36-holiday-identity.css`. The 36 base must stay readable; tier-on-tier composition is the contract.
-
-### Imagery rules (subject-agnostic)
-
-These rules tighten what was previously a soft target. They apply to every Holiday Identity issue regardless of subject:
-
-1. **Per-pick image floor — 2 minimum.** Every Unmissable / Top Attraction / Accommodation / Five-Moments entry gets a hero image AND at least one inline secondary image (food close-up, detail shot, architecture, theming). One hero + a wall of prose reads as press release. Two images per pick = magazine register.
-2. **Meal-slot / ranked-list headers — 1 minimum per slot.** Every `.hol-meal-slot` (Field Guide) or equivalent ranked-list section in a Countdown gets a wide header band image (720px @ ~200px tall) under the slot title and intro paragraph, before the `<ol>` list. Five slots = five headers. Without this the slot reads as a wall of `<li>` items.
-3. **Staged-people press shots are demoted, not banned.** Press kits routinely lead with "smiling family at table", "barman pouring for a delighted guest", "child eating cake" — they are designed to sell an accommodation product, not to document the food or the room. These shots are **never the hero of an Unmissable**. They may appear as atmospheric ephemera (polaroid / postcard) if the bundle has nothing better and the framing makes the people incidental, but the default preference is:
-   - **Food close-ups** (dish on plate, drink in cup, ingredients in hand) — strongest.
-   - **Architecture / theming** (interior, exterior, distinctive built environment) — second-strongest.
-   - **Chef-at-work / kitchen-in-action** (people-as-craft, not people-as-customer) — third.
-   - **Patrons-as-subject** — last resort, often skip.
-4. **Source-domain diversity — every issue.** The same RT-5 cap (no single domain >50% of attributed images) applies. The Field Guide that triggered this rule had 8 distinct domains: a brand CDN, the venue's own `/-/media/`, a press-release distributor, Wikimedia, Flickr, a hospitality trade journal, a family-travel blog, and a chef/food blog. That breadth is the target.
-5. **Per-venue image density on multi-venue trips.** Each headline venue carries enough images to fill its half. The Field Guide rebuild shipped with venue parity at 18/15 (Efteling/Beekse). Skews wider than 60/40 mean one venue is under-photographed and the issue feels unbalanced.
-
-### Editorial structure rules
-
-1. **No two consecutive same-pattern blocks.** Inside an Unmissables chapter the pattern is: `.hol-unmissable → ephemera → .hol-unmissable → different ephemera → .hol-unmissable …`. Never two `.hol-unmissable` blocks in direct succession. The ephemera vocabulary (`.hol-polaroid`, `.hol-postcard`, `.hol-stamp`, `.hol-marquee`, `.hol-chalkboard`, `.hol-pull`, `.hol-pull--big`, `.hol-fleuron`) provides the rhythm. Same rule for meal-slot chapters: no two `.hol-meal-slot` cards without a variety break between them.
-2. **Marquee picks belong in their slot rankings AND in Unmissables.** A pick that is the marquee lunch (e.g. Polles Keuken) must appear both (a) as a full Unmissable entry earlier in the issue AND (b) at the top of the relevant meal-slot ranking with a one-paragraph slot-fit summary that points back to the Unmissable. Strict anti-overlap (Unmissables-only, no slot mention) leaves slot rankings missing their own best venue — the editorial gap shows.
-3. **Multi-venue trips default to comprehensive both-half treatment when both venues are substantial.** Where both venues have substantive food/attraction landscapes and substantial overnight stays, the default is FULL Unmissables + full meal-slot / equivalent treatment for each. The earlier "primary/secondary asymmetry" rule (see formats.md § field-guide rule 7) applies only when one venue is a brief stopover relative to the other. The reader call is content guidance; absent that, comprehensive both-half is the default.
-4. **Visual moments scatter front-to-back — they do not cluster at the start.** Anticipation anchors, decorative dividers, drop-caps, pull-quotes, T-MINUS banners must be distributed across the whole issue. A common failure mode: ship a Trip-in-Numbers band, hype animation, and big pull-quote all in the first chapter, then leave the back half visually flat. Counter-mode: at least one decorative anchor in every chapter; mid-chapter pull-quotes inside long picks (5+ paragraphs); fleuron dividers between major sections; symmetrical T-MINUS banners at each half's close, not just one.
-5. **Drop-cap placement.** Reserve `.hol-dropcap` for chapter intro paragraphs in **prose chapters** (Opening, Half II anchor body, Meanwhile, Foreword). Never on Unmissable picks (see formats.md rule 3 — drop-cap forbidden on picks) or on practical ranked lists.
-
-### Trip-in-Numbers and T-MINUS placement
-
-- `.hol-trip-numbers` belongs at the **top of the Opening** (Field Guide) or directly after the Foreword (Countdown). 4-5 brass stat cells: days-to-go, scale figures (nights, venues, picks), and one structural fact ("0 off-estate picks", "5 zones", "12 attractions").
-- `.hol-tminus` belongs at **the close of each half** for a multi-venue trip, so each half lands on a countdown punch. Single-venue trips get one T-MINUS, just before Meanwhile / On the Radar. Use palette-aware text — Half II savannah palette auto-applies via the `.hol-half--two` ancestor selector.
-
-### What a Countdown gets that a Field Guide does not
-
-Most of the above is shared. The exceptions:
-
-- A Countdown does NOT use `.hol-meal-slot` cards (no meal-slot ranking). It uses the equivalent ranked patterns: `.unmissables`-style "Top Attractions", "Mood Board" gallery, "Five Moments". The header-image and per-pick floor rules from the Imagery Rules section above apply to those equivalents — every ranked entry gets ≥2 images; every ranked-list chapter gets a header image.
-- The "marquee in both Unmissables and rankings" rule (Editorial 2) doesn't apply directly because a Countdown has fewer overlap surfaces. Its analogue: a marquee attraction must appear in BOTH Top Attractions AND Five Moments if it earns both — not be siloed in one.
 
 
 ---
@@ -539,33 +448,6 @@ At ≤ 980px, `.sp-spread` becomes `display: flow-root; position: relative`.
 ---
 
 ## holiday-identity
-
-| Stat curtain (transition) | CSS + JS auto-fires from trigger | `.sp-stat-curtain` + `data-curtain-for="id"` trigger — max 2 per issue |
-| Page fold (3D transition at ground swap) | CSS auto | `.sp-page-fold-wrap` between chapters — max 2 per issue |
-| Signature moment (per-format) | CSS + JS auto from `[data-special]` | Format-specific markup from the signature-moment table |
-| Wax seal + progress bar + back-to-top | CSS + JS auto | Nothing |
-| Full-viewport cover (v8.7.3) | CSS auto via `min-height: 100dvh` | Nothing — works on tablet and phone |
-| Accent lockdown (coral reserved for gate/D-day/progress only) | CSS auto via token cascade | Nothing — demoted secondary accent fills everywhere else |
-| Imagery/stat budget enforcement | Author-side checklist | Gate 2 of compliance checklist; not enforced in code |
-
-**What this means for future issues:** when a Countdown / Versus / Rewind / Deep Dive / etc. is generated in four weeks' time, the author does not need to re-request any of the above. They fire automatically provided (1) `<body class="mag-body is-special" data-special="...">`, (2) every chapter wrapper carries `data-sp-chapter` + alternating `sp-ground-paper` / `sp-ground-ink`, and (3) every chapter is preceded by a `.sp-chapter-gate`. Anything requiring author markup is a class contract, not a CSS request — it's documented in the Feature column with the minimum markup.
-
-**What is NOT auto-applied and requires editorial judgement each time:** imagery density (budget is a minimum, not a ceiling), accommodation-chapter depth, word counts per chapter, the choice of signature moment for the format, placement of `.sp-pull-break` / `.sp-bridger` / `.sp-dash` interludes, and the editorial arc labels (`data-chapter-arc`). These are content decisions the editor makes during generation, not mechanical features.
-
----
-
-## What Good Looks Like
-
-- Scannable in 60 seconds via navigator; rewards 30-45 minutes of deep reading
-- Feels like a thoughtful human editor, not an AI summary bot
-- Varies in tone across sections while feeling like one publication
-- Connects stories the reader wouldn't have linked themselves
-- **Visually varied** — split layouts, big numbers, pull quotes, card stacks, timelines, margin notes, collapsible sections throughout
-- **Has visual moments** — 3-4 points where the reader pauses because something looks interesting
-- **Animates subtly** — reveal on scroll, count-up numbers, ambient cover gradient
-- Includes 2-3 things the reader didn't know they wanted to read about
-
----
 
 ## Holiday Identity (v8.12 — Countdown and Field Guide only)
 
@@ -724,4 +606,29 @@ This sits alongside `.hol-unmissable` rather than replacing it. The two patterns
   </div>
 </section>
 ```
+
+**4. Cover poster variant (NEW component).**
+
+A 70s travel-brochure cover for Countdown and Field Guide issues. Activate by adding `.hol-cover--poster` to the existing `.hol-cover` element. The base `.hol-cover` treatment (cloud-drift indigo poster with collage on the right) is preserved for issues that want the scrapbook-collage feel; the poster variant replaces it with a silkscreen-print SVG illustration plate plus a centred title stack.
+
+The illustration plate is a static SVG: midnight sky gradient, sunburst rays from the upper-right, big moon-with-face character, scattered round stars, four-point sparkle stars, distant ridge silhouette, offset-overprint castle silhouette in rose ghost + cream front with brass lit windows, floating clouds, water reflection, and shoreline trees. The plate is identical across Countdown and Field Guide — it reads as the fairytale night sky on both.
+
+On top of the plate sit, in order:
+- `.hol-cover__sig` — the meta strip (brand + issue + kicker)
+- `.hol-cover__arch` — SVG text-on-path arc (e.g. "★ GREETINGS FROM ★" for Countdown, "★ EAT YOUR WAY THROUGH ★" for Field Guide)
+- `.hol-cover__title` with a `.hol-cover__title--print` inner span — chunky Bowlby One with a hard offset shadow in `--hol-ruby` that reads as misregistered screen-print
+- `.hol-cover__sub` — Yellowtail subtitle, slightly tilted
+- `.hol-cover__deck` — three-pill mono row with star dividers (date · gates · family-of-four, etc.)
+- `.hol-countdown` — the existing live digit grid, pinned at the bottom of the stack
+
+Template part: `assets/template-parts/03-cover-poster.html`. The full SVG plate plus the stack scaffold is embedded — writers paste it verbatim and fill the bracketed placeholders.
+
+**5. Letterpress titles on Half II.**
+
+The Half II opener title now uses `text-shadow: 6px 6px 0 var(--hol-burnt)` for a letterpress / poster-print feel instead of the original drop-shadow. This is a single-line change but it lands every chapter title in the savannah half as a hand-printed poster.
+
+**Pre-flight regressions added in v8.13:**
+- **RT-14:** Flat-fill ground on Half II is banned. Let `.hol-half--two` paint its own ground; don't set `background:` on the wrapper or on inner sections.
+- **RT-15:** Venue/half mismatch is banned. Every Efteling chapter sits in `.hol-half--one`; every Beekse Bergen chapter sits in `.hol-half--two`. Cross-venue chapters live outside both halves (after the cover, or as the transit body).
+
 

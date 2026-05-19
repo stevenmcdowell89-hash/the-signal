@@ -70,7 +70,7 @@ Search the full text for ANY phrase that reveals the magazine knows who the read
 
 - [ ] **Every news item is from the current week (7 days).** A Champions League exit from 5 weeks ago is not this week's story. A Carabao Cup final from a fortnight ago is not this week's story.
 - [ ] **No forced favourite-team content.** If Juventus haven't played this week, they appear in the league table and that's it. Don't dredge up old results to fill space. Same for any team or topic from the reader profile.
-- [ ] **No repeat topics in successive issues.** Check `topics_covered_recently` in the state file. If a Session topic, Pantry recipe theme, or feature angle has been covered in the last 2-3 issues, pick a different angle this week. Variety matters: even a great topic gets stale at 3 weeks running. Specifically for The Session: do not run the same training topic (taper, recovery, periodisation, etc.) two weeks in a row -- rotate the angle.
+- [ ] **No repeat topics in successive issues.** Check `topics_covered_recently` in the state file. If a Session topic or feature angle has been covered in the last 2-3 issues, pick a different angle this week. Variety matters: even a great topic gets stale at 3 weeks running. Specifically for The Session: do not run the same training topic (taper, recovery, periodisation, etc.) two weeks in a row -- rotate the angle.
 - [ ] **Fixture dates verified.** Serie A has Sunday and Monday fixtures. Check every match date. If a match hasn't been played yet, say so — don't report a result that doesn't exist.
 - [ ] **Ongoing stories in tracker, not headline.** Check `ongoing_stories` in state file. Any story that has led for 2+ consecutive weeks must be in an Ongoing tracker box, not leading the section again with a new angle.
 
@@ -225,6 +225,14 @@ For long_shelf section: count items with class="wildcard" (or data-wildcard="tru
 
 For long_game section: scan body for fitness-cluster vocabulary (sets, reps, deload, taper, mileage, HRV, kettlebell, deadlift, squat, lifting, run pace). 3+ matches = misclassified fitness content in a finance section. Hard fail.
 
+### 1L. Rotating cadence floor (planner enforcement)
+
+For each rotating section in the issue, verify `weeks_since_last_appeared >= cadence_low` (per state file). If a section is scheduled inside its floor without a `deficit_override_reason`, hard fail with reason "cadence-floor".
+
+### 1M. Deficit-eligible section omitted
+
+For each rotating section with `weeks_since_last_appeared >= 2 * cadence_high`, verify it appears in the issue. If absent without a `deficit_override_reason`, hard fail with reason "cadence-deficit".
+
 ### 1F+. Image URL verification chain (v8.13.7+ — UNBREAKABLE)
 
 Gate 1F handles per-issue scans the writer/orchestrator can run by eye. The verification chain below is **structurally enforced** by gate scripts the orchestrator MUST run. Each is non-skippable; together they make broken / fabricated / duplicate image URLs impossible to ship.
@@ -267,7 +275,7 @@ Only proceed here after Gate 1 passes clean.
 - [ ] On the Radar: 8-10 items, no overlap with Release Radar, specific and non-patronising
 
 ### Rotating Sections
-- [ ] 2-3 rotating sections selected from state file cadence priority
+- [ ] 3-4 rotating sections selected from state file cadence priority
 - [ ] Only selected sections researched — no wasted research
 - [ ] Catch-up rule respected (Shelf, etc. — full gap since last appearance)
 - [ ] Navigator only shows sections present in this issue
@@ -297,7 +305,6 @@ Only proceed here after Gate 1 passes clean.
 - [ ] No spoilers — ever
 - [ ] Writes like a magazine journalist, not a personal assistant
 - [ ] Each taste-based section (Shelf, Session, Screen & Sound) writes as a general reviewer — profile drives selection, not prose
-- [ ] **The Pantry describes the food briefly and includes macros and a picture.** The intro is short — 1-3 lines is the target, not paragraphs. Tell the reader what the dish IS in plain terms: "chicken and rice with a harissa-style sauce, plus chickpeas" is the right register. Do NOT pitch the recipe ("a perfect midweek meal", "comes together in 40 minutes"). Do NOT use marketing voice ("flavour bomb", "you'll love this"). Do NOT write food-writer sensory prose about smells, textures, spices blooming, etc — the reader doesn't want that. Every Pantry entry must include: (1) a short factual description, (2) macros per serving (kcal, protein, carbs, fat), (3) a picture of the dish.
 - [ ] **No phrase-pattern padding.** The following sentence patterns are BANNED unless they're carrying genuine specific content the rest of the sentence couldn't carry alone — and never more than once per issue: "If you've been on the fence...", "If you've been holding off...", "If you've been waiting...", "this is the moment to...", "now's the time to...", "perfect time to...", "no better time than...", "the time has come to...". They are filler — they sound like meaning but say nothing. When you find one, either delete it entirely or replace it with the actual specific reason (a date, a price, a feature, a stat). Search the output for each phrase before delivery.
 - [ ] **No analyst-voice throat-clearing openers.** The following are BANNED at the start of any paragraph or sentence — they signal that the agent is about to say something interpretive but doesn't trust the facts to do the work: "The context matters", "Context matters", "It's worth noting", "It bears mentioning", "It's important to note", "What's interesting (here) is", "What's notable is", "What's striking is", "The interesting thing is", "The real story (here) is", "The bigger picture (here) is", "Make no mistake", "To be clear", "Let's be honest". A real magazine writer doesn't announce that context matters — they just give you the context. Cut these openers; the sentence after them is almost always doing the actual work, so just lead with that.
 - [ ] **No "is suddenly very real" / "now feels real" closers.** The pattern: state a fact, then claim the consequence "is suddenly very real" or "now feels real" or "is no longer hypothetical" or "is here" or "has arrived". This is the agent telling the reader the implication is significant rather than letting the fact stand. Cut these closers; if the fact needs a follow-up, write a concrete one ("the sport's governing body has announced a strategic review for 2027") or leave the fact to do its own work.

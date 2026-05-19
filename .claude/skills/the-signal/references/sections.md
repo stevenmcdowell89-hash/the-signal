@@ -102,13 +102,22 @@ Film, TV, streaming, Star Wars (always search). Dark purple background, neon acc
 **Lead + Companion structure:** Lead + Companion mandatory. Companion is forbidden from sharing the Lead's franchise.
 
 ### The Shelf *(rotating — every 2-3 weeks)*
-Books, music, podcasts. Dark brown background, gold accent.
-- **Catch-up rule:** when The Shelf appears, research covers the entire period since it last appeared (not just the past 7 days). Check state file for `last_shelf_date`. No good book news, podcast episode, or music release should fall through the cracks.
+Books and music. Dark brown background, gold accent.
+- **Now owns books (primary) and music (secondary).** Podcasts and audio drama split out to The Listen (see below).
+- **Catch-up rule:** when The Shelf appears, research covers the entire period since it last appeared (not just the past 7 days). Check state file for `last_shelf_date`. No good book news or music release should fall through the cracks.
 - **Write as a general editorial reviewer.** The reader profile tells you what genres and topics to research and select from — it does NOT belong in the prose. Review books the way any book column would: premise, tone, what makes it worth reading. Never open with "since you're into Malazan" or "as a Cosmere fan." The selection already signals relevance.
 - Books: features, recommendations, book cards with rating dots. Both epic series AND short fiction. Occasional narrative history (Dan Jones, Tom Holland, Mary Beard).
 - **CRITICAL: No spoilers.** Never reveal plot twists, character deaths, endings for any book. This rule is absolute but invisible — never announce compliance with it.
-- Music: synthwave/retrowave — NOT a fixed section, cover only when relevant.
-- Podcasts: flag specific new episodes with episode titles, dates, and what makes them worth listening to. **Only describe episode content you can verify via search.** If you cannot confirm what a specific episode discussed, link to it without a content summary — do not invent one. The value is surfacing specific episodes since the last Shelf appearance and why they stood out. Cross-reference with audio drama recs.
+- Music: light-touch when The Channel isn't running. Synthwave/retrowave or a notable release noted in passing — the deep music read lives in The Channel.
+
+### The Listen *(rotating — every 3-4 weeks)*
+Podcasts + audio drama. Warm slate background, brass accent.
+- **Owns podcasts and audio drama.** Splits out of The Shelf so The Shelf can focus on books. The Listen covers episode-of-the-week picks, audio drama recommendations, podcast deep-cuts (forgotten gems, niche shows), and one-off recommendations from the reader's known feed (Football Weekly, The Bunker, What Went Wrong, History of Rome/Revolutions).
+- **Episode specificity.** Flag specific new episodes by title and date — never the show in the abstract. "What Went Wrong: 'The Day the Music Industry Sued Its Customers' (released 14 May)" not "What Went Wrong covers tech disasters".
+- **Only describe content you can verify.** Same rule as the old Shelf podcast guidance: don't invent episode content. If you can't confirm what an episode discussed, link it without a content summary.
+- **Audio drama recs cross-reference with The Shelf.** When an audio drama adapts a book also reviewed in The Shelf, cross-link.
+- **Catch-up rule:** research window is since The Listen last appeared. Track in state file `the_listen.last_appeared`.
+- Good sources: Apple Podcasts Charts (UK/IE), Pocket Casts Discover, Audible originals, BBC Sounds, the show's own social.
 
 ### The Session
 Sourced fitness feature. Light green background, orange accent.
@@ -139,17 +148,6 @@ Warm parchment background, gold accent.
 - **Strong preference for pre-WW2 history.** Ancient, medieval, Roman, classical, or early modern. WW1/WW2 only for truly major anniversaries. Post-WW2 is the last resort.
 - Connect to current events when resonant.
 - **Links are essential here.** The featured event must link to its Wikipedia article — Wikipedia is the preferred starting point for history rabbit holes. Additional links (long-form pieces, podcast episodes, documentaries) are welcome but Wikipedia comes first. "Also This Week" one-liners should each link to their Wikipedia article too. History is the section most likely to make the reader think "I want to know more" — give them somewhere to go.
-
-### The Pantry *(rotating — every 2-3 weeks)*
-One practical meal prep idea or recipe per appearance. Light warm background, terracotta accent.
-- **Purpose:** inspiration for the reader's meal rotation, not a meal plan. One solid idea they can decide whether to adopt.
-- **Nutrition context (invisible in prose):** Reader targets ~2,200-2,300 kcal/day with 180g+ protein during the cut (through June 30). Recipes that hit 40-50g protein per serving in the 400-550 kcal range are ideal. Post-holiday this shifts to maintenance/surplus. Prioritise: batch-cookable, scales to 5+ portions, family-friendly (10-year-old son), uses common ingredients. The reader meal preps — practical storage and reheating notes are high value.
-- High-protein, batch-friendly, compatible with a cutting diet (~0.75kg/week loss while training).
-- Should be genuinely appetising and practical — not bland "chicken and rice" bodybuilder food.
-- Good sources: Mob Kitchen, Pinch of Nom, BBC Good Food, Reddit r/MealPrepSunday, Serious Eats, Budget Bytes. NOT generic Men's Health meal plans.
-- Include: ingredients, rough macros (protein per serving), prep time, batch size, storage notes.
-- Use recipe card component (adapt workout card pattern). Include one hero image.
-- Research window: since last Pantry appearance (check state file).
 
 ### The Workshop *(rotating — every 3-4 weeks)*
 Home gym gear, equipment reviews, recovery tools. Light grey background, steel accent.
@@ -195,15 +193,74 @@ Consumer fintech news, features, and deals. Clean white background, teal accent.
 - Good sources: r/UKPersonalFinance, MSE forum, Head for Points (cards/rewards), Monzo/Revolut/Starling blogs and changelogs.
 - Research window: since last Wallet appearance.
 
-### The Itinerary *(rotating — event-driven, increases near trips)*
-Travel, theme parks, and local NI hidden gems. Warm sand background, coral accent.
-- **Owns all travel and parks content.** When The Itinerary appears, Disney Parks, Efteling, Beekse Bergen, and all travel content consolidates here. When absent, parks news drops to one-liners in On the Radar.
-- **Three content streams:**
-  1. **Travel abroad:** destination profiles, flight deals, European trips with a kid, logistics tips.
-  2. **Theme parks:** Disney Parks news, Efteling updates, Beekse Bergen, other parks worth knowing about. New rides, events, ticket deals, tips.
-  3. **NI local finds:** hidden gems, unusual family events, places the reader may not have heard of or tried. NOT the zoo, the leisure centre, or obvious tourist spots. Rare finds, quirky events, seasonal things worth knowing about. Must pass the test: would a local find this genuinely surprising or useful?
+### The Itinerary *(rotating — every 3-4 weeks, more near trips)*
+Travel and theme parks. Warm sand background, coral accent.
+- **Now owns European travel and theme parks only.** NI local content splits to The Local (see below).
+- **Two content streams:**
+  1. Travel abroad: destination profiles, flight deals, European trips with a kid, logistics
+  2. Theme parks: Disney Parks, Efteling, Beekse Bergen, other parks worth knowing about
 - **Frequency:** appears every 3-4 weeks normally. Increases to every issue (or every other) when a trip is approaching. Check state file for upcoming trips.
-- Research window: since last Itinerary appearance. For NI local, also search forward for upcoming events in the next 2-4 weeks.
+- Research window: since last Itinerary appearance.
+
+### The Local *(rotating — every 3-4 weeks)*
+Northern Ireland hidden gems and unusual family events. Earthy green background, copper accent.
+- **Owns NI local content.** Splits out of The Itinerary so The Itinerary can focus on European travel and theme parks. The Local covers hidden gems (places, walks, food), unusual family events (rare finds, quirky seasonal happenings), and one-off discoveries a local might not have heard of.
+- **Test for inclusion:** would a Northern Ireland local find this genuinely surprising or useful? Excludes the zoo, leisure centres, generic tourist spots, anything that turns up on the first page of "things to do in Belfast."
+- **Three content streams, weighted by what's available:**
+  1. Hidden places (a forgotten walk, an underrated cafe, a quirky museum, a coastal find)
+  2. Unusual events (a one-off, an obscure annual, a pop-up worth knowing about) — search forward 2-4 weeks
+  3. Local context (a NI-set book, an NI artist or musician, a NI history piece) — light touch
+- **Research:** since The Local last appeared, plus 2-4 weeks forward for events.
+- Good sources: Visit Belfast, Discover Northern Ireland, r/northernireland for word-of-mouth, local news (Belfast Live, Newsletter, Irish News for events), local food blogs.
+- Track in state file `the_local.last_appeared`.
+
+### The Brickyard *(rotating — every 4-6 weeks)*
+LEGO releases, build reviews, displays. Warm beige background, brick-red accent.
+- **Splits LEGO out of Pixel & Byte.** LEGO gets a dedicated breathing space rather than living as a sidebar inside the tech section.
+- **Content streams:**
+  1. New set announcements (Star Wars, Icons, Architecture, Botanicals, Technic — whatever the wave is)
+  2. Build reviews (worth-the-money, worth-the-time, the surprise hits)
+  3. MOC highlights (My Own Creation — community builds worth showing)
+  4. Sales and availability ("X retiring soon, get it before it goes")
+- **Family-friendly framing.** The reader has a 10-year-old; sets that suit shared builds are flagged via "Family build" sidebar, not narrated.
+- Good sources: Brickset, The Brothers Brick, /r/lego, BrickInsights, LEGO Star Wars community, LAN Game.
+- Track in state file `the_brickyard.last_appeared`.
+
+### The Saga *(rotating — every 6 weeks)*
+Lore deep dives — Star Wars universe, fantasy book worlds, show analysis. Deep purple background, antique gold accent.
+- **Splits the deep-lore reads out of Screen & Sound and The Shelf.** Lets Screen & Sound stay current-week culture critic, lets The Shelf focus on what to read next; The Saga is where you go for long-form universe writing.
+- **Three content modes:**
+  1. Star Wars universe deep dives (Maul's arc across Clone Wars / Rebels / Mandalorian; what Ahsoka's relationship to the Force changes; lore connecting recent shows to older canon)
+  2. Fantasy book-universe lore (Cosmere magic systems, Malazan worldbuilding — **never plot, never characters' fates, never endings**)
+  3. Show analysis with optional spoilers (a 1,200-word essay on a finished arc; spoilers behind a `<details>` collapsible labelled "Spoilers below")
+- **Spoiler rule is absolute.** Plot, deaths, endings, betrayals, twists — all forbidden in book content, all behind `<details>` in show content. Violation = Gate 1 hard fail.
+- **Tone is essayistic, not breathless.** This is a Sunday-magazine essay, not a fan-blog hot take. Cite where you're getting lore from (canonical sources, author interviews, episode references).
+- Good sources: Wookieepedia, official Star Wars databank, author Q&As (Brandon Sanderson AMAs, Steven Erikson interviews), Tor.com, /r/cosmere, /r/Malazan, /r/StarWars.
+- Track in state file `the_saga.last_appeared`.
+
+### The Lab *(rotating — every 4 weeks)*
+Training-science deep dive — slower, more rigorous than the weekly Session. Light cool grey background, lab-blue accent.
+- **Complement to The Session, not replacement.** Where The Session is a 400-700 word feature on this week's training topic, The Lab is a monthly 600-900 word essay on the science underneath — what the literature actually says, what the data shows, what the practical takeaway is.
+- **Content modes:**
+  1. Garmin / wearable data analysis (what HRV trends actually tell you; how to read Training Readiness; what Body Battery is really measuring)
+  2. Training-block design science (the case for/against linear periodisation; concurrent training meta-analyses; deload-week timing)
+  3. Race-prep deep dives (10K pacing models; lactate threshold; carbohydrate timing for endurance)
+  4. Recovery research (sleep as a recovery tool; cold exposure evidence; foam rolling evidence)
+- **Citations matter.** Link to the studies, the meta-analyses, the author podcasts. This is the section where Stronger by Science / Galpin / Helms shine.
+- **No fitness-influencer pop-science.** No Layne Norton vs Mike Israetel beef. No Renaissance Periodization marketing. Stronger by Science, Barbell Medicine, Andy Galpin podcast, peer-reviewed studies, Examine.com — those are the level.
+- Track in state file `the_lab.last_appeared`.
+
+### The Channel *(rotating — every 6 weeks)*
+Music — synthwave, retrowave, soundtracks, retro-listening. Dark navy background, neon-magenta accent.
+- **Music has been absent from the magazine; The Channel brings it back.** The Shelf can mention music in passing but The Channel is where music gets a dedicated read.
+- **Content modes:**
+  1. New synthwave / retrowave releases (album of the period, label news from FiXT / Lakeshore / Aphasia / Lazerdiscs)
+  2. Soundtrack picks (a film or game soundtrack worth the listen — recent or evergreen)
+  3. Retro-listening (an album from the 70s/80s that's having a moment; a re-issue worth knowing about)
+  4. Live & touring (notable shows / tour dates within reach — light touch)
+- **Embed sources.** Bandcamp, Spotify, YouTube — link to the music itself, not the article about the music.
+- Good sources: Bandcamp Daily synthwave tag, RetroSynth Records, The Synthwave Channel (YouTube), FiXT label, /r/outrun, /r/synthwave, /r/SoundtrackCollection.
+- Track in state file `the_channel.last_appeared`.
 
 ### On the Radar — Coming Up
 8-10 upcoming items: fixtures, sporting events, local NI events, parkruns, dates to know, personal milestones, deadlines, cultural events. Compact grid with date + event + detail. Category dots.
@@ -235,14 +292,19 @@ The full enumeration lives in `references/chapter-plan-schema.md`. Adding a new 
 
 | Section | Primary Components | Why |
 |---|---|---|
-| **The Pantry** | `.workout-card` (adapted as recipe card), `.big-number` (protein/cals), `.split-60-40` (image + ingredients), `.sidebar` (storage notes) | Recipe card is the centrepiece; stats make macros scannable |
 | **The Workshop** | `.compare-panel` (product A vs B), `.also-cards` (gear picks), `.big-number` (price/specs), `.img-offset` (product photos) | Compare panels are natural for gear reviews |
 | **The Toolkit** | `.also-cards` (app picks), `.compact-grid` (2 app reviews side by side), `.sidebar-float` ("What it replaces"), `.entry-stat` ("3M downloads") | Card-based layout suits app discovery |
 | **The Ledger** | `.stat-bar` (revenue/trend numbers), `.entry-stat` or `.entry-bullets`, `.pull-quote` (seller insight), `.also-list` with tiers | Data-forward; stat bars make trends scannable |
 | **The Long Game** | `.big-number-row` (ISA allowance, rate), `.pull-quote` (editorial take), `.sidebar` ("One Thing to Do This Month"), `.entry-question` | Editoral framing; big numbers for rates/returns |
 | **The Wallet** | `.compare-panel` (card A vs card B), `.also-cards` (feature roundup), `.entry-bullets` (key changes), `.stat-bar` (rates/cashback %) | Compare panels natural for card/account comparisons |
 | **The Itinerary** | `.timeline` (trip countdown or event dates), `.split-60-40` (destination + image), `.dyk` ("Did you know Efteling..."), `.img-montage` (destination photos), `.sidebar` (logistics) | Timeline for trip countdowns; images sell destinations |
+| **The Local** | `.split-60-40` (find + image), `.dyk` ("Did you know"), `.sidebar` (logistics for events), `.entry-bullets` (event details) | Image-led for places, bulleted for events |
 | **The Shelf** | `.book-card` / `.book-grid`, `.card-stack`, `.rating`, `.pull-quote`, `.collapsible` | Already well-defined from weekly version |
+| **The Listen** | `.also-cards` (episodes), `.entry-bullets` (show notes), `.rating` (episode quality), `.pull-quote` (memorable line from episode) | Card layout suits episodic recs |
+| **The Brickyard** | `.split-60-40` (set + image), `.compare-panel` (set A vs B), `.also-cards` (multi-set roundup), `.sidebar` (family build) | Image-led for sets; comparison frames for sales |
+| **The Saga** | `.dual-col` (essay layout), `.pull-quote` (memorable lore line), `.collapsible` (spoilers), `.timeline` (multi-show arc) | Essay-shaped; collapsibles isolate spoiler content |
+| **The Lab** | `.dual-col`, `.big-number-row` (stat-led opener), `.pull-quote` (researcher line), `.timeline` (training block), `.sidebar` ("What this means for you") | Long-form science with data-rich callouts |
+| **The Channel** | `.also-cards` (album picks), `.rating`, `.pull-quote` (artist line), `.entry-bullets` (label news) | Cards for albums; bullets for label changes |
 | **This Week in History** | `.timeline`, `.year-badge`, `.img-offset`, `.sec-opener` | Already well-defined from weekly version |
 
 
@@ -269,11 +331,9 @@ Only research topics for the rotating sections selected for this issue. This sav
 
 Only search the groups for sections appearing in this issue.
 
-**Group R1 — The Shelf:** fantasy/sci-fi book news + r/Fantasy, podcasts (Football Weekly, The Bunker, What Went Wrong, History of Rome/Revolutions), audio drama recommendations, synthwave/retrowave music releases. Research window: since last Shelf appearance.
+**Group R1 — The Shelf:** fantasy/sci-fi book news + r/Fantasy, narrative history (Dan Jones / Tom Holland / Mary Beard), occasional music context when The Channel isn't running. Research window: since last Shelf appearance.
 
 **Group R2 — This Week in History:** history this week (ancient/medieval preferred). Research window: current week.
-
-**Group R3 — The Pantry:** high-protein meal prep recipes, batch cooking ideas, r/MealPrepSunday, Mob Kitchen, BBC Good Food. Research window: since last Pantry appearance.
 
 **Group R4 — The Workshop:** home gym equipment reviews, recovery tools, running gear, kettlebell gear, r/homegym, Garage Gym Reviews, DC Rainmaker. Research window: since last Workshop appearance.
 
@@ -285,4 +345,16 @@ Only search the groups for sections appearing in this issue.
 
 **Group R8 — The Wallet:** Monzo/Revolut/Starling updates, new fintech features, cashback cards, switching deals, MSE forum, Head for Points. Research window: since last Wallet appearance.
 
-**Group R9 — The Itinerary:** Disney Parks news, Efteling updates, Beekse Bergen, European travel deals, NI hidden gems and unusual family events (search forward 2-4 weeks for upcoming events). Research window: since last Itinerary appearance.
+**Group R9 — The Itinerary:** Disney Parks news, Efteling updates, Beekse Bergen, European travel deals. Research window: since last Itinerary appearance.
+
+**Group R10 — The Listen:** podcast episodes (Football Weekly, The Bunker, What Went Wrong, History of Rome/Revolutions, plus discover), audio drama releases, niche podcast finds. Research window: since last Listen appearance.
+
+**Group R11 — The Local:** NI hidden gems, unusual family events, NI cultural happenings (search forward 2-4 weeks for upcoming).
+
+**Group R12 — The Brickyard:** LEGO releases (Star Wars, Icons, Architecture, Botanicals, Technic), build reviews, MOC highlights, retirement/availability news. Sources: Brickset, The Brothers Brick, /r/lego, BrickInsights. Research window: since last Brickyard appearance.
+
+**Group R13 — The Saga:** Star Wars lore deep-dives (Wookieepedia, official databank, /r/StarWars), fantasy book-universe lore (Cosmere — /r/cosmere, Brandon Sanderson AMAs; Malazan — /r/Malazan, Steven Erikson interviews), Tor.com long-reads, show-arc essays. Spoiler-policed. Research window: since last Saga appearance.
+
+**Group R14 — The Lab:** Stronger by Science, Barbell Medicine, Andy Galpin podcast, Examine.com, peer-reviewed training/recovery research, wearable-data interpretation pieces. Research window: since last Lab appearance.
+
+**Group R15 — The Channel:** synthwave/retrowave releases (Bandcamp Daily, RetroSynth, FiXT, Lakeshore, Aphasia, Lazerdiscs), notable soundtrack picks, retro-listening reissues, /r/outrun, /r/synthwave, /r/SoundtrackCollection. Research window: since last Channel appearance.

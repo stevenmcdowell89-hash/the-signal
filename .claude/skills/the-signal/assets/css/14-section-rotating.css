@@ -1,21 +1,6 @@
 /* ═══════════ ROTATING SECTION STYLES ═══════════ */
 /* Each rotating section gets a background, accent colour, and section-aware overrides */
 
-.pantry-section { background: var(--pantry-bg); }
-.pantry-section .section-label { color: var(--pantry-accent); }
-.pantry-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
-.pantry-section h3 { font-size: 22px; margin: 24px 0 10px; }
-.pantry-section .sec-watermark { color: var(--pantry-accent); }
-.pantry-section .workout-card { border-left-color: var(--pantry-accent); } /* reuse workout-card for recipe cards */
-.pantry-section .workout-card-title { color: var(--pantry-accent); }
-.pantry-section .big-number .num { color: var(--pantry-accent); }
-.pantry-section .pull-quote { border-left-color: var(--pantry-accent); }
-.pantry-section .dyk { background: rgba(198,93,58,.06); border-color: rgba(198,93,58,.12); }
-.pantry-section .dyk-title { color: var(--pantry-accent); }
-.pantry-section .read-next a { color: var(--pantry-accent); }
-.pantry-section .sidebar { border-left-color: var(--pantry-accent); }
-.pantry-section .sidebar-title { color: var(--pantry-accent); }
-
 .workshop-section { background: var(--workshop-bg); }
 .workshop-section .section-label { color: var(--workshop-accent); }
 .workshop-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
@@ -99,10 +84,94 @@
 .itinerary-section .sidebar { border-left-color: var(--itinerary-accent); }
 .itinerary-section .sidebar-title { color: var(--itinerary-accent); }
 
+/* The Listen — warm slate background, brass accent (dark section) */
+.listen-section { background: var(--listen-bg); color: rgba(255,255,255,.8); }
+.listen-section .section-label { color: var(--listen-accent); }
+.listen-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; color: #fff; }
+.listen-section h3 { font-size: 22px; margin: 24px 0 10px; color: #fff; }
+.listen-section .sec-watermark { color: var(--listen-accent); }
+.listen-section .big-number .num { color: var(--listen-accent); }
+.listen-section .pull-quote { border-left-color: var(--listen-accent); }
+.listen-section .dyk { background: rgba(184,146,77,.10); border-color: rgba(184,146,77,.18); }
+.listen-section .dyk-title { color: var(--listen-accent); }
+.listen-section .read-next a { color: var(--listen-accent); }
+.listen-section .also-cards .also-card { border-color: rgba(184,146,77,.18); }
+.listen-section .sidebar { border-left-color: var(--listen-accent); }
+.listen-section .sidebar-title { color: var(--listen-accent); }
+
+/* The Local — earthy green background, copper accent (dark section) */
+.local-section { background: var(--local-bg); color: rgba(255,255,255,.8); }
+.local-section .section-label { color: var(--local-accent); }
+.local-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; color: #fff; }
+.local-section h3 { font-size: 22px; margin: 24px 0 10px; color: #fff; }
+.local-section .sec-watermark { color: var(--local-accent); }
+.local-section .big-number .num { color: var(--local-accent); }
+.local-section .pull-quote { border-left-color: var(--local-accent); }
+.local-section .dyk { background: rgba(194,106,43,.10); border-color: rgba(194,106,43,.18); }
+.local-section .dyk-title { color: var(--local-accent); }
+.local-section .read-next a { color: var(--local-accent); }
+.local-section .sidebar { border-left-color: var(--local-accent); }
+.local-section .sidebar-title { color: var(--local-accent); }
+
+/* The Brickyard — warm beige background, brick-red accent */
+.brickyard-section { background: var(--brickyard-bg); }
+.brickyard-section .section-label { color: var(--brickyard-accent); }
+.brickyard-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.brickyard-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.brickyard-section .sec-watermark { color: var(--brickyard-accent); }
+.brickyard-section .big-number .num { color: var(--brickyard-accent); }
+.brickyard-section .pull-quote { border-left-color: var(--brickyard-accent); }
+.brickyard-section .dyk { background: rgba(184,58,44,.06); border-color: rgba(184,58,44,.12); }
+.brickyard-section .dyk-title { color: var(--brickyard-accent); }
+.brickyard-section .read-next a { color: var(--brickyard-accent); }
+.brickyard-section .compare-panel .compare-side { border-color: rgba(184,58,44,.2); }
+.brickyard-section .sidebar { border-left-color: var(--brickyard-accent); }
+.brickyard-section .sidebar-title { color: var(--brickyard-accent); }
+
+/* The Saga — deep purple background, antique gold accent (dark section) */
+.saga-section { background: var(--saga-bg); color: rgba(255,255,255,.8); }
+.saga-section .section-label { color: var(--saga-accent); }
+.saga-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; color: #fff; }
+.saga-section h3 { font-size: 22px; margin: 24px 0 10px; color: #fff; }
+.saga-section .sec-watermark { color: var(--saga-accent); }
+.saga-section .big-number .num { color: var(--saga-accent); }
+.saga-section .pull-quote { border-left-color: var(--saga-accent); }
+.saga-section .dyk { background: rgba(201,150,46,.10); border-color: rgba(201,150,46,.18); }
+.saga-section .dyk-title { color: var(--saga-accent); }
+.saga-section .read-next a { color: var(--saga-accent); }
+.saga-section .sidebar { border-left-color: var(--saga-accent); }
+.saga-section .sidebar-title { color: var(--saga-accent); }
+
+/* The Lab — light cool grey background, lab-blue accent */
+.lab-section { background: var(--lab-bg); }
+.lab-section .section-label { color: var(--lab-accent); }
+.lab-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+.lab-section h3 { font-size: 22px; margin: 24px 0 10px; }
+.lab-section .sec-watermark { color: var(--lab-accent); }
+.lab-section .big-number .num { color: var(--lab-accent); }
+.lab-section .pull-quote { border-left-color: var(--lab-accent); }
+.lab-section .dyk { background: rgba(46,90,140,.06); border-color: rgba(46,90,140,.12); }
+.lab-section .dyk-title { color: var(--lab-accent); }
+.lab-section .read-next a { color: var(--lab-accent); }
+.lab-section .sidebar { border-left-color: var(--lab-accent); }
+.lab-section .sidebar-title { color: var(--lab-accent); }
+
+/* The Channel — dark navy background, neon-magenta accent (dark section) */
+.channel-section { background: var(--channel-bg); color: rgba(255,255,255,.8); }
+.channel-section .section-label { color: var(--channel-accent); }
+.channel-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; color: #fff; }
+.channel-section h3 { font-size: 22px; margin: 24px 0 10px; color: #fff; }
+.channel-section .sec-watermark { color: var(--channel-accent); }
+.channel-section .big-number .num { color: var(--channel-accent); }
+.channel-section .pull-quote { border-left-color: var(--channel-accent); }
+.channel-section .dyk { background: rgba(255,45,120,.10); border-color: rgba(255,45,120,.18); }
+.channel-section .dyk-title { color: var(--channel-accent); }
+.channel-section .read-next a { color: var(--channel-accent); }
+.channel-section .also-cards .also-card { border-color: rgba(255,45,120,.18); }
+.channel-section .sidebar { border-left-color: var(--channel-accent); }
+.channel-section .sidebar-title { color: var(--channel-accent); }
+
 /* Nav card styles for rotating sections */
-.nav-card.pantry { border-left-color: var(--pantry-accent); background: rgba(198,93,58,.06); }
-.nav-card.pantry:hover { box-shadow: 0 8px 24px rgba(198,93,58,.12); }
-.nav-card.pantry .nav-card-tag { color: var(--pantry-accent); }
 .nav-card.workshop { border-left-color: var(--workshop-accent); background: rgba(90,99,120,.06); }
 .nav-card.workshop:hover { box-shadow: 0 8px 24px rgba(90,99,120,.12); }
 .nav-card.workshop .nav-card-tag { color: var(--workshop-accent); }
@@ -121,12 +190,35 @@
 .nav-card.itinerary { border-left-color: var(--itinerary-accent); background: rgba(212,99,75,.06); }
 .nav-card.itinerary:hover { box-shadow: 0 8px 24px rgba(212,99,75,.12); }
 .nav-card.itinerary .nav-card-tag { color: var(--itinerary-accent); }
+.nav-card.listen { border-left-color: var(--listen-accent); background: rgba(184,146,77,.08); }
+.nav-card.listen:hover { box-shadow: 0 8px 24px rgba(184,146,77,.14); }
+.nav-card.listen .nav-card-tag { color: var(--listen-accent); }
+.nav-card.local { border-left-color: var(--local-accent); background: rgba(194,106,43,.08); }
+.nav-card.local:hover { box-shadow: 0 8px 24px rgba(194,106,43,.14); }
+.nav-card.local .nav-card-tag { color: var(--local-accent); }
+.nav-card.brickyard { border-left-color: var(--brickyard-accent); background: rgba(184,58,44,.06); }
+.nav-card.brickyard:hover { box-shadow: 0 8px 24px rgba(184,58,44,.12); }
+.nav-card.brickyard .nav-card-tag { color: var(--brickyard-accent); }
+.nav-card.saga { border-left-color: var(--saga-accent); background: rgba(201,150,46,.08); }
+.nav-card.saga:hover { box-shadow: 0 8px 24px rgba(201,150,46,.14); }
+.nav-card.saga .nav-card-tag { color: var(--saga-accent); }
+.nav-card.lab { border-left-color: var(--lab-accent); background: rgba(46,90,140,.06); }
+.nav-card.lab:hover { box-shadow: 0 8px 24px rgba(46,90,140,.12); }
+.nav-card.lab .nav-card-tag { color: var(--lab-accent); }
+.nav-card.channel { border-left-color: var(--channel-accent); background: rgba(255,45,120,.08); }
+.nav-card.channel:hover { box-shadow: 0 8px 24px rgba(255,45,120,.14); }
+.nav-card.channel .nav-card-tag { color: var(--channel-accent); }
 
 /* Dividers for rotating sections */
-.dv-pantry { background: linear-gradient(90deg, var(--pantry-accent), #E8845A); }
 .dv-workshop { background: linear-gradient(90deg, var(--workshop-accent), #7A839A); }
 .dv-toolkit { background: linear-gradient(90deg, var(--toolkit-accent), #2AB8CE); }
 .dv-ledger { background: linear-gradient(90deg, var(--ledger-accent), #D4A03C); }
 .dv-longgame { background: linear-gradient(90deg, var(--longgame-accent), #4A5A8C); }
 .dv-wallet { background: linear-gradient(90deg, var(--wallet-accent), #2AB8A8); }
 .dv-itinerary { background: linear-gradient(90deg, var(--itinerary-accent), #E8845A); }
+.dv-listen { background: linear-gradient(90deg, var(--listen-accent), #D4AE6A); }
+.dv-local { background: linear-gradient(90deg, var(--local-accent), #E08D52); }
+.dv-brickyard { background: linear-gradient(90deg, var(--brickyard-accent), #D45A4A); }
+.dv-saga { background: linear-gradient(90deg, var(--saga-accent), #E3B255); }
+.dv-lab { background: linear-gradient(90deg, var(--lab-accent), #5A82B0); }
+.dv-channel { background: linear-gradient(90deg, var(--channel-accent), #FF6BA0); }

@@ -4,17 +4,21 @@ validate-chapter-plan.py — Mandatory gate between Phase 4 (Planner) and Phase 
 
 Usage:
     python scripts/validate-chapter-plan.py [path-to-plan.json]
+    python scripts/validate-chapter-plan.py [path-to-plan.json] --state [path-to-state.json]
+    python scripts/validate-chapter-plan.py --test
 
-Default path: /tmp/signal-build/chapter-plan.json
+Default plan path: /tmp/signal-build/chapter-plan.json
 
 Exits 0 on PASS. Exits 1 on any failure (prints all errors before exiting).
 
-v8.11.0
+v8.16 — adds cadence-floor (rule 7), deficit-promote (rule 8), and
+default-research-window-when-null (rule 9) enforcement for rotating sections.
 """
 
 import json
 import re
 import sys
+from datetime import date, datetime
 from pathlib import Path
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -123,6 +127,48 @@ TOPIC_FAMILIES = {
 
 KEBAB_RE = re.compile(r'^[a-z0-9]+([-_][a-z0-9]+)*$')  # v8.15: underscores allowed alongside hyphens (e.g. pixel_byte, screen_sound, long_shelf)
 DATE_RE  = re.compile(r'^\d{4}-\d{2}-\d{2}$')
+
+# v8.16 — canonical rotating-section roster and cadence bands.
+# Mirrors state-file schema in SKILL.md and editorial-spec § Cadence Table.
+# Used by the cadence-floor and deficit-promote enforcement.
+ROTATING_SECTION_CADENCE = {
+    "the_shelf":            [2, 3],
+    "this_week_in_history": [2, 3],
+    "the_listen":           [3, 4],
+    "the_workshop":         [3, 4],
+    "the_toolkit":          [3, 4],
+    "the_ledger":           [3, 4],
+    "the_long_game":        [4, 4],
+    "the_wallet":           [3, 4],
+    "the_itinerary":        [3, 4],
+    "the_local":            [3, 4],
+    "the_brickyard":        [4, 6],
+    "the_saga":             [6, 6],
+    "the_lab":              [4, 4],
+    "the_channel":          [6, 6],
+}
+
+# Map chapter_id (planner output) back to canonical rotating-section key.
+# Accept both underscored (spec) and single-word (markup) forms; ignore prefixes.
+CHAPTER_ID_TO_ROTATING_KEY = {
+    "the_shelf": "the_shelf", "shelf": "the_shelf",
+    "the_listen": "the_listen", "listen": "the_listen",
+    "this_week_in_history": "this_week_in_history",
+    "this-week-in-history": "this_week_in_history",
+    "history": "this_week_in_history",
+    "the_workshop": "the_workshop", "workshop": "the_workshop",
+    "the_toolkit": "the_toolkit", "toolkit": "the_toolkit",
+    "the_ledger": "the_ledger", "ledger": "the_ledger",
+    "the_long_game": "the_long_game", "the-long-game": "the_long_game",
+    "long_game": "the_long_game", "longgame": "the_long_game",
+    "the_wallet": "the_wallet", "wallet": "the_wallet",
+    "the_itinerary": "the_itinerary", "itinerary": "the_itinerary",
+    "the_local": "the_local", "local": "the_local",
+    "the_brickyard": "the_brickyard", "brickyard": "the_brickyard",
+    "the_saga": "the_saga", "saga": "the_saga",
+    "the_lab": "the_lab", "lab": "the_lab",
+    "the_channel": "the_channel", "channel": "the_channel",
+}
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Helpers
@@ -398,6 +444,180 @@ def check_chapters(chapters, issue_meta):
                 )
 
 
+def _parse_iso_date(s):
+    """Return date or None if s is not a YYYY-MM-DD string."""
+    if not isinstance(s, str) or not DATE_RE.match(s):
+        return None
+    try:
+        return datetime.strptime(s, "%Y-%m-%d").date()
+    except ValueError:
+        return None
+
+
+def _resolve_rotating_state(plan, state_path=None):
+    """v8.16 — Build {rotating_key: {weeks_since_last, cadence_weeks, last_appeared}}
+    from one of three sources, in priority order:
+
+    1. plan["rotating_sections"]: optional planner-supplied block (most authoritative;
+       lets the orchestrator pre-compute weeks_since).
+    2. state_path: an explicit --state path with `rotating_sections` and `last_issue_date`.
+    3. None — returns {} and skips cadence enforcement (caller emits an info note).
+
+    A section with last_appeared=null is treated per rule 9: weeks_since defaults to
+    `initial_research_window_weeks` (default 4); cadence still applies.
+    """
+    today = date.today()
+    issue_date = today
+    if isinstance(plan.get("issue_meta"), dict):
+        d = _parse_iso_date(plan["issue_meta"].get("date"))
+        if d:
+            issue_date = d
+
+    # Source 1: plan-supplied block
+    plan_block = plan.get("rotating_sections")
+    if isinstance(plan_block, dict):
+        out = {}
+        for k, entry in plan_block.items():
+            key = CHAPTER_ID_TO_ROTATING_KEY.get(k, k)
+            if not isinstance(entry, dict):
+                continue
+            cadence = entry.get("cadence_weeks") or ROTATING_SECTION_CADENCE.get(key)
+            wsl = entry.get("weeks_since_last_appeared")
+            last = entry.get("last_appeared")
+            initial_window = entry.get("initial_research_window_weeks", 4)
+            if wsl is None:
+                la = _parse_iso_date(last) if isinstance(last, str) else None
+                if la is None:
+                    wsl = initial_window
+                else:
+                    wsl = max(0, (issue_date - la).days // 7)
+            out[key] = {
+                "weeks_since_last_appeared": int(wsl),
+                "cadence_weeks": list(cadence) if cadence else None,
+                "last_appeared": last,
+            }
+        return out
+
+    # Source 2: --state file
+    if state_path:
+        try:
+            with open(state_path, "r", encoding="utf-8") as f:
+                state = json.load(f)
+        except Exception:
+            return {}
+        rs = state.get("rotating_sections", {})
+        if not isinstance(rs, dict):
+            return {}
+        out = {}
+        for k, entry in rs.items():
+            key = CHAPTER_ID_TO_ROTATING_KEY.get(k, k)
+            if not isinstance(entry, dict):
+                continue
+            cadence = entry.get("cadence_weeks") or ROTATING_SECTION_CADENCE.get(key)
+            last = entry.get("last_appeared")
+            la = _parse_iso_date(last) if isinstance(last, str) else None
+            if la is None:
+                wsl = entry.get("initial_research_window_weeks", 4)
+            else:
+                wsl = max(0, (issue_date - la).days // 7)
+            out[key] = {
+                "weeks_since_last_appeared": int(wsl),
+                "cadence_weeks": list(cadence) if cadence else None,
+                "last_appeared": last,
+            }
+        return out
+
+    return {}
+
+
+def check_rotating_cadence(plan, state_path=None):
+    """v8.16 — Enforce rules 7 (hard cadence floor) and 8 (deficit promotion).
+
+    Rule 7: any rotating section scheduled in `chapters` whose
+            weeks_since_last_appeared < cadence_low is rejected unless the
+            chapter (or plan) carries an explicit `deficit_override_reason`.
+
+    Rule 8: any rotating section with weeks_since_last_appeared >= 2*cadence_high
+            must be force-included in `chapters`. Plan-level
+            `deficit_override_reason` (string keyed by section, or a top-level
+            map) waives the requirement.
+
+    Only fires for weekly issues. Non-weekly formats have no rotating roster.
+    """
+    issue_meta = plan.get("issue_meta", {})
+    if not isinstance(issue_meta, dict):
+        return
+    if issue_meta.get("format") != "weekly":
+        return
+
+    state = _resolve_rotating_state(plan, state_path=state_path)
+    if not state:
+        # No state available -- skip enforcement silently; the orchestrator
+        # is expected to supply either plan.rotating_sections or --state.
+        return
+
+    chapters = plan.get("chapters", []) if isinstance(plan.get("chapters"), list) else []
+
+    # Map scheduled rotating-section keys -> chapter dict for override lookup
+    scheduled = {}
+    for ch in chapters:
+        if not isinstance(ch, dict):
+            continue
+        ch_id = ch.get("chapter_id")
+        key = CHAPTER_ID_TO_ROTATING_KEY.get(ch_id) if ch_id else None
+        if key and key in ROTATING_SECTION_CADENCE:
+            scheduled[key] = ch
+
+    # Plan-level overrides: dict mapping section_key -> reason string
+    plan_overrides = plan.get("deficit_overrides")
+    if not isinstance(plan_overrides, dict):
+        plan_overrides = {}
+
+    # Rule 7 — cadence floor
+    for key, ch in scheduled.items():
+        info = state.get(key)
+        if not info:
+            continue
+        cadence = info.get("cadence_weeks")
+        if not cadence or len(cadence) < 1:
+            continue
+        cadence_low = cadence[0]
+        wsl = info.get("weeks_since_last_appeared")
+        if wsl is None:
+            continue
+        if wsl < cadence_low:
+            override = ch.get("deficit_override_reason") or plan_overrides.get(key)
+            if not override:
+                err(
+                    f"[CADENCE_FLOOR] rotating section '{key}' is scheduled inside its "
+                    f"cadence floor: weeks_since_last_appeared={wsl} < cadence_low={cadence_low}. "
+                    f"Add `deficit_override_reason` on the chapter (or plan.deficit_overrides['{key}']) "
+                    f"to force-schedule. Hard-fail reason: cadence-floor (v8.16 rule 7)."
+                )
+
+    # Rule 8 — deficit promotion
+    for key, info in state.items():
+        if key in scheduled:
+            continue  # already in the plan; rule 7 handles it
+        cadence = info.get("cadence_weeks")
+        if not cadence or len(cadence) < 2:
+            continue
+        cadence_high = cadence[1]
+        wsl = info.get("weeks_since_last_appeared")
+        if wsl is None:
+            continue
+        if wsl >= 2 * cadence_high:
+            override = plan_overrides.get(key)
+            if not override:
+                err(
+                    f"[CADENCE_DEFICIT] rotating section '{key}' is deficit-eligible "
+                    f"(weeks_since_last_appeared={wsl} >= 2*cadence_high={2*cadence_high}) "
+                    f"but missing from this issue. Add `deficit_override_reason` to "
+                    f"plan.deficit_overrides['{key}'] to skip it. Hard-fail reason: "
+                    f"cadence-deficit (v8.16 rule 8)."
+                )
+
+
 def check_assets(assets):
     """Check assets block."""
     path = "assets"
@@ -436,9 +656,30 @@ def check_compliance(compliance):
 # Main
 # ─────────────────────────────────────────────────────────────────────────────
 
+def _parse_main_args(argv):
+    """Parse plan path + optional --state <path>. Returns (plan_path, state_path)."""
+    plan_path = None
+    state_path = None
+    i = 1
+    while i < len(argv):
+        a = argv[i]
+        if a == "--state":
+            if i + 1 < len(argv):
+                state_path = argv[i + 1]
+                i += 2
+                continue
+            else:
+                print("ERROR: --state requires a path argument")
+                sys.exit(2)
+        if plan_path is None and not a.startswith("--"):
+            plan_path = a
+        i += 1
+    return (plan_path or DEFAULT_PLAN_PATH, state_path)
+
+
 def main():
-    plan_path = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_PLAN_PATH
-    plan_path = Path(plan_path)
+    plan_path_str, state_path = _parse_main_args(sys.argv)
+    plan_path = Path(plan_path_str)
 
     # 1. Resolve path
     if not plan_path.exists():
@@ -481,6 +722,9 @@ def main():
 
     if isinstance(compliance, dict):
         check_compliance(compliance)
+
+    # v8.16 — rotating-section cadence enforcement (weekly only)
+    check_rotating_cadence(plan, state_path=state_path)
 
     # ── Report ──
     if errors:
@@ -570,6 +814,8 @@ def run_inline_tests():
             if isinstance(chapters, list):   check_chapters(chapters, issue_meta if isinstance(issue_meta, dict) else {})
             if isinstance(assets, dict):     check_assets(assets)
             if isinstance(compliance, dict): check_compliance(compliance)
+            # v8.16
+            check_rotating_cadence(plan_dict, state_path=None)
 
             passed = len(errors) == 0
             ok = (passed == expect_pass)
@@ -755,6 +1001,109 @@ def run_inline_tests():
     # PASS: non-weekly formats are not bound by the Lead+Companion rule
     run_test("countdown chapter without pieces (not bound by Lead+Companion)",
              make_plan(), expect_pass=True)
+
+    # ── v8.16 rotating-section cadence cases ──
+
+    def rotating_chapter(chapter_id, num):
+        return {
+            "chapter_id": chapter_id,
+            "chapter_num": num,
+            "chapter_type": "literary",
+            "chapter_title": chapter_id,
+            "chapter_arc": "arc",
+            "ground": "paper",
+            "is_hype": False,
+            "data_venue": None,
+            "target_word_count": 500,
+            "images_needed": [],
+            "key_facts": [],
+            "forbidden_topics": [],
+            "cross_refs": []
+        }
+
+    # PASS — rotating section scheduled outside its floor (the_workshop with weeks_since=4, cadence [3,4])
+    run_test("rotating cadence floor — workshop at 4 weeks (above floor=3)", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[
+            weekly_fixed_chapter("world", pieces=valid_pieces),
+            rotating_chapter("the_workshop", 2)
+        ],
+        rotating_sections={
+            "the_workshop": {"weeks_since_last_appeared": 4, "cadence_weeks": [3, 4]}
+        }
+    ), expect_pass=True)
+
+    # FAIL — rotating section scheduled inside its floor (weeks_since=1 < 3)
+    run_test("rotating cadence floor — workshop at 1 week (below floor=3)", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[
+            weekly_fixed_chapter("world", pieces=valid_pieces),
+            rotating_chapter("the_workshop", 2)
+        ],
+        rotating_sections={
+            "the_workshop": {"weeks_since_last_appeared": 1, "cadence_weeks": [3, 4]}
+        }
+    ), expect_pass=False)
+
+    # PASS — rotating section inside floor BUT carries deficit_override_reason
+    floor_override_ch = rotating_chapter("the_workshop", 2)
+    floor_override_ch["deficit_override_reason"] = "no other eligible rotating section"
+    run_test("rotating cadence floor — override allowed", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[
+            weekly_fixed_chapter("world", pieces=valid_pieces),
+            floor_override_ch
+        ],
+        rotating_sections={
+            "the_workshop": {"weeks_since_last_appeared": 1, "cadence_weeks": [3, 4]}
+        }
+    ), expect_pass=True)
+
+    # FAIL — deficit-eligible section omitted (weeks_since=10 >= 2*4=8 for cadence [3,4])
+    run_test("rotating cadence deficit — wallet at 10 weeks not scheduled", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[
+            weekly_fixed_chapter("world", pieces=valid_pieces),
+            rotating_chapter("the_workshop", 2)
+        ],
+        rotating_sections={
+            "the_workshop": {"weeks_since_last_appeared": 4, "cadence_weeks": [3, 4]},
+            "the_wallet":   {"weeks_since_last_appeared": 10, "cadence_weeks": [3, 4]}
+        }
+    ), expect_pass=False)
+
+    # PASS — deficit-eligible section omitted with explicit plan-level override
+    run_test("rotating cadence deficit — override at plan level", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[
+            weekly_fixed_chapter("world", pieces=valid_pieces),
+            rotating_chapter("the_workshop", 2)
+        ],
+        rotating_sections={
+            "the_workshop": {"weeks_since_last_appeared": 4, "cadence_weeks": [3, 4]},
+            "the_wallet":   {"weeks_since_last_appeared": 10, "cadence_weeks": [3, 4]}
+        },
+        deficit_overrides={"the_wallet": "no fintech news this week"}
+    ), expect_pass=True)
+
+    # PASS — cadence rules do not fire on non-weekly formats
+    run_test("cadence rules skipped on countdown format", make_plan(
+        rotating_sections={
+            "the_workshop": {"weeks_since_last_appeared": 1, "cadence_weeks": [3, 4]}
+        }
+    ), expect_pass=True)
+
+    # PASS — null last_appeared treated as weeks_since=initial_research_window_weeks (default 4)
+    run_test("null last_appeared defaults to 4-week window (above floor 3)", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[
+            weekly_fixed_chapter("world", pieces=valid_pieces),
+            rotating_chapter("the_workshop", 2)
+        ],
+        rotating_sections={
+            "the_workshop": {"last_appeared": None, "cadence_weeks": [3, 4]}
+        }
+    ), expect_pass=True)
 
     # ── Summary ──
     print("\n=== INLINE TEST RESULTS ===")

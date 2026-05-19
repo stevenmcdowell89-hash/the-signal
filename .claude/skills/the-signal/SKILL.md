@@ -409,22 +409,28 @@ The state file at `/tmp/the-signal/state/signal-state.json` has this shape:
   "section_topics_recently": {
     "world_leads": [],
     "session": [],
-    "pantry": [],
     "pixel_byte_lead": [],
     "screen_sound_lead": []
   },
   "rotating_sections": {
     "the_shelf": { "last_appeared": null, "cadence_weeks": [2, 3] },
     "this_week_in_history": { "last_appeared": null, "cadence_weeks": [2, 3] },
-    "the_pantry": { "last_appeared": null, "cadence_weeks": [2, 3] },
+    "the_listen": { "last_appeared": null, "cadence_weeks": [3, 4] },
     "the_workshop": { "last_appeared": null, "cadence_weeks": [3, 4] },
     "the_toolkit": { "last_appeared": null, "cadence_weeks": [3, 4] },
     "the_ledger": { "last_appeared": null, "cadence_weeks": [3, 4] },
     "the_long_game": { "last_appeared": null, "cadence_weeks": [4, 4] },
     "the_wallet": { "last_appeared": null, "cadence_weeks": [3, 4] },
-    "the_itinerary": { "last_appeared": null, "cadence_weeks": [3, 4] }
+    "the_itinerary": { "last_appeared": null, "cadence_weeks": [3, 4] },
+    "the_local": { "last_appeared": null, "cadence_weeks": [3, 4] },
+    "the_brickyard": { "last_appeared": null, "cadence_weeks": [4, 6] },
+    "the_saga": { "last_appeared": null, "cadence_weeks": [6, 6] },
+    "the_lab": { "last_appeared": null, "cadence_weeks": [4, 4] },
+    "the_channel": { "last_appeared": null, "cadence_weeks": [6, 6] }
   },
   "down_the_rabbit_hole": { "last_appeared": null, "cadence_weeks": [3, 4] },
+  "last_toolkit_app": null,
+  "last_session_topic": null,
   "training_phase": {
     "current_block": "Block 1: Race Prep + Fat Loss",
     "block_dates": "April 4 - May 3",
@@ -487,7 +493,7 @@ When this block is present, both the Field Guide and the Countdown honour it str
 When generating an issue:
 1. Read state file at start
 2. Evaluate auto-trigger logic (Priority 1 → 2 → 3) and guardrails
-3. If standard weekly: select 2-3 rotating sections based on cadence priority (most overdue first)
+3. If standard weekly: select 3-4 rotating sections based on cadence priority (most overdue first)
 4. Research accordingly (full groups for weekly, topic + light news pass for specials)
 5. After generation, update:
    - `last_issue_date` (always)
@@ -530,7 +536,7 @@ When the reader asks to tweak styling or structure rather than generate an issue
 | `11-section-shelf.css` | the shelf |
 | `12-section-session.css` | the session |
 | `13-section-history.css` | this week in history |
-| `14-section-rotating.css` | pantry, workshop, toolkit, ledger, long game, wallet, itinerary |
+| `14-section-rotating.css` | workshop, toolkit, ledger, long game, wallet, itinerary, listen, local, brickyard, saga, lab, channel |
 | `15-components-extras.css` | timelines, compact takes, margin notes, section icons, collapsibles, read-next |
 | `16-animations.css` | scroll-triggered reveal, count-up |
 | `17-section-longshelf-radar-footer.css` | long shelf, on the radar, footer |
