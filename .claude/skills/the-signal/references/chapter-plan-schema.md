@@ -1,8 +1,10 @@
-# Chapter Plan Schema (v8.11.0)
+# Chapter Plan Schema (v8.15)
 
 The planner subagent writes `/tmp/signal-build/chapter-plan.json`. This file defines the contract between the planner and the writer subagents. Every field here is required unless marked optional.
 
 The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan that fails validation cannot proceed to Phase 5 (writer subagents).
+
+**v8.15 additions:** every fixed-section chapter (`world`, `pixel_byte`, `touchline`, `screen_sound`, `session`) carries a `pieces` array of exactly two entries (Lead + Companion) on distinct `topic_family` values. The `long_shelf` chapter carries an `items` array of 6–8 entries with at least two `wildcard: true`. Topic families are a closed enumeration — see § Topic Family Enumeration at the bottom of this file.
 
 ---
 
@@ -179,6 +181,64 @@ The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan
             "type": "array",
             "items": { "type": "string" },
             "description": "chapter_ids this chapter may reference for narrative throughline. ONLY valid for sequential execution_mode (Deep Dive, Versus, Rewind, Season Review). Must be empty for parallel formats."
+          },
+
+          "pieces": {
+            "type": "array",
+            "description": "REQUIRED for fixed-section weekly chapters with chapter_id in {world, pixel_byte, touchline, screen_sound, session}. Exactly two pieces: one role=lead, one role=companion. Lead.topic_family MUST differ from Companion.topic_family. Validator hard-fails any plan where a fixed-section chapter omits this array or includes pieces with the same topic_family.",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": "object",
+              "required": ["role", "topic_family", "word_count_target", "headline_hint", "link_targets"],
+              "properties": {
+                "role": {
+                  "type": "string",
+                  "enum": ["lead", "companion"],
+                  "description": "'lead' is the section's centrepiece. 'companion' is the mandatory second substantive piece."
+                },
+                "topic_family": {
+                  "type": "string",
+                  "description": "Must be drawn from the closed enumeration in § Topic Family Enumeration below. Lead.topic_family != Companion.topic_family within the same chapter."
+                },
+                "word_count_target": {
+                  "type": "object",
+                  "required": ["min", "max"],
+                  "properties": {
+                    "min": { "type": "integer", "minimum": 200, "description": "Floor word count. Lead floor 300; Companion floor 200." },
+                    "max": { "type": "integer", "minimum": 200, "description": "Ceiling. Lead typical 700, can run to 1000+. Companion typical 450, ceiling 600." }
+                  },
+                  "description": "Word-count band for this piece. Validator rejects Lead with min < 300 or Companion with min < 200."
+                },
+                "headline_hint": {
+                  "type": "string",
+                  "description": "Suggested headline angle / framing for the writer. Not the final headline — the writer composes that."
+                },
+                "link_targets": {
+                  "type": "array",
+                  "items": { "type": "string", "format": "uri" },
+                  "description": "URLs the writer should consider linking. Pulled from research-bundle.json. Writer must include at least one outbound link per piece (Gate 1D)."
+                }
+              }
+            }
+          },
+
+          "items": {
+            "type": "array",
+            "description": "REQUIRED for chapter_id 'long_shelf'. Array of 6-8 items with at least 2 carrying wildcard: true. Validator hard-fails if items.length < 6 or > 8, or if count(wildcard==true) < 2.",
+            "minItems": 6,
+            "maxItems": 8,
+            "items": {
+              "type": "object",
+              "required": ["title", "source", "link", "hook", "wildcard"],
+              "properties": {
+                "title": { "type": "string", "description": "Item title (linked in the final markup)." },
+                "source": { "type": "string", "description": "Publisher / origin (e.g. 'The Atlantic', 'Stratechery', 'BBC Sounds')." },
+                "link": { "type": "string", "format": "uri", "description": "Specific item URL — not a category page." },
+                "hook": { "type": "string", "description": "One-sentence hook selling the content on its merit (no reader-profile leaks)." },
+                "wildcard": { "type": "boolean", "description": "true if this item is outside the magazine's usual coverage areas (not gaming, sport, Star Wars, fantasy/sci-fi, fitness, UK consumer fintech, theme parks, history podcasts). At least 2 of the 6-8 items must be wildcards." }
+              }
+            }
           }
 
         }
@@ -328,5 +388,99 @@ The validator enforces this table. If `execution_mode` does not match the format
     "image_source_diversity_min": 0.5,
     "accent_lockdown": true
   }
+}
+```
+
+---
+
+## Topic Family Enumeration (v8.15)
+
+Every `pieces[*].topic_family` MUST be one of the values below. The enumeration is closed — adding a new family requires a spec amendment. Validator (`scripts/validate-chapter-plan.py`) hard-fails any plan with an unrecognised `topic_family`.
+
+Families are grouped by cluster for readability; the cluster name is editorial shorthand only — the validator checks against the flat union of all values.
+
+### news_geopolitics
+`iran_war`, `ukraine`, `russia`, `china_geopolitics`, `us_politics`, `uk_politics`, `eu_politics`, `africa`, `middle_east_non_iran`, `asia_pacific`, `climate_environment`, `space_exploration`, `pandemics_health`, `ni_politics`
+
+### tech_gaming
+`switch_2`, `playstation`, `xbox`, `nintendo_other`, `pc_gaming`, `steam_deck`, `geforce_now`, `consumer_ai`, `generative_ai_consumer`, `ai_search`, `tablets_phones`, `wearables_consumer`, `e_readers`, `lego`, `streaming_tech`, `smart_home`
+
+### sport
+`serie_a`, `premier_league`, `champions_league`, `europa_league`, `wc_qualifiers`, `wc_finals`, `euros`, `golf_majors`, `golf_ryder_cup`, `golf_tours`, `f1`, `tennis_slams`, `tennis_other`, `rugby_six_nations`, `rugby_world_cup`, `olympics`, `cricket`, `snooker`, `sport_governance`
+
+### screen_culture
+`star_wars`, `mcu`, `dc`, `disney_other`, `apple_tv`, `netflix`, `prime_video`, `nowtv_hbo`, `cinema_releases`, `film_classics`, `music_synthwave`, `music_general`, `audio_dramas`, `podcasts_critical`, `podcasts_history`
+
+### fitness
+`running_science`, `concurrent_training`, `hypertrophy`, `kettlebells`, `gymnastics_rings`, `recovery_mobility`, `wearable_data`, `nutrition_recomp`, `landmine_training`, `home_gym_programming`, `race_prep`
+
+### other
+`ni_local`, `travel_european`, `theme_parks`, `books_fantasy_scifi`, `books_history`, `books_other`, `ukpf_fintech`, `ukpf_investing`, `etsy_side_hustle`, `productivity_workflows`
+
+---
+
+## Fixed-Section Lead + Companion Example (v8.15)
+
+```json
+{
+  "chapter_id": "world",
+  "chapter_num": 4,
+  "chapter_type": "opener",
+  "chapter_title": "The World This Week",
+  "chapter_arc": "Two stories that shaped the week",
+  "ground": "paper",
+  "is_hype": false,
+  "data_venue": null,
+  "target_word_count": 1100,
+  "images_needed": [],
+  "key_facts": [],
+  "forbidden_topics": [],
+  "cross_refs": [],
+  "pieces": [
+    {
+      "role": "lead",
+      "topic_family": "us_politics",
+      "word_count_target": { "min": 400, "max": 700 },
+      "headline_hint": "The Senate vote and what it means for the midterms",
+      "link_targets": ["https://www.nytimes.com/...", "https://www.economist.com/..."]
+    },
+    {
+      "role": "companion",
+      "topic_family": "climate_environment",
+      "word_count_target": { "min": 250, "max": 450 },
+      "headline_hint": "COP intersessional concludes — the gap between pledges and plans",
+      "link_targets": ["https://unfccc.int/..."]
+    }
+  ]
+}
+```
+
+## Long Shelf Example (v8.15)
+
+```json
+{
+  "chapter_id": "long_shelf",
+  "chapter_num": 3,
+  "chapter_type": "opener",
+  "chapter_title": "The Long Shelf",
+  "chapter_arc": "Eight things worth your time",
+  "ground": "paper",
+  "is_hype": false,
+  "data_venue": null,
+  "target_word_count": 500,
+  "images_needed": [],
+  "key_facts": [],
+  "forbidden_topics": [],
+  "cross_refs": [],
+  "items": [
+    { "title": "Item one", "source": "Source", "link": "https://...", "hook": "One sentence.", "wildcard": false },
+    { "title": "Item two", "source": "Source", "link": "https://...", "hook": "One sentence.", "wildcard": false },
+    { "title": "Item three", "source": "Source", "link": "https://...", "hook": "One sentence.", "wildcard": false },
+    { "title": "Item four", "source": "Source", "link": "https://...", "hook": "One sentence.", "wildcard": false },
+    { "title": "Item five", "source": "Source", "link": "https://...", "hook": "One sentence.", "wildcard": false },
+    { "title": "Item six", "source": "Source", "link": "https://...", "hook": "One sentence.", "wildcard": false },
+    { "title": "A wildcard pick", "source": "Source", "link": "https://...", "hook": "Why it's outside the magazine's usual ground.", "wildcard": true },
+    { "title": "Another wildcard pick", "source": "Source", "link": "https://...", "hook": "Why it's outside the magazine's usual ground.", "wildcard": true }
+  ]
 }
 ```

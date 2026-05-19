@@ -356,7 +356,7 @@ Panoramic retrospective across all interests. **8,000-12,000 words, 25-40 pages.
 ## Issue Formats
 
 ### Standard Weekly (default)
-The full Sunday edition. **6,000-8,000 words, 20-30 pages.** Section order as listed above.
+The full Sunday edition. **6,500+ words with no hard ceiling, 20-30+ pages.** Section order as listed above. Per-section depth floors hold (no fixed-section piece below 200 words); every fixed section runs a Lead + Companion of 200–700 words each. See editorial-spec.md § Article Structure: Lead + Companion for the full structural contract.
 
 ### Deep Dive
 Single-topic deep exploration. **8,000-12,000 words, 25-40 pages.** Manual trigger: "Run a Deep Dive on [topic]." Cover → Foreword → Reading paths (2/10/30 min) → Full story → On the Radar → Footer. Use 10-14 component types. Best for: a single subject that deserves 10x the space it would get in the weekly. The longer length must be earned with visual variety — more component rotation, not more prose.

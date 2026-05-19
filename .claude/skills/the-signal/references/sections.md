@@ -17,12 +17,16 @@ Visual card grid linking to each section. Top 1-2 cards use `.nav-card.lead` (tw
 ### The Long Shelf — Worth Your Time
 6-8 recommended reads/listens/watches with linked titles, source, and one-sentence hook. Two-column grid. 2 of 8 items should be genuine wildcards outside the magazine's usual coverage areas. Each item's one-sentence hook should sell the content on its own merit — not explain why it was selected for this reader.
 
+**Wildcard discipline:** 2 of 8 items MUST be wildcards (outside the magazine's usual coverage areas). Mark them with `wildcard: true` in the chapter plan.
+
 ### The World This Week
 Hero image. White background, rose accent.
 - **One or two lead stories depending on the week.** If one story is genuinely massive (war breaks out, leader assassinated, major treaty), it gets the section to itself as a single lead. Most weeks, run two properly developed stories (300-500 words each) -- the world rarely has just one thing worth knowing about. The reader should come away knowing 3-4 things that happened, not just one.
 - Opinions mandatory -- give editorial takes
 - The Angle box only for genuinely significant stories
 - **Also This Week: 4-6 items, not throwaway one-liners.** Each Also item gets 2-3 sentences minimum: what happened, why it matters, and a link. A one-liner that nobody remembers five minutes later isn't worth including. Cut the count and increase the quality.
+
+**Lead + Companion structure:** Every World This Week runs a Lead piece (400–700 words) AND a Companion piece (250–450 words) on a distinct topic family. If the Lead is on Iran, the Companion cannot be on Iran (no matter how much there is to say). Ongoing-story tracker boxes are *in addition to* Lead + Companion.
 
 **Ongoing Story Tracker**
 When a single topic has led The World This Week for 2 consecutive weeks, it graduates from headline coverage to a dedicated **"Ongoing"** subsection within World This Week. Rules:
@@ -48,6 +52,8 @@ Gaming, consumer tech, AI tools, LEGO, Steam Deck, e-readers. Warm background, e
   - **In:** consumer-facing AI products (ChatGPT / Claude / Gemini features the reader might actually use, image and video generation tools, AI in tablets and phones, AI in everyday apps like Todoist / Spotify / WhatsApp / Google Maps, AI search changes (SGE, Perplexity, You.com), agent-led purchasing platforms like Visa Intelligent Commerce Connect, on-device AI features in Pixel / Xiaomi / iPhone, AI in browsers, consumer AI hardware (Rabbit, Humane, Friend pendants, Meta Ray-Bans), AI features in games or streaming services).
   - **Out:** developer tooling (GitHub Copilot / Workflow Agent / Cursor / Windsurf / IDE integrations, AI for code review, AI test generation, AI for DevOps), enterprise AI (workflow automation for businesses, AI ops, AI governance frameworks for companies, AI in CRMs / ERPs, AI in BI tools, customer-service AI deployments, AI for compliance / legal / HR), pure-research announcements (new model benchmarks, paper releases) unless they ship as a consumer product the same week, regulatory rulemaking UNLESS it directly affects something a consumer would notice (e.g. model-output labelling rules, content-provenance marks, chatbot warnings, consumer-facing transparency notices).
   - The rule of thumb: if the news item would feel at home in the Engineering Digest, it does not belong in The Signal.
+
+**Lead + Companion structure:** Lead (300–500 words, can be gaming) plus Companion (250–400 words, non-gaming consumer tech if Lead is gaming, gaming if Lead is consumer tech).
 
 ### The Touchline
 **Data first, then narrative.** Dark background, green accents.
@@ -80,6 +86,8 @@ Gaming, consumer tech, AI tools, LEGO, Steam Deck, e-readers. Warm background, e
 - Football reads like editorial, not match reports — the reader already knows the scores
 - Image montage for match photos
 
+**Lead + Companion structure:** Lead + Companion mandatory. When Lead is football, **Companion is non-football** (golf, F1, rugby, tennis, snooker, governance/structural). When Lead is a Priority-2 or Priority-3 non-football story, Companion may be football.
+
 ### Screen & Sound
 Film, TV, streaming, Star Wars (always search). Dark purple background, neon accent.
 - **Write as a culture critic.** Review films, shows, and music the way any entertainment column would. The reader profile drives topic selection, not prose.
@@ -90,6 +98,8 @@ Film, TV, streaming, Star Wars (always search). Dark purple background, neon acc
 - **The Release Radar:** 15-20+ items across ALL categories (film, TV, games, LEGO, tech, books, music). Sub-sections: Now Showing, Coming Soon, Leaving Soon, Also Streaming. Category dots for visual scanning. **Items within each sub-section must be in chronological date order** (earliest first for Coming Soon, most recent first for Now Showing/Also Streaming).
 - "For the Kids" sidebar when relevant
 - **No overlap with On the Radar** — Release Radar covers product/media releases only
+
+**Lead + Companion structure:** Lead + Companion mandatory. Companion is forbidden from sharing the Lead's franchise.
 
 ### The Shelf *(rotating — every 2-3 weeks)*
 Books, music, podcasts. Dark brown background, gold accent.
@@ -120,6 +130,8 @@ Sourced fitness feature. Light green background, orange accent.
 - **Good sources:** Stronger by Science (top tier — Greg Nuckols, Eric Trexler, Eric Helms), StrongFirst, Dan John, Outside Online, Runner's World, T-Nation (training only), Alex Viada, Barbell Medicine, Andy Galpin, Examine.com (nutrition), Jeff Nippard (training science), Layne Norton. NOT Men's Health, NOT bodybuilding, NOT Renaissance Periodization (RP), NOT Mike Israetel.
 - No generic advice ("stay hydrated", "warm up properly").
 - **Good Session topics:** concurrent training (lifting + running without interference), rate of loss and muscle retention during a cut, how to interpret Garmin training readiness and HRV trends, mobility routines for runners, protein timing and distribution, the science of deload weeks, progressive overload with kettlebells at home, running economy and zone 2 benefits, managing fatigue across multiple training modalities, fitness gear and tech (running shoes, kettlebells, home gym equipment, wearables, recovery tools — only stuff relevant to the reader's actual training), home gym setup and equipment reviews (reader is building out a home gym — currently has competition KBs, dip bars, slant board, resistance band; interested in expanding).
+
+**Lead + Companion deep note:** Lead (400–500 words) + a Companion "Also worth reading" deep note (200–250 words) on a different training-topic cluster. **Same cluster cannot anchor two consecutive Session Leads** — track in state-file `last_session_topic`.
 
 ### This Week in History *(rotating — every 2-3 weeks)*
 Warm parchment background, gold accent.
@@ -155,6 +167,7 @@ Apps, tablet productivity, digital workflow discoveries. Light blue-grey backgro
 - Should feel like discoveries — "here's something you might not have found" — not app store roundups.
 - Good sources: r/Android, r/Todoist, Product Hunt, 9to5Google, The Verge (apps/tools coverage), XDA Developers.
 - Research window: since last Toolkit appearance.
+- **Anti-repetition:** Same app cannot anchor two consecutive Toolkit appearances. Track `last_toolkit_app` in state.
 
 ### The Ledger *(rotating — every 3-4 weeks)*
 Passive income, side hustle strategy, digital product sales. Warm cream background, amber accent.
@@ -197,8 +210,20 @@ Travel, theme parks, and local NI hidden gems. Warm sand background, coral accen
 - **No overlap with Release Radar.** Product/media releases go in Release Radar. This is for everything else.
 - When The Itinerary is absent, parks and travel news can appear here as one-liners.
 
+**Mandatory links + "Why it matters" lines:** Every item links to its canonical source. The 2-3 most important items per issue get a 10–15 word "Why it matters" line below the date+event line.
+
 ### Footer
 Masthead echo, issue info line.
+
+### Topic Families & Lifetime Leads
+
+**Topic families** are closed-vocabulary tags on every Lead and Companion piece in the chapter plan. Used by the planner-side validator to enforce Lead ≠ Companion topic family within a section. Used by the Gate 1 grep to enforce the lifetime-leads bar on repeat-promoted ongoing stories.
+
+The full enumeration lives in `references/chapter-plan-schema.md`. Adding a new family requires spec amendment.
+
+**Lifetime leads** count every time a topic family anchors any fixed section's Lead. A topic with `lifetime_leads >= 3` requires `weeks_since_last_lead >= lifetime_leads * 2` before it can lead again. Tracked in state-file `ongoing_stories`.
+
+**The Long Game ↔ The Session boundary** is enforced: Long Game is finance only; fitness deep-dives go to The Session. Cross-classification fails Gate 2.
 
 ---
 

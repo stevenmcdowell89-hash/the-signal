@@ -10,7 +10,7 @@ _This file consolidates the weekly/ subdir into one file. Each former file becom
 ## Issue Formats
 
 ### Standard Weekly (default)
-The full Sunday edition. **6,000-8,000 words, 20-30 pages.** Section order as listed above.
+The full Sunday edition. **6,500+ words with no hard ceiling, 20-30+ pages.** Section order as listed above. Per-section depth floors hold (no fixed-section piece below 200 words); every fixed section runs a Lead + Companion of 200–700 words each. See editorial-spec.md § Article Structure: Lead + Companion for the full structural contract.
 
 
 
@@ -34,44 +34,9 @@ See **Rotation Mechanics** below for scheduling rules.
 For individual section content rules, voice notes, and research guidance, see `references/sections.md`. Only read sections appearing in this issue.
 
 
-## Anchor-Piece Rotation
+## Anchor-Piece Rotation (deprecated v8.15)
 
-Once every fourth standard weekly, one non-World section is promoted to **anchor piece** — a slightly longer, more deliberately-opened article that gives the issue a second centre of gravity. The rotation is subtle: a reader flipping through wouldn't shout "this is the anchor", but on reflection the issue feels more balanced than one where World dominates every week.
-
-### Rotation order
-
-`Pixel & Byte → The Touchline → Screen & Sound → The Shelf → The Session → This Week in History → (back to Pixel & Byte)`
-
-World never anchors — it already leads every issue. Rotating sections that didn't appear in a given issue are skipped and their turn passes to the next eligible issue.
-
-Track current position under `anchor_rotation` in the state file:
-
-```json
-"anchor_rotation": {
-  "issues_since_last_anchor": 0,
-  "next_anchor_section": "pixel_byte",
-  "last_anchor_date": null
-}
-```
-
-Increment `issues_since_last_anchor` each standard weekly. On the fourth issue, anchor the `next_anchor_section`, reset the counter to 0, and advance `next_anchor_section` to the following rotation slot.
-
-### What an anchor piece gets
-
-- A **stat-led or quote-led opener** (`.opener-lead.stat` or `.opener-lead.quote` before the `<h2>`) rather than the default photo-led.
-- **1.5-2× the normal word count** for that section's lead article.
-- **One extra visual component** beyond the section's normal allocation — e.g. a compare panel, sidebar-float, or image montage.
-- **`.is-anchor` class** on the `<section>` element (renders a thin top accent rule in the section's accent colour).
-- **A Navigator badge** — the matching `.toc-row` gets `.is-anchor`, adding a small "Anchor piece" label under the kicker.
-- **A mention in the Colophon's Issue in Numbers block** ("This week's anchor: [section name]").
-
-### What an anchor piece does NOT get
-
-- No cover tag or cover fanfare — the cover still leads with World.
-- No Foreword callout — the Foreword treats all sections evenly.
-- No change to section order, watermark, or divider treatment.
-
-Special editions (Deep Dive, Countdown, etc.) don't anchor — their format already concentrates weight on a single subject. Pause the rotation counter during a special; resume on the next standard weekly.
+Removed. Replaced by the Lead + Companion structure (see § Article Structure). The anchor-piece rotation was unenforced across 8 weekly issues; the new two-anchor structure subsumes its purpose of giving every issue a second centre of gravity.
 
 ---
 
@@ -95,7 +60,77 @@ The Colophon closes with a small sign-off line (`.colophon-sign`) — issue numb
 
 ---
 
+## Article Structure: Lead + Companion
 
+Every fixed section in a standard weekly runs a **Lead piece** AND a **Companion piece**, both substantial, on **distinct topic families**. The Lead is the section's centrepiece; the Companion is not a footnote — it's a second proper article. Tail content (also-lists, quick reviews, tables, sub-sections like the AI block in Pixel & Byte or Release Radar in Screen & Sound) is in addition to Lead + Companion, not instead of it.
+
+### Word count band
+
+| Piece | Floor | Typical | Ceiling |
+|---|---|---|---|
+| Lead | 300 words | 400–700 words | 1,000+ on a genuinely massive week |
+| Companion | 200 words | 250–450 words | 600 words |
+
+The Companion never compresses below 200 words. If research can't support a 200-word companion, the planner must broaden the section's scope — not shrink the piece into a one-liner.
+
+### Topic-family discipline
+
+The Lead and the Companion in the same section MUST be on different `topic_family` values. The closed enumeration of topic families lives in `references/chapter-plan-schema.md`. A planner-side validator rejects any chapter plan where Lead.topic_family == Companion.topic_family within a section.
+
+Tail items (also-lists, quick reviews) are not subject to this rule — they can repeat the lead's topic family. But the Lead and Companion always anchor different ground.
+
+### Sections exempted from Lead + Companion
+
+- **Cover, Navigator, Foreword, Footer, Colophon** — chrome / framing, single-piece by design.
+- **The Long Shelf** — already structurally varied (6–8 items with 2 wildcards). Keep its existing shape.
+- **On the Radar** — compact date-grid format. Keep its existing shape (but see § On the Radar update below for the "why it matters" half-line addition).
+
+### Sections covered by Lead + Companion (mandatory)
+
+- **The World This Week** — Lead + Companion on distinct topic families. Ongoing-story tracker boxes are in addition.
+- **Pixel & Byte** — Lead + Companion. If Lead is gaming, Companion is non-gaming consumer tech (or vice versa).
+- **The Touchline** — Lead + Companion. **The Companion must be a non-football sport** when the Lead is football. If the Lead is a Priority-2/3 non-football story (per existing Touchline hierarchy), the Companion may be football.
+- **Screen & Sound** — Lead + Companion. **Companion cannot be the same franchise as the Lead** (so a Star Wars Lead requires a non-Star-Wars Companion; an MCU Lead requires non-MCU; etc.).
+- **The Session** — Lead piece + a "Companion deep note" of 200–250 words on a different training-topic cluster (see clusters list in sections.md). The Companion can be lighter than other sections' companions but must still be substantive.
+
+Rotating sections use their existing single-feature shape — they don't need Lead + Companion because they already provide variety by rotating in and out across issues.
+
+---
+
+## Topic Lock: Lifetime Leads & Escalating Bar
+
+The spec's "bar rises exponentially" rule for re-promoting ongoing stories needs mechanical enforcement. Two new state-file fields on each entry in `ongoing_stories`:
+
+- `lifetime_leads` (int) — incremented every time this topic anchors any fixed section Lead (not just World). Counts across the topic's entire lifetime.
+- `weeks_since_last_lead` (int) — ticks +1 each weekly the topic is NOT the lead; resets to 0 when it is.
+
+### Planner enforcement
+
+A topic with `lifetime_leads >= 3` cannot anchor the Lead unless `weeks_since_last_lead >= lifetime_leads * 2`.
+
+Worked example: Iran has had 5 lifetime leads. Re-promoting Iran to Lead requires 10 weeks of not-leading first. Until then, Iran lives in the tracker box.
+
+### Topics this rule applies to
+
+`ongoing_stories` is not limited to World This Week — it's a tracking concept for any topic that has anchored any section's Lead. Track:
+
+- World This Week: Iran War, Ukraine, US-China trade, etc.
+- Pixel & Byte: Switch 2 ecosystem, Steam Deck, consumer AI launches
+- Touchline: Serie A title race, Champions League knockout, WC qualifying campaign
+- Screen & Sound: long-running show arcs (Star Wars: Maul, Daredevil, House of the Dragon, etc.)
+- Session: running-race build-up, hypertrophy block, etc.
+
+### Gate 1 grep check
+
+After generation, scan each fixed section's Lead H2 + first paragraph for the topic's named entities. If `lifetime_leads >= 3` for any tracked topic AND that topic's named entities appear in the Lead (≥3 mentions or in H2), Gate 1 fails with reason "topic-lock: <topic> exceeds lifetime-leads bar". Re-plan the Lead.
+
+---
+
+## Per-section discipline rules
+
+- **The Toolkit (rotating)** — Same app cannot anchor two consecutive Toolkit appearances. Track `last_toolkit_app` in state file (slug like `todoist`, `obsidian`, `perplexity`).
+- **The Session** — State-file `last_session_topic` tracks the cluster (running_science / concurrent_training / hypertrophy / kettlebells / gymnastics_rings / recovery_mobility / wearable_data / nutrition_recomp / landmine_training / home_gym_programming). Same cluster cannot anchor two consecutive Session Leads.
+- **The Long Game ↔ The Session boundary** — The Long Game is **finance only** (ISAs, pensions, savings, investing, market trends, UK personal-finance reads). Fitness deep-dives belong in The Session. Misclassification = Gate 2 hard fail (compliance-checklist).
 
 ---
 
@@ -123,7 +158,7 @@ Each issue includes **all fixed sections** plus **2-3 rotating sections** select
 
 1. **Check the state file** (`signal-state.json`) for `rotating_sections` — each entry has `last_appeared` date.
 2. **Pick the most overdue sections first.** If The Shelf last appeared 3 weeks ago and The Wallet 2 weeks ago, The Shelf has priority.
-3. **Cap at 2-3 rotating sections per issue** to keep overall length in the 6,000-8,000+ word target. Rotating sections should be concise (300-600 words each, except The Shelf which can be longer).
+3. **Cap at 2-3 rotating sections per issue** to maintain pacing. Rotating sections should be substantive (300-600 words each, except The Shelf which can be longer). The 6,500+ word target is met primarily by the fixed sections' Lead + Companion structure; rotating sections add variety on top, not bulk.
 4. **The Itinerary overrides normal cadence** when a trip is approaching — it appears every issue or every other issue in the lead-up. Check state file for `upcoming_trips`.
 5. **Don't force it.** If research for a rotating section turns up nothing worthwhile, skip it even if it's overdue. The cadence is a guide, not a mandate.
 6. **Ensure variety across a month.** Over any 4-issue stretch, aim for every rotating section to appear at least once (except The Long Game, which is monthly, and The Itinerary, which is event-driven).
@@ -167,47 +202,9 @@ Only research topics for the rotating sections selected for this issue. This sav
 
 ## anchor-piece
 
-## Anchor-Piece Rotation
+## Anchor-Piece Rotation (deprecated v8.15)
 
-Once every fourth standard weekly, one non-World section is promoted to **anchor piece** — a slightly longer, more deliberately-opened article that gives the issue a second centre of gravity. The rotation is subtle: a reader flipping through wouldn't shout "this is the anchor", but on reflection the issue feels more balanced than one where World dominates every week.
-
-### Rotation order
-
-`Pixel & Byte → The Touchline → Screen & Sound → The Shelf → The Session → This Week in History → (back to Pixel & Byte)`
-
-World never anchors — it already leads every issue. Rotating sections that didn't appear in a given issue are skipped and their turn passes to the next eligible issue.
-
-Track current position under `anchor_rotation` in the state file:
-
-```json
-"anchor_rotation": {
-  "issues_since_last_anchor": 0,
-  "next_anchor_section": "pixel_byte",
-  "last_anchor_date": null
-}
-```
-
-Increment `issues_since_last_anchor` each standard weekly. On the fourth issue, anchor the `next_anchor_section`, reset the counter to 0, and advance `next_anchor_section` to the following rotation slot.
-
-### What an anchor piece gets
-
-- A **stat-led or quote-led opener** (`.opener-lead.stat` or `.opener-lead.quote` before the `<h2>`) rather than the default photo-led.
-- **1.5-2× the normal word count** for that section's lead article.
-- **One extra visual component** beyond the section's normal allocation — e.g. a compare panel, sidebar-float, or image montage.
-- **`.is-anchor` class** on the `<section>` element (renders a thin top accent rule in the section's accent colour).
-- **A Navigator badge** — the matching `.toc-row` gets `.is-anchor`, adding a small "Anchor piece" label under the kicker.
-- **A mention in the Colophon's Issue in Numbers block** ("This week's anchor: [section name]").
-
-### What an anchor piece does NOT get
-
-- No cover tag or cover fanfare — the cover still leads with World.
-- No Foreword callout — the Foreword treats all sections evenly.
-- No change to section order, watermark, or divider treatment.
-
-Special editions (Deep Dive, Countdown, etc.) don't anchor — their format already concentrates weight on a single subject. Pause the rotation counter during a special; resume on the next standard weekly.
-
----
-
+Removed. Replaced by the Lead + Companion structure (see § Article Structure: Lead + Companion above). The anchor-piece rotation was unenforced across 8 weekly issues; the new two-anchor structure subsumes its purpose of giving every issue a second centre of gravity.
 
 ---
 

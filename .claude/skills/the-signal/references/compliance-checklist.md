@@ -191,6 +191,40 @@ awk '/<figcaption/,/<\/figcaption>/' FILE | grep -v -E 'Photo:|Still:|Credit:|Im
 
 **Why this is Gate 1, not Gate 2:** image-caption mismatch is fabrication of visual claims, parallel to fabrication of factual claims (1B). One v8.10.x issue had the same YouTube thumbnail captioned as two different venues in two different chapters — a confident lie the reader would only notice on close inspection. Mechanical detection prevents the class entirely.
 
+### 1G. Lead + Companion structural compliance (new v8.15)
+
+For every fixed section in the stitched HTML, grep for two distinct article anchors (each with a substantial H2 + body). A section with only one substantial article is a hard fail.
+
+```bash
+# Sketch:
+# For each fixed section (world, pixel_byte, touchline, screen_sound, session):
+#   - Count <h2> tags inside the section: must be >= 2
+#   - For each h2-anchored block: word count must be >= 200
+# Mismatch = topic-lock or single-anchor regression — hard fail.
+```
+
+### 1H. Lifetime-leads escalating bar (new v8.15)
+
+For each topic in state-file ongoing_stories with lifetime_leads >= 3:
+1. Read its named-entity tag (e.g. "Iran War" -> ["iran", "tehran", "hormuz", "khamenei"])
+2. Scan each fixed section's Lead H2 + first paragraph
+3. If named entities appear in H2 OR appear 3+ times in first paragraph AND lifetime_leads * 2 > weeks_since_last_lead: hard fail with reason "topic-lock"
+
+### 1I. Per-section mandatory links (promoted from Gate 1D v8.15)
+
+For each section in {world, pixel_byte, touchline, screen_sound, on_the_radar}:
+- Count `<a href="http...">` inside the section: must be >= 1 per substantial item
+- For On the Radar specifically: every list item must contain an `<a href="http...">`
+Hard fail if any item is link-free.
+
+### 1J. Long Shelf wildcard count
+
+For long_shelf section: count items with class="wildcard" (or data-wildcard="true"). Must be >= 2. Hard fail otherwise.
+
+### 1K. Long Game ↔ Session boundary
+
+For long_game section: scan body for fitness-cluster vocabulary (sets, reps, deload, taper, mileage, HRV, kettlebell, deadlift, squat, lifting, run pace). 3+ matches = misclassified fitness content in a finance section. Hard fail.
+
 ### 1F+. Image URL verification chain (v8.13.7+ — UNBREAKABLE)
 
 Gate 1F handles per-issue scans the writer/orchestrator can run by eye. The verification chain below is **structurally enforced** by gate scripts the orchestrator MUST run. Each is non-skippable; together they make broken / fabricated / duplicate image URLs impossible to ship.
@@ -221,6 +255,9 @@ Only proceed here after Gate 1 passes clean.
 ### Coverage
 - [ ] Word count meets format target (see editorial spec Issue Formats)
 - [ ] Every major section has at least one relevant image
+- [ ] Every fixed section has TWO substantive articles (Lead + Companion), not one big + listicle.
+- [ ] Lead and Companion within the same section are on visibly different topics (not just different framings of the same story).
+- [ ] No fixed section reads as 70%+ about one story when there's been substantial coverage of that story across recent issues.
 - [ ] Touchline: lead story is most compelling sport of the week. Serie A ≥ PL depth on normal domestic weeks. Full table (top 10 + relegation zone). Coverage beyond Juve. Doesn't exceed ~30% of issue.
 - [ ] **Touchline diversity rule.** Even in a Scudetto-clinching, title-decided, or otherwise once-a-season football week, Touchline must surface at least THREE distinct sport beats — not one big football story plus scraps. The bar: either (a) three different football competitions covered with real substance (e.g. Serie A + Champions League + an FA Cup or Coppa beat), OR (b) at least one beat clearly outside top-flight football (F1 race weekend, snooker/golf/tennis major, NBA / Euroleague playoffs, NFL draft, Six Nations rugby, world athletics, NW200, GAA championship). When a single story (a title clinch, a CL final, a Coppa final) genuinely dominates the week, the lead can take the lion's share — but the section still needs two other meaningfully-treated beats below it. The Also on the Pitch list does NOT count toward the three; it complements them. If the week is genuinely thin outside the headline, surface a non-football sport rather than padding the football coverage.
 - [ ] Release Radar: 15-20+ items across ALL categories, chronological within sub-sections

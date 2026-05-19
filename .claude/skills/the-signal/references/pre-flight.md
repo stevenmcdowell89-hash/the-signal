@@ -447,6 +447,26 @@ done
 
 ---
 
+### RT-18: Lead + Companion topic discipline (v8.15)
+
+When you write a fixed-section chapter, you write BOTH the Lead AND the Companion (or you receive them as two pieces from the planner — confirm both are present). Self-check before submission:
+
+1. Is there a Lead piece (300-700 words) AND a Companion piece (200-450 words)?
+2. Are they on visibly different topics, not two framings of the same story?
+3. Does each have a substantive body, not a stub?
+4. Does each link to at least one canonical source?
+5. If your section is World This Week and the Lead is about an ongoing tracked story (Iran, Ukraine), the Companion MUST be on a topic family from a different cluster (not just a different war).
+6. If your section is Touchline and the Lead is football, the Companion MUST be a non-football sport.
+7. If your section is Screen & Sound and the Lead is Star Wars (or any single franchise), the Companion MUST be from a different franchise.
+
+If any of the above is false, do NOT submit — escalate back to the planner.
+
+### RT-19: Section link discipline (v8.15)
+
+Before submission, count outbound `<a href="http...">` links in your chapter. For sections in {World This Week, Pixel & Byte, Touchline, Screen & Sound, On the Radar}: every substantial item — every Lead, every Companion, every Also item, every Quick Review, every On the Radar entry — must link to its specific canonical source. Category pages and homepages do not count. If you can't find a link for an item, find a different item.
+
+---
+
 ## 3. Canonical Markup Snippets
 
 Copy-paste these directly. Do not invent alternates.
