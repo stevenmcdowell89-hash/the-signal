@@ -1,5 +1,7 @@
 # The Signal — Editorial Specification
 
+> **v8.16** — Section roster: dropped The Pantry, split The Listen out of The Shelf, split The Local out of The Itinerary, added The Brickyard / The Saga / The Lab / The Channel. Hard cadence floor + deficit-promote rule + null-state default-window enforcement. Slicer rewritten to be header-anchored.
+>
 > **v8.15** — Lead + Companion structural rebalance, topic-family discipline, lifetime-leads enforcement, anchor-piece rotation deprecated, per-section link enforcement.
 
 ## Identity
@@ -22,13 +24,15 @@ Tech-literate professional in Northern Ireland with a 10-year-old son. Does NOT 
 
 ## Section Structure (Standard Weekly)
 
-Sections are divided into **fixed** (appear every issue) and **rotating** (appear on a cadence, selected per issue). Each issue includes all fixed sections plus 2-3 rotating sections. The Navigator adapts to show only the sections present in that issue. The issue ends with a Colophon (sign-off block) before the Footer — see § End-of-Issue Colophon.
+Sections are divided into **fixed** (appear every issue) and **rotating** (appear on a cadence, selected per issue). Each issue includes all fixed sections plus 3-4 rotating sections. The Navigator adapts to show only the sections present in that issue. The issue ends with a Colophon (sign-off block) before the Footer — see § End-of-Issue Colophon.
+
+> **Why 3-4 rotating slots (v8.16).** The roster grew from 9 rotating sections to 14 in v8.16. With per-section cadence targets ranging from every 2-3 weeks (Shelf, History) to every 6 weeks (Saga, Channel), each issue needs 3-4 slots to keep every section near its target cadence.
 
 ### Fixed vs Rotating
 
 **Fixed (every issue):** Cover, Navigator, Foreword, The Long Shelf, The World This Week, Pixel & Byte, The Touchline, Screen & Sound (with Release Radar), The Session (omit if nothing found), On the Radar, Footer.
 
-**Rotating (cadence-based):** The Shelf, This Week in History, The Pantry, The Workshop, The Toolkit, The Ledger, The Long Game, The Wallet, The Itinerary.
+**Rotating (cadence-based):** The Shelf, The Listen, This Week in History, The Workshop, The Toolkit, The Ledger, The Long Game, The Wallet, The Itinerary, The Local, The Brickyard, The Saga, The Lab, The Channel.
 
 See **Rotation Mechanics** below for scheduling rules.
 
@@ -138,7 +142,7 @@ After generation, scan each fixed section's Lead H2 + first paragraph for the to
 
 ## Rotation Mechanics
 
-Each issue includes **all fixed sections** plus **2-3 rotating sections** selected based on cadence and editorial judgement.
+Each issue includes **all fixed sections** plus **3-4 rotating sections** selected based on cadence and editorial judgement.
 
 ### Cadence Table
 
@@ -146,22 +150,32 @@ Each issue includes **all fixed sections** plus **2-3 rotating sections** select
 |---|---|---|---|
 | The Shelf | Every 2-3 weeks | Since last appearance | Catch-up rule: covers full gap |
 | This Week in History | Every 2-3 weeks | Current week | History is date-bound |
-| The Pantry | Every 2-3 weeks | Since last appearance | One recipe per appearance |
+| The Listen | Every 3-4 weeks | Since last appearance | Podcasts + audio drama; episodic + retrospective |
 | The Workshop | Every 3-4 weeks | Since last appearance | Home gym, gear, recovery tools |
 | The Toolkit | Every 3-4 weeks | Since last appearance | Apps, productivity, workflows |
 | The Ledger | Every 3-4 weeks | Since last appearance | Side hustle, Etsy, templates |
 | The Long Game | Monthly (~every 4 weeks) | Since last appearance | Personal finance, investing |
 | The Wallet | Every 3-4 weeks | Since last appearance | Consumer fintech, banking apps |
-| The Itinerary | Every 3-4 weeks (more near trips) | Since last appearance + forward 2-4 weeks for events | Travel, parks, NI hidden gems |
+| The Itinerary | Every 3-4 weeks (more near trips) | Since last appearance + forward 2-4 weeks for events | European travel + theme parks |
+| The Local | Every 3-4 weeks | Since last appearance + forward 2-4 weeks for events | NI hidden gems + unusual family events |
+| The Brickyard | Every 4-6 weeks | Since last appearance | LEGO sets, builds, MOCs, availability |
+| The Saga | Every 6 weeks | Since last appearance | Star Wars + fantasy lore deep dives (no spoilers) |
+| The Lab | Monthly (~every 4 weeks) | Since last appearance | Training-science deep dive, slower than The Session |
+| The Channel | Every 6 weeks | Since last appearance | Music — synthwave, soundtracks, retro listening |
 
 ### Selection Rules
 
 1. **Check the state file** (`signal-state.json`) for `rotating_sections` — each entry has `last_appeared` date.
 2. **Pick the most overdue sections first.** If The Shelf last appeared 3 weeks ago and The Wallet 2 weeks ago, The Shelf has priority.
-3. **Cap at 2-3 rotating sections per issue** to maintain pacing. Rotating sections should be substantive (300-600 words each, except The Shelf which can be longer). The 6,500+ word target is met primarily by the fixed sections' Lead + Companion structure; rotating sections add variety on top, not bulk.
+3. **Cap at 3-4 rotating sections per issue** to maintain pacing. Rotating sections should be substantive (300-600 words each, except The Shelf which can be longer). The 6,500+ word target is met primarily by the fixed sections' Lead + Companion structure; rotating sections add variety on top, not bulk.
 4. **The Itinerary overrides normal cadence** when a trip is approaching — it appears every issue or every other issue in the lead-up. Check state file for `upcoming_trips`.
 5. **Don't force it.** If research for a rotating section turns up nothing worthwhile, skip it even if it's overdue. The cadence is a guide, not a mandate.
-6. **Ensure variety across a month.** Over any 4-issue stretch, aim for every rotating section to appear at least once (except The Long Game, which is monthly, and The Itinerary, which is event-driven).
+6. **Ensure variety across a month.** Over any 4-issue stretch, aim for every rotating section to appear at least once (except The Long Game / The Lab, which are monthly, and The Itinerary, which is event-driven, and The Saga / The Channel, which run on a 6-week cadence).
+7. **Hard cadence floor (planner-enforced).** A rotating section CANNOT be scheduled unless `weeks_since_last_appeared >= cadence_low` (the lower bound of its cadence band). The planner-side validator rejects any chapter plan that schedules a section inside its floor. Override: if no other rotating section is eligible (rare; only happens when most of the roster is too-soon AND the issue still needs slots), the planner picks the most-overdue section and the validator emits a warning instead of a hard fail.
+
+8. **Deficit promotion (mandatory force-include).** A rotating section with `weeks_since_last_appeared >= 2 * cadence_high` is force-included in the next eligible issue, regardless of editorial preference. The planner must include it; the validator rejects any plan that leaves a deficit-eligible section out without an explicit reason field (`"deficit_override_reason"`). Prevents the Ledger / Wallet droughts seen in early v8.x.
+
+9. **Default research window when `last_appeared` is null.** When a rotating section appears for the first time after a state file reset (or first-ever appearance), its research window defaults to "past 4 weeks" — NOT open-ended. Prevents the first appearance of a section from surfacing months-old news (e.g. the Revolut-from-March bug). Override via explicit `initial_research_window_weeks` field in state if the editor wants different.
 
 ### Placement: Interleave, Don't Stack
 
@@ -169,17 +183,22 @@ Each issue includes **all fixed sections** plus **2-3 rotating sections** select
 
 | Rotating Section | Preferred Slot | Reasoning |
 |---|---|---|
-| The Pantry | Between Pixel & Byte and The Touchline | Palate cleanser between tech and sport; warm tone bridges the gap |
-| The Shelf | Between Screen & Sound and The Session (original position) | Natural flow from entertainment to books/podcasts |
+| The Shelf | Between Screen & Sound and The Session (original position) | Natural flow from entertainment to books |
+| The Listen | Between Screen & Sound and The Session | Pairs with entertainment, breaks before fitness |
 | The Workshop | Between The Session and the next section | Gear/gym pairs naturally with fitness |
 | The Toolkit | Between The World This Week and Pixel & Byte | Productivity/apps feel at home near the tech section |
 | The Ledger | Between The Touchline and Screen & Sound | Change of pace between sport and entertainment |
 | The Long Game | Between The Touchline and Screen & Sound | Finance as a breather between dense sections |
 | The Wallet | Between Pixel & Byte and The Touchline | Fintech pairs with the tech section |
 | The Itinerary | Between The Session and On the Radar | Travel/events naturally leads into the calendar |
+| The Local | Between The Session and On the Radar | NI events lead naturally into the calendar |
+| The Brickyard | Between Pixel & Byte and Screen & Sound | Sits in the "play" cluster |
+| The Saga | Between Screen & Sound and The Shelf | Sits in the "story" cluster |
+| The Lab | Between The Session and the next section | Pairs with fitness; deeper than the weekly Session |
+| The Channel | Between Screen & Sound and The Shelf | Sits in the "listen" cluster (or before The Listen if both present) |
 | This Week in History | Between The Session and On the Radar (original position) | Reflective close before the forward-looking calendar |
 
-**When 2-3 rotating sections appear in the same issue:**
+**When 3-4 rotating sections appear in the same issue:**
 - Spread them across different slots — never place two rotating sections back-to-back.
 - If two sections share a preferred slot, move one to its alternate position.
 - The read-next connectors chain naturally through whatever sections are present.
@@ -675,7 +694,7 @@ These are editorial principles. The compliance checklist (Gate 1 + Gate 2) handl
 
 **Fonts:** Cormorant Garamond (headlines, body), DM Sans (UI, tags, labels), JetBrains Mono (section labels, dates).
 
-**Section backgrounds:** World = `--paper` (light), Pixel & Byte = `--warm`, Touchline = `--pitch` (near-black), Screen & Sound = `--screen-bg` (dark purple), Shelf = `--shelf-bg` (dark brown), Session = `--session-bg` (light green), History = `--hist-bg` (parchment). **Rotating section backgrounds:** Pantry = light warm/terracotta accent, Workshop = light grey/steel accent, Toolkit = light blue-grey/cyan accent, Ledger = warm cream/amber accent, Long Game = cool grey/navy accent, Wallet = clean white/teal accent, Itinerary = warm sand/coral accent. New rotating sections should use CSS custom properties following the same pattern as existing sections.
+**Section backgrounds:** World = `--paper` (light), Pixel & Byte = `--warm`, Touchline = `--pitch` (near-black), Screen & Sound = `--screen-bg` (dark purple), Shelf = `--shelf-bg` (dark brown), Session = `--session-bg` (light green), History = `--hist-bg` (parchment). **Rotating section backgrounds:** Workshop = light grey/steel accent, Toolkit = light blue-grey/cyan accent, Ledger = warm cream/amber accent, Long Game = cool grey/navy accent, Wallet = clean white/teal accent, Itinerary = warm sand/coral accent, Listen = warm slate/brass accent (dark), Local = earthy green/copper accent (dark), Brickyard = warm beige/brick-red accent, Saga = deep purple/antique gold accent (dark), Lab = light cool grey/lab-blue accent, Channel = dark navy/neon-magenta accent (dark). New rotating sections should use CSS custom properties following the same pattern as existing sections.
 
 **Dark sections:** body text uses `rgba(255,255,255,.8)`. DYK boxes adapt to section palette.
 

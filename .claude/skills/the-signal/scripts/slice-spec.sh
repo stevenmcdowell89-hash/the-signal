@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 # slice-spec.sh — Deterministically slices references/editorial-spec.md into
-# role-targeted files under references/spec/.
+# role-targeted files under references/spec/, using HEADER-ANCHORED extraction.
 #
-# Run: bash scripts/slice-spec.sh [--spec-path <path>] [--out-dir <dir>]
+# v8.16 — rewritten to be robust to line-number drift. Each declared slice
+# names a Markdown heading (H2 by default, or H3 with `h3:` prefix) and the
+# extractor pulls content from that heading to the next heading at the same
+# level. No hardcoded line ranges anywhere.
+#
+# Run: bash scripts/slice-spec.sh [path-to-spec] [out-dir]
 # Idempotent: safe to re-run after editorial-spec.md edits.
-#
-# v8.11.0 — pipeline rework
 
 set -euo pipefail
 
@@ -15,128 +18,221 @@ OUT_DIR="${2:-$(dirname "$0")/../references/spec}"
 SPEC="$(realpath "$SPEC")"
 OUT_DIR="$(realpath "$OUT_DIR")"
 
-# Create output directories
 mkdir -p "$OUT_DIR/global" "$OUT_DIR/weekly" "$OUT_DIR/specials" \
          "$OUT_DIR/formats" "$OUT_DIR/triggers"
 
 TOTAL_LINES=$(wc -l < "$SPEC")
 written=0
-covered_lines=0
 
-# Helper: extract lines $2..$3 from SPEC into $1 (creating dirs as needed)
-write_section() {
+# ─────────────────────────────────────────────────────────────────────────────
+# Heading extractor.
+#
+# extract_heading <outfile> <H2-heading-text>
+#   Extract content from "## <heading-text>" up to (but not including) the
+#   next "## " heading. Heading match is exact-prefix on the text after "## ".
+#
+# extract_h3 <outfile> <H3-heading-text>
+#   Same, but for "### <heading>" up to the next "### " or "## ".
+#
+# extract_multi <outfile> <h2|h3> <heading-1> <heading-2> ...
+#   Extract multiple headings and concatenate into one outfile.
+#
+# Headings are matched case-sensitively against the exact text after the
+# "## " (or "### "). Empty result is a hard error — fail fast on spec drift.
+# ─────────────────────────────────────────────────────────────────────────────
+
+extract_heading() {
   local outfile="$1"
-  local from="$2"
-  local to="$3"
-  local lines=$(( to - from + 1 ))
+  local heading="$2"
   mkdir -p "$(dirname "$outfile")"
-  sed -n "${from},${to}p" "$SPEC" > "$outfile"
+  awk -v h="$heading" '
+    BEGIN { inside = 0 }
+    /^## / {
+      if (inside) { exit }
+      stripped = $0
+      sub(/^## /, "", stripped)
+      if (stripped == h) { inside = 1; print; next }
+    }
+    inside { print }
+  ' "$SPEC" > "$outfile"
+  local count=$(wc -l < "$outfile")
+  if [ "$count" -lt 2 ]; then
+    echo "  FAIL: $outfile — heading '## $heading' not found in spec (only $count lines extracted)"
+    return 1
+  fi
   written=$(( written + 1 ))
-  covered_lines=$(( covered_lines + lines ))
-  echo "  wrote: $outfile ($lines lines)"
+  echo "  wrote: $outfile ($count lines, anchor='## $heading')"
 }
 
-echo "=== slice-spec.sh: slicing $SPEC into $OUT_DIR ==="
-echo "Total source lines: $TOTAL_LINES"
+extract_h3() {
+  local outfile="$1"
+  local heading="$2"
+  mkdir -p "$(dirname "$outfile")"
+  awk -v h="$heading" '
+    BEGIN { inside = 0 }
+    /^### / {
+      if (inside) { exit }
+      stripped = $0
+      sub(/^### /, "", stripped)
+      if (stripped == h) { inside = 1; print; next }
+    }
+    /^## / { if (inside) { exit } }
+    inside { print }
+  ' "$SPEC" > "$outfile"
+  local count=$(wc -l < "$outfile")
+  if [ "$count" -lt 2 ]; then
+    echo "  FAIL: $outfile — heading '### $heading' not found in spec (only $count lines extracted)"
+    return 1
+  fi
+  written=$(( written + 1 ))
+  echo "  wrote: $outfile ($count lines, anchor='### $heading')"
+}
+
+# Concatenate multiple H2 sections into one outfile.
+# Usage: extract_h2_multi <outfile> "Heading 1" "Heading 2" ...
+extract_h2_multi() {
+  local outfile="$1"; shift
+  mkdir -p "$(dirname "$outfile")"
+  : > "$outfile"
+  for h in "$@"; do
+    awk -v h="$h" '
+      BEGIN { inside = 0 }
+      /^## / {
+        if (inside) { exit }
+        stripped = $0
+        sub(/^## /, "", stripped)
+        if (stripped == h) { inside = 1; print; next }
+      }
+      inside { print }
+    ' "$SPEC" >> "$outfile"
+    echo "" >> "$outfile"
+  done
+  local count=$(wc -l < "$outfile")
+  if [ "$count" -lt 2 ]; then
+    echo "  FAIL: $outfile — none of the requested H2 headings matched"
+    return 1
+  fi
+  written=$(( written + 1 ))
+  echo "  wrote: $outfile ($count lines, concatenated $# H2 sections)"
+}
+
+# Concatenate multiple H3 sections into one outfile.
+extract_h3_multi() {
+  local outfile="$1"; shift
+  mkdir -p "$(dirname "$outfile")"
+  : > "$outfile"
+  for h in "$@"; do
+    awk -v h="$h" '
+      BEGIN { inside = 0 }
+      /^### / {
+        if (inside) { exit }
+        stripped = $0
+        sub(/^### /, "", stripped)
+        if (stripped == h) { inside = 1; print; next }
+      }
+      /^## / { if (inside) { exit } }
+      inside { print }
+    ' "$SPEC" >> "$outfile"
+    echo "" >> "$outfile"
+  done
+  local count=$(wc -l < "$outfile")
+  if [ "$count" -lt 2 ]; then
+    echo "  FAIL: $outfile — none of the requested H3 headings matched"
+    return 1
+  fi
+  written=$(( written + 1 ))
+  echo "  wrote: $outfile ($count lines, concatenated $# H3 sections)"
+}
+
+echo "=== slice-spec.sh: header-anchored extraction (v8.16) ==="
+echo "Source: $SPEC ($TOTAL_LINES lines)"
+echo "Output: $OUT_DIR"
 echo ""
 
 # ─────────────────────────────────────────────────────────────────────────────
-# GLOBAL — cross-cutting hard rules every role reads
+# SLICE MAPPING (outfile → spec heading)
+#
+# global/         — cross-cutting hard rules every role reads
+# weekly/         — standard weekly format details
+# specials/       — common rules across special editions
+# formats/        — one file per format
+# triggers/       — auto-trigger logic and search checklist
+#
+# H2 anchors are exact text of the spec heading.
+# H3 anchors are exact text of sub-headings inside an H2.
+# Format-section files use H3 anchors inside "Issue Formats".
 # ─────────────────────────────────────────────────────────────────────────────
 
 echo "── global/ ──"
-
-# 01-identity.md  — lines 1-19 (Identity + reader intro separator)
-write_section "$OUT_DIR/global/01-identity.md" 1 19
-
-# 02-key-rules.md — lines 516-574 (Key Rules section: Cardinal, Voice, Content, Section Rules)
-write_section "$OUT_DIR/global/02-key-rules.md" 516 550
-
-# 03-visual-design.md — lines 552-574 (Visual Design, fonts, backgrounds, output)
-write_section "$OUT_DIR/global/03-visual-design.md" 552 574
-
-# 04-markup-contracts.md — lines 850-880 (Markup contracts v8.10.3)
-write_section "$OUT_DIR/global/04-markup-contracts.md" 850 867
-
-# 05-image-integrity.md — lines 696-739 (Image-caption integrity v8.10.3 +
-# Image URL verification chain v8.13.7+ unbreakable-rule chain). Re-check
-# range if editorial-spec.md image-integrity sections are extended.
-write_section "$OUT_DIR/global/05-image-integrity.md" 696 739
-
-# 06-ground-discipline.md — lines 839-849 (Ground discipline v8.4)
-write_section "$OUT_DIR/global/06-ground-discipline.md" 839 849
-
-# 07-accent-lockdown.md — lines 868-894 (Accent lockdown v8.4)
-write_section "$OUT_DIR/global/07-accent-lockdown.md" 868 880
-
-# 08-stat-budget.md — lines 881-930 (Stat budget v8.4 + Held-attention + Issue accent + Chrome + Visual features)
-write_section "$OUT_DIR/global/08-stat-budget.md" 881 969
-
-# ─────────────────────────────────────────────────────────────────────────────
-# WEEKLY — standard weekly format
-# ─────────────────────────────────────────────────────────────────────────────
+# Identity is H2 "Identity" + "The Reader" (the reader intro continues identity)
+extract_h2_multi "$OUT_DIR/global/01-identity.md" "Identity" "The Reader"
+extract_heading  "$OUT_DIR/global/02-key-rules.md" "Key Rules"
+extract_heading  "$OUT_DIR/global/03-visual-design.md" "Visual Design"
+extract_h3       "$OUT_DIR/global/04-markup-contracts.md" "Markup contracts (v8.10.3 — hard rule)"
+extract_h3_multi "$OUT_DIR/global/05-image-integrity.md" \
+  "Image-caption integrity (v8.10.3 — hard rule)" \
+  "Image URL verification chain (v8.13.7+) — UNBREAKABLE RULE"
+extract_h3       "$OUT_DIR/global/06-ground-discipline.md" "Ground discipline (v8.4 — hard rule)"
+extract_h3       "$OUT_DIR/global/07-accent-lockdown.md"   "Accent lockdown (v8.4 — hard rule)"
+extract_h3_multi "$OUT_DIR/global/08-stat-budget.md" \
+  "Stat budget (v8.4 — hard cap per issue)" \
+  "Held-attention moment (format-agnostic)" \
+  "Issue accent" \
+  "Chrome positioning ground rules" \
+  "Visual features — auto-apply guarantee (v8.7.3)"
 
 echo ""
 echo "── weekly/ ──"
-
-# 01-overview.md — lines 249-253 (Standard Weekly format overview)
-write_section "$OUT_DIR/weekly/01-overview.md" 249 253
-
-# 02-sections.md — lines 21-96 (Section Structure, Fixed vs Rotating, Anchor Piece, Colophon)
-write_section "$OUT_DIR/weekly/02-sections.md" 21 97
-
-# 03-rotating.md — lines 98-157 (Rotation Mechanics, Cadence Table, Selection Rules, Placement)
-write_section "$OUT_DIR/weekly/03-rotating.md" 98 157
-
-# 04-anchor-piece.md — lines 37-76 (Anchor piece rotation in detail)
-write_section "$OUT_DIR/weekly/04-anchor-piece.md" 37 76
-
-# 05-search-checklist.md — lines 159-183 (Search Checklist: core groups)
-write_section "$OUT_DIR/weekly/05-search-checklist.md" 159 183
-
-# 06-image-budget.md — lines 185-247 (Component Quick Reference)
-write_section "$OUT_DIR/weekly/06-image-budget.md" 185 247
-
-# ─────────────────────────────────────────────────────────────────────────────
-# SPECIALS — common rules across all special editions
-# ─────────────────────────────────────────────────────────────────────────────
+extract_h3       "$OUT_DIR/weekly/01-overview.md"        "Standard Weekly (default)"
+extract_heading  "$OUT_DIR/weekly/02-sections.md"        "Section Structure (Standard Weekly)"
+extract_heading  "$OUT_DIR/weekly/03-rotating.md"        "Rotation Mechanics"
+extract_heading  "$OUT_DIR/weekly/04-anchor-piece.md"    "Anchor-Piece Rotation (deprecated v8.15)"
+extract_heading  "$OUT_DIR/weekly/05-search-checklist.md" "Search Checklist"
+extract_heading  "$OUT_DIR/weekly/06-image-budget.md"     "Component Quick Reference"
 
 echo ""
 echo "── specials/ ──"
+# Specials overview = the content-first contract H3, inside Special Editions H2
+extract_h3       "$OUT_DIR/specials/01-overview.md" "Content-first contract (non-negotiable)"
+extract_h3_multi "$OUT_DIR/specials/02-cover.md" \
+  "Authoring a special edition" \
+  "Component list"
+extract_heading  "$OUT_DIR/specials/03-meanwhile.md" "Auto-Triggered Specials"
+extract_h3       "$OUT_DIR/specials/04-chapter-gate.md" \
+  "Chapter gate (MANDATORY for every chapter on every special edition — v8.5, sticky scroll model)"
+extract_h3       "$OUT_DIR/specials/05-imagery-budget.md" \
+  "Imagery budget — MANDATORY for loud special editions"
+extract_h3_multi "$OUT_DIR/specials/06-editorial-body-kit.md" \
+  "Editorial body kit — MANDATORY rules for loud special editions" \
+  "Editorial motion layer (tier 5.5) — MANDATORY for loud special editions"
+extract_h3       "$OUT_DIR/specials/07-signature-moments.md" \
+  "Signature moments — ONE per format (mandatory)"
+extract_h3       "$OUT_DIR/specials/08-chapter-transitions.md" \
+  "Chapter transitions + ambient (format-agnostic)"
+# 09-multi-venue and 13-holiday-identity: synthetic / from holiday-identity H2
+extract_heading  "$OUT_DIR/specials/13-holiday-identity.md" \
+  "Holiday Identity (v8.12 — Countdown and Field Guide only)"
 
-# 01-overview.md — lines 576-595 (Special editions: content-first contract)
-write_section "$OUT_DIR/specials/01-overview.md" 576 595
+# Synthetic specials files (no clean H2/H3 mapping; hand-curated text)
+cat > "$OUT_DIR/specials/09-multi-venue.md" <<'MV'
+# Multi-venue Countdown
 
-# 02-cover.md — lines 596-630 (Authoring a special edition + component list)
-write_section "$OUT_DIR/specials/02-cover.md" 596 630
+> See `formats/countdown.md` for the full Countdown spec; this file is a cross-format summary of multi-venue rules that live inside that section.
 
-# 03-meanwhile.md — lines 450-514 (Meanwhile section + auto-trigger logic + guardrails + trip-aware)
-write_section "$OUT_DIR/specials/03-meanwhile.md" 450 514
+Multi-venue trips (e.g. Efteling + Beekse Bergen) get parallel treatment:
+- Equal hype weight: words and images per venue sit within a 60/40 split.
+- Each venue's full estate is researched, not just the marquee feature.
+- A `data-multi-venue="true"` body flag activates per-venue palette tokens.
+- Tier 33 (`33-countdown-destinations.css`) provides Efteling and Beekse Bergen
+  palettes; Tier 36 (`36-holiday-identity.css`) provides the two-half + transit
+  structural rhythm. The two layers compose.
 
-# 04-chapter-gate.md — lines 774-838 (Chapter gate MANDATORY)
-write_section "$OUT_DIR/specials/04-chapter-gate.md" 774 838
+For Field Guides, multi-venue rules live in `formats/field-guide.md`
+(headline rule 7 — multi-venue balance).
+MV
+written=$(( written + 1 ))
+echo "  wrote: $OUT_DIR/specials/09-multi-venue.md (synthetic — no clean H2/H3 anchor)"
 
-# 05-imagery-budget.md — lines 631-649 (Imagery budget MANDATORY)
-write_section "$OUT_DIR/specials/05-imagery-budget.md" 631 649
-
-# 06-editorial-body-kit.md — lines 685-731 (Editorial body kit MANDATORY)
-write_section "$OUT_DIR/specials/06-editorial-body-kit.md" 685 703
-
-# 07-signature-moments.md — lines 732-754 (Signature moments ONE per format)
-write_section "$OUT_DIR/specials/07-signature-moments.md" 732 754
-
-# 08-chapter-transitions.md — lines 755-773 (Chapter transitions + ambient)
-write_section "$OUT_DIR/specials/08-chapter-transitions.md" 755 773
-
-# 09-multi-venue.md — (Multi-venue theming — referenced in CSS tier 9; spec section is in CSS SKILL.md; 
-#   this file captures the editorial rules from the CSS table reference in SKILL.md context)
-# The editorial-spec.md doesn't have a standalone multi-venue H2, but the concept is embedded in 
-# Countdown section (lines 257-323). We capture it there.
-write_section "$OUT_DIR/specials/09-multi-venue.md" 257 323
-
-# 10-hype-chapter-visuals.md — lines (embedded in Countdown, ~262-290ish + Hype variants section)
-# The hype variants rule starts after the canonical chapter order, within countdown spec
-# We include it as a sub-topic note pointing to the main countdown format file
 cat > "$OUT_DIR/specials/10-hype-chapter-visuals.md" <<'HYPE'
 # Hype-Chapter Visuals (v8.9.1)
 
@@ -158,22 +254,10 @@ Apply on:
 2. **`[data-sp-chapter].is-hype`** — re-permits coral on `.sp-number`, `.sp-number-huge`, `.sp-kicker`, `.sp-brief-kicker`, `.unmissables .sp-datum-value`, `.why-its-here`. All global lockdown elements unchanged.
 3. **`.sp-ground-gallery`** — neutral slate ground (#1A1E27) for image-first chapters (Mood Board primary, optionally Field Guide Opening). NOT pitch black.
 4. **`.unmissables` / `.unmissable`** — Field Guide Unmissables pattern: 6-10 full-width editorial beats, each = hero image + sensory prose + "Why It's Here" coral kicker + mono `<dl>` practical footer. Drop-cap forbidden on picks.
-
-## Markup reminder
-
-```html
-<!-- Hype chapter gate -->
-<div class="sp-chapter-gate is-hype" data-chapter-num="II" ...>...</div>
-
-<!-- Hype chapter wrapper -->
-<section data-sp-chapter data-chapter-num="2" data-chapter-title="Top Attractions"
-         data-chapter-arc="The rides worth your day" class="is-hype">
-```
 HYPE
-  written=$(( written + 1 ))
-  echo "  wrote: $OUT_DIR/specials/10-hype-chapter-visuals.md (synthetic)"
+written=$(( written + 1 ))
+echo "  wrote: $OUT_DIR/specials/10-hype-chapter-visuals.md (synthetic)"
 
-# 11-readability-locks.md — brief note (Readability Lock Principle from SKILL.md CSS table, v8.10.3)
 cat > "$OUT_DIR/specials/11-readability-locks.md" <<'LOCKS'
 # Readability Locks (v8.10.3)
 
@@ -191,16 +275,9 @@ Some self-painting components lose identity when nested inside `[data-sp-chapter
 
 **Markup contracts (Gate 1E):** the lockdown only works when markup matches the contract. See `global/04-markup-contracts.md` and `references/pre-flight.md` § Canonical markup snippets.
 LOCKS
-  written=$(( written + 1 ))
-  echo "  wrote: $OUT_DIR/specials/11-readability-locks.md (synthetic)"
+written=$(( written + 1 ))
+echo "  wrote: $OUT_DIR/specials/11-readability-locks.md (synthetic)"
 
-# 13-holiday-identity.md — v8.12 / v8.13 separate visual identity for Countdown + Field Guide
-# editorial-spec.md § Holiday Identity starts at line 1030 (## Holiday Identity ...)
-# v8.13 (May 2026) extended this section to end-of-file.
-# and runs to end of file (line 1120). Re-check exact range if editorial-spec.md changes.
-write_section "$OUT_DIR/specials/13-holiday-identity.md" 1028 1211
-
-# 12-portrait-spread.md — portrait spread hybrid layout note
 cat > "$OUT_DIR/specials/12-portrait-spread.md" <<'SPREAD'
 # Portrait Spread — Hybrid Layout (v8.7.2)
 
@@ -230,71 +307,35 @@ At ≤ 980px, `.sp-spread` becomes `display: flow-root; position: relative`.
 
 **Never stack:** portrait is the canonical read. The three-column desktop layout is a bonus, not the target.
 SPREAD
-  written=$(( written + 1 ))
-  echo "  wrote: $OUT_DIR/specials/12-portrait-spread.md (synthetic)"
-
-# ─────────────────────────────────────────────────────────────────────────────
-# FORMATS — one file per format
-# ─────────────────────────────────────────────────────────────────────────────
+written=$(( written + 1 ))
+echo "  wrote: $OUT_DIR/specials/12-portrait-spread.md (synthetic)"
 
 echo ""
 echo "── formats/ ──"
-
-# weekly.md — lines 249-253 + key rules 516-550 + rotation 98-157 summary reference
-write_section "$OUT_DIR/formats/weekly.md" 249 256
-
-# deep-dive.md — lines 254-256
-write_section "$OUT_DIR/formats/deep-dive.md" 254 256
-
-# countdown.md — lines 257-323
-write_section "$OUT_DIR/formats/countdown.md" 257 323
-
-# season-review.md — lines 324-328
-write_section "$OUT_DIR/formats/season-review.md" 324 328
-
-# versus.md — lines 329-366
-write_section "$OUT_DIR/formats/versus.md" 329 366
-
-# rewind.md — lines 367-375
-write_section "$OUT_DIR/formats/rewind.md" 360 375
-
-# starter-kit.md — lines 376-384
-write_section "$OUT_DIR/formats/starter-kit.md" 367 384
-
-# blueprint.md — lines 385-394
-write_section "$OUT_DIR/formats/blueprint.md" 376 394
-
-# shortlist.md — lines 395-445
-write_section "$OUT_DIR/formats/shortlist.md" 385 445
-
-# field-guide.md — lines 395-445
-write_section "$OUT_DIR/formats/field-guide.md" 395 445
-
-# ─────────────────────────────────────────────────────────────────────────────
-# TRIGGERS — auto-trigger logic
-# ─────────────────────────────────────────────────────────────────────────────
+# weekly.md = the H3 "Standard Weekly (default)" inside "Issue Formats"
+extract_h3 "$OUT_DIR/formats/weekly.md"        "Standard Weekly (default)"
+extract_h3 "$OUT_DIR/formats/deep-dive.md"     "Deep Dive"
+extract_h3 "$OUT_DIR/formats/countdown.md"     "The Countdown"
+extract_h3 "$OUT_DIR/formats/season-review.md" "The Season Review"
+extract_h3 "$OUT_DIR/formats/versus.md"        "The Versus"
+extract_h3 "$OUT_DIR/formats/rewind.md"        "The Rewind"
+extract_h3 "$OUT_DIR/formats/starter-kit.md"   "The Starter Kit"
+extract_h3 "$OUT_DIR/formats/blueprint.md"     "The Blueprint"
+extract_h3 "$OUT_DIR/formats/shortlist.md"     "The Shortlist"
+extract_h3 "$OUT_DIR/formats/field-guide.md"   "The Field Guide"
 
 echo ""
 echo "── triggers/ ──"
-
-# 01-priority-1-calendar.md — synthetic (from auto-trigger logic block, lines 460-495)
-# We split this by priority within the block
-write_section "$OUT_DIR/triggers/01-priority-1-calendar.md" 460 473
-
-# 02-priority-2-event.md
-write_section "$OUT_DIR/triggers/02-priority-2-event.md" 474 487
-
-# 03-priority-3-safety.md
-write_section "$OUT_DIR/triggers/03-priority-3-safety.md" 488 503
-
-# 04-guardrails.md — lines 496-514
-write_section "$OUT_DIR/triggers/04-guardrails.md" 496 514
-
-# 05-search-checklist.md — lines 159-183 (core + rotating group pointers)
-write_section "$OUT_DIR/triggers/05-search-checklist.md" 159 184
+# Trigger logic and guardrails live inside the "Auto-Triggered Specials" H2.
+# Slice the relevant H3 sub-headings.
+extract_h3 "$OUT_DIR/triggers/01-priority-1-calendar.md" "Auto-Trigger Logic"
+extract_h3 "$OUT_DIR/triggers/02-priority-2-event.md"    "Auto-Trigger Logic"
+extract_h3 "$OUT_DIR/triggers/03-priority-3-safety.md"   "Auto-Trigger Logic"
+extract_h3 "$OUT_DIR/triggers/04-guardrails.md"          "Guardrails"
+extract_heading "$OUT_DIR/triggers/05-search-checklist.md" "Search Checklist"
 
 # ─────────────────────────────────────────────────────────────────────────────
-# README.md — reading order per role
+# README — reading order per role
 # ─────────────────────────────────────────────────────────────────────────────
 
 echo ""
@@ -304,39 +345,40 @@ cat > "$OUT_DIR/README.md" <<'README'
 # references/spec/ — Sliced Editorial Spec
 
 This directory contains role-targeted slices of `references/editorial-spec.md`.
-Generated by `scripts/slice-spec.sh`. Re-run after any editorial-spec.md edit.
+Generated by `scripts/slice-spec.sh` (v8.16, header-anchored). Re-run after any
+editorial-spec.md edit.
 
 ## Reading Order Per Role
 
 ### Researcher
 Reads: context on what to find and how to source it. Does NOT need visual/markup rules.
 
-1. `global/02-key-rules.md` — Cardinal Rule, voice, content standards, section rules
-2. `global/05-image-integrity.md` — image-caption integrity, what makes a valid image
-3. `triggers/05-search-checklist.md` — core search groups (always-run)
-4. `triggers/01-priority-1-calendar.md` + `02-priority-2-event.md` + `03-priority-3-safety.md` — trigger logic
-5. `triggers/04-guardrails.md` — what NOT to trigger
-6. `formats/<format>.md` — format-specific research requirements
+1. `global.md` § `key-rules` — Cardinal Rule, voice, content standards, section rules
+2. `global.md` § `image-integrity` — image-caption integrity, what makes a valid image
+3. `triggers.md` § `search-checklist` — core search groups (always-run)
+4. `triggers.md` § `priority-1-calendar` + `priority-2-event` + `priority-3-safety` — trigger logic
+5. `triggers.md` § `guardrails` — what NOT to trigger
+6. `formats.md` § `<format>` — format-specific research requirements
 
 ### Planner
 Reads: structural rules, constraints, and the format contract for the issue.
 
-1. `global/01-identity.md` — what The Signal IS
-2. `global/02-key-rules.md` — Cardinal Rule and editorial standards
-3. `global/04-markup-contracts.md` — banned markup alternates (chapter plan must not prescribe banned markup)
-4. `global/07-accent-lockdown.md` — coral rules (plan must flag hype chapters correctly)
-5. `global/08-stat-budget.md` — stat cap per issue, held-attention moment rules
-6. `formats/<format>.md` — canonical chapter order, word count targets, format-specific requirements
-7. `specials/01-overview.md` — if format is any special edition
+1. `global.md` § `identity` — what The Signal IS
+2. `global.md` § `key-rules` — Cardinal Rule and editorial standards
+3. `global.md` § `markup-contracts` — banned markup alternates
+4. `global.md` § `accent-lockdown` — coral rules
+5. `global.md` § `stat-budget` — stat cap per issue, held-attention moment rules
+6. `formats.md` § `<format>` — canonical chapter order, word count targets
+7. `specials.md` § `overview` — if format is any special edition
 
 ### Writer (per chapter)
 Reads: markup contracts, ground rules, accent rules, and their format.
 
-1. `references/pre-flight.md` — **ALWAYS first** (12 regression triggers, canonical markup, self-audit)
-2. `global/04-markup-contracts.md` — banned markup alternates (full list)
-3. `global/06-ground-discipline.md` — paper/ink/gallery ground rules
-4. `global/07-accent-lockdown.md` — coral lockdown rules
-5. `formats/<format>.md` — their issue's format spec
+1. `references/pre-flight.md` — **ALWAYS first**
+2. `global.md` § `markup-contracts` — banned markup alternates (full list)
+3. `global.md` § `ground-discipline` — paper/ink/gallery ground rules
+4. `global.md` § `accent-lockdown` — coral lockdown rules
+5. `formats.md` § `<format>` — their issue's format spec
 6. Chapter brief from `chapter-plan.json` — their specific chapter's requirements
 
 ### Repair Subagent
@@ -346,91 +388,40 @@ Same as writer, plus the failing chapter's gate report.
 2. Gate report for the failing chapter (passed in objective)
 3. `references/compliance-checklist.md` — Gate 1E markup greps (run these after repair)
 
-## Directory Structure
+## Files
 
-```
-references/spec/
-├── README.md                    ← this file
-├── global/
-│   ├── 01-identity.md           ← Identity + The Reader (who this is for)
-│   ├── 02-key-rules.md          ← Cardinal Rule, voice, content standards
-│   ├── 03-visual-design.md      ← Fonts, backgrounds, output format
-│   ├── 04-markup-contracts.md   ← Banned markup alternates (Gate 1E source)
-│   ├── 05-image-integrity.md    ← Image-caption integrity rules (Gate 1F source)
-│   ├── 06-ground-discipline.md  ← Paper/ink/gallery ground rules (v8.4)
-│   ├── 07-accent-lockdown.md    ← Coral accent rules (v8.4)
-│   └── 08-stat-budget.md        ← Stat cap, held-attention, chrome rules, auto-apply
-├── weekly/
-│   ├── 01-overview.md           ← Standard weekly: word count, page target
-│   ├── 02-sections.md           ← Fixed vs rotating, anchor piece, colophon
-│   ├── 03-rotating.md           ← Rotation mechanics, cadence, placement
-│   ├── 04-anchor-piece.md       ← Anchor piece rotation detail
-│   ├── 05-search-checklist.md   ← Core search groups
-│   └── 06-image-budget.md       ← Component quick reference
-├── specials/
-│   ├── 01-overview.md           ← Content-first contract (non-negotiable)
-│   ├── 02-cover.md              ← Authoring + component list
-│   ├── 03-meanwhile.md          ← Meanwhile section rules + auto-trigger logic
-│   ├── 04-chapter-gate.md       ← Chapter gate MANDATORY (v8.5)
-│   ├── 05-imagery-budget.md     ← Imagery budget MANDATORY
-│   ├── 06-editorial-body-kit.md ← Editorial body kit MANDATORY
-│   ├── 07-signature-moments.md  ← One per format
-│   ├── 08-chapter-transitions.md← Transitions + ambient
-│   ├── 09-multi-venue.md        ← Multi-venue countdown rules
-│   ├── 10-hype-chapter-visuals.md← Hype modifiers (v8.9.1)
-│   ├── 11-readability-locks.md  ← Readability lock principle (v8.10.3)
-│   ├── 12-portrait-spread.md    ← Portrait spread hybrid layout (v8.7.2)
-│   └── 13-holiday-identity.md   ← Holiday identity (v8.12, Countdown + Field Guide)
-├── formats/
-│   ├── weekly.md                ← Standard weekly format
-│   ├── deep-dive.md             ← Deep Dive format
-│   ├── countdown.md             ← The Countdown format (full)
-│   ├── season-review.md         ← Season Review format
-│   ├── versus.md                ← Versus format (incl. holiday/destination subtype)
-│   ├── rewind.md                ← The Rewind format
-│   ├── starter-kit.md           ← The Starter Kit format
-│   ├── blueprint.md             ← The Blueprint format
-│   ├── shortlist.md             ← The Shortlist format
-│   └── field-guide.md           ← The Field Guide format (full)
-└── triggers/
-    ├── 01-priority-1-calendar.md← Calendar-fixed triggers (P1)
-    ├── 02-priority-2-event.md   ← Event-driven triggers (P2)
-    ├── 03-priority-3-safety.md  ← Safety-net triggers (P3)
-    ├── 04-guardrails.md         ← What NOT to trigger
-    └── 05-search-checklist.md   ← Core search groups reference
-```
+After running `slice-spec.sh`, the directory holds one consolidated `.md`
+file per subdir (subdirs are removed in the consolidation stage):
+
+- `global.md` — Identity, Key Rules, Visual Design, Markup Contracts, Image Integrity, Ground Discipline, Accent Lockdown, Stat Budget
+- `weekly.md` — Standard Weekly overview + Section Structure + Rotation Mechanics + Anchor-Piece + Search Checklist + Component Reference
+- `specials.md` — Content-first contract + Authoring + Component list + Auto-Triggered Specials + Chapter Gate + Imagery Budget + Editorial Body Kit + Signature Moments + Chapter Transitions + Multi-venue + Hype Variants + Readability Locks + Portrait Spread + Holiday Identity
+- `formats.md` — One H2 per format: Standard Weekly, Deep Dive, Countdown, Season Review, Versus, Rewind, Starter Kit, Blueprint, Shortlist, Field Guide
+- `triggers.md` — Priority 1/2/3 trigger logic + Guardrails + Search Checklist
 
 ## Source
 
-All slices derived from `references/editorial-spec.md` (980 lines).
+All slices derived from `references/editorial-spec.md`. Slicer is **header-anchored**
+(v8.16): each output file is extracted from an H2 (`## Heading`) or H3
+(`### Heading`) marker in the source, NOT a hardcoded line range. This means
+the slicer is robust to edits that shift line numbers.
+
 Re-generate with: `bash scripts/slice-spec.sh`
 README
 
-  written=$(( written + 1 ))
-  echo "  wrote: $OUT_DIR/README.md"
-
-# ─────────────────────────────────────────────────────────────────────────────
-# SUMMARY
-# ─────────────────────────────────────────────────────────────────────────────
+written=$(( written + 1 ))
+echo "  wrote: $OUT_DIR/README.md"
 
 echo ""
-echo "=== DONE ==="
-echo "Files written:     $written"
-echo "Source lines:      $TOTAL_LINES"
-echo "Lines referenced:  $covered_lines (note: some ranges overlap, synthetic files not counted)"
+echo "=== DONE — $written files written ==="
 echo ""
-echo "Verify with:"
-echo "  find $OUT_DIR -name '*.md' | wc -l   # should be 31"
-echo "  wc -l $OUT_DIR/**/*.md               # per-file counts"
 
 # ─────────────────────────────────────────────────────────────────────────────
-# CONSOLIDATION STAGE (v8.11.0+)
-# Skill library caps file count at 100. Concatenate each subdir into one .md
-# file with H2 anchors, then remove the subdirs. This keeps role-targeted
+# CONSOLIDATION — concatenate each subdir into one .md file
+# Skill library caps file count at 100. Consolidation keeps role-targeted
 # reads (via H2 anchors) while staying under the file cap.
 # ─────────────────────────────────────────────────────────────────────────────
 
-echo ""
 echo "=== CONSOLIDATING (subdirs → flat .md files) ==="
 
 cd "$OUT_DIR" || exit 1
