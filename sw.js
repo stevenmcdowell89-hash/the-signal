@@ -16,7 +16,7 @@
  *                 the phone to verify what's actually cached.
  */
 
-const CACHE_VERSION = "v5";
+const CACHE_VERSION = "v6";
 const SHELL_CACHE = `signal-shell-${CACHE_VERSION}`;
 const ISSUE_CACHE = `signal-issues-${CACHE_VERSION}`;
 const IMAGE_CACHE = `signal-images-${CACHE_VERSION}`;
@@ -104,7 +104,12 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (sameOrigin && url.pathname.startsWith("/issues/")) {
-    event.respondWith(cacheFirst(req, ISSUE_CACHE));
+    // Stale-while-revalidate, NOT cache-first: serve the cached copy
+    // immediately (so offline + fast paint both work) AND fetch in the
+    // background so any post-publish fixes to the issue HTML reach the
+    // reader the *next* time they open it. Pure cache-first means a
+    // shipped bug stays shipped on every cached device forever.
+    event.respondWith(staleWhileRevalidate(req, ISSUE_CACHE));
     return;
   }
   if (sameOrigin && url.pathname.startsWith("/assets/cached/")) {
