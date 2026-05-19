@@ -276,13 +276,13 @@ Music — synthwave, retrowave, soundtracks, retro-listening. Dark navy backgrou
 ### Footer
 Masthead echo, issue info line.
 
-### Topic Families & Lifetime Leads
+### Topic Families & Recent Leads
 
-**Topic families** are closed-vocabulary tags on every Lead and Companion piece in the chapter plan. Used by the planner-side validator to enforce Lead ≠ Companion topic family within a section. Used by the Gate 1 grep to enforce the lifetime-leads bar on repeat-promoted ongoing stories.
+**Topic families** are closed-vocabulary tags on every Lead and Companion piece in the chapter plan. Used by the planner-side validator to enforce Lead ≠ Companion topic family within a section. Used by the Gate 1 grep to enforce the recent-leads bar on repeat-promoted ongoing stories.
 
 The full enumeration lives in `references/chapter-plan-schema.md`. Adding a new family requires spec amendment.
 
-**Lifetime leads** count every time a topic family anchors any fixed section's Lead. A topic with `lifetime_leads >= 3` requires `weeks_since_last_lead >= lifetime_leads * 2` before it can lead again. Tracked in state-file `ongoing_stories`.
+**Recent leads (sliding-window cap, v8.18).** Every time a topic family anchors any fixed section's Lead, the date is appended to that topic's `lead_history` array in state. `recent_leads` = count of entries within the last **26 weeks** of the current issue date. A topic with `recent_leads >= 3` requires `weeks_since_last_lead >= recent_leads × 2` before it can lead again. Older entries age out of the window automatically, so a topic that goes quiet for 6 months becomes promotable again without manual override.
 
 **The Long Game ↔ The Session boundary** is enforced: Long Game is finance only; fitness deep-dives go to The Session. Cross-classification fails Gate 2.
 

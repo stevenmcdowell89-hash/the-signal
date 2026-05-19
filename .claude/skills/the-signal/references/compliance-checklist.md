@@ -203,12 +203,14 @@ For every fixed section in the stitched HTML, grep for two distinct article anch
 # Mismatch = topic-lock or single-anchor regression — hard fail.
 ```
 
-### 1H. Lifetime-leads escalating bar (new v8.15)
+### 1H. Recent-leads sliding-window cap (v8.15, refined v8.18)
 
-For each topic in state-file ongoing_stories with lifetime_leads >= 3:
-1. Read its named-entity tag (e.g. "Iran War" -> ["iran", "tehran", "hormuz", "khamenei"])
+For each topic in state-file ongoing_stories, compute `recent_leads` = count of entries in `lead_history` with date within the last 26 weeks of the issue date. If `recent_leads >= 3`:
+1. Read the topic's named-entity tag (e.g. "Iran War" -> ["iran", "tehran", "hormuz", "khamenei"])
 2. Scan each fixed section's Lead H2 + first paragraph
-3. If named entities appear in H2 OR appear 3+ times in first paragraph AND lifetime_leads * 2 > weeks_since_last_lead: hard fail with reason "topic-lock"
+3. If named entities appear in H2 OR appear 3+ times in first paragraph AND `recent_leads * 2 > weeks_since_last_lead`: hard fail with reason "topic-lock"
+
+Leads older than 26 weeks age out of the window automatically — they don't count toward `recent_leads`. Topics that have gone quiet for 6 months become promotable again without override (v8.18 change from the v8.15 unbounded lifetime counter).
 
 ### 1I. Per-section mandatory links (promoted from Gate 1D v8.15)
 

@@ -1,5 +1,7 @@
 # The Signal — Editorial Specification
 
+> **v8.18** — Sliding-window topic-lock: `lifetime_leads` (unbounded counter) replaced by `recent_leads` (count within a rolling 26-week window driven by a `lead_history` array). The cap still tightens with active coverage but now decays as leads age out — a topic that goes quiet for 6 months becomes promotable again without needing an editorial override. Same rule shape, frequency-capped on recent history instead of forever.
+>
 > **v8.17** — Sub-format variations: Screen & Sound Director's Cut (monthly essay mode) + This Week in History A Closer Look (single 6-weekly narrative deep dive). Adds optional `sub_format` field to those two chapters.
 >
 > **v8.16** — Section roster: dropped The Pantry, split The Listen out of The Shelf, split The Local out of The Itinerary, added The Brickyard / The Saga / The Lab / The Channel. Hard cadence floor + deficit-promote rule + null-state default-window enforcement. Slicer rewritten to be header-anchored.
@@ -105,18 +107,28 @@ Rotating sections use their existing single-feature shape — they don't need Le
 
 ---
 
-## Topic Lock: Lifetime Leads & Escalating Bar
+## Topic Lock: Recent Leads & Sliding-Window Cap
 
-The spec's "bar rises exponentially" rule for re-promoting ongoing stories needs mechanical enforcement. Two new state-file fields on each entry in `ongoing_stories`:
+Re-promoting an ongoing story to the Lead slot is gated by a **sliding-window frequency cap**. The cap tightens with the topic's recent lead history and decays as that history ages, so a story that has been in heavy rotation cools off automatically without needing editorial override.
 
-- `lifetime_leads` (int) — incremented every time this topic anchors any fixed section Lead (not just World). Counts across the topic's entire lifetime.
-- `weeks_since_last_lead` (int) — ticks +1 each weekly the topic is NOT the lead; resets to 0 when it is.
+### State-file shape per `ongoing_stories` entry
+
+- `lead_history` (array of ISO date strings) — every date this topic anchored any fixed section's Lead. Example: `["2026-03-15", "2026-03-22", "2026-04-19", "2026-05-03"]`. Append each new lead date; never trim (entries age out of the window automatically).
+- `weeks_since_last_lead` (int, derived) — ticks +1 each weekly the topic is NOT the lead; resets to 0 when it is. The planner can compute this from `lead_history` or read a cached value.
+
+### The recent-leads window
+
+`recent_leads` = count of entries in `lead_history` with date within the last **26 weeks** (6 months) of the issue date. Older entries are ignored for cap purposes.
 
 ### Planner enforcement
 
-A topic with `lifetime_leads >= 3` cannot anchor the Lead unless `weeks_since_last_lead >= lifetime_leads * 2`.
+A topic with `recent_leads >= 3` cannot anchor the Lead unless `weeks_since_last_lead >= recent_leads × 2`.
 
-Worked example: Iran has had 5 lifetime leads. Re-promoting Iran to Lead requires 10 weeks of not-leading first. Until then, Iran lives in the tracker box.
+**Worked example.** Iran has 5 leads in the last 26 weeks. Re-promoting Iran to Lead requires 10 weeks of not-leading first. Until then, Iran lives in the tracker box.
+
+**Decay in action.** Six months after Iran's last lead in the active window, every one of those 5 leads has aged out. `recent_leads` falls to 0. The cap no longer fires. Iran becomes promotable again without needing a new escalation — but the magazine has been forced to give every other story breathing room in the meantime.
+
+A topic that broke out, dominated for a few weeks, then settled into the tracker will naturally re-emerge in the Lead rotation once enough time has passed; a topic in sustained active coverage will hit the cap hard and stay in the tracker.
 
 ### Topics this rule applies to
 
@@ -130,7 +142,11 @@ Worked example: Iran has had 5 lifetime leads. Re-promoting Iran to Lead require
 
 ### Gate 1 grep check
 
-After generation, scan each fixed section's Lead H2 + first paragraph for the topic's named entities. If `lifetime_leads >= 3` for any tracked topic AND that topic's named entities appear in the Lead (≥3 mentions or in H2), Gate 1 fails with reason "topic-lock: <topic> exceeds lifetime-leads bar". Re-plan the Lead.
+After generation, scan each fixed section's Lead H2 + first paragraph for the topic's named entities. If `recent_leads >= 3` for any tracked topic AND that topic's named entities appear in the Lead (≥3 mentions or in H2), Gate 1 fails with reason "topic-lock: <topic> exceeds recent-leads bar". Re-plan the Lead.
+
+### Tuning
+
+The 26-week window is the single knob. Shorter window (e.g. 13 weeks) → topics return more easily; cap feels light. Longer window (e.g. 52 weeks) → strong forcing function; topics blocked for years. 26 weeks chosen as the editorial sweet spot: "a story can't be in the Lead rotation more than ~5 times in any 6-month period." Adjust here if real-world runs show the window is wrong.
 
 ---
 
