@@ -1,10 +1,12 @@
-# Chapter Plan Schema (v8.15)
+# Chapter Plan Schema (v8.17)
 
 The planner subagent writes `/tmp/signal-build/chapter-plan.json`. This file defines the contract between the planner and the writer subagents. Every field here is required unless marked optional.
 
 The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan that fails validation cannot proceed to Phase 5 (writer subagents).
 
 **v8.15 additions:** every fixed-section chapter (`world`, `pixel_byte`, `touchline`, `screen_sound`, `session`) carries a `pieces` array of exactly two entries (Lead + Companion) on distinct `topic_family` values. The `long_shelf` chapter carries an `items` array of 6–8 entries with at least two `wildcard: true`. Topic families are a closed enumeration — see § Topic Family Enumeration at the bottom of this file.
+
+**v8.17 additions:** optional `sub_format` field on the `screen_sound` and `history` chapters. Allowed values: `null` (default), `"directors_cut"` (screen_sound only), `"closer_look"` (history only). When `sub_format = "directors_cut"`, the Lead piece's word_count_target.min must be ≥ 550. When `sub_format = "closer_look"`, the history chapter must carry a single `featured_item` with word_count_target.min ≥ 600 and NO `items`/`also_items` array.
 
 ---
 
@@ -225,7 +227,7 @@ The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan
 
           "items": {
             "type": "array",
-            "description": "REQUIRED for chapter_id 'long_shelf'. Array of 6-8 items with at least 2 carrying wildcard: true. Validator hard-fails if items.length < 6 or > 8, or if count(wildcard==true) < 2.",
+            "description": "REQUIRED for chapter_id 'long_shelf'. Array of 6-8 items with at least 2 carrying wildcard: true. Validator hard-fails if items.length < 6 or > 8, or if count(wildcard==true) < 2. For chapter_id 'history' with sub_format='closer_look', this array is FORBIDDEN — the chapter has a single featured item only.",
             "minItems": 6,
             "maxItems": 8,
             "items": {
@@ -237,6 +239,35 @@ The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan
                 "link": { "type": "string", "format": "uri", "description": "Specific item URL — not a category page." },
                 "hook": { "type": "string", "description": "One-sentence hook selling the content on its merit (no reader-profile leaks)." },
                 "wildcard": { "type": "boolean", "description": "true if this item is outside the magazine's usual coverage areas (not gaming, sport, Star Wars, fantasy/sci-fi, fitness, UK consumer fintech, theme parks, history podcasts). At least 2 of the 6-8 items must be wildcards." }
+              }
+            }
+          },
+
+          "sub_format": {
+            "type": ["string", "null"],
+            "enum": [null, "directors_cut", "closer_look"],
+            "description": "v8.17 — Optional sub-format mode for specific chapters. Allowed values: null (default standard mode), 'directors_cut' (Screen & Sound only — Lead is a 550-750 word essay; Lead.word_count_target.min must be >= 550), 'closer_look' (History only — single 600-800 word narrative; chapter must have a featured_item with word_count_target.min >= 600 and NO items/also_items array). Validator rejects: sub_format='directors_cut' on any chapter other than screen_sound; sub_format='closer_look' on any chapter other than history; word floors not met; also_items present on closer_look."
+          },
+
+          "featured_item": {
+            "type": "object",
+            "description": "REQUIRED for chapter_id 'history' with sub_format='closer_look'. The single narrative deep-dive piece. Forbidden for other chapters.",
+            "required": ["topic_family", "word_count_target", "headline_hint", "link_targets"],
+            "properties": {
+              "topic_family": { "type": "string", "description": "Drawn from the topic-family enum. Usually 'books_history' or an era-specific family." },
+              "word_count_target": {
+                "type": "object",
+                "required": ["min", "max"],
+                "properties": {
+                  "min": { "type": "integer", "minimum": 600, "description": "A Closer Look floor: 600." },
+                  "max": { "type": "integer", "minimum": 600, "description": "A Closer Look ceiling typical: 800." }
+                }
+              },
+              "headline_hint": { "type": "string" },
+              "link_targets": {
+                "type": "array",
+                "items": { "type": "string", "format": "uri" },
+                "description": "Wikipedia link is mandatory; additional sources welcome."
               }
             }
           }

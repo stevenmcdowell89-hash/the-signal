@@ -431,6 +431,8 @@ The state file at `/tmp/the-signal/state/signal-state.json` has this shape:
   "down_the_rabbit_hole": { "last_appeared": null, "cadence_weeks": [3, 4] },
   "last_toolkit_app": null,
   "last_session_topic": null,
+  "last_directors_cut_date": null,
+  "last_closer_look_date": null,
   "training_phase": {
     "current_block": "Block 1: Race Prep + Fat Loss",
     "block_dates": "April 4 - May 3",

@@ -465,6 +465,26 @@ If any of the above is false, do NOT submit — escalate back to the planner.
 
 Before submission, count outbound `<a href="http...">` links in your chapter. For sections in {World This Week, Pixel & Byte, Touchline, Screen & Sound, On the Radar}: every substantial item — every Lead, every Companion, every Also item, every Quick Review, every On the Radar entry — must link to its specific canonical source. Category pages and homepages do not count. If you can't find a link for an item, find a different item.
 
+### RT-20: Director's Cut mode discipline (v8.17)
+
+If your Screen & Sound chapter plan has `sub_format: "directors_cut"`:
+1. Lead must be 550-750 words and read as an essay on a show / film / director / arc — NOT a current-week news beat.
+2. Companion remains mandatory: 250-450 words, on a different topic family. The Companion can carry the current-week news beat that the Director's Cut displaced.
+3. Voice for the Lead: culture critic essayist. Not "what dropped this week".
+4. Cite where appropriate (link to the show / film, link to interviews if quoted, link to other essays you're responding to).
+5. After publish, update state file `last_directors_cut_date`.
+6. Optionally mark the section header visually with `<span class="sub-format-tag">Director's Cut</span>` inside the `.section-label`.
+
+### RT-21: A Closer Look mode discipline (v8.17)
+
+If your This Week in History chapter plan has `sub_format: "closer_look"`:
+1. Write ONE 600-800 word narrative deep dive on one event or figure. No also-this-weeks timeline. No multiple items.
+2. Wikipedia link mandatory for the subject; additional well-sourced links (podcasts, long-form articles, primary sources) welcome.
+3. Strong pre-WW2 preference — this format is ideal for ancient/medieval/early modern.
+4. Voice: narrative historian — tell the story, ground it in specifics, surface what's surprising. Not encyclopedic.
+5. After publish, update state file `last_closer_look_date`.
+6. Optionally mark the section header visually with `<span class="sub-format-tag">A Closer Look</span>` inside the `.section-label`.
+
 ---
 
 ## 3. Canonical Markup Snippets
