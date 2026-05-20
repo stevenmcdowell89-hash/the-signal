@@ -38,6 +38,7 @@ set -euo pipefail
 PLAN_PATH=""
 BUILD_DIR="/tmp/signal-build"
 OUT_PATH=""
+ISSUE_NUMBER=""
 SKILL_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -46,10 +47,11 @@ SKILL_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --plan)      PLAN_PATH="$2";   shift 2 ;;
-    --build-dir) BUILD_DIR="$2";   shift 2 ;;
-    --out)       OUT_PATH="$2";    shift 2 ;;
-    *)           echo "Unknown arg: $1"; exit 1 ;;
+    --plan)         PLAN_PATH="$2";     shift 2 ;;
+    --build-dir)    BUILD_DIR="$2";     shift 2 ;;
+    --out)          OUT_PATH="$2";      shift 2 ;;
+    --issue-number) ISSUE_NUMBER="$2";  shift 2 ;;
+    *)              echo "Unknown arg: $1"; exit 1 ;;
   esac
 done
 
@@ -246,9 +248,11 @@ CHAPTER_IDS_CSV=$(IFS=','; echo "${CHAPTER_IDS_ORDERED[*]}")
 # (which drops 01-masthead.html / 03-cover.html / 18-footer.html on holiday
 # formats) reaches the assembly step. Without this, Python re-reads the plan
 # and reuses the un-overridden list.
+# argv[9] = ISSUE_NUMBER (string, may be empty) — substituted into footer [N]
+# placeholder. Date-range and date substitution computed from plan's meta.date.
 python3 - \
   "$PLAN_PATH" "$CHAPTERS_DIR" "$TEMPLATE_DIR" "$CSS_DIR" "$JS_FILE" \
-  "$OUT_PATH" "$CHAPTER_IDS_CSV" "$SCAFFOLD_PARTS" \
+  "$OUT_PATH" "$CHAPTER_IDS_CSV" "$SCAFFOLD_PARTS" "$ISSUE_NUMBER" \
   <<'PYEOF'
 
 import sys, json, re
@@ -262,6 +266,10 @@ js_file      = Path(sys.argv[5])
 out_path     = Path(sys.argv[6])
 chapter_ids  = sys.argv[7].split(',') if sys.argv[7] else []
 scaffold_parts_override = sys.argv[8].split(',') if len(sys.argv) > 8 and sys.argv[8] else None
+# v8.18.1 — issue number for footer [N] substitution; empty means leave as-is
+# (orchestrator should pass --issue-number; if absent, validate-issue.py will
+# catch the unresolved placeholder).
+issue_number_str = sys.argv[9] if len(sys.argv) > 9 else ""
 
 with open(plan_path) as f:
     plan = json.load(f)
@@ -296,6 +304,45 @@ js_content = js_file.read_text(encoding="utf-8")
 head_open = (template_dir / "00-head-open.html").read_text(encoding="utf-8")
 closing   = (template_dir / "19-closing.html").read_text(encoding="utf-8")
 
+# ── v8.18.1 — Scaffold placeholder substitution ──
+# 00-head-open.html ships with `<title>The Signal — [DATE RANGE]</title>` and
+# 18-footer.html ships with `Issue #[N] · [Date]`. These are structural
+# placeholders the writers don't touch; the stitcher owns the substitution.
+# Date-range format: "DD–DD Mon YYYY" (e.g. "18–24 May 2026") for weeklies;
+# for specials, use the issue date alone (e.g. "24 May 2026") since specials
+# don't span a week.
+def _compute_date_range(date_str, fmt):
+    """Return ('date range', 'pretty date') tuple for placeholder substitution."""
+    from datetime import datetime, timedelta
+    try:
+        d = datetime.strptime(date_str, "%Y-%m-%d")
+    except (ValueError, TypeError):
+        return ("[DATE RANGE]", "[Date]")  # leave as-is; gate will catch
+    pretty_date = d.strftime("%-d %B %Y")  # e.g. "24 May 2026"
+    if fmt == "weekly":
+        start = d - timedelta(days=6)
+        if start.month == d.month:
+            range_str = f"{start.day}–{d.day} {d.strftime('%B %Y')}"
+        else:
+            range_str = f"{start.strftime('%-d %b')}–{d.strftime('%-d %b %Y')}"
+    else:
+        range_str = pretty_date
+    return (range_str, pretty_date)
+
+_issue_meta_local = plan.get("issue_meta", {}) if isinstance(plan, dict) else {}
+_issue_date = _issue_meta_local.get("date", "")
+_issue_fmt  = _issue_meta_local.get("format", "weekly")
+_range_str, _pretty_date = _compute_date_range(_issue_date, _issue_fmt)
+head_open = head_open.replace("[DATE RANGE]", _range_str)
+
+def _substitute_footer_placeholders(text):
+    """Replace [N], [Date], [DATE RANGE] in footer / scaffold parts."""
+    text = text.replace("[DATE RANGE]", _range_str)
+    text = text.replace("[Date]", _pretty_date)
+    if issue_number_str:
+        text = text.replace("[N]", issue_number_str)
+    return text
+
 # ── Assemble middle scaffold parts (everything between head and closing) ──
 middle_parts = []
 for part_name in scaffold_parts:
@@ -304,7 +351,7 @@ for part_name in scaffold_parts:
         continue
     part_path = template_dir / part_name
     if part_path.exists():
-        middle_parts.append(part_path.read_text(encoding="utf-8"))
+        middle_parts.append(_substitute_footer_placeholders(part_path.read_text(encoding="utf-8")))
     else:
         print(f"WARNING: Scaffold part '{part_name}' not found — skipping")
 
