@@ -39,9 +39,9 @@
 
 /* Timeline on dark backgrounds */
 .touchline-section .timeline::before { background: rgba(255,255,255,.1); }
-.touchline-section .timeline-node::before { background: var(--turf-lt); border-color: var(--pitch); }
-.touchline-section .timeline-node .timeline-date { color: var(--turf-lt); }
-.touchline-section .timeline-node .timeline-content { color: rgba(255,255,255,.7); }
+.touchline-section .timeline-node::before { background: var(--touchline-accent); border-color: var(--touchline-bg); }
+.touchline-section .timeline-node .timeline-date { color: var(--touchline-accent); }
+.touchline-section .timeline-node .timeline-content { color: var(--touchline-ink); }
 .touchline-section .timeline-node .timeline-content strong { color: rgba(255,255,255,.95); }
 
 .screen-section .timeline::before { background: rgba(255,255,255,.1); }

@@ -1,5 +1,7 @@
 /* ═══════════ THE LONG SHELF ═══════════ */
-.longshelf-section { background: var(--paper); border-bottom: 1px solid var(--rule); }
+/* v8.20: own bg (--longshelf-bg cream) so it doesn't share --paper with the
+   World section it sits next to. */
+.longshelf-section { background: var(--longshelf-bg); border-bottom: 1px solid var(--longshelf-rule); }
 .longshelf-section .section-label { color: var(--rose); }
 /* Two-column compact layout */
 .longshelf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 32px; }
@@ -16,7 +18,9 @@
 }
 
 /* ═══════════ ON THE RADAR ═══════════ */
-.radar-section { background: var(--warm); }
+/* v8.20: own bg (--radar-bg sand) so it doesn't share --warm with Pixel & Byte
+   which sits earlier in the issue. */
+.radar-section { background: var(--radar-bg); }
 .radar-section .section-label { color: var(--ember); }
 .radar-section .radar-row { border-bottom-color: rgba(0,0,0,.06); color: var(--ink); }
 .radar-section .radar-date { color: var(--ember); font-size: 12px; }
