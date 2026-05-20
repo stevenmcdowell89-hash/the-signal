@@ -333,6 +333,13 @@ Only proceed here after Gate 1 passes clean.
 - [ ] 2 of 8 Long Shelf items are wildcards
 - [ ] Cross-cluster connections present where natural
 
+### Lens-not-Filter (v8.19)
+- [ ] `plan.discovery_picks` carries >= 3 entries (weekly format). Each entry has chapter_id, headline_hint, discovery_rationale.
+- [ ] Every discovery_pick item appears in the rendered HTML at the chapter it's tagged to. (Spot-check: open the named chapter, find the item.)
+- [ ] Each recommendation section appearing this issue (Shelf, Listen, Workshop, Toolkit, Ledger, Long Game, Wallet, Brickyard, Saga, Lab, Channel) shows visible Discovery vs. Reinforcement balance — not 100% reinforcement of known brands/apps/series.
+- [ ] No recommendation section repeats the dominant brand/app/series from its previous appearance (cross-reference state file `last_toolkit_app`, `last_session_topic`, and the latest issue of each section in `issues/`).
+- [ ] World This Week (or another news section) carries any genuinely major world story that landed this week, regardless of whether it maps to a declared interest. Story missing = Gate 2 fail.
+
 ### Special Editions (when applicable)
 - [ ] "Meanwhile..." section present before Footer, 12-18 linked items
 - [ ] Guardrails respected: no 3+ consecutive specials, manual triggers override

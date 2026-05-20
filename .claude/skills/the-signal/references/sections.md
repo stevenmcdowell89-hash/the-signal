@@ -5,6 +5,18 @@ Only read the sections appearing in this issue.
 
 ---
 
+## Cross-cutting principle: Lens, not Filter (v8.19)
+
+Applies to every recommendation section below (Shelf, Listen, Workshop, Toolkit, Ledger, Long Game, Wallet, Brickyard, Saga, Lab, Channel, plus Long Shelf and the Companion pieces in fixed sections):
+
+- **50/50 Discovery vs. Reinforcement target.** Roughly half the picks reinforce something the reader already engages with; the other half surface something genuinely new. "New" = an app the reader doesn't use, a writer they haven't read, a label/artist they haven't heard of, a training method adjacent to but distinct from their current programme, a corner of personal finance they don't already follow, a podcast they don't subscribe to. Track in the chapter plan; writer self-audits via RT-23.
+- **No drift-to-defaults.** If the last appearance of this section featured a specific brand/app/series (e.g. Todoist, Efteling, Cosmere), the next appearance should NOT default to the same. Anti-repetition rules in state file (`last_toolkit_app` etc.) catch the obvious cases; editorial judgement catches the rest.
+- **The Long Shelf wildcard rule (2-of-8) is the floor, not the ceiling.** Other recommendation sections aim for similar discovery weight.
+
+For news sections (World This Week especially): **major world stories are covered regardless of profile fit.** A war, election upset, regulatory change with broad consumer impact, or major scientific breakthrough lands in the issue whether or not it maps to a declared interest. See § Lens, Not Filter in editorial-spec.md.
+
+---
+
 ### Cover
 Masthead, date, issue number, editorial hook headline, 6-10 topic tags. Ambient animation via CSS.
 

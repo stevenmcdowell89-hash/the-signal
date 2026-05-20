@@ -707,6 +707,47 @@ def check_rotating_cadence(plan, state_path=None):
                 )
 
 
+def check_discovery_picks(plan, issue_meta):
+    """v8.19: Lens-not-filter discovery quota.
+
+    Standard weeklies must carry an issue-level discovery_picks array with
+    >= 3 entries. Each entry must reference a chapter and have a non-empty
+    headline_hint + discovery_rationale. Specials are exempt (they're
+    single-topic by design).
+    """
+    fmt = (issue_meta or {}).get("format", "")
+    if fmt != "weekly":
+        return  # specials are exempt
+
+    picks = plan.get("discovery_picks")
+    if picks is None:
+        err(
+            "[DISCOVERY] plan.discovery_picks is missing — v8.19 lens-not-filter rule "
+            "requires standard weeklies to carry >= 3 issue-level discovery picks. "
+            "See editorial-spec.md § The Lens, Not the Filter."
+        )
+        return
+    if not isinstance(picks, list):
+        err("[DISCOVERY] plan.discovery_picks must be an array.")
+        return
+    if len(picks) < 3:
+        err(
+            f"[DISCOVERY] plan.discovery_picks has {len(picks)} entries; v8.19 requires >= 3 on "
+            "standard weeklies. Every weekly must surface at least three 'you wouldn't have "
+            "looked for this yourself' items across the issue. The Long Shelf's 2 wildcards "
+            "count toward this; the remaining 1+ can come from any other section."
+        )
+
+    for j, p in enumerate(picks if isinstance(picks, list) else []):
+        ppath = f"plan.discovery_picks[{j}]"
+        if not isinstance(p, dict):
+            err(f"[DISCOVERY] {ppath} must be an object.")
+            continue
+        for key in ("chapter_id", "headline_hint", "discovery_rationale"):
+            if not p.get(key):
+                err(f"[DISCOVERY] {ppath}: missing or empty required field '{key}'.")
+
+
 def check_assets(assets):
     """Check assets block."""
     path = "assets"
@@ -815,6 +856,10 @@ def main():
     # v8.16 — rotating-section cadence enforcement (weekly only)
     check_rotating_cadence(plan, state_path=state_path)
 
+    # v8.19 — lens-not-filter discovery quota (weekly only)
+    if isinstance(issue_meta, dict):
+        check_discovery_picks(plan, issue_meta)
+
     # ── Report ──
     if errors:
         print(f"FAIL — {len(errors)} error(s) found in '{plan_path}':")
@@ -879,7 +924,13 @@ def run_inline_tests():
                 "stat_budget_max": 12,
                 "image_source_diversity_min": 0.5,
                 "accent_lockdown": True
-            }
+            },
+            # v8.19 — discovery_picks default for fixture (only consulted by weekly format)
+            "discovery_picks": [
+                {"chapter_id": "long_shelf", "headline_hint": "wildcard pick 1", "discovery_rationale": "outside usual coverage"},
+                {"chapter_id": "long_shelf", "headline_hint": "wildcard pick 2", "discovery_rationale": "outside usual coverage"},
+                {"chapter_id": "screen_sound", "headline_hint": "new-to-reader show", "discovery_rationale": "not in their viewing list"}
+            ]
         }
         for k, v in overrides.items():
             plan[k] = v
@@ -905,6 +956,9 @@ def run_inline_tests():
             if isinstance(compliance, dict): check_compliance(compliance)
             # v8.16
             check_rotating_cadence(plan_dict, state_path=None)
+            # v8.19
+            if isinstance(issue_meta, dict):
+                check_discovery_picks(plan_dict, issue_meta)
 
             passed = len(errors) == 0
             ok = (passed == expect_pass)
@@ -1311,6 +1365,43 @@ def run_inline_tests():
     run_test("featured_item without closer_look sub_format", make_plan(
         issue_meta=weekly_meta,
         chapters=[orphan_featured]
+    ), expect_pass=False)
+
+    # ── v8.19 discovery_picks cases ──
+
+    # FAIL: weekly with discovery_picks missing
+    run_test("weekly missing discovery_picks", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[
+            weekly_fixed_chapter("world", pieces=valid_pieces)
+        ],
+        discovery_picks=None
+    ), expect_pass=False)
+
+    # FAIL: weekly with only 2 discovery_picks (below floor of 3)
+    run_test("weekly with 2 discovery_picks (below floor)", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[weekly_fixed_chapter("world", pieces=valid_pieces)],
+        discovery_picks=[
+            {"chapter_id": "long_shelf", "headline_hint": "x", "discovery_rationale": "y"},
+            {"chapter_id": "long_shelf", "headline_hint": "x2", "discovery_rationale": "y2"}
+        ]
+    ), expect_pass=False)
+
+    # PASS: discovery_picks rule does not fire on specials (countdown)
+    run_test("discovery_picks rule skipped on countdown", make_plan(
+        discovery_picks=None
+    ), expect_pass=True)
+
+    # FAIL: discovery_picks entry missing required fields
+    run_test("discovery_picks entry missing rationale", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[weekly_fixed_chapter("world", pieces=valid_pieces)],
+        discovery_picks=[
+            {"chapter_id": "long_shelf", "headline_hint": "x", "discovery_rationale": ""},
+            {"chapter_id": "long_shelf", "headline_hint": "x2", "discovery_rationale": "ok"},
+            {"chapter_id": "screen_sound", "headline_hint": "x3", "discovery_rationale": "ok"}
+        ]
     ), expect_pass=False)
 
     # ── Summary ──
