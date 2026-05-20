@@ -485,6 +485,27 @@ If your This Week in History chapter plan has `sub_format: "closer_look"`:
 5. After publish, update state file `last_closer_look_date`.
 6. Optionally mark the section header visually with `<span class="sub-format-tag">A Closer Look</span>` inside the `.section-label`.
 
+### RT-22: Bundle-only facts (v8.18.1) — hard rule
+
+**Every named factual claim in your chapter MUST trace back to the research bundle.** This is the same discipline as RT-2 (No-Taste Rule) extended from sensory prose to ALL specifics. The bundle is the ground truth; the writer's job is to *interpret* it editorially, not to invent additions.
+
+**Banned:**
+- Inventing media titles, show names, album names, podcast episodes, books, articles, or events that are not in the research bundle. (This is the failure mode observed in the v8.18 test run: writers under-supplied with bundle content invented "Apple Mythic Quest-replacement", "BBC adaptation of Adam Mars-Jones' Box Hill", "Carpenter Brut Knife Twin single" — none real, none in the bundle.)
+- Inventing dates, prices, statistics, quotes, or attribution.
+- Inventing source names ("according to The Guardian…" when no Guardian article is in the bundle).
+- Inventing relationships between things ("X collaborated with Y" without a bundle source confirming).
+- "Plausible-sounding" placeholder facts to round out a paragraph.
+
+**Required:**
+- Every named title, date, price, stat, or quoted line must be present in `research-bundle.json` (the `sources`, `key_facts`, `image_candidates`, or topic-specific arrays). Trace before you write.
+- If the bundle doesn't carry enough material for a piece, do NOT invent — instead: (a) shorten the piece toward the floor (200-word minimum for Companion, 300 for Lead), (b) escalate via the planner for additional research, or (c) suggest a different topic entirely. **Compressed-but-true beats expanded-but-fabricated.** Always.
+- Quotes must carry attribution AND a link to the source.
+- When in doubt about whether a fact is supported, omit it.
+
+**Self-audit before submission.** Walk every paragraph. For each specific name, date, number, quote: open `/tmp/signal-build/research-bundle.json` and find the supporting entry. If you can't find it, cut the claim.
+
+The whole magazine is undermined by a single fabrication the reader catches. This rule is non-negotiable across every section and every writer subagent.
+
 ---
 
 ## 3. Canonical Markup Snippets

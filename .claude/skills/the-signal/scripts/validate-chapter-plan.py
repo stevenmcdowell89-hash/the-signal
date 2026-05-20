@@ -86,8 +86,12 @@ FIXED_SECTION_CHAPTER_IDS = {
     "session",
 }
 
-# v8.15 — chapter ID that requires the `items` array with wildcard discipline
-LONG_SHELF_CHAPTER_IDS = {"long_shelf", "long-shelf", "long_shelf", "shelf"}
+# v8.15 — chapter ID that requires the `items` array with wildcard discipline.
+# NOTE (v8.18.1): "shelf" was previously in this set, but it collides with the
+# rotating "The Shelf" section (books + music). The Long Shelf is a different
+# section (curated 6-8 link list opener). Require the canonical kebab/underscore
+# form only.
+LONG_SHELF_CHAPTER_IDS = {"long_shelf", "long-shelf"}
 
 # v8.17 — sub-format mapping: chapter_id -> allowed sub_format values
 SCREEN_SOUND_CHAPTER_IDS = {"screen_sound", "screen-sound", "screen"}
