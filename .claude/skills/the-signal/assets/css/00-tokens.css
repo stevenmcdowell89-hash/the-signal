@@ -8,6 +8,10 @@
   --slate: #64697B;
   --ghost: #A4A8B6;
   --rule: #E0DED8;
+  /* --pitch / --turf / --turf-lt retained for backward compat with components
+     that still reference them (radar football pill, compare-panel right side,
+     football navigator card border, timeline node fallback). The Touchline
+     itself no longer uses them — see --touchline-* below (v8.20). */
   --pitch: #0A0E17;
   --turf: #1A7A4C;
   --turf-lt: #2BD67B;
@@ -19,6 +23,25 @@
   --session-accent: #D4622B;
   --hist-bg: #F0EBE0;
   --hist-accent: #8B6914;
+
+  /* ── v8.20 — Touchline light retheme (linen + ink + darkened turf accent) ── */
+  /* The dark "stadium at night" treatment felt jarring mid-magazine — Touchline
+     was the only consistently-dark section since Screen & Sound + Shelf rotate
+     in less or feel warmer. Now: pale linen background, deep navy-ink for
+     text, darkened turf for accents (kept green to preserve sport semantic). */
+  --touchline-bg:     #EDE8DD;
+  --touchline-ink:    #0F1A2E;
+  --touchline-accent: #155F3D;
+  --touchline-rule:   #D8D2C2;
+  --touchline-mute:   #6C7185;
+
+  /* ── v8.20 — Long Shelf + On the Radar de-duplicated from World / Tech ── */
+  /* Previously both shared --paper / --warm with sections they sat next to,
+     producing visually-identical pages. Slightly differentiated cream + sand. */
+  --longshelf-bg:   #F8F3E8;
+  --longshelf-rule: #E5DDC8;
+  --radar-bg:       #F2EDE2;
+  --radar-rule:     #DFD7C4;
 
   /* ── Rotating section palettes ── */
   --workshop-bg: #F0F1F3;

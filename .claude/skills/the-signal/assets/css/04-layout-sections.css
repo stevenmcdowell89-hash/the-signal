@@ -21,6 +21,44 @@
 
 /* ═══════════ GENERIC SECTION ═══════════ */
 .sec { padding: 48px 60px; position: relative; overflow: hidden; }
+
+/* ═══════════ Section accent bar (v8.20) ═══════════
+   Every section gets a 4px coloured band along its top edge in its own
+   accent colour, giving readers an immediate "you just entered a new
+   section" cue. The colour is set per-section via the --section-accent
+   CSS custom property below. Section CSS files set the value; this rule
+   paints it once, universally. */
+.sec::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 88px; height: 4px;
+  background: var(--section-accent, transparent);
+  z-index: 1;
+}
+/* Per-section accent assignments (light + dark sections both). Reads
+   each section's existing accent token; no new colours introduced. */
+.world-section      { --section-accent: var(--rose); }
+.tech-section       { --section-accent: var(--ember); }
+.touchline-section  { --section-accent: var(--touchline-accent); }
+.screen-section     { --section-accent: var(--neon); }
+.session-section    { --section-accent: var(--session-accent); }
+.history-section    { --section-accent: var(--hist-accent); }
+.shelf-section      { --section-accent: var(--shelf-accent); }
+.longshelf-section  { --section-accent: var(--rose); }
+.radar-section      { --section-accent: var(--ember); }
+.workshop-section   { --section-accent: var(--workshop-accent); }
+.toolkit-section    { --section-accent: var(--toolkit-accent); }
+.ledger-section     { --section-accent: var(--ledger-accent); }
+.longgame-section   { --section-accent: var(--longgame-accent); }
+.wallet-section     { --section-accent: var(--wallet-accent); }
+.itinerary-section  { --section-accent: var(--itinerary-accent); }
+.listen-section     { --section-accent: var(--listen-accent); }
+.local-section      { --section-accent: var(--local-accent); }
+.brickyard-section  { --section-accent: var(--brickyard-accent); }
+.saga-section       { --section-accent: var(--saga-accent); }
+.lab-section        { --section-accent: var(--lab-accent); }
+.channel-section    { --section-accent: var(--channel-accent); }
 .sec h2 { font-size: 36px; font-weight: 700; line-height: 1.15; margin-bottom: 20px; max-width: 680px; }
 /* Sub-story headings: lighter weight for visual hierarchy separation */
 .sec h3 { font-size: 22px; font-weight: 600; line-height: 1.2; margin: 28px 0 10px; }
