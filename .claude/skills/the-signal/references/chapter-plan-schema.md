@@ -276,6 +276,21 @@ The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan
       }
     },
 
+    "discovery_picks": {
+      "type": "array",
+      "description": "v8.19 — Issue-level array of items the planner has flagged as 'discovery' (things the reader wouldn't have looked for themselves). Must contain >= 3 entries on standard weeklies. The Long Shelf's 2 wildcards count toward this; the remaining 1+ can come from any other section's content. Each entry references the chapter and item that's the discovery pick. Gate 2 verifies the array length and that each referenced item actually appears in the rendered HTML. Lens-not-filter enforcement.",
+      "minItems": 0,
+      "items": {
+        "type": "object",
+        "required": ["chapter_id", "headline_hint", "discovery_rationale"],
+        "properties": {
+          "chapter_id": { "type": "string", "description": "The chapter containing this discovery pick." },
+          "headline_hint": { "type": "string", "description": "Short identifier of the specific item / pick / topic that's the discovery moment." },
+          "discovery_rationale": { "type": "string", "description": "One-sentence editorial reason this counts as a genuine discovery for this reader — not just 'new to the magazine'." }
+        }
+      }
+    },
+
     "assets": {
       "type": "object",
       "required": ["css_inject_marker", "js_inject_marker", "scaffold_parts_used"],

@@ -506,6 +506,20 @@ If your This Week in History chapter plan has `sub_format: "closer_look"`:
 
 The whole magazine is undermined by a single fabrication the reader catches. This rule is non-negotiable across every section and every writer subagent.
 
+### RT-23: Lens-not-Filter (v8.19) — discovery vs reinforcement
+
+The reader profile is a lens, not a filter. Two checks every recommendation-section writer makes before submission:
+
+**1. Discovery vs. Reinforcement balance (~50/50 target).** For your section's picks, count how many reinforce something the reader already engages with (Todoist, Cosmere, synthwave, Switch 2, etc.) vs. how many are genuinely new (a different app, an unfamiliar writer, a label they haven't heard of, an adjacent training method). Aim for parity. A section that's 90% reinforcement is a failure mode — it makes the magazine feel like a feed. A section that's 100% discovery is also wrong — it stops feeling curated.
+
+**2. The anti-drift check.** If you can name the dominant brand/app/series your section featured last appearance (look at the state file: `last_toolkit_app`, `last_session_topic`, or the last appearance in `issues/`), this appearance MUST NOT default to the same. Different app, different artist, different angle. The whole point of rotating sections is that they don't become single-topic columns.
+
+If your section is one of the recommendation sections (Shelf, Listen, Workshop, Toolkit, Ledger, Long Game, Wallet, Brickyard, Saga, Lab, Channel, Long Shelf, Companion pieces in fixed sections): apply both checks before submitting.
+
+If your section is World This Week or any news section: **a major world story that landed this week is covered even when it falls outside the declared interest profile.** A vacuum on a story everyone else is reading is a failure mode. Cover at the appropriate weight — Lead, Companion, or substantive Also item — based on the story's actual significance.
+
+For the issue-level Discovery Quota (>= 3 picks per weekly issue): the planner identifies and tags discovery picks in the chapter plan's `discovery_picks` array. Validator rejects plans with < 3. Writers don't need to coordinate across sections — the planner has set the targets.
+
 ---
 
 ## 3. Canonical Markup Snippets

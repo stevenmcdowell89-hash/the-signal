@@ -1,5 +1,7 @@
 # The Signal — Editorial Specification
 
+> **v8.19** — Lens-not-filter principle elevated to Cardinal-tier: news breadth (major world stories covered regardless of declared interests), 50/50 Discovery vs. Reinforcement target across all recommendation sections, issue-level Discovery Quota ≥ 3 enforced via chapter-plan `discovery_picks` array + Gate 2. Adds writer pre-flight RT-23.
+>
 > **v8.18** — Sliding-window topic-lock: `lifetime_leads` (unbounded counter) replaced by `recent_leads` (count within a rolling 26-week window driven by a `lead_history` array). The cap still tightens with active coverage but now decays as leads age out — a topic that goes quiet for 6 months becomes promotable again without needing an editorial override. Same rule shape, frequency-capped on recent history instead of forever.
 >
 > **v8.17** — Sub-format variations: Screen & Sound Director's Cut (monthly essay mode) + This Week in History A Closer Look (single 6-weekly narrative deep dive). Adds optional `sub_format` field to those two chapters.
@@ -646,6 +648,24 @@ These are editorial principles. The compliance checklist (Gate 1 + Gate 2) handl
 
 ### The Cardinal Rule
 **The reader profile drives selection, not prose.** The profile tells you what to research, what to cover, and what to prioritise. It must be completely invisible in the writing. Write every section as if the magazine has 100,000 readers. See Gate 1A in the compliance checklist for specific banned patterns — this is the most common failure.
+
+### The Lens, Not the Filter (v8.19 — sits alongside the Cardinal Rule)
+
+**The reader profile is a lens, not a filter.** It shapes *how* a topic gets framed; it never decides *whether* a topic gets covered. Two failure modes the lens-not-filter principle exists to prevent:
+
+1. **News vacuum on a story everyone else is reading.** If a major story landed this week — war, election upset, regulatory change with broad consumer impact, death of a significant figure, scientific breakthrough — the magazine covers it. Coverage breadth is the magazine's job; the profile only narrows angle, not appetite. A weekly that goes silent on a genuinely big story because "it isn't on the interest list" is broken.
+
+2. **Recommendation drift into reinforcement-only.** Every recommendation section (Shelf, Listen, Workshop, Toolkit, Ledger, Long Game, Wallet, Brickyard, Saga, Lab, Channel) drifts toward "more of what the reader already engages with" unless explicitly counterweighted. The reader has Todoist; the next Toolkit shouldn't be more Todoist. The reader is into Malazan; the next Shelf should include at least one book outside epic fantasy.
+
+The structural mechanics that enforce this:
+
+- **Discovery vs. Reinforcement (50/50 target per recommendation section).** Every recommendation section aims for roughly half its content reinforcing existing engagement, half surfacing something genuinely new. "New" means: a different app they don't use; a writer they haven't read; a label/artist they haven't heard of; a training method adjacent to but distinct from their current programme; a corner of personal finance they don't already follow. Writer self-audits per RT-23.
+
+- **Issue-level Discovery Quota (≥ 3 per issue).** Independent of which sections appear, every weekly issue contains at least three "you wouldn't have looked for this yourself" items across the issue. The Long Shelf's 2-of-8 wildcards count toward this; the rest can come from anywhere — a Workshop tool the reader doesn't have, a Saga deep-dive on an author they've never read, a Down-the-Rabbit-Hole sidebar, the Companion piece in any fixed section landing on an unfamiliar topic. Planner tracks `discovery_picks` as an issue-level array in the chapter plan. Gate 2 verifies count >= 3.
+
+- **News breadth check.** Phase 0f's news scout (and the researcher's Group 1 scan in Phase 3a) explicitly searches for major world stories regardless of whether they map to the interest profile. World This Week's Lead OR Companion OR an Also item must cover any genuinely big global story that landed this week, even if neither maps to a declared interest. Skipping a major story because it's outside-profile is a Gate 2 editorial-quality fail.
+
+Reinforcement still dominates the magazine because that's what makes it feel curated. Discovery has a guaranteed floor.
 
 ### Editorial Voice
 - **Opinions mandatory.** The reader wants editorial voice, not neutrality.

@@ -40,6 +40,24 @@ These are editorial principles. The compliance checklist (Gate 1 + Gate 2) handl
 ### The Cardinal Rule
 **The reader profile drives selection, not prose.** The profile tells you what to research, what to cover, and what to prioritise. It must be completely invisible in the writing. Write every section as if the magazine has 100,000 readers. See Gate 1A in the compliance checklist for specific banned patterns — this is the most common failure.
 
+### The Lens, Not the Filter (v8.19 — sits alongside the Cardinal Rule)
+
+**The reader profile is a lens, not a filter.** It shapes *how* a topic gets framed; it never decides *whether* a topic gets covered. Two failure modes the lens-not-filter principle exists to prevent:
+
+1. **News vacuum on a story everyone else is reading.** If a major story landed this week — war, election upset, regulatory change with broad consumer impact, death of a significant figure, scientific breakthrough — the magazine covers it. Coverage breadth is the magazine's job; the profile only narrows angle, not appetite. A weekly that goes silent on a genuinely big story because "it isn't on the interest list" is broken.
+
+2. **Recommendation drift into reinforcement-only.** Every recommendation section (Shelf, Listen, Workshop, Toolkit, Ledger, Long Game, Wallet, Brickyard, Saga, Lab, Channel) drifts toward "more of what the reader already engages with" unless explicitly counterweighted. The reader has Todoist; the next Toolkit shouldn't be more Todoist. The reader is into Malazan; the next Shelf should include at least one book outside epic fantasy.
+
+The structural mechanics that enforce this:
+
+- **Discovery vs. Reinforcement (50/50 target per recommendation section).** Every recommendation section aims for roughly half its content reinforcing existing engagement, half surfacing something genuinely new. "New" means: a different app they don't use; a writer they haven't read; a label/artist they haven't heard of; a training method adjacent to but distinct from their current programme; a corner of personal finance they don't already follow. Writer self-audits per RT-23.
+
+- **Issue-level Discovery Quota (≥ 3 per issue).** Independent of which sections appear, every weekly issue contains at least three "you wouldn't have looked for this yourself" items across the issue. The Long Shelf's 2-of-8 wildcards count toward this; the rest can come from anywhere — a Workshop tool the reader doesn't have, a Saga deep-dive on an author they've never read, a Down-the-Rabbit-Hole sidebar, the Companion piece in any fixed section landing on an unfamiliar topic. Planner tracks `discovery_picks` as an issue-level array in the chapter plan. Gate 2 verifies count >= 3.
+
+- **News breadth check.** Phase 0f's news scout (and the researcher's Group 1 scan in Phase 3a) explicitly searches for major world stories regardless of whether they map to the interest profile. World This Week's Lead OR Companion OR an Also item must cover any genuinely big global story that landed this week, even if neither maps to a declared interest. Skipping a major story because it's outside-profile is a Gate 2 editorial-quality fail.
+
+Reinforcement still dominates the magazine because that's what makes it feel curated. Discovery has a guaranteed floor.
+
 ### Editorial Voice
 - **Opinions mandatory.** The reader wants editorial voice, not neutrality.
 - **Reader opinions ≠ editorial fact.** The reader's personal experiences and preferences are context, not conclusions. If the magazine makes a critical claim ("the show declined"), it must be backed by external evidence, not just the reader's view. The magazine brings the wider world in — creating a bubble is the worst failure mode.
