@@ -1,1 +1,698 @@
-PLACEHOLDER_WILL_BE_READ_FROM_FILE
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>The Signal — Archive</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Serif+4:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #1A1A2E;
+      --bg-2: #16213E;
+      --bg-3: #20253E;
+      --ink: #E8E8E8;
+      --ink-2: #B6BAC6;
+      --ink-dim: #888;
+      --coral: #E94560;
+      --orange: #FF6B35;
+      --gold: #C9A66B;
+      --terracotta: #C46A4F;
+      --line: rgba(255,255,255,0.08);
+      --line-strong: rgba(255,255,255,0.16);
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Source Sans 3', sans-serif;
+      min-height: 100vh;
+      padding: 1.5rem 1.25rem 5rem;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    /* ---------- Masthead ---------- */
+    .page-header { text-align: center; padding: 1.25rem 0 2rem; }
+    .masthead {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: clamp(2.5rem, 6vw, 3.75rem);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 0.3rem;
+      background: linear-gradient(135deg, var(--coral), var(--orange));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+    .tagline {
+      font-size: 0.78rem;
+      color: var(--ink-dim);
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    /* ---------- Section label ---------- */
+    .section-label {
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      color: var(--ink-dim);
+      font-weight: 600;
+      margin: 2.25rem 0 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--line);
+    }
+
+    /* ---------- Continue reading ---------- */
+    .continue { display: none; margin-top: 0.5rem; }
+    .continue.is-visible { display: block; }
+    .continue-card {
+      display: flex;
+      gap: 1rem;
+      padding: 1rem;
+      background: linear-gradient(135deg, rgba(233,69,96,0.10), rgba(255,107,53,0.05));
+      border: 1px solid rgba(233,69,96,0.25);
+      border-radius: 12px;
+      text-decoration: none;
+      color: var(--ink);
+      align-items: center;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .continue-card:hover { transform: translateY(-2px); border-color: rgba(233,69,96,0.5); }
+    .continue-cover {
+      width: 88px;
+      height: 88px;
+      flex-shrink: 0;
+      border-radius: 8px;
+      background: var(--bg-3) var(--cover, none) center/cover no-repeat;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+    .continue-body { flex: 1; min-width: 0; }
+    .continue-kicker {
+      font-size: 0.7rem;
+      color: var(--coral);
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    .continue-title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 0.5rem;
+      line-height: 1.25;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+    .continue-bar {
+      height: 4px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 0.35rem;
+    }
+    .continue-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--coral), var(--orange));
+      width: 0%;
+      transition: width 0.4s;
+    }
+    .continue-pct {
+      font-size: 0.78rem;
+      color: var(--ink-2);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ---------- Hero (latest issue) ---------- */
+    .hero { margin-top: 0.5rem; }
+    .hero-card {
+      display: grid;
+      grid-template-rows: minmax(220px, 38vh) auto;
+      background: var(--bg-2);
+      border-radius: 16px;
+      overflow: hidden;
+      text-decoration: none;
+      color: var(--ink);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      transition: transform 0.25s, box-shadow 0.25s;
+      position: relative;
+    }
+    .hero-card:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
+    .hero-cover {
+      background: var(--bg-3) var(--cover, none) center/cover no-repeat;
+      position: relative;
+    }
+    .hero-cover::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(26,26,46,0) 50%, rgba(26,26,46,0.85) 100%);
+    }
+    .hero-body { padding: 1.5rem 1.5rem 1.75rem; position: relative; }
+    .hero-format {
+      font-size: 0.72rem;
+      color: var(--coral);
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      font-weight: 600;
+      margin-bottom: 0.55rem;
+    }
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: clamp(1.4rem, 3vw, 1.85rem);
+      line-height: 1.2;
+      margin-bottom: 0.7rem;
+    }
+    .hero-summary {
+      color: var(--ink-2);
+      font-size: 0.95rem;
+      margin-bottom: 1.1rem;
+      line-height: 1.55;
+    }
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--orange);
+    }
+    .hero-cta::after { content: '→'; transition: transform 0.2s; }
+    .hero-card:hover .hero-cta::after { transform: translateX(4px); }
+
+    /* ---------- Archive grid ---------- */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1rem;
+      list-style: none;
+    }
+    .card {
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-2);
+      border-radius: 12px;
+      overflow: hidden;
+      text-decoration: none;
+      color: var(--ink);
+      transition: transform 0.2s, background 0.2s;
+      border: 1px solid transparent;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      background: var(--bg-3);
+      border-color: var(--line-strong);
+    }
+    .card-cover {
+      aspect-ratio: 3 / 2;
+      background: var(--bg-3) var(--cover, none) center/cover no-repeat;
+      position: relative;
+    }
+    .card-cover.is-empty {
+      background: linear-gradient(135deg, var(--bg-2), var(--bg-3));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card-cover.is-empty::before {
+      content: '';
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--coral), var(--orange));
+      -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M4 4h16v16H4z M4 9h16'/></svg>") center/contain no-repeat;
+      mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M4 4h16v16H4z M4 9h16'/></svg>") center/contain no-repeat;
+      opacity: 0.5;
+    }
+    .card-body {
+      padding: 0.9rem 1rem 1.05rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      flex: 1;
+    }
+    .card-format {
+      font-size: 0.65rem;
+      color: var(--coral);
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-weight: 600;
+    }
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 1rem;
+      line-height: 1.3;
+    }
+    .card-summary {
+      font-size: 0.82rem;
+      color: var(--ink-2);
+      line-height: 1.5;
+      flex: 1;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+    }
+    .card-date {
+      font-size: 0.72rem;
+      color: var(--ink-dim);
+      margin-top: 0.15rem;
+    }
+
+    /* ---------- Update banner ---------- */
+    .update-banner {
+      position: fixed;
+      bottom: 1rem;
+      left: 50%;
+      transform: translate(-50%, 120%);
+      background: var(--bg-2);
+      color: var(--ink);
+      border: 1px solid var(--line-strong);
+      border-radius: 999px;
+      padding: 0.65rem 0.65rem 0.65rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      font-size: 0.88rem;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      max-width: calc(100vw - 2rem);
+      z-index: 100;
+    }
+    .update-banner.is-visible { transform: translate(-50%, 0); }
+    .update-banner-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .update-banner-btn {
+      font: inherit;
+      font-weight: 600;
+      padding: 0.4rem 0.95rem;
+      border-radius: 999px;
+      border: 0;
+      background: linear-gradient(135deg, var(--coral), var(--orange));
+      color: #fff;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .update-banner-btn:hover { opacity: 0.9; }
+    .update-banner-dismiss {
+      background: transparent;
+      color: var(--ink-dim);
+      border: 0;
+      font-size: 1.25rem;
+      width: 28px; height: 28px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 50%;
+    }
+    .update-banner-dismiss:hover { color: var(--ink); }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 640px) {
+      body { padding: 1rem 0.85rem 5rem; }
+      .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.75rem; }
+      .hero-card { grid-template-rows: minmax(180px, 32vh) auto; }
+      .hero-body { padding: 1.1rem 1.1rem 1.35rem; }
+      .card-body { padding: 0.75rem 0.85rem 0.95rem; }
+    }
+    @media (min-width: 900px) {
+      .hero-card {
+        grid-template-rows: none;
+        grid-template-columns: 1.4fr 1fr;
+        min-height: 340px;
+      }
+      .hero-cover::after { background: linear-gradient(90deg, rgba(26,26,46,0) 70%, rgba(26,26,46,0.4) 100%); }
+      .hero-body { padding: 2rem 2.25rem; align-self: center; }
+    }
+  </style>
+<!-- the-signal:pwa -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#E94560">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="The Signal">
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      var hadController = !!navigator.serviceWorker.controller;
+
+      navigator.serviceWorker.register('/sw.js').then(function (reg) {
+        function handleNew(sw) {
+          if (!sw) return;
+          sw.addEventListener('statechange', function () {
+            if (sw.state !== 'installed') return;
+            if (!hadController) {
+              // First install on this device — no point making the user wait.
+              sw.postMessage({ type: 'SKIP_WAITING' });
+            } else {
+              // Genuine upgrade — surface the banner so user chooses when.
+              showUpdateBanner();
+            }
+          });
+        }
+        if (reg.waiting && hadController) showUpdateBanner();
+        if (reg.installing) handleNew(reg.installing);
+        reg.addEventListener('updatefound', function () { handleNew(reg.installing); });
+      }).catch(function (err) { console.warn('SW registration failed:', err); });
+
+      // Reload immediately when the controlling SW changes (after user taps Refresh
+      // OR after first-install auto-skip-wait). Guard against double reloads.
+      var refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', function () {
+        if (refreshing) return;
+        refreshing = true;
+        if (hadController) window.location.reload();
+      });
+
+      window.__signalRefreshSW = function () {
+        navigator.serviceWorker.getRegistration().then(function (reg) {
+          if (reg && reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+        });
+      };
+    });
+  }
+
+  function showUpdateBanner() {
+    var b = document.getElementById('update-banner');
+    if (b) b.classList.add('is-visible');
+  }
+</script>
+<!-- /the-signal:pwa -->
+</head>
+<body>
+  <div class="container">
+    <header class="page-header">
+      <div class="masthead">The Signal</div>
+      <div class="tagline">Weekly Intelligence Brief</div>
+    </header>
+
+    <!-- Continue reading (revealed by JS if localStorage has progress) -->
+    <section class="continue" id="continue-section" aria-hidden="true">
+      <h2 class="section-label">Continue reading</h2>
+      <a href="#" class="continue-card" id="continue-card">
+        <div class="continue-cover" id="continue-cover"></div>
+        <div class="continue-body">
+          <div class="continue-kicker" id="continue-kicker">Picking up where you left off</div>
+          <div class="continue-title" id="continue-title">—</div>
+          <div class="continue-bar"><div class="continue-fill" id="continue-fill"></div></div>
+          <div class="continue-pct" id="continue-pct">0% read</div>
+        </div>
+      </a>
+    </section>
+
+    <!-- HERO: latest issue -->
+    <section class="hero" aria-label="Latest issue">
+      <h2 class="section-label">This week</h2>
+      <a class="hero-card" href="issues/signal_deep-dive_2026-05-22.html" data-cover-slug="signal_deep-dive_2026-05-22">
+        <div class="hero-cover"></div>
+        <div class="hero-body">
+          <div class="hero-format">Deep Dive</div>
+          <div class="hero-title">The Yellow Turban Revolt</div>
+          <div class="hero-summary">How a faith-healing movement in second-century Hebei began the long death of the Han dynasty — thirty-six years before it formally ended. Twelve chapters across the late-Han court, the rising of 184 CE, and the seventeen-hundred-year shadow it cast.</div>
+          <div class="hero-cta">Read this issue</div>
+        </div>
+      </a>
+    </section>
+
+    <!-- ARCHIVE -->
+    <section aria-label="Archive">
+      <h2 class="section-label">Archive</h2>
+      <ul class="grid">
+        <li>
+          <a class="card" href="issues/signal_weekly_2026-05-17.html" data-cover-slug="signal_weekly_2026-05-17">
+            <div class="card-cover"></div>
+            <div class="card-body">
+              <div class="card-format">Issue #9 · Standard Weekly</div>
+              <div class="card-title">17–23 May 2026</div>
+              <div class="card-summary">Starmer clings on as Streeting quits and Labour splinters, Bulgaria wins Eurovision in Vienna, Google I/O lands Tuesday, Yoshi launches on Switch 2, Mandalorian and Grogu opens Friday, Arsenal's title shot with two games left, Revolut becomes a full UK bank.</div>
+              <div class="card-date">17 May 2026</div>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a class="card" href="issues/signal_field-guide_2026-05-17.html" data-cover-slug="signal_field-guide_2026-05-17">
+            <div class="card-cover"></div>
+            <div class="card-body">
+              <div class="card-format">Field Guide</div>
+              <div class="card-title">Eating at Efteling &amp; Beekse Bergen</div>
+              <div class="card-summary">Where to eat across two estates, one week, no car off site. Six Unmissable picks at Efteling, seven at Beekse Bergen, ranked meal-slot coverage on both halves.</div>
+              <div class="card-date">17 May 2026 · Special</div>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a class="card" href="issues/signal_weekly_2026-05-10.html" data-cover-slug="signal_weekly_2026-05-10">
+            <div class="card-cover"></div>
+            <div class="card-body">
+              <div class="card-format">Issue #8 · Standard Weekly</div>
+              <div class="card-title">10–16 May 2026</div>
+              <div class="card-summary">Canvas hack exposes 275M records, federal court strikes down Trump tariff again, Inter celebrate the Scudetto, PSG vs Arsenal in Budapest, Wu Yize wins the Crucible, Antonelli takes Miami.</div>
+              <div class="card-date">10 May 2026</div>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a class="card" href="issues/signal_weekly_2026-05-03.html" data-cover-slug="signal_weekly_2026-05-03">
+            <div class="card-cover"></div>
+            <div class="card-body">
+              <div class="card-format">Issue #7 · Standard Weekly</div>
+              <div class="card-title">3–9 May 2026</div>
+              <div class="card-summary">UK terror threat raised to severe, Iran war cost doubles, Inter clinch Scudetto, Maul finale on Star Wars Day, Hooghmoed opens at Efteling, post-10K recovery science.</div>
+              <div class="card-date">3 May 2026</div>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a class="card" href="issues/versus-sanguli-clodia.html" data-cover-slug="versus-sanguli-clodia">
+            <div class="card-cover"></div>
+            <div class="card-body">
+              <div class="card-format">Versus</div>
+              <div class="card-title">Sanguli Salou vs Piani di Clodia</div>
+              <div class="card-summary">Round-by-round head-to-head between two European holiday parks. Pools, food, theming, location, late-August edge case.</div>
+              <div class="card-date">29 April 2026 · Special</div>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a class="card" href="issues/signal_weekly_2026-04-26.html" data-cover-slug="signal_weekly_2026-04-26">
+            <div class="card-cover"></div>
+            <div class="card-body">
+              <div class="card-format">Issue #6 · Standard Weekly</div>
+              <div class="card-title">20–26 April 2026</div>
+              <div class="card-summary">Pope in Africa, $166bn tariff reversal, Andor S2, The Shelf, History (Founding of Rome), The Pantry.</div>
+              <div class="card-date">20 April 2026</div>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a class="card" href="issues/signal_weekly_2026-04-19.html" data-cover-slug="signal_weekly_2026-04-19">
+            <div class="card-cover"></div>
+            <div class="card-body">
+              <div class="card-format">Issue #5 · Standard Weekly</div>
+              <div class="card-title">13–19 April 2026</div>
+              <div class="card-summary">Hormuz ceasefire, CL semi-final draw, The Ledger, The Long Game, The Itinerary.</div>
+              <div class="card-date">13 April 2026</div>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a class="card" href="issues/shortlist-switch2-solo.html" data-cover-slug="shortlist-switch2-solo">
+            <div class="card-cover"></div>
+            <div class="card-body">
+              <div class="card-format">Shortlist</div>
+              <div class="card-title">Solo Games for Switch 2</div>
+              <div class="card-summary">Caves of Qud, Inscryption, Outer Wilds, 13 Sentinels, Fights in Tight Spaces, Wildermyth, Rogue Legacy 2.</div>
+              <div class="card-date">12 April 2026 · Special</div>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a class="card" href="issues/starterkit-switch2-coop.html" data-cover-slug="starterkit-switch2-coop">
+            <div class="card-cover"></div>
+            <div class="card-body">
+              <div class="card-format">Starter Kit</div>
+              <div class="card-title">Switch 2 Co-Op Games</div>
+              <div class="card-summary">TMNT: Splintered Fate, Risk of Rain Returns, Sunderfolk, Hyrule Warriors, Sea of Stars, Trine, Diablo III.</div>
+              <div class="card-date">12 April 2026 · Special</div>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a class="card" href="issues/signal_weekly_2026-04-12.html" data-cover-slug="signal_weekly_2026-04-12">
+            <div class="card-cover"></div>
+            <div class="card-body">
+              <div class="card-format">Issue #4 · Standard Weekly</div>
+              <div class="card-title">6–12 April 2026</div>
+              <div class="card-summary">Hungary election, CL quarter-finals, The Toolkit, The Wallet, The Workshop.</div>
+              <div class="card-date">6 April 2026</div>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a class="card" href="issues/signal_weekly_2026-04-05.html" data-cover-slug="signal_weekly_2026-04-05">
+            <div class="card-cover"></div>
+            <div class="card-body">
+              <div class="card-format">Issue #3 · Standard Weekly</div>
+              <div class="card-title">30 Mar – 5 April 2026</div>
+              <div class="card-summary">Iran Week 6, Serie A, Star Wars: Maul, Constantinople.</div>
+              <div class="card-date">30 March 2026</div>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a class="card" href="issues/starterkit-audio-dramas.html" data-cover-slug="starterkit-audio-dramas">
+            <div class="card-cover"></div>
+            <div class="card-body">
+              <div class="card-format">Starter Kit</div>
+              <div class="card-title">Your First Audio Drama Podcasts</div>
+              <div class="card-summary">An on-ramp to the genre — character, ensemble, single-narrator, comedy.</div>
+              <div class="card-date">30 March 2026 · Special</div>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a class="card" href="issues/versus-tlm-ibex.html" data-cover-slug="versus-tlm-ibex">
+            <div class="card-cover"></div>
+            <div class="card-body">
+              <div class="card-format">Versus</div>
+              <div class="card-title">The Lyss Method vs Ibex Training</div>
+              <div class="card-summary">Two structured strength programmes, weighed against each other on volume, autoregulation, simplicity, and adherence.</div>
+              <div class="card-date">30 March 2026 · Special</div>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a class="card" href="issues/issue-2.html" data-cover-slug="issue-2">
+            <div class="card-cover"></div>
+            <div class="card-body">
+              <div class="card-format">Issue #2 · Standard Weekly</div>
+              <div class="card-title">22–29 March 2026</div>
+              <div class="card-summary">Second issue.</div>
+              <div class="card-date">22 March 2026</div>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a class="card" href="issues/countdown-wcq.html" data-cover-slug="countdown-wcq">
+            <div class="card-cover"></div>
+            <div class="card-body">
+              <div class="card-format">Countdown</div>
+              <div class="card-title">World Cup Qualifiers</div>
+              <div class="card-summary">European Playoff Semi-Finals build-up.</div>
+              <div class="card-date">23 March 2026 · Special</div>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a class="card" href="issues/countdown-efteling.html" data-cover-slug="countdown-efteling">
+            <div class="card-cover"></div>
+            <div class="card-body">
+              <div class="card-format">Countdown</div>
+              <div class="card-title">Efteling &amp; Beekse Bergen</div>
+              <div class="card-summary">100 days out from the trip.</div>
+              <div class="card-date">21 March 2026 · Special</div>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a class="card" href="issues/issue-1.html" data-cover-slug="issue-1">
+            <div class="card-cover"></div>
+            <div class="card-body">
+              <div class="card-format">Issue #1 · Standard Weekly</div>
+              <div class="card-title">15–21 March 2026</div>
+              <div class="card-summary">Inaugural issue.</div>
+              <div class="card-date">15 March 2026</div>
+            </div>
+          </a>
+        </li>
+      </ul>
+    </section>
+  </div>
+
+  <!-- Update banner -->
+  <div class="update-banner" id="update-banner" role="status" aria-live="polite">
+    <span class="update-banner-text">New version available</span>
+    <button class="update-banner-btn" onclick="window.__signalRefreshSW && window.__signalRefreshSW()">Refresh</button>
+    <button class="update-banner-dismiss" aria-label="Dismiss" onclick="this.parentElement.classList.remove('is-visible')">×</button>
+  </div>
+
+  <script>
+    // -------- Cover image assignment from slug --------
+    document.querySelectorAll('[data-cover-slug]').forEach(function (el) {
+      var slug = el.dataset.coverSlug;
+      var coverUrl = '/assets/covers/' + slug + '.jpg';
+      var coverEl = el.querySelector('.hero-cover, .card-cover, .continue-cover') || el;
+
+      // Probe the cover; if it 404s, show a fallback state.
+      var img = new Image();
+      img.onload = function () {
+        coverEl.style.setProperty('--cover', 'url("' + coverUrl + '")');
+      };
+      img.onerror = function () {
+        coverEl.classList.add('is-empty');
+      };
+      img.src = coverUrl;
+    });
+
+    // -------- Continue reading --------
+    // Issue pages write { pct, ts, title, slug } under signal-progress-<slug>.
+    // We pick the most-recently-updated entry with > 5% and < 95% progress.
+    (function () {
+      try {
+        var entries = [];
+        for (var i = 0; i < localStorage.length; i++) {
+          var key = localStorage.key(i);
+          if (!key || !key.startsWith('signal-progress-')) continue;
+          try {
+            var v = JSON.parse(localStorage.getItem(key));
+            if (v && typeof v.pct === 'number' && v.pct >= 5 && v.pct < 95) {
+              entries.push(v);
+            }
+          } catch (_) {}
+        }
+        if (entries.length === 0) return;
+
+        entries.sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
+        var top = entries[0];
+
+        var section = document.getElementById('continue-section');
+        var card = document.getElementById('continue-card');
+        var cover = document.getElementById('continue-cover');
+        var title = document.getElementById('continue-title');
+        var fill = document.getElementById('continue-fill');
+        var pct = document.getElementById('continue-pct');
+
+        // #continue triggers the issue page's scroll-restore logic.
+        card.href = 'issues/' + top.slug + '.html#continue';
+        cover.style.setProperty('--cover', 'url("/assets/covers/' + top.slug + '.jpg")');
+        title.textContent = top.title || top.slug;
+        fill.style.width = Math.round(top.pct) + '%';
+        pct.textContent = Math.round(top.pct) + '% read';
+        section.classList.add('is-visible');
+        section.setAttribute('aria-hidden', 'false');
+      } catch (e) { /* localStorage unavailable in some contexts */ }
+    })();
+  </script>
+</body>
+</html>
