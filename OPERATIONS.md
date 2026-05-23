@@ -100,13 +100,16 @@ overnight has the issue fully offline by the morning.
 
 ### 1. Generate keys
 
+**Web (Android / any browser):** open `https://<your-pages-host>/setup.html`. Tap **Generate keys**. It runs in your browser, never sends keys anywhere. Each value has a Copy button next to it.
+
+**CLI (alternative):**
+
 ```
 python3 -m pip install cryptography
 python3 scripts/generate-vapid.py
 ```
 
-The script prints three values: `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`,
-and `NOTIFY_AUTH_TOKEN`. Don't commit any of them.
+Either way, you end up with three values: `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, and `NOTIFY_AUTH_TOKEN`. Don't commit any of them.
 
 ### 2. Configure the Cloudflare Pages project
 
