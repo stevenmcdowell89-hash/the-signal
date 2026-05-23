@@ -18,6 +18,13 @@
     "directory": ".",
     "binding": "ASSETS"
   },
+  // KV bindings: Workers Builds treats this file as the source of truth.
+  // Bindings set only via the dashboard get wiped on the next deploy, so
+  // SUBSCRIPTIONS has to live here. The id is the namespace's identifier
+  // (not a secret) — visible in CF dashboard → Workers & Pages → KV.
+  "kv_namespaces": [
+    { "binding": "SUBSCRIPTIONS", "id": "f528a67f5a1d4c739273680b9f046534" }
+  ],
   "observability": {
     "enabled": true
   }
