@@ -79,6 +79,61 @@
       background: var(--line);
     }
 
+    /* ---------- Archive tabs ---------- */
+    .tabs {
+      display: flex;
+      gap: 1.75rem;
+      margin: 2.25rem 0 1.25rem;
+      border-bottom: 1px solid var(--line);
+      position: relative;
+    }
+    .tab {
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      color: var(--ink-dim);
+      font-weight: 600;
+      background: none;
+      border: 0;
+      padding: 0.7rem 0.1rem;
+      cursor: pointer;
+      position: relative;
+      display: inline-flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      transition: color 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .tab:hover { color: var(--ink-2); }
+    .tab:focus-visible {
+      outline: none;
+      color: var(--ink);
+    }
+    .tab.is-active { color: var(--ink); }
+    .tab.is-active::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0;
+      bottom: -1px;
+      height: 2px;
+      background: linear-gradient(135deg, var(--coral), var(--orange));
+      border-radius: 2px;
+    }
+    .tab-count {
+      font-size: 0.7rem;
+      color: var(--ink-dim);
+      letter-spacing: 0.05em;
+      font-variant-numeric: tabular-nums;
+      font-weight: 500;
+    }
+    .tab.is-active .tab-count { color: var(--coral); }
+    .tab-panel[hidden] { display: none; }
+    @media (max-width: 640px) {
+      .tabs { gap: 1.25rem; margin-top: 1.75rem; }
+      .tab { padding: 0.6rem 0.1rem; font-size: 0.74rem; letter-spacing: 0.18em; }
+    }
+
     /* ---------- Continue reading ---------- */
     .continue { display: none; margin-top: 0.5rem; }
     .continue.is-visible { display: block; }
@@ -435,9 +490,20 @@
       </a>
     </section>
 
-    <!-- WEEKLY -->
-    <section aria-label="Weekly issues">
-      <h2 class="section-label">Weekly</h2>
+    <!-- ARCHIVE (tabbed) -->
+    <section aria-label="Archive">
+      <div class="tabs" role="tablist" aria-label="Archive sections">
+        <button id="tab-weekly" class="tab is-active" role="tab" data-tab="weekly"
+                aria-controls="panel-weekly" aria-selected="true" tabindex="0">
+          Weekly <span class="tab-count">·&nbsp;9</span>
+        </button>
+        <button id="tab-specials" class="tab" role="tab" data-tab="specials"
+                aria-controls="panel-specials" aria-selected="false" tabindex="-1">
+          Specials <span class="tab-count">·&nbsp;8</span>
+        </button>
+      </div>
+
+      <div id="panel-weekly" class="tab-panel is-active" role="tabpanel" aria-labelledby="tab-weekly">
       <ul class="grid">
         <li>
           <a class="card" href="issues/signal_weekly_2026-05-17.html" data-cover-slug="signal_weekly_2026-05-17">
@@ -539,11 +605,9 @@
           </a>
         </li>
       </ul>
-    </section>
+      </div>
 
-    <!-- SPECIALS -->
-    <section aria-label="Specials">
-      <h2 class="section-label">Specials</h2>
+      <div id="panel-specials" class="tab-panel" role="tabpanel" aria-labelledby="tab-specials" hidden>
       <ul class="grid">
         <li>
           <a class="card" href="issues/signal_field-guide_2026-05-17.html" data-cover-slug="signal_field-guide_2026-05-17">
@@ -634,6 +698,7 @@
           </a>
         </li>
       </ul>
+      </div>
     </section>
   </div>
 
@@ -699,6 +764,67 @@
         section.classList.add('is-visible');
         section.setAttribute('aria-hidden', 'false');
       } catch (e) { /* localStorage unavailable in some contexts */ }
+    })();
+
+    // -------- Archive tabs --------
+    (function () {
+      var TABS = ['weekly', 'specials'];
+      var STORAGE_KEY = 'signal-archive-tab';
+      var tabs = document.querySelectorAll('.tab');
+      var panels = document.querySelectorAll('.tab-panel');
+      if (!tabs.length) return;
+
+      function activate(name, opts) {
+        if (TABS.indexOf(name) === -1) name = 'weekly';
+        tabs.forEach(function (t) {
+          var on = t.dataset.tab === name;
+          t.classList.toggle('is-active', on);
+          t.setAttribute('aria-selected', on ? 'true' : 'false');
+          t.setAttribute('tabindex', on ? '0' : '-1');
+        });
+        panels.forEach(function (p) {
+          var on = p.id === 'panel-' + name;
+          p.hidden = !on;
+          p.classList.toggle('is-active', on);
+        });
+        if (!opts || !opts.silent) {
+          try { localStorage.setItem(STORAGE_KEY, name); } catch (_) {}
+          if (location.hash !== '#' + name) {
+            history.replaceState(null, '', '#' + name);
+          }
+        }
+      }
+
+      // Initial: hash > localStorage > default
+      var initial = null;
+      var hash = (location.hash || '').slice(1);
+      if (TABS.indexOf(hash) !== -1) initial = hash;
+      if (!initial) {
+        try {
+          var stored = localStorage.getItem(STORAGE_KEY);
+          if (TABS.indexOf(stored) !== -1) initial = stored;
+        } catch (_) {}
+      }
+      activate(initial || 'weekly', { silent: true });
+
+      tabs.forEach(function (t) {
+        t.addEventListener('click', function () { activate(t.dataset.tab); });
+        t.addEventListener('keydown', function (e) {
+          if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+          e.preventDefault();
+          var idx = TABS.indexOf(t.dataset.tab);
+          var next = e.key === 'ArrowRight'
+            ? (idx + 1) % TABS.length
+            : (idx - 1 + TABS.length) % TABS.length;
+          var nextTab = document.querySelector('.tab[data-tab="' + TABS[next] + '"]');
+          if (nextTab) { nextTab.focus(); activate(TABS[next]); }
+        });
+      });
+
+      window.addEventListener('hashchange', function () {
+        var h = (location.hash || '').slice(1);
+        if (TABS.indexOf(h) !== -1) activate(h, { silent: true });
+      });
     })();
   </script>
 </body>
