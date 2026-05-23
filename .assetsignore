@@ -21,3 +21,8 @@ state/
 .gitignore
 .assetsignore
 *.md
+
+# Worker source — bundled into the Worker by wrangler, not served as static
+_worker.js
+wrangler.jsonc
+functions/
