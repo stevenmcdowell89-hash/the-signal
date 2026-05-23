@@ -45,7 +45,6 @@ function canonicalUrl(req) {
 const SHELL_ASSETS = [
   "/",
   "/index.html",
-  "/manifest.json",
   "/assets/styles.css",
   "/assets/script.js",
   "/assets/icons/icon-192.png",
@@ -92,11 +91,16 @@ self.addEventListener("message", (event) => {
 // --- Activate: clean up old caches -----------------------------------------
 self.addEventListener("activate", (event) => {
   const KEEP = new Set([SHELL_CACHE, ISSUE_CACHE, IMAGE_CACHE, EXTERNAL_CACHE]);
-  event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.map((k) => (KEEP.has(k) ? null : caches.delete(k)))),
-    ),
-  );
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.map((k) => (KEEP.has(k) ? null : caches.delete(k))));
+    // Evict the stale manifest from any previous version that cached it,
+    // so a PWA reinstall fetches fresh from the network on the next try.
+    try {
+      const shell = await caches.open(SHELL_CACHE);
+      await shell.delete("/manifest.json", { ignoreSearch: true });
+    } catch (_) {}
+  })());
   self.clients.claim();
 });
 
@@ -220,6 +224,13 @@ self.addEventListener("fetch", (event) => {
   // Diagnostic endpoint
   if (sameOrigin && url.pathname === "/sw-status") {
     event.respondWith(buildStatusResponse());
+    return;
+  }
+
+  // Don't intercept the PWA manifest — let the browser fetch fresh on every
+  // install attempt. Caching it makes orientation/scope/theme changes
+  // require a SW update + activation before they propagate to a reinstall.
+  if (sameOrigin && url.pathname === "/manifest.json") {
     return;
   }
 
