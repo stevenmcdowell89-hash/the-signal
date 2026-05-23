@@ -326,8 +326,9 @@ extract_h3 "$OUT_DIR/formats/season-review.md" "The Season Review"
 extract_h3 "$OUT_DIR/formats/versus.md"        "The Versus"
 extract_h3 "$OUT_DIR/formats/rewind.md"        "The Rewind"
 extract_h3 "$OUT_DIR/formats/starter-kit.md"   "The Starter Kit"
-extract_h3 "$OUT_DIR/formats/blueprint.md"     "The Blueprint"
 extract_h3 "$OUT_DIR/formats/shortlist.md"     "The Shortlist"
+extract_h3 "$OUT_DIR/formats/next.md"          "The Next"
+extract_h3 "$OUT_DIR/formats/lookahead.md"     "The Lookahead"
 extract_h3 "$OUT_DIR/formats/field-guide.md"   "The Field Guide"
 
 echo ""
@@ -402,7 +403,7 @@ file per subdir (subdirs are removed in the consolidation stage):
 - `global.md` — Identity, Key Rules, Visual Design, Markup Contracts, Image Integrity, Ground Discipline, Accent Lockdown, Stat Budget
 - `weekly.md` — Standard Weekly overview + Section Structure + Rotation Mechanics + Anchor-Piece + Search Checklist + Component Reference
 - `specials.md` — Content-first contract + Authoring + Component list + Auto-Triggered Specials + Chapter Gate + Imagery Budget + Editorial Body Kit + Signature Moments + Chapter Transitions + Multi-venue + Hype Variants + Readability Locks + Portrait Spread + Holiday Identity
-- `formats.md` — One H2 per format: Standard Weekly, Deep Dive, Countdown, Season Review, Versus, Rewind, Starter Kit, Blueprint, Shortlist, Field Guide
+- `formats.md` — One H2 per format: Standard Weekly, Deep Dive, Countdown, Season Review, Versus, Rewind, Starter Kit, Shortlist, Next, Lookahead, Field Guide
 - `triggers.md` — Priority 1/2/3 trigger logic + Guardrails + Search Checklist
 
 ## Source

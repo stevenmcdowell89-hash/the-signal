@@ -5,21 +5,6 @@ _This file consolidates the formats/ subdir into one file. Each former file beco
 
 ---
 
-## blueprint
-
-### The Blueprint
-Project planning issue. **5,000-7,000 words, 18-25 pages.** Manual trigger: "Run a Blueprint — [goal]. [Optional: constraints and preferences]." Cover → Foreword → The Goal → Current State → Decision Points (with options) → Phased Plan → Tools & Resources → Risks & Pitfalls → First Steps This Week → Footer.
-- **Presents options, not prescriptions.** The reader is the audience, not a collaborator. The Blueprint does the research, lays out the choices clearly with compare panels and decision trees, and lets the reader decide. It never tells the reader what to do — it shows them what's available and the trade-offs.
-- **Decision Points** is the core section. Each open decision gets a compare panel: "If your priority is X → Option A [details, pros, cons]. If your priority is Y → Option B [details, pros, cons]." Research the options thoroughly so the reader can choose with confidence.
-- **Respects stated constraints.** If the trigger includes preferences ("budget: £500", "already own comp KBs"), the Blueprint works within those rails. It never argues against the reader's stated position.
-- Best for: home gym build-out, 10k race plan, Etsy store relaunch, trip planning, reading order for a long series, tech setup overhaul.
-- Use compare panels heavily, timeline for phased plans, stat bars for budgets/targets, sidebars for tools, also-cards for resources.
-- Use 10-14 component types.
-
-
-
----
-
 ## countdown
 
 ### The Countdown
@@ -208,14 +193,76 @@ All special editions use the same design system and component library. Use sideb
 
 ---
 
+## lookahead
+
+### The Lookahead
+Multi-event preview of a defined window (6-8 weeks default). **4,500-6,500 words, 16-22 pages.** Manual trigger: "Run a Lookahead — [window]." E.g. "the next six weeks", "June 2026", "the run-up to the F1 summer break", "the Switch 2 launch window". Canonical chapter order: Cover → Foreword → The Window in Numbers → The Calendar (chronological, every item with a verdict) → The Crunch Weeks → What Else Is Brewing → Footer.
+
+- **Different from Countdown.** Countdown is one event built into hype. Lookahead is **many** events surveyed editorially — gaming, film, sport fixtures, book releases, calendar anniversaries — across the same window, with the magazine's verdict on each.
+- **Different from the weekly's On the Radar.** On the Radar is light, single-section, present-tense. Lookahead is a whole issue dedicated to looking forward, with a verdict on each item and a per-week priority guide.
+- Best for: the start of a quarter, before a busy release stretch (Switch 2 launch waves, F1 season opening, a packed weekend of major events), or any "what should I actually pay attention to in the next ~6 weeks" moment.
+
+**The killer feature — The Verdict per item.** Every entry in The Calendar gets one of four tags, with a one-line reason:
+
+- 🔥 **Don't miss** — the items the editor is most confident will reward the reader's time. Sparingly applied.
+- 👀 **Worth a look** — solid bet for the right temperament, with a one-line "you'll like this if…"
+- ⏳ **Wait for reviews** — looks promising, but the editor doesn't yet have enough signal to commit. Re-check on release week.
+- 🚫 **Probably skip** — the items the editor would actively steer the reader away from, with the reason (overhyped sequel, lazy adaptation, scheduling-driven event that won't materialise).
+
+Hedging is the failure mode — every item must get a tag. "Could be good or bad" is not editorial work. The reader trusts the magazine to take a position; if four items in a row are "wait for reviews", the editor hasn't done the job. Aim for a roughly 1:2:1:1 split across the four tags, give or take, across the whole calendar.
+
+**The second killer feature — The Crunch Weeks.** Look across the whole window for weeks where 3+ "Don't miss" or "Worth a look" items cluster. Each such week gets its own short callout: which item to prioritise, which to defer, which can wait. The reader isn't a completionist — they want to know what to actually do when the calendar is packed. A typical issue surfaces 1-3 crunch weeks; if none surface, the issue tells the reader honestly that the window is paced rather than peaked.
+
+- **Window length defaults to 6-8 weeks.** Shorter windows (a single packed week, a 10-day stretch) bend Lookahead toward Crunch Weeks; longer windows (a quarter, the back half of a season) bend it toward the Calendar. Anything beyond a quarter is too speculative — the magazine cannot tag-verdict items it doesn't have signal on yet.
+- The Window in Numbers opens with the headline counts: total events, total worth-your-time count, total don't-miss count, total skips. Plus a few interest-area counts (e.g. 4 game releases, 3 F1 weekends, 2 film releases, 1 book launch).
+- Source-discipline rule: every item in The Calendar must have a verifiable source (release announcement, fixture list, official calendar). No "rumoured to ship around" entries. If the date isn't firm, the item belongs in What Else Is Brewing, not in The Calendar.
+- Use 8-12 component types. The Calendar leans on date-stamped rows with verdict tags; The Crunch Weeks lean on the dashboard / dl pattern.
+
+
+
+---
+
+## next
+
+### The Next
+Post-completion recommendation — "you just finished X, here's what to try next." **3,500-5,500 words, 14-20 pages.** Manual trigger: "Run a Next — after [the thing you finished]." E.g. "after the audio dramas", "after Daredevil S2", "after Murderbot Diaries", "after the fat-loss block". Canonical chapter order: Cover → Foreword → The Itch (what made the original work, named explicitly) → The Closest Next Step → One Step Sideways → The Wildcard → If You Only Try One → Where to Go After That → Footer.
+
+- **Different from Starter Kit.** Starter Kit is for someone with no entry point. Next is for someone with a *known* entry point — they finished a specific thing and want the natural progression. The starting context is rich; the recommendations are anchored to it.
+- **Different from Shortlist.** Shortlist is "the magazine's picks in a category, ranked into tiers". Next is structured around progression away from a single anchor.
+
+**The killer feature — The On-Ramp.** Every pick in Next comes with a specific entry instruction, not just a recommendation. This is what made the Starter Kit's one-week plan valuable: it told the reader *exactly* how to engage with each pick, not just that they should. The On-Ramp for a Next pick takes the form:
+
+> **Start with:** episode 4 (the first one that lets the world breathe) — not episode 1, which is plot-setup-heavy and won't show why this is here.
+> **Stop and reassess at:** the end of the first arc (~episode 6). If it isn't clicking by then it won't.
+> **Then:** if it landed, head to season 2. If it half-landed, try [adjacent pick] for the part that did work.
+
+Each pick gets that three-part instruction (Start / Reassess / Then), or a justified shorter version. **Vague "give it a few episodes" recommendations are forbidden** — the editor must commit to a specific entry point and an explicit stop-and-decide moment. This is the single component that makes Next worth running.
+
+**The second killer feature — If You Only Try One.** A short, single-pick chapter near the end. Not the safest pick — the most decisive one. The pick the editor is most confident in, written without hedging. "If you take one thing from this issue, take this. Here's why, here's the on-ramp, here's why I'd skip the others if you only had time for one." Maximum 300 words, one image, one strong sentence. A standalone moment of editorial conviction.
+
+- **The Itch is essential.** Before any picks, a chapter that names *exactly* what made the original work for this reader — the lone-gunslinger episodic feel, the procedural-with-stakes rhythm, the way the world breathed between plot beats. The Itch is the criterion every pick is judged against. If a pick doesn't address the Itch, it doesn't belong in the issue.
+- **Three tiers, not five.** The Closest Next Step (the safest, "if you want more of the same") — 1 pick. One Step Sideways (adjacent, "the same itch from a different angle") — 1 pick. The Wildcard (the bet, "completely different but addresses the same itch in a way you wouldn't predict") — 1 pick. Plus the If You Only Try One overlay. That's it — three picks plus a fourth-as-headline. No fat.
+- **Where to Go After That** at the end: brief horizon items (3-5) for when the three primary picks are exhausted. No on-ramp required — these are pointers, not commitments.
+- Use 8-12 component types. Lean on the on-ramp block (a structured "Start / Reassess / Then" trio), the tier band from Shortlist, big-numbers for the If You Only Try One pick.
+
+
+
+---
+
 ## rewind
 
 ### The Rewind
-Panoramic retrospective across all interests. **8,000-12,000 words, 25-40 pages.** Manual trigger: "Run a Rewind — [period]." Cover → Foreword → The Period in Numbers (stat bars, big-number-row) → Highs → Lows → What We Missed → What Stuck → Picks of the Period → Footer.
-- Unlike The Season Review (which covers one subject that ended), The Rewind looks back across *everything* — gaming, football, fitness, books, tech, life. It's a panoramic snapshot.
-- Best for: year-end, half-year, "my first 6 months of running", "2026 so far."
-- Ratings, rankings, and numbers everywhere. Timelines, big numbers, rating dots for scoring highs and lows.
-- Use 10-14 component types. Should feel like an awards ceremony in magazine form.
+Panoramic retrospective across **all** interests. **8,000-12,000 words, 25-40 pages.** Manual trigger: "Run a Rewind — [period]." Canonical chapter order: Cover → Foreword → The Period in Numbers (stat bars, big-number-row) → The Throughline → Highs → Lows → What We Missed → The Memory Test → Picks of the Period → Footer.
+
+- **Panoramic, not single-subject.** Rewind looks across gaming, football, F1, fitness, books, tech, world news, life — the lot. Season Review covers a single concluded subject; Rewind covers a defined time period across everything. If the topic fits one lane only, use Season Review instead.
+- Best for: half-year (last Sunday of June), year-end (last Sunday of December), end of a defined personal period (a training block, a trip window, a season-spanning window where multiple things converged).
+
+**The killer feature — The Throughline.** The chapter that earns Rewind's place. Find the single connecting thread that ran across all the disparate highs and lows of the period and name it. "This period was about *new launches landing all at once.*" "This period was about *waiting* — for the trip, for the title race, for the next book in the series." "This period was the one where I *stopped optimising and started enjoying*." It's an editor's interpretive call, drawn from the actual material the period produced. The reader gets a frame for what just happened, not a list of what happened. **One Throughline per Rewind.** Stated in the chapter title and earned in the chapter body. The rest of the issue arranges itself around it.
+
+**The second killer feature — The Memory Test.** Near the end, before Picks of the Period. A short chapter that splits the period's notable moments into three columns: **Will Stick** (the things you'll still be talking about in six months), **Might Stick** (the things that might fade or might surprise you by lasting), **Will Fade** (the things that felt big in the moment but won't last the year). This is the magazine's prediction, owned with an editor's confidence — not a hedge. Six months later, when the next Rewind comes around, the editor checks the prediction. Wrong calls are interesting; soft hedges are not.
+
+- The Throughline is a literary chapter; The Memory Test is structurally distinctive (three-column layout). Together they're what makes Rewind worth running — without them it's just a list-of-lists with a stat opener.
+- Ratings, rankings, and numbers everywhere across the body. Timelines, big-number-rows, rating dots for scoring highs and lows. Use 10-14 component types.
 
 
 

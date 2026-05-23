@@ -285,19 +285,29 @@ The Aside is a standalone mini-section placed between full sections for pacing. 
 | Picks of the Period | `sec shelf-section sec-opener` | `.also-cards` with rating dots |
 | Meanwhile | `sec world-section` | See universal pattern above |
 
-## The Blueprint
+## The Next
 
 | Section | Section class | Pattern |
 |---|---|---|
 | Foreword | `sec` (light bg) | Short prose |
-| The Goal | `sec world-section sec-opener` | `entry-stat` for target, `split-60-40` with `.sidebar` |
-| Current State | `sec session-section` | Prose + `.sidebar` or `.compare-panel` (current vs target) |
-| Decision Points | `sec world-section` | `.compare-panel` for each decision (Option A vs Option B), repeated. This is the core section |
-| Phased Plan | `sec session-section` | `.timeline` > `.timeline-node` per phase |
-| Tools & Resources | `sec history-section sec-opener` | `.also-cards` grid |
-| Risks & Pitfalls | `sec world-section` | `.timeline` with risk items |
-| First Steps This Week | `sec session-section` | `.timeline` or numbered prose |
-| Meanwhile | `sec world-section` | See universal pattern above |
+| The Itch | `chapter` | Prose — names exactly what made the original work for this reader. Single anchor for every pick that follows |
+| The Closest Next Step | `chapter` | `.next-tier` label + pick prose + `.on-ramp` block (Start with / Reassess at / Then) |
+| One Step Sideways | `chapter` | `.next-tier` label + pick prose + `.on-ramp` block |
+| The Wildcard | `chapter` | `.next-tier.is-wildcard` label + pick prose + `.on-ramp` block |
+| If You Only Try One | `chapter` | `.only-one` dark slab — single pick, no hedging, ~200-300 words |
+| Where to Go After That | `chapter` | Brief horizon list (3-5 items), no on-ramp required |
+| Meanwhile | `chapter` | See universal pattern above |
+
+## The Lookahead
+
+| Section | Section class | Pattern |
+|---|---|---|
+| Foreword | `sec` (light bg) | Short prose framing the window |
+| The Window in Numbers | `chapter` | `.bignum-row` — total events / don't-miss count / worth-a-look count / skip count |
+| The Calendar | `chapter` | `.calendar` `<ol>` of `.cal-row` entries, each with `data-verdict="hot\|warm\|wait\|skip"` |
+| The Crunch Weeks | `chapter` | One `.crunch-week` callout per dense week (Prioritise / Defer / Skip via `<dl>`) |
+| What Else Is Brewing | `chapter` | Brief horizon items without firm dates — `.also-list` style |
+| Meanwhile | `chapter` | See universal pattern above |
 
 ## The Field Guide
 
