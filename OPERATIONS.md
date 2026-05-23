@@ -89,3 +89,69 @@ dev setups. Install Python deps locally as needed:
 ```
 python3 -m pip install Pillow requests
 ```
+
+## Push notifications (one-time Cloudflare Pages setup)
+
+The PWA auto-subscribes any installed device to web push and the publish
+pipeline POSTs to `/api/notify` after each Sunday run. The push handler
+in `sw.js` pre-caches the new issue (HTML + cover + every inline image)
+*before* showing the notification — so a tablet that receives the push
+overnight has the issue fully offline by the morning.
+
+### 1. Generate keys
+
+```
+python3 -m pip install cryptography
+python3 scripts/generate-vapid.py
+```
+
+The script prints three values: `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`,
+and `NOTIFY_AUTH_TOKEN`. Don't commit any of them.
+
+### 2. Configure the Cloudflare Pages project
+
+Pages dashboard → the project → **Settings → Functions**:
+
+**Env vars (Production)**
+- `VAPID_PUBLIC_KEY` — plaintext, the base64url public key.
+- `VAPID_PRIVATE_KEY` — **secret**, the JWK JSON string.
+- `NOTIFY_AUTH_TOKEN` — **secret**, the random URL-safe token.
+- `VAPID_SUBJECT` *(optional)* — `mailto:you@example.com`; defaults to a
+  placeholder if unset.
+
+**KV namespace binding**
+- Variable name: `SUBSCRIPTIONS`
+- KV namespace: create one (e.g. `signal-push-subs`) and select it.
+
+Redeploy the Pages project (any push or "Retry deployment") so the new
+bindings take effect.
+
+### 3. Wire the trigger
+
+On the Claude Code web trigger that runs the Sunday pipeline:
+
+- `NOTIFY_AUTH_TOKEN` — the same value as above.
+- `SIGNAL_NOTIFY_HOST` — the Pages host (e.g. `the-signal.pages.dev` or
+  your custom domain). The skill's Phase 10 step 5 uses both.
+
+### 4. Verify
+
+1. Open the live site, install as PWA, accept the OS prompt.
+2. Open the project's Pages Function logs (or visit `/sw-status`) — you
+   should see a subscription stored.
+3. Manually fire a test push:
+   ```
+   curl -X POST "https://<host>/api/notify" \
+     -H "Authorization: Bearer <NOTIFY_AUTH_TOKEN>" \
+     -H "Content-Type: application/json" \
+     -d '{"title":"Test","body":"hello","url":"/"}'
+   ```
+   Notification should arrive within a few seconds.
+
+### Failure modes
+
+- `/api/vapid-public-key` returns 503 → `VAPID_PUBLIC_KEY` env var missing.
+- `/api/subscribe` returns 503 → `SUBSCRIPTIONS` KV binding missing.
+- `/api/notify` returns 401 → wrong or unset `NOTIFY_AUTH_TOKEN`.
+- Subscriptions returning 410/404 from the push service are auto-pruned
+  on the next `/api/notify` call.

@@ -137,6 +137,78 @@ async function maybeFetchAndPut(cache, url) {
   }
 }
 
+// --- Push: new-issue notification + deep pre-cache --------------------------
+// On push, the SW wakes, fetches the new issue HTML + cover + every inline
+// /assets/cached/ image, writes them to the appropriate caches, THEN shows
+// the OS notification. By the time the user taps it (or just leaves the
+// device idle), the entire issue is offline-ready.
+self.addEventListener("push", (event) => {
+  event.waitUntil((async () => {
+    let data = {};
+    try { data = event.data ? event.data.json() : {}; }
+    catch (_) { /* non-JSON payload */ }
+
+    const title = data.title || "The Signal";
+    const body = data.body || "A new issue is live.";
+    const url = data.url || "/";
+    const image = data.image || undefined;
+    const slug = data.slug || undefined;
+
+    if (url && url !== "/") {
+      try { await deepPrecacheIssue(url); }
+      catch (err) { console.warn("[sw] deep pre-cache failed:", err); }
+    }
+
+    await self.registration.showNotification(title, {
+      body,
+      icon: "/assets/icons/icon-192.png",
+      badge: "/assets/icons/icon-192.png",
+      image,
+      tag: slug ? `signal-${slug}` : "signal-issue",
+      renotify: true,
+      data: { url },
+    });
+  })());
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const targetUrl = (event.notification.data && event.notification.data.url) || "/";
+  event.waitUntil((async () => {
+    const target = new URL(targetUrl, self.location.origin);
+    const clients = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+    for (const client of clients) {
+      const u = new URL(client.url);
+      if (u.origin === target.origin && u.pathname === target.pathname) {
+        return client.focus();
+      }
+    }
+    return self.clients.openWindow(target.href);
+  })());
+});
+
+// Fetch issue HTML + cover + every inline /assets/cached/ image referenced
+// by the HTML. Idempotent: skips anything already cached.
+async function deepPrecacheIssue(issueUrl) {
+  const issueCache = await caches.open(ISSUE_CACHE);
+  const imageCache = await caches.open(IMAGE_CACHE);
+
+  let html;
+  const cached = await issueCache.match(issueUrl, MATCH_OPTS);
+  if (cached) {
+    html = await cached.clone().text();
+  } else {
+    const resp = await fetch(issueUrl);
+    if (!resp.ok) return;
+    html = await resp.clone().text();
+    await putInCache(issueCache, new Request(issueUrl), resp);
+  }
+
+  const imgRe = /src="(\/assets\/(?:cached|covers)\/[^"]+)"/g;
+  const imageUrls = [...new Set([...html.matchAll(imgRe)].map((m) => m[1]))];
+  await Promise.all(imageUrls.map((u) => maybeFetchAndPut(imageCache, u)));
+}
+
 // --- Fetch routing ----------------------------------------------------------
 self.addEventListener("fetch", (event) => {
   const req = event.request;
