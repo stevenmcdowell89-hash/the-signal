@@ -1,0 +1,562 @@
+/* ============================================================
+   SPECIAL EDITION — PER-FORMAT FLAIR  (non-holiday)
+
+   Format-aware accents on top of the calm baseline.
+
+   Quiet formats — Deep Dive, Blueprint, Starter Kit — get only
+   a hue shift on --accent and minor accent-tinted ornament.
+
+   Visual formats — Versus, Rewind, Season Review, Shortlist —
+   get distinctive components that significantly step up the
+   visual register: comparison rails, score panels, tier cards,
+   year-band rails, ratings bars.
+   ============================================================ */
+
+
+/* ───────────────────────── quiet formats ────────────────────
+   Light differentiation, mostly through the --accent token.
+   ============================================================ */
+
+body.is-special[data-special="deep-dive"]   { --accent: var(--accent-ochre); }
+body.is-special[data-special="blueprint"]   { --accent: var(--accent-ink); }
+body.is-special[data-special="starter-kit"] { --accent: var(--accent-jade); }
+
+/* Blueprint: a subtle blueprint-grid background on chapter heads */
+body.is-special[data-special="blueprint"] .chapter-head {
+  position: relative;
+}
+body.is-special[data-special="blueprint"] .chapter-head::before {
+  content: '';
+  position: absolute;
+  inset: -0.5rem -1rem auto -1rem;
+  height: 100%;
+  background-image:
+    linear-gradient(to right, color-mix(in oklab, var(--accent-ink) 14%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--accent-ink) 14%, transparent) 1px, transparent 1px);
+  background-size: 1.5rem 1.5rem;
+  opacity: 0.5;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Starter Kit: ordered "Essentials" list with numbered ringed badges */
+body.is-special[data-special="starter-kit"] .essentials {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0;
+  counter-reset: essential;
+  display: grid;
+  gap: 1.25rem;
+}
+body.is-special[data-special="starter-kit"] .essentials > li {
+  counter-increment: essential;
+  display: grid;
+  grid-template-columns: 3rem 1fr;
+  gap: 1rem;
+  align-items: start;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+body.is-special[data-special="starter-kit"] .essentials > li:last-child { border-bottom: 0; }
+body.is-special[data-special="starter-kit"] .essentials > li::before {
+  content: counter(essential, decimal-leading-zero);
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: 1.05rem;
+  text-align: center;
+  padding: 0.4rem 0;
+  border: 1px solid var(--accent);
+  border-radius: 50%;
+  color: var(--accent);
+  width: 2.4rem;
+  height: 2.4rem;
+  display: grid;
+  place-items: center;
+  letter-spacing: 0.05em;
+}
+
+
+/* ───────────────────────── VERSUS ──────────────────────────
+   Side-by-side comparison built into the layout. The cover
+   declares two subjects (A / B); the body uses .vs-pair rails
+   that put the two cases on the page in parallel.
+   ============================================================ */
+
+body.is-special[data-special="versus"] { --accent: var(--accent-blood); --accent-b: var(--accent-jade); }
+
+/* Cover: stamp the matchup in the centre, big and balanced */
+body.is-special[data-special="versus"] .cover-title {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: clamp(1rem, 3vw, 2.5rem);
+  text-align: center;
+}
+body.is-special[data-special="versus"] .cover-title .vs-a { text-align: right; color: var(--ink-on-dark); }
+body.is-special[data-special="versus"] .cover-title .vs-b { text-align: left;  color: var(--ink-on-dark); }
+body.is-special[data-special="versus"] .cover-title .vs-glyph {
+  font-family: var(--mono);
+  font-style: normal;
+  font-weight: 700;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  color: var(--accent-ochre);
+  letter-spacing: 0.05em;
+  padding: 0.2em 0.4em;
+  border: 2px solid var(--accent-ochre);
+  border-radius: 50%;
+  line-height: 1;
+}
+@media (max-width: 720px) {
+  body.is-special[data-special="versus"] .cover-title {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  body.is-special[data-special="versus"] .cover-title .vs-a,
+  body.is-special[data-special="versus"] .cover-title .vs-b { text-align: center; }
+}
+
+/* Tale-of-the-tape table: two columns sharing a row of stats */
+body.is-special[data-special="versus"] .vs-tape {
+  margin: 2.5rem 0;
+  width: 100%;
+  max-width: var(--measure-wide);
+  margin-inline: auto;
+  border-collapse: collapse;
+  font-family: var(--sans);
+}
+body.is-special[data-special="versus"] .vs-tape th,
+body.is-special[data-special="versus"] .vs-tape td {
+  padding: 0.85rem 1rem;
+  text-align: center;
+  border-bottom: 1px solid var(--rule);
+  font-variant-numeric: tabular-nums;
+  font-size: 1rem;
+}
+body.is-special[data-special="versus"] .vs-tape th {
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--ink-soft);
+  border-bottom: 2px solid var(--ink);
+}
+body.is-special[data-special="versus"] .vs-tape td.vs-row-label {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--bone-soft);
+  text-align: center;
+  width: 14rem;
+}
+body.is-special[data-special="versus"] .vs-tape td.vs-win { color: var(--accent); font-weight: 600; }
+
+/* The argument rail — two stacked panels for The Case For A / The Case For B */
+body.is-special[data-special="versus"] .vs-pair {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: 1fr 1fr;
+  max-width: var(--measure-wide);
+  margin: 2.5rem auto;
+}
+body.is-special[data-special="versus"] .vs-pair > article {
+  padding: 1.5rem 1.5rem 1.75rem;
+  border-top: 4px solid var(--accent);
+  background: var(--paper-warm);
+}
+body.is-special[data-special="versus"] .vs-pair > article + article {
+  border-top-color: var(--accent-b);
+}
+body.is-special[data-special="versus"] .vs-pair h3 {
+  margin-top: 0;
+  font-size: 1.3rem;
+  color: var(--accent);
+}
+body.is-special[data-special="versus"] .vs-pair > article + article h3 { color: var(--accent-b); }
+@media (max-width: 720px) {
+  body.is-special[data-special="versus"] .vs-pair { grid-template-columns: 1fr; }
+}
+
+/* Verdict panel — wide, bold, dark ground for the conclusion */
+body.is-special[data-special="versus"] .vs-verdict {
+  margin: 3rem auto;
+  max-width: var(--measure-wide);
+  padding: clamp(2rem, 4vw, 3rem) clamp(1.5rem, 4vw, 3rem);
+  background: var(--ink);
+  color: var(--ink-on-dark);
+  border-radius: 4px;
+  display: grid;
+  gap: 1rem;
+  text-align: center;
+}
+body.is-special[data-special="versus"] .vs-verdict .vs-eyebrow {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  color: var(--accent-ochre);
+}
+body.is-special[data-special="versus"] .vs-verdict .vs-winner {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  line-height: 1.05;
+}
+body.is-special[data-special="versus"] .vs-verdict p {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.1rem;
+  color: rgba(239, 227, 196, 0.86);
+  max-width: 40rem;
+  margin: 0 auto;
+}
+
+
+/* ───────────────────────── REWIND ──────────────────────────
+   Panoramic retrospective. Heavy on stats; the bignum-row gets
+   a treatment, and a year-band rail anchors highs / lows /
+   surprises. Cover lists "the period" prominently.
+   ============================================================ */
+
+body.is-special[data-special="rewind"] { --accent: var(--accent-rust); }
+
+body.is-special[data-special="rewind"] .cover-eyebrow::before {
+  content: "Rewind · ";
+  color: var(--accent-ochre);
+}
+
+/* Rewind's big-num row is the spine of the issue — larger, lined */
+body.is-special[data-special="rewind"] .bignum-row {
+  max-width: var(--measure-wide);
+  margin-inline: auto;
+  padding: 2.5rem 0;
+  border-color: var(--rule-strong);
+}
+body.is-special[data-special="rewind"] .bignum-row .bignum-value {
+  font-size: clamp(3.2rem, 7vw, 5rem);
+  color: var(--ink);
+  position: relative;
+}
+body.is-special[data-special="rewind"] .bignum-row .bignum-value::after {
+  content: '';
+  display: block;
+  width: 3rem;
+  height: 3px;
+  background: var(--accent);
+  margin: 0.65rem auto 0;
+}
+
+/* Year-band rail — horizontal band of months / quarters with markers
+   for highs and lows. */
+body.is-special[data-special="rewind"] .year-band {
+  margin: 2.5rem auto;
+  max-width: var(--measure-wide);
+  padding: 1.5rem 0;
+  position: relative;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+body.is-special[data-special="rewind"] .year-band-track {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 2px;
+  position: relative;
+}
+body.is-special[data-special="rewind"] .year-band-month {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--bone-soft);
+  text-align: center;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--rule);
+  position: relative;
+}
+body.is-special[data-special="rewind"] .year-band-marker {
+  position: absolute;
+  bottom: -7px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--paper);
+  cursor: help;
+}
+body.is-special[data-special="rewind"] .year-band-marker.is-low { background: var(--accent-jade); }
+body.is-special[data-special="rewind"] .year-band-legend {
+  margin-top: 1.25rem;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--ink-soft);
+}
+body.is-special[data-special="rewind"] .year-band-legend .leg-high::before,
+body.is-special[data-special="rewind"] .year-band-legend .leg-low::before {
+  content: '';
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  margin-right: 0.5em;
+  vertical-align: middle;
+}
+body.is-special[data-special="rewind"] .year-band-legend .leg-high::before { background: var(--accent); }
+body.is-special[data-special="rewind"] .year-band-legend .leg-low::before  { background: var(--accent-jade); }
+
+/* Highs / Lows / Picks grid — large hero cards */
+body.is-special[data-special="rewind"] .rewind-cards {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  margin: 2rem 0;
+}
+body.is-special[data-special="rewind"] .rewind-card {
+  padding: 1.5rem 1.5rem 1.75rem;
+  background: var(--paper-warm);
+  border-top: 4px solid var(--accent);
+}
+body.is-special[data-special="rewind"] .rewind-card.is-low { border-top-color: var(--accent-jade); }
+body.is-special[data-special="rewind"] .rewind-card h4 {
+  margin: 0 0 0.4rem;
+  font-size: 1.15rem;
+}
+body.is-special[data-special="rewind"] .rewind-card .rc-month {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+
+/* ───────────────────── SEASON REVIEW ───────────────────────
+   Ratings bars, league table feel, milestone moments. The
+   cover is dressed like a programme: badge + season title +
+   "what happened" subtitle.
+   ============================================================ */
+
+body.is-special[data-special="season-review"] { --accent: var(--accent-ink); }
+
+body.is-special[data-special="season-review"] .cover-eyebrow::before {
+  content: "Season Review · ";
+  color: var(--accent-ochre);
+}
+
+/* Ratings bar — used per player / per team / per moment */
+body.is-special[data-special="season-review"] .rating {
+  display: grid;
+  grid-template-columns: 12rem 1fr 3rem;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+body.is-special[data-special="season-review"] .rating:last-child { border-bottom: 0; }
+body.is-special[data-special="season-review"] .rating-label {
+  font-family: var(--serif);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+body.is-special[data-special="season-review"] .rating-bar {
+  height: 10px;
+  background: var(--paper-deep);
+  position: relative;
+  border-radius: 5px;
+  overflow: hidden;
+}
+body.is-special[data-special="season-review"] .rating-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--score, 0) * 1%);
+  background: linear-gradient(to right, var(--accent-ink), var(--accent-rust));
+  border-radius: 5px;
+}
+body.is-special[data-special="season-review"] .rating-score {
+  text-align: right;
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Scoreboard / league table */
+body.is-special[data-special="season-review"] .scoreboard {
+  width: 100%;
+  max-width: var(--measure-wide);
+  margin: 2rem auto;
+  border-collapse: collapse;
+  font-family: var(--sans);
+  font-size: 0.96rem;
+}
+body.is-special[data-special="season-review"] .scoreboard th,
+body.is-special[data-special="season-review"] .scoreboard td {
+  padding: 0.7rem 0.9rem;
+  text-align: right;
+  border-bottom: 1px solid var(--rule);
+  font-variant-numeric: tabular-nums;
+}
+body.is-special[data-special="season-review"] .scoreboard th:first-child,
+body.is-special[data-special="season-review"] .scoreboard td:first-child {
+  text-align: left;
+}
+body.is-special[data-special="season-review"] .scoreboard th {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--ink-soft);
+  border-bottom: 2px solid var(--ink);
+  background: var(--paper-warm);
+}
+body.is-special[data-special="season-review"] .scoreboard tbody tr:nth-child(odd) {
+  background: color-mix(in oklab, var(--paper-warm) 65%, transparent);
+}
+body.is-special[data-special="season-review"] .scoreboard td.sb-rank {
+  font-family: var(--mono);
+  font-weight: 600;
+  width: 2.5rem;
+  text-align: center;
+  color: var(--accent);
+}
+
+/* Milestone moment — a portrait card with a caption */
+body.is-special[data-special="season-review"] .milestones {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  margin: 2.5rem 0;
+}
+body.is-special[data-special="season-review"] .milestone {
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  overflow: hidden;
+  border-radius: 4px;
+}
+body.is-special[data-special="season-review"] .milestone img {
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  width: 100%;
+  height: auto;
+}
+body.is-special[data-special="season-review"] .milestone .ms-body {
+  padding: 1rem 1.1rem 1.2rem;
+}
+body.is-special[data-special="season-review"] .milestone .ms-when {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+body.is-special[data-special="season-review"] .milestone h4 {
+  margin: 0 0 0.4rem;
+  font-size: 1.05rem;
+  line-height: 1.25;
+}
+
+
+/* ───────────────────────── SHORTLIST ───────────────────────
+   Tiered picks with cover imagery breaks. Top Picks /
+   Strong Picks / Wildcards each get a visual divider and
+   their picks are presented as bold cards.
+   ============================================================ */
+
+body.is-special[data-special="shortlist"] { --accent: var(--accent-rust); }
+
+body.is-special[data-special="shortlist"] .cover-eyebrow::before {
+  content: "Shortlist · ";
+  color: var(--accent-ochre);
+}
+
+/* Tier band — bold horizontal stripe announcing the tier */
+body.is-special[data-special="shortlist"] .tier-band {
+  margin: 3rem auto 1.5rem;
+  max-width: var(--measure-wide);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1.25rem;
+}
+body.is-special[data-special="shortlist"] .tier-band .tb-rule {
+  height: 2px;
+  background: var(--accent);
+  border-radius: 1px;
+}
+body.is-special[data-special="shortlist"] .tier-band .tb-mark {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--accent);
+  line-height: 1;
+}
+body.is-special[data-special="shortlist"] .tier-band .tb-label {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  color: var(--ink);
+  font-weight: 600;
+}
+body.is-special[data-special="shortlist"] .tier-band[data-tier="strong"]   { --accent: var(--accent-ochre); }
+body.is-special[data-special="shortlist"] .tier-band[data-tier="wildcard"] { --accent: var(--accent-jade); }
+
+/* Pick — image left, text right; alternating rows flip to image right */
+body.is-special[data-special="shortlist"] .pick {
+  display: grid;
+  grid-template-columns: 14rem 1fr;
+  gap: 1.5rem;
+  margin: 1.5rem 0 2rem;
+  align-items: start;
+}
+body.is-special[data-special="shortlist"] .pick:nth-of-type(even) {
+  grid-template-columns: 1fr 14rem;
+}
+body.is-special[data-special="shortlist"] .pick:nth-of-type(even) .pick-img {
+  order: 2;
+}
+body.is-special[data-special="shortlist"] .pick-img {
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  width: 100%;
+  border-radius: 4px;
+  box-shadow: var(--shadow-soft);
+}
+body.is-special[data-special="shortlist"] .pick-body h3 {
+  margin-top: 0;
+}
+body.is-special[data-special="shortlist"] .pick-body .pick-tag {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  background: var(--ink);
+  color: var(--ink-on-dark);
+  padding: 0.25rem 0.6rem;
+  border-radius: 2px;
+  margin-bottom: 0.5rem;
+}
+@media (max-width: 640px) {
+  body.is-special[data-special="shortlist"] .pick,
+  body.is-special[data-special="shortlist"] .pick:nth-of-type(even) {
+    grid-template-columns: 1fr;
+  }
+  body.is-special[data-special="shortlist"] .pick:nth-of-type(even) .pick-img { order: initial; }
+  body.is-special[data-special="shortlist"] .pick-img { aspect-ratio: 4 / 3; max-height: 16rem; }
+}

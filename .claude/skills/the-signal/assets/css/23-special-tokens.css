@@ -1,0 +1,57 @@
+/* ============================================================
+   SPECIAL EDITION — TOKENS  (non-holiday formats)
+   Calm editorial palette. Holiday specials (Countdown / Field
+   Guide) have their own palette in the 33-/36+ files and are not
+   affected by anything in the 23-32 range.
+   ============================================================ */
+
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) {
+  /* Paper / ink */
+  --paper:       #F2EBDA;
+  --paper-warm:  #EFE7D2;
+  --paper-deep:  #EAE2CC;
+  --ink:         #15151C;
+  --ink-soft:    #1E1E27;
+  --ink-deep:    #0A0E14;
+  --bone:        #C9C2B5;
+  --bone-soft:   #A29A8B;
+  --rule:        rgba(21, 21, 28, 0.18);
+  --rule-strong: rgba(21, 21, 28, 0.45);
+
+  /* Accents — held back. The cover uses one of these per format;
+     body copy never lights up the whole palette. */
+  --accent-rust:  #B45A3C;
+  --accent-ochre: #C89344;
+  --accent-jade:  #5C7060;
+  --accent-blood: #8B2D2D;
+  --accent-ink:   #1F2A3A;
+
+  /* Default accent — overridden per format below in 29-special-format-flair */
+  --accent: var(--accent-rust);
+
+  /* Reverse palette used inside dark grounds (covers, etc.) */
+  --ink-on-dark:    #EFE3C4;
+  --ink-on-dark-mu: rgba(239, 227, 196, 0.72);
+  --rule-on-dark:   rgba(239, 227, 196, 0.22);
+
+  /* Measure */
+  --measure:      36rem;   /* body column, ~620px */
+  --measure-wide: 50rem;   /* spreads, tables */
+  --measure-tight: 30rem;  /* asides */
+
+  /* Type stack */
+  --serif: 'Cormorant Garamond', 'EB Garamond', Georgia, serif;
+  --sans:  'DM Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --mono:  'JetBrains Mono', 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+
+  /* Spacing rhythm */
+  --gap-xs: 0.5rem;
+  --gap-s:  0.85rem;
+  --gap-m:  1.5rem;
+  --gap-l:  2.5rem;
+  --gap-xl: 4rem;
+
+  /* Shadows */
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-mid:  0 4px 16px rgba(0, 0, 0, 0.18);
+}

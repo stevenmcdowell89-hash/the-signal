@@ -1,0 +1,116 @@
+/* ============================================================
+   SPECIAL EDITION — FIGURES + CAPTIONS  (non-holiday)
+
+   Calm, magazine-style figures. No motion. Captions are always
+   present, mono caps eyebrow + serif italic credit line.
+
+   <figure class="fig">                          (default — column-width)
+     <img src="..." alt="...">
+     <figcaption>
+       <span class="fig-caption">Caption text…</span>
+       <cite class="fig-credit">Photo: Source / License</cite>
+     </figcaption>
+   </figure>
+
+   Variants:
+     .is-wide       break out to --measure-wide
+     .is-fullbleed  break out to 100vw
+     .is-half       half-column floating right
+     .is-half.is-left  half-column floating left
+   ============================================================ */
+
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) figure.fig {
+  margin: 2.25rem 0;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) figure.fig img {
+  width: 100%;
+  height: auto;
+  display: block;
+  box-shadow: var(--shadow-soft);
+}
+
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) figure.fig figcaption {
+  margin-top: 0.85rem;
+  font-family: var(--serif);
+  font-size: 0.95rem;
+  font-style: italic;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  max-width: var(--measure);
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) figure.fig .fig-caption {
+  display: block;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) figure.fig .fig-credit {
+  display: block;
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--bone-soft);
+  margin-top: 0.4rem;
+}
+
+/* Half-column floating figure. Default = float right. .is-left for left. */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) figure.fig.is-half {
+  float: right;
+  max-width: 18rem;
+  margin: 0.3rem 0 1rem 1.5rem;
+  clear: right;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) figure.fig.is-half.is-left {
+  float: left;
+  margin: 0.3rem 1.5rem 1rem 0;
+  clear: left;
+}
+
+/* On narrow viewports a half-column figure becomes full-width. */
+@media (max-width: 720px) {
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) figure.fig.is-half,
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) figure.fig.is-half.is-left {
+    float: none;
+    max-width: none;
+    margin: 1.5rem 0;
+  }
+}
+
+/* Image-quote: a photo with an overlaid italic pull from someone's words.
+   Used for "what people say about X" breakouts. */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) figure.image-quote {
+  position: relative;
+  margin: 2.5rem 0;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: var(--shadow-mid);
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) figure.image-quote img {
+  width: 100%;
+  height: auto;
+  filter: brightness(0.55);
+  display: block;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) figure.image-quote blockquote {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  display: grid;
+  align-content: center;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  color: var(--ink-on-dark);
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(1.2rem, 2.4vw, 1.9rem);
+  line-height: 1.4;
+  text-wrap: pretty;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) figure.image-quote cite {
+  display: block;
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  margin-top: 0.85rem;
+  color: var(--accent-ochre);
+}

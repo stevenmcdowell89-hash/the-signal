@@ -1,0 +1,78 @@
+/* ============================================================
+   SPECIAL EDITION — "MEANWHILE..."  (non-holiday)
+
+   When a special replaces the standard weekly, this section
+   sits before the footer and catches the reader up on the
+   week's news in 12-18 short bullets with linked sources.
+
+       <section class="meanwhile">
+         <header class="chapter-head">
+           <div class="chapter-numeral">XIII</div>
+           <h2 class="chapter-title">Meanwhile…</h2>
+         </header>
+         <div class="chapter-body">
+           <ul class="meanwhile-list">
+             <li class="tier-hot"><strong>Headline.</strong> One sentence.
+               <a href="…">Source</a></li>
+             …
+           </ul>
+         </div>
+       </section>
+   ============================================================ */
+
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .meanwhile-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 1.1rem;
+}
+
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .meanwhile-list li {
+  position: relative;
+  padding: 0.65rem 0 0.7rem 1.5rem;
+  border-bottom: 1px solid var(--rule);
+  font-size: 0.98rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .meanwhile-list li:last-child {
+  border-bottom: 0;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .meanwhile-list li strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* Tier dot — left of the bullet */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .meanwhile-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 1.05em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--bone-soft);
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .meanwhile-list .tier-hot::before {
+  background: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 22%, transparent);
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .meanwhile-list .tier-warm::before {
+  background: var(--accent-ochre);
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .meanwhile-list .tier-note::before {
+  background: var(--bone-soft);
+}
+
+/* Source link at end of each bullet */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .meanwhile-list li a {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  margin-left: 0.4em;
+  background-size: 100% 1.02em;
+  white-space: nowrap;
+}
