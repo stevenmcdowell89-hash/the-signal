@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>The Signal — Push setup</title>
+<style>
+  :root {
+    --bg: #1A1A2E;
+    --bg-2: #16213E;
+    --bg-3: #20253E;
+    --ink: #E8E8E8;
+    --ink-2: #B6BAC6;
+    --ink-dim: #888;
+    --coral: #E94560;
+    --orange: #FF6B35;
+    --line: rgba(255,255,255,0.08);
+    --line-strong: rgba(255,255,255,0.16);
+    --code-bg: #0D1220;
+    --ok: #4ade80;
+    --warn: #fbbf24;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    line-height: 1.55;
+    padding: 1.5rem 1.25rem 5rem;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; }
+  h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(1.8rem, 5vw, 2.4rem);
+    margin: 0.5rem 0 0.4rem;
+    background: linear-gradient(135deg, var(--coral), var(--orange));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 0.02em;
+  }
+  .lede { color: var(--ink-2); margin: 0 0 1.5rem; }
+  h2 {
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--ink-dim);
+    margin: 2rem 0 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  h2::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+  .step { color: var(--coral); font-weight: 700; font-variant-numeric: tabular-nums; }
+  .field { margin-bottom: 1.5rem; }
+  .field-label {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin-bottom: 0.4rem;
+  }
+  .field-name {
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--ink);
+  }
+  .field-tag {
+    font-size: 0.7rem;
+    color: var(--ink-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-weight: 600;
+  }
+  .field-tag.secret { color: var(--warn); }
+  .value-box {
+    position: relative;
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0.85rem 4rem 0.85rem 0.95rem;
+    font-family: ui-monospace, 'JetBrains Mono', SFMono-Regular, monospace;
+    font-size: 0.78rem;
+    word-break: break-all;
+    color: var(--ink);
+    min-height: 2.8rem;
+  }
+  .value-empty { color: var(--ink-dim); font-style: italic; font-family: inherit; }
+  .copy-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: var(--bg-2);
+    color: var(--ink);
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    padding: 0.35rem 0.7rem;
+    font: inherit;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .copy-btn:hover { background: var(--bg-3); }
+  .copy-btn:active { transform: scale(0.96); }
+  .copy-btn.is-copied { background: var(--ok); color: #000; border-color: var(--ok); }
+  .actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin: 1.5rem 0 0.5rem;
+  }
+  .btn {
+    background: linear-gradient(135deg, var(--coral), var(--orange));
+    color: #fff;
+    border: 0;
+    padding: 0.85rem 1.5rem;
+    border-radius: 999px;
+    font: inherit;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 0.82rem;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn:hover { opacity: 0.9; }
+  .btn.secondary {
+    background: var(--bg-2);
+    border: 1px solid var(--line-strong);
+  }
+  .warn {
+    background: rgba(251, 191, 36, 0.08);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    border-radius: 8px;
+    padding: 0.85rem 1rem;
+    margin-bottom: 1.5rem;
+    color: var(--ink-2);
+    font-size: 0.88rem;
+  }
+  .warn strong { color: var(--warn); }
+  ol.dash-steps {
+    padding-left: 1.4rem;
+    color: var(--ink-2);
+  }
+  ol.dash-steps li { margin-bottom: 0.5rem; }
+  ol.dash-steps code, p code, .inline-code {
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 0.1em 0.4em;
+    font-family: ui-monospace, monospace;
+    font-size: 0.85em;
+    word-break: break-word;
+  }
+  .gen-status {
+    margin-top: 1rem;
+    color: var(--ok);
+    font-size: 0.88rem;
+    font-weight: 500;
+    min-height: 1.2rem;
+  }
+  .gen-status.err { color: var(--coral); }
+  a { color: var(--coral); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Push setup</h1>
+  <p class="lede">Generates the three Cloudflare env vars + the KV binding name you need to turn on push notifications. Runs entirely in this browser — keys are never sent anywhere.</p>
+
+  <div class="warn">
+    <strong>One-time only.</strong> Regenerating overwrites the existing keys; every device already subscribed will need to be re-subscribed (re-open the PWA, accept the prompt again).
+  </div>
+
+  <div class="actions">
+    <button class="btn" id="gen">Generate keys</button>
+    <button class="btn secondary" id="reset" hidden>Generate new set</button>
+  </div>
+  <div class="gen-status" id="status"></div>
+
+  <h2><span class="step">1.</span> Env vars</h2>
+  <p class="lede" style="margin-bottom: 0.5rem; font-size: 0.92rem;">Cloudflare Pages → your project → <strong>Settings → Functions → Production env vars → Add variable</strong>. Set the first as plaintext, the other two as <em>secrets</em>.</p>
+
+  <div class="field">
+    <div class="field-label">
+      <span class="field-name">VAPID_PUBLIC_KEY</span>
+      <span class="field-tag">Plaintext</span>
+    </div>
+    <div class="value-box" id="pub-box"><span class="value-empty">Press Generate to populate</span></div>
+  </div>
+
+  <div class="field">
+    <div class="field-label">
+      <span class="field-name">VAPID_PRIVATE_KEY</span>
+      <span class="field-tag secret">Secret</span>
+    </div>
+    <div class="value-box" id="priv-box"><span class="value-empty">Press Generate to populate</span></div>
+  </div>
+
+  <div class="field">
+    <div class="field-label">
+      <span class="field-name">NOTIFY_AUTH_TOKEN</span>
+      <span class="field-tag secret">Secret</span>
+    </div>
+    <div class="value-box" id="token-box"><span class="value-empty">Press Generate to populate</span></div>
+  </div>
+
+  <div class="field">
+    <div class="field-label">
+      <span class="field-name">VAPID_SUBJECT</span>
+      <span class="field-tag">Plaintext · optional</span>
+    </div>
+    <div class="value-box" id="subject-box">mailto:steven.mcdowell.89@gmail.com</div>
+  </div>
+
+  <h2><span class="step">2.</span> KV binding</h2>
+  <p class="lede" style="margin-bottom: 0.5rem; font-size: 0.92rem;">Same page in the dashboard → <strong>KV namespace bindings → Add binding</strong>:</p>
+  <ol class="dash-steps">
+    <li>Variable name: <code>SUBSCRIPTIONS</code></li>
+    <li>KV namespace: create one (call it <code>signal-push-subs</code>), then select it.</li>
+  </ol>
+
+  <h2><span class="step">3.</span> Redeploy</h2>
+  <p class="lede" style="margin-bottom: 0.5rem; font-size: 0.92rem;">Deployments tab → latest deploy → <strong>Manage deployment → Retry deployment</strong>. Env vars and KV bindings only take effect on a new deploy.</p>
+
+  <h2><span class="step">4.</span> Sunday trigger</h2>
+  <p class="lede" style="margin-bottom: 0.5rem; font-size: 0.92rem;">Claude Code on the Web — the trigger that runs the Sunday pipeline. Add two env vars there too so the pipeline can call <code>/api/notify</code> after publishing:</p>
+  <ol class="dash-steps">
+    <li><code>NOTIFY_AUTH_TOKEN</code> — same value as above.</li>
+    <li><code>SIGNAL_NOTIFY_HOST</code> — your Pages host (e.g. <code>the-signal.pages.dev</code>, or a custom domain).</li>
+  </ol>
+
+  <h2><span class="step">5.</span> Subscribe this device</h2>
+  <p class="lede" style="margin-bottom: 0.5rem; font-size: 0.92rem;">Open the PWA (Add to Home Screen if you haven't), tap the Signal icon, accept the notification prompt. That's it — every issue from then on triggers a push.</p>
+
+  <h2><span class="step">6.</span> Test</h2>
+  <p class="lede" style="margin-bottom: 0.5rem; font-size: 0.92rem;">Fire a test push from a terminal app on the tablet (or any HTTP client) once the steps above are done:</p>
+  <div class="value-box" id="test-curl" style="font-size: 0.72rem;"><span class="value-empty">Generate keys first to populate the test command</span></div>
+</div>
+
+<script>
+function b64url(buf) {
+  const bytes = new Uint8Array(buf);
+  let s = "";
+  for (let i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]);
+  return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function showCopyable(el, value) {
+  el.innerHTML = "";
+  el.textContent = value;
+  const btn = document.createElement("button");
+  btn.className = "copy-btn";
+  btn.type = "button";
+  btn.textContent = "Copy";
+  btn.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(value);
+      btn.textContent = "Copied";
+      btn.classList.add("is-copied");
+      setTimeout(() => { btn.textContent = "Copy"; btn.classList.remove("is-copied"); }, 1500);
+    } catch (err) {
+      // Fallback: select text
+      const range = document.createRange();
+      range.selectNodeContents(el.childNodes[0]);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      btn.textContent = "Selected — copy manually";
+    }
+  });
+  el.appendChild(btn);
+}
+
+async function generateKeys() {
+  const status = document.getElementById("status");
+  status.classList.remove("err");
+  status.textContent = "Generating…";
+
+  try {
+    const kp = await crypto.subtle.generateKey(
+      { name: "ECDSA", namedCurve: "P-256" }, true, ["sign", "verify"]
+    );
+    const privJwk = await crypto.subtle.exportKey("jwk", kp.privateKey);
+    const pubRaw = new Uint8Array(await crypto.subtle.exportKey("raw", kp.publicKey));
+
+    const publicKey = b64url(pubRaw);
+    const privateKeyString = JSON.stringify({
+      kty: "EC", crv: "P-256",
+      x: privJwk.x, y: privJwk.y, d: privJwk.d,
+    });
+    const tokenBytes = crypto.getRandomValues(new Uint8Array(32));
+    const token = b64url(tokenBytes);
+
+    showCopyable(document.getElementById("pub-box"), publicKey);
+    showCopyable(document.getElementById("priv-box"), privateKeyString);
+    showCopyable(document.getElementById("token-box"), token);
+    showCopyable(document.getElementById("subject-box"), "mailto:steven.mcdowell.89@gmail.com");
+
+    const host = location.host;
+    const testCurl = `curl -X POST "https://${host}/api/notify" \\\n  -H "Authorization: Bearer ${token}" \\\n  -H "Content-Type: application/json" \\\n  -d '{"title":"Test push","body":"hello from setup","url":"/"}'`;
+    showCopyable(document.getElementById("test-curl"), testCurl);
+
+    status.textContent = "Done. Copy each value into the Cloudflare dashboard.";
+    document.getElementById("reset").hidden = false;
+    document.getElementById("gen").hidden = true;
+  } catch (err) {
+    status.classList.add("err");
+    status.textContent = "Generation failed: " + (err && err.message || err);
+  }
+}
+
+document.getElementById("gen").addEventListener("click", generateKeys);
+document.getElementById("reset").addEventListener("click", () => {
+  if (confirm("Generate a new set? This will overwrite the existing values on screen. You'll need to paste the new values into Cloudflare and re-subscribe every PWA.")) {
+    generateKeys();
+  }
+});
+</script>
+</body>
+</html>

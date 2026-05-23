@@ -450,8 +450,62 @@
       // already cached, so this only fetches new issues / new covers.
       navigator.serviceWorker.ready.then(function (reg) {
         if (reg && reg.active) reg.active.postMessage({ type: 'PRECACHE_ALL' });
+        ensurePushSubscription(reg);
       });
     });
+  }
+
+  // -------- Push: auto-subscribe in PWA standalone mode --------
+  // Strategy: if the PWA is installed (running standalone), request the OS
+  // notification permission once, then subscribe with the VAPID public key
+  // and POST the subscription to /api/subscribe. Subsequent loads re-POST
+  // the existing subscription so the server stays in sync (browsers can
+  // rotate the endpoint without notice).
+  function ensurePushSubscription(reg) {
+    try {
+      if (!('Notification' in window) || !('PushManager' in window)) return;
+      var isStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches)
+        || window.navigator.standalone === true;
+      if (!isStandalone) return;
+      if (Notification.permission === 'denied') return;
+
+      reg.pushManager.getSubscription().then(function (existing) {
+        if (existing) { return postSubscription(existing); }
+        var requestPerm = (Notification.permission === 'default')
+          ? Notification.requestPermission()
+          : Promise.resolve(Notification.permission);
+
+        requestPerm.then(function (perm) {
+          if (perm !== 'granted') return;
+          return fetch('/api/vapid-public-key').then(function (r) {
+            if (!r.ok) throw new Error('VAPID public key unavailable');
+            return r.text();
+          }).then(function (publicKey) {
+            return reg.pushManager.subscribe({
+              userVisibleOnly: true,
+              applicationServerKey: urlBase64ToUint8Array(publicKey.trim()),
+            });
+          }).then(postSubscription);
+        });
+      }).catch(function (err) { console.warn('Push subscribe error:', err); });
+    } catch (err) { console.warn('Push subscribe error:', err); }
+  }
+
+  function postSubscription(sub) {
+    return fetch('/api/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(sub.toJSON ? sub.toJSON() : sub),
+    }).catch(function (err) { console.warn('Subscription POST failed:', err); });
+  }
+
+  function urlBase64ToUint8Array(b64) {
+    var padding = '='.repeat((4 - b64.length % 4) % 4);
+    var base64 = (b64 + padding).replace(/-/g, '+').replace(/_/g, '/');
+    var raw = atob(base64);
+    var buf = new Uint8Array(raw.length);
+    for (var i = 0; i < raw.length; i++) buf[i] = raw.charCodeAt(i);
+    return buf;
   }
 
   function showUpdateBanner() {
