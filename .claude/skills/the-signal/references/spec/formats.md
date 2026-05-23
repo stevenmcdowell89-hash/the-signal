@@ -271,7 +271,7 @@ Panoramic retrospective across **all** interests. **8,000-12,000 words, 25-40 pa
 - **Panoramic, not single-subject.** Rewind looks across gaming, football, F1, fitness, books, tech, world news, life — the lot. Season Review covers a single concluded subject; Rewind covers a defined time period across everything. If the topic fits one lane only, use Season Review instead.
 - Best for: half-year (last Sunday of June), year-end (last Sunday of December), end of a defined personal period (a training block, a trip window, a season-spanning window where multiple things converged).
 
-**The killer feature — The Throughline.** The chapter that earns Rewind's place. Find the single connecting thread that ran across all the disparate highs and lows of the period and name it. "This period was about *new launches landing all at once.*" "This period was about *waiting* — for the trip, for the title race, for the next book in the series." "This period was the one where I *stopped optimising and started enjoying*." It's an editor's interpretive call, drawn from the actual material the period produced. The reader gets a frame for what just happened, not a list of what happened. **One Throughline per Rewind.** Stated in the chapter title and earned in the chapter body. The rest of the issue arranges itself around it.
+**The killer feature — The Throughline.** The chapter that earns Rewind's place. Find the single connecting thread that ran across all the disparate highs and lows of the period and name it. "This period was about *new launches landing all at once.*" "This period was about *waiting* — for the trip, for the title race, for the next book in the series." "This period was the one where I *stopped optimising and started enjoying*." It's an editor's interpretive call, drawn from the actual material the period produced. The reader gets a frame for what just happened, not a list of what happened. **One Throughline per Rewind.** Stated in the chapter title and earned in the chapter body. The rest of the issue arranges itself around it. Marked visually by adding `is-throughline` to the chapter-head and a `.throughline-mark` eyebrow before the title — the chapter-numeral hides on this one chapter, and the title gets curly quotes + italic styling, so the reader sees at a glance this is THE chapter that earns the issue.
 
 **The second killer feature — The Memory Test.** Near the end, before Picks of the Period. A short chapter that splits the period's notable moments into three columns: **Will Stick** (the things you'll still be talking about in six months), **Might Stick** (the things that might fade or might surprise you by lasting), **Will Fade** (the things that felt big in the moment but won't last the year). This is the magazine's prediction, owned with an editor's confidence — not a hedge. Six months later, when the next Rewind comes around, the editor checks the prediction. Wrong calls are interesting; soft hedges are not.
 
@@ -285,9 +285,12 @@ Panoramic retrospective across **all** interests. **8,000-12,000 words, 25-40 pa
 ## season-review
 
 ### The Season Review
-End-of-season retrospective. **7,000-10,000 words, 22-35 pages.** Manual trigger: "Run a Season Review for [subject]." Cover → Foreword → Full narrative → Data/stats → Ratings → What's next → Long Shelf → Footer.
+End-of-season retrospective. **7,000-10,000 words, 22-35 pages.** Manual trigger: "Run a Season Review for [subject]." Cover → Foreword → Full narrative → Data/stats → The Scorecards → What's Next → Long Shelf → Footer.
 - **Only for things that have concluded.** A Serie A season, a completed book series, a console generation, a TV show that just wrapped, a year of training. If it's still ongoing, use a Deep Dive instead.
-- Ratings are mandatory — score the highs and lows. "What's next" looks forward from the ending.
+
+**The killer feature — The Scorecards.** Ratings are mandatory and they must be specific. Each subject (player, episode, album, character, training block, whatever the season was about) gets a `.scorecard` card: name + final rating in serif accent at the top, a `.sc-bar` with `--score: N` underneath, and an italic one-line `.sc-verdict` at the bottom. The card carries `data-tier="hot|warm|cold"` so the top-border colour and the score colour reflect tier at a glance — a wall of mostly-rose scorecards reads "great season" before any prose is read; a wall of mostly-grey reads "rough year." **Hedge-free verdicts.** "Best season since he signed" is the standard; "had his moments" is not. Aim for 8-12 scorecards in the chapter — enough to give the season a real shape, not so many that the wall becomes wallpaper.
+
+- "What's Next" looks forward from the ending — single chapter, 400-600 words, no Scorecards (those belong to the season that just ended, not the one coming).
 
 
 
@@ -298,9 +301,11 @@ End-of-season retrospective. **7,000-10,000 words, 22-35 pages.** Manual trigger
 ### The Shortlist
 Opinionated recommendation list. **3,500-5,500 words, 14-20 pages.** Manual trigger: "Run a Shortlist — [topic]." Cover → Foreword → The Lens (selection criteria) → The Shortlist (tiered picks: Top Picks, Strong Picks, Wildcards) → Also Worth Knowing (horizon items) → The Cheat Sheet (summary table) → Meanwhile... → Footer.
 - **Tiered, not ranked.** Picks are grouped into tiers (Top Picks 2-3, Strong Picks 2-3, Wildcards 1-2) rather than numbered 1-7. Each tier has a different editorial tone: Top Picks get the most space and strongest recommendation; Strong Picks are excellent with a caveat or two; Wildcards are unusual choices that reward the right temperament.
-- **The Lens is essential.** Before any picks, a short section explains the selection criteria — what the magazine looked for, what the reader's profile suggests, what was excluded and why. This frames every pick that follows.
-- **Every pick needs a "Why It's Here" callout.** Use `.dyk` or `.entry-question` components. This is the editorial voice — not a review summary, but the specific reason this pick made the list for this reader.
-- **The Cheat Sheet** is a quick-reference table with all picks: game/item, genre/type, price, playtime/length, status, vibe tag. Top Picks get a star emoji. Also Worth Knowing items appear in italics.
+
+**The killer feature — The Lens + The Cheat Sheet, bookending the picks.** The Lens at the start is the editor's stated criteria — what was looked for, what was excluded, why this set rather than another. Rendered as a `.lens` block: mono-caps eyebrow, a short italic-serif statement of the criteria, then a numbered `.lens-criteria` list (3-5 entries) of the specific things the magazine looked for. Without The Lens, the picks read as "stuff the magazine likes"; with The Lens they read as "stuff the magazine likes *for this specific reason*." The Cheat Sheet at the end is the at-a-glance summary table: `.cheat-sheet` with `#` / `Pick` / `Tier` / `Why` columns, every row tagged `data-tier="top|strong|wildcard"` so the tier pill colour-codes inline. Reader who skim-reads the issue can lift the whole shortlist in 30 seconds from the Cheat Sheet alone.
+
+- **Every pick needs a "Why It's Here" callout.** This is the editorial voice — not a review summary, but the specific reason this pick made the list for this reader.
+- Tier-band visuals (`.tier-band` with `data-tier="strong|wildcard"`) divide the body into Top / Strong / Wildcard sections.
 - **Also Worth Knowing** covers 3-5 items on the horizon — not out yet, but worth watching. Card format, lighter treatment.
 - Best for: "games for Switch 2", "books for a holiday", "podcasts to start", "kettlebells under £100", anything where the reader wants a curated shortlist with editorial reasoning.
 - Use 8-12 component types. Each pick needs at least a Quick Stats sidebar. Vary layout between picks — no two consecutive picks should use the same component pattern.
@@ -312,13 +317,15 @@ Opinionated recommendation list. **3,500-5,500 words, 14-20 pages.** Manual trig
 ## starter-kit
 
 ### The Starter Kit
-Beginner's guide. **4,000-6,000 words, 15-22 pages.** Manual trigger: "Run a Starter Kit — [topic]." Cover → Foreword → Why This Matters → The Essentials (5-7 items) → Common Mistakes → One-Week Plan → Where to Go Deeper → Footer.
+Beginner's guide. **4,000-6,000 words, 15-22 pages.** Manual trigger: "Run a Starter Kit — [topic]." Cover → Foreword → Why This Matters → The Essentials (5-7 items) → Common Mistakes → The One-Week Plan → Where to Go Deeper → Footer.
 - A structured progression from zero to competent. Practical, opinionated, designed for sharing or for new interests.
 - Best for: "Getting into Malazan", "Home kettlebell training from scratch", "Specialty coffee basics", "Starting an Etsy template shop", "Fantasy Premier League for beginners."
 - **Opinionated curation.** The Essentials are not a balanced list of all options — they're the 5-7 things the magazine recommends, with reasoning. "Buy this, not that" energy.
 - Common Mistakes should be genuinely useful warnings, not generic filler ("don't give up!").
-- Use timeline components for the One-Week Plan, also-cards for The Essentials, compare panels for "this not that", sidebars for tips.
-- Use 8-12 component types.
+
+**The killer feature — The One-Week Plan.** A day-by-day sequence telling the reader exactly what to do across the seven days after they finish the issue. Not "try things at your pace" — specific instructions per day. Day 1: this. Day 3: switch to this. Day 5: come back to the first one, now you'll get the difference. **This is the thing the reader will quote back as why the format worked** — concrete, sequenced, decision-light. Rendered as the `.week-plan` vertical timeline: each day gets a bordered day-badge (Day N / Mon) on the left of an accent rail, with the action title + a short "why this on this day" beneath. Seven days, no more, no fewer; if the topic doesn't need seven days the Starter Kit doesn't need seven days of plan — but the plan must commit to a specific schedule, not a "do this whenever" punt.
+
+- Use 8-12 component types: the `.essentials` numbered-ring list for The Essentials, the `.week-plan` timeline for The One-Week Plan, compare panels for "this not that" inside Common Mistakes, sidebars for tips.
 
 
 
