@@ -334,7 +334,21 @@ Use 10-14 different types per standard issue. No two consecutive sections should
 The full Sunday edition. **6,000-8,000 words, 20-30 pages.** Section order as listed above.
 
 ### Deep Dive
-Single-topic deep exploration. **8,000-12,000 words default; flex to 18,000-20,000 for inherently large topics.** Manual trigger ("Run a Deep Dive on [topic]") or quarterly auto-trigger from the backlog. Cover → Foreword → Reading paths (2/10/30 min) → Full story → On the Radar → Footer. Use 10-14 component types. Best for: a single subject that deserves 10x the space it would get in the weekly.
+Single-topic deep exploration. **8,000-12,000 words default; flex to 18,000-20,000 for inherently large topics.** Manual trigger ("Run a Deep Dive on [topic]") or quarterly auto-trigger from the backlog. Canonical chapter order: Cover → Foreword → The Argument → Full story → Keep Digging → Footer. Use 10-14 component types. Best for: a single subject that deserves 10x the space it would get in the weekly.
+
+**The killer feature — The Argument.** A short chapter (200-400 words) sitting between the Foreword and the body, naming the magazine's *interpretive frame* for the topic. Not neutral like Wikipedia, not personal like an essay — the editor's stated take, owned up front. "This issue reads the Yellow Turban Revolt as the first plague-religion convergence in Chinese history, not the peasant uprising it usually gets framed as." Three parts: an eyebrow ("The magazine's take"), a one-or-two-sentence thesis in larger italic serif, and a short paragraph explaining the stance and what it means for how the issue reads. The rest of the issue arranges itself around the argument — chapters can support it, complicate it, or push against it, but no chapter is neutral about it. **No-hedge rule:** an Argument that says "this could be read several ways" is a fail. The editor commits to a frame; the prose earns it.
+
+  The Argument replaces the old "Reading paths (2/10/30 min)" chapter, which sat in the spec but was never written into actual issues — the writers ignored it because offering a 10-minute cliff-notes cut of a piece the reader specifically asked for at full depth contradicted the request. If a reader wants depth, give them depth; if they want a skim, the weekly already exists.
+
+**The second killer feature — Keep Digging.** A closing chapter (before Footer) that points the reader at cross-media extensions of the topic — **specifically away from the page**. Different from a "Further Reading" list because the magazine isn't a bibliography; the move is "this topic has lived in other media too, here's where." Each item gets a typed pill (podcast / tv / film / game / video / book), the title, and a single-line "why it's here" anchored to the issue's argument — *not* a generic review summary, but a pointer-back to the magazine's frame.
+
+  **Source-discipline rules:**
+  1. **Podcasts must be specific episodes**, not series. "The Chinese History Podcast" is a fail. "The Chinese History Podcast — Episode 142, *Zhang Jue and the Way of Great Peace*" is the standard. The researcher must surface the episode title, episode number where applicable, and the specific reason that episode (not the show in general) earns the slot.
+  2. **Same rule applies to TV** — if a series only addresses the topic in two specific episodes, name those two episodes, not the series.
+  3. **Lean cross-media, not bibliographic.** Aim for **5-9 items, at least 4 of them non-print** (podcast episode, TV, film, game, video documentary). Books are allowed but should never dominate — readers already know how to find a book on a topic. The Keep Digging chapter's value comes from the items they *wouldn't* have found by searching the topic on Amazon.
+  4. **Every item must be real and verifiable.** No invented podcast episodes, no plausible-but-fictional documentaries. The researcher surfaces these in Phase 3 with URLs the writer can cite. An item the researcher couldn't verify does not appear.
+
+  Reads as the magazine respecting the reader as someone who might want to keep going, not as a librarian handing out a syllabus.
 
 **Word-count flex rule.** The 8-12k band is the default. For inherently scope-rich topics (the Napoleonic Wars, the 2008 financial crisis, a century of computing) the chapter plan may declare `expanded_scope: true` with explicit rationale, raising the ceiling to 18-20k. Stripping the ceiling entirely is not allowed — open-ended budgets invite bloat. **Chapter-length floor:** if the average chapter would drop below 1,000 words to fit the budget, expand the budget rather than pad. Vague topics never qualify for the flex — vagueness is fixed by sharpening the scope at planner stage, not by writing more words. A vague topic at 18k is twice the disappointment of a vague topic at 8k.
 
@@ -808,7 +822,8 @@ Every non-holiday special edition obeys these rules. Holiday specials (Countdown
 - **JS-off renders a complete issue.** The whole non-holiday system is pure CSS.
 - **Word counts and section depth are the spine.** Visual flair sits around content, not in place of it.
 - **Quiet vs. visual register.**
-  - *Quiet* — Deep Dive, Starter Kit. Baseline editorial system + minor accent (drop cap, format colour, numbered ring badges on Starter Kit essentials).
+  - *Quiet* — Starter Kit. Baseline editorial system + minor accent (drop cap, format colour, numbered ring badges on Starter Kit essentials).
+  - *Argued (Deep Dive)* — baseline plus `.argument` framed thesis early + `.keep-digging` cross-media closing grid. Body is literary, but two distinctive components anchor the opening and the close.
   - *Visual* — Versus, Rewind, Season Review, Shortlist, Next, Lookahead. Same baseline plus format-specific components (`.vs-tape` / `.vs-pair` / `.vs-verdict`, `.year-band` / `.rewind-cards` / `.memory-test`, `.rating` / `.scoreboard` / `.milestones`, `.tier-band` / `.pick`, `.on-ramp` / `.only-one`, `.calendar` / `.cal-verdict` / `.crunch-week`) for clear differentiation.
 
 ### Authoring a special edition
@@ -838,7 +853,6 @@ Every non-holiday special edition obeys these rules. Holiday specials (Countdown
   - `.chapter-body` — clamped to `--measure` (36rem) by default
   - `.is-wide` / `.is-fullbleed` modifiers on children to break out of the measure
 - `.sp-kicker` — sub-section heading inside long chapters (mono caps, accent)
-- `.reading-paths` — grid of 2/10/30-min path cards (Deep Dive)
 
 **Baseline flair (every non-holiday special):**
 - `.chapter-body.has-dropcap` or `<p class="lede">` — first paragraph gets a large accent drop cap
@@ -869,9 +883,14 @@ Every non-holiday special edition obeys these rules. Holiday specials (Countdown
 - *Next:* `.next-tier` row with `data-step="I|II|III"` for the numbered roundel marker (+ `.is-wildcard` modifier for the third tier); `.on-ramp` stepped track — the killer feature — with three `.on-ramp-row` entries each tagged `data-step="start|reassess|then"` (auto-renders the glyph + connecting track), `.on-ramp-label` + `.on-ramp-body`; `.only-one` dark slab for the "If You Only Try One" hero with star seal (`.only-one-mark` + `.only-one-pick` + `.only-one-reason`)
 - *Lookahead:* `.calendar` `<ol>` with optional `<li class="cal-week">` dividers and `.cal-row` items carrying `data-verdict="hot|warm|wait|skip"` — each row has a tinted background + accent rail in the verdict colour, `.cal-when` (date card with `.cal-date` + `.cal-where`), `.cal-body` (`<h4>` + `<p>`), `.cal-verdict` containing `.cal-verdict-chip` (full pill — the killer chip with glyph + label + tinted bg) and optional `.cal-reason` italic gloss; plus `.crunch-week` callout with `.crunch-header` (`.crunch-label` warning chip + `.crunch-when` heading) and `.crunch-list` `<dl>` whose `<dt>` carry `data-tier="hot|warm|wait|skip"` for tier-coloured Prioritise / Defer / Skip badges
 
-**Quiet-format mini-flair (Deep Dive / Starter Kit):**
-- All baseline components above. Each format has a distinct `--accent` colour set on `body[data-special="…"]`.
-- *Starter Kit:* `.essentials` ordered list — each `<li>` gets a numbered ring badge (counter-based)
+**Deep Dive flair:**
+- All baseline components above. Plus two killer-feature components:
+- `.argument` — framed thesis block (`.argument-eyebrow` + `.argument-thesis` italic serif + `.argument-stance` paragraph). Sits between Foreword and the body; pilcrow seal in accent.
+- `.keep-digging` — closing cross-media grid of `.kd-item` cards. Each card carries `data-medium="podcast|tv|film|game|video|book"` (which paints the per-type pill colour + glyph) and contains `.kd-medium` pill, `.kd-title` heading, optional `.kd-episode` italic line (mandatory on podcasts — series-only refs forbidden), `.kd-why` italic gloss.
+
+**Quiet-format mini-flair (Starter Kit):**
+- All baseline components above. Distinct `--accent` colour set on `body[data-special="starter-kit"]`.
+- `.essentials` ordered list — each `<li>` gets a numbered ring badge (counter-based).
 
 **What was removed (v8.21 redesign):**
 - All scroll motion (`.sp-parallax`, `.sp-stagger`, `.sp-wipe`, `.sp-curtain`)

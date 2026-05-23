@@ -57,6 +57,195 @@ body.is-special[data-special="starter-kit"] .essentials > li::before {
 }
 
 
+/* ───────────────────────── DEEP DIVE ────────────────────────
+   Killer features:
+   - The Argument: framed thesis block early in the issue,
+     stating the magazine's interpretive frame for the topic.
+   - Keep Digging: closing cross-media grid (podcast / tv / film
+     / game / book / longread / video), each typed with a tinted
+     pill, anchored to the issue's argument.
+   ============================================================ */
+
+/* The Argument — a framed block, not a callout. Reads as the editor's
+   stated position; intentionally distinct from a pullquote so the
+   reader knows this is a claim being made, not a quotation.
+
+     <div class="argument">
+       <div class="argument-eyebrow">The magazine's take</div>
+       <p class="argument-thesis">This issue reads the Yellow Turban Revolt
+         as the first plague-religion convergence in Chinese history,
+         not the peasant uprising it usually gets framed as.</p>
+       <p class="argument-stance">Stance paragraph — what that frame buys
+         us, what it costs, and how the rest of the issue works around it.</p>
+     </div>
+*/
+body.is-special[data-special="deep-dive"] .argument {
+  margin: 1.5rem auto 2.5rem;
+  max-width: var(--measure);
+  padding: 1.75rem 1.75rem 1.5rem 2.25rem;
+  background: linear-gradient(to right,
+    color-mix(in oklab, var(--accent) 9%, var(--paper-warm)),
+    var(--paper-warm) 60%);
+  border-left: 5px solid var(--accent);
+  border-radius: 0 6px 6px 0;
+  box-shadow: var(--shadow-soft);
+  position: relative;
+}
+/* Open-quote ornament in the top-left corner of the block */
+body.is-special[data-special="deep-dive"] .argument::before {
+  content: '\00B6';   /* ¶ pilcrow — claim marker */
+  position: absolute;
+  top: 0.4rem;
+  left: -0.5rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  display: grid;
+  place-items: center;
+  background: var(--accent);
+  color: var(--paper);
+  border-radius: 50%;
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1;
+  box-shadow: 0 2px 6px color-mix(in oklab, var(--accent) 30%, transparent);
+}
+body.is-special[data-special="deep-dive"] .argument-eyebrow {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 0.85rem;
+}
+body.is-special[data-special="deep-dive"] .argument-thesis {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(1.2rem, 1.8vw, 1.5rem);
+  line-height: 1.35;
+  color: var(--ink);
+  margin: 0 0 1rem;
+  text-wrap: pretty;
+}
+body.is-special[data-special="deep-dive"] .argument-stance {
+  font-family: var(--serif);
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+/* Keep Digging — closing cross-media grid. Each item is a card with a
+   typed pill at the top, the title, and a single-line "why" anchored
+   to the issue's argument.
+
+     <div class="keep-digging">
+       <article class="kd-item" data-medium="podcast">
+         <span class="kd-medium">Podcast</span>
+         <h4 class="kd-title">The Chinese History Podcast — Yellow Turbans series</h4>
+         <p class="kd-why">Five-part audio narrative covering the full arc.</p>
+       </article>
+       <article class="kd-item" data-medium="film">…</article>
+       …
+     </div>
+
+   data-medium accepts: podcast | tv | film | game | video | book.
+   Books are allowed but should be the minority — the format's value is
+   the cross-media items the reader wouldn't find on Amazon.
+
+   For podcasts and tv, an optional <span class="kd-episode">…</span>
+   line surfaces the specific episode title beneath the show name
+   (podcasts must always carry one — the spec forbids series-only refs).
+*/
+body.is-special[data-special="deep-dive"] .keep-digging {
+  margin: 1.75rem 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1rem;
+}
+body.is-special[data-special="deep-dive"] .kd-item {
+  padding: 1rem 1.1rem 1.2rem;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-top: 3px solid var(--bone-soft);
+  border-radius: 0 0 4px 4px;
+  display: grid;
+  gap: 0.45rem;
+  align-content: start;
+}
+body.is-special[data-special="deep-dive"] .kd-medium {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-weight: 700;
+  padding: 0.25rem 0.55rem;
+  border-radius: 2px;
+  background: var(--bone-soft);
+  color: var(--paper);
+  justify-self: start;
+  white-space: nowrap;
+}
+body.is-special[data-special="deep-dive"] .kd-medium::before {
+  font-size: 0.78rem;
+  line-height: 1;
+}
+/* Per-medium colour + glyph */
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="podcast"]  { border-top-color: var(--accent-ember); }
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="tv"]       { border-top-color: var(--accent-rose); }
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="film"]     { border-top-color: var(--accent-deep); }
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="game"]     { border-top-color: var(--accent-teal); }
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="video"]    { border-top-color: var(--accent-tan); }
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="book"]     { border-top-color: var(--accent-gold); }
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="podcast"]  .kd-medium { background: var(--accent-ember); color: var(--ink); }
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="tv"]       .kd-medium { background: var(--accent-rose);  color: var(--paper); }
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="film"]     .kd-medium { background: var(--accent-deep);  color: var(--paper); }
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="game"]     .kd-medium { background: var(--accent-teal);  color: var(--paper); }
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="video"]    .kd-medium { background: var(--accent-tan);   color: var(--paper); }
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="book"]     .kd-medium { background: var(--accent-gold);  color: var(--ink); }
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="podcast"]  .kd-medium::before { content: '\1F3A7'; }   /* headphones */
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="tv"]       .kd-medium::before { content: '\1F4FA'; }   /* TV */
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="film"]     .kd-medium::before { content: '\1F39E\FE0F'; }  /* film frames */
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="game"]     .kd-medium::before { content: '\1F3AE'; }   /* video game */
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="video"]    .kd-medium::before { content: '\25B6'; }    /* play */
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="book"]     .kd-medium::before { content: '\1F4D6'; }   /* open book */
+
+body.is-special[data-special="deep-dive"] .kd-title {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.3;
+  font-weight: 600;
+  color: var(--ink);
+}
+/* Optional episode line — surfaces the specific episode beneath the
+   show/series title. Mandatory on podcasts (per the spec). */
+body.is-special[data-special="deep-dive"] .kd-episode {
+  display: block;
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 0.92rem;
+  line-height: 1.35;
+  color: var(--accent);
+  margin-top: -0.15rem;
+}
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="podcast"] .kd-episode { color: var(--accent-ember); }
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="tv"]      .kd-episode { color: var(--accent-rose); }
+body.is-special[data-special="deep-dive"] .kd-why {
+  margin: 0;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+
 /* ───────────────────────── VERSUS ──────────────────────────
    Side-by-side comparison built into the layout. The cover
    declares two subjects (A / B); the body uses .vs-pair rails

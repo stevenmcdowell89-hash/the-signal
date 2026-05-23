@@ -233,10 +233,44 @@ The Aside is a standalone mini-section placed between full sections for pacing. 
 
 | Section | Section class | Pattern |
 |---|---|---|
-| Foreword | `sec` (light bg) | Short prose, 50-80 words |
-| Reading Paths | `sec session-section` | Three `.col-card` items in a `.dual-col` or standalone list: 2-min / 10-min / 30-min paths |
-| Main Story | `sec world-section sec-opener` | Long-form prose broken up with `split-60-40` (images + sidebars), `entry-stat`, `pull-quote`, `dyk`, `timeline`, `stat-bar`, `compare-panel`. Multiple sub-sections with `<h3>` headers |
-| Meanwhile | `sec world-section` | See universal pattern above |
+| Foreword | `chapter` | Short prose, 50-80 words |
+| The Argument | `chapter` | `.argument` framed block — `.argument-eyebrow` ("The magazine's take") + `.argument-thesis` (large italic serif, the thesis) + `.argument-stance` (paragraph) |
+| Main Story | `chapter` (×N) | Long-form prose. Body components: `.pullquote`, `.marginalia`, `.bignum`, `.bignum-row`, `figure.fig`, `figure.image-quote`, `.sp-ornament`, `.sp-kicker` |
+| Keep Digging | `chapter` | `.keep-digging` cross-media grid of `.kd-item` cards |
+| Meanwhile | `chapter` | See universal pattern above (only if the Deep Dive is replacing the standard weekly) |
+
+### The Argument contract
+
+```html
+<div class="argument">
+  <div class="argument-eyebrow">The magazine's take</div>
+  <p class="argument-thesis">This issue reads the Yellow Turban Revolt as the first plague-religion convergence in Chinese history, not the peasant uprising it usually gets framed as.</p>
+  <p class="argument-stance">Stance paragraph (~80-150 words) explaining what that frame buys, what it costs, and how the rest of the issue works around it. No hedging — the editor commits.</p>
+</div>
+```
+
+### Keep Digging contract
+
+Cross-media closing chapter. **Lean non-print** — aim for 5-9 items with at least 4 across `podcast / tv / film / game / video`. Books are allowed but should never dominate.
+
+```html
+<div class="keep-digging">
+  <article class="kd-item" data-medium="podcast">
+    <span class="kd-medium">Podcast</span>
+    <h4 class="kd-title">The History of China Podcast</h4>
+    <span class="kd-episode">Episode 49 — "The Yellow Turbans"</span>
+    <p class="kd-why">Chris Stewart's hour-long narrative covers Zhang Jue's rise and the rebellion's collapse in a single sitting — the cleanest audio overview that doesn't bury the religious dimension.</p>
+  </article>
+  <article class="kd-item" data-medium="film">
+    <span class="kd-medium">Film</span>
+    <h4 class="kd-title">Red Cliff (2008)</h4>
+    <p class="kd-why">John Woo's two-part epic on the war that finished off the Han — the direct sequel to the Yellow Turban story.</p>
+  </article>
+  <!-- … -->
+</div>
+```
+
+`data-medium` accepts `podcast | tv | film | game | video | book`. **Podcasts must always carry a `<span class="kd-episode">` line naming the specific episode** — series-only references are forbidden. The same rule applies to TV where only a couple of episodes touch the topic. Every item must be real and verifiable; the researcher surfaces these in Phase 3 with URLs.
 
 ## The Countdown
 

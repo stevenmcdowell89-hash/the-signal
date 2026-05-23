@@ -14,7 +14,8 @@ Every non-holiday special edition obeys these rules. Holiday specials (Countdown
 - **JS-off renders a complete issue.** The whole non-holiday system is pure CSS.
 - **Word counts and section depth are the spine.** Visual flair sits around content, not in place of it.
 - **Quiet vs. visual register.**
-  - *Quiet* — Deep Dive, Starter Kit. Baseline editorial system + minor accent (drop cap, format colour, numbered ring badges on Starter Kit essentials).
+  - *Quiet* — Starter Kit. Baseline editorial system + minor accent (drop cap, format colour, numbered ring badges on Starter Kit essentials).
+  - *Argued (Deep Dive)* — baseline plus `.argument` framed thesis early + `.keep-digging` cross-media closing grid. Body is literary, but two distinctive components anchor the opening and the close.
   - *Visual* — Versus, Rewind, Season Review, Shortlist, Next, Lookahead. Same baseline plus format-specific components (`.vs-tape` / `.vs-pair` / `.vs-verdict`, `.year-band` / `.rewind-cards` / `.memory-test`, `.rating` / `.scoreboard` / `.milestones`, `.tier-band` / `.pick`, `.on-ramp` / `.only-one`, `.calendar` / `.cal-verdict` / `.crunch-week`) for clear differentiation.
 
 
@@ -51,7 +52,6 @@ Every non-holiday special edition obeys these rules. Holiday specials (Countdown
   - `.chapter-body` — clamped to `--measure` (36rem) by default
   - `.is-wide` / `.is-fullbleed` modifiers on children to break out of the measure
 - `.sp-kicker` — sub-section heading inside long chapters (mono caps, accent)
-- `.reading-paths` — grid of 2/10/30-min path cards (Deep Dive)
 
 **Baseline flair (every non-holiday special):**
 - `.chapter-body.has-dropcap` or `<p class="lede">` — first paragraph gets a large accent drop cap
@@ -82,9 +82,14 @@ Every non-holiday special edition obeys these rules. Holiday specials (Countdown
 - *Next:* `.next-tier` row with `data-step="I|II|III"` for the numbered roundel marker (+ `.is-wildcard` modifier for the third tier); `.on-ramp` stepped track — the killer feature — with three `.on-ramp-row` entries each tagged `data-step="start|reassess|then"` (auto-renders the glyph + connecting track), `.on-ramp-label` + `.on-ramp-body`; `.only-one` dark slab for the "If You Only Try One" hero with star seal (`.only-one-mark` + `.only-one-pick` + `.only-one-reason`)
 - *Lookahead:* `.calendar` `<ol>` with optional `<li class="cal-week">` dividers and `.cal-row` items carrying `data-verdict="hot|warm|wait|skip"` — each row has a tinted background + accent rail in the verdict colour, `.cal-when` (date card with `.cal-date` + `.cal-where`), `.cal-body` (`<h4>` + `<p>`), `.cal-verdict` containing `.cal-verdict-chip` (full pill — the killer chip with glyph + label + tinted bg) and optional `.cal-reason` italic gloss; plus `.crunch-week` callout with `.crunch-header` (`.crunch-label` warning chip + `.crunch-when` heading) and `.crunch-list` `<dl>` whose `<dt>` carry `data-tier="hot|warm|wait|skip"` for tier-coloured Prioritise / Defer / Skip badges
 
-**Quiet-format mini-flair (Deep Dive / Starter Kit):**
-- All baseline components above. Each format has a distinct `--accent` colour set on `body[data-special="…"]`.
-- *Starter Kit:* `.essentials` ordered list — each `<li>` gets a numbered ring badge (counter-based)
+**Deep Dive flair:**
+- All baseline components above. Plus two killer-feature components:
+- `.argument` — framed thesis block (`.argument-eyebrow` + `.argument-thesis` italic serif + `.argument-stance` paragraph). Sits between Foreword and the body; pilcrow seal in accent.
+- `.keep-digging` — closing cross-media grid of `.kd-item` cards. Each card carries `data-medium="podcast|tv|film|game|video|book"` (which paints the per-type pill colour + glyph) and contains `.kd-medium` pill, `.kd-title` heading, optional `.kd-episode` italic line (mandatory on podcasts — series-only refs forbidden), `.kd-why` italic gloss.
+
+**Quiet-format mini-flair (Starter Kit):**
+- All baseline components above. Distinct `--accent` colour set on `body[data-special="starter-kit"]`.
+- `.essentials` ordered list — each `<li>` gets a numbered ring badge (counter-based).
 
 **What was removed (v8.21 redesign):**
 - All scroll motion (`.sp-parallax`, `.sp-stagger`, `.sp-wipe`, `.sp-curtain`)
