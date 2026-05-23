@@ -78,9 +78,16 @@ jobs:
           fi
           python3 scripts/extract-issue-meta.py "$ISSUE" > payload.json
           echo "Payload:"; cat payload.json; echo
-          curl -fsSL -X POST "https://${SIGNAL_NOTIFY_HOST}/api/notify" \
+          http_code=$(curl -sS -X POST "https://${SIGNAL_NOTIFY_HOST}/api/notify" \
             -H "Authorization: Bearer ${NOTIFY_AUTH_TOKEN}" \
             -H "Content-Type: application/json" \
             --data-binary @payload.json \
-            | tee response.json
+            -o response.txt -w '%{http_code}')
+          echo "HTTP ${http_code}"
+          echo "Response body:"
+          cat response.txt
           echo
+          if [ "${http_code}" -ge 400 ]; then
+            echo "::error::/api/notify returned ${http_code}. See response body above for details."
+            exit 1
+          fi
