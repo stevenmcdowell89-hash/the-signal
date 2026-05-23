@@ -1,0 +1,138 @@
+/* ============================================================
+   SPECIAL EDITION — CHAPTERS  (non-holiday)
+
+   Each chapter has:
+     <section class="chapter">
+       <header class="chapter-head">
+         <div class="chapter-numeral">II</div>
+         <h2 class="chapter-title">Three Ways to Read This Story</h2>
+       </header>
+       <div class="chapter-body"> ... </div>
+     </section>
+
+   Body content sits in .chapter-body which clamps to --measure.
+   Wider components (figures, tables) opt out with .is-wide / .is-fullbleed.
+   ============================================================ */
+
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .chapter {
+  padding: clamp(3rem, 8vw, 6rem) clamp(1.25rem, 5vw, 3rem);
+  border-bottom: 1px solid var(--rule);
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .chapter:last-of-type {
+  border-bottom: 0;
+}
+
+/* Chapter header sits above the body column, slightly larger margin */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .chapter-head {
+  max-width: var(--measure-wide);
+  margin: 0 auto clamp(2rem, 4vw, 3.25rem);
+  display: grid;
+  gap: 0.6rem;
+}
+
+/* Oversized roman numeral, italic, jade tone — quiet but distinctive */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .chapter-numeral {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(2.4rem, 5vw, 3.6rem);
+  line-height: 1;
+  color: var(--bone-soft);
+  letter-spacing: 0.02em;
+}
+
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .chapter-title {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: clamp(1.9rem, 4vw, 2.9rem);
+  line-height: 1.1;
+  letter-spacing: -0.008em;
+  margin: 0;
+  text-wrap: balance;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .chapter-title em {
+  color: var(--accent);
+  font-style: italic;
+  font-weight: 500;
+}
+
+/* Body column — the default measure for prose */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .chapter-body {
+  max-width: var(--measure);
+  margin: 0 auto;
+}
+
+/* Wider variants — for figures + tables + the occasional spread */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .chapter-body > .is-wide,
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .chapter-body > figure.is-wide {
+  max-width: var(--measure-wide);
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .chapter-body > .is-fullbleed,
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .chapter-body > figure.is-fullbleed {
+  max-width: none;
+  margin-left: calc(50% - 50vw);
+  width: 100vw;
+}
+
+/* Section sub-headers inside a chapter — kept close to body type. */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-kicker {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  margin: 2.25rem 0 0.5rem;
+  font-weight: 600;
+}
+
+/* Foreword / opening — slightly larger drop after cover, no chapter
+   numeral, italic deck. */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .foreword {
+  padding: clamp(3rem, 7vw, 5rem) clamp(1.25rem, 5vw, 3rem);
+  border-bottom: 1px solid var(--rule);
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .foreword-body {
+  max-width: var(--measure);
+  margin: 0 auto;
+  font-size: 1.08em;
+  line-height: 1.66;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .foreword-body > p:first-of-type::first-line {
+  font-variant: small-caps;
+  letter-spacing: 0.05em;
+}
+
+/* Reading-path cards — present in Deep Dive, useful for any long format.
+   Small grid of 2/10/30-min cards.  */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .reading-paths {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  margin: 1.5rem 0 0;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .reading-paths article {
+  background: var(--paper-warm);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 1.1rem 1.2rem 1.2rem;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .reading-paths article h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1.1rem;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .reading-paths article .rp-time {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 0.4rem;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .reading-paths article p {
+  margin: 0;
+  font-size: 0.96rem;
+  color: var(--ink-soft);
+}

@@ -1,0 +1,67 @@
+/* ============================================================
+   SPECIAL EDITION — FOOTER  (non-holiday)
+
+   Closing card. Small wordmark, issue meta, colophon line. No
+   marquee, no arc notch, no sealed-document drama — just a
+   well-set sign-off.
+
+       <footer class="sp-footer">
+         <div class="sp-footer-wordmark">The Signal</div>
+         <div class="sp-footer-meta">
+           <span>Deep Dive</span><span>·</span>
+           <span>22 May 2026</span>
+         </div>
+         <div class="sp-footer-colophon">…optional…</div>
+       </footer>
+   ============================================================ */
+
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-footer {
+  margin-top: clamp(2rem, 6vw, 4rem);
+  padding: clamp(3rem, 6vw, 5rem) clamp(1.25rem, 5vw, 3rem) clamp(4rem, 8vw, 6rem);
+  background: var(--paper-warm);
+  border-top: 1px solid var(--rule);
+  display: grid;
+  gap: 0.75rem;
+  justify-items: center;
+  text-align: center;
+  color: var(--ink-soft);
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-footer-wordmark {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(1.6rem, 3vw, 2.3rem);
+  color: var(--ink);
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-footer-meta {
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.55rem;
+  color: var(--ink-soft);
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-footer-meta span:nth-child(even) {
+  color: var(--bone-soft);
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-footer-colophon {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--bone-soft);
+  margin-top: 0.5rem;
+  max-width: 32rem;
+}
+
+/* Small ornament rule above the wordmark, matching .sp-ornament style */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-footer::before {
+  content: "\2022 \2022 \2022";
+  font-family: var(--serif);
+  color: var(--bone-soft);
+  letter-spacing: 1.1em;
+  padding-left: 1.1em;
+  margin-bottom: 1rem;
+}

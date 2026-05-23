@@ -1,0 +1,200 @@
+/* ============================================================
+   SPECIAL EDITION — CALLOUTS + BASELINE FLAIR  (non-holiday)
+
+   Components every special edition can use. The baseline level
+   of "flair" — light typographic ornament — so even quiet
+   formats (Deep Dive, Blueprint, Starter Kit) feel like
+   editorial design, not unstyled prose.
+
+     - Drop cap on chapter opener paragraph
+     - Section ornaments (* * *) between sub-sections
+     - Pull quotes (huge italic)
+     - Marginalia (chip in the gutter)
+     - Big-number stat callouts (single + grid)
+     - Source strip (mono caps row of citations)
+   ============================================================ */
+
+/* ---------- Drop cap ---------- */
+/* First paragraph of a chapter body gets a sober drop cap. Author opt-in
+   via .has-dropcap on the .chapter-body, or first <p> with .lede. */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .chapter-body.has-dropcap > p:first-of-type::first-letter,
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .chapter-body > p.lede::first-letter {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 4.4em;
+  line-height: 0.88;
+  float: left;
+  padding: 0.08em 0.12em 0 0;
+  margin-bottom: -0.1em;
+  color: var(--accent);
+}
+
+/* ---------- Section ornament ---------- */
+/* Quiet typographic break between sub-sections inside a long chapter.
+   Three small marks centered. */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-ornament {
+  text-align: center;
+  margin: 2.5rem 0;
+  letter-spacing: 1.1em;
+  padding-left: 1.1em;
+  font-family: var(--serif);
+  color: var(--bone-soft);
+  font-size: 1rem;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-ornament::before {
+  content: "\2022 \2022 \2022";
+}
+
+/* ---------- Pull quote — huge italic ---------- */
+/* Used to break up long prose blocks. Centred, big, italic, soft hairlines
+   above and below. */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .pullquote {
+  margin: 2.75rem 0;
+  padding: 2rem 1rem;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  text-align: center;
+  position: relative;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .pullquote p {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(1.4rem, 2.6vw, 2.1rem);
+  line-height: 1.25;
+  margin: 0;
+  color: var(--ink-soft);
+  text-wrap: balance;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .pullquote::before {
+  content: "\201C";
+  position: absolute;
+  top: -0.2em;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--serif);
+  font-size: 3rem;
+  color: var(--accent);
+  background: var(--paper);
+  padding: 0 0.4em;
+  line-height: 1;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .pullquote cite {
+  display: block;
+  margin-top: 0.85rem;
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--bone-soft);
+}
+
+/* ---------- Marginalia chip ---------- */
+/* Small fact / number chip that floats into the margin. Falls back to
+   inline at narrow widths. */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .chapter-body { position: relative; }
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .marginalia {
+  float: right;
+  margin: 0.2rem -10rem 1rem 1.25rem;
+  width: 8.5rem;
+  padding: 0.85rem 0.95rem 1rem;
+  border-left: 2px solid var(--accent);
+  background: var(--paper-warm);
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  line-height: 1.4;
+  color: var(--ink-soft);
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .marginalia.is-left {
+  float: left;
+  margin: 0.2rem 1.25rem 1rem -10rem;
+  border-left: 0;
+  border-right: 2px solid var(--accent);
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .marginalia .m-label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+  margin-bottom: 0.35rem;
+  font-weight: 600;
+}
+@media (max-width: 1180px) {
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .marginalia,
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .marginalia.is-left {
+    float: none;
+    width: auto;
+    margin: 1.25rem 0;
+  }
+}
+
+/* ---------- Big number — single ---------- */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .bignum {
+  margin: 2.25rem 0;
+  text-align: center;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .bignum-value {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: clamp(3.6rem, 9vw, 6rem);
+  line-height: 1;
+  color: var(--accent);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .bignum-label {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--ink-soft);
+  margin-top: 0.5rem;
+}
+
+/* Big-number row — grid of 2-4 stats */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .bignum-row {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  margin: 2.25rem 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  padding: 2rem 0;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .bignum-row .bignum {
+  margin: 0;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .bignum-row .bignum-value {
+  font-size: clamp(2.6rem, 6vw, 4rem);
+}
+
+/* ---------- Source strip ---------- */
+/* Row of citations at the end of a chapter or piece. Mono caps. */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .source-strip {
+  margin: 2.5rem 0 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--bone-soft);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.25rem;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .source-strip strong {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ---------- Small inline stat (count-up etc.) ---------- */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-number {
+  font-family: var(--serif);
+  font-weight: 600;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}

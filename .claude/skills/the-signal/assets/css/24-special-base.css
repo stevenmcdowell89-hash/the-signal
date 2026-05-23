@@ -1,0 +1,99 @@
+/* ============================================================
+   SPECIAL EDITION — BASE TYPOGRAPHY  (non-holiday)
+
+   Sets the body ground, link style, headings, image baseline.
+   Holiday specials override these via their own body selector.
+   ============================================================ */
+
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) {
+  margin: 0;
+  font-family: var(--serif);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 19px;
+  line-height: 1.62;
+  font-feature-settings: "kern", "liga", "calt", "onum";
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) *::selection {
+  background: var(--accent-ember);
+  color: var(--ink);
+}
+
+/* Links: subtle underline that lifts on hover. Underline lives on a
+   background-image so it sits 1px below the baseline without colliding
+   with descenders. */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) a {
+  color: inherit;
+  text-decoration: none;
+  background-image: linear-gradient(to top, currentColor 1px, transparent 1px);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 1.05em;
+  padding-bottom: 0.05em;
+  transition: color .18s ease, background-color .18s ease;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) a:hover {
+  color: var(--accent);
+}
+
+/* Body media defaults */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) figure {
+  margin: 0;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) p {
+  margin: 0 0 1.05em;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) strong {
+  font-weight: 600;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) em {
+  font-style: italic;
+}
+
+/* Headings — defined here at neutral defaults; the chapter / cover
+   stylesheets override sizing where it matters. Body H3/H4 used inline
+   in long chapters stay close to body type. */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) h2,
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) h3,
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) h4 {
+  font-family: var(--serif);
+  font-weight: 600;
+  line-height: 1.18;
+  text-wrap: balance;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) h3 {
+  font-size: 1.42rem;
+  margin: 2rem 0 0.6rem;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) h4 {
+  font-size: 1.15rem;
+  margin: 1.5rem 0 0.4rem;
+  color: var(--ink-soft);
+}
+
+/* Reading progress bar (top, only when JS sets the width) */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .reading-progress {
+  position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+  background: var(--accent);
+  z-index: 200;
+  transition: width .12s linear;
+}
+
+/* "Eyebrow" — the recurring mono caps label used above chapter titles
+   and on figcaptions. */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-eyebrow {
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--accent);
+  font-weight: 600;
+}

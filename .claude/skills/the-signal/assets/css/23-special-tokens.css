@@ -1,0 +1,61 @@
+/* ============================================================
+   SPECIAL EDITION — TOKENS  (non-holiday formats)
+   Calm editorial palette. Holiday specials (Countdown / Field
+   Guide) have their own palette in the 33-/36+ files and are not
+   affected by anything in the 23-32 range.
+   ============================================================ */
+
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) {
+  /* Paper / ink — aligned with the weekly family (--paper/--warm/--ink etc.)
+     Light, cool off-white ground. Specials read as the same magazine
+     as the weeklies and the archive index, just with their own structure. */
+  --paper:       #FAFAF8;
+  --paper-warm:  #F5F4F0;
+  --paper-deep:  #EFEEEA;
+  --ink:         #111119;
+  --ink-soft:    #1B1B2F;
+  --ink-deep:    #0A0E17;
+  --bone:        #A4A8B6;
+  --bone-soft:   #64697B;
+  --rule:        rgba(17, 17, 25, 0.14);
+  --rule-strong: rgba(17, 17, 25, 0.38);
+
+  /* Accents — the Signal family. Rose / ember / gold echo the masthead
+     gradient (--coral → --orange) on the archive index. Held back: the
+     cover uses one per format, body copy never lights up the whole palette. */
+  --accent-rose:    #E8384F;
+  --accent-ember:   #FF6D3A;
+  --accent-gold:    #C9A66B;
+  --accent-deep:    #1B1B2F;
+  --accent-tan:     #C46A4F;
+  --accent-teal:    #1A8A7A;
+
+  /* Default accent — overridden per format below in 32-special-format-flair */
+  --accent: var(--accent-rose);
+
+  /* Reverse palette inside dark grounds (covers, verdict slab, etc.) */
+  --ink-on-dark:    #FAFAF8;
+  --ink-on-dark-mu: rgba(250, 250, 248, 0.72);
+  --rule-on-dark:   rgba(250, 250, 248, 0.20);
+
+  /* Measure */
+  --measure:      36rem;   /* body column, ~620px */
+  --measure-wide: 50rem;   /* spreads, tables */
+  --measure-tight: 30rem;  /* asides */
+
+  /* Type stack */
+  --serif: 'Cormorant Garamond', 'EB Garamond', Georgia, serif;
+  --sans:  'DM Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --mono:  'JetBrains Mono', 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+
+  /* Spacing rhythm */
+  --gap-xs: 0.5rem;
+  --gap-s:  0.85rem;
+  --gap-m:  1.5rem;
+  --gap-l:  2.5rem;
+  --gap-xl: 4rem;
+
+  /* Shadows */
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-mid:  0 4px 16px rgba(0, 0, 0, 0.18);
+}

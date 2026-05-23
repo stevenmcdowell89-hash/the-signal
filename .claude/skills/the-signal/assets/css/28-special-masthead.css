@@ -1,0 +1,102 @@
+/* ============================================================
+   SPECIAL EDITION — PERSISTENT MASTHEAD  (non-holiday)
+
+   Thin pinned bar at the top of the page, all formats. Holds
+   the wordmark, issue number / format, and date.
+
+       <div class="mast">
+         <div class="mast-wordmark">The Signal</div>
+         <div class="mast-meta">
+           <span class="mast-format">Deep Dive</span>
+           <span class="mast-sep">·</span>
+           <span class="mast-date">22 May 2026</span>
+         </div>
+       </div>
+
+   The cover overlaps it underneath (z-index), so it appears
+   subtle on the cover and crisp once the reader scrolls onto
+   the paper background.
+   ============================================================ */
+
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .mast {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 150;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.55rem clamp(1rem, 4vw, 3rem) 0.55rem
+    calc(clamp(1rem, 4vw, 3rem) + 8.5rem); /* leave room for the back-link pill at top-left */
+  background: rgba(242, 235, 218, 0.86);
+  backdrop-filter: saturate(140%) blur(10px);
+  -webkit-backdrop-filter: saturate(140%) blur(10px);
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--ink);
+  pointer-events: none; /* let the back-link pill stay tappable */
+}
+
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .mast-wordmark {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  color: var(--ink);
+  pointer-events: auto;
+}
+
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .mast-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: var(--ink-soft);
+  pointer-events: auto;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .mast-format {
+  color: var(--accent);
+  font-weight: 600;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .mast-sep {
+  color: var(--bone-soft);
+}
+
+/* Over the dark cover, the mast inverts. The cover's top padding already
+   leaves room for it — this just recolours so it still reads. */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .cover ~ * .mast,
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]).cover-active .mast {
+  background: rgba(10, 14, 20, 0.4);
+  border-bottom-color: var(--rule-on-dark);
+  color: var(--ink-on-dark);
+}
+
+/* Tighten on phones — the back-link pill is wider here proportionally */
+@media (max-width: 640px) {
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .mast {
+    padding-left: calc(1rem + 8rem);
+    font-size: 0.65rem;
+  }
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .mast-wordmark {
+    font-size: 0.85rem;
+  }
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .mast-meta {
+    gap: 0.4rem;
+  }
+  /* On narrow phones, hide the date so wordmark + format fit cleanly. */
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .mast-date,
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .mast-sep {
+    display: none;
+  }
+}
+
+/* Body offset — the mast is fixed, so first content needs padding to
+   clear it. The cover handles its own padding; everything after needs the
+   shim only if the page doesn't start with .cover. */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]):not(:has(> .cover:first-child)) {
+  padding-top: 2.4rem;
+}
