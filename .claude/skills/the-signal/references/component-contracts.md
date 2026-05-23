@@ -291,12 +291,33 @@ The Aside is a standalone mini-section placed between full sections for pacing. 
 |---|---|---|
 | Foreword | `sec` (light bg) | Short prose |
 | The Itch | `chapter` | Prose — names exactly what made the original work for this reader. Single anchor for every pick that follows |
-| The Closest Next Step | `chapter` | `.next-tier` label + pick prose + `.on-ramp` block (Start with / Reassess at / Then) |
-| One Step Sideways | `chapter` | `.next-tier` label + pick prose + `.on-ramp` block |
-| The Wildcard | `chapter` | `.next-tier.is-wildcard` label + pick prose + `.on-ramp` block |
-| If You Only Try One | `chapter` | `.only-one` dark slab — single pick, no hedging, ~200-300 words |
+| The Closest Next Step | `chapter` | `<div class="next-tier" data-step="I">Closest Next Step</div>` + pick prose + `.on-ramp` block |
+| One Step Sideways | `chapter` | `<div class="next-tier" data-step="II">One Step Sideways</div>` + pick prose + `.on-ramp` block |
+| The Wildcard | `chapter` | `<div class="next-tier is-wildcard" data-step="III">The Wildcard</div>` + pick prose + `.on-ramp` block |
+| If You Only Try One | `chapter` | `.only-one` dark slab with star seal — single pick, no hedging, ~200-300 words |
 | Where to Go After That | `chapter` | Brief horizon list (3-5 items), no on-ramp required |
 | Meanwhile | `chapter` | See universal pattern above |
+
+### On-Ramp markup contract
+
+Every pick in Next includes one `.on-ramp` block. The block renders as a stepped track with three glyphed nodes (▶ Start / ⏸ Reassess / → Then) connected by a vertical accent line. Each row must carry `data-step="start|reassess|then"` so the correct glyph paints.
+
+```html
+<div class="on-ramp">
+  <div class="on-ramp-row" data-step="start">
+    <span class="on-ramp-label">Start with</span>
+    <span class="on-ramp-body">Episode 4 — the first one that lets the world breathe.</span>
+  </div>
+  <div class="on-ramp-row" data-step="reassess">
+    <span class="on-ramp-label">Reassess at</span>
+    <span class="on-ramp-body">End of the first arc, ~episode 6.</span>
+  </div>
+  <div class="on-ramp-row" data-step="then">
+    <span class="on-ramp-label">Then</span>
+    <span class="on-ramp-body">If it landed, head to season 2.</span>
+  </div>
+</div>
+```
 
 ## The Lookahead
 
@@ -304,10 +325,50 @@ The Aside is a standalone mini-section placed between full sections for pacing. 
 |---|---|---|
 | Foreword | `sec` (light bg) | Short prose framing the window |
 | The Window in Numbers | `chapter` | `.bignum-row` — total events / don't-miss count / worth-a-look count / skip count |
-| The Calendar | `chapter` | `.calendar` `<ol>` of `.cal-row` entries, each with `data-verdict="hot\|warm\|wait\|skip"` |
-| The Crunch Weeks | `chapter` | One `.crunch-week` callout per dense week (Prioritise / Defer / Skip via `<dl>`) |
+| The Calendar | `chapter` | `.calendar` `<ol>` of `.cal-row` entries with `data-verdict`; optional `<li class="cal-week">` dividers between weeks |
+| The Crunch Weeks | `chapter` | One `.crunch-week` callout per dense week — warning chip + `.crunch-list` `<dl>` with tier-coloured Prioritise / Defer / Skip badges |
 | What Else Is Brewing | `chapter` | Brief horizon items without firm dates — `.also-list` style |
 | Meanwhile | `chapter` | See universal pattern above |
+
+### Calendar row contract
+
+```html
+<ol class="calendar">
+  <li class="cal-week">Week of 14 Jun</li>
+  <li class="cal-row" data-verdict="hot">
+    <div class="cal-when">
+      <span class="cal-date">14 Jun</span>
+      <span class="cal-where">Football · PL</span>
+    </div>
+    <div class="cal-body">
+      <h4>Arsenal vs Manchester City — title race decider</h4>
+      <p>Two games left, two points apart. This is the one.</p>
+    </div>
+    <div class="cal-verdict">
+      <span class="cal-verdict-chip">Don't miss</span>
+      <span class="cal-reason">Title decider on the second-to-last weekend.</span>
+    </div>
+  </li>
+</ol>
+```
+
+`data-verdict` must be one of `hot` / `warm` / `wait` / `skip` — the chip glyph (★ / ◉ / ⏱ / ✕), the row's left rail colour, and the row's background tint all paint from this attribute.
+
+### Crunch Week contract
+
+```html
+<aside class="crunch-week">
+  <div class="crunch-header">
+    <span class="crunch-label">Crunch week</span>
+    <h4 class="crunch-when">Week of 14 Jun</h4>
+  </div>
+  <dl class="crunch-list">
+    <dt data-tier="hot">Prioritise</dt><dd>Title decider — can't be re-experienced.</dd>
+    <dt data-tier="wait">Defer</dt><dd>Canadian GP — strong race, no championship stakes.</dd>
+    <dt data-tier="skip">Skip</dt><dd>The Long Walk — sits in "wait for reviews".</dd>
+  </dl>
+</aside>
+```
 
 ## The Field Guide
 
