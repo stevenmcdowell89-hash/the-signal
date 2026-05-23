@@ -17,9 +17,9 @@
    Light differentiation, mostly through the --accent token.
    ============================================================ */
 
-body.is-special[data-special="deep-dive"]   { --accent: var(--accent-ochre); }
-body.is-special[data-special="blueprint"]   { --accent: var(--accent-ink); }
-body.is-special[data-special="starter-kit"] { --accent: var(--accent-jade); }
+body.is-special[data-special="deep-dive"]   { --accent: var(--accent-ember); }
+body.is-special[data-special="blueprint"]   { --accent: var(--accent-deep); }
+body.is-special[data-special="starter-kit"] { --accent: var(--bone-soft); }
 
 /* Blueprint: a subtle blueprint-grid background on chapter heads */
 body.is-special[data-special="blueprint"] .chapter-head {
@@ -31,8 +31,8 @@ body.is-special[data-special="blueprint"] .chapter-head::before {
   inset: -0.5rem -1rem auto -1rem;
   height: 100%;
   background-image:
-    linear-gradient(to right, color-mix(in oklab, var(--accent-ink) 14%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in oklab, var(--accent-ink) 14%, transparent) 1px, transparent 1px);
+    linear-gradient(to right, color-mix(in oklab, var(--accent-deep) 14%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--accent-deep) 14%, transparent) 1px, transparent 1px);
   background-size: 1.5rem 1.5rem;
   opacity: 0.5;
   z-index: -1;
@@ -82,37 +82,128 @@ body.is-special[data-special="starter-kit"] .essentials > li::before {
    that put the two cases on the page in parallel.
    ============================================================ */
 
-body.is-special[data-special="versus"] { --accent: var(--accent-blood); --accent-b: var(--accent-jade); }
+body.is-special[data-special="versus"] {
+  --accent:   var(--accent-rose);   /* side A — warm coral */
+  --accent-b: var(--accent-ember);  /* side B — warm orange. Two warm-but-distinct hots in tension */
+}
 
-/* Cover: stamp the matchup in the centre, big and balanced */
+/* Cover: the matchup IS the headline. Two huge words with a tilted ember
+   "vs" pill between them. Each side gets a soft glow in its accent. Way
+   bigger than the default cover-title — it's a poster, not a paragraph. */
 body.is-special[data-special="versus"] .cover-title {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  gap: clamp(1rem, 3vw, 2.5rem);
+  gap: clamp(1rem, 3vw, 3rem);
   text-align: center;
+  font-size: clamp(3rem, 9vw, 7rem);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
 }
-body.is-special[data-special="versus"] .cover-title .vs-a { text-align: right; color: var(--ink-on-dark); }
-body.is-special[data-special="versus"] .cover-title .vs-b { text-align: left;  color: var(--ink-on-dark); }
+body.is-special[data-special="versus"] .cover-title .vs-a {
+  text-align: right;
+  color: var(--ink-on-dark);
+  text-shadow: 0 0 80px color-mix(in oklab, var(--accent) 60%, transparent);
+}
+body.is-special[data-special="versus"] .cover-title .vs-b {
+  text-align: left;
+  color: var(--ink-on-dark);
+  text-shadow: 0 0 80px color-mix(in oklab, var(--accent-b) 60%, transparent);
+}
 body.is-special[data-special="versus"] .cover-title .vs-glyph {
   font-family: var(--mono);
-  font-style: normal;
+  font-style: italic;
   font-weight: 700;
-  font-size: clamp(1.6rem, 3vw, 2.4rem);
-  color: var(--accent-ochre);
-  letter-spacing: 0.05em;
-  padding: 0.2em 0.4em;
-  border: 2px solid var(--accent-ochre);
-  border-radius: 50%;
+  font-size: clamp(1.2rem, 2.4vw, 2rem);
+  color: var(--ink);
+  background: var(--accent-b);
+  letter-spacing: 0.04em;
+  padding: 0.45em 0.75em;
+  border-radius: 999px;
   line-height: 1;
+  text-transform: lowercase;
+  transform: rotate(-4deg);
+  box-shadow: 0 4px 16px color-mix(in oklab, var(--accent-b) 50%, transparent);
+}
+/* Re-tint the cover radial pool to use BOTH sides — left = A, right = B.
+   The matchup tension lives in the lighting. */
+body.is-special[data-special="versus"] .cover::before {
+  background:
+    radial-gradient(ellipse 60% 50% at 20% 35%,
+      color-mix(in oklab, var(--accent)   34%, transparent), transparent 70%),
+    radial-gradient(ellipse 60% 50% at 80% 35%,
+      color-mix(in oklab, var(--accent-b) 30%, transparent), transparent 70%);
 }
 @media (max-width: 720px) {
   body.is-special[data-special="versus"] .cover-title {
     grid-template-columns: 1fr;
-    gap: 0.5rem;
+    gap: 0.4rem;
+    font-size: clamp(2.4rem, 12vw, 4rem);
   }
   body.is-special[data-special="versus"] .cover-title .vs-a,
   body.is-special[data-special="versus"] .cover-title .vs-b { text-align: center; }
+  body.is-special[data-special="versus"] .cover-title .vs-glyph { justify-self: center; }
+}
+
+/* Every chapter is a "Round". Replace the quiet roman numeral with a
+   numbered round badge that announces the structure. */
+body.is-special[data-special="versus"] .chapter-numeral {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  font-size: clamp(1rem, 1.6vw, 1.25rem);
+  font-family: var(--mono);
+  font-style: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  font-weight: 600;
+  color: var(--ink);
+  padding: 0.45rem 0.85rem;
+  background: var(--accent-b);
+  width: max-content;
+}
+body.is-special[data-special="versus"] .chapter-numeral::before { content: "Round "; }
+
+/* Optional scoreboard ribbon — running tally after Tale-of-the-Tape.
+     <div class="vs-scoreboard">
+       <div class="vs-score"><span class="vs-label">Mountains</span><span class="vs-tally">5</span></div>
+       <div class="vs-score"><span class="vs-label">Sea</span><span class="vs-tally">3</span></div>
+     </div>
+*/
+body.is-special[data-special="versus"] .vs-scoreboard {
+  margin: 2rem auto 3rem;
+  max-width: var(--measure-wide);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: var(--shadow-mid);
+}
+body.is-special[data-special="versus"] .vs-score {
+  padding: 1.75rem 1.5rem;
+  display: grid;
+  gap: 0.4rem;
+  justify-items: center;
+  text-align: center;
+  color: var(--ink-on-dark);
+  background: var(--accent);
+}
+body.is-special[data-special="versus"] .vs-score + .vs-score { background: var(--accent-b); }
+body.is-special[data-special="versus"] .vs-score .vs-label {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-weight: 600;
+  opacity: 0.92;
+}
+body.is-special[data-special="versus"] .vs-score .vs-tally {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: clamp(3rem, 7vw, 4.6rem);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 
 /* Tale-of-the-tape table: two columns sharing a row of stats */
@@ -151,7 +242,10 @@ body.is-special[data-special="versus"] .vs-tape td.vs-row-label {
 }
 body.is-special[data-special="versus"] .vs-tape td.vs-win { color: var(--accent); font-weight: 600; }
 
-/* The argument rail — two stacked panels for The Case For A / The Case For B */
+/* The argument rail — two panels side-by-side, each colour-coded to its
+   side. A bold left rail in the accent, a small "Case for" badge at the
+   top, the heading in the accent colour. The visual contrast between the
+   two panels carries the structure. */
 body.is-special[data-special="versus"] .vs-pair {
   display: grid;
   gap: 1.5rem;
@@ -160,25 +254,51 @@ body.is-special[data-special="versus"] .vs-pair {
   margin: 2.5rem auto;
 }
 body.is-special[data-special="versus"] .vs-pair > article {
-  padding: 1.5rem 1.5rem 1.75rem;
-  border-top: 4px solid var(--accent);
+  position: relative;
+  padding: 1.5rem 1.5rem 1.75rem 2rem;
+  border-left: 6px solid var(--accent);
   background: var(--paper-warm);
+  border-radius: 0 4px 4px 0;
+  box-shadow: var(--shadow-soft);
 }
 body.is-special[data-special="versus"] .vs-pair > article + article {
-  border-top-color: var(--accent-b);
+  border-left-color: var(--accent-b);
+}
+body.is-special[data-special="versus"] .vs-pair > article::before {
+  content: "Case A";
+  position: absolute;
+  top: -0.7rem;
+  left: 1.5rem;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--ink-on-dark);
+  background: var(--accent);
+  padding: 0.3rem 0.7rem;
+  border-radius: 2px;
+}
+body.is-special[data-special="versus"] .vs-pair > article + article::before {
+  content: "Case B";
+  background: var(--accent-b);
+  color: var(--ink);
 }
 body.is-special[data-special="versus"] .vs-pair h3 {
-  margin-top: 0;
-  font-size: 1.3rem;
+  margin: 0.3rem 0 0.8rem;
+  font-size: 1.4rem;
   color: var(--accent);
+  font-weight: 600;
 }
 body.is-special[data-special="versus"] .vs-pair > article + article h3 { color: var(--accent-b); }
 @media (max-width: 720px) {
   body.is-special[data-special="versus"] .vs-pair { grid-template-columns: 1fr; }
 }
 
-/* Verdict panel — wide, bold, dark ground for the conclusion */
+/* Verdict panel — full-impact closing slab. Dark ground, side-stripes
+   in both accent colours converging at the verdict eyebrow. */
 body.is-special[data-special="versus"] .vs-verdict {
+  position: relative;
   margin: 3rem auto;
   max-width: var(--measure-wide);
   padding: clamp(2rem, 4vw, 3rem) clamp(1.5rem, 4vw, 3rem);
@@ -188,13 +308,24 @@ body.is-special[data-special="versus"] .vs-verdict {
   display: grid;
   gap: 1rem;
   text-align: center;
+  overflow: hidden;
+  box-shadow: var(--shadow-mid);
 }
+body.is-special[data-special="versus"] .vs-verdict::before,
+body.is-special[data-special="versus"] .vs-verdict::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 8px;
+}
+body.is-special[data-special="versus"] .vs-verdict::before { left: 0;  background: var(--accent); }
+body.is-special[data-special="versus"] .vs-verdict::after  { right: 0; background: var(--accent-b); }
 body.is-special[data-special="versus"] .vs-verdict .vs-eyebrow {
   font-family: var(--mono);
   font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 0.28em;
-  color: var(--accent-ochre);
+  color: var(--accent-ember);
 }
 body.is-special[data-special="versus"] .vs-verdict .vs-winner {
   font-family: var(--serif);
@@ -218,11 +349,11 @@ body.is-special[data-special="versus"] .vs-verdict p {
    surprises. Cover lists "the period" prominently.
    ============================================================ */
 
-body.is-special[data-special="rewind"] { --accent: var(--accent-rust); }
+body.is-special[data-special="rewind"] { --accent: var(--accent-rose); }
 
 body.is-special[data-special="rewind"] .cover-eyebrow::before {
   content: "Rewind · ";
-  color: var(--accent-ochre);
+  color: var(--accent-ember);
 }
 
 /* Rewind's big-num row is the spine of the issue — larger, lined */
@@ -285,7 +416,7 @@ body.is-special[data-special="rewind"] .year-band-marker {
   box-shadow: 0 0 0 3px var(--paper);
   cursor: help;
 }
-body.is-special[data-special="rewind"] .year-band-marker.is-low { background: var(--accent-jade); }
+body.is-special[data-special="rewind"] .year-band-marker.is-low { background: var(--bone-soft); }
 body.is-special[data-special="rewind"] .year-band-legend {
   margin-top: 1.25rem;
   display: flex;
@@ -308,7 +439,7 @@ body.is-special[data-special="rewind"] .year-band-legend .leg-low::before {
   vertical-align: middle;
 }
 body.is-special[data-special="rewind"] .year-band-legend .leg-high::before { background: var(--accent); }
-body.is-special[data-special="rewind"] .year-band-legend .leg-low::before  { background: var(--accent-jade); }
+body.is-special[data-special="rewind"] .year-band-legend .leg-low::before  { background: var(--bone-soft); }
 
 /* Highs / Lows / Picks grid — large hero cards */
 body.is-special[data-special="rewind"] .rewind-cards {
@@ -322,7 +453,7 @@ body.is-special[data-special="rewind"] .rewind-card {
   background: var(--paper-warm);
   border-top: 4px solid var(--accent);
 }
-body.is-special[data-special="rewind"] .rewind-card.is-low { border-top-color: var(--accent-jade); }
+body.is-special[data-special="rewind"] .rewind-card.is-low { border-top-color: var(--bone-soft); }
 body.is-special[data-special="rewind"] .rewind-card h4 {
   margin: 0 0 0.4rem;
   font-size: 1.15rem;
@@ -344,11 +475,11 @@ body.is-special[data-special="rewind"] .rewind-card .rc-month {
    "what happened" subtitle.
    ============================================================ */
 
-body.is-special[data-special="season-review"] { --accent: var(--accent-ink); }
+body.is-special[data-special="season-review"] { --accent: var(--accent-deep); }
 
 body.is-special[data-special="season-review"] .cover-eyebrow::before {
   content: "Season Review · ";
-  color: var(--accent-ochre);
+  color: var(--accent-ember);
 }
 
 /* Ratings bar — used per player / per team / per moment */
@@ -379,7 +510,7 @@ body.is-special[data-special="season-review"] .rating-bar::after {
   position: absolute;
   inset: 0 auto 0 0;
   width: calc(var(--score, 0) * 1%);
-  background: linear-gradient(to right, var(--accent-ink), var(--accent-rust));
+  background: linear-gradient(to right, var(--accent-deep), var(--accent-rose));
   border-radius: 5px;
 }
 body.is-special[data-special="season-review"] .rating-score {
@@ -476,11 +607,11 @@ body.is-special[data-special="season-review"] .milestone h4 {
    their picks are presented as bold cards.
    ============================================================ */
 
-body.is-special[data-special="shortlist"] { --accent: var(--accent-rust); }
+body.is-special[data-special="shortlist"] { --accent: var(--accent-rose); }
 
 body.is-special[data-special="shortlist"] .cover-eyebrow::before {
   content: "Shortlist · ";
-  color: var(--accent-ochre);
+  color: var(--accent-ember);
 }
 
 /* Tier band — bold horizontal stripe announcing the tier */
@@ -513,8 +644,8 @@ body.is-special[data-special="shortlist"] .tier-band .tb-label {
   color: var(--ink);
   font-weight: 600;
 }
-body.is-special[data-special="shortlist"] .tier-band[data-tier="strong"]   { --accent: var(--accent-ochre); }
-body.is-special[data-special="shortlist"] .tier-band[data-tier="wildcard"] { --accent: var(--accent-jade); }
+body.is-special[data-special="shortlist"] .tier-band[data-tier="strong"]   { --accent: var(--accent-ember); }
+body.is-special[data-special="shortlist"] .tier-band[data-tier="wildcard"] { --accent: var(--bone-soft); }
 
 /* Pick — image left, text right; alternating rows flip to image right */
 body.is-special[data-special="shortlist"] .pick {

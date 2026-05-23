@@ -6,33 +6,37 @@
    ============================================================ */
 
 body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) {
-  /* Paper / ink */
-  --paper:       #F2EBDA;
-  --paper-warm:  #EFE7D2;
-  --paper-deep:  #EAE2CC;
-  --ink:         #15151C;
-  --ink-soft:    #1E1E27;
-  --ink-deep:    #0A0E14;
-  --bone:        #C9C2B5;
-  --bone-soft:   #A29A8B;
-  --rule:        rgba(21, 21, 28, 0.18);
-  --rule-strong: rgba(21, 21, 28, 0.45);
+  /* Paper / ink — aligned with the weekly family (--paper/--warm/--ink etc.)
+     Light, cool off-white ground. Specials read as the same magazine
+     as the weeklies and the archive index, just with their own structure. */
+  --paper:       #FAFAF8;
+  --paper-warm:  #F5F4F0;
+  --paper-deep:  #EFEEEA;
+  --ink:         #111119;
+  --ink-soft:    #1B1B2F;
+  --ink-deep:    #0A0E17;
+  --bone:        #A4A8B6;
+  --bone-soft:   #64697B;
+  --rule:        rgba(17, 17, 25, 0.14);
+  --rule-strong: rgba(17, 17, 25, 0.38);
 
-  /* Accents — held back. The cover uses one of these per format;
-     body copy never lights up the whole palette. */
-  --accent-rust:  #B45A3C;
-  --accent-ochre: #C89344;
-  --accent-jade:  #5C7060;
-  --accent-blood: #8B2D2D;
-  --accent-ink:   #1F2A3A;
+  /* Accents — the Signal family. Rose / ember / gold echo the masthead
+     gradient (--coral → --orange) on the archive index. Held back: the
+     cover uses one per format, body copy never lights up the whole palette. */
+  --accent-rose:    #E8384F;
+  --accent-ember:   #FF6D3A;
+  --accent-gold:    #C9A66B;
+  --accent-deep:    #1B1B2F;
+  --accent-tan:     #C46A4F;
+  --accent-teal:    #1A8A7A;
 
-  /* Default accent — overridden per format below in 29-special-format-flair */
-  --accent: var(--accent-rust);
+  /* Default accent — overridden per format below in 32-special-format-flair */
+  --accent: var(--accent-rose);
 
-  /* Reverse palette used inside dark grounds (covers, etc.) */
-  --ink-on-dark:    #EFE3C4;
-  --ink-on-dark-mu: rgba(239, 227, 196, 0.72);
-  --rule-on-dark:   rgba(239, 227, 196, 0.22);
+  /* Reverse palette inside dark grounds (covers, verdict slab, etc.) */
+  --ink-on-dark:    #FAFAF8;
+  --ink-on-dark-mu: rgba(250, 250, 248, 0.72);
+  --rule-on-dark:   rgba(250, 250, 248, 0.20);
 
   /* Measure */
   --measure:      36rem;   /* body column, ~620px */

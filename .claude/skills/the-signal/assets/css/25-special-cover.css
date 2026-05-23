@@ -5,14 +5,17 @@
    one deck, one optional slogan/epigraph. No motion, no splash,
    no ticker — the cover does the work by being well composed.
 
-   Per-format accent gradient via data-special; defaults to rust.
+   Per-format accent gradient via data-special; defaults to rose.
    ============================================================ */
 
 body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .cover {
   position: relative;
   min-height: 100vh;
   min-height: 100dvh;
-  background: linear-gradient(170deg, #0A0E14 0%, #14171F 38%, #1B1A14 65%, #281E0E 100%);
+  /* Navy gradient — same family as the archive index (--bg / --bg-2 / --bg-3
+     in index.html). Warm accent comes in via the radial pools below, not
+     via the ground. */
+  background: linear-gradient(170deg, #0A0E17 0%, #14121E 38%, #1B1B2F 65%, #20253E 100%);
   color: var(--ink-on-dark);
   overflow: hidden;
   display: grid;
@@ -28,7 +31,7 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
     radial-gradient(ellipse 80% 50% at 50% 35%,
       color-mix(in oklab, var(--accent) 28%, transparent), transparent 70%),
     radial-gradient(ellipse 60% 40% at 80% 80%,
-      color-mix(in oklab, var(--accent-rust) 22%, transparent), transparent 70%);
+      color-mix(in oklab, var(--accent-rose) 22%, transparent), transparent 70%);
   pointer-events: none;
 }
 
@@ -59,7 +62,7 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
   color: var(--ink-on-dark-mu);
 }
 body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .cover-meta strong {
-  color: var(--accent-ochre);
+  color: var(--accent-ember);
   font-weight: 600;
   letter-spacing: 0.22em;
 }
@@ -78,7 +81,7 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
   font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 0.28em;
-  color: var(--accent-ochre);
+  color: var(--accent-ember);
 }
 
 body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .cover-title {
@@ -91,7 +94,7 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
   text-wrap: balance;
 }
 body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .cover-title em {
-  color: var(--accent-ochre);
+  color: var(--accent-ember);
   font-style: italic;
   font-weight: 500;
 }
@@ -101,7 +104,7 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
   font-style: italic;
   font-size: clamp(1.1rem, 1.8vw, 1.45rem);
   line-height: 1.5;
-  color: rgba(239, 227, 196, 0.86);
+  color: rgba(250, 250, 248, 0.86);
   max-width: 44rem;
   text-wrap: pretty;
 }
@@ -128,7 +131,7 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
   font-family: var(--serif);
   font-style: italic;
   font-size: 1.05rem;
-  color: rgba(239, 227, 196, 0.74);
+  color: rgba(250, 250, 248, 0.74);
 }
 body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .cover-slogan-attr {
   font-family: var(--mono);
