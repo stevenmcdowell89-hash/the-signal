@@ -1,0 +1,63 @@
+name: Notify subscribers on new issue
+
+# Fires on any push to main that adds a new file under /issues/. Works for
+# both scheduled (Sunday trigger) and manual publishes — anything that lands
+# a new issue HTML on main goes out as a push notification.
+#
+# Edits to existing issues do NOT notify (diff-filter=A only matches added
+# files), so retroactive fixes don't ping the audience.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'issues/*.html'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: notify-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Find newly added issue
+        id: find
+        run: |
+          set -euo pipefail
+          added=$(git diff --name-only --diff-filter=A HEAD~1 HEAD -- 'issues/*.html' | head -1)
+          if [ -z "$added" ]; then
+            echo "No new issue added in this push (only edits). Skipping notify."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "issue=$added" >> "$GITHUB_OUTPUT"
+          echo "Detected new issue: $added"
+
+      - name: Send notification
+        if: steps.find.outputs.skip != 'true'
+        env:
+          NOTIFY_AUTH_TOKEN: ${{ secrets.NOTIFY_AUTH_TOKEN }}
+          SIGNAL_NOTIFY_HOST: ${{ secrets.SIGNAL_NOTIFY_HOST }}
+          ISSUE: ${{ steps.find.outputs.issue }}
+        run: |
+          set -euo pipefail
+          if [ -z "${NOTIFY_AUTH_TOKEN:-}" ] || [ -z "${SIGNAL_NOTIFY_HOST:-}" ]; then
+            echo "::warning::NOTIFY_AUTH_TOKEN or SIGNAL_NOTIFY_HOST not set in repo secrets; skipping."
+            exit 0
+          fi
+          python3 scripts/extract-issue-meta.py "$ISSUE" > payload.json
+          echo "Payload:"; cat payload.json; echo
+          curl -fsSL -X POST "https://${SIGNAL_NOTIFY_HOST}/api/notify" \
+            -H "Authorization: Bearer ${NOTIFY_AUTH_TOKEN}" \
+            -H "Content-Type: application/json" \
+            --data-binary @payload.json \
+            | tee response.json
+          echo

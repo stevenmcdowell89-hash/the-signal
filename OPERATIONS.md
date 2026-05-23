@@ -129,13 +129,21 @@ Pages dashboard → the project → **Settings → Functions**:
 Redeploy the Pages project (any push or "Retry deployment") so the new
 bindings take effect.
 
-### 3. Wire the trigger
+### 3. Wire the GitHub Action
 
-On the Claude Code web trigger that runs the Sunday pipeline:
+Notifications fire from `.github/workflows/notify-on-publish.yml` on any
+push to `main` that adds a new `issues/*.html` — scheduled or manual,
+the workflow doesn't care how the issue got there. It reads two repo
+secrets:
 
-- `NOTIFY_AUTH_TOKEN` — the same value as above.
-- `SIGNAL_NOTIFY_HOST` — the Pages host (e.g. `the-signal.pages.dev` or
-  your custom domain). The skill's Phase 10 step 5 uses both.
+GitHub repo → **Settings → Secrets and variables → Actions → New repository secret**:
+
+- `NOTIFY_AUTH_TOKEN` — same value as the CF env var.
+- `SIGNAL_NOTIFY_HOST` — your Pages host, no `https://` (e.g.
+  `the-signal.pages.dev` or your custom domain).
+
+If either is missing the workflow logs a warning and skips, so partial
+setup doesn't break publishes.
 
 ### 4. Verify
 

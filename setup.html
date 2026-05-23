@@ -234,11 +234,12 @@
   <h2><span class="step">3.</span> Redeploy</h2>
   <p class="lede" style="margin-bottom: 0.5rem; font-size: 0.92rem;">Deployments tab → latest deploy → <strong>Manage deployment → Retry deployment</strong>. Env vars and KV bindings only take effect on a new deploy.</p>
 
-  <h2><span class="step">4.</span> Sunday trigger</h2>
-  <p class="lede" style="margin-bottom: 0.5rem; font-size: 0.92rem;">Claude Code on the Web — the trigger that runs the Sunday pipeline. Add two env vars there too so the pipeline can call <code>/api/notify</code> after publishing:</p>
+  <h2><span class="step">4.</span> GitHub repo secrets</h2>
+  <p class="lede" style="margin-bottom: 0.5rem; font-size: 0.92rem;">A GitHub Action (<code>notify-on-publish.yml</code>) fires the notification on any push to <code>main</code> that adds an issue — scheduled or manual. It needs two repo secrets.</p>
+  <p class="lede" style="margin-bottom: 0.5rem; font-size: 0.92rem;">GitHub repo → <strong>Settings → Secrets and variables → Actions → New repository secret</strong>:</p>
   <ol class="dash-steps">
-    <li><code>NOTIFY_AUTH_TOKEN</code> — same value as above.</li>
-    <li><code>SIGNAL_NOTIFY_HOST</code> — your Pages host (e.g. <code>the-signal.pages.dev</code>, or a custom domain).</li>
+    <li><code>NOTIFY_AUTH_TOKEN</code> — same value as <em>step 1</em> above.</li>
+    <li><code>SIGNAL_NOTIFY_HOST</code> — your Pages host, no <code>https://</code> (e.g. <code>the-signal.pages.dev</code>, or a custom domain).</li>
   </ol>
 
   <h2><span class="step">5.</span> Subscribe this device</h2>

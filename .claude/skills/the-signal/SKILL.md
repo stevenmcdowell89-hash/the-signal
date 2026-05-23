@@ -331,25 +331,8 @@ If gates STILL fail after auto-repair (or fail in non-image ways — release-dat
    - Call `mcp__github__push_files` with `owner: "stevenmcdowell89-hash"`, `repo: "the-signal"`, `branch: "main"`, the commit `message` (see below), and `files` listing every changed path with its contents read from disk. Three files in a standard run: `issues/<filename>.html`, `index.html`, `state/signal-state.json`. Plus the cost log if it lives in the repo (`state/cost-log.jsonl`).
    - **Commit message format:** `Issue #N — <date range>: <headlines>` for standard weeklies; `<Format> — <Topic>: <date>` for specials.
    - If MCP push fails, fall back to plain `git push` from inside the cloned repo — credentials may be configured.
-5. **Notify subscribers via the push endpoint.** After the GitHub push succeeds, POST to the live `/api/notify` endpoint so every installed PWA gets a notification and silently pre-caches the new issue offline (the SW handles both in one push). Use Bash:
-
-   ```bash
-   curl -X POST "https://${SIGNAL_NOTIFY_HOST}/api/notify" \
-     -H "Authorization: Bearer ${NOTIFY_AUTH_TOKEN}" \
-     -H "Content-Type: application/json" \
-     -d '{
-       "title": "The Signal — <Format or Issue #N>",
-       "body":  "<hero-summary, single sentence>",
-       "url":   "/issues/<filename>.html",
-       "image": "/assets/covers/<slug>.jpg",
-       "slug":  "<slug>"
-     }'
-   ```
-
-   `SIGNAL_NOTIFY_HOST` and `NOTIFY_AUTH_TOKEN` are environment variables on the trigger. If either is missing, log a warning ("notifications skipped — env vars not configured") and continue; the publish itself is not gated on the notify call. A 2xx response means delivery to the push services was accepted (delivery to the device is best-effort and handled by the OS).
-
-6. Confirm publication by stating the GitHub Pages URL for the new issue in the closing summary. Include a note if Phase 9 had remaining defects (e.g. "Note: shipped with N image substitutions after auto-repair could not fully clear the bundle. CI will track.").
-7. **Do NOT wait for CI; do NOT revert on CI red.** CI (`.github/workflows/issue-validation.yml`) runs automatically and files a tracking issue if it finds defects the pipeline missed. The tracking issue is informational — the reader (audience, not engineer) is not required to act on it. The previous week's issue stays accessible via `index.html` so the site never degrades.
+5. Confirm publication by stating the GitHub Pages URL for the new issue in the closing summary. Include a note if Phase 9 had remaining defects (e.g. "Note: shipped with N image substitutions after auto-repair could not fully clear the bundle. CI will track."). Push notifications to installed PWAs are fired automatically by `.github/workflows/notify-on-publish.yml` on any push to `main` that adds a new `issues/*.html` file — the pipeline does not need to call `/api/notify` itself.
+6. **Do NOT wait for CI; do NOT revert on CI red.** CI (`.github/workflows/issue-validation.yml`) runs automatically and files a tracking issue if it finds defects the pipeline missed. The tracking issue is informational — the reader (audience, not engineer) is not required to act on it. The previous week's issue stays accessible via `index.html` so the site never degrades.
 
 **Why we publish even on red:** the reader's weekly Sunday read is the product. A new issue with imperfect images is preferable to no new issue. Phase 9's 3-round budget is the defence; if 3 rounds couldn't fix it, additional rounds rarely would. Better to ship and surface the residual issue in CI than to gate the audience's reading on a defect-resolution loop.
 
