@@ -130,11 +130,16 @@ async function precacheFromIndex() {
 }
 
 async function maybeFetchAndPut(cache, url) {
-  const existing = await cache.match(url, MATCH_OPTS);
+  // putInCache stores under the canonical (no-.html) URL; check that first
+  // so we don't re-fetch every visit just because the lookup key didn't match.
+  const req = new Request(url);
+  const canonical = canonicalUrl(req);
+  let existing = await cache.match(canonical, MATCH_OPTS);
+  if (!existing) existing = await cache.match(req, MATCH_OPTS);
   if (existing) return;
   try {
     const resp = await fetch(url);
-    if (resp.ok) await putInCache(cache, new Request(url), resp);
+    if (resp.ok) await putInCache(cache, req, resp);
   } catch (err) {
     // Best effort — individual misses don't fail the batch.
     console.warn(`[sw] precache miss: ${url}`, err);
@@ -198,14 +203,17 @@ async function deepPrecacheIssue(issueUrl) {
   const imageCache = await caches.open(IMAGE_CACHE);
 
   let html;
-  const cached = await issueCache.match(issueUrl, MATCH_OPTS);
+  const req = new Request(issueUrl);
+  const canonical = canonicalUrl(req);
+  let cached = await issueCache.match(canonical, MATCH_OPTS);
+  if (!cached) cached = await issueCache.match(req, MATCH_OPTS);
   if (cached) {
     html = await cached.clone().text();
   } else {
     const resp = await fetch(issueUrl);
     if (!resp.ok) return;
     html = await resp.clone().text();
-    await putInCache(issueCache, new Request(issueUrl), resp);
+    await putInCache(issueCache, req, resp);
   }
 
   const imgRe = /src="(\/assets\/(?:cached|covers)\/[^"]+)"/g;
