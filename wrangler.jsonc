@@ -1,0 +1,24 @@
+{
+  // Workers Static Assets config for The Signal.
+  //
+  // Re-introduced (after the May-18 revert that broke the site) for one
+  // specific reason: declaring `main` is what promotes the project from
+  // "Worker with only static assets" to "Worker with a script", which is
+  // required to add env vars and bindings (KV, etc.) for the push system.
+  //
+  // We deliberately do NOT set `html_handling` — leaving it at the default
+  // (auto-trailing-slash) is what makes / resolve to index.html. Setting
+  // it to "none" is what broke the site last time.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "the-signal",
+  "compatibility_date": "2025-12-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "_worker.js",
+  "assets": {
+    "directory": ".",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "enabled": true
+  }
+}
