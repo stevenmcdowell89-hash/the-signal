@@ -445,6 +445,12 @@
           if (reg && reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
         });
       };
+
+      // Top up the precache on every index visit. The SW skips anything
+      // already cached, so this only fetches new issues / new covers.
+      navigator.serviceWorker.ready.then(function (reg) {
+        if (reg && reg.active) reg.active.postMessage({ type: 'PRECACHE_ALL' });
+      });
     });
   }
 

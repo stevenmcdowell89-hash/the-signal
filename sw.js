@@ -53,28 +53,39 @@ const SHELL_ASSETS = [
   "/assets/icons/apple-touch-icon.png",
 ];
 
-// --- Install: precache the app shell ---------------------------------------
+// --- Install: precache the app shell + every issue from the index ---------
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(SHELL_CACHE).then((cache) =>
-      Promise.all(
-        SHELL_ASSETS.map((url) =>
-          cache.add(url).catch((err) => {
-            console.warn(`[sw] shell precache miss: ${url}`, err);
-          }),
-        ),
+  event.waitUntil((async () => {
+    const cache = await caches.open(SHELL_CACHE);
+    await Promise.all(
+      SHELL_ASSETS.map((url) =>
+        cache.add(url).catch((err) => {
+          console.warn(`[sw] shell precache miss: ${url}`, err);
+        }),
       ),
-    ),
-  );
+    );
+    // Crawl the index for issue HTML + cover URLs and pre-fetch them.
+    // Best-effort: never fail install over the precache.
+    try { await precacheFromIndex(); }
+    catch (err) { console.warn("[sw] precache-from-index failed:", err); }
+  })());
   // Don't auto-skipWaiting here. The page checks for a previous controller
   // and posts SKIP_WAITING explicitly — either immediately (first install,
   // no controller) or after the user taps the update banner's Refresh.
 });
 
-// --- Message handler: skip waiting on demand -------------------------------
+// --- Message handler --------------------------------------------------------
 self.addEventListener("message", (event) => {
-  if (event.data && event.data.type === "SKIP_WAITING") {
+  if (!event.data || !event.data.type) return;
+  if (event.data.type === "SKIP_WAITING") {
     self.skipWaiting();
+  }
+  if (event.data.type === "PRECACHE_ALL") {
+    // Page-driven top-up: catches new issues that have appeared since this
+    // SW installed.
+    event.waitUntil(precacheFromIndex().catch((err) => {
+      console.warn("[sw] precache-from-index (top-up) failed:", err);
+    }));
   }
 });
 
@@ -88,6 +99,43 @@ self.addEventListener("activate", (event) => {
   );
   self.clients.claim();
 });
+
+// --- Precache discovery -----------------------------------------------------
+// Fetches /index.html, extracts issue + cover URLs, and pre-fetches anything
+// not already cached. HTML and covers only — in-issue images stay lazy (the
+// existing cache-first route picks them up on first view) to keep the
+// install footprint reasonable.
+async function precacheFromIndex() {
+  const indexResp = await fetch("/index.html", { cache: "no-cache" });
+  if (!indexResp.ok) return;
+  const html = await indexResp.text();
+
+  const issueRe = /href="(issues\/[^"]+\.html)"/g;
+  const slugRe = /data-cover-slug="([^"]+)"/g;
+  const issueUrls = [...new Set([...html.matchAll(issueRe)].map((m) => "/" + m[1]))];
+  const slugs = [...new Set([...html.matchAll(slugRe)].map((m) => m[1]))];
+  const coverUrls = slugs.map((s) => `/assets/covers/${s}.jpg`);
+
+  const issueCache = await caches.open(ISSUE_CACHE);
+  const imageCache = await caches.open(IMAGE_CACHE);
+
+  await Promise.all([
+    ...issueUrls.map((url) => maybeFetchAndPut(issueCache, url)),
+    ...coverUrls.map((url) => maybeFetchAndPut(imageCache, url)),
+  ]);
+}
+
+async function maybeFetchAndPut(cache, url) {
+  const existing = await cache.match(url, MATCH_OPTS);
+  if (existing) return;
+  try {
+    const resp = await fetch(url);
+    if (resp.ok) await putInCache(cache, new Request(url), resp);
+  } catch (err) {
+    // Best effort — individual misses don't fail the batch.
+    console.warn(`[sw] precache miss: ${url}`, err);
+  }
+}
 
 // --- Fetch routing ----------------------------------------------------------
 self.addEventListener("fetch", (event) => {
