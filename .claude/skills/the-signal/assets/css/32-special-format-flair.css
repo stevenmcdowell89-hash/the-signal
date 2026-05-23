@@ -18,26 +18,7 @@
    ============================================================ */
 
 body.is-special[data-special="deep-dive"]   { --accent: var(--accent-ember); }
-body.is-special[data-special="blueprint"]   { --accent: var(--accent-deep); }
 body.is-special[data-special="starter-kit"] { --accent: var(--bone-soft); }
-
-/* Blueprint: a subtle blueprint-grid background on chapter heads */
-body.is-special[data-special="blueprint"] .chapter-head {
-  position: relative;
-}
-body.is-special[data-special="blueprint"] .chapter-head::before {
-  content: '';
-  position: absolute;
-  inset: -0.5rem -1rem auto -1rem;
-  height: 100%;
-  background-image:
-    linear-gradient(to right, color-mix(in oklab, var(--accent-deep) 14%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in oklab, var(--accent-deep) 14%, transparent) 1px, transparent 1px);
-  background-size: 1.5rem 1.5rem;
-  opacity: 0.5;
-  z-index: -1;
-  pointer-events: none;
-}
 
 /* Starter Kit: ordered "Essentials" list with numbered ringed badges */
 body.is-special[data-special="starter-kit"] .essentials {
@@ -73,6 +54,195 @@ body.is-special[data-special="starter-kit"] .essentials > li::before {
   display: grid;
   place-items: center;
   letter-spacing: 0.05em;
+}
+
+
+/* ───────────────────────── DEEP DIVE ────────────────────────
+   Killer features:
+   - The Argument: framed thesis block early in the issue,
+     stating the magazine's interpretive frame for the topic.
+   - Keep Digging: closing cross-media grid (podcast / tv / film
+     / game / book / longread / video), each typed with a tinted
+     pill, anchored to the issue's argument.
+   ============================================================ */
+
+/* The Argument — a framed block, not a callout. Reads as the editor's
+   stated position; intentionally distinct from a pullquote so the
+   reader knows this is a claim being made, not a quotation.
+
+     <div class="argument">
+       <div class="argument-eyebrow">The magazine's take</div>
+       <p class="argument-thesis">This issue reads the Yellow Turban Revolt
+         as the first plague-religion convergence in Chinese history,
+         not the peasant uprising it usually gets framed as.</p>
+       <p class="argument-stance">Stance paragraph — what that frame buys
+         us, what it costs, and how the rest of the issue works around it.</p>
+     </div>
+*/
+body.is-special[data-special="deep-dive"] .argument {
+  margin: 1.5rem auto 2.5rem;
+  max-width: var(--measure);
+  padding: 1.75rem 1.75rem 1.5rem 2.25rem;
+  background: linear-gradient(to right,
+    color-mix(in oklab, var(--accent) 9%, var(--paper-warm)),
+    var(--paper-warm) 60%);
+  border-left: 5px solid var(--accent);
+  border-radius: 0 6px 6px 0;
+  box-shadow: var(--shadow-soft);
+  position: relative;
+}
+/* Open-quote ornament in the top-left corner of the block */
+body.is-special[data-special="deep-dive"] .argument::before {
+  content: '\00B6';   /* ¶ pilcrow — claim marker */
+  position: absolute;
+  top: 0.4rem;
+  left: -0.5rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  display: grid;
+  place-items: center;
+  background: var(--accent);
+  color: var(--paper);
+  border-radius: 50%;
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1;
+  box-shadow: 0 2px 6px color-mix(in oklab, var(--accent) 30%, transparent);
+}
+body.is-special[data-special="deep-dive"] .argument-eyebrow {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 0.85rem;
+}
+body.is-special[data-special="deep-dive"] .argument-thesis {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(1.2rem, 1.8vw, 1.5rem);
+  line-height: 1.35;
+  color: var(--ink);
+  margin: 0 0 1rem;
+  text-wrap: pretty;
+}
+body.is-special[data-special="deep-dive"] .argument-stance {
+  font-family: var(--serif);
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+/* Keep Digging — closing cross-media grid. Each item is a card with a
+   typed pill at the top, the title, and a single-line "why" anchored
+   to the issue's argument.
+
+     <div class="keep-digging">
+       <article class="kd-item" data-medium="podcast">
+         <span class="kd-medium">Podcast</span>
+         <h4 class="kd-title">The Chinese History Podcast — Yellow Turbans series</h4>
+         <p class="kd-why">Five-part audio narrative covering the full arc.</p>
+       </article>
+       <article class="kd-item" data-medium="film">…</article>
+       …
+     </div>
+
+   data-medium accepts: podcast | tv | film | game | video | book.
+   Books are allowed but should be the minority — the format's value is
+   the cross-media items the reader wouldn't find on Amazon.
+
+   For podcasts and tv, an optional <span class="kd-episode">…</span>
+   line surfaces the specific episode title beneath the show name
+   (podcasts must always carry one — the spec forbids series-only refs).
+*/
+body.is-special[data-special="deep-dive"] .keep-digging {
+  margin: 1.75rem 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1rem;
+}
+body.is-special[data-special="deep-dive"] .kd-item {
+  padding: 1rem 1.1rem 1.2rem;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-top: 3px solid var(--bone-soft);
+  border-radius: 0 0 4px 4px;
+  display: grid;
+  gap: 0.45rem;
+  align-content: start;
+}
+body.is-special[data-special="deep-dive"] .kd-medium {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-weight: 700;
+  padding: 0.25rem 0.55rem;
+  border-radius: 2px;
+  background: var(--bone-soft);
+  color: var(--paper);
+  justify-self: start;
+  white-space: nowrap;
+}
+body.is-special[data-special="deep-dive"] .kd-medium::before {
+  font-size: 0.78rem;
+  line-height: 1;
+}
+/* Per-medium colour + glyph */
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="podcast"]  { border-top-color: var(--accent-ember); }
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="tv"]       { border-top-color: var(--accent-rose); }
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="film"]     { border-top-color: var(--accent-deep); }
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="game"]     { border-top-color: var(--accent-teal); }
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="video"]    { border-top-color: var(--accent-tan); }
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="book"]     { border-top-color: var(--accent-gold); }
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="podcast"]  .kd-medium { background: var(--accent-ember); color: var(--ink); }
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="tv"]       .kd-medium { background: var(--accent-rose);  color: var(--paper); }
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="film"]     .kd-medium { background: var(--accent-deep);  color: var(--paper); }
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="game"]     .kd-medium { background: var(--accent-teal);  color: var(--paper); }
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="video"]    .kd-medium { background: var(--accent-tan);   color: var(--paper); }
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="book"]     .kd-medium { background: var(--accent-gold);  color: var(--ink); }
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="podcast"]  .kd-medium::before { content: '\1F3A7'; }   /* headphones */
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="tv"]       .kd-medium::before { content: '\1F4FA'; }   /* TV */
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="film"]     .kd-medium::before { content: '\1F39E\FE0F'; }  /* film frames */
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="game"]     .kd-medium::before { content: '\1F3AE'; }   /* video game */
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="video"]    .kd-medium::before { content: '\25B6'; }    /* play */
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="book"]     .kd-medium::before { content: '\1F4D6'; }   /* open book */
+
+body.is-special[data-special="deep-dive"] .kd-title {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.3;
+  font-weight: 600;
+  color: var(--ink);
+}
+/* Optional episode line — surfaces the specific episode beneath the
+   show/series title. Mandatory on podcasts (per the spec). */
+body.is-special[data-special="deep-dive"] .kd-episode {
+  display: block;
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 0.92rem;
+  line-height: 1.35;
+  color: var(--accent);
+  margin-top: -0.15rem;
+}
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="podcast"] .kd-episode { color: var(--accent-ember); }
+body.is-special[data-special="deep-dive"] .kd-item[data-medium="tv"]      .kd-episode { color: var(--accent-rose); }
+body.is-special[data-special="deep-dive"] .kd-why {
+  margin: 0;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
 }
 
 
@@ -690,4 +860,994 @@ body.is-special[data-special="shortlist"] .pick-body .pick-tag {
   }
   body.is-special[data-special="shortlist"] .pick:nth-of-type(even) .pick-img { order: initial; }
   body.is-special[data-special="shortlist"] .pick-img { aspect-ratio: 4 / 3; max-height: 16rem; }
+}
+
+
+/* ───────────────────────── NEXT ────────────────────────────
+   Post-completion recommendation. The killer component is the
+   On-Ramp: every pick comes with Start / Reassess / Then
+   instructions, not just a recommendation. Plus a single
+   "If You Only Try One" hero block near the end.
+   ============================================================ */
+
+body.is-special[data-special="next"] {
+  --accent:   var(--accent-rose);
+  --accent-b: var(--accent-ember);
+}
+
+body.is-special[data-special="next"] .cover-eyebrow::before {
+  content: "Next · ";
+  color: var(--accent-ember);
+}
+
+/* The tier label sits above each pick. Numbered roundel + roman numeral
+   per tier — visually anchors the three-pick progression. The wildcard
+   tier swaps to ember + a different glyph. */
+body.is-special[data-special="next"] .next-tier {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 3rem 0 1rem;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  color: var(--accent);
+  font-weight: 600;
+}
+body.is-special[data-special="next"] .next-tier::before {
+  content: attr(data-step);
+  flex: 0 0 2.4rem;
+  width: 2.4rem;
+  height: 2.4rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--paper);
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 1.15rem;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 6px color-mix(in oklab, var(--accent) 30%, transparent);
+}
+body.is-special[data-special="next"] .next-tier::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right,
+    color-mix(in oklab, var(--accent) 40%, transparent), transparent);
+}
+body.is-special[data-special="next"] .next-tier.is-wildcard { color: var(--accent-b); }
+body.is-special[data-special="next"] .next-tier.is-wildcard::before {
+  background: var(--accent-b);
+  color: var(--ink);
+  box-shadow: 0 2px 6px color-mix(in oklab, var(--accent-b) 40%, transparent);
+}
+body.is-special[data-special="next"] .next-tier.is-wildcard::after {
+  background: linear-gradient(to right,
+    color-mix(in oklab, var(--accent-b) 50%, transparent), transparent);
+}
+
+/* The On-Ramp — the format's killer feature. A real stepped track:
+   numbered nodes connected by a vertical accent line, each step gets
+   a labelled badge + serif body.
+
+     <div class="on-ramp">
+       <div class="on-ramp-row" data-step="start">
+         <span class="on-ramp-label">Start with</span>
+         <span class="on-ramp-body">Episode 4 — the first one that lets the world breathe.</span>
+       </div>
+       <div class="on-ramp-row" data-step="reassess">
+         <span class="on-ramp-label">Reassess at</span>
+         <span class="on-ramp-body">End of the first arc, ~episode 6.</span>
+       </div>
+       <div class="on-ramp-row" data-step="then">
+         <span class="on-ramp-label">Then</span>
+         <span class="on-ramp-body">If it landed, head to season 2.</span>
+       </div>
+     </div>
+*/
+body.is-special[data-special="next"] .on-ramp {
+  position: relative;
+  margin: 1.5rem 0 2.5rem;
+  padding: 1.75rem 1.5rem 1.75rem 4rem;
+  background: linear-gradient(to right,
+    color-mix(in oklab, var(--accent) 8%, var(--paper-warm)),
+    var(--paper-warm));
+  border-radius: 6px;
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, var(--accent) 18%, transparent),
+    var(--shadow-soft);
+}
+
+/* The vertical accent track connecting the three step markers */
+body.is-special[data-special="next"] .on-ramp::before {
+  content: '';
+  position: absolute;
+  left: 2.05rem;
+  top: 2.4rem;
+  bottom: 2.4rem;
+  width: 2px;
+  background: linear-gradient(to bottom,
+    var(--accent) 0%,
+    var(--accent) 50%,
+    color-mix(in oklab, var(--accent) 50%, transparent) 100%);
+  border-radius: 1px;
+}
+
+body.is-special[data-special="next"] .on-ramp-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.3rem;
+  padding: 0.5rem 0;
+}
+body.is-special[data-special="next"] .on-ramp-row + .on-ramp-row {
+  margin-top: 1rem;
+}
+
+/* Step glyph circle on the left, sitting on the track */
+body.is-special[data-special="next"] .on-ramp-row::before {
+  position: absolute;
+  left: -2.65rem;
+  top: 0.35rem;
+  width: 1.8rem;
+  height: 1.8rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 0.85rem;
+  line-height: 1;
+}
+body.is-special[data-special="next"] .on-ramp-row[data-step="start"]::before    { content: '\25B6'; font-size: 0.7rem; }
+body.is-special[data-special="next"] .on-ramp-row[data-step="reassess"]::before { content: '\23F8'; font-size: 0.9rem; }
+body.is-special[data-special="next"] .on-ramp-row[data-step="then"]::before     { content: '\2192'; font-size: 0.95rem; }
+
+body.is-special[data-special="next"] .on-ramp-label {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  color: var(--accent);
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  background: color-mix(in oklab, var(--accent) 12%, transparent);
+  border-radius: 2px;
+  align-self: start;
+  margin-right: auto;
+}
+body.is-special[data-special="next"] .on-ramp-body {
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+@media (max-width: 540px) {
+  body.is-special[data-special="next"] .on-ramp { padding-left: 3.5rem; }
+  body.is-special[data-special="next"] .on-ramp::before { left: 1.7rem; }
+  body.is-special[data-special="next"] .on-ramp-row::before { left: -2.35rem; }
+}
+
+/* "If You Only Try One" — the standalone editorial conviction block.
+   Dark ground, embossed seal at top, no hedging.
+
+     <aside class="only-one">
+       <div class="only-one-mark">If you only try one</div>
+       <h3 class="only-one-pick">[Title of the pick]</h3>
+       <p class="only-one-reason">One short paragraph (~200 words). No hedging.</p>
+     </aside>
+*/
+body.is-special[data-special="next"] .only-one {
+  position: relative;
+  margin: 3.5rem auto;
+  max-width: var(--measure-wide);
+  padding: clamp(2.5rem, 4.5vw, 3.5rem) clamp(1.5rem, 4vw, 3rem) clamp(2rem, 4vw, 3rem);
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 0%,
+      color-mix(in oklab, var(--accent) 22%, transparent), transparent 70%),
+    var(--ink);
+  color: var(--ink-on-dark);
+  border-radius: 6px;
+  text-align: center;
+  overflow: hidden;
+  box-shadow: var(--shadow-mid);
+}
+/* The seal ornament at the top — a circle with a star inside, in accent */
+body.is-special[data-special="next"] .only-one::before {
+  content: '\2605';
+  position: absolute;
+  top: 1.1rem; left: 50%;
+  transform: translateX(-50%);
+  width: 2.4rem;
+  height: 2.4rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent-ember);
+  color: var(--ink);
+  font-size: 1.05rem;
+  box-shadow: 0 4px 12px color-mix(in oklab, var(--accent-ember) 40%, transparent);
+}
+/* The horizontal accent rule beneath the seal */
+body.is-special[data-special="next"] .only-one::after {
+  content: '';
+  position: absolute;
+  top: 3.8rem; left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 2px;
+  background: var(--accent-ember);
+}
+body.is-special[data-special="next"] .only-one-mark {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  color: var(--accent-ember);
+  margin: 1.5rem 0 0.85rem;
+}
+body.is-special[data-special="next"] .only-one-pick {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: clamp(2.2rem, 5.5vw, 3.4rem);
+  line-height: 1.02;
+  margin: 0 0 1rem;
+  color: var(--ink-on-dark);
+  letter-spacing: -0.01em;
+}
+body.is-special[data-special="next"] .only-one-reason {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.1rem;
+  line-height: 1.55;
+  max-width: 40rem;
+  margin: 0 auto;
+  color: rgba(250, 250, 248, 0.88);
+}
+
+
+/* ───────────────────────── LOOKAHEAD ───────────────────────
+   Multi-event preview window. Killer feature is The Verdict per
+   item — every Calendar row gets one of four tags. Plus a
+   Crunch Weeks callout for densely-packed weeks.
+   ============================================================ */
+
+body.is-special[data-special="lookahead"] {
+  --accent:        var(--accent-rose);
+  --verdict-hot:   var(--accent-rose);
+  --verdict-warm:  var(--accent-ember);
+  --verdict-wait:  var(--accent-gold);
+  --verdict-skip:  var(--bone-soft);
+}
+
+body.is-special[data-special="lookahead"] .cover-eyebrow::before {
+  content: "Lookahead · ";
+  color: var(--accent-ember);
+}
+
+/* The Calendar — date-stamped rows with verdict chips. The date column is
+   a card, not a stamp; the verdict is a full pill with glyph + label and
+   a tinted row background so it's visible at a glance.
+
+   Optional week dividers via <li class="cal-week">Week of N Jun</li>.
+
+     <ol class="calendar">
+       <li class="cal-week">Week of 14 Jun</li>
+       <li class="cal-row" data-verdict="hot">
+         <div class="cal-when"><span class="cal-date">14 Jun</span>
+                               <span class="cal-where">Football · PL</span></div>
+         <div class="cal-body">
+           <h4>Title decider, in one line</h4>
+           <p>Two sentences of context.</p>
+         </div>
+         <div class="cal-verdict">
+           <span class="cal-verdict-chip">Don't miss</span>
+           <span class="cal-reason">Antonelli's championship lead gets its first stress test.</span>
+         </div>
+       </li>
+       …
+     </ol>
+*/
+body.is-special[data-special="lookahead"] .calendar {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0;
+  max-width: var(--measure-wide);
+  margin-inline: auto;
+  display: grid;
+  gap: 0.75rem;
+}
+
+/* Week divider — optional structural marker */
+body.is-special[data-special="lookahead"] .cal-week {
+  margin: 1.25rem 0 0.25rem;
+  padding: 0.45rem 0.9rem;
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  font-weight: 700;
+  color: var(--accent);
+  background: color-mix(in oklab, var(--accent) 10%, transparent);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 2px 2px 0;
+}
+
+body.is-special[data-special="lookahead"] .cal-row {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr 12rem;
+  gap: 1.25rem;
+  padding: 1.1rem 1.1rem 1.2rem;
+  border: 1px solid var(--rule);
+  border-left-width: 5px;
+  border-left-color: var(--bone-soft);
+  background: var(--paper);
+  border-radius: 0 4px 4px 0;
+  align-items: start;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+body.is-special[data-special="lookahead"] .cal-row[data-verdict="hot"]  { border-left-color: var(--verdict-hot);  background: color-mix(in oklab, var(--verdict-hot)  6%, var(--paper)); }
+body.is-special[data-special="lookahead"] .cal-row[data-verdict="warm"] { border-left-color: var(--verdict-warm); background: color-mix(in oklab, var(--verdict-warm) 5%, var(--paper)); }
+body.is-special[data-special="lookahead"] .cal-row[data-verdict="wait"] { border-left-color: var(--verdict-wait); }
+body.is-special[data-special="lookahead"] .cal-row[data-verdict="skip"] { border-left-color: var(--verdict-skip); opacity: 0.72; }
+
+/* The date card — bigger, anchored, with a tinted background */
+body.is-special[data-special="lookahead"] .cal-when {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.6rem 0.5rem;
+  text-align: center;
+  background: var(--paper-warm);
+  border-radius: 4px;
+  align-self: start;
+}
+body.is-special[data-special="lookahead"] .cal-date {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+body.is-special[data-special="lookahead"] .cal-where {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--bone-soft);
+  font-weight: 600;
+}
+body.is-special[data-special="lookahead"] .cal-body h4 {
+  margin: 0.05rem 0 0.35rem;
+  font-size: 1.12rem;
+  line-height: 1.3;
+}
+body.is-special[data-special="lookahead"] .cal-body p {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+/* Verdict chip — the actual killer feature. Bold, glyph + label as one
+   unit, coloured background per verdict. Reason sits beneath in italic. */
+body.is-special[data-special="lookahead"] .cal-verdict {
+  display: grid;
+  gap: 0.5rem;
+  align-self: start;
+  text-align: right;
+  justify-items: end;
+}
+body.is-special[data-special="lookahead"] .cal-verdict-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-weight: 700;
+  padding: 0.35rem 0.75rem 0.35rem 0.4rem;
+  border-radius: 99px;
+  background: var(--bone-soft);
+  color: var(--paper);
+  white-space: nowrap;
+}
+body.is-special[data-special="lookahead"] .cal-verdict-chip::before {
+  display: inline-grid;
+  place-items: center;
+  width: 1.05rem;
+  height: 1.05rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  font-size: 0.78rem;
+  line-height: 1;
+}
+body.is-special[data-special="lookahead"] .cal-row[data-verdict="hot"]  .cal-verdict-chip { background: var(--verdict-hot);  color: var(--paper); box-shadow: 0 2px 6px color-mix(in oklab, var(--verdict-hot) 30%, transparent); }
+body.is-special[data-special="lookahead"] .cal-row[data-verdict="warm"] .cal-verdict-chip { background: var(--verdict-warm); color: var(--ink); }
+body.is-special[data-special="lookahead"] .cal-row[data-verdict="wait"] .cal-verdict-chip { background: var(--verdict-wait); color: var(--ink); }
+body.is-special[data-special="lookahead"] .cal-row[data-verdict="skip"] .cal-verdict-chip { background: transparent; color: var(--bone-soft); border: 1px solid var(--bone-soft); padding: 0.3rem 0.7rem 0.3rem 0.35rem; }
+body.is-special[data-special="lookahead"] .cal-row[data-verdict="hot"]  .cal-verdict-chip::before { content: '\2605'; }   /* ★ star */
+body.is-special[data-special="lookahead"] .cal-row[data-verdict="warm"] .cal-verdict-chip::before { content: '\25C9'; }   /* ◉ eye */
+body.is-special[data-special="lookahead"] .cal-row[data-verdict="wait"] .cal-verdict-chip::before { content: '\23F1'; }   /* ⏱ hourglass-ish */
+body.is-special[data-special="lookahead"] .cal-row[data-verdict="skip"] .cal-verdict-chip::before { content: '\2715'; background: transparent; }   /* ✕ */
+
+body.is-special[data-special="lookahead"] .cal-reason {
+  display: block;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.88rem;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--ink-soft);
+  line-height: 1.4;
+  max-width: 12rem;
+}
+body.is-special[data-special="lookahead"] .cal-row[data-verdict="skip"] .cal-reason { color: var(--bone-soft); }
+
+@media (max-width: 820px) {
+  body.is-special[data-special="lookahead"] .cal-row {
+    grid-template-columns: 5rem 1fr;
+    grid-template-areas: "when body" "verdict verdict";
+    gap: 0.9rem;
+  }
+  body.is-special[data-special="lookahead"] .cal-when    { grid-area: when; padding: 0.4rem 0.3rem; }
+  body.is-special[data-special="lookahead"] .cal-body    { grid-area: body; }
+  body.is-special[data-special="lookahead"] .cal-verdict { grid-area: verdict; text-align: left; justify-items: start; margin-top: 0.3rem; padding-top: 0.6rem; border-top: 1px dashed var(--rule); }
+  body.is-special[data-special="lookahead"] .cal-reason  { max-width: none; }
+  body.is-special[data-special="lookahead"] .cal-date    { font-size: 1.15rem; }
+}
+
+/* Crunch Weeks callout — when 3+ priority items cluster in one week.
+   Warning-callout style — bold left rail, attention-grabbing label, a
+   striped header band. The Prioritise / Defer / Skip rows are
+   tier-coloured for instant scanning.
+
+     <aside class="crunch-week">
+       <div class="crunch-header">
+         <span class="crunch-label">Crunch week</span>
+         <h4 class="crunch-when">Week of 14 Jun</h4>
+       </div>
+       <dl class="crunch-list">
+         <dt data-tier="hot">Prioritise</dt><dd>Title decider — can't be re-experienced.</dd>
+         <dt data-tier="wait">Defer</dt><dd>Canadian GP — strong race, no championship stakes.</dd>
+         <dt data-tier="skip">Skip</dt><dd>The Long Walk — sits in "wait for reviews".</dd>
+       </dl>
+     </aside>
+*/
+body.is-special[data-special="lookahead"] .crunch-week {
+  margin: 2.5rem auto;
+  max-width: var(--measure-wide);
+  padding: 0;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-left: 6px solid var(--accent);
+  border-radius: 0 6px 6px 0;
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+}
+body.is-special[data-special="lookahead"] .crunch-header {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 1.1rem 1.5rem;
+  background:
+    linear-gradient(135deg,
+      color-mix(in oklab, var(--accent) 12%, transparent) 0%,
+      color-mix(in oklab, var(--accent) 4%,  transparent) 100%);
+  border-bottom: 1px solid var(--rule);
+}
+body.is-special[data-special="lookahead"] .crunch-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  color: var(--paper);
+  background: var(--accent);
+  padding: 0.3rem 0.75rem;
+  border-radius: 2px;
+  font-weight: 700;
+  flex: 0 0 auto;
+}
+body.is-special[data-special="lookahead"] .crunch-label::before {
+  content: '\26A0';   /* ⚠ warning */
+  font-size: 0.85rem;
+}
+body.is-special[data-special="lookahead"] .crunch-when {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--ink);
+}
+body.is-special[data-special="lookahead"] .crunch-list {
+  margin: 0;
+  padding: 1.25rem 1.5rem 1.5rem;
+  display: grid;
+  grid-template-columns: 7.5rem 1fr;
+  gap: 0.8rem 1.25rem;
+}
+body.is-special[data-special="lookahead"] .crunch-list dt {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-weight: 700;
+  padding: 0.15rem 0.55rem;
+  border-radius: 2px;
+  align-self: start;
+  justify-self: start;
+  white-space: nowrap;
+}
+body.is-special[data-special="lookahead"] .crunch-list dt[data-tier="hot"]  { background: var(--verdict-hot);  color: var(--paper); }
+body.is-special[data-special="lookahead"] .crunch-list dt[data-tier="warm"] { background: var(--verdict-warm); color: var(--ink); }
+body.is-special[data-special="lookahead"] .crunch-list dt[data-tier="wait"] { background: var(--verdict-wait); color: var(--ink); }
+body.is-special[data-special="lookahead"] .crunch-list dt[data-tier="skip"] { background: transparent; color: var(--bone-soft); border: 1px solid var(--bone-soft); padding: 0.1rem 0.5rem; }
+/* Fallback when no data-tier given */
+body.is-special[data-special="lookahead"] .crunch-list dt:not([data-tier]) { background: var(--ink); color: var(--paper); }
+body.is-special[data-special="lookahead"] .crunch-list dd {
+  margin: 0;
+  font-size: 0.96rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  padding-top: 0.15rem;
+}
+@media (max-width: 540px) {
+  body.is-special[data-special="lookahead"] .crunch-header { flex-direction: column; align-items: flex-start; gap: 0.6rem; }
+  body.is-special[data-special="lookahead"] .crunch-list { grid-template-columns: 1fr; gap: 0.3rem 0; }
+  body.is-special[data-special="lookahead"] .crunch-list dd { margin-bottom: 0.6rem; }
+}
+
+
+/* ─────────────── REWIND — Memory Test grid ─────────────────
+   The second killer feature for Rewind (Throughline is a
+   literary chapter, no CSS needed). Three columns: Will Stick /
+   Might Stick / Will Fade — predictions owned with confidence.
+
+     <div class="memory-test">
+       <section class="mt-col mt-stick">
+         <h3>Will stick</h3>
+         <ul><li>…</li><li>…</li></ul>
+       </section>
+       <section class="mt-col mt-might"> … </section>
+       <section class="mt-col mt-fade">  … </section>
+     </div>
+*/
+body.is-special[data-special="rewind"] .memory-test {
+  margin: 2.5rem auto;
+  max-width: var(--measure-wide);
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(3, 1fr);
+}
+body.is-special[data-special="rewind"] .mt-col {
+  padding: 1.25rem 1.25rem 1.5rem;
+  background: var(--paper-warm);
+  border-top: 4px solid var(--bone-soft);
+  border-radius: 0 0 4px 4px;
+}
+body.is-special[data-special="rewind"] .mt-col.mt-stick { border-top-color: var(--accent); }
+body.is-special[data-special="rewind"] .mt-col.mt-might { border-top-color: var(--accent-gold); }
+body.is-special[data-special="rewind"] .mt-col.mt-fade  { border-top-color: var(--bone-soft); opacity: 0.86; }
+body.is-special[data-special="rewind"] .mt-col h3 {
+  margin: 0 0 0.85rem;
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  font-weight: 600;
+}
+body.is-special[data-special="rewind"] .mt-col.mt-stick h3 { color: var(--accent); }
+body.is-special[data-special="rewind"] .mt-col.mt-might h3 { color: var(--accent-gold); }
+body.is-special[data-special="rewind"] .mt-col.mt-fade  h3 { color: var(--bone-soft); }
+body.is-special[data-special="rewind"] .mt-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+body.is-special[data-special="rewind"] .mt-col li {
+  padding: 0.45rem 0;
+  border-bottom: 1px solid var(--rule);
+  font-size: 0.96rem;
+  line-height: 1.4;
+}
+body.is-special[data-special="rewind"] .mt-col li:last-child { border-bottom: 0; }
+@media (max-width: 820px) {
+  body.is-special[data-special="rewind"] .memory-test { grid-template-columns: 1fr; }
+}
+
+
+/* ─────────── STARTER KIT — The One-Week Plan ────────────────
+   The format's killer feature, finally with a real visual.
+   Vertical timeline of seven days, each with a day badge on
+   the left, instructions on the right, vertical accent line
+   connecting them.
+
+     <ol class="week-plan">
+       <li class="wp-day">
+         <div class="wp-day-mark">
+           <span class="wp-day-num">Day 1</span>
+           <span class="wp-day-name">Mon</span>
+         </div>
+         <div class="wp-day-body">
+           <h4 class="wp-day-title">Listen to episodes 1–4 of Wolf 359</h4>
+           <p>Why this entry point: …</p>
+         </div>
+       </li>
+       …
+     </ol>
+*/
+body.is-special[data-special="starter-kit"] .week-plan {
+  position: relative;
+  list-style: none;
+  padding: 0 0 0 1.25rem;
+  margin: 1.75rem 0 2rem;
+  display: grid;
+  gap: 0;
+}
+/* Vertical accent rail running the length of the list */
+body.is-special[data-special="starter-kit"] .week-plan::before {
+  content: '';
+  position: absolute;
+  left: 2.6rem;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  width: 2px;
+  background: linear-gradient(to bottom,
+    var(--accent-ember) 0%,
+    var(--accent-ember) 80%,
+    color-mix(in oklab, var(--accent-ember) 40%, transparent) 100%);
+  border-radius: 1px;
+}
+body.is-special[data-special="starter-kit"] .wp-day {
+  position: relative;
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
+  gap: 1.5rem;
+  padding: 0.85rem 0;
+  align-items: start;
+}
+body.is-special[data-special="starter-kit"] .wp-day + .wp-day {
+  border-top: 1px dashed var(--rule);
+  padding-top: 1.1rem;
+  margin-top: 0.25rem;
+}
+body.is-special[data-special="starter-kit"] .wp-day-mark {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 0.2rem;
+  padding: 0.5rem 0.4rem;
+  background: var(--paper);
+  border: 2px solid var(--accent-ember);
+  border-radius: 4px;
+  z-index: 1;
+}
+body.is-special[data-special="starter-kit"] .wp-day-num {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-weight: 700;
+  color: var(--accent-ember);
+}
+body.is-special[data-special="starter-kit"] .wp-day-name {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 1.05rem;
+  line-height: 1;
+  color: var(--ink);
+}
+body.is-special[data-special="starter-kit"] .wp-day-body h4 {
+  margin: 0.1rem 0 0.4rem;
+  font-size: 1.05rem;
+  line-height: 1.3;
+}
+body.is-special[data-special="starter-kit"] .wp-day-body p {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 0.96rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+@media (max-width: 540px) {
+  body.is-special[data-special="starter-kit"] .week-plan { padding-left: 0.5rem; }
+  body.is-special[data-special="starter-kit"] .week-plan::before { left: 1.85rem; }
+  body.is-special[data-special="starter-kit"] .wp-day { grid-template-columns: 3.5rem 1fr; gap: 1rem; }
+  body.is-special[data-special="starter-kit"] .wp-day-mark { padding: 0.4rem 0.3rem; }
+  body.is-special[data-special="starter-kit"] .wp-day-name { font-size: 0.9rem; }
+}
+
+
+/* ─────────── REWIND — The Throughline marker ────────────────
+   The Throughline is the chapter that names what the period
+   was actually about — Rewind's first killer feature. Marked
+   with a special chapter-head treatment so the reader sees
+   "this is THE chapter" at a glance.
+
+     <header class="chapter-head is-throughline">
+       <div class="throughline-mark">The Throughline</div>
+       <h2 class="chapter-title">A year of new launches</h2>
+     </header>
+
+   The mark replaces the chapter-numeral on this one chapter.
+*/
+body.is-special[data-special="rewind"] .chapter-head.is-throughline { gap: 0.85rem; }
+body.is-special[data-special="rewind"] .chapter-head.is-throughline .chapter-numeral { display: none; }
+body.is-special[data-special="rewind"] .throughline-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.32em;
+  font-weight: 700;
+  color: var(--accent);
+  padding: 0.4rem 0;
+  width: max-content;
+}
+body.is-special[data-special="rewind"] .throughline-mark::before,
+body.is-special[data-special="rewind"] .throughline-mark::after {
+  content: '';
+  height: 1px;
+  background: var(--accent);
+}
+body.is-special[data-special="rewind"] .throughline-mark::before { width: 2.5rem; }
+body.is-special[data-special="rewind"] .throughline-mark::after  { width: 1.25rem; }
+body.is-special[data-special="rewind"] .chapter-head.is-throughline .chapter-title {
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+}
+body.is-special[data-special="rewind"] .chapter-head.is-throughline .chapter-title::before {
+  content: '\201C';
+  color: var(--accent);
+  margin-right: 0.15em;
+}
+body.is-special[data-special="rewind"] .chapter-head.is-throughline .chapter-title::after {
+  content: '\201D';
+  color: var(--accent);
+  margin-left: 0.05em;
+}
+
+
+/* ─────────── SHORTLIST — The Lens + Cheat Sheet ─────────────
+   The Lens is the framed criteria block at the start —
+   "what the magazine looked for." The Cheat Sheet is the
+   summary table at the end — "every pick at a glance."
+*/
+
+/* The Lens — sits in the opening chapter, before any picks.
+
+     <div class="lens">
+       <div class="lens-eyebrow">The Lens</div>
+       <p class="lens-statement">Picked for [criteria]. Excluded
+         anything that [other criteria].</p>
+       <ol class="lens-criteria">
+         <li>What we looked for #1</li>
+         <li>What we looked for #2</li>
+       </ol>
+     </div>
+*/
+body.is-special[data-special="shortlist"] .lens {
+  margin: 1.5rem 0 2.5rem;
+  padding: 1.75rem 1.75rem 1.5rem;
+  background: var(--paper-warm);
+  border-top: 4px solid var(--accent);
+  border-radius: 0 0 6px 6px;
+  box-shadow: var(--shadow-soft);
+}
+body.is-special[data-special="shortlist"] .lens-eyebrow {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 0.6rem;
+}
+body.is-special[data-special="shortlist"] .lens-statement {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.15rem;
+  line-height: 1.45;
+  margin: 0 0 1rem;
+  color: var(--ink);
+}
+body.is-special[data-special="shortlist"] .lens-criteria {
+  margin: 0;
+  padding-left: 1.5rem;
+  display: grid;
+  gap: 0.4rem;
+}
+body.is-special[data-special="shortlist"] .lens-criteria li {
+  font-family: var(--serif);
+  font-size: 0.98rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  padding-left: 0.3rem;
+}
+body.is-special[data-special="shortlist"] .lens-criteria li::marker {
+  font-family: var(--mono);
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* The Cheat Sheet — at the end of the issue, every pick at a glance.
+
+     <table class="cheat-sheet">
+       <thead><tr><th>#</th><th>Pick</th><th>Tier</th><th>Why</th></tr></thead>
+       <tbody>
+         <tr data-tier="top"><td>1</td><td>Title</td><td>Top Pick</td><td>Why in one line</td></tr>
+         <tr data-tier="strong"><td>2</td><td>…</td><td>Strong Pick</td><td>…</td></tr>
+         <tr data-tier="wildcard"><td>3</td><td>…</td><td>Wildcard</td><td>…</td></tr>
+       </tbody>
+     </table>
+*/
+body.is-special[data-special="shortlist"] .cheat-sheet {
+  margin: 2rem auto;
+  max-width: var(--measure-wide);
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--sans);
+  font-size: 0.95rem;
+}
+body.is-special[data-special="shortlist"] .cheat-sheet th {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--ink-soft);
+  text-align: left;
+  padding: 0.7rem 0.85rem;
+  border-bottom: 2px solid var(--ink);
+  background: var(--paper-warm);
+}
+body.is-special[data-special="shortlist"] .cheat-sheet td {
+  padding: 0.8rem 0.85rem;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+  line-height: 1.45;
+}
+body.is-special[data-special="shortlist"] .cheat-sheet td:first-child {
+  font-family: var(--mono);
+  font-weight: 700;
+  color: var(--accent);
+  width: 2.5rem;
+  text-align: center;
+}
+body.is-special[data-special="shortlist"] .cheat-sheet td:nth-child(2) {
+  font-family: var(--serif);
+  font-weight: 600;
+  color: var(--ink);
+}
+body.is-special[data-special="shortlist"] .cheat-sheet td:nth-child(3) {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-weight: 700;
+  white-space: nowrap;
+  width: 8rem;
+}
+body.is-special[data-special="shortlist"] .cheat-sheet tr[data-tier="top"]      td:nth-child(3) { color: var(--accent-rose); }
+body.is-special[data-special="shortlist"] .cheat-sheet tr[data-tier="strong"]   td:nth-child(3) { color: var(--accent-ember); }
+body.is-special[data-special="shortlist"] .cheat-sheet tr[data-tier="wildcard"] td:nth-child(3) { color: var(--accent-teal); }
+body.is-special[data-special="shortlist"] .cheat-sheet td:last-child {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--ink-soft);
+}
+body.is-special[data-special="shortlist"] .cheat-sheet tbody tr {
+  position: relative;
+}
+body.is-special[data-special="shortlist"] .cheat-sheet tr[data-tier="top"]      td:first-child { border-left: 3px solid var(--accent-rose); }
+body.is-special[data-special="shortlist"] .cheat-sheet tr[data-tier="strong"]   td:first-child { border-left: 3px solid var(--accent-ember); }
+body.is-special[data-special="shortlist"] .cheat-sheet tr[data-tier="wildcard"] td:first-child { border-left: 3px solid var(--accent-teal); }
+
+
+/* ─────────── SEASON REVIEW — Scorecards ─────────────────────
+   Upgrade for the existing flat .rating bars. Card-based
+   layout: subject name top, final rating in serif accent,
+   bar in the middle, italic one-line verdict at the bottom.
+   Card top-border colour tracks rating tier.
+
+     <div class="scorecards">
+       <article class="scorecard" data-tier="hot">
+         <div class="sc-head">
+           <h4 class="sc-name">Lautaro Martínez</h4>
+           <div class="sc-score">8.4</div>
+         </div>
+         <div class="sc-bar" style="--score: 84"></div>
+         <p class="sc-verdict">Best season since he signed; deserved the Scudetto MVP.</p>
+       </article>
+       …
+     </div>
+*/
+body.is-special[data-special="season-review"] .scorecards {
+  margin: 1.75rem 0 2.5rem;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+}
+body.is-special[data-special="season-review"] .scorecard {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-top: 4px solid var(--bone-soft);
+  border-radius: 0 0 4px 4px;
+  padding: 1rem 1.15rem 1.15rem;
+  display: grid;
+  gap: 0.6rem;
+}
+body.is-special[data-special="season-review"] .scorecard[data-tier="hot"]   { border-top-color: var(--accent-rose); }
+body.is-special[data-special="season-review"] .scorecard[data-tier="warm"]  { border-top-color: var(--accent-ember); }
+body.is-special[data-special="season-review"] .scorecard[data-tier="cold"]  { border-top-color: var(--bone-soft); }
+body.is-special[data-special="season-review"] .sc-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+body.is-special[data-special="season-review"] .sc-name {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 1.15rem;
+  line-height: 1.15;
+  color: var(--ink);
+}
+body.is-special[data-special="season-review"] .sc-score {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+body.is-special[data-special="season-review"] .scorecard[data-tier="hot"]  .sc-score { color: var(--accent-rose); }
+body.is-special[data-special="season-review"] .scorecard[data-tier="warm"] .sc-score { color: var(--accent-ember); }
+body.is-special[data-special="season-review"] .scorecard[data-tier="cold"] .sc-score { color: var(--bone-soft); }
+body.is-special[data-special="season-review"] .sc-bar {
+  height: 8px;
+  background: var(--paper-deep);
+  position: relative;
+  border-radius: 4px;
+  overflow: hidden;
+}
+body.is-special[data-special="season-review"] .sc-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--score, 0) * 1%);
+  background: linear-gradient(to right, var(--accent-deep), var(--accent-rose));
+  border-radius: 4px;
+}
+body.is-special[data-special="season-review"] .scorecard[data-tier="hot"]  .sc-bar::after { background: linear-gradient(to right, var(--accent-ember), var(--accent-rose)); }
+body.is-special[data-special="season-review"] .scorecard[data-tier="cold"] .sc-bar::after { background: linear-gradient(to right, var(--bone-soft), var(--bone)); }
+body.is-special[data-special="season-review"] .sc-verdict {
+  margin: 0;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.92rem;
+  line-height: 1.4;
+  color: var(--ink-soft);
 }

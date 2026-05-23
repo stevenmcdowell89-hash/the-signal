@@ -104,35 +104,6 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
   letter-spacing: 0.05em;
 }
 
-/* Reading-path cards — present in Deep Dive, useful for any long format.
-   Small grid of 2/10/30-min cards.  */
-body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .reading-paths {
-  display: grid;
-  gap: 1.25rem;
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-  margin: 1.5rem 0 0;
-}
-body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .reading-paths article {
-  background: var(--paper-warm);
-  border: 1px solid var(--rule);
-  border-radius: 4px;
-  padding: 1.1rem 1.2rem 1.2rem;
-}
-body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .reading-paths article h3 {
-  margin: 0 0 0.35rem;
-  font-size: 1.1rem;
-}
-body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .reading-paths article .rp-time {
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  color: var(--accent);
-  display: block;
-  margin-bottom: 0.4rem;
-}
-body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .reading-paths article p {
-  margin: 0;
-  font-size: 0.96rem;
-  color: var(--ink-soft);
-}
+/* (.reading-paths was retired in v8.22.2 — Deep Dive's killer feature
+   is now The Argument + Keep Digging; see 32-special-format-flair.css.
+   The reading-paths chapter was never written into actual issues.) */

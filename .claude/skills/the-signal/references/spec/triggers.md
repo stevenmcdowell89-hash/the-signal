@@ -39,9 +39,13 @@ If no Priority 1 or 2 trigger has fired in the last 5 weeks, the editor picks a 
 | Starter Kit | Getting into Malazan, Specialty coffee from scratch, Fantasy Premier League for beginners, Home kettlebell training, Starting on Etsy |
 | Deep Dive | The history of a favourite game franchise, A deep look at a training methodology, The state of e-readers in 2026, Serie A tactical evolution |
 | Versus | V60 vs AeroPress, Two fitness approaches, Two e-readers, Two budget tablets |
-| Blueprint | Home gym next phase, 10k training plan options, Etsy store growth paths |
+| Shortlist | A category roundup that hasn't been covered recently — boutique games, kettlebell drills, audio essay channels |
 
 **The editorial picks pool ensures there's always a viable special available.** The editor selects the most timely or interesting option from the pool. Over time, used topics are tracked in the state file to avoid repeats.
+
+**Manual-only formats — Next and Lookahead.** Two formats never auto-trigger; they require the reader to call them because they depend on specific context that only the reader holds.
+- **Next** ("Run a Next — after [the thing you finished]") — needs the anchor: what the reader just finished. The magazine can't reliably detect "finished" status for podcasts/books/seasons from external signals.
+- **Lookahead** ("Run a Lookahead — [window]") — needs the window: what stretch the reader wants surveyed. Default is 6-8 weeks; reader can shorten ("the next ten days") or lengthen ("the rest of the quarter").
 
 
 
@@ -81,9 +85,13 @@ If no Priority 1 or 2 trigger has fired in the last 5 weeks, the editor picks a 
 | Starter Kit | Getting into Malazan, Specialty coffee from scratch, Fantasy Premier League for beginners, Home kettlebell training, Starting on Etsy |
 | Deep Dive | The history of a favourite game franchise, A deep look at a training methodology, The state of e-readers in 2026, Serie A tactical evolution |
 | Versus | V60 vs AeroPress, Two fitness approaches, Two e-readers, Two budget tablets |
-| Blueprint | Home gym next phase, 10k training plan options, Etsy store growth paths |
+| Shortlist | A category roundup that hasn't been covered recently — boutique games, kettlebell drills, audio essay channels |
 
 **The editorial picks pool ensures there's always a viable special available.** The editor selects the most timely or interesting option from the pool. Over time, used topics are tracked in the state file to avoid repeats.
+
+**Manual-only formats — Next and Lookahead.** Two formats never auto-trigger; they require the reader to call them because they depend on specific context that only the reader holds.
+- **Next** ("Run a Next — after [the thing you finished]") — needs the anchor: what the reader just finished. The magazine can't reliably detect "finished" status for podcasts/books/seasons from external signals.
+- **Lookahead** ("Run a Lookahead — [window]") — needs the window: what stretch the reader wants surveyed. Default is 6-8 weeks; reader can shorten ("the next ten days") or lengthen ("the rest of the quarter").
 
 
 
@@ -123,9 +131,13 @@ If no Priority 1 or 2 trigger has fired in the last 5 weeks, the editor picks a 
 | Starter Kit | Getting into Malazan, Specialty coffee from scratch, Fantasy Premier League for beginners, Home kettlebell training, Starting on Etsy |
 | Deep Dive | The history of a favourite game franchise, A deep look at a training methodology, The state of e-readers in 2026, Serie A tactical evolution |
 | Versus | V60 vs AeroPress, Two fitness approaches, Two e-readers, Two budget tablets |
-| Blueprint | Home gym next phase, 10k training plan options, Etsy store growth paths |
+| Shortlist | A category roundup that hasn't been covered recently — boutique games, kettlebell drills, audio essay channels |
 
 **The editorial picks pool ensures there's always a viable special available.** The editor selects the most timely or interesting option from the pool. Over time, used topics are tracked in the state file to avoid repeats.
+
+**Manual-only formats — Next and Lookahead.** Two formats never auto-trigger; they require the reader to call them because they depend on specific context that only the reader holds.
+- **Next** ("Run a Next — after [the thing you finished]") — needs the anchor: what the reader just finished. The magazine can't reliably detect "finished" status for podcasts/books/seasons from external signals.
+- **Lookahead** ("Run a Lookahead — [window]") — needs the window: what stretch the reader wants surveyed. Default is 6-8 weeks; reader can shorten ("the next ten days") or lengthen ("the rest of the quarter").
 
 
 

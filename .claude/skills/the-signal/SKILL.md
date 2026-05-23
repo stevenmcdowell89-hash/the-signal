@@ -6,11 +6,12 @@ description: >-
   create, or schedule The Signal, or when the user mentions "the signal",
   "signal magazine", "sunday magazine", "personal magazine", "run the
   signal", "deep dive", "countdown", "season review", "versus", "rewind",
-  "starter kit", "blueprint", "shortlist", or "field guide" in the context
-  of their personal weekly reading. Supports multiple issue formats:
-  standard weekly, deep dive, countdown, season review, versus, rewind,
-  starter kit, blueprint, shortlist, and field guide. Includes HTML
-  template, editorial spec, and a compliance checklist.
+  "starter kit", "shortlist", "next", "after", "lookahead", or "field
+  guide" in the context of their personal weekly reading. Supports
+  multiple issue formats: standard weekly, deep dive, countdown, season
+  review, versus, rewind, starter kit, shortlist, next, lookahead, and
+  field guide. Includes HTML template, editorial spec, and a compliance
+  checklist.
 ---
 
 # The Signal
@@ -107,7 +108,7 @@ If a P2 fires, commit to that format and continue at Phase 3. Skip 0e.
 If no P1 or P2 fired AND `p3_locked = false`:
 - Compute weeks since `last_special_date` from state.
 - If ≥ 5 weeks, P3 fires.
-- Pick the next format from the P3 rotation (Shortlist, Starter Kit, Blueprint, Versus, Deep Dive on a non-trip topic). Read `recent_special_formats` from state — pick the format that has not appeared in the last 6 specials. If multiple formats tie, pick the one with the strongest topic surfaced during 0d.
+- Pick the next format from the P3 rotation (Shortlist, Starter Kit, Versus, Deep Dive on a non-trip topic). Read `recent_special_formats` from state — pick the format that has not appeared in the last 6 specials. If multiple formats tie, pick the one with the strongest topic surfaced during 0d. **Next and Lookahead are manual-only** and never enter P3 — they require reader-supplied context (the thing just finished / the window to survey) that the orchestrator cannot infer.
 - Commit that format and continue at Phase 3.
 
 If no P1, no P2, and (P3 is locked OR < 5 weeks since last special), commit to standard weekly (`format_committed = weekly`).
@@ -125,8 +126,8 @@ Every format — weekly or any special — continues at **Phase 3** below. There
 ## Phase 3 — Derive execution mode
 
 From the committed format, derive `execution_mode`:
-- **Parallel mode** (Countdown, Field Guide, Shortlist, Starter Kit, Blueprint, weekly): writer subagents in Phase 5 spawn in one batch.
-- **Sequential mode** (Deep Dive, Versus, Rewind, Season Review): writer subagents in Phase 5 spawn one at a time, each reading its predecessor's output to maintain throughline.
+- **Parallel mode** (Countdown, Field Guide, Shortlist, Starter Kit, Lookahead, weekly): writer subagents in Phase 5 spawn in one batch.
+- **Sequential mode** (Deep Dive, Versus, Rewind, Season Review, Next): writer subagents in Phase 5 spawn one at a time, each reading its predecessor's output to maintain throughline. Next is sequential because every pick has to be judged against The Itch named in the opening chapter, and the On-Ramp for each pick benefits from knowing what the previous pick covered.
 
 ### Phase 3a — Researcher subagent
 Spawn an `Agent` with `subagent_type: "Explore"` and `model: "sonnet"` (fallback `"haiku"`). In the prompt, tell it to read `references/spec/global.md` (sections `key-rules` and `image-integrity`), `references/spec/triggers.md` (full file — short), and the matching format section in `references/spec/formats.md` (H2 anchor for the issue's format). Pass committed format + state snapshot inline. The subagent does all web research and writes `/tmp/signal-build/research-bundle.json` (sources, key facts, image candidates with attribution, ongoing-story status, training-phase context).
@@ -179,10 +180,10 @@ Run `python scripts/validate-chapter-plan.py`. **If invalid:** re-spawn planner 
 **Cost log:** after each planner attempt, run `bash scripts/log-call.sh planner <model> <issue_id> - <retry_count> <outcome>`. Outcome is `validator_fail` if validator rejected and another retry is coming, `ok` if the plan passed, `escalated` if the fallback chain ran out. See § Cost Logging.
 
 ### Phase 5 — Writer subagents (format-aware)
-Read `chapter-plan.json`. For each chapter, spawn an `Agent` with `subagent_type: "general-purpose"` and `model: "sonnet"` (fallback `"haiku"`). In the prompt, pass: the pre-flight.md path, the chapter brief (one chapter object from the plan), the research-bundle.json path, plus the H2 anchor reference for the issue's format inside `references/spec/formats.md`. Writers also read `references/spec/global.md` sections `markup-contracts`, `ground-discipline`, `accent-lockdown`. **NON-HOLIDAY SPECIAL FORMATS (`deep_dive`, `versus`, `rewind`, `season_review`, `blueprint`, `starter_kit`, `shortlist`):** writers MUST read `references/spec/specials.md` § `cover` → "Component list" for the v8.21 editorial system: persistent `.mast` chrome, `.cover` / `.chapter` / `.chapter-body` structure, baseline flair (`.pullquote`, `.marginalia`, `.bignum`, `.sp-ornament`, `.sp-eyebrow`, `.has-dropcap`), figures (`.fig`, `.image-quote`), per-format flair components for the visual formats (`.vs-tape` / `.vs-pair` / `.vs-verdict`, `.year-band` / `.rewind-cards`, `.rating` / `.scoreboard` / `.milestones`, `.tier-band` / `.pick`). The old `sp-*` vocabulary (`.sp-chapter-gate`, `.sp-spread`, `.sp-pull-break`, `.sp-manifesto`, `.sp-bignum`, `.sp-gallery`, `.sp-diptych`, `.sp-marquee`, `.sp-parallax`, `.sp-wipe`, `.sp-stagger`, `.sp-splash`, `.mast-ticker`, `.sp-format-badge`, signature-moments `.sp-sig-*`, hype `.is-hype`) was retired in v8.21 — those classes are no longer in the CSS bundle and will render unstyled. **HOLIDAY FORMATS ONLY (`countdown`, `field_guide`):** writers read `references/spec/specials.md` § `holiday-identity` for the `.hol-*` component map. Holiday formats retain their motion/identity layer in CSS files `33-` and `36-` through `44-`. Each writer outputs `/tmp/signal-build/chapters/<chapter_id>.html` (chapter-only, no scaffold).
+Read `chapter-plan.json`. For each chapter, spawn an `Agent` with `subagent_type: "general-purpose"` and `model: "sonnet"` (fallback `"haiku"`). In the prompt, pass: the pre-flight.md path, the chapter brief (one chapter object from the plan), the research-bundle.json path, plus the H2 anchor reference for the issue's format inside `references/spec/formats.md`. Writers also read `references/spec/global.md` sections `markup-contracts`, `ground-discipline`, `accent-lockdown`. **NON-HOLIDAY SPECIAL FORMATS (`deep_dive`, `versus`, `rewind`, `season_review`, `starter_kit`, `shortlist`, `next`, `lookahead`):** writers MUST read `references/spec/specials.md` § `cover` → "Component list" for the v8.21 editorial system: persistent `.mast` chrome, `.cover` / `.chapter` / `.chapter-body` structure, baseline flair (`.pullquote`, `.marginalia`, `.bignum`, `.sp-ornament`, `.sp-eyebrow`, `.has-dropcap`), figures (`.fig`, `.image-quote`), per-format flair components for the visual formats (`.vs-tape` / `.vs-pair` / `.vs-verdict`, `.year-band` / `.rewind-cards`, `.rating` / `.scoreboard` / `.milestones`, `.tier-band` / `.pick`). The old `sp-*` vocabulary (`.sp-chapter-gate`, `.sp-spread`, `.sp-pull-break`, `.sp-manifesto`, `.sp-bignum`, `.sp-gallery`, `.sp-diptych`, `.sp-marquee`, `.sp-parallax`, `.sp-wipe`, `.sp-stagger`, `.sp-splash`, `.mast-ticker`, `.sp-format-badge`, signature-moments `.sp-sig-*`, hype `.is-hype`) was retired in v8.21 — those classes are no longer in the CSS bundle and will render unstyled. **HOLIDAY FORMATS ONLY (`countdown`, `field_guide`):** writers read `references/spec/specials.md` § `holiday-identity` for the `.hol-*` component map. Holiday formats retain their motion/identity layer in CSS files `33-` and `36-` through `44-`. Each writer outputs `/tmp/signal-build/chapters/<chapter_id>.html` (chapter-only, no scaffold).
 
-- **Parallel mode** (Countdown, Field Guide, Shortlist, Starter Kit, Blueprint, weekly): spawn all writers in one batch — issue every `Agent` call in a single message.
-- **Sequential mode** (Deep Dive, Versus, Rewind, Season Review): spawn writers one at a time. After each chapter completes, the next writer reads its predecessor's output to maintain throughline.
+- **Parallel mode** (Countdown, Field Guide, Shortlist, Starter Kit, Lookahead, weekly): spawn all writers in one batch — issue every `Agent` call in a single message.
+- **Sequential mode** (Deep Dive, Versus, Rewind, Season Review, Next): spawn writers one at a time. After each chapter completes, the next writer reads its predecessor's output to maintain throughline.
 
 **Cost log:** after each writer returns, run `bash scripts/log-call.sh writer <model> <issue_id> <chapter_id> 0 ok`. One call per chapter. See § Cost Logging.
 
