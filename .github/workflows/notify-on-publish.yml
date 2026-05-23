@@ -12,6 +12,12 @@ on:
     branches: [main]
     paths:
       - 'issues/*.html'
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: 'Issue path to notify for (e.g. issues/signal_deep-dive_2026-05-22.html). Leave blank to use the most recently added issue.'
+        required: false
+        default: ''
 
 permissions:
   contents: read
@@ -26,20 +32,37 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
-      - name: Find newly added issue
+      - name: Resolve target issue
         id: find
+        env:
+          MANUAL_ISSUE: ${{ inputs.issue }}
         run: |
           set -euo pipefail
-          added=$(git diff --name-only --diff-filter=A HEAD~1 HEAD -- 'issues/*.html' | head -1)
-          if [ -z "$added" ]; then
-            echo "No new issue added in this push (only edits). Skipping notify."
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-            exit 0
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            if [ -n "${MANUAL_ISSUE}" ]; then
+              issue="${MANUAL_ISSUE}"
+              echo "Manual run with explicit issue: ${issue}"
+            else
+              # Most recently added issue across history
+              issue=$(git log --diff-filter=A --name-only --pretty=format: -- 'issues/*.html' | awk 'NF' | head -1)
+              echo "Manual run, auto-detected latest issue: ${issue}"
+            fi
+          else
+            issue=$(git diff --name-only --diff-filter=A HEAD~1 HEAD -- 'issues/*.html' | head -1)
+            if [ -z "$issue" ]; then
+              echo "No new issue added in this push (only edits). Skipping notify."
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            echo "Push-triggered, new issue: ${issue}"
           fi
-          echo "issue=$added" >> "$GITHUB_OUTPUT"
-          echo "Detected new issue: $added"
+          if [ -z "$issue" ] || [ ! -f "$issue" ]; then
+            echo "::error::Could not resolve a valid issue path (got: '${issue}')"
+            exit 1
+          fi
+          echo "issue=${issue}" >> "$GITHUB_OUTPUT"
 
       - name: Send notification
         if: steps.find.outputs.skip != 'true'
