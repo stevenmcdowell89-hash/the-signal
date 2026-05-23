@@ -190,12 +190,12 @@
   <div class="gen-status" id="status"></div>
 
   <h2><span class="step">1.</span> Env vars</h2>
-  <p class="lede" style="margin-bottom: 0.5rem; font-size: 0.92rem;">Cloudflare Pages → your project → <strong>Settings → Functions → Production env vars → Add variable</strong>. Set the first as plaintext, the other two as <em>secrets</em>.</p>
+  <p class="lede" style="margin-bottom: 0.5rem; font-size: 0.92rem;">Cloudflare dashboard → your project → <strong>Settings → Variables and Secrets → Add variable</strong>. <strong>Encrypt all three</strong> (Workers Builds wipes plaintext variables that aren't declared in <code>wrangler.jsonc</code>; encrypted ones survive).</p>
 
   <div class="field">
     <div class="field-label">
       <span class="field-name">VAPID_PUBLIC_KEY</span>
-      <span class="field-tag">Plaintext</span>
+      <span class="field-tag secret">Encrypt</span>
     </div>
     <div class="value-box" id="pub-box"><span class="value-empty">Press Generate to populate</span></div>
   </div>

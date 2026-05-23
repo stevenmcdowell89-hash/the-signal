@@ -115,10 +115,13 @@ Either way, you end up with three values: `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY
 
 Pages dashboard → the project → **Settings → Functions**:
 
-**Env vars (Production)**
-- `VAPID_PUBLIC_KEY` — plaintext, the base64url public key.
-- `VAPID_PRIVATE_KEY` — **secret**, the JWK JSON string.
-- `NOTIFY_AUTH_TOKEN` — **secret**, the random URL-safe token.
+**Variables and Secrets (Production)** — encrypt all three. Workers Builds
+wipes plaintext variables that aren't declared in `wrangler.jsonc` on every
+deploy; encrypted secrets survive.
+
+- `VAPID_PUBLIC_KEY` — encrypted, the base64url public key.
+- `VAPID_PRIVATE_KEY` — encrypted, the JWK JSON string.
+- `NOTIFY_AUTH_TOKEN` — encrypted, the random URL-safe token.
 - `VAPID_SUBJECT` *(optional)* — `mailto:you@example.com`; defaults to a
   placeholder if unset.
 
