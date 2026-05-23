@@ -296,7 +296,13 @@ async function cacheFirst(req, cacheName, opts = {}) {
 
 async function staleWhileRevalidate(req, cacheName) {
   const cache = await caches.open(cacheName);
-  const cached = await cache.match(req, MATCH_OPTS);
+  // Mirror cacheFirst: putInCache stores under the canonical (no-.html) key,
+  // so the lookup has to try canonical first or .html requests always miss
+  // and silently fall through to the network — which returns undefined
+  // when offline. This is what broke offline issue access.
+  const canonical = canonicalUrl(req);
+  let cached = await cache.match(canonical, MATCH_OPTS);
+  if (!cached) cached = await cache.match(req, MATCH_OPTS);
   const fetchPromise = fetch(req)
     .then((resp) => {
       if (resp && resp.ok) putInCache(cache, req, resp);

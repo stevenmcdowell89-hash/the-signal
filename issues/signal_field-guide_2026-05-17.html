@@ -20,43 +20,7 @@
   Match class names exactly. Swap placeholder text [in brackets] with real content.
   For HOLIDAY issues (Countdown, Field Guide): keep the HOLIDAY-FONTS block above and set
   <body class="is-special" data-special="countdown">
-<!-- the-signal:back -->
-<style data-signal-back>
-  .signal-back-to-archive {
-    position: fixed;
-    top: max(0.75rem, env(safe-area-inset-top, 0px));
-    left: max(0.75rem, env(safe-area-inset-left, 0px));
-    z-index: 9999;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.45rem 0.85rem 0.45rem 0.7rem;
-    border-radius: 999px;
-    background: rgba(20, 20, 30, 0.72);
-    color: #fff;
-    font-family: 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', sans-serif;
-    font-size: 0.74rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    text-decoration: none;
-    backdrop-filter: saturate(140%) blur(10px);
-    -webkit-backdrop-filter: saturate(140%) blur(10px);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.22);
-    transition: transform 0.15s ease, background 0.15s ease;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .signal-back-to-archive:hover { background: rgba(20, 20, 30, 0.88); }
-  .signal-back-to-archive:active { transform: scale(0.96); }
-  .signal-back-to-archive svg { display: block; opacity: 0.9; }
-  @media print { .signal-back-to-archive { display: none; } }
-</style>
-<a href="../" class="signal-back-to-archive" aria-label="Back to The Signal archive">
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
-  <span>The Signal</span>
-</a>
-<!-- /the-signal:back -->
- (or field-guide).
+(or field-guide).
   For all OTHER formats: DELETE the HOLIDAY-FONTS-OPEN/CLOSE block — those faces are unused.
 -->
 <style>
@@ -12433,6 +12397,43 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
 <!-- /the-signal:pwa -->
 </head>
 <body class="is-special" data-special="field-guide">
+<!-- the-signal:back -->
+<style data-signal-back>
+  .signal-back-to-archive {
+    position: fixed;
+    top: max(0.75rem, env(safe-area-inset-top, 0px));
+    left: max(0.75rem, env(safe-area-inset-left, 0px));
+    z-index: 9999;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.85rem 0.45rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(20, 20, 30, 0.72);
+    color: #fff;
+    font-family: 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    backdrop-filter: saturate(140%) blur(10px);
+    -webkit-backdrop-filter: saturate(140%) blur(10px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.22);
+    transition: transform 0.15s ease, background 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .signal-back-to-archive:hover { background: rgba(20, 20, 30, 0.88); }
+  .signal-back-to-archive:active { transform: scale(0.96); }
+  .signal-back-to-archive svg { display: block; opacity: 0.9; }
+  @media print { .signal-back-to-archive { display: none; } }
+</style>
+<a href="../" class="signal-back-to-archive" aria-label="Back to The Signal archive">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+  <span>The Signal</span>
+</a>
+<!-- /the-signal:back -->
+
 <div class="progress-bar" id="progressBar"></div>
 
 <header class="hol-masthead">
