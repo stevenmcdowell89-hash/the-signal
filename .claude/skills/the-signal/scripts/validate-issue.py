@@ -509,6 +509,44 @@ def check_toc_anchors(html: str, report: Report) -> None:
         report.ok("toc-anchors", f"all {len(toc_hrefs)} TOC links resolve to a section id")
 
 
+def check_toc_numerals(html: str, fmt: str, report: Report) -> None:
+    """Standard weeklies use UPPERCASE Roman numerals starting at I in the TOC
+    (e.g. I, II, III, IV, ...). The 24 May 2026 rebuild shipped with lowercase
+    book-frontmatter numerals starting at iii (iii, iv, v, ...), which gave
+    the weekly a "special edition / frontmatter" visual feel rather than the
+    standard weekly look.
+
+    This check runs for weekly format only — specials may legitimately use
+    other conventions per their own spec.
+    """
+    if fmt != "weekly":
+        return
+    numerals = re.findall(r'<div class="toc-roman">([^<]+)</div>', html)
+    if not numerals:
+        return  # No toc-roman in this issue — older nav-card style, skip
+    # Standard weekly convention: uppercase Roman, starting at I
+    UPPER_ROMAN = {
+        'I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX',
+    }
+    not_uppercase = [n for n in numerals if n.strip() not in UPPER_ROMAN]
+    if not_uppercase:
+        report.fail(
+            "toc-numerals",
+            f"weekly TOC uses non-standard numeral style. Found: {numerals[:5]}... "
+            "Standard weekly convention is UPPERCASE Roman starting at I "
+            "(I, II, III, IV, …). Lowercase or book-frontmatter starts (iii, iv, …) "
+            "are a special-edition convention and shouldn't appear in weeklies.",
+        )
+    elif numerals[0].strip() != 'I':
+        report.fail(
+            "toc-numerals",
+            f"weekly TOC numerals don't start at I — first numeral is {numerals[0]!r}. "
+            "Standard weekly convention starts at I (no frontmatter prelim numbering).",
+        )
+    else:
+        report.ok("toc-numerals", f"weekly TOC numerals are uppercase Roman starting at I ({len(numerals)} entries)")
+
+
 def check_css_class_sanity(html: str, report: Report) -> None:
     style_match = re.search(r"<style\b[^>]*>(.*?)</style>", html, re.DOTALL | re.IGNORECASE)
     if not style_match:
@@ -604,6 +642,7 @@ def main(argv: list[str]) -> int:
     check_placeholders(html, report)
     check_css_class_sanity(html, report)
     check_toc_anchors(html, report)
+    check_toc_numerals(html, fmt, report)
 
     # Holiday-only checks
     if fmt in HOLIDAY_FORMATS:
