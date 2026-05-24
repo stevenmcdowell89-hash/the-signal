@@ -248,7 +248,19 @@ If any of the three paragraphs honestly fails, the chapter goes to repair (Phase
 
 The check is honor-system at the LLM layer — the orchestrator has to give itself an honest answer rather than rationalising a marginal pass. The negative examples in the spec are the calibration: if a paragraph reads like the Yellow Turban foreword paragraph 2, it fails. If it reads like a magazine telling a story, it passes.
 
-This is the only Phase 7 gate that doesn't have a script — by design. The point is to refuse to ship prose that reads as a paper, and a regex can't measure that.
+**Deep Dive only — teaching-density spot check (v8.22.12, runs alongside the narrative-voice gate).** The narrative-voice check above catches the Yellow Turban failure mode (academic essay). It does NOT catch the WWI Deep Dive failure mode (magazine-essayist register that performs comprehension without conveying it — formulaic vignette openings, contrastive pivots, parallel triplets, withheld-word endings, characteristic-listing in place of mechanism, "no X / no Y / no Z" domino lists of recognisable nouns). A paragraph can pass the Sunday-morning narrative check and still teach the reader nothing.
+
+After the narrative-voice spot-check passes, the orchestrator picks **3 fresh random body paragraphs** (different from the narrative-voice sample) and asks itself, honestly:
+
+> "If I delete every metaphor, every parallel construction, every withheld-word ending, and every contrastive pivot in this paragraph, does what remains teach the reader something concrete about the subject — at the level the reader could re-explain to a friend?"
+
+The pass bar is **re-explainable understanding**, not memorable atmosphere. A paragraph that gives the reader a vivid image of Franz Joseph's chair-brake but nothing about how the Dual Monarchy actually divided power between Vienna and Budapest fails. A paragraph that walks the reader through the four mechanisms of Versailles territorial transfer and what each one downstream-produced passes — even if the prose has no atmospheric beats at all.
+
+**One document-level check** also runs at Phase 7: list every chapter's opening sentence. If more than five chapters open with the date-place-person vignette template ("On [date] in [place], [person] [did concrete thing]"), the issue fails for **formula mannerism** — see `editorial-spec.md` § "No formula openings." Repair: rewrite the openings of the over-budget chapters, varying between question, structural claim, primary-source quote, single framing number, comparison, counterfactual.
+
+If any chapter fails the teaching-density check, OR the issue fails the formula-opening check, that chapter (or those openings) go to repair with the editorial-spec.md § "Mechanism over mood" section and its anti-pattern examples pasted into the brief. Both gates re-run after repair.
+
+This is the only Phase 7 gate that doesn't have a script — by design. The point is to refuse to ship prose that reads as a paper OR prose that reads as well-decorated but content-empty magazine essay. A regex can't measure either.
 
 ### Phase 7.5 — Release-date sanity check (mandatory before publish)
 Run `bash scripts/check-release-dates.sh <stitched-html-path>`. The script extracts every claim of a date or relative-time phrase adjacent to a media name (TV, film, game, book, album), plus any line that mentions a locked-register entry (Andor, Tales of the [Jedi/Empire/Underworld], Skeleton Crew, Acolyte, Maul: Shadow Lord, Mandalorian and Grogu). Output is written to `/tmp/signal-date-claims.txt`.
