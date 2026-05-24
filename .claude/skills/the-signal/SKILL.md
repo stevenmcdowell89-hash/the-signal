@@ -665,8 +665,7 @@ When the reader asks to tweak styling or structure rather than generate an issue
 | `01-masthead.html` | persistent masthead bar |
 | `02-wax-seal.html` | rotating wax-stamp seal |
 | `03-cover.html` | full-bleed editorial cover |
-| `04-navigator.html` | navigator grid (default) — **canonical for WEEKLY format**. Card grid with lead-card thumbnail. |
-| `04-navigator-toc.html` | navigator grid — TOC-style variant (Enhancement 22F). **SPECIALS ONLY** (Deep Dive, Field Guide, Versus, Rewind, Season Review, Shortlist, Starter Kit, Next, Lookahead). Per `spec/global.md` § Navigator variants and validated by `validate-issue.py § check_weekly_navigator`: a weekly using this template fails the stitch. |
+| `04-navigator.html` | navigator grid — **canonical for every format that has a navigator**. Card grid with lead-card thumbnail. Specials that want an in-issue contents page use the chapter-numeral structure inside `<section class="chapter">`, not a separate template. The former `04-navigator-toc.html` TOC-style variant was deleted in v8.22.11 — no current format used it, and writers reaching for it on weeklies was the May 17 / May 24 2026 bug. |
 | `05-foreword.html` | foreword block |
 | `06-long-shelf.html` | the long shelf |
 | `07-world.html` | the world this week (plus ongoing-story tracker patterns) |

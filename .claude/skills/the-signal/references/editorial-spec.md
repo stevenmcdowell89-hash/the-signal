@@ -317,7 +317,6 @@ Use 10-14 different types per standard issue. No two consecutive sections should
 | Folio watermark | `.folio-watermark` | Giant italic numeral bleeding off bottom-right of a section. Coexists with `.sec-watermark` (top-left). Hidden below 820px. (Enhancement 22C) |
 | Pull-break | `.pull-break` > `.pull`/`.attrib` | Dark full-bleed quote band with book-end quotation marks. **World-only flourish, max one per issue.** (Enhancement 22D) |
 | Marginalia | `.marginalia` > `.quote`/`.attrib`/`.datum`/`ul` | Floated sidebar card with italic quote, datum blocks, list. Auto-inherits section accent; auto-inverts to paper-on-dark on dark sections. (Enhancement 22E) |
-| TOC-style navigator | `.nav-section.toc-style` + `.toc-row.<section>` | Opt-in alternate navigator. Drop in `04-navigator-toc.html` instead of `04-navigator.html`. All TOC selectors scoped — cannot leak into other tables/lists. (Enhancement 22F) |
 | Ember period | `.mast-period` / `.brand-period` | Ember-coloured period on "The Signal." wordmark in masthead and cover. (Enhancement 22G) |
 
 **Entry pattern rotation rule:** no two adjacent articles should open the same way. Rotate between `.entry-stat`, `.entry-quote`, `.entry-bullets`, `.entry-question`, and plain prose openings. This applies across articles within a section and across section leads.
@@ -880,7 +879,7 @@ Reinforcement still dominates the magazine because that's what makes it feel cur
 
 **Tablet ground-level gutter rule (special editions):** `.sp-ground-paper` and `.sp-ground-ink` chapter wrappers are full-bleed by design — the background tone reaches the viewport edge. Their CONTENT is given a horizontal gutter on tablet and mobile by `26-special-editorial.css` (28px tablet / 20px mobile, with `env(safe-area-inset-*)` floors). When you add a NEW component inside a chapter that should also be full-bleed (like `.sp-pull-break`, `.sp-folio`, `.sp-gallery`, `.sp-image-strip`, `.sp-scroll-image.is-fullbleed`), you MUST add it to the `:not(...)` exemption list in that media query — otherwise it'll inherit the gutter and look misaligned against the other full-bleed components.
 
-**Navigator variants:** default grid (`04-navigator.html`) for most issues; TOC-style (`04-navigator-toc.html`) for longer, more literary issues — special editions, deep dives, field guides. The TOC variant reads like a bound-magazine contents page and is opt-in per issue.
+**Navigator:** every format that has a navigator uses `04-navigator.html` — a card grid with a lead-card thumbnail. Specials that want an in-issue contents page do it through the chapter-numeral structure inside `<section class="chapter">`, not a separate template. (The former `04-navigator-toc.html` TOC variant was deleted in v8.22.11 — no current format used it, and writers reaching for it on weeklies was the May 17 / May 24 2026 bug.)
 
 ---
 
