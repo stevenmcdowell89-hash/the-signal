@@ -136,10 +136,20 @@ async function maybeFetchAndPut(cache, url) {
   const canonical = canonicalUrl(req);
   let existing = await cache.match(canonical, MATCH_OPTS);
   if (!existing) existing = await cache.match(req, MATCH_OPTS);
+  // Defensive: clear any cached redirected-from-follow Responses left over
+  // from the v118 SW; they read as ok=true but the browser refuses to
+  // serve them to navigation requests.
+  if (existing && (existing.redirected || existing.type === "opaqueredirect" || !existing.ok)) {
+    try { await cache.delete(canonical, MATCH_OPTS); } catch (_) {}
+    try { await cache.delete(req, MATCH_OPTS); } catch (_) {}
+    existing = null;
+  }
   if (existing) return;
   try {
-    const resp = await fetch(url);
-    if (resp.ok) await putInCache(cache, req, resp);
+    // Fetch canonical URL so the response is not flagged redirected.
+    // See staleWhileRevalidate comment for the full rationale.
+    const resp = await fetch(canonical, { credentials: "same-origin" });
+    if (resp.ok && !resp.redirected) await putInCache(cache, req, resp);
   } catch (err) {
     // Best effort — individual misses don't fail the batch.
     console.warn(`[sw] precache miss: ${url}`, err);
@@ -207,11 +217,20 @@ async function deepPrecacheIssue(issueUrl) {
   const canonical = canonicalUrl(req);
   let cached = await issueCache.match(canonical, MATCH_OPTS);
   if (!cached) cached = await issueCache.match(req, MATCH_OPTS);
+  // Drop poisoned entries (redirected/opaqueredirect/non-ok) so the push
+  // flow doesn't reuse them and short-circuit the refetch.
+  if (cached && (cached.redirected || cached.type === "opaqueredirect" || !cached.ok)) {
+    try { await issueCache.delete(canonical, MATCH_OPTS); } catch (_) {}
+    try { await issueCache.delete(req, MATCH_OPTS); } catch (_) {}
+    cached = null;
+  }
   if (cached) {
     html = await cached.clone().text();
   } else {
-    const resp = await fetch(issueUrl);
-    if (!resp.ok) return;
+    // Fetch canonical URL (no .html) so the response isn't flagged
+    // redirected — see staleWhileRevalidate for the full story.
+    const resp = await fetch(canonical, { credentials: "same-origin" });
+    if (!resp.ok || resp.redirected) return;
     html = await resp.clone().text();
     await putInCache(issueCache, req, resp);
   }
@@ -276,10 +295,10 @@ async function cacheFirst(req, cacheName, opts = {}) {
   // Look up under both the canonical (no .html) and the request URL forms.
   let cached = await cache.match(canonical, MATCH_OPTS);
   if (!cached) cached = await cache.match(req, MATCH_OPTS);
-  // Defensive: discard cached redirects / non-ok responses (see SWR
-  // comment). Opaque responses (cross-origin no-cors) stay — they have
-  // type "opaque" and ok=false but are intentional.
-  if (cached && !cached.ok && cached.type !== "opaque") {
+  // Defensive: discard structurally unsafe cached entries (see SWR comment
+  // for the full story). Opaque responses (cross-origin no-cors) stay —
+  // they have type "opaque" and ok=false but are intentional.
+  if (cached && cached.type !== "opaque" && (!cached.ok || cached.redirected || cached.type === "opaqueredirect")) {
     try { await cache.delete(canonical, MATCH_OPTS); } catch (_) {}
     try { await cache.delete(req, MATCH_OPTS); } catch (_) {}
     cached = null;
@@ -287,15 +306,18 @@ async function cacheFirst(req, cacheName, opts = {}) {
   if (cached) return cached;
 
   try {
-    // redirect: "follow" mirrors the SWR fix — get the final 200 in one
-    // hop instead of an opaqueredirect that has to round-trip.
+    // For same-origin fetches, hit the CANONICAL url so the response
+    // doesn't have .redirected=true (which the SW spec forbids serving
+    // to navigation requests). For cross-origin opaque fetches, keep the
+    // original Request — those can't be canonicalised and don't have
+    // the .html-redirect problem.
     const fetchOpts = opts.allowOpaque
       ? { mode: "no-cors", credentials: "omit" }
-      : { method: "GET", credentials: "same-origin", redirect: "follow" };
+      : { method: "GET", credentials: "same-origin" };
     const resp = opts.allowOpaque
       ? await fetch(req, fetchOpts)
-      : await fetch(req.url, fetchOpts);
-    if (resp && (resp.ok || resp.type === "opaque")) {
+      : await fetch(canonical, fetchOpts);
+    if (resp && (resp.ok || resp.type === "opaque") && !resp.redirected) {
       await putInCache(cache, req, resp);
     }
     return resp;
@@ -326,33 +348,47 @@ async function staleWhileRevalidate(req, cacheName) {
   let cached = await cache.match(canonical, MATCH_OPTS);
   if (!cached) cached = await cache.match(req, MATCH_OPTS);
 
-  // Defensive: throw out any cached entry that isn't a proper 2xx response.
-  // A previous buggy SW version may have stored an opaqueredirect under the
-  // canonical key — without this check, every reopen of an issue served the
-  // redirect back to the browser, which followed it, hit the SW again, hit
-  // the same cached redirect, and looped. Today's putInCache won't write
-  // these (.ok check is in place), but old caches on existing devices can.
-  if (cached && (!cached.ok || cached.type === "opaqueredirect")) {
+  // Defensive: throw out any cached entry that is structurally unsafe to
+  // serve to a navigation request. Three kinds get evicted:
+  //   - !ok (non-2xx) — would render as an error
+  //   - opaqueredirect — would loop the browser through redirects forever
+  //   - redirected (followed-from-redirect) — the SW spec forbids serving
+  //     these to navigation requests via respondWith. PR #118's first cut
+  //     of this fix tried fetch(req.url, {redirect:"follow"}) which made
+  //     Responses with redirected=true; the browser then threw a
+  //     NetworkError on every reopen of an issue. This delete clears any
+  //     poisoned entries from devices that ran the v118 SW.
+  if (cached && (!cached.ok || cached.type === "opaqueredirect" || cached.redirected)) {
     try { await cache.delete(canonical, MATCH_OPTS); } catch (_) {}
     try { await cache.delete(req, MATCH_OPTS); } catch (_) {}
     cached = null;
   }
 
-  // Use redirect: "follow" on the network fetch. Navigation requests have
-  // req.redirect === "manual", which means fetch(req) returns an
-  // opaqueredirect Response when CF responds with a 307 (.html → no-.html).
-  // That forces a round-trip through the browser's navigation flow and
-  // re-enters the SW for the redirected URL — fragile, and the source of
-  // the May 2026 "issues don't load" bug. Fetching the URL string with
-  // explicit follow gives us the final 200 response in one hop, which is
-  // what putInCache and the browser both want.
-  const fetchPromise = fetch(req.url, {
+  // Fetch the CANONICAL url (no .html), not the original request URL.
+  //
+  // CF's html_handling redirects /foo.html → /foo. The canonical URL
+  // (no .html) doesn't redirect — it serves the file directly with a 200.
+  //
+  // If we fetched req.url with redirect:"follow", the resulting Response
+  // would have .redirected = true — and the SW spec forbids serving
+  // such Responses to navigation requests via respondWith. The browser
+  // throws a NetworkError even though the response itself is a perfectly
+  // valid 200 with the right HTML body. That was the bug that v118
+  // didn't fully fix; it merely changed one symptom (loops) for another
+  // (NetworkError on every reopen).
+  //
+  // Fetching the canonical URL directly: no redirect involved, response
+  // has .redirected = false, safe to respondWith for navigations, and
+  // safe to cache.put.
+  const fetchPromise = fetch(canonical, {
     method: "GET",
     credentials: "same-origin",
-    redirect: "follow",
   })
     .then((resp) => {
-      if (resp && resp.ok) putInCache(cache, req, resp);
+      // Belt-and-braces: only cache + serve responses that are safe.
+      if (resp && resp.ok && !resp.redirected) {
+        putInCache(cache, req, resp);
+      }
       return resp;
     })
     .catch(() => cached);
