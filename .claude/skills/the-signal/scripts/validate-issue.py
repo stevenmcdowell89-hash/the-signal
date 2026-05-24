@@ -482,6 +482,33 @@ def check_image_urls(html: str, timeout: float, workers: int, report: Report, ht
 CLASS_ATTR_RE = re.compile(r'class\s*=\s*"([^"]+)"', re.IGNORECASE)
 
 
+def check_toc_anchors(html: str, report: Report) -> None:
+    """Every <a class="toc-row" href="#X"> must point to a <section id="X">.
+
+    The 24 May 2026 weekly rebuild shipped with three broken TOC links
+    (#foreword / #pixel / #touchline) where the linked anchor didn't
+    exist as a section id in the body — the orchestrator hand-wrote the
+    navigator and picked arbitrary anchor names instead of using the
+    scaffold canon (#tech, #football) or matching an existing id.
+
+    Catches missing-anchor and orphaned-section problems.
+    """
+    toc_hrefs = re.findall(r'<a[^>]+class="toc-row[^"]*"[^>]+href="(#[^"]+)"', html)
+    if not toc_hrefs:
+        return  # No TOC in this issue — nothing to check
+    section_ids = set(re.findall(r'<section[^>]+id="([^"]+)"', html))
+    broken = [h for h in toc_hrefs if h.lstrip('#') not in section_ids]
+    if broken:
+        report.fail(
+            "toc-anchors",
+            "TOC links to anchors that don't exist as section ids: "
+            + ", ".join(sorted(set(broken)))
+            + f" — section ids in body: {sorted(section_ids)}",
+        )
+    else:
+        report.ok("toc-anchors", f"all {len(toc_hrefs)} TOC links resolve to a section id")
+
+
 def check_css_class_sanity(html: str, report: Report) -> None:
     style_match = re.search(r"<style\b[^>]*>(.*?)</style>", html, re.DOTALL | re.IGNORECASE)
     if not style_match:
@@ -576,6 +603,7 @@ def main(argv: list[str]) -> int:
     check_structure(html, report)
     check_placeholders(html, report)
     check_css_class_sanity(html, report)
+    check_toc_anchors(html, report)
 
     # Holiday-only checks
     if fmt in HOLIDAY_FORMATS:
