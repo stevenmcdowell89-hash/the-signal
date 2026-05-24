@@ -336,9 +336,10 @@ _range_str, _pretty_date = _compute_date_range(_issue_date, _issue_fmt)
 head_open = head_open.replace("[DATE RANGE]", _range_str)
 
 def _substitute_footer_placeholders(text):
-    """Replace [N], [Date], [DATE RANGE] in footer / scaffold parts."""
+    """Replace [N], [Date], [DATE RANGE], [YEAR] in footer / scaffold parts."""
     text = text.replace("[DATE RANGE]", _range_str)
     text = text.replace("[Date]", _pretty_date)
+    text = text.replace("[YEAR]", _pretty_date.split()[-1] if _pretty_date else "")
     if issue_number_str:
         text = text.replace("[N]", issue_number_str)
     return text
@@ -519,6 +520,60 @@ if issue_format_early in HOLIDAY_FORMATS:
         print(f"Issue format is '{issue_format_early}' but no .hol-half element found.")
         print("Every holiday issue must have at least one .hol-half--one (and a")
         print(".hol-half--two + .hol-transit for multi-venue issues).")
+        sys.exit(1)
+
+# ── Weekly-format gate: ban the SPECIAL vocabulary in weekly issues ──
+# Mirror of the holiday gate above, in the other direction. The .sp-*
+# editorial vocabulary (.sp-spread, .sp-marginalia, .sp-pullquote-huge,
+# .sp-rail, .sp-margin, .sp-brief-kicker, .sp-spread-body, etc.) is defined
+# only inside `body.is-special:not(holiday)` selectors. On a standard weekly
+# (no .is-special on body) those rules don't match — the elements render
+# unstyled. Writers reaching for "specials.md" by mistake have done this in
+# at least one shipped weekly; this gate stops the next one.
+if issue_format_early in {"", "weekly"}:
+    chapter_scan_text = "\n".join(chapter_bodies)
+    BANNED_WEEKLY_SP_PATTERNS = [
+        ('sp-spread',         r'class="(?:[^"]* )?sp-spread\b'),
+        ('sp-spread-body',    r'class="(?:[^"]* )?sp-spread-body\b'),
+        ('sp-marginalia',     r'class="(?:[^"]* )?sp-marginalia\b'),
+        ('sp-rail',           r'class="(?:[^"]* )?sp-rail\b'),
+        ('sp-margin',         r'class="(?:[^"]* )?sp-margin\b'),
+        ('sp-pullquote-huge', r'class="(?:[^"]* )?sp-pullquote-huge\b'),
+        ('sp-brief',          r'class="(?:[^"]* )?sp-brief\b'),
+        ('sp-brief-kicker',   r'class="(?:[^"]* )?sp-brief-kicker\b'),
+        ('sp-dash',           r'class="(?:[^"]* )?sp-dash\b'),
+        ('sp-chapter-gate',   r'class="(?:[^"]* )?sp-chapter-gate\b'),
+        ('sp-chapter-chrome', r'class="(?:[^"]* )?sp-chapter-chrome\b'),
+        ('sp-pull-break',     r'class="(?:[^"]* )?sp-pull-break\b'),
+        ('sp-manifesto',      r'class="(?:[^"]* )?sp-manifesto\b'),
+        ('sp-bignum',         r'class="(?:[^"]* )?sp-bignum\b'),
+        ('sp-gallery',        r'class="(?:[^"]* )?sp-gallery\b'),
+        ('sp-diptych',        r'class="(?:[^"]* )?sp-diptych\b'),
+    ]
+    weekly_violations = []
+    for token, pat in BANNED_WEEKLY_SP_PATTERNS:
+        hits = len(re.findall(pat, chapter_scan_text))
+        if hits > 0:
+            weekly_violations.append(f"{token} — {hits} occurrence(s)")
+    if weekly_violations:
+        print("")
+        print("═══ WEEKLY-FORMAT GATE FAILED ═══")
+        print("Issue format is 'weekly' but the chapter HTML uses the special-edition")
+        print(".sp-* vocabulary. Those classes are scoped to body.is-special and are")
+        print("undefined on weeklies — the elements render unstyled.")
+        print("")
+        print("This is the May 24 2026 bug: writers reached for specials.md by")
+        print("mistake instead of using the weekly section-component vocabulary")
+        print("(.split-60-40, .sidebar, .stat-bar, .dyk, .also-cards, .pull-quote,")
+        print("etc.) and the cascade silently dropped the styling.")
+        print("")
+        print("Violations (in chapter content):")
+        for v in weekly_violations:
+            print(f"  • {v}")
+        print("")
+        print("Action: re-run Phase 5 writer subagents with explicit weekly-format")
+        print("vocabulary brief — see SKILL.md Phase 5 + references/component-")
+        print("contracts.md § Weekly. The .sp-* vocabulary is for SPECIALS ONLY.")
         sys.exit(1)
 
 # ── Inject CSS — support both placeholder conventions ──
