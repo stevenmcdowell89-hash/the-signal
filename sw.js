@@ -157,10 +157,19 @@ async function maybeFetchAndPut(cache, url) {
 }
 
 // --- Push: new-issue notification + deep pre-cache --------------------------
-// On push, the SW wakes, fetches the new issue HTML + cover + every inline
-// /assets/cached/ image, writes them to the appropriate caches, THEN shows
-// the OS notification. By the time the user taps it (or just leaves the
+// On push, the SW wakes, shows the notification IMMEDIATELY, and then runs
+// deepPrecacheIssue in the same waitUntil so the SW stays alive long enough
+// to populate ISSUE_CACHE + IMAGE_CACHE with the new issue and its inline
+// images. By the time the user taps the notification (or just leaves the
 // device idle), the entire issue is offline-ready.
+//
+// Order matters: notification first, then precache. The 24 May 2026 weekly
+// publish revealed a race where the push arrives at the device before
+// Cloudflare has finished deploying the new HTML — so the first fetch in
+// deepPrecacheIssue 404'd, the function returned silently, and the issue
+// never landed in cache. Fix: deepPrecacheIssue now retries with backoff
+// (see below) AND we fire the notification first so the user sees it
+// without waiting for precache to complete.
 self.addEventListener("push", (event) => {
   event.waitUntil((async () => {
     let data = {};
@@ -173,12 +182,8 @@ self.addEventListener("push", (event) => {
     const image = data.image || undefined;
     const slug = data.slug || undefined;
 
-    if (url && url !== "/") {
-      try { await deepPrecacheIssue(url); }
-      catch (err) { console.warn("[sw] deep pre-cache failed:", err); }
-    }
-
-    await self.registration.showNotification(title, {
+    // Fire notification first — don't make it wait on precache.
+    const notifyPromise = self.registration.showNotification(title, {
       body,
       icon: "/assets/icons/icon-192.png",
       badge: "/assets/icons/icon-192.png",
@@ -187,6 +192,18 @@ self.addEventListener("push", (event) => {
       renotify: true,
       data: { url },
     });
+
+    // Then run precache in the same waitUntil so the SW stays alive long
+    // enough to complete it. Both promises must settle before the SW can
+    // be terminated.
+    let precachePromise = Promise.resolve();
+    if (url && url !== "/") {
+      precachePromise = deepPrecacheIssue(url).catch((err) => {
+        console.warn("[sw] deep pre-cache threw:", err);
+      });
+    }
+
+    await Promise.all([notifyPromise, precachePromise]);
   })());
 });
 
@@ -206,9 +223,36 @@ self.addEventListener("notificationclick", (event) => {
   })());
 });
 
+// Write a diagnostic entry to the signal-debug cache so /sw-status can
+// surface what happened. Best-effort; never throws.
+async function logDeepPrecache(entry) {
+  try {
+    const debugCache = await caches.open("signal-debug");
+    const key = `/_debug/deep-precache/${Date.now()}_${encodeURIComponent(entry.issueUrl || "unknown")}`;
+    await debugCache.put(
+      key,
+      new Response(JSON.stringify({ ts: new Date().toISOString(), ...entry }), {
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+  } catch (_) { /* swallow */ }
+}
+
 // Fetch issue HTML + cover + every inline /assets/cached/ image referenced
 // by the HTML. Idempotent: skips anything already cached.
+//
+// CF-deployment race (24 May 2026 weekly bug): the push to subscribed
+// devices fans out within seconds of the GitHub Action firing, which is
+// often FASTER than Cloudflare's edge propagation of the newly-pushed
+// HTML. The first fetch attempt 404'd and the function returned silently,
+// leaving the new issue uncached. Result: user gets the notification,
+// opens the PWA offline shortly after, the issue won't load.
+//
+// Fix: retry the HTML fetch with exponential backoff for up to ~30s
+// (covers the typical CF propagation window). Log every attempt + final
+// outcome to signal-debug cache so /sw-status surfaces failures.
 async function deepPrecacheIssue(issueUrl) {
+  const startedAt = Date.now();
   const issueCache = await caches.open(ISSUE_CACHE);
   const imageCache = await caches.open(IMAGE_CACHE);
 
@@ -226,18 +270,53 @@ async function deepPrecacheIssue(issueUrl) {
   }
   if (cached) {
     html = await cached.clone().text();
+    await logDeepPrecache({ issueUrl, canonical, outcome: "served-from-existing-cache" });
   } else {
-    // Fetch canonical URL (no .html) so the response isn't flagged
-    // redirected — see staleWhileRevalidate for the full story.
-    const resp = await fetch(canonical, { credentials: "same-origin" });
-    if (!resp.ok || resp.redirected) return;
+    // Retry-on-non-2xx with exponential backoff. Total budget ~31s
+    // (1+2+4+8+16). CF edge propagation usually completes well within
+    // 5-10s but the budget gives margin for slow days.
+    const backoffsMs = [0, 1000, 2000, 4000, 8000, 16000];
+    let resp = null;
+    const attempts = [];
+    for (let i = 0; i < backoffsMs.length; i++) {
+      if (backoffsMs[i] > 0) await new Promise((r) => setTimeout(r, backoffsMs[i]));
+      try {
+        resp = await fetch(canonical, { credentials: "same-origin", cache: "no-store" });
+        attempts.push({ i, status: resp.status, redirected: resp.redirected, ok: resp.ok });
+        if (resp.ok && !resp.redirected) break;
+        resp = null;
+      } catch (err) {
+        attempts.push({ i, error: String((err && err.message) || err) });
+        resp = null;
+      }
+    }
+    if (!resp) {
+      await logDeepPrecache({
+        issueUrl, canonical, outcome: "html-fetch-failed-after-retries",
+        attempts, elapsedMs: Date.now() - startedAt,
+      });
+      return;
+    }
     html = await resp.clone().text();
     await putInCache(issueCache, req, resp);
+    await logDeepPrecache({
+      issueUrl, canonical, outcome: "cached-html",
+      attempts, elapsedMs: Date.now() - startedAt,
+    });
   }
 
   const imgRe = /src="(\/assets\/(?:cached|covers)\/[^"]+)"/g;
   const imageUrls = [...new Set([...html.matchAll(imgRe)].map((m) => m[1]))];
-  await Promise.all(imageUrls.map((u) => maybeFetchAndPut(imageCache, u)));
+  const imageResults = await Promise.allSettled(
+    imageUrls.map((u) => maybeFetchAndPut(imageCache, u)),
+  );
+  const imageFailures = imageResults.filter((r) => r.status === "rejected").length;
+  await logDeepPrecache({
+    issueUrl, canonical, outcome: "complete",
+    imagesTotal: imageUrls.length,
+    imagesFailed: imageFailures,
+    elapsedMs: Date.now() - startedAt,
+  });
 }
 
 // --- Fetch routing ----------------------------------------------------------
@@ -452,14 +531,19 @@ async function buildStatusResponse() {
     };
   }
 
-  // Surface any debug-cache entries (failed cache.put attempts)
-  const failures = [];
+  // Surface any debug-cache entries — historical putInCache failures AND
+  // recent deepPrecacheIssue outcomes (attempts, status, elapsed). Most-
+  // recent first by timestamp embedded in the entry payload.
+  const debugLog = [];
   try {
     const debugCache = await caches.open("signal-debug");
     const debugKeys = await debugCache.keys();
-    for (const k of debugKeys.slice(0, 20)) {
+    for (const k of debugKeys.slice(-40).reverse()) {
       const r = await debugCache.match(k);
-      if (r) failures.push(await r.json());
+      if (r) {
+        try { debugLog.push(await r.json()); }
+        catch (_) { debugLog.push({ key: k.url, parseError: true }); }
+      }
     }
   } catch (_) {}
 
@@ -468,7 +552,7 @@ async function buildStatusResponse() {
       sw_version: CACHE_VERSION,
       ts: new Date().toISOString(),
       caches: buckets,
-      put_failures: failures,
+      debug_log: debugLog,
     },
     null,
     2,
