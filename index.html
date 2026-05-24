@@ -418,8 +418,10 @@
           sw.addEventListener('statechange', function () {
             if (sw.state !== 'installed') return;
             if (!hadController) {
+              // First install on this device — no point making the user wait.
               sw.postMessage({ type: 'SKIP_WAITING' });
             } else {
+              // Genuine upgrade — surface the banner so user chooses when.
               showUpdateBanner();
             }
           });
@@ -429,6 +431,8 @@
         reg.addEventListener('updatefound', function () { handleNew(reg.installing); });
       }).catch(function (err) { console.warn('SW registration failed:', err); });
 
+      // Reload immediately when the controlling SW changes (after user taps Refresh
+      // OR after first-install auto-skip-wait). Guard against double reloads.
       var refreshing = false;
       navigator.serviceWorker.addEventListener('controllerchange', function () {
         if (refreshing) return;
@@ -442,6 +446,8 @@
         });
       };
 
+      // Top up the precache on every index visit. The SW skips anything
+      // already cached, so this only fetches new issues / new covers.
       navigator.serviceWorker.ready.then(function (reg) {
         if (reg && reg.active) reg.active.postMessage({ type: 'PRECACHE_ALL' });
         ensurePushSubscription(reg);
@@ -449,6 +455,12 @@
     });
   }
 
+  // -------- Push: auto-subscribe in PWA standalone mode --------
+  // Strategy: if the PWA is installed (running standalone), request the OS
+  // notification permission once, then subscribe with the VAPID public key
+  // and POST the subscription to /api/subscribe. Subsequent loads re-POST
+  // the existing subscription so the server stays in sync (browsers can
+  // rotate the endpoint without notice).
   function ensurePushSubscription(reg) {
     try {
       if (!('Notification' in window) || !('PushManager' in window)) return;
@@ -527,12 +539,12 @@
     <!-- HERO: latest issue -->
     <section class="hero" aria-label="Latest issue">
       <h2 class="section-label">This week</h2>
-      <a class="hero-card" href="issues/signal_weekly_2026-05-24.html" data-cover-slug="signal_weekly_2026-05-24">
+      <a class="hero-card" href="issues/signal_deep-dive_2026-05-22.html" data-cover-slug="signal_deep-dive_2026-05-22">
         <div class="hero-cover"></div>
         <div class="hero-body">
-          <div class="hero-format">Issue #10 · Standard Weekly</div>
-          <div class="hero-title">A new global health emergency, a fractured government — and Budapest in six days</div>
-          <div class="hero-summary">WHO declares Ebola PHEIC as the DRC outbreak reaches a tipping point. Labour’s government fractures with a historic rebel vote. Arsenal face PSG in Budapest. Aaron Rai ends a 107-year English drought at the PGA Championship.</div>
+          <div class="hero-format">Deep Dive</div>
+          <div class="hero-title">The Year the Sky Changed Colour</div>
+          <div class="hero-summary">How a faith-healing movement in second-century Hebei began the long death of the Han dynasty — thirty-six years before it formally ended. Twelve chapters across the late-Han court, the rising of 184 CE, and the seventeen-hundred-year shadow it cast.</div>
           <div class="hero-cta">Read this issue</div>
         </div>
       </a>
@@ -543,34 +555,23 @@
       <div class="tabs" role="tablist" aria-label="Archive sections">
         <button id="tab-weekly" class="tab is-active" role="tab" data-tab="weekly"
                 aria-controls="panel-weekly" aria-selected="true" tabindex="0">
-          Weekly <span class="tab-count">·&nbsp;10</span>
+          Weekly <span class="tab-count">·&nbsp;9</span>
         </button>
         <button id="tab-specials" class="tab" role="tab" data-tab="specials"
                 aria-controls="panel-specials" aria-selected="false" tabindex="-1">
-          Specials <span class="tab-count">·&nbsp;9</span>
+          Specials <span class="tab-count">·&nbsp;8</span>
         </button>
       </div>
 
       <div id="panel-weekly" class="tab-panel is-active" role="tabpanel" aria-labelledby="tab-weekly">
       <ul class="grid">
         <li>
-          <a class="card" href="issues/signal_weekly_2026-05-24.html" data-cover-slug="signal_weekly_2026-05-24">
-            <div class="card-cover"></div>
-            <div class="card-body">
-              <div class="card-format">Issue #10 · Standard Weekly</div>
-              <div class="card-title">24–30 May 2026</div>
-              <div class="card-summary">WHO declares Ebola PHEIC, Labour fractures with 95+ rebel MPs, Arsenal vs PSG in Budapest, Aaron Rai ends 107-year English drought at PGA, Aston Villa win Europa League, Google I/O AI announcements, Garmin CIRQA launches.</div>
-              <div class="card-date">24 May 2026</div>
-            </div>
-          </a>
-        </li>
-        <li>
           <a class="card" href="issues/signal_weekly_2026-05-17.html" data-cover-slug="signal_weekly_2026-05-17">
             <div class="card-cover"></div>
             <div class="card-body">
               <div class="card-format">Issue #9 · Standard Weekly</div>
               <div class="card-title">17–23 May 2026</div>
-              <div class="card-summary">Starmer clings on as Streeting quits and Labour splinters, Bulgaria wins Eurovision in Vienna, Google I/O lands Tuesday, Yoshi launches on Switch 2, Mandalorian and Grogu opens Friday, Arsenal’s title shot with two games left, Revolut becomes a full UK bank.</div>
+              <div class="card-summary">Starmer clings on as Streeting quits and Labour splinters, Bulgaria wins Eurovision in Vienna, Google I/O lands Tuesday, Yoshi launches on Switch 2, Mandalorian and Grogu opens Friday, Arsenal's title shot with two games left, Revolut becomes a full UK bank.</div>
               <div class="card-date">17 May 2026</div>
             </div>
           </a>
@@ -669,17 +670,6 @@
       <div id="panel-specials" class="tab-panel" role="tabpanel" aria-labelledby="tab-specials" hidden>
       <ul class="grid">
         <li>
-          <a class="card" href="issues/signal_deep-dive_2026-05-22.html" data-cover-slug="signal_deep-dive_2026-05-22">
-            <div class="card-cover"></div>
-            <div class="card-body">
-              <div class="card-format">Deep Dive</div>
-              <div class="card-title">The Year the Sky Changed Colour</div>
-              <div class="card-summary">How a faith-healing movement in second-century Hebei began the long death of the Han dynasty — thirty-six years before it formally ended. Twelve chapters across the late-Han court, the rising of 184 CE, and the seventeen-hundred-year shadow it cast.</div>
-              <div class="card-date">22 May 2026</div>
-            </div>
-          </a>
-        </li>
-        <li>
           <a class="card" href="issues/signal_field-guide_2026-05-17.html" data-cover-slug="signal_field-guide_2026-05-17">
             <div class="card-cover"></div>
             <div class="card-body">
@@ -776,7 +766,7 @@
   <div class="update-banner" id="update-banner" role="status" aria-live="polite">
     <span class="update-banner-text">New version available</span>
     <button class="update-banner-btn" onclick="window.__signalRefreshSW && window.__signalRefreshSW()">Refresh</button>
-    <button class="update-banner-dismiss" aria-label="Dismiss" onclick="this.parentElement.classList.remove('is-visible')">&#215;</button>
+    <button class="update-banner-dismiss" aria-label="Dismiss" onclick="this.parentElement.classList.remove('is-visible')">×</button>
   </div>
 
   <script>
@@ -786,6 +776,7 @@
       var coverUrl = '/assets/covers/' + slug + '.jpg';
       var coverEl = el.querySelector('.hero-cover, .card-cover, .continue-cover') || el;
 
+      // Probe the cover; if it 404s, show a fallback state.
       var img = new Image();
       img.onload = function () {
         coverEl.style.setProperty('--cover', 'url("' + coverUrl + '")');
@@ -797,6 +788,8 @@
     });
 
     // -------- Continue reading --------
+    // Issue pages write { pct, ts, title, slug } under signal-progress-<slug>.
+    // We pick the most-recently-updated entry with > 5% and < 95% progress.
     (function () {
       try {
         var entries = [];
@@ -822,6 +815,7 @@
         var fill = document.getElementById('continue-fill');
         var pct = document.getElementById('continue-pct');
 
+        // #continue triggers the issue page's scroll-restore logic.
         card.href = 'issues/' + top.slug + '.html#continue';
         cover.style.setProperty('--cover', 'url("/assets/covers/' + top.slug + '.jpg")');
         title.textContent = top.title || top.slug;
@@ -829,7 +823,7 @@
         pct.textContent = Math.round(top.pct) + '% read';
         section.classList.add('is-visible');
         section.setAttribute('aria-hidden', 'false');
-      } catch (e) {}
+      } catch (e) { /* localStorage unavailable in some contexts */ }
     })();
 
     // -------- Archive tabs --------
@@ -861,6 +855,7 @@
         }
       }
 
+      // Initial: hash > localStorage > default
       var initial = null;
       var hash = (location.hash || '').slice(1);
       if (TABS.indexOf(hash) !== -1) initial = hash;
@@ -881,9 +876,14 @@
           var next = e.key === 'ArrowRight'
             ? (idx + 1) % TABS.length
             : (idx - 1 + TABS.length) % TABS.length;
-          tabs[next].focus();
-          activate(TABS[next]);
+          var nextTab = document.querySelector('.tab[data-tab="' + TABS[next] + '"]');
+          if (nextTab) { nextTab.focus(); activate(TABS[next]); }
         });
+      });
+
+      window.addEventListener('hashchange', function () {
+        var h = (location.hash || '').slice(1);
+        if (TABS.indexOf(h) !== -1) activate(h, { silent: true });
       });
     })();
   </script>
