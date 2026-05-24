@@ -11112,6 +11112,31 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
   opacity: 0.7;
 }
 
+
+
+/* ──────────────────────────────────────────────────────────────────
+   v8.22.7 HOT-FIX SHIM (24 May 2026 weekly rebuild)
+
+   The rebuild (#140) cleared most of the .sp-* vocabulary the original
+   ship had (PR #130 fixed the first version), but a stray Yellow
+   Turban-style closing card leaked into the rebuild as a duplicate
+   footer (<footer class="sp-footer"> with "Deep Dive · 22 May 2026"
+   content — orphaned from the previous Deep Dive's writer
+   subagent context).
+
+   The actual weekly footer (.footer) is intact above it. Just hide
+   the orphan.
+
+   The stitcher gate hardening (v8.22.7, same PR) will prevent this
+   class of leak going forward by widening the scan from
+   chapter_bodies-only to chapter_bodies + middle_parts, switching
+   from a deny-list to an allow-list, and adding sp-footer* to the
+   banned set.
+   ────────────────────────────────────────────────────────────────── */
+.sp-footer,
+.sp-footer * {
+  display: none !important;
+}
 </style>
 <!-- the-signal:pwa -->
 <link rel="manifest" href="/manifest.json">
