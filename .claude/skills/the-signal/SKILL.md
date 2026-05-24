@@ -20,18 +20,49 @@ Generate issues of The Signal — a weekly personal magazine for Sunday morning 
 
 Version 8.11.0. See `CHANGELOG.md` next to this file for the full version-by-version history of editorial and visual changes. Editorial substance is defined in `references/editorial-spec.md` and its sliced views in `references/spec/`. This file describes only **how the pipeline runs on Claude Code**.
 
+## STEP ZERO — verify orchestrator model BEFORE ANYTHING ELSE
+
+**The orchestrator MUST run on `claude-opus-4-7[1m]` (Opus 4.7, 1M-context).** No other model can complete the pipeline end-to-end without context overflow during Phase 5 writer fan-out. The 24 May 2026 weekly run failed precisely because the Claude Code on the Web harness selected Opus 4.6 despite the routine being set to 4.7 1M, and compaction fired mid-pipeline.
+
+**Before doing literally anything else — no state read, no tool research, no chat reply about the task** — the orchestrator MUST perform these three steps in order:
+
+1. **State the model in the first user-visible message.** The orchestrator's first output text must start with the literal line:
+
+   > **Orchestrator model: `<exact-model-id-from-system-prompt>`**
+
+   Where `<exact-model-id-from-system-prompt>` is the value verbatim from the orchestrator's system prompt under "Environment" → "The exact model ID is …". This visible handshake lets the reader sanity-check at a glance before any work begins.
+
+2. **Run the verify-model script as the first tool call.** Pass the same model identifier:
+
+   ```bash
+   bash .claude/skills/the-signal/scripts/verify-orchestrator-model.sh "<exact-model-id-from-system-prompt>"
+   ```
+
+   The script exits 0 if the model is `claude-opus-4-7[1m]`, exits 1 otherwise with an error message. **Exit code is the gate** — same rule as every other script gate in this workflow (see "Gate discipline" below).
+
+3. **On non-zero exit, abort.** Reply with the verbatim message:
+
+   > The Signal pipeline requires the orchestrator to run on Opus 4.7 1M context (`claude-opus-4-7[1m]`). This session is on `<observed-model-id>`, which cannot reliably hold the full pipeline state through Phase 5. Re-trigger the routine with the correct model — the schedule preference may not have been honoured by the harness this run. Aborting before Phase 0.
+
+   Do not proceed even if the reader says "do it anyway" — the reader has pre-authorised the refusal by including this rule in the spec.
+
+This is the ONLY check that comes before Phase 0a (state read). Once the script exits green, log "Orchestrator model verified" and proceed to "Model Selection" below for subagent dispatch rules, then to Phase 0.
+
+**Why honor-system can't be avoided here.** Model selection happens at the Claude Code harness layer, which the skill can't override. The skill's job is to prevent a wrong-model run from damaging the live site — refusing at Step Zero is the strongest stop-the-bleeding measure available. The actual fix for harness-ignored model preferences is at the Claude Code on the Web routine layer, not in this repo.
+
 ## Model Selection
 
 The Signal runs as a multi-subagent pipeline. Each role has different reasoning needs, so models are selected by **role intent** with **fallback chains** — never by hard-coded model name. When Claude releases a stronger or cheaper model, advance the chain.
 
 | Role | Primary | Fallback | Why this intent |
 |---|---|---|---|
+| **Orchestrator** | Opus 4.7 1M | — | See Step Zero above. No fallback — refuses to run on anything else. |
 | **Researcher** | Sonnet 4.6 | Haiku 4.5 | Web search + synthesis. Coverage and cost matter more than top reasoning. |
 | **Planner** | Opus 4.7 | Sonnet 4.6 | Structured reasoning, JSON output, hard constraints. Logic dominates. |
 | **Writer** (any format) | Sonnet 4.6 | Haiku 4.5 | Tight per-chapter brief from planner. Sonnet follows constraints reliably at low cost. |
 | **Repair** | Sonnet 4.6 | — | Surgical fix to a failing chapter. Same skill as writer, narrower scope. |
 
-**Rationale.** The planner is the only role where premium reasoning materially affects output (whole-issue coherence, validator-passing JSON, anti-overlap logic). Writers operate on a tight brief from a strong planner — Sonnet performs at the same quality as Opus once the planner has done the hard thinking. Researchers and repairers are even cheaper.
+**Rationale.** The planner is the only subagent role where premium reasoning materially affects output. Writers operate on a tight brief — Sonnet performs at the same quality as Opus once the planner has done the hard thinking.
 
 **Spawning.** Use the `Agent` tool with `subagent_type` and the optional `model` parameter:
 - Researcher → `subagent_type: "Explore"` (read-only research/search), `model: "sonnet"`.
@@ -39,19 +70,7 @@ The Signal runs as a multi-subagent pipeline. Each role has different reasoning 
 - Writer → `subagent_type: "general-purpose"`, `model: "sonnet"`.
 - Repair → `subagent_type: "general-purpose"`, `model: "sonnet"`.
 
-**Override.** If the reader explicitly says "use the top model" or "lean cheaper", honour the override across the whole pipeline.
-
-## Orchestrator model — HARD REQUIREMENT (v8.22.5)
-
-**This skill MUST run on `claude-opus-4-7[1m]` (Opus 4.7, 1M-context).** No other model can complete the pipeline end-to-end without context overflow during Phase 5 writer fan-out — the 24 May 2026 weekly run lost live state mid-pipeline because the harness selected 4.6 despite the routine being set to 4.7 1M, and a compaction happened during Phase 5.
-
-**Refusal rule.** Before reading state in Phase 0a, the orchestrator MUST verify its model identifier. The exact model ID is published in the orchestrator's own system prompt under "Environment" → "You are powered by the model named …" and the line beneath ("The exact model ID is …"). If that identifier is anything other than **`claude-opus-4-7[1m]`** (i.e. lower-tier Opus, any Sonnet, any Haiku, or a non-1M Opus 4.7), the orchestrator MUST refuse to start the pipeline and reply with the following message verbatim:
-
-> The Signal pipeline requires the orchestrator to run on Opus 4.7 1M context (`claude-opus-4-7[1m]`). This session is on `<observed-model-id>`, which cannot reliably hold the full pipeline state through Phase 5. Re-trigger the routine with the correct model — the schedule preference may not have been honoured by the harness this run. Aborting before Phase 0.
-
-Do not proceed past this check on a wrong model even if the reader says "do it anyway" — the user has already pre-authorised the refusal by including this rule in the spec. If the model is right, log "Orchestrator model verified: claude-opus-4-7[1m]" and continue to Phase 0a.
-
-This is a single check at the top of every run. Subagents (researchers, planners, writers, repair) follow the per-role table above and don't need this verification — only the orchestrator's own model matters for context lifetime.
+**Override.** If the reader explicitly says "use the top model" or "lean cheaper", honour the override across the **subagent** chain. The orchestrator-level requirement at Step Zero is not overridable — it exists to prevent the May 24 failure mode, where the orchestrator itself ran on a model too small to hold pipeline state.
 
 ## Workflow
 
@@ -63,7 +82,7 @@ There is NO separate "lightweight" path. Standard weeklies run the full pipeline
 
 > **Environment note.** Claude Code on the web runs in an ephemeral container that is reclaimed when the session ends. The repository at `stevenmcdowell89-hash/the-signal` is the only durable store — state, issues, and the cost log all live there. Per-session paths like `/tmp/signal-build/` are scratch only.
 
-> **Gate discipline (MANDATORY).** Every script-backed gate in this workflow — `validate-chapter-plan.py`, `validate-research-bundle.py`, `stitch-issue.sh` (which embeds the holiday-activation rewrite + banned-vocabulary scan + holiday scaffold override + holiday half-wrap reorganisation), `check-release-dates.sh`, `validate-issue.py`, `check-image-diversity.sh`, and `visual-smoke-test.py` — is **run by the orchestrator itself**, not delegated to a subagent. The gate's verdict is its **exit code**, full stop. A subagent claiming "gate X passed" is not acceptable evidence — the orchestrator must invoke the script via `bash` or `python3`, read the printed report, and read the exit code before advancing. If a subagent reports success but the orchestrator did not run the gate, the orchestrator runs it now. This rule exists because subagents have been observed reporting "gate passed" for gates they never invoked.
+> **Gate discipline (MANDATORY).** Every script-backed gate in this workflow — `verify-orchestrator-model.sh` (Step Zero), `validate-chapter-plan.py`, `validate-research-bundle.py`, `stitch-issue.sh` (which embeds the holiday-activation rewrite + banned-vocabulary scan + holiday scaffold override + holiday half-wrap reorganisation), `check-release-dates.sh`, `validate-issue.py`, `check-image-diversity.sh`, and `visual-smoke-test.py` — is **run by the orchestrator itself**, not delegated to a subagent. The gate's verdict is its **exit code**, full stop. A subagent claiming "gate X passed" is not acceptable evidence — the orchestrator must invoke the script via `bash` or `python3`, read the printed report, and read the exit code before advancing. If a subagent reports success but the orchestrator did not run the gate, the orchestrator runs it now. This rule exists because subagents have been observed reporting "gate passed" for gates they never invoked.
 
 ---
 
