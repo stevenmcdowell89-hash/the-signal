@@ -333,6 +333,29 @@ Use 10-14 different types per standard issue. No two consecutive sections should
 ### Standard Weekly (default)
 The full Sunday edition. **6,000-8,000 words, 20-30 pages.** Section order as listed above.
 
+### Visual-density floor (every non-holiday special, v8.22.4)
+
+The audio drama Starter Kit (April 2026), the Ibex Method Versus (April 2026), and the Switch 2 solo games Shortlist (April 2026) set the visual-density floor. New issues at v8.21+ must hit or exceed it. Bare-prose chapters with only the killer-feature component fall through the floor.
+
+**Per-pick chapter (Shortlist Top/Strong picks, Starter Kit Essentials when written as detailed picks, Next picks, Versus rounds) — required per pick:**
+1. At least one image (`figure.fig` floated half-width, `figure.fig.is-wide`, or `figure.image-quote` for visual rhythm).
+2. One `.pick-stats` info block (mono-caps `<dl>`) OR one `.marginalia` chip — practical detail in a structured form, not buried in prose.
+3. Three-or-more-paragraph writeup. One-paragraph "this is good" picks are a fail.
+4. One of: `.pullquote` between picks, `.bignum-row` of headline stats for the chapter, or a `figure.image-quote` opening the chapter — to break the rhythm.
+5. A `.source-strip` at the chapter close listing 2+ sources used in the writeup.
+
+**Per non-pick chapter (Foreword, The Argument, Throughline, Common Mistakes, prose chapters in Deep Dive) — required:**
+1. At least one image OR one `.pullquote` (visual rhythm, not just prose).
+2. One `.marginalia` chip OR `.bignum`/`.bignum-row` (practical detail).
+3. `.has-dropcap` on first paragraph for chapter openers.
+
+**Multi-item bridging chapters (Also Worth Knowing, Where to Go After That, Shows Just Outside, Related Reading) — required:**
+- `.also-cards` grid with 4-8 items. Each card carries an `.ac-meta` category line + `<h4>` + italic `<p>` + source link.
+
+**Why the floor exists:** the v8.21 editorial baseline is less loud than the pre-v8.21 chrome, but visual VOLUME is meant to be comparable. The writers must reach for figures, stats, marginalia, pull-quotes, source strips, and `.also-cards` actively — not write prose-only chapters and assume the chrome will carry the issue. Gate-1 checks should warn when a non-foreword chapter has fewer than 3 visual components.
+
+---
+
 ### Deep Dive
 Single-topic deep exploration. **8,000-12,000 words default; flex to 18,000-20,000 for inherently large topics.** Manual trigger ("Run a Deep Dive on [topic]") or quarterly auto-trigger from the backlog. Canonical chapter order: Cover → Foreword → The Argument → Full story → Keep Digging → Footer. Use 10-14 component types. Best for: a single subject that deserves 10x the space it would get in the weekly.
 
@@ -545,7 +568,13 @@ Beginner's guide. **4,000-6,000 words, 15-22 pages.** Manual trigger: "Run a Sta
 
 **The killer feature — The One-Week Plan.** A day-by-day sequence telling the reader exactly what to do across the seven days after they finish the issue. Not "try things at your pace" — specific instructions per day. Day 1: this. Day 3: switch to this. Day 5: come back to the first one, now you'll get the difference. **This is the thing the reader will quote back as why the format worked** — concrete, sequenced, decision-light. Rendered as the `.week-plan` vertical timeline: each day gets a bordered day-badge (Day N / Mon) on the left of an accent rail, with the action title + a short "why this on this day" beneath. Seven days, no more, no fewer; if the topic doesn't need seven days the Starter Kit doesn't need seven days of plan — but the plan must commit to a specific schedule, not a "do this whenever" punt.
 
-- Use 8-12 component types: the `.essentials` numbered-ring list for The Essentials, the `.week-plan` timeline for The One-Week Plan, compare panels for "this not that" inside Common Mistakes, sidebars for tips.
+**The Essentials chapter — pick density.** The Essentials is the heart of a Starter Kit and must hit the per-pick density floor (see "Visual-density floor" above). The pattern is:
+
+- 5-7 picks rendered as cross-format `.pick` items (image left/right alternating, `.pick-body` containing `.pick-tag` "Top Pick" / "Strong Pick" pill, `<h3>` title, multi-paragraph writeup, `.pick-stats` info block, optional `figure.image-quote` or `.pullquote` between picks).
+- The `.essentials` numbered-ring list is ONLY for short concept lists (e.g. "5 essential techniques" inside Why This Matters). NOT for the main pick chapter.
+- The audio drama Starter Kit (April 2026) sets the floor — each pick had an image, a stats sidebar, a 4-number stat row, a "did-you-know" callout, and a source strip. Reproduce that density using the v8.22 vocabulary.
+
+- Use 10-14 component types: `.pick` + `.pick-stats` for The Essentials picks, `.bignum-row` for headline counts, `.pullquote` between picks, `.week-plan` for The One-Week Plan, `.also-cards` for Where to Go Deeper, `figure.image-quote` for visual rhythm.
 
 ### The Shortlist
 Opinionated recommendation list. **3,500-5,500 words, 14-20 pages.** Manual trigger: "Run a Shortlist — [topic]." Cover → Foreword → The Lens (selection criteria) → The Shortlist (tiered picks: Top Picks, Strong Picks, Wildcards) → Also Worth Knowing (horizon items) → The Cheat Sheet (summary table) → Meanwhile... → Footer.
@@ -839,6 +868,22 @@ Every non-holiday special edition obeys these rules. Holiday specials (Countdown
 3. Include the components from the component list below as appropriate for the format. Each component has a documented HTML contract in `component-contracts.md` (or inline in the CSS).
 4. Inject assets with `scripts/inject-assets.sh` as normal.
 
+### Cover — mandatory richness floor (v8.22.4)
+
+Every non-holiday special cover MUST include all of these. A bare cover (eyebrow + title + deck only) ships as sparse; the Yellow Turban Deep Dive cover (2026-05-22) is the floor.
+
+- `.cover-meta` — top row, two children. **Left:** `<span><strong>The Signal</strong> · <Format></span>`. **Right:** `<span><Issue date> · Sunday Edition</span>` (or "Sample Issue", "No. N", etc.).
+- `.cover-eyebrow` — **at least two meta tokens** separated by `·`. E.g. "A Deep Dive · 184 CE · Eastern Han", not just "A Deep Dive". Carries format + period + scope-tag where relevant.
+- `.cover-title` — serif headline. At least one accent-coloured `<em>…</em>` inside.
+- `.cover-deck` — italic-serif description, 25-50 words. The deck is where the issue's argument shows up first.
+- `.cover-slogan` — **MANDATORY** epigraph block with three children:
+  - `.cover-slogan-cn` / `.cover-slogan-primary` — large serif line. The native-language phrase, the headline quote, the founding figure's slogan, the chant, the line on the wall. Whatever fits the topic.
+  - `.cover-slogan-en` / `.cover-slogan-translation` — italic-serif translation or gloss.
+  - `.cover-slogan-attr` — mono-caps attribution line. Source + date or topic + era.
+- `.cover-foot` — bottom row, **three children**. **Left:** issue meta ("Twelve chapters · 10,900 words"). **Center:** `.cover-scroll` ("Scroll to begin"). **Right:** tagline ("Hand-set · Long-form · Sunday Morning"). Centers on a single child if only one is provided.
+
+A cover that omits the slogan block or runs `.cover-foot` with only one child reads as a sample, not as an issue. Gate-1 grep check should warn.
+
 ### Component list
 
 > **Note (v8.21):** The non-holiday special edition system was redesigned around an editorial / paper-and-ink aesthetic (see `assets/css/23-` through `32-` files). The list below documents the **new** components. Holiday formats (Countdown, Field Guide) retain their previous holiday-themed system in the `33-`, `36-` through `44-` CSS files — those are not affected by this list.
@@ -876,6 +921,10 @@ Every non-holiday special edition obeys these rules. Holiday specials (Countdown
 - Modifiers: `.is-wide`, `.is-fullbleed`, `.is-half` (+ `.is-left`)
 - `figure.image-quote` with `<img>` + `<blockquote>` — darkened photo with overlaid italic quote and accent-coloured `<cite>`
 
+**Rich pick + multi-item grid (every non-holiday special, v8.22.4):**
+- `.pick` — image + body grid, alternating layout (image-left odd rows, image-right even rows). Contains `<img class="pick-img">`, `.pick-body` with optional `.pick-tag` pill + `<h3>` + prose + optional `.pick-stats` (a `<dl>` of mono-caps `<dt>` + serif `<dd>`). The workhorse for detailed-pick chapters across Shortlist, Starter Kit, Next, Deep Dive.
+- `.also-cards` grid — 4-8 `.also-card` items (`.ac-meta` mono-caps category line + `<h4>` + italic `<p>` why-it's-here + optional `<a>` source link). For "Also Worth Knowing" / "Where to Go After That" / "Shows Just Outside the Top Six" / "Related Reading" patterns. Cross-format.
+
 **Meanwhile section (when a special replaces the standard weekly):**
 - `.meanwhile-list` — bulleted catch-up list with tier dots (`.tier-hot` / `.tier-warm` / `.tier-note`)
 
@@ -886,7 +935,7 @@ Every non-holiday special edition obeys these rules. Holiday specials (Countdown
 - *Versus:* `.vs-tape` (tale-of-the-tape table), `.vs-pair` (stacked case panels with per-side accent rails + Case A / Case B badges), `.vs-verdict` (dark wide verdict slab with side stripes), optional `.vs-scoreboard` ribbon (running tally with side colours)
 - *Rewind:* enlarged `.bignum-row`, `.year-band` (12-month rail with `.year-band-month` + `.year-band-marker` highs/lows + `.year-band-legend`), `.rewind-cards` (`.rewind-card` + `.is-low` modifier), `.chapter-head.is-throughline` + `.throughline-mark` for the Throughline chapter, `.memory-test` 3-column grid (`.mt-col.mt-stick` / `.mt-might` / `.mt-fade`) for the second killer feature
 - *Season Review:* `.scorecards` grid of `.scorecard[data-tier="hot|warm|cold"]` cards — each with `.sc-head` (`.sc-name` + `.sc-score`), `.sc-bar` driven by `--score: N`, `.sc-verdict` italic line. Legacy `.rating` / `.scoreboard` / `.milestones` still available for stat-heavy supporting chapters.
-- *Shortlist:* `.lens` framed criteria block (`.lens-eyebrow` + `.lens-statement` italic + `.lens-criteria` numbered list) at the opening; `.tier-band` (`.tb-mark` + `.tb-label` + `.tb-rule`, `data-tier="strong|wildcard"` for accent swap), `.pick` with alternating image/body grid + `.pick-tag` pill for the body; `.cheat-sheet` table (`#` / `Pick` / `Tier` / `Why` columns, rows tagged `data-tier="top|strong|wildcard"` for inline colour-coding) at the close
+- *Shortlist:* `.lens` framed criteria block (`.lens-eyebrow` + `.lens-statement` italic + `.lens-criteria` numbered list) at the opening; `.tier-band` (`.tb-mark` + `.tb-label` + `.tb-rule`, `data-tier="strong|wildcard"` for accent swap) divides the body into Top / Strong / Wildcard sections; the cross-format `.pick` (with `.pick-img`, `.pick-tag`, `.pick-stats`) carries each detailed pick; `.cheat-sheet` table (`#` / `Pick` / `Tier` / `Why` columns, rows tagged `data-tier="top|strong|wildcard"` for inline colour-coding) at the close. `.also-cards` for "Also Worth Knowing."
 - *Next:* `.next-tier` row with `data-step="I|II|III"` for the numbered roundel marker (+ `.is-wildcard` modifier for the third tier); `.on-ramp` stepped track — the killer feature — with three `.on-ramp-row` entries each tagged `data-step="start|reassess|then"` (auto-renders the glyph + connecting track), `.on-ramp-label` + `.on-ramp-body`; `.only-one` dark slab for the "If You Only Try One" hero with star seal (`.only-one-mark` + `.only-one-pick` + `.only-one-reason`)
 - *Lookahead:* `.calendar` `<ol>` with optional `<li class="cal-week">` dividers and `.cal-row` items carrying `data-verdict="hot|warm|wait|skip"` — each row has a tinted background + accent rail in the verdict colour, `.cal-when` (date card with `.cal-date` + `.cal-where`), `.cal-body` (`<h4>` + `<p>`), `.cal-verdict` containing `.cal-verdict-chip` (full pill — the killer chip with glyph + label + tinted bg) and optional `.cal-reason` italic gloss; plus `.crunch-week` callout with `.crunch-header` (`.crunch-label` warning chip + `.crunch-when` heading) and `.crunch-list` `<dl>` whose `<dt>` carry `data-tier="hot|warm|wait|skip"` for tier-coloured Prioritise / Defer / Skip badges
 
@@ -895,9 +944,10 @@ Every non-holiday special edition obeys these rules. Holiday specials (Countdown
 - `.argument` — framed thesis block (`.argument-eyebrow` + `.argument-thesis` italic serif + `.argument-stance` paragraph). Sits between Foreword and the body; pilcrow seal in accent.
 - `.keep-digging` — closing cross-media grid of `.kd-item` cards. Each card carries `data-medium="podcast|tv|film|game|video|book"` (which paints the per-type pill colour + glyph) and contains `.kd-medium` pill, `.kd-title` heading, optional `.kd-episode` italic line (mandatory on podcasts — series-only refs forbidden), `.kd-why` italic gloss.
 
-**Quiet-format mini-flair (Starter Kit):**
+**Starter Kit flair:**
 - All baseline components above. Distinct `--accent` colour set on `body[data-special="starter-kit"]`.
-- `.essentials` ordered list — each `<li>` gets a numbered ring badge (counter-based).
+- `.essentials` ordered list — each `<li>` gets a numbered ring badge. **Use only for short concept lists** ("5 essential techniques", "7 things to learn first"). NOT for detailed-pick chapters — those use the cross-format `.pick` (each pick gets image + body + `.pick-stats` + a `.pullquote` or `.image-quote` for visual rhythm).
+- `.week-plan` vertical timeline — the killer feature. Seven `.wp-day` items with badged day-marks (Day N / Mon) on the left of an accent rail, body on the right.
 
 **What was removed (v8.21 redesign):**
 - All scroll motion (`.sp-parallax`, `.sp-stagger`, `.sp-wipe`, `.sp-curtain`)

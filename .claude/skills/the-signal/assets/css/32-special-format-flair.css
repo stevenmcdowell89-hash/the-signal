@@ -13,6 +13,181 @@
    ============================================================ */
 
 
+/* ─────────── CROSS-FORMAT — rich picks + multi-item grids ────
+   These two components are used by Shortlist, Starter Kit, Next,
+   Deep Dive, and Versus — wherever a chapter needs to present
+   either (a) a small set of detailed picks with image + body, or
+   (b) a wider grid of shorter card-style items.
+
+   The audio-drama Starter Kit and Switch 2 Shortlist (April 2026)
+   set the floor for visual density. The rule: pick chapters carry
+   at minimum image + sidebar info + stat row + pull-quote across
+   the picks; bridging chapters use .also-cards for the "also
+   worth knowing" / "shows just outside the top six" / "where to
+   go after that" patterns.
+   ============================================================ */
+
+/* .pick — rich per-item layout with alternating image side. Defined
+   cross-format. Shortlist used to scope this; the scope is now lifted
+   so Starter Kit, Next, and Deep Dive can use the same component.
+
+     <article class="pick">
+       <img class="pick-img" src="…" alt="…">
+       <div class="pick-body">
+         <span class="pick-tag">Top Pick</span>
+         <h3>Pick title</h3>
+         <p>Long-form writeup, multiple paragraphs.</p>
+         <aside class="pick-stats">
+           <dl>
+             <dt>Episodes</dt><dd>57</dd>
+             <dt>Length</dt><dd>15–40 min</dd>
+             <dt>Start here</dt><dd>Episode 1.</dd>
+           </dl>
+         </aside>
+       </div>
+     </article>
+*/
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .pick {
+  display: grid;
+  grid-template-columns: 14rem 1fr;
+  gap: 1.5rem;
+  margin: 1.5rem 0 2rem;
+  align-items: start;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .pick:nth-of-type(even) {
+  grid-template-columns: 1fr 14rem;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .pick:nth-of-type(even) .pick-img {
+  order: 2;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .pick-img {
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  width: 100%;
+  border-radius: 4px;
+  box-shadow: var(--shadow-soft);
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .pick-body h3 {
+  margin-top: 0;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .pick-body .pick-tag {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  background: var(--ink);
+  color: var(--ink-on-dark);
+  padding: 0.25rem 0.6rem;
+  border-radius: 2px;
+  margin-bottom: 0.5rem;
+}
+/* Inline stat dl inside a .pick — keeps the per-pick info block
+   the audio-drama issue's .sidebar was doing, but in our editorial
+   vocabulary. mono caps key / serif value. */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .pick-stats {
+  margin: 1rem 0 0;
+  padding: 0.85rem 1rem;
+  background: var(--paper-warm);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 4px 4px 0;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .pick-stats dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: 7rem 1fr;
+  gap: 0.35rem 1rem;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .pick-stats dt {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+  font-weight: 700;
+  padding-top: 0.1rem;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .pick-stats dd {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 0.92rem;
+  line-height: 1.4;
+  color: var(--ink-soft);
+}
+@media (max-width: 640px) {
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .pick,
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .pick:nth-of-type(even) {
+    grid-template-columns: 1fr;
+  }
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .pick:nth-of-type(even) .pick-img { order: initial; }
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .pick-img { aspect-ratio: 4 / 3; max-height: 16rem; }
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .pick-stats dl { grid-template-columns: 6rem 1fr; }
+}
+
+/* .also-cards — compact grid of short items, 4-8 per chapter. Used
+   for "Also Worth Knowing" / "Where to Go After That" / "Shows Just
+   Outside the Top Six" / "Related Reading" patterns. Cross-format.
+
+     <div class="also-cards">
+       <article class="also-card">
+         <span class="ac-meta">Audio Drama · Complete</span>
+         <h4>Item title</h4>
+         <p>1-2 sentence why-it's-here.</p>
+         <a href="…">Source / link</a>
+       </article>
+       … 3-7 more cards …
+     </div>
+*/
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .also-cards {
+  margin: 1.5rem 0;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .also-card {
+  padding: 1rem 1.1rem 1.15rem;
+  background: var(--paper-warm);
+  border: 1px solid var(--rule);
+  border-top: 3px solid var(--accent);
+  border-radius: 0 0 4px 4px;
+  display: grid;
+  gap: 0.45rem;
+  align-content: start;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .also-card .ac-meta {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--bone-soft);
+  font-weight: 600;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .also-card h4 {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.3;
+  font-weight: 600;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .also-card p {
+  margin: 0;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .also-card a {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+  margin-top: 0.2rem;
+}
+
+
 /* ───────────────────────── quiet formats ────────────────────
    Light differentiation, mostly through the --accent token.
    ============================================================ */
@@ -817,50 +992,9 @@ body.is-special[data-special="shortlist"] .tier-band .tb-label {
 body.is-special[data-special="shortlist"] .tier-band[data-tier="strong"]   { --accent: var(--accent-ember); }
 body.is-special[data-special="shortlist"] .tier-band[data-tier="wildcard"] { --accent: var(--bone-soft); }
 
-/* Pick — image left, text right; alternating rows flip to image right */
-body.is-special[data-special="shortlist"] .pick {
-  display: grid;
-  grid-template-columns: 14rem 1fr;
-  gap: 1.5rem;
-  margin: 1.5rem 0 2rem;
-  align-items: start;
-}
-body.is-special[data-special="shortlist"] .pick:nth-of-type(even) {
-  grid-template-columns: 1fr 14rem;
-}
-body.is-special[data-special="shortlist"] .pick:nth-of-type(even) .pick-img {
-  order: 2;
-}
-body.is-special[data-special="shortlist"] .pick-img {
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
-  width: 100%;
-  border-radius: 4px;
-  box-shadow: var(--shadow-soft);
-}
-body.is-special[data-special="shortlist"] .pick-body h3 {
-  margin-top: 0;
-}
-body.is-special[data-special="shortlist"] .pick-body .pick-tag {
-  display: inline-block;
-  font-family: var(--mono);
-  font-size: 0.68rem;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  background: var(--ink);
-  color: var(--ink-on-dark);
-  padding: 0.25rem 0.6rem;
-  border-radius: 2px;
-  margin-bottom: 0.5rem;
-}
-@media (max-width: 640px) {
-  body.is-special[data-special="shortlist"] .pick,
-  body.is-special[data-special="shortlist"] .pick:nth-of-type(even) {
-    grid-template-columns: 1fr;
-  }
-  body.is-special[data-special="shortlist"] .pick:nth-of-type(even) .pick-img { order: initial; }
-  body.is-special[data-special="shortlist"] .pick-img { aspect-ratio: 4 / 3; max-height: 16rem; }
-}
+/* .pick — defined cross-format earlier in this file (was Shortlist-only
+   before v8.22.4; promoted so Starter Kit / Next / Deep Dive can use the
+   same alternating image/body layout). */
 
 
 /* ───────────────────────── NEXT ────────────────────────────

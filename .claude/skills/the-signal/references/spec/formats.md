@@ -325,7 +325,13 @@ Beginner's guide. **4,000-6,000 words, 15-22 pages.** Manual trigger: "Run a Sta
 
 **The killer feature — The One-Week Plan.** A day-by-day sequence telling the reader exactly what to do across the seven days after they finish the issue. Not "try things at your pace" — specific instructions per day. Day 1: this. Day 3: switch to this. Day 5: come back to the first one, now you'll get the difference. **This is the thing the reader will quote back as why the format worked** — concrete, sequenced, decision-light. Rendered as the `.week-plan` vertical timeline: each day gets a bordered day-badge (Day N / Mon) on the left of an accent rail, with the action title + a short "why this on this day" beneath. Seven days, no more, no fewer; if the topic doesn't need seven days the Starter Kit doesn't need seven days of plan — but the plan must commit to a specific schedule, not a "do this whenever" punt.
 
-- Use 8-12 component types: the `.essentials` numbered-ring list for The Essentials, the `.week-plan` timeline for The One-Week Plan, compare panels for "this not that" inside Common Mistakes, sidebars for tips.
+**The Essentials chapter — pick density.** The Essentials is the heart of a Starter Kit and must hit the per-pick density floor (see "Visual-density floor" above). The pattern is:
+
+- 5-7 picks rendered as cross-format `.pick` items (image left/right alternating, `.pick-body` containing `.pick-tag` "Top Pick" / "Strong Pick" pill, `<h3>` title, multi-paragraph writeup, `.pick-stats` info block, optional `figure.image-quote` or `.pullquote` between picks).
+- The `.essentials` numbered-ring list is ONLY for short concept lists (e.g. "5 essential techniques" inside Why This Matters). NOT for the main pick chapter.
+- The audio drama Starter Kit (April 2026) sets the floor — each pick had an image, a stats sidebar, a 4-number stat row, a "did-you-know" callout, and a source strip. Reproduce that density using the v8.22 vocabulary.
+
+- Use 10-14 component types: `.pick` + `.pick-stats` for The Essentials picks, `.bignum-row` for headline counts, `.pullquote` between picks, `.week-plan` for The One-Week Plan, `.also-cards` for Where to Go Deeper, `figure.image-quote` for visual rhythm.
 
 
 
