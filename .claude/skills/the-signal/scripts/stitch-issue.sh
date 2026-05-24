@@ -443,8 +443,16 @@ html = "\n".join(html_parts)
 issue_meta_early = plan.get("issue_meta", {})
 issue_format_early = issue_meta_early.get("format", "").lower().replace("_", "-")
 HOLIDAY_FORMATS = {"countdown", "field-guide"}
+SPECIAL_FORMATS = {"countdown", "field-guide", "deep-dive", "versus", "rewind",
+                   "season-review", "starter-kit", "shortlist", "next", "lookahead"}
 
-if issue_format_early in HOLIDAY_FORMATS:
+# v8.22.12 — activate body for ALL special formats, not just holiday.
+# The non-holiday v8.21 CSS bundle (23- through 32-) is scoped to
+# `body.is-special:not([data-special="countdown"]):not([data-special="field-guide"])`,
+# so without the body activation a deep-dive / versus / rewind / etc renders
+# entirely unstyled (paper background, no chapter chrome, no cover styling).
+# The 24 May 2026 WW1 Deep Dive shipped this way before the gate was added.
+if issue_format_early in SPECIAL_FORMATS:
     # Activation rewrite — stamp the body tag deterministically.
     #
     # CRITICAL: anchor to </head>. The scaffold (00-head-open.html) contains
@@ -458,7 +466,7 @@ if issue_format_early in HOLIDAY_FORMATS:
         sys.exit(1)
     body_search = re.search(r'<body\b[^>]*>', html[head_end_match.end():], re.IGNORECASE)
     if not body_search:
-        print("ERROR: No <body> tag after </head> — cannot activate holiday identity")
+        print("ERROR: No <body> tag after </head> — cannot activate special-edition identity")
         sys.exit(1)
     body_abs_start = head_end_match.end() + body_search.start()
     body_abs_end   = head_end_match.end() + body_search.end()
@@ -470,6 +478,9 @@ if issue_format_early in HOLIDAY_FORMATS:
     html = html[:body_abs_start] + desired_body + html[body_abs_end:]
     mv_note = " + data-multi-venue=true" if multi_venue_flag else ""
     print(f"ACTIVATION: rewrote real <body> (after </head>) to is-special + data-special={issue_format_early}{mv_note}")
+
+# Holiday-only gates: banned vocabulary scan, scaffold override, etc.
+if issue_format_early in HOLIDAY_FORMATS:
 
     # Build the gate scan target: ONLY the concatenated chapter bodies.
     # Scaffolds (00-head-open.html / 19-closing.html) are clean by spec.
