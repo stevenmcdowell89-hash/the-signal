@@ -2,6 +2,7 @@
 
 _This file consolidates the specials/ subdir into one file. Each former file becomes an H2 section. Anchor names use the original filename without the numeric prefix._
 
+
 ---
 
 ## overview
@@ -18,12 +19,6 @@ Every non-holiday special edition obeys these rules. Holiday specials (Countdown
   - *Visual* — Versus, Rewind, Season Review, Shortlist, Next, Lookahead. Same baseline plus format-specific components (`.vs-tape` / `.vs-pair` / `.vs-verdict`, `.year-band` / `.rewind-cards` / `.memory-test`, `.rating` / `.scoreboard` / `.milestones`, `.tier-band` / `.pick`, `.on-ramp` / `.only-one`, `.calendar` / `.cal-verdict` / `.crunch-week`) for clear differentiation.
 
 
-- **No motion in the non-holiday system.** As of v8.21, the non-holiday specials are an editorial / paper-and-ink design with no scroll-driven animation. Holiday formats retain their motion layer.
-- **JS-off renders a complete issue.** The whole non-holiday system is pure CSS.
-- **Word counts and section depth are the spine.** Visual flair sits around content, not in place of it.
-- **Quiet vs. visual register.**
-  - *Quiet* — Deep Dive, Blueprint, Starter Kit. Baseline editorial system + minor accent (drop cap, format colour, optional grid-bleed on Blueprint headings, numbered ring badges on Starter Kit essentials).
-  - *Visual* — Versus, Rewind, Season Review, Shortlist. Same baseline plus format-specific components (`.vs-tape` / `.vs-pair` / `.vs-verdict`, `.year-band` / `.rewind-cards`, `.rating` / `.scoreboard` / `.milestones`, `.tier-band` / `.pick`) for clear differentiation.
 
 ---
 
@@ -34,6 +29,7 @@ Every non-holiday special edition obeys these rules. Holiday specials (Countdown
 2. **For Countdown only:** add `data-dday-start="N"` on `<body>` where N is the number of days between the issue date (today, when generating) and the event. The D-day badge displays this authored value statically — a magazine issue is a snapshot and the badge must agree with the prose, forever. Compute N at generation time as `(trip_date - today)` in days. The Countdown auto-trigger fires 2-3 weeks before a trip, so N is typically 14-21. If generating a prototype or back-dated issue, use the fictional issue-date reference. (Optional: also add `data-trip-date="YYYY-MM-DD"` for human reference, but it does NOT drive a live countdown at runtime.) The previous scroll-scrubbing pattern (`data-dday-start` + `data-dday-end` interpolated by scroll percentage) has been removed — a scroll-driven countdown is nonsensical.
 3. Include the components from the component list below as appropriate for the format. Each component has a documented HTML contract in `component-contracts.md` (or inline in the CSS).
 4. Inject assets with `scripts/inject-assets.sh` as normal.
+
 
 ### Component list
 
@@ -108,44 +104,8 @@ Every non-holiday special edition obeys these rules. Holiday specials (Countdown
 - The Blueprint format (retired in v8.22 — never used after 6+ specials, planning use cases absorbed by Deep Dive and Shortlist)
 - These components/formats are no longer in the CSS bundle for non-holiday specials. Don't reference them in new issues. They remain in already-published issues since their CSS is inlined at generation time.
 
-**Baseline flair (every non-holiday special):**
-- `.chapter-body.has-dropcap` or `<p class="lede">` — first paragraph gets a large accent drop cap
-- `.sp-ornament` — three dots, used to break up sub-sections within a chapter
-- `.pullquote` with `<p>` + optional `<cite>` — huge italic pull quote with ornamental "
-- `.marginalia` (+ `.is-left`) with `.m-label` + body — chip in the gutter; falls back to inline at ≤1180px
-- `.bignum` with `.bignum-value` + `.bignum-label` — single stat callout
-- `.bignum-row` — grid of 2–4 `.bignum` items, top + bottom hairlines
-- `.source-strip` — mono caps row of citations
-- `.sp-number` — inline accent-coloured stat (e.g. `<span class="sp-number">74</span>`)
 
-**Figures (every non-holiday special):**
-- `figure.fig` with `<img>` + `<figcaption>` containing `.fig-caption` + `.fig-credit`
-- Modifiers: `.is-wide`, `.is-fullbleed`, `.is-half` (+ `.is-left`)
-- `figure.image-quote` with `<img>` + `<blockquote>` — darkened photo with overlaid italic quote and accent-coloured `<cite>`
 
-**Meanwhile section (when a special replaces the standard weekly):**
-- `.meanwhile-list` — bulleted catch-up list with tier dots (`.tier-hot` / `.tier-warm` / `.tier-note`)
-
-**Footer (every non-holiday special):**
-- `.sp-footer` with `.sp-footer-wordmark`, `.sp-footer-meta`, optional `.sp-footer-colophon` — quiet sign-off panel with ornament rule above
-
-**Format-specific flair (visual formats only — Versus / Rewind / Season Review / Shortlist):**
-- *Versus:* `.vs-tape` (tale-of-the-tape table), `.vs-pair` (stacked case panels), `.vs-verdict` (dark wide verdict panel)
-- *Rewind:* enlarged `.bignum-row`, `.year-band` (12-month rail with `.year-band-month` + `.year-band-marker` highs/lows + `.year-band-legend`), `.rewind-cards` (`.rewind-card` + `.is-low` modifier)
-- *Season Review:* `.rating` row (label + `.rating-bar` with `--score` custom prop + numeric score), `.scoreboard` table with `.sb-rank`, `.milestones` grid with `.milestone` cards
-- *Shortlist:* `.tier-band` (`.tb-mark` + `.tb-label` + `.tb-rule`, `data-tier="strong|wildcard"` for accent swap), `.pick` with alternating image/body grid + `.pick-tag` pill
-
-**Quiet-format mini-flair (Deep Dive / Blueprint / Starter Kit):**
-- All baseline components above. Each format has a distinct `--accent` colour set on `body[data-special="…"]`.
-- *Blueprint:* `.chapter-head::before` adds a faint blueprint-grid bleed behind the heading
-- *Starter Kit:* `.essentials` ordered list — each `<li>` gets a numbered ring badge (counter-based)
-
-**What was removed (v8.21 redesign):**
-- All scroll motion (`.sp-parallax`, `.sp-stagger`, `.sp-wipe`, `.sp-curtain`)
-- Pre-roll splash (`.sp-splash`), ticker masthead (`.mast-ticker`), rotated format badge (`.sp-format-badge`)
-- Signature moments (`.sp-sig-*`), chapter gates (sticky-scroll model), hype variants
-- Old editorial breakouts (`.sp-manifesto`, `.sp-bignum`, `.sp-gallery`, `.sp-diptych`, `.sp-marquee`)
-- These components are no longer in the CSS bundle for non-holiday specials. Don't reference them in new issues. They remain in already-published issues since their CSS is inlined at generation time.
 
 ---
 
@@ -435,6 +395,7 @@ These components compose with the existing `.sp-wipe`, `.sp-curtain`, ground alt
 
 ## multi-venue
 
+
 > See `formats/countdown.md` for the full Countdown spec; this file is a cross-format summary of multi-venue rules that live inside that section.
 
 Multi-venue trips (e.g. Efteling + Beekse Bergen) get parallel treatment:
@@ -448,9 +409,36 @@ Multi-venue trips (e.g. Efteling + Beekse Bergen) get parallel treatment:
 For Field Guides, multi-venue rules live in `formats/field-guide.md`
 (headline rule 7 — multi-venue balance).
 
+
+---
+
+## hype-chapter-visuals
+
+
+> See `formats/countdown.md` for the full hype-chapter spec. This file is a cross-format summary.
+
+**Hype-chapter visuals** are opt-in CSS modifiers (`32-hype-variants.css`) that dial back default special-edition chrome on chapters where excitement — not literary depth — is the job.
+
+## When to use hype modifiers
+
+Apply on:
+- Countdown hype chapters: Top Attractions, Accommodation, Mood Board, Five Moments Worth the Trip, By the Numbers (when image-led)
+- Field Guide: The Opening, The Unmissables
+
+**Never apply on literary formats:** Deep Dive, Versus, Rewind, Season Review — these keep full default chrome.
+
+## The four modifiers
+
+1. **`.sp-chapter-gate.is-hype`** — compact gate: 60vh track (vs 110vh), 40vh hold (vs 100vh), layers solid by progress 0.08 (vs 0.20)
+2. **`[data-sp-chapter].is-hype`** — re-permits coral on `.sp-number`, `.sp-number-huge`, `.sp-kicker`, `.sp-brief-kicker`, `.unmissables .sp-datum-value`, `.why-its-here`. All global lockdown elements unchanged.
+3. **`.sp-ground-gallery`** — neutral slate ground (#1A1E27) for image-first chapters (Mood Board primary, optionally Field Guide Opening). NOT pitch black.
+4. **`.unmissables` / `.unmissable`** — Field Guide Unmissables pattern: 6-10 full-width editorial beats, each = hero image + sensory prose + "Why It's Here" coral kicker + mono `<dl>` practical footer. Drop-cap forbidden on picks.
+
+
 ---
 
 ## readability-locks
+
 
 **CSS layer:** `34-readability-locks.css` (Tier 10, runs last in cascade).
 
@@ -466,9 +454,11 @@ Some self-painting components lose identity when nested inside `[data-sp-chapter
 
 **Markup contracts (Gate 1E):** the lockdown only works when markup matches the contract. See `global/04-markup-contracts.md` and `references/pre-flight.md` § Canonical markup snippets.
 
+
 ---
 
 ## portrait-spread
+
 
 **CSS:** `26-special-editorial.css`. The three-column `.sp-spread` layout adapts at ≤980px.
 
@@ -495,6 +485,7 @@ At ≤ 980px, `.sp-spread` becomes `display: flow-root; position: relative`.
 ```
 
 **Never stack:** portrait is the canonical read. The three-column desktop layout is a bonus, not the target.
+
 
 ---
 
@@ -681,4 +672,5 @@ The Half II opener title now uses `text-shadow: 6px 6px 0 var(--hol-burnt)` for 
 **Pre-flight regressions added in v8.13:**
 - **RT-14:** Flat-fill ground on Half II is banned. Let `.hol-half--two` paint its own ground; don't set `background:` on the wrapper or on inner sections.
 - **RT-15:** Venue/half mismatch is banned. Every Efteling chapter sits in `.hol-half--one`; every Beekse Bergen chapter sits in `.hol-half--two`. Cross-venue chapters live outside both halves (after the cover, or as the transit body).
+
 

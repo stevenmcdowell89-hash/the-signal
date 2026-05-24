@@ -307,7 +307,7 @@ The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan
         "scaffold_parts_used": {
           "type": "array",
           "items": { "type": "string" },
-          "description": "Template part filenames (from assets/template-parts/) used to build the scaffold. The stitcher reads these in order. E.g. ['00-head-open.html', '01-masthead.html', '02-wax-seal.html', '03-cover.html', '04-navigator-toc.html', '05-foreword.html']."
+          "description": "Template part filenames (from assets/template-parts/) used to build the scaffold. The stitcher reads these in order. E.g. ['00-head-open.html', '01-masthead.html', '02-wax-seal.html', '03-cover.html', '04-navigator.html', '05-foreword.html']."
         }
       }
     },
@@ -426,7 +426,7 @@ The validator enforces this table. If `execution_mode` does not match the format
       "01-masthead.html",
       "02-wax-seal.html",
       "03-cover.html",
-      "04-navigator-toc.html",
+      "04-navigator.html",
       "05-foreword.html",
       "19-closing.html"
     ]
