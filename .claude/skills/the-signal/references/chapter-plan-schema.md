@@ -35,8 +35,9 @@ The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan
             "versus",
             "rewind",
             "starter_kit",
-            "blueprint",
             "shortlist",
+            "next",
+            "lookahead",
             "field_guide"
           ],
           "description": "Issue format — closed vocabulary. Use snake_case."
@@ -352,10 +353,11 @@ The validator enforces this table. If `execution_mode` does not match the format
 | `field_guide` | `parallel` | Reference chapters are independent |
 | `shortlist` | `parallel` | List-driven picks are independent |
 | `starter_kit` | `parallel` | Listicle chapters are independent |
-| `blueprint` | `parallel` | How-to phases are independent |
+| `lookahead` | `parallel` | Calendar items are independent; The Crunch Weeks chapter aggregates after |
 | `deep_dive` | `sequential` | Literary voice must coalesce across chapters |
 | `versus` | `sequential` | Round verdicts reference prior rounds |
-| `rewind` | `sequential` | Narrative arc spans all chapters |
+| `rewind` | `sequential` | Narrative arc and Throughline span all chapters |
+| `next` | `sequential` | Every pick is judged against The Itch named in chapter 1; If You Only Try One depends on prior picks |
 | `season_review` | `sequential` | Seasonal argument builds chapter to chapter |
 
 ---

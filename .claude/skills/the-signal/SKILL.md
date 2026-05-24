@@ -6,11 +6,12 @@ description: >-
   create, or schedule The Signal, or when the user mentions "the signal",
   "signal magazine", "sunday magazine", "personal magazine", "run the
   signal", "deep dive", "countdown", "season review", "versus", "rewind",
-  "starter kit", "blueprint", "shortlist", or "field guide" in the context
-  of their personal weekly reading. Supports multiple issue formats:
-  standard weekly, deep dive, countdown, season review, versus, rewind,
-  starter kit, blueprint, shortlist, and field guide. Includes HTML
-  template, editorial spec, and a compliance checklist.
+  "starter kit", "shortlist", "next", "after", "lookahead", or "field
+  guide" in the context of their personal weekly reading. Supports
+  multiple issue formats: standard weekly, deep dive, countdown, season
+  review, versus, rewind, starter kit, shortlist, next, lookahead, and
+  field guide. Includes HTML template, editorial spec, and a compliance
+  checklist.
 ---
 
 # The Signal
@@ -19,18 +20,49 @@ Generate issues of The Signal — a weekly personal magazine for Sunday morning 
 
 Version 8.11.0. See `CHANGELOG.md` next to this file for the full version-by-version history of editorial and visual changes. Editorial substance is defined in `references/editorial-spec.md` and its sliced views in `references/spec/`. This file describes only **how the pipeline runs on Claude Code**.
 
+## STEP ZERO — verify orchestrator model BEFORE ANYTHING ELSE
+
+**The orchestrator MUST run on `claude-opus-4-7[1m]` (Opus 4.7, 1M-context).** No other model can complete the pipeline end-to-end without context overflow during Phase 5 writer fan-out. The 24 May 2026 weekly run failed precisely because the Claude Code on the Web harness selected Opus 4.6 despite the routine being set to 4.7 1M, and compaction fired mid-pipeline.
+
+**Before doing literally anything else — no state read, no tool research, no chat reply about the task** — the orchestrator MUST perform these three steps in order:
+
+1. **State the model in the first user-visible message.** The orchestrator's first output text must start with the literal line:
+
+   > **Orchestrator model: `<exact-model-id-from-system-prompt>`**
+
+   Where `<exact-model-id-from-system-prompt>` is the value verbatim from the orchestrator's system prompt under "Environment" → "The exact model ID is …". This visible handshake lets the reader sanity-check at a glance before any work begins.
+
+2. **Run the verify-model script as the first tool call.** Pass the same model identifier:
+
+   ```bash
+   bash .claude/skills/the-signal/scripts/verify-orchestrator-model.sh "<exact-model-id-from-system-prompt>"
+   ```
+
+   The script exits 0 if the model is `claude-opus-4-7[1m]`, exits 1 otherwise with an error message. **Exit code is the gate** — same rule as every other script gate in this workflow (see "Gate discipline" below).
+
+3. **On non-zero exit, abort.** Reply with the verbatim message:
+
+   > The Signal pipeline requires the orchestrator to run on Opus 4.7 1M context (`claude-opus-4-7[1m]`). This session is on `<observed-model-id>`, which cannot reliably hold the full pipeline state through Phase 5. Re-trigger the routine with the correct model — the schedule preference may not have been honoured by the harness this run. Aborting before Phase 0.
+
+   Do not proceed even if the reader says "do it anyway" — the reader has pre-authorised the refusal by including this rule in the spec.
+
+This is the ONLY check that comes before Phase 0a (state read). Once the script exits green, log "Orchestrator model verified" and proceed to "Model Selection" below for subagent dispatch rules, then to Phase 0.
+
+**Why honor-system can't be avoided here.** Model selection happens at the Claude Code harness layer, which the skill can't override. The skill's job is to prevent a wrong-model run from damaging the live site — refusing at Step Zero is the strongest stop-the-bleeding measure available. The actual fix for harness-ignored model preferences is at the Claude Code on the Web routine layer, not in this repo.
+
 ## Model Selection
 
 The Signal runs as a multi-subagent pipeline. Each role has different reasoning needs, so models are selected by **role intent** with **fallback chains** — never by hard-coded model name. When Claude releases a stronger or cheaper model, advance the chain.
 
 | Role | Primary | Fallback | Why this intent |
 |---|---|---|---|
+| **Orchestrator** | Opus 4.7 1M | — | See Step Zero above. No fallback — refuses to run on anything else. |
 | **Researcher** | Sonnet 4.6 | Haiku 4.5 | Web search + synthesis. Coverage and cost matter more than top reasoning. |
 | **Planner** | Opus 4.7 | Sonnet 4.6 | Structured reasoning, JSON output, hard constraints. Logic dominates. |
 | **Writer** (any format) | Sonnet 4.6 | Haiku 4.5 | Tight per-chapter brief from planner. Sonnet follows constraints reliably at low cost. |
 | **Repair** | Sonnet 4.6 | — | Surgical fix to a failing chapter. Same skill as writer, narrower scope. |
 
-**Rationale.** The planner is the only role where premium reasoning materially affects output (whole-issue coherence, validator-passing JSON, anti-overlap logic). Writers operate on a tight brief from a strong planner — Sonnet performs at the same quality as Opus once the planner has done the hard thinking. Researchers and repairers are even cheaper.
+**Rationale.** The planner is the only subagent role where premium reasoning materially affects output. Writers operate on a tight brief — Sonnet performs at the same quality as Opus once the planner has done the hard thinking.
 
 **Spawning.** Use the `Agent` tool with `subagent_type` and the optional `model` parameter:
 - Researcher → `subagent_type: "Explore"` (read-only research/search), `model: "sonnet"`.
@@ -38,7 +70,7 @@ The Signal runs as a multi-subagent pipeline. Each role has different reasoning 
 - Writer → `subagent_type: "general-purpose"`, `model: "sonnet"`.
 - Repair → `subagent_type: "general-purpose"`, `model: "sonnet"`.
 
-**Override.** If the reader explicitly says "use the top model" or "lean cheaper", honour the override across the whole pipeline.
+**Override.** If the reader explicitly says "use the top model" or "lean cheaper", honour the override across the **subagent** chain. The orchestrator-level requirement at Step Zero is not overridable — it exists to prevent the May 24 failure mode, where the orchestrator itself ran on a model too small to hold pipeline state.
 
 ## Workflow
 
@@ -50,7 +82,7 @@ There is NO separate "lightweight" path. Standard weeklies run the full pipeline
 
 > **Environment note.** Claude Code on the web runs in an ephemeral container that is reclaimed when the session ends. The repository at `stevenmcdowell89-hash/the-signal` is the only durable store — state, issues, and the cost log all live there. Per-session paths like `/tmp/signal-build/` are scratch only.
 
-> **Gate discipline (MANDATORY).** Every script-backed gate in this workflow — `validate-chapter-plan.py`, `validate-research-bundle.py`, `stitch-issue.sh` (which embeds the holiday-activation rewrite + banned-vocabulary scan + holiday scaffold override + holiday half-wrap reorganisation), `check-release-dates.sh`, `validate-issue.py`, `check-image-diversity.sh`, and `visual-smoke-test.py` — is **run by the orchestrator itself**, not delegated to a subagent. The gate's verdict is its **exit code**, full stop. A subagent claiming "gate X passed" is not acceptable evidence — the orchestrator must invoke the script via `bash` or `python3`, read the printed report, and read the exit code before advancing. If a subagent reports success but the orchestrator did not run the gate, the orchestrator runs it now. This rule exists because subagents have been observed reporting "gate passed" for gates they never invoked.
+> **Gate discipline (MANDATORY).** Every script-backed gate in this workflow — `verify-orchestrator-model.sh` (Step Zero), `validate-chapter-plan.py`, `validate-research-bundle.py`, `stitch-issue.sh` (which embeds the holiday-activation rewrite + banned-vocabulary scan + holiday scaffold override + holiday half-wrap reorganisation), `check-release-dates.sh`, `validate-issue.py`, `check-image-diversity.sh`, and `visual-smoke-test.py` — is **run by the orchestrator itself**, not delegated to a subagent. The gate's verdict is its **exit code**, full stop. A subagent claiming "gate X passed" is not acceptable evidence — the orchestrator must invoke the script via `bash` or `python3`, read the printed report, and read the exit code before advancing. If a subagent reports success but the orchestrator did not run the gate, the orchestrator runs it now. This rule exists because subagents have been observed reporting "gate passed" for gates they never invoked.
 
 ---
 
@@ -107,7 +139,7 @@ If a P2 fires, commit to that format and continue at Phase 3. Skip 0e.
 If no P1 or P2 fired AND `p3_locked = false`:
 - Compute weeks since `last_special_date` from state.
 - If ≥ 5 weeks, P3 fires.
-- Pick the next format from the P3 rotation (Shortlist, Starter Kit, Blueprint, Versus, Deep Dive on a non-trip topic). Read `recent_special_formats` from state — pick the format that has not appeared in the last 6 specials. If multiple formats tie, pick the one with the strongest topic surfaced during 0d.
+- Pick the next format from the P3 rotation (Shortlist, Starter Kit, Versus, Deep Dive on a non-trip topic). Read `recent_special_formats` from state — pick the format that has not appeared in the last 6 specials. If multiple formats tie, pick the one with the strongest topic surfaced during 0d. **Next and Lookahead are manual-only** and never enter P3 — they require reader-supplied context (the thing just finished / the window to survey) that the orchestrator cannot infer.
 - Commit that format and continue at Phase 3.
 
 If no P1, no P2, and (P3 is locked OR < 5 weeks since last special), commit to standard weekly (`format_committed = weekly`).
@@ -125,8 +157,8 @@ Every format — weekly or any special — continues at **Phase 3** below. There
 ## Phase 3 — Derive execution mode
 
 From the committed format, derive `execution_mode`:
-- **Parallel mode** (Countdown, Field Guide, Shortlist, Starter Kit, Blueprint, weekly): writer subagents in Phase 5 spawn in one batch.
-- **Sequential mode** (Deep Dive, Versus, Rewind, Season Review): writer subagents in Phase 5 spawn one at a time, each reading its predecessor's output to maintain throughline.
+- **Parallel mode** (Countdown, Field Guide, Shortlist, Starter Kit, Lookahead, weekly): writer subagents in Phase 5 spawn in one batch.
+- **Sequential mode** (Deep Dive, Versus, Rewind, Season Review, Next): writer subagents in Phase 5 spawn one at a time, each reading its predecessor's output to maintain throughline. Next is sequential because every pick has to be judged against The Itch named in the opening chapter, and the On-Ramp for each pick benefits from knowing what the previous pick covered.
 
 ### Phase 3a — Researcher subagent
 Spawn an `Agent` with `subagent_type: "Explore"` and `model: "sonnet"` (fallback `"haiku"`). In the prompt, tell it to read `references/spec/global.md` (sections `key-rules` and `image-integrity`), `references/spec/triggers.md` (full file — short), and the matching format section in `references/spec/formats.md` (H2 anchor for the issue's format). Pass committed format + state snapshot inline. The subagent does all web research and writes `/tmp/signal-build/research-bundle.json` (sources, key facts, image candidates with attribution, ongoing-story status, training-phase context).
@@ -179,10 +211,16 @@ Run `python scripts/validate-chapter-plan.py`. **If invalid:** re-spawn planner 
 **Cost log:** after each planner attempt, run `bash scripts/log-call.sh planner <model> <issue_id> - <retry_count> <outcome>`. Outcome is `validator_fail` if validator rejected and another retry is coming, `ok` if the plan passed, `escalated` if the fallback chain ran out. See § Cost Logging.
 
 ### Phase 5 — Writer subagents (format-aware)
-Read `chapter-plan.json`. For each chapter, spawn an `Agent` with `subagent_type: "general-purpose"` and `model: "sonnet"` (fallback `"haiku"`). In the prompt, pass: the pre-flight.md path, the chapter brief (one chapter object from the plan), the research-bundle.json path, plus the H2 anchor reference for the issue's format inside `references/spec/formats.md`. Writers also read `references/spec/global.md` sections `markup-contracts`, `ground-discipline`, `accent-lockdown`. **NON-HOLIDAY SPECIAL FORMATS (`deep_dive`, `versus`, `rewind`, `season_review`, `blueprint`, `starter_kit`, `shortlist`):** writers MUST read `references/spec/specials.md` § `cover` → "Component list" for the v8.21 editorial system: persistent `.mast` chrome, `.cover` / `.chapter` / `.chapter-body` structure, baseline flair (`.pullquote`, `.marginalia`, `.bignum`, `.sp-ornament`, `.sp-eyebrow`, `.has-dropcap`), figures (`.fig`, `.image-quote`), per-format flair components for the visual formats (`.vs-tape` / `.vs-pair` / `.vs-verdict`, `.year-band` / `.rewind-cards`, `.rating` / `.scoreboard` / `.milestones`, `.tier-band` / `.pick`). The old `sp-*` vocabulary (`.sp-chapter-gate`, `.sp-spread`, `.sp-pull-break`, `.sp-manifesto`, `.sp-bignum`, `.sp-gallery`, `.sp-diptych`, `.sp-marquee`, `.sp-parallax`, `.sp-wipe`, `.sp-stagger`, `.sp-splash`, `.mast-ticker`, `.sp-format-badge`, signature-moments `.sp-sig-*`, hype `.is-hype`) was retired in v8.21 — those classes are no longer in the CSS bundle and will render unstyled. **HOLIDAY FORMATS ONLY (`countdown`, `field_guide`):** writers read `references/spec/specials.md` § `holiday-identity` for the `.hol-*` component map. Holiday formats retain their motion/identity layer in CSS files `33-` and `36-` through `44-`. Each writer outputs `/tmp/signal-build/chapters/<chapter_id>.html` (chapter-only, no scaffold).
+Read `chapter-plan.json`. For each chapter, spawn an `Agent` with `subagent_type: "general-purpose"` and `model: "sonnet"` (fallback `"haiku"`). In the prompt, pass: the pre-flight.md path, the chapter brief (one chapter object from the plan), the research-bundle.json path, plus the H2 anchor reference for the issue's format inside `references/spec/formats.md`. Writers also read `references/spec/global.md` sections `markup-contracts`, `ground-discipline`, `accent-lockdown`.
 
-- **Parallel mode** (Countdown, Field Guide, Shortlist, Starter Kit, Blueprint, weekly): spawn all writers in one batch — issue every `Agent` call in a single message.
-- **Sequential mode** (Deep Dive, Versus, Rewind, Season Review): spawn writers one at a time. After each chapter completes, the next writer reads its predecessor's output to maintain throughline.
+**WEEKLY FORMAT (`weekly`):** writers MUST read `references/component-contracts.md` § Weekly and `references/sections.md`. Weekly sections use the section-component vocabulary: `.split-60-40` / `.split-40-60`, `.sidebar` / `.sidebar-float` / `.sidebar-title`, `.stat-bar` / `.entry-stat`, `.dyk` / `.dyk-title`, `.also-list` / `.also-cards` / `.also-card`, `.pull-quote`, `.compare-panel`, `.timeline` / `.timeline-node`, `.entry-bullets`, `.entry-quote`, `.entry-question`. The special-edition `.sp-*` vocabulary (`.sp-spread`, `.sp-marginalia`, `.sp-rail`, `.sp-margin`, `.sp-pullquote-huge`, `.sp-brief`, `.sp-brief-kicker`, `.sp-spread-body`, `.sp-dash`, `.sp-chapter-gate`, `.sp-chapter-chrome`, `.sp-pull-break`, `.sp-manifesto`, `.sp-bignum`, `.sp-gallery`, `.sp-diptych`) is **forbidden in weekly issues** — those classes are scoped to `body.is-special` selectors and render unstyled on a standard weekly. **The stitcher gate enforces this — any weekly chapter containing those tokens fails the stitch.** Writers reaching for specials.md by mistake is the bug that broke the 24 May 2026 weekly.
+
+**NON-HOLIDAY SPECIAL FORMATS (`deep_dive`, `versus`, `rewind`, `season_review`, `starter_kit`, `shortlist`, `next`, `lookahead`):** writers MUST read `references/spec/specials.md` § `cover` → "Component list" for the v8.21 editorial system: persistent `.mast` chrome, `.cover` / `.chapter` / `.chapter-body` structure, baseline flair (`.pullquote`, `.marginalia`, `.bignum`, `.sp-ornament`, `.sp-eyebrow`, `.has-dropcap`), figures (`.fig`, `.image-quote`), per-format flair components for the visual formats (`.vs-tape` / `.vs-pair` / `.vs-verdict`, `.year-band` / `.rewind-cards`, `.rating` / `.scoreboard` / `.milestones`, `.tier-band` / `.pick`). The old `sp-*` vocabulary (`.sp-chapter-gate`, `.sp-spread`, `.sp-pull-break`, `.sp-manifesto`, `.sp-bignum`, `.sp-gallery`, `.sp-diptych`, `.sp-marquee`, `.sp-parallax`, `.sp-wipe`, `.sp-stagger`, `.sp-splash`, `.mast-ticker`, `.sp-format-badge`, signature-moments `.sp-sig-*`, hype `.is-hype`) was retired in v8.21 — those classes are no longer in the CSS bundle and will render unstyled. **HOLIDAY FORMATS ONLY (`countdown`, `field_guide`):** writers read `references/spec/specials.md` § `holiday-identity` for the `.hol-*` component map. Holiday formats retain their motion/identity layer in CSS files `33-` and `36-` through `44-`. Each writer outputs `/tmp/signal-build/chapters/<chapter_id>.html` (chapter-only, no scaffold).
+
+**Cover, navigator, foreword, colophon, footer chapters are FULL writer-agent chapters — not orchestrator-written.** Every chapter in the plan, including the front-matter and back-matter, gets a spawned writer Agent with pre-flight + brief + research bundle. The orchestrator does NOT write chapter content inline by hand. If a chapter is templated (scaffold-derived) it goes in `scaffold_parts_used` and the stitcher concatenates it directly; if it's authored content it goes through Phase 5. Don't mix. The 24 May 2026 weekly shipped with orchestrator-written cover/navigator/foreword/colophon/footer because the planner initially listed them as scaffold parts and the orchestrator then wrote them directly — neither path applied pre-flight or compliance gates. Either fully scaffold (template-only with no per-issue prose) or fully writer-agent (with the full Phase 5 → Phase 7 chain).
+
+- **Parallel mode** (Countdown, Field Guide, Shortlist, Starter Kit, Lookahead, weekly): spawn all writers in one batch — issue every `Agent` call in a single message.
+- **Sequential mode** (Deep Dive, Versus, Rewind, Season Review, Next): spawn writers one at a time. After each chapter completes, the next writer reads its predecessor's output to maintain throughline.
 
 **Cost log:** after each writer returns, run `bash scripts/log-call.sh writer <model> <issue_id> <chapter_id> 0 ok`. One call per chapter. See § Cost Logging.
 
@@ -191,10 +229,26 @@ Run `bash scripts/stitch-issue.sh --plan /tmp/signal-build/chapter-plan.json --o
 
 **v8.13.4 fix:** the body-rewrite regex is now anchored to `</head>` (not the first `<body>` in the document). The scaffold `00-head-open.html` contains a documentation comment with an example body tag (`<body class="is-special" data-special="countdown"> (or field-guide).`), and a naive `count=1` regex matches that example FIRST and silently leaves the real `<body>` bare. Anchoring to `</head>` guarantees we rewrite the real DOM tag. If you edit stitch-issue.sh, preserve this anchoring.
 
+**v8.22.5 weekly gate.** Symmetric to the holiday gate: for `weekly` format issues, the stitcher scans chapter bodies for special-edition `.sp-*` vocabulary tokens (`sp-spread`, `sp-marginalia`, `sp-rail`, `sp-margin`, `sp-pullquote-huge`, `sp-brief`, `sp-brief-kicker`, `sp-dash`, `sp-chapter-gate`, `sp-manifesto`, `sp-bignum`, `sp-gallery`, `sp-diptych`) and exits non-zero if any are found. Those classes are scoped to `body.is-special` selectors and render unstyled on a standard weekly. The 24 May 2026 weekly shipped with all of these in its chapter bodies — this gate stops the next one. Action on fail: re-run Phase 5 writers with the weekly-vocabulary brief.
+
+**v8.22.5 `[YEAR]` substitution.** The stitcher now substitutes `[YEAR]` (in addition to `[Date]`, `[DATE RANGE]`, `[N]`) from the issue's pretty date. `01-masthead.html` uses `[YEAR]` in its right-meta tag; previously the literal shipped and got sed-fixed in Phase 9. Now handled in stitch.
+
 **Plan-level multi-venue flag.** If `issue_meta.multi_venue` is `true` in chapter-plan.json, the stitcher additionally stamps `data-multi-venue="true"` on the rewritten body. This activates tier-9 per-venue scoping for Countdown (and is harmless on Field Guide, which uses the `.hol-half--one`/`--two` structure instead). The planner sets this flag for issues with two named venues; do not set it manually.
 
 ### Phase 7 — Per-chapter Gate 1 (during pipeline)
 Each chapter has already self-audited via pre-flight.md. Now grep-scan every chapter HTML for the Gate 1 hard-fail patterns from `references/compliance-checklist.md` (1A reader-profile leaks, 1B fabrication markers, 1C staleness, 1E markup contracts, 1F image-caption integrity). Any failure → enter repair flow.
+
+**Deep Dive only — narrative-voice spot check (v8.22.6).** A Deep Dive's worst failure mode is not a markup violation; it's prose that reads as an academic essay rather than a Sunday-morning narrative. Regex can't detect this; a human-equivalent read can. After the Gate 1 grep, the orchestrator picks **3 random body paragraphs** from non-foreword, non-Argument, non-Keep-Digging chapters (i.e. from the actual narrative chapters) and asks itself, **honestly**:
+
+> "Would I want to read this with coffee on a Sunday morning?"
+
+The pass bar is *would*, not *could*. The orchestrator is checking for the failure modes documented in `references/editorial-spec.md` § Deep Dive → "Editorial voice — narrative-first": performed seriousness, narrative throat-clearing, long-then-terse-then-terser rhetorical pose, noun-stack abstractions, lit-review walls, self-narration of structure, paragraphs over ~150 words, paragraphs whose subject is the chapter itself rather than what the chapter is about.
+
+If any of the three paragraphs honestly fails, the chapter goes to repair (Phase 9) with the editorial-voice section and the three anti-pattern examples pasted into the repair brief. The repaired chapter is re-spot-checked from a fresh 3-paragraph sample.
+
+The check is honor-system at the LLM layer — the orchestrator has to give itself an honest answer rather than rationalising a marginal pass. The negative examples in the spec are the calibration: if a paragraph reads like the Yellow Turban foreword paragraph 2, it fails. If it reads like a magazine telling a story, it passes.
+
+This is the only Phase 7 gate that doesn't have a script — by design. The point is to refuse to ship prose that reads as a paper, and a regex can't measure that.
 
 ### Phase 7.5 — Release-date sanity check (mandatory before publish)
 Run `bash scripts/check-release-dates.sh <stitched-html-path>`. The script extracts every claim of a date or relative-time phrase adjacent to a media name (TV, film, game, book, album), plus any line that mentions a locked-register entry (Andor, Tales of the [Jedi/Empire/Underworld], Skeleton Crew, Acolyte, Maul: Shadow Lord, Mandalorian and Grogu). Output is written to `/tmp/signal-date-claims.txt`.
@@ -339,6 +393,39 @@ If gates STILL fail after auto-repair (or fail in non-image ways — release-dat
 **Why state lives in the repo.** Claude Code on the web runs in an ephemeral container that is reclaimed when the session ends. The repo is the only path that's visible from every session, and it gives you version history of every state change for free.
 
 **The deliverable is the published GitHub Pages URL** + a record of any Phase 9 residual defects, not a perfect issue. The reader receives the URL in the closing summary.
+
+### Operational pitfalls (post-mortem catalog — 24 May 2026)
+
+These all bit a real pipeline run on 24 May 2026. Read this section once before every full pipeline run.
+
+1. **Confirm the model BEFORE Phase 0.** The user expects Opus 4.7 1M-context for the orchestrator. If the harness selects 4.6, context will overflow during Phase 5 (writer fan-out across 16 chapters), a compaction will happen, and live state will be lost. Check the model banner at start; if it's not 4.7, abort and restart with explicit `/model claude-opus-4-7[1m]`.
+
+2. **Don't pass `--verify-network --write-back` to `validate-research-bundle.py` in an egress-blocked environment.** That combo overwrites valid `blocked:egress` verification markers with hard failures and forces a full re-research. The flag pair is only safe in environments where the verifier can actually hit the CDNs. In egress-blocked sandboxes, use `--verify-network` alone (read-only verification) or skip the verifier in that mode entirely.
+
+3. **Front-matter chapters are FULL writer-agent chapters.** Cover, navigator, foreword, colophon, footer go through Phase 5 + Phase 7 like every other chapter. Don't list them in `scaffold_parts_used` and then write them inline in the orchestrator — that path skips pre-flight and the per-chapter gates. If a chapter is templated, it must be 100% template (no per-issue prose); anything authored goes through the spawned-agent path.
+
+4. **`blocked:egress` URLs are research CANDIDATES, not shippable.** In an egress-blocked environment the researcher cannot verify URLs, so it records them as `blocked:egress`. The planner / writer should treat these as "needs verification by CI" — and the pipeline must NOT trust them blindly. Phase 9 auto-repair rotates from the verified pool only; `blocked:egress` URLs that fail in CI should be replaced from the verified bundle in the next round, not shipped as-is. If the verified bundle is thin, defer the publish rather than ship with `blocked:egress` placeholders.
+
+5. **Add new image-source domains to the registry as they appear.** When a writer or researcher uses a domain not in `references/image-source-types.json`, Phase 7.7 advisories will mention it. Add the mapping in the same PR as the issue that introduced the domain — don't kick the can. The 24 May 2026 run added 12 domains (`phil.cdc.gov`, `i.guim.co.uk`, `static.independent.co.uk`, `lumiere-a.akamaihd.net`, etc.) mid-pipeline; build them into the registry so the next run finds them.
+
+6. **Publish via `git push` from `/home/user/the-signal`, NOT via `mcp__github__push_files`.** The MCP push-files tool can't carry payloads larger than ~250KB inline, and any modern Signal issue is 100KB-700KB. The git remote at `/home/user/the-signal` is wired through a local proxy (`127.0.0.1:<port>`) that handles auth transparently. Use the standard `git add / git commit / git push origin main` flow. The MCP tool is for small files (state JSON, index updates) only.
+
+7. **Notify workflow needs to exist BEFORE the publish that should trigger it.** The 22 May 2026 Yellow Turban Deep Dive shipped without notifications because the notify workflow was added 8 hours later. Notify workflow exists now — verify it stays in `main` before any publish.
+
+8. **Pre-cache works via the push-notification path; the user does NOT need to open the PWA.** Two separate SW precache paths exist and they get confused with each other in post-mortems:
+
+   - **`deepPrecacheIssue(url)` — push-triggered, the intended path for new issues.** When the notify workflow fires (on a push to `main` touching `issues/*.html`), it POSTs to `/api/notify`, which sends a push to subscribed devices. The SW's `push` event handler calls `event.waitUntil(deepPrecacheIssue(url))` BEFORE showing the notification — so it fetches the issue HTML + every `/assets/cached/` and `/assets/covers/` image, writes them to ISSUE_CACHE + IMAGE_CACHE, and only then shows the OS notification. By the time the user sees the notification (or even if they don't tap it), the issue is fully offline-ready. **No PWA open required.**
+
+   - **`precacheFromIndex()` — page-open path, secondary.** Fires on SW install and on the `PRECACHE_ALL` message that `index.html` sends on `navigator.serviceWorker.ready`. Crawls `/index.html` dynamically for `<a href="issues/…">` links and pre-fetches anything not already cached. This is the safety net for devices that missed the push (push subscription dropped, app permission revoked, push delivery delayed). No static asset manifest — it's pure runtime discovery.
+
+   **If pre-cache "didn't happen" for a new issue, the failure is at step 1, 2, or 3 of the push chain:**
+   1. Notify workflow didn't fire on the publish push (workflow file missing on `main` at publish time, or path filter didn't match — the workflow is `on: push: paths: ['issues/*.html']`).
+   2. Workflow fired but `/api/notify` returned non-2xx (auth, KV, VAPID config). PR #100 surfaces the response body in workflow logs — check the run output.
+   3. Push delivered to the SW but the SW errored in `deepPrecacheIssue` (e.g. issue URL gave a redirected response — fixed in v119; or an image domain isn't reachable). `/sw-status` on the device shows ISSUE_CACHE contents.
+
+   Verifying after publish: GitHub → Actions → notify-on-publish run for the publish commit (green = step 1+2 OK), then `/sw-status` on the device to confirm step 3 wrote the issue + its images into ISSUE_CACHE + IMAGE_CACHE.
+
+   The 24 May 2026 post-mortem item that said "pre-cache not working — the SW needs a SW update with the new URL in its asset manifest" is incorrect; both paths above are dynamic. The actual cause was the notify workflow's role + this confusion, not a missing manifest.
 
 ### Note on unbreakable enforcement
 
@@ -578,8 +665,8 @@ When the reader asks to tweak styling or structure rather than generate an issue
 | `01-masthead.html` | persistent masthead bar |
 | `02-wax-seal.html` | rotating wax-stamp seal |
 | `03-cover.html` | full-bleed editorial cover |
-| `04-navigator.html` | navigator grid (default) |
-| `04-navigator-toc.html` | navigator grid — TOC-style variant (Enhancement 22F, opt-in) |
+| `04-navigator.html` | navigator grid (default) — **canonical for WEEKLY format**. Card grid with lead-card thumbnail. |
+| `04-navigator-toc.html` | navigator grid — TOC-style variant (Enhancement 22F). **SPECIALS ONLY** (Deep Dive, Field Guide, Versus, Rewind, Season Review, Shortlist, Starter Kit, Next, Lookahead). Per `spec/global.md` § Navigator variants and validated by `validate-issue.py § check_weekly_navigator`: a weekly using this template fails the stitch. |
 | `05-foreword.html` | foreword block |
 | `06-long-shelf.html` | the long shelf |
 | `07-world.html` | the world this week (plus ongoing-story tracker patterns) |

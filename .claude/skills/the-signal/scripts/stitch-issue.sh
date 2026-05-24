@@ -336,9 +336,10 @@ _range_str, _pretty_date = _compute_date_range(_issue_date, _issue_fmt)
 head_open = head_open.replace("[DATE RANGE]", _range_str)
 
 def _substitute_footer_placeholders(text):
-    """Replace [N], [Date], [DATE RANGE] in footer / scaffold parts."""
+    """Replace [N], [Date], [DATE RANGE], [YEAR] in footer / scaffold parts."""
     text = text.replace("[DATE RANGE]", _range_str)
     text = text.replace("[Date]", _pretty_date)
+    text = text.replace("[YEAR]", _pretty_date.split()[-1] if _pretty_date else "")
     if issue_number_str:
         text = text.replace("[N]", issue_number_str)
     return text
@@ -519,6 +520,76 @@ if issue_format_early in HOLIDAY_FORMATS:
         print(f"Issue format is '{issue_format_early}' but no .hol-half element found.")
         print("Every holiday issue must have at least one .hol-half--one (and a")
         print(".hol-half--two + .hol-transit for multi-venue issues).")
+        sys.exit(1)
+
+# ── Weekly-format gate: ban the SPECIAL vocabulary in weekly issues ──
+# Mirror of the holiday gate above, in the other direction. The .sp-*
+# editorial vocabulary (.sp-spread, .sp-marginalia, .sp-pullquote-huge,
+# .sp-rail, .sp-margin, .sp-brief-kicker, .sp-spread-body, .sp-footer*,
+# etc.) is defined only inside `body.is-special:not(holiday)` selectors.
+# On a standard weekly (no .is-special on body) those rules don't match —
+# the elements render unstyled.
+#
+# v8.22.7 hardening (after May 24 2026 rebuild leaked classes through):
+#   - Added sp-footer* (v8.21 special-edition footer; missed in v8.22.5).
+#   - Switched from sp-* token list to "any sp-* class" with a narrow
+#     allowlist of universal/JS-artifact tokens (sp-chapter-beads,
+#     sp-wipe-layer, sp-word, sp-fade). The deny-list approach kept
+#     missing new tokens; the allow-list approach catches them by default.
+#   - Scan target widened from chapter_bodies only to chapter_bodies +
+#     ALL non-scaffold-template substitutions. Anything a writer adds is
+#     in scope. (The scaffold parts themselves are checked against the
+#     allowlist only — they shouldn't contain editorial vocabulary.)
+if issue_format_early in {"", "weekly"}:
+    # Allowlisted sp-* tokens that are LEGITIMATE on weeklies:
+    #   - sp-chapter-beads: universal chapter-progress strip (PR #110 follow-up)
+    #   - sp-wipe-layer: JS-injected empty <span> markers, no visual effect
+    #   - sp-word:        JS-injected per-word spans for stagger reveal
+    #   - sp-fade:        small fade utility class used by motion JS
+    ALLOWED_SP_TOKENS = {
+        'sp-chapter-beads',
+        'sp-wipe-layer',
+        'sp-word',
+        'sp-fade',
+    }
+
+    # Scan target: ALL chapter bodies + the stitcher-controlled middle
+    # parts (everything that isn't head/closing scaffold). Writers can put
+    # sp-* in any of these; only the head/closing templates are skipped
+    # since those are stitcher-owned and known clean.
+    weekly_scan_text = "\n".join(chapter_bodies + middle_parts)
+
+    # Find every sp-* token. Filter out the allowlist.
+    sp_class_re = re.compile(r'class="[^"]*?\b(sp-[a-z][a-z0-9-]*)\b', re.IGNORECASE)
+    found = {}
+    for m in sp_class_re.finditer(weekly_scan_text):
+        tok = m.group(1)
+        if tok in ALLOWED_SP_TOKENS:
+            continue
+        found[tok] = found.get(tok, 0) + 1
+
+    if found:
+        print("")
+        print("═══ WEEKLY-FORMAT GATE FAILED ═══")
+        print("Issue format is 'weekly' but the chapter / scaffold HTML uses the")
+        print("special-edition .sp-* vocabulary. Those classes are scoped to")
+        print("body.is-special selectors and are undefined on weeklies — the")
+        print("elements render unstyled.")
+        print("")
+        print("This is the May 24 2026 bug: writers reached for specials.md by")
+        print("mistake instead of using the weekly section-component vocabulary")
+        print("(.split-60-40, .sidebar, .stat-bar, .dyk, .also-cards, .pull-quote,")
+        print("etc.) and the cascade silently dropped the styling.")
+        print("")
+        print("Disallowed tokens found:")
+        for token, count in sorted(found.items(), key=lambda kv: -kv[1]):
+            print(f"  • {token} — {count} occurrence(s)")
+        print("")
+        print(f"Allowlist (legitimate on weeklies): {sorted(ALLOWED_SP_TOKENS)}")
+        print("")
+        print("Action: re-run Phase 5 writer subagents with explicit weekly-format")
+        print("vocabulary brief — see SKILL.md Phase 5 + references/component-")
+        print("contracts.md § Weekly. The .sp-* vocabulary is for SPECIALS ONLY.")
         sys.exit(1)
 
 # ── Inject CSS — support both placeholder conventions ──

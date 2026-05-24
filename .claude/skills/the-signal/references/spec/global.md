@@ -423,7 +423,7 @@ If a draft exceeds the cap, cut the weakest blocks. Rule of thumb: any stat that
 
 
 ### Issue accent
-Each format maps to a palette variable: countdown → rose, rewind → ember, versus → neon, season-review → turf, field-guide → itinerary-accent, deep-dive → deep, blueprint → longgame, shortlist → shelf-gold, starter-kit → session-accent. `--issue-accent` is set from `[data-special]` selectors and drives splash colour, format badge, D-day badge, and wipe default colour. No neon-lime — The Signal's identity is preserved, just intensified.
+Each format maps to a palette variable. **Non-holiday formats (v8.21 system, see `assets/css/32-special-format-flair.css`):** deep-dive → ember, starter-kit → bone-soft, versus → rose + ember (two-side), rewind → rose, season-review → deep, shortlist → rose, next → rose + ember, lookahead → rose. **Holiday formats retain their legacy `--issue-accent` mapping:** countdown → rose, field-guide → itinerary-accent.
 
 
 ### Chrome positioning ground rules

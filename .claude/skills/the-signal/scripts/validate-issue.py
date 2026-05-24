@@ -482,6 +482,112 @@ def check_image_urls(html: str, timeout: float, workers: int, report: Report, ht
 CLASS_ATTR_RE = re.compile(r'class\s*=\s*"([^"]+)"', re.IGNORECASE)
 
 
+def check_toc_anchors(html: str, report: Report) -> None:
+    """Every <a class="toc-row" href="#X"> must point to a <section id="X">.
+
+    The 24 May 2026 weekly rebuild shipped with three broken TOC links
+    (#foreword / #pixel / #touchline) where the linked anchor didn't
+    exist as a section id in the body — the orchestrator hand-wrote the
+    navigator and picked arbitrary anchor names instead of using the
+    scaffold canon (#tech, #football) or matching an existing id.
+
+    Catches missing-anchor and orphaned-section problems.
+    """
+    toc_hrefs = re.findall(r'<a[^>]+class="toc-row[^"]*"[^>]+href="(#[^"]+)"', html)
+    if not toc_hrefs:
+        return  # No TOC in this issue — nothing to check
+    section_ids = set(re.findall(r'<section[^>]+id="([^"]+)"', html))
+    broken = [h for h in toc_hrefs if h.lstrip('#') not in section_ids]
+    if broken:
+        report.fail(
+            "toc-anchors",
+            "TOC links to anchors that don't exist as section ids: "
+            + ", ".join(sorted(set(broken)))
+            + f" — section ids in body: {sorted(section_ids)}",
+        )
+    else:
+        report.ok("toc-anchors", f"all {len(toc_hrefs)} TOC links resolve to a section id")
+
+
+def check_weekly_navigator(html: str, fmt: str, report: Report) -> None:
+    """Weeklies must use the canonical .nav-card grid (04-navigator.html),
+    NOT the .toc-row variant (04-navigator-toc.html, which is specials-only).
+
+    The toc-row variant is documented in spec/global.md as "for longer, more
+    literary issues — special editions, deep dives, field guides." Weeklies
+    that opt into it get a book-frontmatter visual that doesn't match the
+    rest of the issue.
+
+    The May 17 and May 24 2026 weeklies both shipped with the TOC variant
+    by mistake (the orchestrator hand-wrote the navigator); both were
+    repaired to .nav-card in v8.22.10. This gate stops a recurrence.
+    """
+    if fmt != "weekly":
+        return
+    # Find the nav-section opener
+    m = re.search(r'<section[^>]+class="([^"]*nav-section[^"]*)"', html)
+    if not m:
+        return  # No navigator; nothing to enforce
+    nav_classes = m.group(1).split()
+    if 'toc-style' in nav_classes:
+        report.fail(
+            "weekly-navigator",
+            "weekly issue uses the TOC-style navigator variant "
+            "(class='nav-section toc-style'). The TOC variant is for "
+            "specials only — see references/spec/global.md § Navigator "
+            "variants. Weeklies must use the canonical .nav-card grid from "
+            "04-navigator.html (NOT 04-navigator-toc.html).",
+        )
+        return
+    # Belt-and-braces: any .toc-row markup anywhere fails too
+    if re.search(r'<a[^>]+class="[^"]*\btoc-row\b', html):
+        report.fail(
+            "weekly-navigator",
+            "weekly issue contains .toc-row markup. That's the specials-only "
+            "TOC-style navigator variant. Weeklies must use .nav-card grid.",
+        )
+        return
+    report.ok("weekly-navigator", "uses canonical .nav-card navigator")
+
+
+def check_toc_numerals(html: str, fmt: str, report: Report) -> None:
+    """Standard weeklies use UPPERCASE Roman numerals starting at I in the TOC
+    (e.g. I, II, III, IV, ...). The 24 May 2026 rebuild shipped with lowercase
+    book-frontmatter numerals starting at iii (iii, iv, v, ...), which gave
+    the weekly a "special edition / frontmatter" visual feel rather than the
+    standard weekly look.
+
+    This check runs for weekly format only — specials may legitimately use
+    other conventions per their own spec.
+    """
+    if fmt != "weekly":
+        return
+    numerals = re.findall(r'<div class="toc-roman">([^<]+)</div>', html)
+    if not numerals:
+        return  # No toc-roman in this issue — older nav-card style, skip
+    # Standard weekly convention: uppercase Roman, starting at I
+    UPPER_ROMAN = {
+        'I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX',
+    }
+    not_uppercase = [n for n in numerals if n.strip() not in UPPER_ROMAN]
+    if not_uppercase:
+        report.fail(
+            "toc-numerals",
+            f"weekly TOC uses non-standard numeral style. Found: {numerals[:5]}... "
+            "Standard weekly convention is UPPERCASE Roman starting at I "
+            "(I, II, III, IV, …). Lowercase or book-frontmatter starts (iii, iv, …) "
+            "are a special-edition convention and shouldn't appear in weeklies.",
+        )
+    elif numerals[0].strip() != 'I':
+        report.fail(
+            "toc-numerals",
+            f"weekly TOC numerals don't start at I — first numeral is {numerals[0]!r}. "
+            "Standard weekly convention starts at I (no frontmatter prelim numbering).",
+        )
+    else:
+        report.ok("toc-numerals", f"weekly TOC numerals are uppercase Roman starting at I ({len(numerals)} entries)")
+
+
 def check_css_class_sanity(html: str, report: Report) -> None:
     style_match = re.search(r"<style\b[^>]*>(.*?)</style>", html, re.DOTALL | re.IGNORECASE)
     if not style_match:
@@ -576,6 +682,9 @@ def main(argv: list[str]) -> int:
     check_structure(html, report)
     check_placeholders(html, report)
     check_css_class_sanity(html, report)
+    check_toc_anchors(html, report)
+    check_weekly_navigator(html, fmt, report)
+    check_toc_numerals(html, fmt, report)
 
     # Holiday-only checks
     if fmt in HOLIDAY_FORMATS:

@@ -203,15 +203,44 @@ The anchored section opens with a stat-led or quote-led opener (see below) and r
 
 | Section | Section class | Pattern |
 |---|---|---|
-| Foreword | `sec` (light bg) | Short prose, 50-80 words. Drop-cap on first paragraph. |
-| The Lens | `sec world-section sec-opener` | Prose (150-250 words) explaining the criteria. Optional `.sidebar-float` or `.dyk` with a key principle. Keep it tight — this frames, it doesn't lecture. |
-| The Shortlist — tier headers | (within `sec shelf-section sec-opener`) | Use `<h3>` tier labels: "Top Picks", "Strong Picks", "Wildcards". Styled with `.section-label` or inline accent colour. |
-| The Shortlist — Top Picks (2-3) | (within same section) | `split-60-40`: left = `entry-quote` or `pull-quote` hook + paragraphs + key detail line (price/link); right = `<img>` + `.sidebar` with stats. One pick gets a "Top Pick" badge (use `.entry-stat` with star icon). Separate picks with `.dyk`, `.breather`, `.stat-bar` |
-| The Shortlist — Strong Picks (2-3) | (within same section) | `dual-col` or sequential `.split-60-40` with smaller sidebars. Still opinionated, still has stats, just less space per pick. Image optional. |
-| The Shortlist — Wildcards (1-2) | (within same section) | `split-60-40` or `split-40-60` (reversed for visual variety). Each needs a "Why this is here" callout — use `.dyk` or `.entry-question` component. |
-| Also Worth Knowing | `sec session-section` | `.also-cards` grid with 4-8 `.also-card` items. Each card: name, 1-2 sentences, key stats line. This correctly uses the multi-item 2-col grid. |
-| The Cheat Sheet | `sec history-section sec-opener` | HTML `<table>` with `.compare-table` class, or a `.compact-grid`. All picks (main 7 + Also Worth Knowing) with key attributes as columns. Topic-dependent columns. Designed as a reference card. |
-| Meanwhile | `sec world-section` | See universal pattern above |
+| Foreword | `chapter` | Short prose, 50-80 words. Drop-cap on first paragraph. |
+| The Lens | `chapter` | `.lens` framed block — `.lens-eyebrow` ("The Lens") + `.lens-statement` italic + numbered `.lens-criteria` list. Followed by optional prose for context. |
+| Top Picks | `chapter` | `.tier-band` with `data-tier` absent (defaults to top / rose) + `.tb-mark` ✦ + `.tb-label` "Top Picks". Each pick uses `.pick` alternating image/body layout + `.pick-tag` pill |
+| Strong Picks | `chapter` | `.tier-band data-tier="strong"` (ember) + `.pick` items |
+| Wildcards | `chapter` | `.tier-band data-tier="wildcard"` (teal) + `.pick` items |
+| Also Worth Knowing | `chapter` | Horizon list (3-5 items) — `.also-cards` grid |
+| The Cheat Sheet | `chapter` | `.cheat-sheet` table — see contract below |
+| Meanwhile | `chapter` | See universal pattern above |
+
+### The Lens contract
+
+```html
+<div class="lens">
+  <div class="lens-eyebrow">The Lens</div>
+  <p class="lens-statement">Picked for [the criteria, in one sentence]. Excluded anything that [counter-criterion, in another sentence].</p>
+  <ol class="lens-criteria">
+    <li>What we looked for, point 1.</li>
+    <li>What we looked for, point 2.</li>
+    <li>What disqualified candidates we considered.</li>
+  </ol>
+</div>
+```
+
+### The Cheat Sheet contract
+
+```html
+<table class="cheat-sheet">
+  <thead><tr><th>#</th><th>Pick</th><th>Tier</th><th>Why</th></tr></thead>
+  <tbody>
+    <tr data-tier="top">     <td>1</td><td>Pick name</td><td>Top Pick</td>   <td>One-line why.</td></tr>
+    <tr data-tier="top">     <td>2</td><td>Pick name</td><td>Top Pick</td>   <td>One-line why.</td></tr>
+    <tr data-tier="strong">  <td>3</td><td>Pick name</td><td>Strong Pick</td><td>One-line why.</td></tr>
+    <tr data-tier="wildcard"><td>4</td><td>Pick name</td><td>Wildcard</td>   <td>One-line why.</td></tr>
+  </tbody>
+</table>
+```
+
+`data-tier` accepts `top | strong | wildcard` — paints the tier-cell colour + the leading-rail under the rank number.
 
 ## The Aside (All Formats)
 
@@ -233,10 +262,44 @@ The Aside is a standalone mini-section placed between full sections for pacing. 
 
 | Section | Section class | Pattern |
 |---|---|---|
-| Foreword | `sec` (light bg) | Short prose, 50-80 words |
-| Reading Paths | `sec session-section` | Three `.col-card` items in a `.dual-col` or standalone list: 2-min / 10-min / 30-min paths |
-| Main Story | `sec world-section sec-opener` | Long-form prose broken up with `split-60-40` (images + sidebars), `entry-stat`, `pull-quote`, `dyk`, `timeline`, `stat-bar`, `compare-panel`. Multiple sub-sections with `<h3>` headers |
-| Meanwhile | `sec world-section` | See universal pattern above |
+| Foreword | `chapter` | Short prose, 50-80 words |
+| The Argument | `chapter` | `.argument` framed block — `.argument-eyebrow` ("The magazine's take") + `.argument-thesis` (large italic serif, the thesis) + `.argument-stance` (paragraph) |
+| Main Story | `chapter` (×N) | Long-form prose. Body components: `.pullquote`, `.marginalia`, `.bignum`, `.bignum-row`, `figure.fig`, `figure.image-quote`, `.sp-ornament`, `.sp-kicker` |
+| Keep Digging | `chapter` | `.keep-digging` cross-media grid of `.kd-item` cards |
+| Meanwhile | `chapter` | See universal pattern above (only if the Deep Dive is replacing the standard weekly) |
+
+### The Argument contract
+
+```html
+<div class="argument">
+  <div class="argument-eyebrow">The magazine's take</div>
+  <p class="argument-thesis">This issue reads the Yellow Turban Revolt as the first plague-religion convergence in Chinese history, not the peasant uprising it usually gets framed as.</p>
+  <p class="argument-stance">Stance paragraph (~80-150 words) explaining what that frame buys, what it costs, and how the rest of the issue works around it. No hedging — the editor commits.</p>
+</div>
+```
+
+### Keep Digging contract
+
+Cross-media closing chapter. **Lean non-print** — aim for 5-9 items with at least 4 across `podcast / tv / film / game / video`. Books are allowed but should never dominate.
+
+```html
+<div class="keep-digging">
+  <article class="kd-item" data-medium="podcast">
+    <span class="kd-medium">Podcast</span>
+    <h4 class="kd-title">The History of China Podcast</h4>
+    <span class="kd-episode">Episode 49 — "The Yellow Turbans"</span>
+    <p class="kd-why">Chris Stewart's hour-long narrative covers Zhang Jue's rise and the rebellion's collapse in a single sitting — the cleanest audio overview that doesn't bury the religious dimension.</p>
+  </article>
+  <article class="kd-item" data-medium="film">
+    <span class="kd-medium">Film</span>
+    <h4 class="kd-title">Red Cliff (2008)</h4>
+    <p class="kd-why">John Woo's two-part epic on the war that finished off the Han — the direct sequel to the Yellow Turban story.</p>
+  </article>
+  <!-- … -->
+</div>
+```
+
+`data-medium` accepts `podcast | tv | film | game | video | book`. **Podcasts must always carry a `<span class="kd-episode">` line naming the specific episode** — series-only references are forbidden. The same rule applies to TV where only a couple of episodes touch the topic. Every item must be real and verifiable; the researcher surfaces these in Phase 3 with URLs.
 
 ## The Countdown
 
@@ -254,12 +317,68 @@ The Aside is a standalone mini-section placed between full sections for pacing. 
 
 | Section | Section class | Pattern |
 |---|---|---|
-| Foreword | `sec` (light bg) | Short prose |
-| Full Narrative | `sec world-section sec-opener` | Long-form with `split-60-40`, `pull-quote`, `entry-stat`, `timeline` for key moments |
-| Data & Stats | `sec` (light bg) | `.stat-bar`, `big-number-row`, tables, `.compact-grid` |
-| Ratings | `sec shelf-section sec-opener` | `.also-cards` with rating dots per item, `compare-panel` for highs vs lows |
-| What's Next | `sec session-section` | Prose + `.sidebar` |
-| Meanwhile | `sec world-section` | See universal pattern above |
+| Foreword | `chapter` | Short prose |
+| Full Narrative | `chapter` (×N) | Long-form prose. Body components: `.pullquote`, `.marginalia`, `figure.fig`, `.bignum-row` for headline counts |
+| The Scorecards | `chapter` | `.scorecards` grid of `.scorecard[data-tier]` cards — see contract below |
+| What's Next | `chapter` | Single-chapter forward look, 400-600 words, no scorecards |
+| Meanwhile | `chapter` | See universal pattern above |
+
+### Scorecard contract
+
+```html
+<div class="scorecards">
+  <article class="scorecard" data-tier="hot">
+    <div class="sc-head">
+      <h4 class="sc-name">Lautaro Martínez</h4>
+      <div class="sc-score">8.4</div>
+    </div>
+    <div class="sc-bar" style="--score: 84"></div>
+    <p class="sc-verdict">Best season since he signed; deserved the Scudetto MVP.</p>
+  </article>
+  <article class="scorecard" data-tier="warm">…</article>
+  <article class="scorecard" data-tier="cold">…</article>
+</div>
+```
+
+`data-tier` accepts `hot | warm | cold` — paints the top-border colour, the `.sc-score` colour, and the `.sc-bar` gradient. `--score` is `0-100`; the bar fills that percentage. Aim for 8-12 scorecards per Season Review.
+
+## The Starter Kit
+
+| Section | Section class | Pattern |
+|---|---|---|
+| Foreword | `chapter` | Short prose |
+| Why This Matters | `chapter` | Prose, 200-300 words |
+| The Essentials | `chapter` | `.essentials` ordered list with numbered ring badges (5-7 items) |
+| Common Mistakes | `chapter` | Prose with `.pullquote` and `.marginalia` for callouts |
+| The One-Week Plan | `chapter` | `.week-plan` vertical timeline — see contract below |
+| Where to Go Deeper | `chapter` | Brief horizon list (3-5 items) |
+| Meanwhile | `chapter` | See universal pattern above |
+
+### The One-Week Plan contract
+
+The killer feature. Seven `.wp-day` items in an ordered list, day-badged on the left, instruction body on the right. Each day must commit to a specific action — vague "experiment with what you've learned" entries are forbidden.
+
+```html
+<ol class="week-plan">
+  <li class="wp-day">
+    <div class="wp-day-mark">
+      <span class="wp-day-num">Day 1</span>
+      <span class="wp-day-name">Mon</span>
+    </div>
+    <div class="wp-day-body">
+      <h4 class="wp-day-title">Listen to Wolf 359, episodes 1–4</h4>
+      <p>Why this entry point: episode 4 is the first one that gives the world room to breathe; the first three are scene-setting.</p>
+    </div>
+  </li>
+  <li class="wp-day">
+    <div class="wp-day-mark"><span class="wp-day-num">Day 2</span><span class="wp-day-name">Tue</span></div>
+    <div class="wp-day-body"><h4 class="wp-day-title">Pause; reflect</h4><p>If Wolf 359 didn't grab you by episode 4, jump to Day 3 — try The Magnus Archives instead.</p></div>
+  </li>
+  <!-- … through Day 7 -->
+</ol>
+```
+
+## The Rewind
 
 ## The Versus
 
@@ -276,28 +395,116 @@ The Aside is a standalone mini-section placed between full sections for pacing. 
 
 | Section | Section class | Pattern |
 |---|---|---|
-| Foreword | `sec` (light bg) | Short prose |
-| The Period in Numbers | `sec world-section sec-opener` | `.stat-bar`, `big-number-row`, multiple `entry-stat` |
-| Highs | `sec shelf-section sec-opener` | `.also-cards` for items, rating dots, `pull-quote` |
-| Lows | `sec world-section` | `.also-cards`, `entry-quote` |
-| What We Missed | `sec session-section` | `.timeline` or `.also-cards` |
-| What Stuck | `sec history-section sec-opener` | `split-60-40`, `pull-quote` |
-| Picks of the Period | `sec shelf-section sec-opener` | `.also-cards` with rating dots |
-| Meanwhile | `sec world-section` | See universal pattern above |
+| Foreword | `chapter` | Short prose |
+| The Period in Numbers | `chapter` | `.bignum-row`, `.year-band` 12-month rail with high/low markers |
+| The Throughline | `chapter` | `.chapter-head.is-throughline` with `.throughline-mark` eyebrow + italic curly-quoted title — see contract below. The chapter that names what the period was about. |
+| Highs | `chapter` | `.rewind-cards` grid of `.rewind-card` items |
+| Lows | `chapter` | `.rewind-cards` grid with `.is-low` modifier on cards |
+| What We Missed | `chapter` | Prose with `.pullquote` and `.marginalia` |
+| The Memory Test | `chapter` | `.memory-test` 3-column grid (`.mt-col.mt-stick` / `.mt-might` / `.mt-fade`) — Rewind's second killer feature |
+| Picks of the Period | `chapter` | `.rewind-cards` grid |
+| Meanwhile | `chapter` | See universal pattern above |
 
-## The Blueprint
+### The Throughline contract
+
+```html
+<section class="chapter">
+  <header class="chapter-head is-throughline">
+    <div class="throughline-mark">The Throughline</div>
+    <h2 class="chapter-title">A year of new launches</h2>
+  </header>
+  <div class="chapter-body">
+    <p>The chapter that names what this period was actually about…</p>
+  </div>
+</section>
+```
+
+`is-throughline` on the chapter-head hides the chapter-numeral and italicises the chapter title with curly quotes painted in accent. The `.throughline-mark` eyebrow sits above the title with rule marks either side of it. Use on exactly one chapter per Rewind.
+
+## The Next
 
 | Section | Section class | Pattern |
 |---|---|---|
 | Foreword | `sec` (light bg) | Short prose |
-| The Goal | `sec world-section sec-opener` | `entry-stat` for target, `split-60-40` with `.sidebar` |
-| Current State | `sec session-section` | Prose + `.sidebar` or `.compare-panel` (current vs target) |
-| Decision Points | `sec world-section` | `.compare-panel` for each decision (Option A vs Option B), repeated. This is the core section |
-| Phased Plan | `sec session-section` | `.timeline` > `.timeline-node` per phase |
-| Tools & Resources | `sec history-section sec-opener` | `.also-cards` grid |
-| Risks & Pitfalls | `sec world-section` | `.timeline` with risk items |
-| First Steps This Week | `sec session-section` | `.timeline` or numbered prose |
-| Meanwhile | `sec world-section` | See universal pattern above |
+| The Itch | `chapter` | Prose — names exactly what made the original work for this reader. Single anchor for every pick that follows |
+| The Closest Next Step | `chapter` | `<div class="next-tier" data-step="I">Closest Next Step</div>` + pick prose + `.on-ramp` block |
+| One Step Sideways | `chapter` | `<div class="next-tier" data-step="II">One Step Sideways</div>` + pick prose + `.on-ramp` block |
+| The Wildcard | `chapter` | `<div class="next-tier is-wildcard" data-step="III">The Wildcard</div>` + pick prose + `.on-ramp` block |
+| If You Only Try One | `chapter` | `.only-one` dark slab with star seal — single pick, no hedging, ~200-300 words |
+| Where to Go After That | `chapter` | Brief horizon list (3-5 items), no on-ramp required |
+| Meanwhile | `chapter` | See universal pattern above |
+
+### On-Ramp markup contract
+
+Every pick in Next includes one `.on-ramp` block. The block renders as a stepped track with three glyphed nodes (▶ Start / ⏸ Reassess / → Then) connected by a vertical accent line. Each row must carry `data-step="start|reassess|then"` so the correct glyph paints.
+
+```html
+<div class="on-ramp">
+  <div class="on-ramp-row" data-step="start">
+    <span class="on-ramp-label">Start with</span>
+    <span class="on-ramp-body">Episode 4 — the first one that lets the world breathe.</span>
+  </div>
+  <div class="on-ramp-row" data-step="reassess">
+    <span class="on-ramp-label">Reassess at</span>
+    <span class="on-ramp-body">End of the first arc, ~episode 6.</span>
+  </div>
+  <div class="on-ramp-row" data-step="then">
+    <span class="on-ramp-label">Then</span>
+    <span class="on-ramp-body">If it landed, head to season 2.</span>
+  </div>
+</div>
+```
+
+## The Lookahead
+
+| Section | Section class | Pattern |
+|---|---|---|
+| Foreword | `sec` (light bg) | Short prose framing the window |
+| The Window in Numbers | `chapter` | `.bignum-row` — total events / don't-miss count / worth-a-look count / skip count |
+| The Calendar | `chapter` | `.calendar` `<ol>` of `.cal-row` entries with `data-verdict`; optional `<li class="cal-week">` dividers between weeks |
+| The Crunch Weeks | `chapter` | One `.crunch-week` callout per dense week — warning chip + `.crunch-list` `<dl>` with tier-coloured Prioritise / Defer / Skip badges |
+| What Else Is Brewing | `chapter` | Brief horizon items without firm dates — `.also-list` style |
+| Meanwhile | `chapter` | See universal pattern above |
+
+### Calendar row contract
+
+```html
+<ol class="calendar">
+  <li class="cal-week">Week of 14 Jun</li>
+  <li class="cal-row" data-verdict="hot">
+    <div class="cal-when">
+      <span class="cal-date">14 Jun</span>
+      <span class="cal-where">Football · PL</span>
+    </div>
+    <div class="cal-body">
+      <h4>Arsenal vs Manchester City — title race decider</h4>
+      <p>Two games left, two points apart. This is the one.</p>
+    </div>
+    <div class="cal-verdict">
+      <span class="cal-verdict-chip">Don't miss</span>
+      <span class="cal-reason">Title decider on the second-to-last weekend.</span>
+    </div>
+  </li>
+</ol>
+```
+
+`data-verdict` must be one of `hot` / `warm` / `wait` / `skip` — the chip glyph (★ / ◉ / ⏱ / ✕), the row's left rail colour, and the row's background tint all paint from this attribute.
+
+### Crunch Week contract
+
+```html
+<aside class="crunch-week">
+  <div class="crunch-header">
+    <span class="crunch-label">Crunch week</span>
+    <h4 class="crunch-when">Week of 14 Jun</h4>
+  </div>
+  <dl class="crunch-list">
+    <dt data-tier="hot">Prioritise</dt><dd>Title decider — can't be re-experienced.</dd>
+    <dt data-tier="wait">Defer</dt><dd>Canadian GP — strong race, no championship stakes.</dd>
+    <dt data-tier="skip">Skip</dt><dd>The Long Walk — sits in "wait for reviews".</dd>
+  </dl>
+</aside>
+```
 
 ## The Field Guide
 

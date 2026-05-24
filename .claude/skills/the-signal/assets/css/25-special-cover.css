@@ -141,16 +141,38 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
   color: var(--ink-on-dark-mu);
 }
 
-/* Foot row: gentle scroll cue */
+/* Foot row: three items spread across the width — issue meta on left,
+   scroll cue centered, tagline on right. Matches the Yellow Turban
+   cover pattern. A single child stays centered. */
 body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .cover-foot {
-  display: flex;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 1.5rem;
   font-family: var(--mono);
   font-size: 0.72rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--ink-on-dark-mu);
 }
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .cover-foot > :first-child  { justify-self: start;  text-align: left;  }
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .cover-foot > :nth-child(2) { justify-self: center; text-align: center; }
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .cover-foot > :last-child   { justify-self: end;    text-align: right; }
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .cover-foot > :only-child   { grid-column: 1 / -1; justify-self: center; text-align: center; }
+
+@media (max-width: 640px) {
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .cover-foot {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    text-align: center;
+  }
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .cover-foot > :first-child,
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .cover-foot > :last-child {
+    justify-self: center;
+    text-align: center;
+  }
+}
+
 body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .cover-scroll::after {
   content: ' \2193';
   font-family: var(--serif);

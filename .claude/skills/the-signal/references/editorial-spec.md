@@ -333,8 +333,82 @@ Use 10-14 different types per standard issue. No two consecutive sections should
 ### Standard Weekly (default)
 The full Sunday edition. **6,000-8,000 words, 20-30 pages.** Section order as listed above.
 
+### Visual-density floor (every non-holiday special, v8.22.4)
+
+The audio drama Starter Kit (April 2026), the Ibex Method Versus (April 2026), and the Switch 2 solo games Shortlist (April 2026) set the visual-density floor. New issues at v8.21+ must hit or exceed it. Bare-prose chapters with only the killer-feature component fall through the floor.
+
+**Per-pick chapter (Shortlist Top/Strong picks, Starter Kit Essentials when written as detailed picks, Next picks, Versus rounds) — required per pick:**
+1. At least one image (`figure.fig` floated half-width, `figure.fig.is-wide`, or `figure.image-quote` for visual rhythm).
+2. One `.pick-stats` info block (mono-caps `<dl>`) OR one `.marginalia` chip — practical detail in a structured form, not buried in prose.
+3. Three-or-more-paragraph writeup. One-paragraph "this is good" picks are a fail.
+4. One of: `.pullquote` between picks, `.bignum-row` of headline stats for the chapter, or a `figure.image-quote` opening the chapter — to break the rhythm.
+5. A `.source-strip` at the chapter close listing 2+ sources used in the writeup.
+
+**Per non-pick chapter (Foreword, The Argument, Throughline, Common Mistakes, prose chapters in Deep Dive) — required:**
+1. At least one image OR one `.pullquote` (visual rhythm, not just prose).
+2. One `.marginalia` chip OR `.bignum`/`.bignum-row` (practical detail).
+3. `.has-dropcap` on first paragraph for chapter openers.
+
+**Multi-item bridging chapters (Also Worth Knowing, Where to Go After That, Shows Just Outside, Related Reading) — required:**
+- `.also-cards` grid with 4-8 items. Each card carries an `.ac-meta` category line + `<h4>` + italic `<p>` + source link.
+
+**Why the floor exists:** the v8.21 editorial baseline is less loud than the pre-v8.21 chrome, but visual VOLUME is meant to be comparable. The writers must reach for figures, stats, marginalia, pull-quotes, source strips, and `.also-cards` actively — not write prose-only chapters and assume the chrome will carry the issue. Gate-1 checks should warn when a non-foreword chapter has fewer than 3 visual components.
+
+---
+
 ### Deep Dive
-Single-topic deep exploration. **8,000-12,000 words default; flex to 18,000-20,000 for inherently large topics.** Manual trigger ("Run a Deep Dive on [topic]") or quarterly auto-trigger from the backlog. Cover → Foreword → Reading paths (2/10/30 min) → Full story → On the Radar → Footer. Use 10-14 component types. Best for: a single subject that deserves 10x the space it would get in the weekly.
+Single-topic deep exploration. **8,000-12,000 words default; flex to 18,000-20,000 for inherently large topics.** Manual trigger ("Run a Deep Dive on [topic]") or quarterly auto-trigger from the backlog. Canonical chapter order: Cover → Foreword → The Argument → Full story → Keep Digging → Footer. Use 10-14 component types. Best for: a single subject that deserves 10x the space it would get in the weekly.
+
+#### Editorial voice — narrative-first (the single most important Deep Dive rule)
+
+**A Deep Dive is a STORY about a topic, not an ESSAY about it.**
+
+The narrator is a magazine editor with a coffee, not a graduate student with a deadline. The reader is on a sofa, not in a seminar. Every paragraph asks "what happens next?" not "what frame are we in?"
+
+The Deep Dive is the longest format in The Signal — the room to really tell something. Use the room for *the telling*. Not for the literature review. Not for the methodology. Not for self-narration of the issue's structure. Not for performed seriousness.
+
+**Four concrete principles. Apply them in this priority order; #1 dominates the rest.**
+
+1. **Scenes before summaries.** Open every chapter with a moment, a person, a place. Never with a thesis sentence about what the chapter will prove. A reader who walks into a scene will follow you anywhere; a reader who walks into a thesis statement is already deciding whether to bounce. *Wrong:* "The structural template — religious millenarian uprising by a peasantry ground down by landlord concentration — recurs in Chinese history at intervals…" *Right:* "In 184 CE, a healer in Hebei sent his lieutenants into thirty-six cities at once."
+
+2. **People before concepts.** The protagonist of a paragraph is a person doing a thing — Zhang Jue distributing talismans, a court official taking a bribe, a peasant burying a child. Abstractions (millenarianism, institutional collapse, agrarian crisis) name themselves only after the reader has seen what they look like. *Wrong:* "What collapsed was not a dynasty confronted by rebels, but a dynasty that had already hollowed itself out through partisan prohibitions, the sale of offices, and the dominance of the Ten Attendants." *Right:* show one bribed office, one banned scholar, one eunuch making a decision the emperor was supposed to make. Then say the word "hollowed."
+
+3. **Sources serve the story, not the other way around.** Cite a scholar when you're drawing on a specific argument they made and that argument is helping the reader understand what's in front of them. Never as a survey-of-the-literature gesture. "Howard S. Levy's 1956 article in the Journal of the American Oriental Society and Barbara Hendrischke's 2006 translation of the Taiping Jing" almost never belongs in body prose; it belongs in a marginalia chip, the colophon, or a Keep Digging item.
+
+4. **The Argument is the editor's TAKE, not a survey of competing frames.** The Deep Dive commits to one reading. Other frames come up in the body when they actually help the reader, not as a respectful tour to demonstrate the writer has done their homework. The no-hedge rule under "The killer feature — The Argument" below is the structural expression of this.
+
+**One structural backstop:** no paragraph over ~150 words. A reader hitting a 200-word wall bounces. Long paragraphs are usually a symptom of one of the four violations above — a literature-review dump, a multi-frame survey, a self-narration of structure — and shortening them mechanically is treating the symptom. Fix the cause; the length follows.
+
+**Anti-patterns — direct from the Yellow Turban Deep Dive (May 2026).** These are real paragraphs that shipped and made the issue harder to read. Use them as negative examples in writer briefs.
+
+> ❌ **Performed seriousness / lit-review wall (216 words, foreword paragraph 2):** "Three serious interpretive frames have organised scholarly debate across the past seventy years. The first is religious-millenarian: the position associated with Howard S. Levy's foundational 1956 article in the Journal of the American Oriental Society and extended by Barbara Hendrischke's 2006 translation of the Taiping Jing — that the movement was primarily a religious sect with a coherent doctrinal vision of cosmic renewal, and that the uprising was less a peasant revolt than a millenarian community driven to armed self-defence. The second is the peasant uprising frame, the 農民起義 (nóngmín qǐyì) of PRC historiography from Fan Wenlan onward… The third frame belongs to Rafe de Crespigny… The full story will hold all three frames in parallel, and resist the temptation to declare a winner."
+>
+> Why it fails: every fault at once. Lit-review dump, source name-checking, four-word abstractions ("epiphenomenal"), no scene, no person, ends on a hedge that explicitly refuses to commit. The cover hooked the reader with a healer and a slogan; this paragraph throws both away.
+
+> ❌ **Narrative throat-clearing / structure narration (90 words):** "Before anyone tied yellow cloth around a head, before a healer from Julu Commandery had distributed a single talisman to the sick, the Eastern Han dynasty was already engaged in the work of its own destruction. The foreword named this the institutional collapse frame — the third of its three interpretive lenses, sitting alongside the religious-millenarian and peasant-uprising readings. It is where this part of the story begins: not with Zhang Jue, not with a cosmological proclamation, but with the court itself, and with the decades of systemic dysfunction that created the conditions everything else required."
+>
+> Why it fails: the entire paragraph is *about* what the next paragraph will say. Three sentences of orientation: the first is OK as a hook but doesn't deliver a scene; the second is meta-commentary referencing the foreword; the third tells the reader what's NOT in the chapter before telling them what IS. **Cut the whole paragraph and start with the next one.**
+
+> ❌ **Long fact-dense setup + short epigram + sharper epigram (rhythmic pose):** "The Eastern Han dynasty (25–220 CE) rebuilt the imperial apparatus after Wang Mang's short-lived Xin interregnum on a three-tier structure: emperor at the apex; a Confucian bureaucracy of scholar-officials staffing the outer government below him; and threading between them, the palace eunuchs who managed the emperor's physical world and controlled access to his person. In the earlier decades the balance held. By the mid-second century it had become a mechanism for manufacturing dysfunction."
+>
+> Why it fails: the long-then-terse-then-terser rhythm is a rhetorical pose that works once. Used as a recurring beat across an issue it becomes mannered and tiring. Also: "a mechanism for manufacturing dysfunction" is a noun-stack that sounds clever in isolation but gives the reader no image. *What* mechanism, *how* did it manufacture dysfunction? Tell, don't pose.
+
+**The Deep Dive writer's prompt should include this whole section verbatim**, with the negative examples called out as "your chapter will be rejected if it reads like any of these." Combined with the Argument's no-hedge rule, this is the editorial spine of the format.
+
+#### The killer feature — The Argument
+A short chapter (200-400 words) sitting between the Foreword and the body, naming the magazine's *interpretive frame* for the topic. Not neutral like Wikipedia, not personal like an essay — the editor's stated take, owned up front. "This issue reads the Yellow Turban Revolt as the first plague-religion convergence in Chinese history, not the peasant uprising it usually gets framed as." Three parts: an eyebrow ("The magazine's take"), a one-or-two-sentence thesis in larger italic serif, and a short paragraph explaining the stance and what it means for how the issue reads. The rest of the issue arranges itself around the argument — chapters can support it, complicate it, or push against it, but no chapter is neutral about it. **No-hedge rule:** an Argument that says "this could be read several ways" is a fail. The editor commits to a frame; the prose earns it.
+
+  The Argument replaces the old "Reading paths (2/10/30 min)" chapter, which sat in the spec but was never written into actual issues — the writers ignored it because offering a 10-minute cliff-notes cut of a piece the reader specifically asked for at full depth contradicted the request. If a reader wants depth, give them depth; if they want a skim, the weekly already exists.
+
+**The second killer feature — Keep Digging.** A closing chapter (before Footer) that points the reader at cross-media extensions of the topic — **specifically away from the page**. Different from a "Further Reading" list because the magazine isn't a bibliography; the move is "this topic has lived in other media too, here's where." Each item gets a typed pill (podcast / tv / film / game / video / book), the title, and a single-line "why it's here" anchored to the issue's argument — *not* a generic review summary, but a pointer-back to the magazine's frame.
+
+  **Source-discipline rules:**
+  1. **Podcasts must be specific episodes**, not series. "The Chinese History Podcast" is a fail. "The Chinese History Podcast — Episode 142, *Zhang Jue and the Way of Great Peace*" is the standard. The researcher must surface the episode title, episode number where applicable, and the specific reason that episode (not the show in general) earns the slot.
+  2. **Same rule applies to TV** — if a series only addresses the topic in two specific episodes, name those two episodes, not the series.
+  3. **Lean cross-media, not bibliographic.** Aim for **5-9 items, at least 4 of them non-print** (podcast episode, TV, film, game, video documentary). Books are allowed but should never dominate — readers already know how to find a book on a topic. The Keep Digging chapter's value comes from the items they *wouldn't* have found by searching the topic on Amazon.
+  4. **Every item must be real and verifiable.** No invented podcast episodes, no plausible-but-fictional documentaries. The researcher surfaces these in Phase 3 with URLs the writer can cite. An item the researcher couldn't verify does not appear.
+
+  Reads as the magazine respecting the reader as someone who might want to keep going, not as a librarian handing out a syllabus.
 
 **Word-count flex rule.** The 8-12k band is the default. For inherently scope-rich topics (the Napoleonic Wars, the 2008 financial crisis, a century of computing) the chapter plan may declare `expanded_scope: true` with explicit rationale, raising the ceiling to 18-20k. Stripping the ceiling entirely is not allowed — open-ended budgets invite bloat. **Chapter-length floor:** if the average chapter would drop below 1,000 words to fit the budget, expand the budget rather than pad. Vague topics never qualify for the flex — vagueness is fixed by sharpening the scope at planner stage, not by writing more words. A vague topic at 18k is twice the disappointment of a vague topic at 8k.
 
@@ -427,9 +501,12 @@ The layer is purely additive: removing `data-multi-venue="true"` strips all them
 - **Sources, in order of preference, but cast a wide net.** Start with Wikimedia, official press kits, and credited Flickr — theme parks and resort groups (Efteling/Libema/Disney/Universal/Center Parcs/etc.) maintain extensive press image libraries that are free to use editorially with credit. **Then go beyond the official channels.** Well-shot traveller photography from travel blogs, Reddit photo threads (r/Efteling, r/themeparks, r/solotravel etc.), Flickr's wider pool, Instagram posts with clear credit, and forum trip reports are all in scope — they often capture detail (queue energy, food on a real plate, a room actually lived in) that press kits never will. The bar is quality and credit, not source pedigree: only use images that are sharp, well-composed, and large enough to render at the layout's native size; always credit the photographer/blog/handle + licence or permission basis. **Never AI-generated, never uncredited stock filler.**
 
 ### The Season Review
-End-of-season retrospective. **7,000-10,000 words, 22-35 pages.** Manual trigger: "Run a Season Review for [subject]." Cover → Foreword → Full narrative → Data/stats → Ratings → What's next → Long Shelf → Footer.
+End-of-season retrospective. **7,000-10,000 words, 22-35 pages.** Manual trigger: "Run a Season Review for [subject]." Cover → Foreword → Full narrative → Data/stats → The Scorecards → What's Next → Long Shelf → Footer.
 - **Only for things that have concluded.** A Serie A season, a completed book series, a console generation, a TV show that just wrapped, a year of training. If it's still ongoing, use a Deep Dive instead.
-- Ratings are mandatory — score the highs and lows. "What's next" looks forward from the ending.
+
+**The killer feature — The Scorecards.** Ratings are mandatory and they must be specific. Each subject (player, episode, album, character, training block, whatever the season was about) gets a `.scorecard` card: name + final rating in serif accent at the top, a `.sc-bar` with `--score: N` underneath, and an italic one-line `.sc-verdict` at the bottom. The card carries `data-tier="hot|warm|cold"` so the top-border colour and the score colour reflect tier at a glance — a wall of mostly-rose scorecards reads "great season" before any prose is read; a wall of mostly-grey reads "rough year." **Hedge-free verdicts.** "Best season since he signed" is the standard; "had his moments" is not. Aim for 8-12 scorecards in the chapter — enough to give the season a real shape, not so many that the wall becomes wallpaper.
+
+- "What's Next" looks forward from the ending — single chapter, 400-600 words, no Scorecards (those belong to the season that just ended, not the one coming).
 
 ### The Versus
 Head-to-head comparison. **5,000-7,000 words, 18-25 pages.** Manual trigger: "Run a Versus — [A] vs [B]." Default chapter shape: Cover → Foreword → Tale of the Tape (stat bars, compare panels) → The Case for A → The Case for B → The Verdict → Related Reading → Footer.
@@ -462,37 +539,88 @@ When the Versus is comparing two holidays — two parks, two resorts, two cities
   2. **"What the price gap buys" — specific and sourced.** Where one option is more expensive, the issue must surface concretely *what* you're paying extra for. "Park A's equivalent lodge runs roughly £X more across a week. What that buys, per the sources: heated pool inside the unit, walk to the spa, golf included, two extra restaurants on-site." Not "Park A is more premium." Specific. Sourced. The reader then decides whether those specific things are worth that specific amount.
   3. **The Verdict refuses a flat winner.** A flat "A wins" is a fail in this subtype. The Verdict must explicitly weigh the price gap and frame the winner as conditional: "If the priorities are [specific things], A. If you'd rather spend the difference on [alternative], B. Where the rounds split: A wins on accommodation and theming; B wins on value and food; pools is closer than the price would suggest." The reasoning lives in the conditions, not in a single declaration.
 
+### The Lookahead
+Multi-event preview of a defined window (6-8 weeks default). **4,500-6,500 words, 16-22 pages.** Manual trigger: "Run a Lookahead — [window]." E.g. "the next six weeks", "June 2026", "the run-up to the F1 summer break", "the Switch 2 launch window". Canonical chapter order: Cover → Foreword → The Window in Numbers → The Calendar (chronological, every item with a verdict) → The Crunch Weeks → What Else Is Brewing → Footer.
+
+- **Different from Countdown.** Countdown is one event built into hype. Lookahead is **many** events surveyed editorially — gaming, film, sport fixtures, book releases, calendar anniversaries — across the same window, with the magazine's verdict on each.
+- **Different from the weekly's On the Radar.** On the Radar is light, single-section, present-tense. Lookahead is a whole issue dedicated to looking forward, with a verdict on each item and a per-week priority guide.
+- Best for: the start of a quarter, before a busy release stretch (Switch 2 launch waves, F1 season opening, a packed weekend of major events), or any "what should I actually pay attention to in the next ~6 weeks" moment.
+
+**The killer feature — The Verdict per item.** Every entry in The Calendar gets one of four tags, with a one-line reason:
+
+- 🔥 **Don't miss** — the items the editor is most confident will reward the reader's time. Sparingly applied.
+- 👀 **Worth a look** — solid bet for the right temperament, with a one-line "you'll like this if…"
+- ⏳ **Wait for reviews** — looks promising, but the editor doesn't yet have enough signal to commit. Re-check on release week.
+- 🚫 **Probably skip** — the items the editor would actively steer the reader away from, with the reason (overhyped sequel, lazy adaptation, scheduling-driven event that won't materialise).
+
+Hedging is the failure mode — every item must get a tag. "Could be good or bad" is not editorial work. The reader trusts the magazine to take a position; if four items in a row are "wait for reviews", the editor hasn't done the job. Aim for a roughly 1:2:1:1 split across the four tags, give or take, across the whole calendar.
+
+**The second killer feature — The Crunch Weeks.** Look across the whole window for weeks where 3+ "Don't miss" or "Worth a look" items cluster. Each such week gets its own short callout: which item to prioritise, which to defer, which can wait. The reader isn't a completionist — they want to know what to actually do when the calendar is packed. A typical issue surfaces 1-3 crunch weeks; if none surface, the issue tells the reader honestly that the window is paced rather than peaked.
+
+- **Window length defaults to 6-8 weeks.** Shorter windows (a single packed week, a 10-day stretch) bend Lookahead toward Crunch Weeks; longer windows (a quarter, the back half of a season) bend it toward the Calendar. Anything beyond a quarter is too speculative — the magazine cannot tag-verdict items it doesn't have signal on yet.
+- The Window in Numbers opens with the headline counts: total events, total worth-your-time count, total don't-miss count, total skips. Plus a few interest-area counts (e.g. 4 game releases, 3 F1 weekends, 2 film releases, 1 book launch).
+- Source-discipline rule: every item in The Calendar must have a verifiable source (release announcement, fixture list, official calendar). No "rumoured to ship around" entries. If the date isn't firm, the item belongs in What Else Is Brewing, not in The Calendar.
+- Use 8-12 component types. The Calendar leans on date-stamped rows with verdict tags; The Crunch Weeks lean on the dashboard / dl pattern.
+
+### The Next
+Post-completion recommendation — "you just finished X, here's what to try next." **3,500-5,500 words, 14-20 pages.** Manual trigger: "Run a Next — after [the thing you finished]." E.g. "after the audio dramas", "after Daredevil S2", "after Murderbot Diaries", "after the fat-loss block". Canonical chapter order: Cover → Foreword → The Itch (what made the original work, named explicitly) → The Closest Next Step → One Step Sideways → The Wildcard → If You Only Try One → Where to Go After That → Footer.
+
+- **Different from Starter Kit.** Starter Kit is for someone with no entry point. Next is for someone with a *known* entry point — they finished a specific thing and want the natural progression. The starting context is rich; the recommendations are anchored to it.
+- **Different from Shortlist.** Shortlist is "the magazine's picks in a category, ranked into tiers". Next is structured around progression away from a single anchor.
+
+**The killer feature — The On-Ramp.** Every pick in Next comes with a specific entry instruction, not just a recommendation. This is what made the Starter Kit's one-week plan valuable: it told the reader *exactly* how to engage with each pick, not just that they should. The On-Ramp for a Next pick takes the form:
+
+> **Start with:** episode 4 (the first one that lets the world breathe) — not episode 1, which is plot-setup-heavy and won't show why this is here.
+> **Stop and reassess at:** the end of the first arc (~episode 6). If it isn't clicking by then it won't.
+> **Then:** if it landed, head to season 2. If it half-landed, try [adjacent pick] for the part that did work.
+
+Each pick gets that three-part instruction (Start / Reassess / Then), or a justified shorter version. **Vague "give it a few episodes" recommendations are forbidden** — the editor must commit to a specific entry point and an explicit stop-and-decide moment. This is the single component that makes Next worth running.
+
+**The second killer feature — If You Only Try One.** A short, single-pick chapter near the end. Not the safest pick — the most decisive one. The pick the editor is most confident in, written without hedging. "If you take one thing from this issue, take this. Here's why, here's the on-ramp, here's why I'd skip the others if you only had time for one." Maximum 300 words, one image, one strong sentence. A standalone moment of editorial conviction.
+
+- **The Itch is essential.** Before any picks, a chapter that names *exactly* what made the original work for this reader — the lone-gunslinger episodic feel, the procedural-with-stakes rhythm, the way the world breathed between plot beats. The Itch is the criterion every pick is judged against. If a pick doesn't address the Itch, it doesn't belong in the issue.
+- **Three tiers, not five.** The Closest Next Step (the safest, "if you want more of the same") — 1 pick. One Step Sideways (adjacent, "the same itch from a different angle") — 1 pick. The Wildcard (the bet, "completely different but addresses the same itch in a way you wouldn't predict") — 1 pick. Plus the If You Only Try One overlay. That's it — three picks plus a fourth-as-headline. No fat.
+- **Where to Go After That** at the end: brief horizon items (3-5) for when the three primary picks are exhausted. No on-ramp required — these are pointers, not commitments.
+- Use 8-12 component types. Lean on the on-ramp block (a structured "Start / Reassess / Then" trio), the tier band from Shortlist, big-numbers for the If You Only Try One pick.
+
 ### The Rewind
-Panoramic retrospective across all interests. **8,000-12,000 words, 25-40 pages.** Manual trigger: "Run a Rewind — [period]." Cover → Foreword → The Period in Numbers (stat bars, big-number-row) → Highs → Lows → What We Missed → What Stuck → Picks of the Period → Footer.
-- Unlike The Season Review (which covers one subject that ended), The Rewind looks back across *everything* — gaming, football, fitness, books, tech, life. It's a panoramic snapshot.
-- Best for: year-end, half-year, "my first 6 months of running", "2026 so far."
-- Ratings, rankings, and numbers everywhere. Timelines, big numbers, rating dots for scoring highs and lows.
-- Use 10-14 component types. Should feel like an awards ceremony in magazine form.
+Panoramic retrospective across **all** interests. **8,000-12,000 words, 25-40 pages.** Manual trigger: "Run a Rewind — [period]." Canonical chapter order: Cover → Foreword → The Period in Numbers (stat bars, big-number-row) → The Throughline → Highs → Lows → What We Missed → The Memory Test → Picks of the Period → Footer.
+
+- **Panoramic, not single-subject.** Rewind looks across gaming, football, F1, fitness, books, tech, world news, life — the lot. Season Review covers a single concluded subject; Rewind covers a defined time period across everything. If the topic fits one lane only, use Season Review instead.
+- Best for: half-year (last Sunday of June), year-end (last Sunday of December), end of a defined personal period (a training block, a trip window, a season-spanning window where multiple things converged).
+
+**The killer feature — The Throughline.** The chapter that earns Rewind's place. Find the single connecting thread that ran across all the disparate highs and lows of the period and name it. "This period was about *new launches landing all at once.*" "This period was about *waiting* — for the trip, for the title race, for the next book in the series." "This period was the one where I *stopped optimising and started enjoying*." It's an editor's interpretive call, drawn from the actual material the period produced. The reader gets a frame for what just happened, not a list of what happened. **One Throughline per Rewind.** Stated in the chapter title and earned in the chapter body. The rest of the issue arranges itself around it. Marked visually by adding `is-throughline` to the chapter-head and a `.throughline-mark` eyebrow before the title — the chapter-numeral hides on this one chapter, and the title gets curly quotes + italic styling, so the reader sees at a glance this is THE chapter that earns the issue.
+
+**The second killer feature — The Memory Test.** Near the end, before Picks of the Period. A short chapter that splits the period's notable moments into three columns: **Will Stick** (the things you'll still be talking about in six months), **Might Stick** (the things that might fade or might surprise you by lasting), **Will Fade** (the things that felt big in the moment but won't last the year). This is the magazine's prediction, owned with an editor's confidence — not a hedge. Six months later, when the next Rewind comes around, the editor checks the prediction. Wrong calls are interesting; soft hedges are not.
+
+- The Throughline is a literary chapter; The Memory Test is structurally distinctive (three-column layout). Together they're what makes Rewind worth running — without them it's just a list-of-lists with a stat opener.
+- Ratings, rankings, and numbers everywhere across the body. Timelines, big-number-rows, rating dots for scoring highs and lows. Use 10-14 component types.
 
 ### The Starter Kit
-Beginner's guide. **4,000-6,000 words, 15-22 pages.** Manual trigger: "Run a Starter Kit — [topic]." Cover → Foreword → Why This Matters → The Essentials (5-7 items) → Common Mistakes → One-Week Plan → Where to Go Deeper → Footer.
+Beginner's guide. **4,000-6,000 words, 15-22 pages.** Manual trigger: "Run a Starter Kit — [topic]." Cover → Foreword → Why This Matters → The Essentials (5-7 items) → Common Mistakes → The One-Week Plan → Where to Go Deeper → Footer.
 - A structured progression from zero to competent. Practical, opinionated, designed for sharing or for new interests.
 - Best for: "Getting into Malazan", "Home kettlebell training from scratch", "Specialty coffee basics", "Starting an Etsy template shop", "Fantasy Premier League for beginners."
 - **Opinionated curation.** The Essentials are not a balanced list of all options — they're the 5-7 things the magazine recommends, with reasoning. "Buy this, not that" energy.
 - Common Mistakes should be genuinely useful warnings, not generic filler ("don't give up!").
-- Use timeline components for the One-Week Plan, also-cards for The Essentials, compare panels for "this not that", sidebars for tips.
-- Use 8-12 component types.
 
-### The Blueprint
-Project planning issue. **5,000-7,000 words, 18-25 pages.** Manual trigger: "Run a Blueprint — [goal]. [Optional: constraints and preferences]." Cover → Foreword → The Goal → Current State → Decision Points (with options) → Phased Plan → Tools & Resources → Risks & Pitfalls → First Steps This Week → Footer.
-- **Presents options, not prescriptions.** The reader is the audience, not a collaborator. The Blueprint does the research, lays out the choices clearly with compare panels and decision trees, and lets the reader decide. It never tells the reader what to do — it shows them what's available and the trade-offs.
-- **Decision Points** is the core section. Each open decision gets a compare panel: "If your priority is X → Option A [details, pros, cons]. If your priority is Y → Option B [details, pros, cons]." Research the options thoroughly so the reader can choose with confidence.
-- **Respects stated constraints.** If the trigger includes preferences ("budget: £500", "already own comp KBs"), the Blueprint works within those rails. It never argues against the reader's stated position.
-- Best for: home gym build-out, 10k race plan, Etsy store relaunch, trip planning, reading order for a long series, tech setup overhaul.
-- Use compare panels heavily, timeline for phased plans, stat bars for budgets/targets, sidebars for tools, also-cards for resources.
-- Use 10-14 component types.
+**The killer feature — The One-Week Plan.** A day-by-day sequence telling the reader exactly what to do across the seven days after they finish the issue. Not "try things at your pace" — specific instructions per day. Day 1: this. Day 3: switch to this. Day 5: come back to the first one, now you'll get the difference. **This is the thing the reader will quote back as why the format worked** — concrete, sequenced, decision-light. Rendered as the `.week-plan` vertical timeline: each day gets a bordered day-badge (Day N / Mon) on the left of an accent rail, with the action title + a short "why this on this day" beneath. Seven days, no more, no fewer; if the topic doesn't need seven days the Starter Kit doesn't need seven days of plan — but the plan must commit to a specific schedule, not a "do this whenever" punt.
+
+**The Essentials chapter — pick density.** The Essentials is the heart of a Starter Kit and must hit the per-pick density floor (see "Visual-density floor" above). The pattern is:
+
+- 5-7 picks rendered as cross-format `.pick` items (image left/right alternating, `.pick-body` containing `.pick-tag` "Top Pick" / "Strong Pick" pill, `<h3>` title, multi-paragraph writeup, `.pick-stats` info block, optional `figure.image-quote` or `.pullquote` between picks).
+- The `.essentials` numbered-ring list is ONLY for short concept lists (e.g. "5 essential techniques" inside Why This Matters). NOT for the main pick chapter.
+- The audio drama Starter Kit (April 2026) sets the floor — each pick had an image, a stats sidebar, a 4-number stat row, a "did-you-know" callout, and a source strip. Reproduce that density using the v8.22 vocabulary.
+
+- Use 10-14 component types: `.pick` + `.pick-stats` for The Essentials picks, `.bignum-row` for headline counts, `.pullquote` between picks, `.week-plan` for The One-Week Plan, `.also-cards` for Where to Go Deeper, `figure.image-quote` for visual rhythm.
 
 ### The Shortlist
 Opinionated recommendation list. **3,500-5,500 words, 14-20 pages.** Manual trigger: "Run a Shortlist — [topic]." Cover → Foreword → The Lens (selection criteria) → The Shortlist (tiered picks: Top Picks, Strong Picks, Wildcards) → Also Worth Knowing (horizon items) → The Cheat Sheet (summary table) → Meanwhile... → Footer.
 - **Tiered, not ranked.** Picks are grouped into tiers (Top Picks 2-3, Strong Picks 2-3, Wildcards 1-2) rather than numbered 1-7. Each tier has a different editorial tone: Top Picks get the most space and strongest recommendation; Strong Picks are excellent with a caveat or two; Wildcards are unusual choices that reward the right temperament.
-- **The Lens is essential.** Before any picks, a short section explains the selection criteria — what the magazine looked for, what the reader's profile suggests, what was excluded and why. This frames every pick that follows.
-- **Every pick needs a "Why It's Here" callout.** Use `.dyk` or `.entry-question` components. This is the editorial voice — not a review summary, but the specific reason this pick made the list for this reader.
-- **The Cheat Sheet** is a quick-reference table with all picks: game/item, genre/type, price, playtime/length, status, vibe tag. Top Picks get a star emoji. Also Worth Knowing items appear in italics.
+
+**The killer feature — The Lens + The Cheat Sheet, bookending the picks.** The Lens at the start is the editor's stated criteria — what was looked for, what was excluded, why this set rather than another. Rendered as a `.lens` block: mono-caps eyebrow, a short italic-serif statement of the criteria, then a numbered `.lens-criteria` list (3-5 entries) of the specific things the magazine looked for. Without The Lens, the picks read as "stuff the magazine likes"; with The Lens they read as "stuff the magazine likes *for this specific reason*." The Cheat Sheet at the end is the at-a-glance summary table: `.cheat-sheet` with `#` / `Pick` / `Tier` / `Why` columns, every row tagged `data-tier="top|strong|wildcard"` so the tier pill colour-codes inline. Reader who skim-reads the issue can lift the whole shortlist in 30 seconds from the Cheat Sheet alone.
+
+- **Every pick needs a "Why It's Here" callout.** This is the editorial voice — not a review summary, but the specific reason this pick made the list for this reader.
+- Tier-band visuals (`.tier-band` with `data-tier="strong|wildcard"`) divide the body into Top / Strong / Wildcard sections.
 - **Also Worth Knowing** covers 3-5 items on the horizon — not out yet, but worth watching. Card format, lighter treatment.
 - Best for: "games for Switch 2", "books for a holiday", "podcasts to start", "kettlebells under £100", anything where the reader wants a curated shortlist with editorial reasoning.
 - Use 8-12 component types. Each pick needs at least a Quick Stats sidebar. Vary layout between picks — no two consecutive picks should use the same component pattern.
@@ -620,9 +748,13 @@ If no Priority 1 or 2 trigger has fired in the last 5 weeks, the editor picks a 
 | Starter Kit | Getting into Malazan, Specialty coffee from scratch, Fantasy Premier League for beginners, Home kettlebell training, Starting on Etsy |
 | Deep Dive | The history of a favourite game franchise, A deep look at a training methodology, The state of e-readers in 2026, Serie A tactical evolution |
 | Versus | V60 vs AeroPress, Two fitness approaches, Two e-readers, Two budget tablets |
-| Blueprint | Home gym next phase, 10k training plan options, Etsy store growth paths |
+| Shortlist | A category roundup that hasn't been covered recently — boutique games, kettlebell drills, audio essay channels |
 
 **The editorial picks pool ensures there's always a viable special available.** The editor selects the most timely or interesting option from the pool. Over time, used topics are tracked in the state file to avoid repeats.
+
+**Manual-only formats — Next and Lookahead.** Two formats never auto-trigger; they require the reader to call them because they depend on specific context that only the reader holds.
+- **Next** ("Run a Next — after [the thing you finished]") — needs the anchor: what the reader just finished. The magazine can't reliably detect "finished" status for podcasts/books/seasons from external signals.
+- **Lookahead** ("Run a Lookahead — [window]") — needs the window: what stretch the reader wants surveyed. Default is 6-8 weeks; reader can shorten ("the next ten days") or lengthen ("the rest of the quarter").
 
 ### Guardrails
 
@@ -752,60 +884,115 @@ Reinforcement still dominates the magazine because that's what makes it feel cur
 
 ---
 
-## Special Editions — Maximalist Motion System
+## Special Editions — Editorial System (v8.21)
 
-Special editions (Countdown, Rewind, Versus, Season Review, Deep Dive, Blueprint, Starter Kit, Shortlist, Field Guide) opt into an additive motion + chrome layer on top of the standard Signal identity. This layer is defined in `assets/css/23-special-chrome.css`, `assets/css/24-special-motion.css`, and the special-edition block at the bottom of `assets/script.js`. It activates only when `<body>` has `class="mag-body is-special"`.
+Special editions (Countdown, Rewind, Versus, Season Review, Deep Dive, Starter Kit, Shortlist, Next, Lookahead, Field Guide) opt into the editorial system defined in `assets/css/23-special-tokens.css` through `32-special-format-flair.css` (v8.21). Holiday formats (Countdown, Field Guide) layer their own visual identity from `33-` and `36-` through `44-` on top of that. The system activates only when `<body>` has `class="is-special"`.
 
 ### Content-first contract (non-negotiable)
-Every motion component below obeys these rules. Never ship a special edition that violates any of them:
-- **No scroll hijacking, ever.** Native scroll speed and direction are untouched.
-- **No motion on body copy.** Only chrome, openers, and decorative layers animate. Prose is always static.
-- **Stagger reveals cap at 400ms total.** Word-level reveals use 40ms delays and stop after ~10 words.
-- **`prefers-reduced-motion` disables every decorative animation.** The controller short-circuits after the splash cleanup.
-- **JS-off still renders a complete issue.** All motion is additive — the issue must be fully readable with scripts disabled.
-- **Word counts and section depth are not reduced to make room for motion.** Motion sits around content, not in place of it.
-- **Format-variable intensity.** Countdown / Versus / Rewind go loud. Deep Dive / Blueprint / Field Guide stay quiet (splash + ticker + manifesto only).
+Every non-holiday special edition obeys these rules. Holiday specials (Countdown, Field Guide) have their own contract in `36-holiday-*`.
+
+- **No motion in the non-holiday system.** As of v8.21, the non-holiday specials are an editorial / paper-and-ink design with no scroll-driven animation. Holiday formats retain their motion layer.
+- **JS-off renders a complete issue.** The whole non-holiday system is pure CSS.
+- **Word counts and section depth are the spine.** Visual flair sits around content, not in place of it.
+- **Quiet vs. visual register.**
+  - *Quiet* — Starter Kit. Baseline editorial system + minor accent (drop cap, format colour, numbered ring badges on Starter Kit essentials).
+  - *Argued (Deep Dive)* — baseline plus `.argument` framed thesis early + `.keep-digging` cross-media closing grid. Body is literary, but two distinctive components anchor the opening and the close.
+  - *Visual* — Versus, Rewind, Season Review, Shortlist, Next, Lookahead. Same baseline plus format-specific components (`.vs-tape` / `.vs-pair` / `.vs-verdict`, `.year-band` / `.rewind-cards` / `.memory-test`, `.rating` / `.scoreboard` / `.milestones`, `.tier-band` / `.pick`, `.on-ramp` / `.only-one`, `.calendar` / `.cal-verdict` / `.crunch-week`) for clear differentiation.
 
 ### Authoring a special edition
-1. On `<body>`, add `is-special` and `data-special="<format>"` where format is one of: `countdown`, `rewind`, `versus`, `season-review`, `deep-dive`, `blueprint`, `starter-kit`, `shortlist`, `field-guide`.
+1. On `<body>`, add `is-special` and `data-special="<format>"` where format is one of: `countdown`, `rewind`, `versus`, `season-review`, `deep-dive`, `starter-kit`, `shortlist`, `next`, `lookahead`, `field-guide`.
 2. **For Countdown only:** add `data-dday-start="N"` on `<body>` where N is the number of days between the issue date (today, when generating) and the event. The D-day badge displays this authored value statically — a magazine issue is a snapshot and the badge must agree with the prose, forever. Compute N at generation time as `(trip_date - today)` in days. The Countdown auto-trigger fires 2-3 weeks before a trip, so N is typically 14-21. If generating a prototype or back-dated issue, use the fictional issue-date reference. (Optional: also add `data-trip-date="YYYY-MM-DD"` for human reference, but it does NOT drive a live countdown at runtime.) The previous scroll-scrubbing pattern (`data-dday-start` + `data-dday-end` interpolated by scroll percentage) has been removed — a scroll-driven countdown is nonsensical.
 3. Include the components from the component list below as appropriate for the format. Each component has a documented HTML contract in `component-contracts.md` (or inline in the CSS).
 4. Inject assets with `scripts/inject-assets.sh` as normal.
 
+### Cover — mandatory richness floor (v8.22.4)
+
+Every non-holiday special cover MUST include all of these. A bare cover (eyebrow + title + deck only) ships as sparse; the Yellow Turban Deep Dive cover (2026-05-22) is the floor.
+
+- `.cover-meta` — top row, two children. **Left:** `<span><strong>The Signal</strong> · <Format></span>`. **Right:** `<span><Issue date> · Sunday Edition</span>` (or "Sample Issue", "No. N", etc.).
+- `.cover-eyebrow` — **at least two meta tokens** separated by `·`. E.g. "A Deep Dive · 184 CE · Eastern Han", not just "A Deep Dive". Carries format + period + scope-tag where relevant.
+- `.cover-title` — serif headline. At least one accent-coloured `<em>…</em>` inside.
+- `.cover-deck` — italic-serif description, 25-50 words. The deck is where the issue's argument shows up first.
+- `.cover-slogan` — **MANDATORY** epigraph block with three children:
+  - `.cover-slogan-cn` / `.cover-slogan-primary` — large serif line. The native-language phrase, the headline quote, the founding figure's slogan, the chant, the line on the wall. Whatever fits the topic.
+  - `.cover-slogan-en` / `.cover-slogan-translation` — italic-serif translation or gloss.
+  - `.cover-slogan-attr` — mono-caps attribution line. Source + date or topic + era.
+- `.cover-foot` — bottom row, **three children**. **Left:** issue meta ("Twelve chapters · 10,900 words"). **Center:** `.cover-scroll` ("Scroll to begin"). **Right:** tagline ("Hand-set · Long-form · Sunday Morning"). Centers on a single child if only one is provided.
+
+A cover that omits the slogan block or runs `.cover-foot` with only one child reads as a sample, not as an issue. Gate-1 grep check should warn.
+
 ### Component list
-**Chrome (tier 1 — all special editions):**
-- `.sp-splash` — full-bleed pre-roll wash with format glyph, self-dismisses after 2.2s
-- `.mast-ticker` — horizontal marquee masthead replacing the static masthead
-- `.sp-format-badge` — rotated ◆ format label, fixed top-right
-- `.sp-footer-card` with arc notch + ◆ seal — closing card
 
-**Scroll motion (tier 2 — loud formats):**
-- `.sp-parallax` with `.p-bg` / `.p-mid` / `.p-fg` layers — layered parallax on hero and section openers
-- `.sp-stagger` with `.sp-word` children — word-by-word reveal on h2 openers (400ms cap)
-- `.sp-wipe` with three `.sp-wipe-layer` children (l1/l2/l3) — contained colour-wipe transitions between sections. The wipe container is `overflow: hidden` and `contain: layout paint` — it never extends past content width and cannot push surrounding columns during transition.
-- `.sp-dday` — Countdown-only live days-to-go badge, top-left, reads `data-trip-date` from `<body>`, does NOT scrub with scroll
+> **Note (v8.21):** The non-holiday special edition system was redesigned around an editorial / paper-and-ink aesthetic (see `assets/css/23-` through `32-` files). The list below documents the **new** components. Holiday formats (Countdown, Field Guide) retain their previous holiday-themed system in the `33-`, `36-` through `44-` CSS files — those are not affected by this list.
 
-**Layout breakouts (tier 3 — loud formats):**
-- `.sp-manifesto` — oversized foreword
-- `.sp-bignum` — full-width statement number
-- `.sp-gallery` — broken editorial gallery
-- `.sp-diptych` — split-screen contrast layout
-- `.sp-marquee` — source-strip marquee at end of issue
+**Persistent chrome (every non-holiday special):**
+- `.mast` — thin pinned bar at the top of every page, containing `.mast-wordmark`, `.mast-format`, `.mast-sep`, `.mast-date`. Inverts to a translucent dark style while the dark cover is in view. Provides a constant "where am I" anchor.
 
-**Cover kinetic (opt-in):**
-- `.cover-kinetic` with `.k-bold` / `.k-italic` / `.k-outline` — three overlapping title layers that collide on arrival
+**Cover (every non-holiday special):**
+- `.cover` — single-screen dark cover with filmic grain and per-format radial-pool gradient. Contains:
+  - `.cover-meta` — top row: issue date/number left, format mark right
+  - `.cover-body` — centered column with `.cover-eyebrow` (mono caps), `.cover-title` (serif), optional `<em>` for accent words, `.cover-deck` (italic serif), optional `.cover-slogan` block (epigraph / slogan with hairlines top + bottom)
+  - `.cover-foot` — bottom row with optional `.cover-scroll` cue
+- Versus only: title is a 3-column grid (`.vs-a` / `.vs-glyph` / `.vs-b`) — the matchup, balanced
 
-**Body-embedded components (tier 4 — inside article sections, not between them):**
-- `.sp-scroll-image` (+ `.is-fullbleed` variant) — hero image that can drop into any section mid-article. Image has subtle parallax (±20px) within its frame as it scrolls through viewport. Supports `<figcaption>` with `<cite>` for credit.
-- `.sp-inline-figure` (+ `.is-left` / default right) — half-width floating figure alongside body copy. Reveals with fade + 20px slide when scrolled into view. Collapses to full-width at ≤820px.
-- `.sp-image-strip` with `.sp-strip-track` — 3-image horizontal strip that drifts sideways as the page scrolls vertically. Echoes the landonorris.com horizontal-in-vertical motion.
-- `.sp-pullquote-huge` — oversized full-column italic pull quote with ornamental quote mark, top+bottom rules. Breaks up long prose blocks. Contains `<p>` and optional `<cite>`.
-- `.sp-number` (inline) and `.sp-number-block` / `.sp-number-huge` (block) — count-up stat callouts. Add `data-to="N"` (with optional comma formatting) to trigger the animation when scrolled into view. Can be used inline in prose: `<span class="sp-number" data-to="74">74</span>`.
-- `.sp-marginalia` (with `data-side="left|right"`) — fact/stat chip that floats in from the margin. Parent must be `position: relative` (all sections already are). Falls back to inline breakout at ≤1200px.
-- `.sp-kicker` — class for h3/h4 sub-headings inside long articles. Reveals with 10px slide + fade when entering view. Keeps body reading flow intact.
-- `.sp-image-quote` — photo with overlaid italic pull quote. For "what people say about X" breakouts. Image is darkened (brightness 0.55) so text sits over it cleanly.
-- `.sp-curtain` with `.sp-curtain-panel` — vertical curtain-drop transition between sections. Half the height of `.sp-wipe` (60px). Drops, then retracts 700ms later. Use sparingly for rhythm variety.
-- `.sp-chapter-number` with `.sp-chapter-num` + `.sp-chapter-label` — oversized roman/arabic numeral that precedes a long section. Adds typographic weight without needing imagery. Good opener for internal chapters.
+**Chapter structure (every non-holiday special):**
+- `.foreword` — first chapter after cover; larger measure, italic small-caps first line via `.foreword-body`
+- `.chapter` — every subsequent chapter. Contains:
+  - `.chapter-head` with `.chapter-numeral` (italic roman) + `.chapter-title`
+  - `.chapter-body` — clamped to `--measure` (36rem) by default
+  - `.is-wide` / `.is-fullbleed` modifiers on children to break out of the measure
+- `.sp-kicker` — sub-section heading inside long chapters (mono caps, accent)
+
+**Baseline flair (every non-holiday special):**
+- `.chapter-body.has-dropcap` or `<p class="lede">` — first paragraph gets a large accent drop cap
+- `.sp-ornament` — three dots, used to break up sub-sections within a chapter
+- `.pullquote` with `<p>` + optional `<cite>` — huge italic pull quote with ornamental "
+- `.marginalia` (+ `.is-left`) with `.m-label` + body — chip in the gutter; falls back to inline at ≤1180px
+- `.bignum` with `.bignum-value` + `.bignum-label` — single stat callout
+- `.bignum-row` — grid of 2–4 `.bignum` items, top + bottom hairlines
+- `.source-strip` — mono caps row of citations
+- `.sp-number` — inline accent-coloured stat (e.g. `<span class="sp-number">74</span>`)
+
+**Figures (every non-holiday special):**
+- `figure.fig` with `<img>` + `<figcaption>` containing `.fig-caption` + `.fig-credit`
+- Modifiers: `.is-wide`, `.is-fullbleed`, `.is-half` (+ `.is-left`)
+- `figure.image-quote` with `<img>` + `<blockquote>` — darkened photo with overlaid italic quote and accent-coloured `<cite>`
+
+**Rich pick + multi-item grid (every non-holiday special, v8.22.4):**
+- `.pick` — image + body grid, alternating layout (image-left odd rows, image-right even rows). Contains `<img class="pick-img">`, `.pick-body` with optional `.pick-tag` pill + `<h3>` + prose + optional `.pick-stats` (a `<dl>` of mono-caps `<dt>` + serif `<dd>`). The workhorse for detailed-pick chapters across Shortlist, Starter Kit, Next, Deep Dive.
+- `.also-cards` grid — 4-8 `.also-card` items (`.ac-meta` mono-caps category line + `<h4>` + italic `<p>` why-it's-here + optional `<a>` source link). For "Also Worth Knowing" / "Where to Go After That" / "Shows Just Outside the Top Six" / "Related Reading" patterns. Cross-format.
+
+**Meanwhile section (when a special replaces the standard weekly):**
+- `.meanwhile-list` — bulleted catch-up list with tier dots (`.tier-hot` / `.tier-warm` / `.tier-note`)
+
+**Footer (every non-holiday special):**
+- `.sp-footer` with `.sp-footer-wordmark`, `.sp-footer-meta`, optional `.sp-footer-colophon` — quiet sign-off panel with ornament rule above
+
+**Format-specific flair (visual formats — Versus / Rewind / Season Review / Shortlist / Next / Lookahead):**
+- *Versus:* `.vs-tape` (tale-of-the-tape table), `.vs-pair` (stacked case panels with per-side accent rails + Case A / Case B badges), `.vs-verdict` (dark wide verdict slab with side stripes), optional `.vs-scoreboard` ribbon (running tally with side colours)
+- *Rewind:* enlarged `.bignum-row`, `.year-band` (12-month rail with `.year-band-month` + `.year-band-marker` highs/lows + `.year-band-legend`), `.rewind-cards` (`.rewind-card` + `.is-low` modifier), `.chapter-head.is-throughline` + `.throughline-mark` for the Throughline chapter, `.memory-test` 3-column grid (`.mt-col.mt-stick` / `.mt-might` / `.mt-fade`) for the second killer feature
+- *Season Review:* `.scorecards` grid of `.scorecard[data-tier="hot|warm|cold"]` cards — each with `.sc-head` (`.sc-name` + `.sc-score`), `.sc-bar` driven by `--score: N`, `.sc-verdict` italic line. Legacy `.rating` / `.scoreboard` / `.milestones` still available for stat-heavy supporting chapters.
+- *Shortlist:* `.lens` framed criteria block (`.lens-eyebrow` + `.lens-statement` italic + `.lens-criteria` numbered list) at the opening; `.tier-band` (`.tb-mark` + `.tb-label` + `.tb-rule`, `data-tier="strong|wildcard"` for accent swap) divides the body into Top / Strong / Wildcard sections; the cross-format `.pick` (with `.pick-img`, `.pick-tag`, `.pick-stats`) carries each detailed pick; `.cheat-sheet` table (`#` / `Pick` / `Tier` / `Why` columns, rows tagged `data-tier="top|strong|wildcard"` for inline colour-coding) at the close. `.also-cards` for "Also Worth Knowing."
+- *Next:* `.next-tier` row with `data-step="I|II|III"` for the numbered roundel marker (+ `.is-wildcard` modifier for the third tier); `.on-ramp` stepped track — the killer feature — with three `.on-ramp-row` entries each tagged `data-step="start|reassess|then"` (auto-renders the glyph + connecting track), `.on-ramp-label` + `.on-ramp-body`; `.only-one` dark slab for the "If You Only Try One" hero with star seal (`.only-one-mark` + `.only-one-pick` + `.only-one-reason`)
+- *Lookahead:* `.calendar` `<ol>` with optional `<li class="cal-week">` dividers and `.cal-row` items carrying `data-verdict="hot|warm|wait|skip"` — each row has a tinted background + accent rail in the verdict colour, `.cal-when` (date card with `.cal-date` + `.cal-where`), `.cal-body` (`<h4>` + `<p>`), `.cal-verdict` containing `.cal-verdict-chip` (full pill — the killer chip with glyph + label + tinted bg) and optional `.cal-reason` italic gloss; plus `.crunch-week` callout with `.crunch-header` (`.crunch-label` warning chip + `.crunch-when` heading) and `.crunch-list` `<dl>` whose `<dt>` carry `data-tier="hot|warm|wait|skip"` for tier-coloured Prioritise / Defer / Skip badges
+
+**Deep Dive flair:**
+- All baseline components above. Plus two killer-feature components:
+- `.argument` — framed thesis block (`.argument-eyebrow` + `.argument-thesis` italic serif + `.argument-stance` paragraph). Sits between Foreword and the body; pilcrow seal in accent.
+- `.keep-digging` — closing cross-media grid of `.kd-item` cards. Each card carries `data-medium="podcast|tv|film|game|video|book"` (which paints the per-type pill colour + glyph) and contains `.kd-medium` pill, `.kd-title` heading, optional `.kd-episode` italic line (mandatory on podcasts — series-only refs forbidden), `.kd-why` italic gloss.
+
+**Starter Kit flair:**
+- All baseline components above. Distinct `--accent` colour set on `body[data-special="starter-kit"]`.
+- `.essentials` ordered list — each `<li>` gets a numbered ring badge. **Use only for short concept lists** ("5 essential techniques", "7 things to learn first"). NOT for detailed-pick chapters — those use the cross-format `.pick` (each pick gets image + body + `.pick-stats` + a `.pullquote` or `.image-quote` for visual rhythm).
+- `.week-plan` vertical timeline — the killer feature. Seven `.wp-day` items with badged day-marks (Day N / Mon) on the left of an accent rail, body on the right.
+
+**What was removed (v8.21 redesign):**
+- All scroll motion (`.sp-parallax`, `.sp-stagger`, `.sp-wipe`, `.sp-curtain`)
+- Pre-roll splash (`.sp-splash`), ticker masthead (`.mast-ticker`), rotated format badge (`.sp-format-badge`)
+- Signature moments (`.sp-sig-*`), chapter gates (sticky-scroll model), hype variants
+- Old editorial breakouts (`.sp-manifesto`, `.sp-bignum`, `.sp-gallery`, `.sp-diptych`, `.sp-marquee`)
+- The Blueprint format (retired in v8.22 — never used after 6+ specials, planning use cases absorbed by Deep Dive and Shortlist)
+- These components/formats are no longer in the CSS bundle for non-holiday specials. Don't reference them in new issues. They remain in already-published issues since their CSS is inlined at generation time.
 
 ### Imagery budget — MANDATORY for loud special editions
 
@@ -944,7 +1131,6 @@ Each special edition format has exactly one signature moment — a single visual
 | Versus | `.sp-fault-line` | Sticky vertical line spanning all comparison sections | `data-max-shift="90"` on the line; each paragraph in the comparison `<p data-lean="-2"…+2>`; verdict element `data-verdict="a"\|"b"` |
 | Season Review | `.sp-form-tape` | Top of the issue + repeated at top of each chapter | Each chapter `<section data-results="W,W,D,L,W" data-result-from="0">…</section>`; tape pre-renders one `.ft-pill` per fixture |
 | Deep Dive | `.sp-thread-pull` | Fixed left margin (desktops ≥ 1100px only) | Wrapper element `[data-tp-track]` defines the scroll range; markers `<g class="tp-marker" data-at="0.42">…</g>` inside the SVG carry concept-tag text |
-| Blueprint | `.sp-build-meter` | Sticky top of viewport, below masthead | One `.bm-cell` per phase in the meter; each phase section `<section data-phase="0">…</section>` |
 | Starter Kit | `.sp-cold-start` | Cover/opener, gates the prose | One word, split into `<span class="cs-letter">K</span>` per letter. Wrap the rest of the issue in `.sp-cs-after` |
 | Shortlist | `.sp-deck-reveal` | Mid-issue picks block | A `.sp-deck` with one `.dk-card` per pick (#1 first / on top); scroll triggers `<div data-deck-step="1">…</div>` peel cards |
 | Field Guide | `.sp-pinboard` | Cover/opener (sticky 100vh) | A `.sp-pinboard` with `.pb-stage` background image + `.pb-pin`/`.pb-label` pairs (`--x:38%; --y:52%`); prose sections referring to a pin add `data-pin-id="<id>"` to trigger pulse |
@@ -1017,7 +1203,7 @@ Place the gate **immediately before** the chapter section's opening `<section da
 **Required attributes:**
 - `data-chapter-num` — Roman numeral (I, II, III…). Required.
 - `data-chapter-title` — chapter name in CAPS (e.g. `BEEKSE BERGEN`). Required.
-- `data-chapter-arc` — the narrative-arc label. Required on Countdown, Deep Dive, Rewind, Season Review. Optional on Versus / Starter Kit / Blueprint / Shortlist / Field Guide.
+- `data-chapter-arc` — the narrative-arc label. Required on Countdown, Deep Dive, Rewind, Season Review, Next. Optional on Versus / Starter Kit / Shortlist / Lookahead / Field Guide.
 - `<p class="scg-deck">…</p>` — **mandatory one-line deck**. A sentence that tells the reader *what this chapter will do for them*. Not a subtitle, not a description — a promise. See deck-writing rules below.
 
 **The deck line — what makes it good:**
@@ -1116,7 +1302,7 @@ If a draft exceeds the cap, cut the weakest blocks. Rule of thumb: any stat that
   5. Best uses: a single character portrait during an interview, or a pull-quote that watches over an unfolding argument. Never a decorative stock photo.
 
 ### Issue accent
-Each format maps to a palette variable: countdown → rose, rewind → ember, versus → neon, season-review → turf, field-guide → itinerary-accent, deep-dive → deep, blueprint → longgame, shortlist → shelf-gold, starter-kit → session-accent. `--issue-accent` is set from `[data-special]` selectors and drives splash colour, format badge, D-day badge, and wipe default colour. No neon-lime — The Signal's identity is preserved, just intensified.
+Each format maps to a palette variable. **Non-holiday formats (v8.21 system, see `assets/css/32-special-format-flair.css`):** deep-dive → ember, starter-kit → bone-soft, versus → rose + ember (two-side), rewind → rose, season-review → deep, shortlist → rose, next → rose + ember, lookahead → rose. **Holiday formats retain their legacy `--issue-accent` mapping:** countdown → rose, field-guide → itinerary-accent.
 
 ### Chrome positioning ground rules
 Fixed chrome elements must not overlap. Current occupation:
@@ -1187,7 +1373,7 @@ Every visual feature hardened between v8.0 and v8.7 fires automatically on every
 
 ## Holiday Identity (v8.12 — Countdown and Field Guide only)
 
-The Countdown and Field Guide formats use a **separate visual identity** from every other special edition. Where Deep Dive, Rewind, Versus, Season Review, Blueprint, Starter Kit, and Shortlist all share the default special-edition chrome (sticky chapter gate, paper/ink grounds, coral lockdown, restrained editorial register), Countdown and Field Guide do not. The default chrome reads as "serious magazine"; holiday issues need to read as "trip scrapbook, building excitement."
+The Countdown and Field Guide formats use a **separate visual identity** from every other special edition. Where Deep Dive, Rewind, Versus, Season Review, Starter Kit, Shortlist, Next, and Lookahead all share the v8.21 editorial chrome (paper-and-ink grounds, persistent `.mast` bar, restrained editorial register), Countdown and Field Guide do not. The default chrome reads as "serious magazine"; holiday issues need to read as "trip scrapbook, building excitement."
 
 **CSS layer:** `36-holiday-identity.css` (Tier 11). Loads only when `body.is-special[data-special="countdown"]` or `body.is-special[data-special="field-guide"]` is set. On every other format the file is dormant.
 
