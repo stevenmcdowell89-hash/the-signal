@@ -238,6 +238,18 @@ Run `bash scripts/stitch-issue.sh --plan /tmp/signal-build/chapter-plan.json --o
 ### Phase 7 — Per-chapter Gate 1 (during pipeline)
 Each chapter has already self-audited via pre-flight.md. Now grep-scan every chapter HTML for the Gate 1 hard-fail patterns from `references/compliance-checklist.md` (1A reader-profile leaks, 1B fabrication markers, 1C staleness, 1E markup contracts, 1F image-caption integrity). Any failure → enter repair flow.
 
+**Deep Dive only — narrative-voice spot check (v8.22.6).** A Deep Dive's worst failure mode is not a markup violation; it's prose that reads as an academic essay rather than a Sunday-morning narrative. Regex can't detect this; a human-equivalent read can. After the Gate 1 grep, the orchestrator picks **3 random body paragraphs** from non-foreword, non-Argument, non-Keep-Digging chapters (i.e. from the actual narrative chapters) and asks itself, **honestly**:
+
+> "Would I want to read this with coffee on a Sunday morning?"
+
+The pass bar is *would*, not *could*. The orchestrator is checking for the failure modes documented in `references/editorial-spec.md` § Deep Dive → "Editorial voice — narrative-first": performed seriousness, narrative throat-clearing, long-then-terse-then-terser rhetorical pose, noun-stack abstractions, lit-review walls, self-narration of structure, paragraphs over ~150 words, paragraphs whose subject is the chapter itself rather than what the chapter is about.
+
+If any of the three paragraphs honestly fails, the chapter goes to repair (Phase 9) with the editorial-voice section and the three anti-pattern examples pasted into the repair brief. The repaired chapter is re-spot-checked from a fresh 3-paragraph sample.
+
+The check is honor-system at the LLM layer — the orchestrator has to give itself an honest answer rather than rationalising a marginal pass. The negative examples in the spec are the calibration: if a paragraph reads like the Yellow Turban foreword paragraph 2, it fails. If it reads like a magazine telling a story, it passes.
+
+This is the only Phase 7 gate that doesn't have a script — by design. The point is to refuse to ship prose that reads as a paper, and a regex can't measure that.
+
 ### Phase 7.5 — Release-date sanity check (mandatory before publish)
 Run `bash scripts/check-release-dates.sh <stitched-html-path>`. The script extracts every claim of a date or relative-time phrase adjacent to a media name (TV, film, game, book, album), plus any line that mentions a locked-register entry (Andor, Tales of the [Jedi/Empire/Underworld], Skeleton Crew, Acolyte, Maul: Shadow Lord, Mandalorian and Grogu). Output is written to `/tmp/signal-date-claims.txt`.
 
