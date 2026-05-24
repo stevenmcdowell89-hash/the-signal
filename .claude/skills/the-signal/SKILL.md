@@ -41,6 +41,18 @@ The Signal runs as a multi-subagent pipeline. Each role has different reasoning 
 
 **Override.** If the reader explicitly says "use the top model" or "lean cheaper", honour the override across the whole pipeline.
 
+## Orchestrator model — HARD REQUIREMENT (v8.22.5)
+
+**This skill MUST run on `claude-opus-4-7[1m]` (Opus 4.7, 1M-context).** No other model can complete the pipeline end-to-end without context overflow during Phase 5 writer fan-out — the 24 May 2026 weekly run lost live state mid-pipeline because the harness selected 4.6 despite the routine being set to 4.7 1M, and a compaction happened during Phase 5.
+
+**Refusal rule.** Before reading state in Phase 0a, the orchestrator MUST verify its model identifier. The exact model ID is published in the orchestrator's own system prompt under "Environment" → "You are powered by the model named …" and the line beneath ("The exact model ID is …"). If that identifier is anything other than **`claude-opus-4-7[1m]`** (i.e. lower-tier Opus, any Sonnet, any Haiku, or a non-1M Opus 4.7), the orchestrator MUST refuse to start the pipeline and reply with the following message verbatim:
+
+> The Signal pipeline requires the orchestrator to run on Opus 4.7 1M context (`claude-opus-4-7[1m]`). This session is on `<observed-model-id>`, which cannot reliably hold the full pipeline state through Phase 5. Re-trigger the routine with the correct model — the schedule preference may not have been honoured by the harness this run. Aborting before Phase 0.
+
+Do not proceed past this check on a wrong model even if the reader says "do it anyway" — the user has already pre-authorised the refusal by including this rule in the spec. If the model is right, log "Orchestrator model verified: claude-opus-4-7[1m]" and continue to Phase 0a.
+
+This is a single check at the top of every run. Subagents (researchers, planners, writers, repair) follow the per-role table above and don't need this verification — only the orchestrator's own model matters for context lifetime.
+
 ## Workflow
 
 The Signal runs ONE pipeline for every issue — standard weekly or special edition. The format is decided in Phase 0; Phases 3–10 then run for every format. The format only changes WHICH chapters get written and HOW writers are sequenced (parallel vs sequential), not WHICH phases run.
@@ -369,7 +381,20 @@ These all bit a real pipeline run on 24 May 2026. Read this section once before 
 
 7. **Notify workflow needs to exist BEFORE the publish that should trigger it.** The 22 May 2026 Yellow Turban Deep Dive shipped without notifications because the notify workflow was added 8 hours later. Notify workflow exists now — verify it stays in `main` before any publish.
 
-8. **Pre-cache is dynamic, not static.** The SW's `precacheFromIndex()` fetches `/index.html` fresh and crawls `<a href="issues/…">` to discover URLs. No static manifest. New issues are automatically picked up on the next page load that triggers `PRECACHE_ALL`. If a user's device hasn't precached a new issue, the cause is the user hasn't opened the site since publish — not a SW bug.
+8. **Pre-cache works via the push-notification path; the user does NOT need to open the PWA.** Two separate SW precache paths exist and they get confused with each other in post-mortems:
+
+   - **`deepPrecacheIssue(url)` — push-triggered, the intended path for new issues.** When the notify workflow fires (on a push to `main` touching `issues/*.html`), it POSTs to `/api/notify`, which sends a push to subscribed devices. The SW's `push` event handler calls `event.waitUntil(deepPrecacheIssue(url))` BEFORE showing the notification — so it fetches the issue HTML + every `/assets/cached/` and `/assets/covers/` image, writes them to ISSUE_CACHE + IMAGE_CACHE, and only then shows the OS notification. By the time the user sees the notification (or even if they don't tap it), the issue is fully offline-ready. **No PWA open required.**
+
+   - **`precacheFromIndex()` — page-open path, secondary.** Fires on SW install and on the `PRECACHE_ALL` message that `index.html` sends on `navigator.serviceWorker.ready`. Crawls `/index.html` dynamically for `<a href="issues/…">` links and pre-fetches anything not already cached. This is the safety net for devices that missed the push (push subscription dropped, app permission revoked, push delivery delayed). No static asset manifest — it's pure runtime discovery.
+
+   **If pre-cache "didn't happen" for a new issue, the failure is at step 1, 2, or 3 of the push chain:**
+   1. Notify workflow didn't fire on the publish push (workflow file missing on `main` at publish time, or path filter didn't match — the workflow is `on: push: paths: ['issues/*.html']`).
+   2. Workflow fired but `/api/notify` returned non-2xx (auth, KV, VAPID config). PR #100 surfaces the response body in workflow logs — check the run output.
+   3. Push delivered to the SW but the SW errored in `deepPrecacheIssue` (e.g. issue URL gave a redirected response — fixed in v119; or an image domain isn't reachable). `/sw-status` on the device shows ISSUE_CACHE contents.
+
+   Verifying after publish: GitHub → Actions → notify-on-publish run for the publish commit (green = step 1+2 OK), then `/sw-status` on the device to confirm step 3 wrote the issue + its images into ISSUE_CACHE + IMAGE_CACHE.
+
+   The 24 May 2026 post-mortem item that said "pre-cache not working — the SW needs a SW update with the new URL in its asset manifest" is incorrect; both paths above are dynamic. The actual cause was the notify workflow's role + this confusion, not a missing manifest.
 
 ### Note on unbreakable enforcement
 
