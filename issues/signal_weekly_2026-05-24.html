@@ -268,7 +268,7 @@ p:last-child { margin-bottom: 0; }
 .cover-noise {
   position: absolute; inset: 0;
   opacity: 0.035;
-  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANWp0mAAAACHRSTlMzMzMzMzMzM85JBgUAAAA0SURBVDjLY2CgNmBWYBBgYFZgEGBkVmAQYGJWYBBgZlZgEGBhVmAQYGVWYBBgY6Y4AABxWAIRkPtLqAAAAABJRU5ErkJggg==");
+  background-image: url("/assets/cached/9b50b1464cc3.jpg");
   pointer-events: none;
   z-index: 1;
 }
@@ -1388,7 +1388,7 @@ p:last-child { margin-bottom: 0; }
   position: absolute;
   inset: 0;
   opacity: 0.06;
-  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANWp0mAAAACHRSTlMzMzMzMzMzM85JBgUAAAA0SURBVDjLY2CgNmBWYBBgYFZgEGBkVmAQYGJWYBBgZlZgEGBhVmAQYGVWYBBgY6Y4AABxWAIRkPtLqAAAAABJRU5ErkJggg==");
+  background-image: url("/assets/cached/0357b56e99a7.jpg");
   pointer-events: none;
   z-index: 0;
 }
@@ -3622,7 +3622,7 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
    present, mono caps eyebrow + serif italic credit line.
 
    <figure class="fig">                          (default — column-width)
-     <img src="..." alt="...">
+     <img src="/assets/cached/785c95b7d2f5.jpg" alt="...">
      <figcaption>
        <span class="fig-caption">Caption text…</span>
        <cite class="fig-credit">Photo: Source / License</cite>
@@ -4217,7 +4217,7 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
    so Starter Kit, Next, and Deep Dive can use the same component.
 
      <article class="pick">
-       <img class="pick-img" src="…" alt="…">
+       <img class="pick-img" src="/assets/cached/67ee91925c4e.webp" alt="…">
        <div class="pick-body">
          <span class="pick-tag">Top Pick</span>
          <h3>Pick title</h3>
@@ -11112,163 +11112,6 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
   opacity: 0.7;
 }
 
-
-
-/* ──────────────────────────────────────────────────────────────────
-   v8.22.5 HOT-FIX SHIM (24 May 2026 weekly)
-
-   This weekly shipped with .sp-* classes from the retired special-edition
-   vocabulary in several chapters. The v8.21 redesign removed those rules
-   from the CSS bundle, so the elements rendered unstyled. The class set
-   has been gated at stitch time going forward (see scripts/stitch-issue.sh
-   weekly-format gate, v8.22.5). This block restores readable styling for
-   THIS issue only, without rewriting markup.
-
-   Two strategies:
-     - HIDE chrome duplicates (.sp-footer, .sp-chapter-gate, .sp-chapter-beads,
-       .sp-wipe-layer) — the standard weekly .footer + .nav already cover
-       these roles; showing the special-vocabulary copies would duplicate.
-     - STYLE content vocabulary (.sp-spread, .sp-marginalia, .sp-pullquote-
-       huge, .sp-brief) — using weekly tokens (--ink, --paper, --warm,
-       --ember, --slate, --rule) so it sits beside the weekly's existing
-       components without clashing.
-   ────────────────────────────────────────────────────────────────── */
-
-/* Hide chrome duplicates */
-.sp-footer,
-.sp-chapter-gate,
-.sp-chapter-beads,
-.sp-wipe-layer { display: none !important; }
-
-/* Stagger-reveal spans render as inline — no visual change needed */
-.sp-word { display: inline; }
-
-/* Magazine 3-col spread → 2-col on desktop, stacked on mobile.
-   The .sp-rail was a left-margin decoration; we keep it as a hairline
-   on desktop. */
-.sp-spread {
-  display: grid;
-  grid-template-columns: 1px 1fr 14rem;
-  gap: 1.5rem 1.5rem;
-  margin: 1.5rem 0;
-  align-items: start;
-}
-.sp-rail {
-  align-self: stretch;
-  background: var(--rule);
-}
-.sp-spread-body {
-  font-size: 1rem;
-  line-height: 1.65;
-  color: var(--ink);
-}
-.sp-spread-body > p { margin: 0 0 1em; }
-.sp-margin {
-  display: grid;
-  gap: 0.85rem;
-  align-content: start;
-}
-.sp-margin > * { margin: 0; }
-
-/* Marginalia chip — paper-warm bg, ember left rail, mono caps label */
-.sp-marginalia {
-  padding: 0.85rem 1rem 0.95rem;
-  background: var(--warm);
-  border-left: 3px solid var(--ember);
-  border-radius: 0 4px 4px 0;
-  font-size: 0.9rem;
-  line-height: 1.5;
-  color: var(--ink);
-}
-.sp-marginalia > p { margin: 0; }
-.sp-marginalia-label {
-  display: block;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
-  font-size: 0.66rem;
-  text-transform: uppercase;
-  letter-spacing: 0.22em;
-  color: var(--ember);
-  font-weight: 700;
-  margin-bottom: 0.4rem;
-}
-
-/* Pull quote — big italic serif with hairlines */
-.sp-pullquote-huge {
-  margin: 2.25rem auto;
-  max-width: 38rem;
-  padding: 1.5rem 1rem;
-  border-top: 1px solid var(--rule);
-  border-bottom: 1px solid var(--rule);
-  text-align: center;
-}
-.sp-pullquote-huge > p,
-.sp-pullquote-huge {
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-style: italic;
-  font-weight: 500;
-  font-size: clamp(1.3rem, 2.4vw, 1.85rem);
-  line-height: 1.3;
-  color: var(--ink);
-}
-.sp-pullquote-huge > p { margin: 0; }
-.sp-pullquote-huge cite,
-.sp-pullquote-huge .attrib {
-  display: block;
-  margin-top: 0.75rem;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
-  font-style: normal;
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.22em;
-  color: var(--slate);
-  font-weight: 600;
-}
-
-/* Brief — info-box with mono caps kicker, serif heading, body, byline */
-.sp-brief {
-  margin: 1.5rem 0;
-  padding: 1.1rem 1.3rem 1.25rem;
-  background: var(--warm);
-  border-top: 3px solid var(--ember);
-  border-radius: 0 0 4px 4px;
-}
-.sp-brief-kicker {
-  display: block;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.24em;
-  color: var(--ember);
-  font-weight: 700;
-  margin-bottom: 0.45rem;
-}
-.sp-brief-h {
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 1.2rem;
-  font-weight: 600;
-  line-height: 1.25;
-  margin: 0 0 0.5rem;
-  color: var(--ink);
-}
-.sp-brief > p { margin: 0 0 0.6rem; font-size: 0.96rem; line-height: 1.55; }
-.sp-brief-byline {
-  display: block;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
-  font-size: 0.65rem;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  color: var(--slate);
-  margin-top: 0.5rem;
-  font-weight: 600;
-}
-
-@media (max-width: 820px) {
-  .sp-spread {
-    grid-template-columns: 1fr;
-  }
-  .sp-rail { display: none; }
-  .sp-margin { order: 2; }
-}
 </style>
 <!-- the-signal:pwa -->
 <link rel="manifest" href="/manifest.json">
@@ -11339,1203 +11182,997 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
 <header class="cover" id="top">
   <div class="cover-noise"></div>
   <div class="cover-grain"></div>
-  <div class="cover-issue" style="position:relative;z-index:2">Issue #10 — Sunday 24 May 2026</div>
-  <div class="cover-brand">The Signal<span class="brand-period">.</span></div>
-  <div class="cover-headline">A new global health emergency, a fractured government — and Budapest in six days</div>
-  <div class="cover-dek" style="font-family:'DM Sans',sans-serif;font-size:15px;color:rgba(255,255,255,.6);line-height:1.65;margin-top:16px;max-width:660px;position:relative;z-index:2;">Ebola PHEIC declared. Starmer under siege. CL Final week arrives. Four sections debut. One Director's Cut returns.</div>
+  <figure class="cover-hero-img" style="position:absolute;inset:0;z-index:0;margin:0;overflow:hidden;">
+    <img
+      src="/assets/cached/aee5b5692199.jpg"
+      alt="Prime Minister Keir Starmer at 10 Downing Street"
+      style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;"
+    >
+    <figcaption style="position:absolute;bottom:0;right:0;font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,.45);padding:4px 8px;background:rgba(0,0,0,.35);letter-spacing:.5px;">Photo: No. 10 Downing Street, Crown Copyright. Licensed under the Open Government Licence</figcaption>
+  </figure>
+  <div class="cover-issue" style="position:relative;z-index:2">Sunday 24 May 2026 · Issue #10 · Sunday Edition</div>
+  <div class="cover-brand" style="position:relative;z-index:2">The Signal<span class="brand-period">.</span></div>
+  <div class="cover-headline" style="position:relative;z-index:2">Starmer on the Brink</div>
+  <div style="font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(255,255,255,.55);margin-top:10px;position:relative;z-index:2;letter-spacing:.5px;">Arsenal end the 22-year wait — and Budapest waits</div>
+  <p style="font-family:'Cormorant Garamond',serif;font-size:16px;font-style:italic;color:rgba(255,255,255,.75);max-width:520px;margin:18px auto 0;position:relative;z-index:2;line-height:1.55;padding:0 1.5rem;">A week of two endings — one political, one footballing. Ninety-five Labour MPs have called on their Prime Minister to resign. Six miles across north London, the title belongs to Arsenal again, for the first time in twenty-two years.</p>
   <div class="cover-tags" style="position:relative;z-index:2;">
-    <span class="tag">Ebola PHEIC</span>
-    <span class="tag">Labour Crisis</span>
-    <span class="tag">CL Final</span>
-    <span class="tag">Google I/O 2026</span>
+    <span class="tag">UK Politics</span>
+    <span class="tag">Arsenal</span>
+    <span class="tag">Champions League</span>
+    <span class="tag">Iran</span>
+    <span class="tag">Switch 2</span>
     <span class="tag">The Boroughs</span>
+    <span class="tag">Boards of Canada</span>
     <span class="tag">Aaron Rai</span>
+    <span class="tag">Roland Garros</span>
     <span class="tag">The Lab</span>
-    <span class="tag">The Listen</span>
-    <span class="tag">The Ledger</span>
-    <span class="tag">The Local</span>
-  </div>
-  <div class="cover-serial">010</div>
-  <div class="cover-foot">
-    <div class="left">16 Chapters · One Sitting</div>
-    <div class="scroll-cue"><span>Scroll</span><span class="arrow"></span><span>to begin</span></div>
-    <div class="right">Hand-set · Long-form · Sunday Morning</div>
   </div>
 </header>
 
 <section class="nav-section toc-style" id="nav">
   <h2>What's Inside</h2>
+
   <div class="toc-head">
     <div>
       <div class="eyebrow">The Order · II</div>
       <h3>What's <em>inside.</em></h3>
     </div>
     <div></div>
-    <div class="meta">16 chapters<br/>~45 minutes<br/>One sitting</div>
+    <div class="meta">11 sections<br/>~55 minutes<br/>One sitting</div>
   </div>
+
   <div class="toc-list">
-    <a class="toc-row world" href="#world">
+
+    <a class="toc-row world" href="#foreword">
       <div class="toc-roman">iii</div>
       <div>
-        <div class="toc-kicker">The World This Week · Lead</div>
-        <div class="toc-title">The PHEIC after <em>Bundibugyo</em> — why this outbreak is different.</div>
+        <div class="toc-kicker">Foreword</div>
+        <div class="toc-title">Two <em>endings</em> on one weekend.</div>
       </div>
-      <div class="toc-dek">WHO declares global emergency. Bundibugyo strain, no vaccine, spread confirmed in Kampala.</div>
-      <div class="toc-read">6 min</div>
-      <div class="toc-arrow">→</div>
-    </a>
-    <a class="toc-row tech" href="#pixel-byte">
-      <div class="toc-roman">iv</div>
-      <div>
-        <div class="toc-kicker">Pixel &amp; Byte</div>
-        <div class="toc-title">Gemini Spark and the 900-million-<em>user</em> moment.</div>
-      </div>
-      <div class="toc-dek">Google pivots from chatbot to background agent at I/O 2026. Plus: Garmin CIRQA leaks at £379.</div>
-      <div class="toc-read">5 min</div>
-      <div class="toc-arrow">→</div>
-    </a>
-    <a class="toc-row football" href="#touchline">
-      <div class="toc-roman">v</div>
-      <div>
-        <div class="toc-kicker">The Touchline</div>
-        <div class="toc-title">Budapest preview — PSG defend, Arsenal chase a <em>first</em>.</div>
-      </div>
-      <div class="toc-dek">Dynasty vs destiny. Plus: Aaron Rai ends a 107-year English drought at Aronimink.</div>
-      <div class="toc-read">6 min</div>
-      <div class="toc-arrow">→</div>
-    </a>
-    <a class="toc-row screen" href="#screen-sound">
-      <div class="toc-roman">vi</div>
-      <div>
-        <div class="toc-kicker">Screen &amp; Sound — Director's Cut</div>
-        <div class="toc-title">The Boroughs and the <em>horror</em> of time running out.</div>
-      </div>
-      <div class="toc-dek">The Duffers' grown-up Stranger Things. Plus: The Mandalorian and Grogu opens.</div>
-      <div class="toc-read">7 min</div>
-      <div class="toc-arrow">→</div>
-    </a>
-    <a class="toc-row session" href="#session">
-      <div class="toc-roman">vii</div>
-      <div>
-        <div class="toc-kicker">The Session</div>
-        <div class="toc-title">Three levers for progressive overload in a <em>deficit</em>.</div>
-      </div>
-      <div class="toc-dek">Why deficit size is the bottleneck. Plus: Garmin vs Whoop HRV accuracy data.</div>
-      <div class="toc-read">5 min</div>
-      <div class="toc-arrow">→</div>
-    </a>
-    <a class="toc-row" href="#on-the-radar">
-      <div class="toc-roman">viii</div>
-      <div>
-        <div class="toc-kicker">On the Radar</div>
-        <div class="toc-title">What's coming in <em>June</em>.</div>
-      </div>
-      <div class="toc-dek">CL Final, Monaco GP, Toy Story 5, Star Fox — and the Efteling countdown at 37 days.</div>
+      <div class="toc-dek">A political crisis and a 22-year wait, arriving together.</div>
       <div class="toc-read">2 min</div>
       <div class="toc-arrow">→</div>
     </a>
-  </div>
-  <div style="margin-top:24px;padding:12px 0;border-top:1px solid var(--rule);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--slate);">
-    <strong>Also this issue:</strong> The Long Shelf (8 picks) · The Lab (debut) · The Ledger (debut) · The Listen (debut) · The Local (debut)
+
+    <a class="toc-row long-shelf" href="#long-shelf">
+      <div class="toc-roman">iv</div>
+      <div>
+        <div class="toc-kicker">The Long Shelf</div>
+        <div class="toc-title">Eight reads — six in the wheelhouse, <em>two from outside it</em>.</div>
+      </div>
+      <div class="toc-dek">From PGA history to a Latin-American indictment to Walter Scott etymology.</div>
+      <div class="toc-read">5 min</div>
+      <div class="toc-arrow">→</div>
+    </a>
+
+    <a class="toc-row world is-anchor" href="#world">
+      <div class="toc-roman">v</div>
+      <div>
+        <div class="toc-kicker">The World This Week <span class="anchor-label">Anchor</span></div>
+        <div class="toc-title">The <em>Starmer</em> endgame.</div>
+      </div>
+      <div class="toc-dek">Ninety-five MPs, one resignation, thirty councils — and who comes next.</div>
+      <div class="toc-read">12 min</div>
+      <div class="toc-arrow">→</div>
+    </a>
+
+    <a class="toc-row tech" href="#pixel">
+      <div class="toc-roman">vi</div>
+      <div>
+        <div class="toc-kicker">Pixel &amp; Byte</div>
+        <div class="toc-title"><em>Stray</em> lands on Switch 2 — four years later.</div>
+      </div>
+      <div class="toc-dek">The cyberpunk cat game arrives Thursday, and Gemini is everywhere.</div>
+      <div class="toc-read">7 min</div>
+      <div class="toc-arrow">→</div>
+    </a>
+
+    <a class="toc-row touchline" href="#touchline">
+      <div class="toc-roman">vii</div>
+      <div>
+        <div class="toc-kicker">The Touchline</div>
+        <div class="toc-title">Arsenal end the wait — and <em>Aaron Rai</em> ends a 107-year one.</div>
+      </div>
+      <div class="toc-dek">The title, Budapest, and the first English PGA Champion since 1919.</div>
+      <div class="toc-read">10 min</div>
+      <div class="toc-arrow">→</div>
+    </a>
+
+    <a class="toc-row screen" href="#screen">
+      <div class="toc-roman">viii</div>
+      <div>
+        <div class="toc-kicker">Screen &amp; Sound</div>
+        <div class="toc-title">A retirement community, <em>The Boroughs</em>, and a Mando at 60%.</div>
+      </div>
+      <div class="toc-dek">The Duffer Brothers produce something better than their flagship.</div>
+      <div class="toc-read">8 min</div>
+      <div class="toc-arrow">→</div>
+    </a>
+
+    <a class="toc-row shelf-accent" href="#listen">
+      <div class="toc-roman">ix</div>
+      <div>
+        <div class="toc-kicker">The Listen</div>
+        <div class="toc-title"><em>Boards of Canada</em> break a thirteen-year silence.</div>
+      </div>
+      <div class="toc-dek">VHS tapes, unmarked posters, and Inferno — out Friday on Warp.</div>
+      <div class="toc-read">4 min</div>
+      <div class="toc-arrow">→</div>
+    </a>
+
+    <a class="toc-row history" href="#ledger">
+      <div class="toc-roman">x</div>
+      <div>
+        <div class="toc-kicker">The Ledger</div>
+        <div class="toc-title">Rates hold — and 1.8 million <em>fixed mortgages</em> expire this year.</div>
+      </div>
+      <div class="toc-dek">The BoE stays at 3.75%, the refi wave is real, and the top ISA pays 4.66%.</div>
+      <div class="toc-read">4 min</div>
+      <div class="toc-arrow">→</div>
+    </a>
+
+    <a class="toc-row session" href="#lab">
+      <div class="toc-roman">xi</div>
+      <div>
+        <div class="toc-kicker">The Lab</div>
+        <div class="toc-title"><em>Leucine</em>, mitochondria, and the Cologne mechanism.</div>
+      </div>
+      <div class="toc-dek">A Nature Cell Biology paper on an amino acid you already eat.</div>
+      <div class="toc-read">6 min</div>
+      <div class="toc-arrow">→</div>
+    </a>
+
+    <a class="toc-row radar" href="#radar">
+      <div class="toc-roman">xii</div>
+      <div>
+        <div class="toc-kicker">On the Radar</div>
+        <div class="toc-title"><em>Budapest</em>, Paris, Monaco — the week ahead.</div>
+      </div>
+      <div class="toc-dek">CL Final Saturday, Roland Garros continues, F1 Monaco in a fortnight.</div>
+      <div class="toc-read">3 min</div>
+      <div class="toc-arrow">→</div>
+    </a>
+
+    <a class="toc-row world" href="#colophon">
+      <div class="toc-roman">xiii</div>
+      <div>
+        <div class="toc-kicker">Colophon</div>
+        <div class="toc-title">A turned back, not a dinner course — the <em>cold shoulder</em> explained.</div>
+      </div>
+      <div class="toc-dek">Sir Walter Scott, Nehemiah, and a folk etymology that never happened.</div>
+      <div class="toc-read">2 min</div>
+      <div class="toc-arrow">→</div>
+    </a>
+
   </div>
 </section>
 
+<!-- ══════ FOREWORD ══════ -->
 <section class="foreword">
-  <p>Seven PHEIC declarations in the history of the WHO — and this is the newest. Bundibugyo, no approved vaccine, first international spread already confirmed in Kampala. While that unfolds, Westminster stages its own crisis in slow motion: a cabinet that started the week with one fewer member and a parliamentary party that cannot agree on a direction. Budapest is six days away. Arsenal are chasing a European final they have not reached in two decades, and one of the great weeks in football awaits. Four sections also debut this issue — The Lab, The Ledger, The Listen, and The Local have been a long time coming.</p>
+  <p>Two endings arrived on the same weekend, and it felt like the country held two different kinds of breath. On the political side: a Prime Minister besieged by his own MPs, a cabinet secretary gone, councils up and down the country having turned against the government in ways that don't easily reverse. On the pitch: 22 years of waiting — and then, finally, Arsenal's. One story is about something falling apart; the other is about something arriving so late that the relief is almost indistinguishable from disbelief.</p>
+
+  <p>This issue sits with both. The World This Week goes deep on the Starmer endgame — the arithmetic of a leadership challenge, the candidates beginning to circle, and what a Labour implosion at this stage of a parliament actually means. The Touchline takes the longer view on Arsenal's title and turns toward Budapest: six days and a Champions League Final against PSG.</p>
+
+  <p>Elsewhere, the Mandalorian and Grogu verdict is in (60% on Rotten Tomatoes, which is its own kind of story), and the Listen section is entirely occupied by Boards of Canada breaking thirteen years of silence. Stray lands on Switch 2 in four days. The Champions League trophy decides itself in six.</p>
+
+  <p>It's a full one. Settle in.</p>
 </section>
 
-<hr class="divider dv-shelf">
+<!-- ══════ THE LONG SHELF — Issue #10 · 24 May 2026 ══════ -->
 <section class="sec longshelf-section" id="long-shelf">
-  <div class="sec-watermark">Shelf</div>
-  <span class="section-label">The Long Shelf — Running Underneath</span>
+  <div class="sec-watermark">Long Shelf</div>
+  <span class="section-label" style="color:var(--rose)">The Long Shelf — Worth Your Time</span>
 
-  <p class="shelf-intro">Eight titles worth carrying into the week ahead — new releases, a proven standby and two deliberate departures from the usual territory.</p>
+  <p class="dropcap"><span class="lead-in">Eight reads for a slow</span> Sunday morning — from a football dynasty finally crowned, to an anonymous Scotsman who coined a phrase half the world has been misusing since 1816. The range this week is deliberately wide: a cult game arriving on new hardware, one of music's strangest returns, a geopolitical escalation hiding behind legal paperwork, and the biochemistry of the amino acid already in your breakfast. Dig in before the afternoon kicks off.</p>
 
-  <div class="also-list">
+  <div class="longshelf-grid">
 
-    <div class="also-item">
-      <strong><a href="https://www.goodreads.com/book/show/123163998-the-last-contract-of-isako">The Last Contract of Isako</a></strong> — Fonda Lee (Orbit, May 2026). A standalone from the author of the Jade City trilogy, repositioning Lee's corporate-samurai sensibility inside a space opera frame. <em>Publishers Weekly</em> called it brilliant — a sharp departure from the Green Bone saga that loses none of its predecessor's edge.
+    <div class="shelf-item">
+      <div class="title"><a href="https://variety.com/2026/tv/reviews/the-boroughs-review-duffer-brothers-netflix-1236755286/">The Boroughs — Variety review</a></div>
+      <div class="meta">Variety · Brian Tallerico</div>
+      <div class="desc">A retirement community against an otherworldly threat, ensemble-driven and Duffer Brothers-produced — the kind of eight-episode show that justifies the binge, scoring 95% on Rotten Tomatoes at premiere. Alfred Molina leads; the Stranger Things pedigree is worn lightly.</div>
     </div>
 
-    <div class="also-item">
-      <strong><a href="https://www.goodreads.com/book/show/241544367-the-tapestry-of-fate">The Tapestry of Fate (Amina al-Sirafi #2)</a></strong> — Shannon Chakraborty (May 2026). The pirate captain returns: this time she's stealing a fate-rewriting spindle from a sorceress whose island no ship has ever left. Early readers report the sequel surpasses the first — higher stakes, sharper dialogue, the same irresistible voice.
+    <div class="shelf-item">
+      <div class="title"><a href="https://www.premierleague.com/en/video/4663629/the-22-year-wait-is-over-arsenal-are-champions">The 22-Year Wait Is Over — Premier League video essay</a></div>
+      <div class="meta">Premier League · Official</div>
+      <div class="desc">Twenty-two years of context — the Invincibles as the opening frame, Wenger's exit, the near-misses, and Arteta's rebuild — all in eleven minutes of official footage. The kind of narrative wrap the highlight reel never quite manages.</div>
     </div>
 
-    <div class="also-item">
-      <strong><a href="https://joeabercrombie.com/books/the-devils/">The Devils</a></strong> — Joe Abercrombie (Tor, 2025). A vampire, a sorcerer, a werewolf and a monk are pressed into escorting a thief to her own coronation. Abercrombie's first standalone in years won the 2025 Dragon Award for Best Fantasy — darker and funnier than the First Law books, and considerably stranger.
+    <div class="shelf-item">
+      <div class="title"><a href="https://www.golfmonthly.com/news/live/pga-championship-leaderboard-live-updates-final-round-2026">Aaron Rai and the Underestimation of Methodical Golf — Golf Monthly</a></div>
+      <div class="meta">Golf Monthly · PGA Championship coverage</div>
+      <div class="desc">Two gloves, iron covers on between shots, a final-round 65 at Aronimink — the first Englishman to win the PGA Championship since 1919. The joy is in reading how quietly it was done.</div>
     </div>
 
-    <div class="also-item">
-      <strong><a href="https://www.goodreads.com/en/book/show/240019874-platform-decay">Platform Decay (Murderbot Diaries #8)</a></strong> — Martha Wells (Tordotcom, May 2026). Wells has hinted this novella sits near the end of Murderbot's arc, which makes it essential and a little melancholy. The formula holds — anxiety, found family, tightly plotted SF — but the weight behind it is new.
+    <div class="shelf-item">
+      <div class="title"><a href="https://ra.co/news/85026">Boards of Canada — Inferno announcement (Resident Advisor)</a></div>
+      <div class="meta">Resident Advisor · News</div>
+      <div class="desc">The full story of the thirteen-year silence, the month-long campaign of VHS tapes mailed to fans and unmarked city posters, and what the album actually sounds like — one of the stranger and more considered returns in recent music memory. Releases 29 May.</div>
     </div>
 
-    <div class="also-item">
-      <strong><a href="https://www.goodreads.com/book/show/The-Golden-Road-William-Dalrymple">The Golden Road: How Ancient India Transformed the World</a></strong> — William Dalrymple (Bloomsbury, 2024). Fifteen hundred years of Indian religious, mathematical and artistic export charted across the trade routes that the Silk Road has long overshadowed. Dalrymple's most ambitious history to date, and arguably his most revelatory.
+    <div class="shelf-item">
+      <div class="title"><a href="https://www.nintendolife.com/games/nintendo-switch-2/stray">Stray on Switch 2 — Nintendo Life breakdown</a></div>
+      <div class="meta">Nintendo Life · Games</div>
+      <div class="desc">Cat, cyberpunk city, mouse controls and 4K — Annapurna's acclaimed 2022 game finally lands on Nintendo hardware on 28 May. The Switch 2 port adds enough to make this worth revisiting even if you played the original.</div>
     </div>
 
-    <div class="also-item">
-      <strong><a href="https://www.goodreads.com/book/show/Science-and-Development-of-Muscle-Hypertrophy-Schoenfeld">Science and Development of Muscle Hypertrophy (2nd Ed.)</a></strong> — Brad Schoenfeld PhD (Human Kinetics, 2023). The most cited reference in evidence-based training, updated and expanded. Schoenfeld moves from cellular biology through to programme design without losing rigour at either end — indispensable for anyone applying the research rather than just reading about it.
+    <div class="shelf-item">
+      <div class="title"><a href="https://www.cecad.uni-koeln.de/outreach/news/article/from-food-to-fuel-how-leucine-enhances-mitochondrial-energy-production">From Food to Fuel — Cologne's Leucine-Mitochondria Finding (CECAD)</a></div>
+      <div class="meta">University of Cologne · CECAD Research Outreach</div>
+      <div class="desc">The dietary amino acid you already eat — abundant in meat, dairy, and eggs — turns out to shield the proteins that transport energy molecules into your mitochondria. Published in Nature Cell Biology, the mechanism is genuinely new and goes well beyond the standard leucine-and-muscle-protein-synthesis story.</div>
     </div>
 
-    <div class="also-item">
-      <strong><a href="https://www.goodreads.com/book/show/The-Anthropologists-Savas">The Anthropologists</a></strong> — Ayşegül Savaş (Bloomsbury, 2024). A foreign couple living in an unnamed European city set out to make a documentary about local rituals. What they find is a quiet novel about the difficulty of belonging — understated, precise, and further from the usual genres than anything else on this list. <span class="badge wildcard">Wildcard</span>
+    <div class="shelf-item">
+      <div class="title"><a href="https://foreignpolicy.com/2026/05/22/cuba-war-trump-united-states-castro-indictment/">Cuba, Indictments, and the Maduro Playbook — Foreign Policy</a></div>
+      <div class="meta">Foreign Policy · International Affairs</div>
+      <div class="desc">A federal murder charge against Raúl Castro, the USS Nimitz in the Caribbean, and a US president saying "it looks like I'll be the one that does it." Read together, the indictment looks less like a legal proceeding and more like a prologue — the same playbook used before the capture of Maduro. The week's most significant story that didn't make the front pages.</div>
     </div>
 
-    <div class="also-item">
-      <strong><a href="https://www.goodreads.com/book/show/A-World-Without-Email-Newport">A World Without Email</a></strong> — Cal Newport (Portfolio, 2021). Newport's case that the hyperactive hive-mind workflow — constant messages, fragmented attention, the illusion of productivity — is a structural problem requiring a structural fix. The proposed alternative is more radical than its title suggests. <span class="badge wildcard">Wildcard</span>
+    <div class="shelf-item">
+      <div class="title"><a href="https://wordhistories.net/2016/12/16/cold-shouder/">Cold Shoulder, Hot History — the Vulgate in Walter Scott (Word Histories)</a></div>
+      <div class="meta">Word Histories · Etymology</div>
+      <div class="desc">The dinner-table folk etymology — cold mutton served to unwanted guests — is pleasingly wrong. The phrase is a mistranslation of a Latin verse from Nehemiah, coined by Scott in The Antiquary in 1816. The cold shoulder is a turned back, not a dinner course. Six minutes; quietly satisfying.</div>
     </div>
 
   </div>
 
-  <div class="read-next">
-    Next: <a href="#world">The World This Week</a> — Ebola declared a global emergency.
-  </div>
 </section>
 
 <hr class="divider dv-world">
-<section class="sec world-section sec-opener" id="world">
+<section class="sec world-section sec-opener is-anchor" id="world">
   <div class="sec-watermark">World</div>
   <div class="opener-band"></div>
-  <span class="section-label">The World This Week</span>
+  <div class="sec-gradient-overlay"></div>
+  <span class="section-label" style="color:var(--rose)">The World This Week</span>
 
-  <!-- ══ LEAD: Ebola PHEIC ══ -->
-  <h2>The PHEIC after Bundibugyo: why this outbreak is different from 2014 and 2018</h2>
+  <!-- ── LEAD: The Starmer Endgame ── -->
 
-  <div class="entry-bullets">
+  <div class="entry-stat">95+</div>
+  <div class="entry-stat-context">Labour MPs publicly calling for Keir Starmer to resign or set a departure timetable</div>
+
+  <h2>The Starmer Endgame — What happens when ninety-five MPs say go</h2>
+
+  <img class="hero-img reveal" src="/assets/cached/94510c39eb29.jpg" alt="Keir Starmer chairing a Cabinet meeting at 10 Downing Street">
+  <div class="caption">Photo: Lauren Hurley / No. 10 Downing Street, Crown Copyright. Licensed under the Open Government Licence</div>
+
+  <p class="dropcap"><span class="lead-in">There is a number</span> at which a leadership crisis stops being a crisis and becomes a mathematical certainty. For Keir Starmer, that number appears to be 95 — the count of Labour MPs who had, as of Sunday 24 May, publicly called for his resignation or demanded a timeline for his departure. Whether that count is enough, and whether the 147 MPs who have yet to take a public position are leaning toward him or away, is the only political question in British public life right now.</p>
+
+  <p>The proximate cause was a set of local election results so bad they defied calibration. Labour lost control of more than thirty councils. Roughly 1,500 councillors were defeated — chased out of seats not by one insurgency but two, with Reform UK swallowing the right flank and the Greens absorbing the left. These were not protest results at the margins. They were a structural verdict on a government that had, in eighteen months, managed to alienate two different electorates simultaneously. The party that won a landslide in 2024 is now losing its own backyard.</p>
+
+  <div class="stat-bar">
+    <div class="stat">
+      <div class="stat-num count-up" data-target="95">95</div>
+      <div class="stat-label">Labour MPs calling for departure</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num count-up" data-target="30">30+</div>
+      <div class="stat-label">Councils lost</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num count-up" data-target="1500">~1,500</div>
+      <div class="stat-label">Councillors defeated</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num count-up" data-target="80">80%</div>
+      <div class="stat-label">Eurasia Group: odds Starmer ousted in 2026</div>
+    </div>
+  </div>
+
+  <p>The resignation of Wes Streeting on 14 May crystallised what the numbers had been suggesting for weeks. The Health Secretary — one of the government's more prominent communicators, and among those most publicly identified with the 2024 majority — announced he had "lost confidence" in the Prime Minister's leadership. Four junior ministers and a number of ministerial aides followed in the days afterward. A cabinet departure of this kind is qualitatively different from a backbench rebellion; it signals that the damage has climbed above the parliamentary waterline.</p>
+
+  <p>Eurasia Group, which tracks political risk across markets, raised its probability estimate of Starmer being ousted in 2026 to 80%, identifying an MP-forced leadership election by September as the most credible scenario. That timeline is not speculation pulled from thin air: it maps to the parliamentary recess window and the timetable constraints of a Labour leadership contest under the party's current rules. The mechanism is visible even if the trigger hasn't fired yet.</p>
+
+  <div class="pull-quote">
+    <p>"The party that won a landslide in 2024 is now losing its own backyard — chased out by Reform on the right and the Greens on the left simultaneously."</p>
+    <cite>— The Signal's reading of the May 2026 council results</cite>
+  </div>
+
+  <p>Names are already circulating. Andy Burnham, still regarded in many quarters as the party's most naturally political operator. David Lammy, the Foreign Secretary, whose international profile has grown during the first eighteen months. Shabana Mahmood, Justice Secretary, seen by some as a credible reformist. Ed Miliband, whose climate legacy is more defensible than his previous leadership record suggested. Al Carns, less well-known but flagged by several Eurasian and political analysts as a candidate with moderniser appeal. None of these names has yet declared. None needs to — the first move is Starmer's, not theirs.</p>
+
+  <p>As of this Sunday, Starmer has not resigned. He has stated publicly that he would stand in any leadership contest, framing his position as a commitment to the project rather than a concession to the pressure. That is, on the available evidence, a difficult position to sustain as the count rises. The 147 MPs who have not yet taken a public stance are watching each other, and that is what makes the next fortnight so fragile: a stampede is self-reinforcing once it begins, and the 95 figure is already a majority of a majority in the wrong direction.</p>
+
+  <p>The structural reading of what this means is harder than the procedural one. A Starmer departure — whether voluntary or forced — would be the second Labour leadership change in five years, after Jeremy Corbyn. It would hand the Conservatives and Reform a propaganda gift at the worst possible moment, confirming a narrative about Labour's ungovernability. Against that, a leader who has lost the cabinet, the councils, and the confidence of a third of his parliamentary party is not, in any practical sense, governing. The question of whether it is better to lance the crisis now or to manage it into the ground is the one being answered behind closed doors across Westminster this weekend.</p>
+
+  <div class="angle reveal">
+    <div class="angle-label">The Angle</div>
+    <p>The Eurasia Group number — 80% — is the signal. Political risk analysts are not in the business of dramatic flourish; that figure reflects a structural assessment, not a temperature reading. The scenario they judge most likely (MP-forced leadership contest by September) is credible because it requires nothing unexpected to happen: just the arithmetic continuing to move in the direction it is already moving. Starmer can survive if the 147 uncommitted MPs decide the risks of removal outweigh the risks of continuation. That is possible. It is not, on current evidence, probable.</p>
+  </div>
+
+  <div class="src"><a href="https://en.wikipedia.org/wiki/2026_United_Kingdom_government_crisis">Wikipedia — 2026 UK Government Crisis</a> · <a href="https://labourlist.org/2026/05/labourlist-labour-mp-starmer-resignation-tracker/">LabourList MP Tracker</a> · <a href="https://www.cnbc.com/2026/05/12/uk-starmer-mps-quit-eurasia-politics.html">CNBC / Eurasia Group analysis</a> · <a href="https://www.cnn.com/2026/05/14/uk/streeting-resigns-health-secretary-starmer-uk-intl">CNN — Streeting resignation</a></div>
+
+  <hr class="divider inset">
+
+  <!-- ── COMPANION: The Hormuz Bargain ── -->
+
+  <h3>The Hormuz Bargain — Trump says "largely negotiated"; Tehran isn't sure that's true</h3>
+
+  <p>On 23 May, President Trump told reporters that a peace agreement with Iran reopening the Strait of Hormuz was "largely negotiated" and would be announced shortly, describing a "very good call" involving leaders from Qatar, Saudi Arabia, Turkey, Pakistan, Jordan, Egypt and the UAE. Within hours, Iran's Fars news agency issued a response: the deal was "incomplete and inconsistent with reality". Both statements can be true simultaneously, which is perhaps the most useful way to understand where this stands.</p>
+
+  <p>The ceasefire that came into force on 8 April has been fragile since the beginning. Skirmishes have continued through April and into May. Almost no commercial shipping has used the Strait since the conflict began — UNCTAD is projecting global growth at 2.6% for 2026, with the energy disruption a significant contributing factor. The economic logic of a deal is overwhelming; the political logic, from Tehran's perspective, is considerably more complicated.</p>
+
+  <div class="sidebar-float">
+    <div class="sidebar-title">Sticking Points</div>
     <ul>
-      <li>WHO declared the DRC Ebola outbreak a Public Health Emergency of International Concern on 17 May 2026 — only the 7th PHEIC in WHO history</li>
-      <li>Bundibugyo ebolavirus strain: no approved vaccine, no specific therapeutic — unlike the 2018–2020 Kivu outbreak, which had rVSV-ZEBOV</li>
-      <li>836 suspected cases, at least 186 deaths as of 22 May; WHO risk assessment rated "very high"</li>
-      <li>Confirmed spread to Kampala, Uganda — first international crossing of this outbreak</li>
+      <li><strong>Enriched uranium</strong> — US insists Iran relinquish stockpiles</li>
+      <li><strong>Natanz</strong> — demands for dismantlement of the enrichment facility</li>
+      <li><strong>Fordow</strong> — buried facility; Iran has refused to consider closure</li>
+      <li><strong>Isfahan</strong> — conversion plant; disputed status in talks</li>
+      <li><strong>Israel</strong> — continues to push for a harder military posture, complicating US leverage</li>
     </ul>
   </div>
 
-  <figure class="hero-bleed">
-    <img src="https://phil.cdc.gov/PHIL_Images/10816/10816.jpg" alt="Electron micrograph of Ebola virus particles, CDC PHIL image 10816, showing filamentous viral structures">
-    <figcaption>Ebola virus particles in electron micrograph. Image: CDC / PHIL 10816 (public domain). The 2026 outbreak involves the Bundibugyo strain, which differs significantly from the Zaire strain responsible for the 2014 West Africa epidemic and the 2018–2020 Kivu crisis.</figcaption>
-  </figure>
+  <p>Trump's demand package remains what it has been throughout: Iran surrenders its enriched uranium and agrees to dismantle the Natanz, Fordow and Isfahan nuclear facilities. For Iran, these are not bargaining chips — they represent years of investment and the core of what its negotiating position has always been protecting. The gap between "largely negotiated" and "done" may be measured in weeks or it may be measured in the distance between two parties who define the deal differently.</p>
 
-  <div class="stat-bar">
-    <div class="stat"><div class="stat-num">836</div><div class="stat-label">suspected cases (22 May)</div></div>
-    <div class="stat"><div class="stat-num">186</div><div class="stat-label">deaths confirmed</div></div>
-    <div class="stat"><div class="stat-num">7th</div><div class="stat-label">PHEIC in WHO history</div></div>
-    <div class="stat"><div class="stat-num">$60m</div><div class="stat-label">UN CERF allocation</div></div>
-  </div>
+  <p>The complicating variable is Israel, which has continued to push for a harder military posture throughout the ceasefire period and has limited interest in a diplomatic resolution that leaves Iran's nuclear infrastructure partially intact. Trump needs a deal — the economic cost of a closed Strait is borne disproportionately by US trading partners in the Gulf, who are also the counterparties to his other diplomatic priorities. Whether "largely negotiated" is an accurate description of the state of play, or a negotiating posture delivered via press conference, is a question the next week or two will likely begin to answer.</p>
 
-  <p>When the WHO's Emergency Committee convened on 17 May and declared a Public Health Emergency of International Concern over the Ebola outbreak in the Democratic Republic of the Congo, it was not a reflexive bureaucratic response to alarming case numbers. It was a considered judgment that the Bundibugyo strain — first confirmed on 15 May in Ituri Province, northeastern DRC — presented a qualitatively different set of problems from any previous Ebola outbreak the international community had learned to manage. Those problems, stacked together, explain why this is only the seventh PHEIC in WHO history.</p>
-
-  <p>The first problem is the strain itself. The 2018–2020 Kivu outbreak, which killed over 2,200 people, was ultimately brought under control partly because of a tool that simply does not exist for Bundibugyo: the rVSV-ZEBOV vaccine, developed and deployed under emergency authorisation, was effective against the Zaire strain. No approved vaccine covers Bundibugyo ebolavirus. No specific therapeutic has been validated against it. The 2026 outbreak is now stress-testing whether the world's Ebola preparedness infrastructure — built largely around Zaire-strain tools — transfers to a different species of the pathogen.</p>
-
-  <blockquote class="pull-quote">
-    <p>"The outbreak does not meet the criteria of pandemic emergency" — Tedros urged countries not to close borders, but the PHEIC declaration signals the international community cannot treat this as a DRC-internal health event.</p>
-    <cite>— WHO Director-General Tedros Adhanom Ghebreyesus, 17 May 2026</cite>
-  </blockquote>
-
-  <p>The second problem is geography. Previous outbreaks in the DRC — Ituri, Equateur, Nord-Kivu — were severe but remained within the country's borders long enough for international support to establish response corridors. This one moved faster. By 22 May, confirmed cases had been recorded in Nord-Kivu and Sud-Kivu provinces inside the DRC, and — most significantly — in Kampala, Uganda's capital. Kampala is not a remote border settlement. It is a city of over two million people, connected by road and air to Nairobi, Addis Ababa, and beyond. International spread to an urban capital within a week of first confirmation is exactly the scenario WHO risk assessors had rated "very high."</p>
-
-  <p>The DRC's security situation compounds every logistical challenge. Ituri Province has been under a state of siege since 2021, intermittently contested between armed forces and militant groups. Health workers in the region have faced attacks during previous response operations. Getting ring-vaccination teams into affected communities is a different problem when those communities are also managing active conflict — a constraint that has not resolved since the Kivu response years.</p>
-
-  <p>The United Nations allocated up to $60 million from the Central Emergency Response Fund within days of the declaration. The DRC government, WHO, MSF, and UNICEF are coordinating a joint response, with Kampala's public health authorities standing up contact-tracing operations in parallel. One immediate diplomatic wrinkle: the United States informed the DRC national football team that players travelling to the country for the 2026 FIFA World Cup must complete an isolation period before entering — a decision driven by US public health protocols that generated friction at a politically sensitive moment for both sides.</p>
-
-  <p>Tedros was careful with language in addressing the Emergency Committee's conclusions. The outbreak "does not meet the criteria of a pandemic emergency," and he urged countries not to close borders — both statements designed to prevent the kind of travel restriction cascade that complicated the 2014 West Africa response and caused substantial economic damage to countries not directly affected. The distinction matters: a PHEIC is a call for coordinated international action, not a declaration of pandemic status. But it is also a formal signal that the world cannot afford to stand back and wait.</p>
-
-  <div class="angle reveal">
-    <div class="angle-label">Historical Context</div>
-    <p>The 2014 West Africa Ebola epidemic killed over 11,000 people, in part because the world's response was slow to recognise the outbreak as a PHEIC problem — the declaration came in August 2014, five months into an epidemic that had already left Guinea, Sierra Leone, and Liberia. The 2026 response has moved faster. Whether speed without the vaccine toolkit that tamed Kivu proves sufficient is the question the coming weeks will answer.</p>
-  </div>
-
-  <div class="src"><a href="https://www.who.int/news/item/17-05-2026-epidemic-of-ebola-disease-in-the-democratic-republic-of-the-congo-and-uganda-determined-a-public-health-emergency-of-international-concern" rel="noopener">WHO — PHEIC declaration, 17 May 2026</a> · <a href="https://www.cidrap.umn.edu/ebola/dr-congo-ebola-outbreak-reaches-nearly-750-suspected-cases-177-deaths-area-risk-upgraded-very" rel="noopener">CIDRAP — DRC outbreak tracker</a></div>
+  <div class="src"><a href="https://www.cnbc.com/2026/05/23/us-iran-war-talks.html">CNBC — Trump / Iran deal announcement</a> · <a href="https://www.washingtonpost.com/national-security/2026/05/23/us-seeks-iran-ceasefire-extension-war-threats-loom/">Washington Post — ceasefire analysis</a> · <a href="https://www.aljazeera.com/news/2026/5/21/israel-pushes-for-war-amid-us-ceasefire-but-its-options-may-be-limited">Al Jazeera — Israel's position</a></div>
 
   <hr class="divider inset">
 
-  <!-- ══ IRAN TRACKER SIDEBAR ══ -->
+  <!-- ── ONGOING TRACKER: Iran ── -->
+
   <div class="sidebar">
-    <div class="sidebar-title">Iran Tracker — Where Things Stand</div>
-    <p>Trump claimed on 23 May that a deal was "largely negotiated," with an announcement expected imminently. The reported framework involves a 60-day ceasefire extension, Strait of Hormuz reopening, restoration of Iranian oil exports, and a moratorium on uranium enrichment — with the US seeking 20 years and Iran proposing 5. Pakistan is mediating. The IRGC-affiliated Fars agency dismissed Trump's claim as "incomplete and inconsistent with reality." No signed text has been confirmed by either government.</p>
+    <div class="sidebar-title">Iran War — Week 8 (Ongoing)</div>
+    <p>The ceasefire in place since 8 April remains technically operative but fragile, punctuated by low-level skirmishes. The Strait of Hormuz remains effectively closed to commercial shipping — energy markets are pricing in sustained disruption. UNCTAD's revised 2026 global growth projection of 2.6% cites the shipping and energy crisis as a material drag. The UN Security Council's emergency session on 19 May produced no new framework. No new military escalation has been confirmed this week; the diplomatic track (see Companion piece above) is where the story now sits.</p>
+    <p><a href="https://en.wikipedia.org/wiki/2026_Iran_war_ceasefire">Wikipedia — 2026 Iran war ceasefire</a></p>
   </div>
 
-  <hr class="divider inset">
+  <!-- ── ALSO THIS WEEK ── -->
 
-  <!-- ══ COMPANION: UK Labour Leadership Crisis ══ -->
-  <h2>Starmer's slow-motion coup: Streeting walks, 95 MPs sign, the party machine wakes up</h2>
-
-  <div class="entry-stat">95<span class="entry-stat-unit">+</span></div>
-  <div class="entry-stat-context">Labour MPs publicly calling for Keir Starmer's resignation or a departure timetable as of mid-week — set against a competing bloc of approximately 111 MPs who signed a statement of support for the Prime Minister</div>
-
-  <p>Wes Streeting resigned from cabinet on 14 May, citing lost confidence in the Prime Minister. Four junior ministers and four ministerial aides followed in the days that followed, making this not a single resignation but a structured withdrawal — a test of whether the parliamentary party would treat it as the beginning of a coordinated removal or an isolated act of conscience. The answer, as of this issue, is: both, simultaneously.</p>
-
-  <p>The roots of the crisis lie in the local elections. Reform UK and the Greens made sweeping gains in May's council contests, carving into Labour's vote share in ways that pointed toward a structural rather than cyclical shift. For Labour MPs in marginal seats, the local results were not abstract — they were a direct preview of what a general election held under current conditions might produce. Streeting's resignation letter named those results explicitly as evidence that the current leadership strategy was not recoverable under the same leader.</p>
-
-  <blockquote class="pull-quote">
-    <p>A formal leadership challenge would trigger a full membership vote — and the membership returned Starmer with a mandate. The awkward arithmetic sits there: 95 MPs demanding departure, 111 saying he should stay, and a rulebook that may yet rescue the man both camps are fighting over.</p>
-    <cite>— UK Labour leadership crisis, May 2026</cite>
-  </blockquote>
-
-  <p>Starmer has shown no sign of stepping down. The Downing Street position has been consistent: the Prime Minister has a mandate, the government is governing, and the party will be judged by results rather than internal polling. That position is constitutionally defensible — a formal challenge requires sufficient nominations under Labour rules, and no challenger has reached the threshold. But the political temperature inside the PLP is not a constitutional question. Ninety-five public signatories represents a sustained drumbeat that makes every Commons vote a test of whether the number moves.</p>
-
-  <p>Potential successors are openly discussed: Andy Burnham, David Lammy, Angela Rayner, and Wes Streeting himself appear in most assessments. Each carries complications. Burnham lacks a Westminster seat; Lammy's profile is strongest on foreign policy, which does not translate easily into domestic leadership authority; Rayner remains the most obvious party-unity candidate but has been deliberately silent. Streeting, who triggered the crisis, would face the argument that a leadership bid from the resigner-in-chief rewards the act of resignation rather than a genuine alternative programme. What neither side has produced yet is the single event that resolves the standoff.</p>
-
-  <div class="src"><a href="https://labourlist.org/2026/05/labourlist-labour-mp-starmer-resignation-tracker/" rel="noopener">LabourList — MP resignation tracker</a> · <a href="https://www.aljazeera.com/news/2026/5/18/britain-faces-weeks-of-leadership-limbo-in-slow-motion-coup-against-starmer" rel="noopener">Al Jazeera — leadership limbo analysis</a></div>
-
-  <hr class="divider inset">
-
-  <!-- ══ ALSO ITEMS ══ -->
   <div class="also">
     <div class="also-title">Also This Week</div>
     <ul class="also-list">
-      <li>
-        <strong>Trump-Xi Beijing Summit, 14–15 May</strong> — Agricultural purchases at $17 billion per year through 2028, a 200-Boeing-jet order, rare earth cooperation frameworks, and two joint trade oversight boards. The joint communiqué described a "constructive strategic stability" framework; Xi warned on Taiwan. A follow-up summit is planned for September in the United States. The most substantive formal US-China trade engagement since the pre-tariff era — implementation mechanisms remain to be tested. (<a href="https://apnews.com/hub/trump-xi" rel="noopener">AP News</a>)
-      </li>
-      <li>
-        <strong>Aston Villa win the Europa League</strong> — 20 May, Istanbul. Villa beat SC Freiburg 3–0, goals from Tielemans, Buendia, and Rogers. The club's first European title since the 1982 European Cup — a 44-year wait ended. Unai Emery wins his fifth Europa League, the record for any manager in the competition. (<a href="https://www.bbc.co.uk/sport/football/europa-league" rel="noopener">BBC Sport</a>)
-      </li>
-      <li>
-        <strong>Pope Leo XIV signs first encyclical</strong> — <em>Magnifica Humanitas</em>, dated 15 May, addresses AI's social impact and the Church's role in peace, drawing on themes from the Pope's April Africa trip. The first encyclical of Leo XIV's pontificate signals the doctrinal priorities of the first American pope: technology ethics and peacemaking through Catholic social teaching. (<a href="https://www.catholicnewsagency.com" rel="noopener">Catholic News Agency</a>)
-      </li>
+      <li class="tier-hot"><strong>Trump-Xi Beijing summit closes with $17bn/yr deal.</strong> The first US presidential visit to China since November 2017 ended with a framework agreement: China committed to purchasing at least $17 billion in US agricultural goods annually through 2028, and the two sides announced a "board of trade" and "board of investment" to manage economic ties. China also indicated interest in purchasing 200 Boeing aircraft, though specific details were not confirmed. Elon Musk and Jensen Huang attended alongside Trump. Analysts noted the meeting was heavy on ceremony — the US and China offered divergent characterisations of what the tariff discussions produced. <a href="https://www.cnbc.com/2026/05/18/us-china-announce-deals-after-trump-xi-summit.html">CNBC</a> · <a href="https://www.cnn.com/2026/05/18/china/xi-trump-trade-agreements-china-visit-intl-hnk">CNN</a></li>
+      <li class="tier-hot"><strong>DOJ indicts Raúl Castro; USS Nimitz arrives in the Caribbean.</strong> The US Department of Justice unsealed a federal indictment charging Cuba's former leader Raúl Castro with murder and destruction of an aircraft — relating to the 1996 shootdown of civilian planes flown by exile group Brothers to the Rescue. Trump and Secretary Rubio followed the announcement by again raising the prospect of US military intervention, with Trump stating "it looks like I'll be the one that does it." The USS Nimitz carrier arrived in the Caribbean coinciding with the indictment. Analysts drew parallels to the pattern that preceded US military action against Venezuela's Maduro in January, suggesting this may be a legal precursor to something rather than a legal process in the conventional sense. <a href="https://www.cnn.com/2026/05/20/politics/live-news/raul-castro-doj-indictment">CNN</a> · <a href="https://foreignpolicy.com/2026/05/22/cuba-war-trump-united-states-castro-indictment/">Foreign Policy</a> · <a href="https://www.npr.org/2026/05/22/nx-s1-5830999/rubio-diplomacy-cuba-trump-military-action">NPR</a></li>
+      <li class="tier-warm"><strong>China coal mine explosion kills at least 90 in Shanxi.</strong> A gas explosion at the Liushenyu Coal Mine in Qinyuan, Changzhi killed at least 90 workers — the deadliest mining disaster in China in over a decade. Of the 247 workers underground at the time, 201 were evacuated and 9 remain missing. Investigators found the mine had been listed among facilities flagged for severe safety hazards by the National Mine Safety Administration in 2024, and that underground blueprints did not match the actual layout — hampering rescue efforts. The Chinese Ministry of Emergency Management deployed 345 personnel from six rescue teams. <a href="https://www.npr.org/2026/05/23/nx-s1-5832405/coal-mine-gas-explosion-china">NPR</a> · <a href="https://en.wikipedia.org/wiki/2026_Liushenyu_coal_mine_explosion">Wikipedia</a></li>
     </ul>
   </div>
 
-  <div class="read-next">Next: <a href="#pixel-byte">Pixel &amp; Byte</a> — Gemini Spark and the 900-million-user moment.</div>
+  <div class="read-next">Up next: <a href="#tech">Pixel &amp; Byte <span class="arrow">→</span></a> — Switch 2's Stray and what Nintendo's price moves mean for hardware buyers</div>
 </section>
 
 <hr class="divider dv-tech">
-<section class="sec tech-section sec-opener" id="pixel-byte">
-  <div class="sec-watermark">Pixel &amp; Byte</div>
+<section class="sec tech-section" id="tech">
+  <div class="sec-watermark">Pixel</div>
+  <div class="sec-gradient-overlay"></div>
   <span class="section-label" style="color:var(--ember)">Pixel &amp; Byte</span>
 
-  <!-- ═══════════════════════════════════════════════════════════
-       LEAD — Google I/O 2026 · consumer_ai
-       ═══════════════════════════════════════════════════════════ -->
-  <article class="article lead-article">
-    <header class="article-header">
-      <span class="topic-label">Consumer AI</span>
-      <h2 class="article-headline">Gemini Spark, Omni and the 900-million-user moment: Google's pivot from chatbot to background agent</h2>
-      <p class="article-dek">At I/O 2026, Google showed that the AI product race is no longer about chat — it is about persistent, ambient intelligence that works while the screen is dark.</p>
-    </header>
+  <!-- LEAD: Stray on Switch 2 -->
+  <div class="opener-lead quote">
+    "A cat exploring a cyberpunk city should not work as a premise. Four years on, it still does."
+    <cite>— Editorial</cite>
+  </div>
 
-    <div class="entry-stat">
-      <span class="big-number">900<span class="big-number-unit">M</span></span>
-      <span class="entry-stat-label">monthly Gemini users as of May 2026 — up from 400 million a year earlier. Over the same period, ChatGPT's share of AI-tool web traffic fell from 77% to 57%.</span>
+  <h3>The Cat Game Comes to Switch 2 — and Brings Mouse Controls With It</h3>
+
+  <div class="split-60-40">
+    <div>
+      <p class="dropcap"><span class="lead-in">Four years after</span> its PC and PlayStation debut, Annapurna Interactive's <strong>Stray</strong> arrives on Nintendo Switch 2 this Thursday, 28 May, priced at $29.99. The package includes 4K resolution output, an improved frame rate, and — the most interesting addition — dedicated mouse controls. If the mouse integration lands cleanly, Stray on Switch 2 becomes something its original console incarnations weren't: a game where pointing at things with your cursor is part of the vocabulary.</p>
+
+      <p>The original Stray was released in July 2022 and won awards for a quality that's genuinely rare in games: tone. You play as an orange tabby navigating a walled cyberpunk city populated entirely by robots, solving environmental puzzles, knocking things off shelves, and eventually piecing together the city's history. Developer BlueTwelve Studio built something that didn't need to be longer than it was — roughly five to six hours, depending on how much you explored — and that restraint was the point. The game understood that a cat's attention span is not a bug, it's the lens.</p>
+
+      <p>The Switch 2 port adds to an increasingly compelling secondary pipeline for Nintendo's new hardware. This month alone has seen Indiana Jones and the Great Circle (14 May), Yoshi and the Mysterious Book (21 May), and now Stray — all multi-platform titles arriving weeks or months after their lead-platform debuts, each with something new to justify the double-dip. Mouse controls on a puzzle-exploration game is a more credible addition than simply bumping resolution, because it changes the interaction: pointing and clicking has a different rhythm from analogue thumbstick navigation, and in a game built around curiosity and environmental reading, that shift in input could meaningfully change pacing.</p>
+
+      <p>Whether mouse controls on a Switch 2 actually feel good will depend heavily on how BlueTwelve Studio has mapped the input — the Joy-Con mouse mode is a genuinely novel control scheme, and Stray is the first major third-party port to commit to it rather than offering it as a cosmetic option. That makes 28 May a minor test case for the platform: if the controls work well, it sets a precedent for how puzzle and strategy developers approach Switch 2 ports going forward.</p>
+
+      <p>The broader question is whether Stray's particular spell still holds. The game's emotional weight came from mystery and miniature scale — the city was large, the cat was small, and the gap between those two things was where the atmosphere lived. That quality is not format-dependent. It should survive 4K and a docked screen just fine. At $29.99 for a first-time Switch 2 owner, it remains one of the stronger entry-point arguments for a platform that's still building its software identity.</p>
+
+      <p><a href="https://www.nintendoreporters.com/en/news/nintendo-switch-2/stray-comes-to-nintendo-switch-2-on-may-28-with-4k-visuals-improved-frame-rate-and-mouse-controls/" style="color:var(--ember)">Nintendo Reporters — Stray Switch 2 details</a> · <a href="https://www.nintendolife.com/games/nintendo-switch-2/stray" style="color:var(--ember)">Nintendo Life listing</a></p>
     </div>
-
-    <p>Google I/O ran on 19–20 May 2026 and delivered something subtly different from the model-benchmarks showcase of recent years: a product vision for AI that lives in the background, surfaces only when useful, and operates across a full day without requiring a single prompt.</p>
-
-    <p>The centrepiece announcement was <strong>Gemini Spark</strong>, a 24/7 cloud-based agent that runs on a dedicated virtual machine assigned to each user. Where today's AI assistants wait to be asked, Spark continues working after the phone is locked — breaking multi-step tasks into sub-tasks, querying APIs, drafting documents, and returning results when the user next opens the app. The framing Google chose was deliberate: not a smarter chatbot, but a background process.</p>
-
-    <p>Alongside Spark, Google announced the <strong>Daily Brief</strong>, a personalised morning digest assembled from Gmail, Calendar and Tasks. The Brief synthesises overnight emails, surfaces upcoming deadlines and flags scheduling conflicts — all without requiring the user to open any individual app. It is the most direct expression yet of Google's ambient-intelligence thesis: information finds the person, rather than the person hunting for information.</p>
-
-    <p>On the model side, the headline release was <strong>Gemini Omni</strong>, a fully multimodal model that accepts image, audio, video and text input simultaneously. Two further variants — <strong>Gemini 3.5 Flash</strong> and <strong>Gemini Omni Flash</strong> — complete the range, with Flash variants targeting speed and cost-per-token for developer use cases. Together, the model family gives Google a credible answer across consumer, enterprise and API tiers.</p>
-
-    <p>The Android integration carries the internal codename <strong>Halo</strong>: a persistent overlay that renders live agent progress as a translucent band at the edge of the screen. As Spark works in the background, Halo surfaces status updates — a visual contract between the user and a process they did not need to supervise. It is a small UX detail with large implications: it normalises the idea of an AI doing work that nobody explicitly watched.</p>
-
-    <p>Hardware ambitions are quieter but notable. Google confirmed audio-glasses partnerships with <strong>Gentle Monster</strong>, <strong>Warby Parker</strong>, and <strong>Samsung</strong>, positioning itself in the wearable-AI tier that Meta's Ray-Ban glasses opened. And <strong>SynthID</strong>, Google's AI-watermarking system, has now been applied to content 50 million times globally — a figure the company cited as evidence that provenance infrastructure is scaling alongside generation infrastructure.</p>
-
-    <p>Taken together, the I/O 2026 keynote was less a product launch than a statement of strategic position. Google is betting that the next wave of AI adoption is not driven by users opening a chat window, but by agents that surface value throughout the day without being summoned. With 900 million monthly Gemini users and a mobile OS that ships on most of the world's phones, the infrastructure for that bet is already in place.</p>
-
-    <p class="article-source"><a href="https://techcrunch.com/2026/05/19/google-updates-its-gemini-app-chatgpt-174500026/" target="_blank" rel="noopener">TechCrunch coverage</a> · <a href="https://blog.google/innovation-and-ai/technology/ai/google-io-2026-all-our-announcements/" target="_blank" rel="noopener">Google I/O all announcements</a></p>
-  </article>
-
-  <!-- ═══════════════════════════════════════════════════════════
-       COMPANION — Garmin CIRQA · wearables_consumer
-       ═══════════════════════════════════════════════════════════ -->
-  <article class="article companion-article">
-    <header class="article-header">
-      <span class="topic-label">Wearables</span>
-      <h2 class="article-headline">Garmin CIRQA: a screenless, subscription-free Whoop rival — and what £379 says about the market</h2>
-      <p class="article-dek">A leaked price tag from a Ukrainian retailer positions Garmin's forthcoming fitness band as a mid-tier challenger — and raises questions about where the wearable market is actually heading.</p>
-    </header>
-
-    <figure class="img-float-left">
-      <img src="https://the5krunner.com/wp-content/uploads/2026/01/garmin-cirqa-leaked-image.jpg" alt="Garmin CIRQA leaked image showing fabric-strap screenless fitness band">
-      <figcaption>The leaked CIRQA image. Credit: The 5k Runner.</figcaption>
-    </figure>
-
-    <p>Garmin has not announced the CIRQA. The device surfaced through a Ukrainian retailer listing at $507 / £379 — a figure that landed in coverage before any official confirmation arrived. What the leak revealed is the broad shape of the product: a screenless fitness band in a fabric-strap format, designed for continuous 24/7 heart-rate variability monitoring, with no subscription required.</p>
-
-    <p>The subscription angle is the most pointed element of the positioning. Whoop, the dominant name in screenless recovery bands, operates entirely on a subscription model: the hardware is provided at low or no upfront cost, and the data platform sits behind a monthly fee. Garmin's apparent approach is the inverse — a significant upfront purchase with no recurring charge. At £379, the CIRQA costs meaningfully more than a Fitbit entry device, but users who stay with it for more than a year pay nothing beyond the purchase price, while a comparable Whoop subscription accumulates substantially more over the same period.</p>
-
-    <p>The name "CIRQA" — evoking circular, body-worn sensing — fits Garmin's recent tendency to brand sub-categories rather than simply extend model lines. The fabric strap format is a conscious departure from the hard-case wristband, prioritising all-day comfort for the sleep and recovery use case where HRV data is most meaningful.</p>
-
-    <p>No confirmed release date has emerged. The product remains in pre-announcement territory, with the retailer listing the only public artefact. But the leak arrives at a moment when the recovery-wearable segment is actively contested: Whoop is expanding its ecosystem with ring and band variants, Apple Watch Ultra continues to absorb high-intent fitness buyers from the top, and Fitbit's mid-range credibility has eroded since the Google acquisition. A Garmin entry at this price, with no subscription and the brand's existing trust among endurance athletes, would shift the segment's centre of gravity.</p>
-
-    <p>Whether £379 proves to be the final price, or a pre-production retail estimate that shifts before launch, the number alone is editorial: it signals that Garmin sees a durable market for no-subscription wearables above the commodity tier, and below the luxury category.</p>
-
-    <p class="article-source"><a href="https://www.androidcentral.com/wearables/garmin/garmins-whoop-rival-just-leaked-and-it-might-be-five-times-the-price-of-the-fitbit-air" target="_blank" rel="noopener">Android Central</a></p>
-  </article>
-
-  <!-- ═══════════════════════════════════════════════════════════
-       ALSO ITEMS — compact grid
-       ═══════════════════════════════════════════════════════════ -->
-  <div class="also-grid">
-    <h3 class="also-grid-heading">Also This Week</h3>
-
-    <!-- Also 1: Gaming — Switch 2 May releases -->
-    <div class="also-item">
-      <figure class="also-item-figure">
-        <img src="https://cdn.nintendolife.com/media/2026/05/yoshi-mysterious-book-switch-2-screenshot.jpg" alt="Yoshi and the Mysterious Book on Nintendo Switch 2">
-        <figcaption>Yoshi and the Mysterious Book. Credit: Nintendo Life.</figcaption>
-      </figure>
-      <div class="also-item-body">
-        <span class="also-topic-label">Gaming</span>
-        <h4 class="also-headline">Switch 2's May scorecard</h4>
-        <p>Three notable Switch 2 releases across the month: <strong>Yoshi and the Mysterious Book</strong> launched 21 May as a first-party exclusive for the new hardware. <strong>Indiana Jones and the Great Circle</strong> arrived 12 May, bringing Bethesda's action-adventure to Nintendo's platform. <strong>Stray</strong>, the critically admired cat-and-robot wanderer, received a native Switch 2 port on 28 May. The trio covers family, adventure and indie segments in a single month — an early signal that Nintendo's software pipeline for the new console is more varied than the launch window suggested.</p>
-      </div>
-    </div>
-
-    <!-- Also 2: LEGO May -->
-    <div class="also-item">
-      <figure class="also-item-figure">
-        <img src="https://www.lego.com/cdn/cs/set/assets/blt9dcba4a06095aa84/77984_box1_v29.jpg" alt="LEGO Jurassic Park Jeep Wrangler set 77984">
-        <figcaption>LEGO set 77984 — Jurassic Park Jeep Wrangler. Credit: LEGO.</figcaption>
-      </figure>
-      <div class="also-item-body">
-        <span class="also-topic-label">LEGO</span>
-        <h4 class="also-headline">May's LEGO slate: Mandalorian, Jurassic Park and F1</h4>
-        <p>Three releases worth noting. The <strong>UCS Mandalorian N-1 Starfighter</strong> (set 75442, 1,809 pieces) lands as the flagship May Star Wars entry. The <strong>Jurassic Park Jeep Wrangler</strong> (set 77984, $199.99) recreates the film's iconic vehicle with period-accurate detail. And LEGO's licensed F1 collection grows with helmet sets for <strong>Lewis Hamilton</strong> and <strong>Charles Leclerc</strong> ($89.99 each) — smaller in piece count but aimed squarely at the fan collector market that the sport's recent mainstream surge has expanded.</p>
-      </div>
-    </div>
-
-    <!-- Also 3: UK Fintech -->
-    <div class="also-item">
-      <div class="also-item-body">
-        <span class="also-topic-label">UK Fintech</span>
-        <h4 class="also-headline">Monzo profitable, Revolut goes private banking</h4>
-        <p>Monzo reported FY2026 profit before tax of <strong>£172.6m</strong> on revenue of <strong>£1.7bn</strong> — a 39% year-on-year revenue increase — with the customer base reaching <strong>15.2 million</strong>. The numbers confirm a credible path to IPO. Meanwhile, Revolut is planning a private banking arm for UK and European clients holding £500,000 or more in assets, moving the challenger brand decisively upmarket and into territory previously held by the established private banks. Two fintech stories arriving in the same week; two very different definitions of what a "bank" should be doing in 2026.</p>
+    <div>
+      <div class="dyk">
+        <div class="dyk-label">Did You Know?</div>
+        <p>Stray was first announced at a PlayStation showcase in June 2020 under its working codename <em>HK_Project</em> — a reference to Hong Kong, one of the inspirations for the city's layered, neon-lit aesthetic. The final game released two years later, in July 2022, to a score of 82 on Metacritic and a Steam rating of "Overwhelmingly Positive". Annapurna Interactive, its publisher, also released Outer Wilds and What Remains of Edith Finch — a catalogue that values environmental storytelling over combat loops.</p>
       </div>
     </div>
   </div>
 
-  <div class="read-next">Next: <a href="#the_lab">The Lab</a> — The leucine threshold protocol during a cut.</div>
+  <!-- COMPANION: Gemini post-I/O rollout -->
+  <div class="sidebar-float">
+    <div class="sidebar-title" style="color:var(--ember)">In AI This Week</div>
+
+    <h3>Gemini Goes Everywhere — Including Someone Else's Phone</h3>
+
+    <p>The week after Google I/O is traditionally when the announcements start arriving in actual products, and this week that process is underway. Gemini 4 integration is rolling into Google Search, expanding AI Overviews to more query types. A drafting assistant powered by Gemini is appearing in Google Docs. YouTube is gaining a Gemini-powered summarisation feature for longer videos — ask what a video covers and get a structured reply rather than a timestamp hunt.</p>
+
+    <p>The detail that stuck from the I/O keynote itself, though, was the device Google chose for a live demo: an iPhone. Google demonstrated Gemini Spark on Apple hardware, centre stage, without apology. The strategic logic is hard to miss — Google is positioning Gemini as platform-agnostic AI in a way that Apple Intelligence, which runs locally and is tied to Apple silicon, structurally cannot be. If the message to consumers is "the best AI assistant doesn't care what phone you use", then demoing on an iPhone is not a quirk, it's the argument.</p>
+
+    <p>Apple WWDC 2026 is scheduled for the coming weeks, and the expectation is that Apple will respond with the next generation of Apple Intelligence features. The gap between Google's approach (cloud-first, cross-platform, heavy on integrations) and Apple's (on-device, privacy-forward, hardware-locked) is sharpening into something the average consumer will increasingly have to choose between. That's a more interesting question than benchmark comparisons.</p>
+
+    <p>Every AI item here passes the consumer test: these are features arriving in apps and services most people already use, not developer tooling. Gemini in Search is something anyone with a Google account will encounter this week, whether or not they went looking for it.</p>
+
+    <p><a href="https://www.techradar.com/tech/icymi-the-weeks-7-biggest-tech-news-stories-from-googles-search-overhaul-to-sonys-priciest-wireless-headphones-ever" style="color:var(--ember)">TechRadar — I/O post-mortem roundup</a></p>
+  </div>
+
+  <!-- ALSO IN TECH & GAMING -->
+  <div class="also">
+    <div class="also-title">Also in Tech &amp; Gaming</div>
+    <ul class="also-list">
+      <li class="tier-hot">
+        <strong>Nintendo raises Switch 2 hardware and game prices.</strong>
+        Nintendo announced sweeping price increases for Switch 2 hardware and software, citing "changes in market conditions" and the "global business outlook" — widely read as a reference to US tariff pressure and supply-chain costs. The company declined to specify exact new regional price points in its initial statement; market-by-market announcements are expected shortly. For anyone who bought at launch, it's unwelcome news. For anyone still considering the hardware, the window of original pricing may be closing.
+        <a href="https://www.nintendolife.com/news/2026/05/nintendo-reconfirms-release-windows-for-major-upcoming-switch-2-games" style="color:var(--ember)">Nintendo Life</a>
+      </li>
+      <li class="tier-warm">
+        <strong>Star Fox is next.</strong>
+        Following Stray on 28 May, the next major Switch 2 first-party release is Star Fox, slated for June. Nintendo hasn't confirmed an exact date. After a string of third-party ports and the Yoshi platformer, a new Star Fox entry would be the platform's first genuine first-party franchise revival — the series hasn't seen a mainline release since Star Fox Zero in 2016.
+        <a href="https://mynintendonews.com/2026/04/23/stray-coming-to-nintendo-switch-2-in-may/" style="color:var(--ember)">My Nintendo News</a>
+      </li>
+      <li class="tier-warm">
+        <strong>Apple WWDC 2026 incoming.</strong>
+        Apple's Worldwide Developers Conference arrives in the coming weeks. With Google having just spent a keynote demonstrating Gemini's cross-platform reach — including on an iPhone — WWDC is now framed as a response. Expectations centre on the next generation of Apple Intelligence features, on-device model improvements, and whatever Apple has to say about the gap between what Gemini can do in the cloud and what Apple Intelligence does locally.
+        <a href="https://www.techloy.com/2026-tech-events-calendar-every-major-ces-apple-google-samsung-and-ai-conference-to-watch/" style="color:var(--ember)">Techloy — 2026 tech calendar</a>
+      </li>
+      <li class="tier-note">
+        <strong>Microsoft: 8.3 billion phishing threats in Q1 2026.</strong>
+        Microsoft's Q1 2026 security report flagged 8.3 billion phishing threats detected across its services in the first quarter, driving further investment in AI-powered threat detection tooling. Not a story that changes daily computing habits — but a useful calibration for anyone who treats email attachments as low-risk.
+      </li>
+    </ul>
+  </div>
+
+  <div class="read-next">Up next: <a href="#football">The Touchline <span class="arrow">→</span></a> — Arsenal, 22 years, and the Budapest final</div>
 </section>
 
-<hr class="divider dv-lab">
-<section class="sec lab-section" id="the_lab">
-  <div class="sec-watermark">Lab</div>
-  <span class="section-label">The Lab — Training Science <span class="debut-tag" style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--lab-accent);color:#fff;padding:2px 7px;border-radius:3px;margin-left:8px;">Debut</span></span>
-
-  <!-- Entry stat -->
-  <div class="entry-stat">
-    <div class="big-number" style="color:var(--lab-accent);">2.5 g</div>
-    <div class="entry-stat-label">Leucine per meal — the threshold that separates muscle growth from muscle loss during a cut</div>
-  </div>
-
-  <h2 class="lab-title">The Leucine Threshold</h2>
-  <p class="lab-deck">The single highest-leverage nutritional protocol during a caloric deficit — and why sub-threshold protein meals can actively accelerate muscle loss.</p>
-
-  <div class="sp-spread">
-    <div class="sp-rail" aria-hidden="true"></div>
-    <aside class="sp-margin">
-      <aside class="sp-marginalia" data-side="right">
-        <span class="sp-marginalia-label">The mechanism</span>
-        <p>Leucine binds to sestrin-2, which releases the GATOR2 complex, which then activates mTORC1. The signalling cascade takes roughly 30–60 minutes post-meal. Anything below the leucine threshold and mTORC1 stays quiet — the anabolic switch simply doesn't flip.</p>
-      </aside>
-    </aside>
-    <div class="sp-spread-body">
-      <p>The conventional wisdom about protein — eat more of it, hit a daily total, distribute it loosely across meals — turns out to be only half right. Total daily intake matters. But there is a finer mechanism at work, one that becomes critically important when the body is already under the metabolic stress of a caloric deficit. Muscle protein synthesis is controlled not by the daily protein ledger but by leucine concentration at individual meals.</p>
-
-      <p>Leucine is an essential amino acid and the primary activator of mTORC1, the molecular complex that triggers muscle protein synthesis. The key finding from a decade of mechanistic research is that there is a threshold — approximately 2.5 grams of leucine in younger adults — below which mTORC1 signalling remains insufficient and the anabolic window at that meal is effectively lost. A meal of 15 grams of protein from chicken breast delivers roughly 1.2 grams of leucine. Not enough. A full 30–40 gram serving delivers 2.5–3.2 grams. Threshold met.</p>
-
-      <p>In a caloric surplus, the body is forgiving. Anabolic hormones are elevated, muscle protein breakdown is low, and a handful of sub-threshold meals represent a missed opportunity rather than a setback. In a deficit, the arithmetic changes completely. Muscle protein breakdown is already elevated; muscle protein synthesis is already suppressed. The body is in a net catabolic state. Sub-threshold protein meals — under 25–30 grams of high-quality protein from meat, fish, dairy, or eggs — do not merely fail to stimulate synthesis. They contribute to net protein breakdown. The distinction matters enormously in practice.</p>
-    </div>
-  </div>
-
-  <!-- Pull quote -->
-  <blockquote class="sp-pullquote-huge">
-    <p>Sub-threshold protein meals during a caloric deficit do not simply fail to build muscle — they actively accelerate the loss of it.</p>
-    <cite>— Emerging consensus across leucine threshold research, 2023–2025</cite>
-  </blockquote>
-
-  <div class="sp-spread">
-    <div class="sp-rail" aria-hidden="true"></div>
-    <aside class="sp-margin">
-      <aside class="sp-marginalia" data-side="right">
-        <span class="sp-marginalia-label">The 2025 evidence</span>
-        <p>Rivera-Bermudez et al. (2025), a systematic review of 14 RCTs, found that leucine supplementation beyond the threshold provided no additional muscle protein synthesis benefit in well-nourished trained adults. The threshold is a ceiling for the signal — more leucine beyond it does not produce more response.</p>
-      </aside>
-    </aside>
-    <div class="sp-spread-body">
-      <p>A 2025 systematic review by Rivera-Bermudez et al., covering 14 randomised controlled trials, confirmed that leucine supplementation beyond the threshold produced no additional muscle protein synthesis benefit in well-nourished trained adults. The threshold is a switch, not a dial. Hitting it matters; exceeding it does not. This clarifies the practical protocol: the goal is to reach threshold consistently across meals, not to over-deliver leucine at any one sitting.</p>
-
-      <p>The 2025 Clinical Nutrition Report protocol translates this into a clear framework: 30–40 grams of high-quality protein per meal, four times daily, spaced 3–4 hours apart. For a 75 kg male running a 300–400 kcal deficit, this means roughly 120–165 grams of protein per day (1.6–2.2 g/kg), arriving as four threshold-hitting servings across the day rather than two large meals bookending the day and a protein bar in between.</p>
-
-      <p>There is an additional wrinkle for those combining resistance training with endurance work — a pattern covered in the progressive-overload framework from The Session. A 2025 Frontiers concurrent training review found that endurance exercise acutely increases muscle protein breakdown more than resistance training alone. The implication for anyone running alongside a strength block: the post-run protein window deserves specific attention. A threshold-hitting protein source — 30–40 grams of meat, fish, dairy, or eggs — within 45–60 minutes of a run limits the catabolic window that endurance exercise opens. A protein shake with 20 grams of whey does not meet threshold; a source delivering 30–40 grams does.</p>
-    </div>
-  </div>
-
-  <!-- Practical sidebar -->
-  <div class="sp-brief">
-    <p class="sp-brief-kicker">What this means practically</p>
-    <h4 class="sp-brief-h">Four meals. Thirty grams minimum.</h4>
-    <p>During a cut: four meals per day, each delivering 30–40g of meat, fish, dairy, or eggs, spaced 3–4 hours apart. Post-run, the window is 45–60 minutes. A sub-threshold snack in that window is worse than nothing — it occupies the meal slot without flipping the anabolic switch.</p>
-    <p class="sp-brief-byline">Sources: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10400406/" target="_blank" rel="noopener">PMC10400406</a> · <a href="https://www.frontiersin.org/journals/sports-and-active-living/articles/10.3389/fspor.2025.1692399/full" target="_blank" rel="noopener">Frontiers, 2025</a></p>
-  </div>
-
-  <!-- Stat bar for the protein-per-meal target -->
-  <div class="stat-bar" style="margin:1.5rem 0;">
-    <div class="stat-bar-row">
-      <span class="stat-bar-label">Protein per meal (threshold-hitting)</span>
-      <span class="big-number" style="color:var(--lab-accent);font-size:2rem;">30–40 g</span>
-    </div>
-    <div class="stat-bar-row" style="margin-top:.5rem;">
-      <span class="stat-bar-label">Meals per day (3–4 hours apart)</span>
-      <span class="big-number" style="color:var(--lab-accent);font-size:2rem;">4×</span>
-    </div>
-    <div class="stat-bar-row" style="margin-top:.5rem;">
-      <span class="stat-bar-label">Post-run protein window</span>
-      <span class="big-number" style="color:var(--lab-accent);font-size:2rem;">45–60 min</span>
-    </div>
-  </div>
-
-  <p class="lab-footer-note">Sources: Rivera-Bermudez et al. 2025 systematic review (14 RCTs) via <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10400406/" target="_blank" rel="noopener">PMC</a> · Concurrent training and muscle protein breakdown: <a href="https://www.frontiersin.org/journals/sports-and-active-living/articles/10.3389/fspor.2025.1692399/full" target="_blank" rel="noopener">Frontiers in Sports and Active Living, 2025</a>.</p>
-
-  <div class="read-next">Next: <a href="#touchline">The Touchline</a> — Budapest preview, PSG vs Arsenal.</div>
-</section>
-
-<hr class="divider dv-touchline">
-<section class="sec touchline-section sec-opener" id="touchline">
+<!-- ══════ THE TOUCHLINE ══════ -->
+<hr class="divider dv-football">
+<section class="sec touchline-section" id="football">
   <div class="sec-watermark">Touchline</div>
   <span class="section-label">The Touchline</span>
 
-  <!-- ═══════════════════════════════════════════════════════════════
-       LEAD: Champions League Final Preview
-       ═══════════════════════════════════════════════════════════════ -->
+  <!-- LEAD: Arsenal PL Title + CL Final Preview -->
 
-  <article class="entry entry-lead" id="cl-final-preview">
+  <div class="hero-bleed reveal">
+    <img src="/assets/cached/9dff3e132179.jpg"
+         alt="Arsenal players celebrating the 2025-26 Premier League title, May 2026">
+    <div class="caption">Photo: Sky Sports / 365dm.com</div>
+  </div>
 
-    <figure class="entry-hero">
-      <img
-        src="https://upload.wikimedia.org/wikipedia/commons/6/69/Pusk%C3%A1s_Ar%C3%A9na_%28cropped%29.jpg"
-        alt="Puskás Aréna, Budapest — host of the 2026 UEFA Champions League Final"
-        loading="eager">
-      <figcaption>Puskás Aréna, Budapest. Capacity 67,215. Saturday 30 May, kick-off 18:00 CET. Credit: Wikimedia Commons / CC BY-SA 4.0.</figcaption>
-    </figure>
-
-    <div class="entry-kicker" style="color: var(--turf);">Champions League Final · Budapest · 30 May</div>
-    <h2 class="entry-headline">Budapest preview: PSG defend, Arsenal chase a first — the dynasty-vs-destiny tactical case</h2>
-    <p class="entry-dek">Two clubs, two entirely different relationships with Saturday's occasion. One question: can 139 years of Arsenal history produce a single night of continental perfection?</p>
-
-    <div class="entry-bullets">
-      <ul>
-        <li><strong>Where:</strong> Puskás Aréna, Budapest — 67,215 capacity</li>
-        <li><strong>When:</strong> Saturday 30 May, 18:00 CET / 17:00 BST</li>
-        <li><strong>Pre-match entertainment:</strong> The Killers headline the pre-match concert</li>
-        <li><strong>Arsenal's stake:</strong> First European final in 20 years; first shot at a domestic-and-continental double in the club's 139-year history</li>
-        <li><strong>PSG's stake:</strong> Would become only the second side after Real Madrid (2016–18) to retain the Champions League</li>
-        <li><strong>Managerial milestone:</strong> Mikel Arteta becomes only the third Arsenal manager to reach a European final, after Bertie Mee (1970) and Arsène Wenger (2006)</li>
-      </ul>
+  <div class="opener-lead stat">
+    <div class="stat-unit">
+      <div class="stat-num count-up" data-target="22">22</div>
+      <div class="stat-label">years waiting</div>
     </div>
-
-    <div class="sp-spread">
-      <div class="sp-rail" aria-hidden="true"></div>
-      <aside class="sp-margin">
-        <aside class="sp-marginalia" data-side="right">
-          <span class="sp-marginalia-label">The Paths Here</span>
-          <p>PSG beat Bayern Munich 6–5 on aggregate in the semi-finals — one of the great modern CL ties. Arsenal eliminated Atlético Madrid 2–1 on aggregate, with Bukayo Saka decisive in the tie.</p>
-        </aside>
-        <aside class="sp-marginalia" data-side="right">
-          <span class="sp-marginalia-label">Opta's Call</span>
-          <p>Opta's pre-match modelling gives Arsenal a slight statistical edge heading into the final — an unusual position for a club contesting only their second Champions League final.</p>
-        </aside>
-      </aside>
-      <div class="sp-spread-body">
-        <p>The story that has built all season arrives at its fullest weight on Saturday evening. Arsenal, Premier League champions with a victory parade already pencilled in for Islington on 31 May, face Paris Saint-Germain in what the neutral has been waiting for since the draw was made: a genuinely open final, a clean dynasty-against-destiny narrative, and a venue — the Puskás Aréna's sweeping terracotta mass — that holds the occasion without dwarfing it.</p>
-
-        <p>PSG's route here was the more dramatic of the two semi-finals. Their 6–5 aggregate dismantling of Bayern Munich — a two-legged thriller that belongs in any short anthology of modern Champions League football — required nerve, goal-line defending, and the kind of individual intervention that only Ousmane Dembélé, the reigning Ballon d'Or holder, can conjure with reliable frequency. Dembélé's goal tally across the knockout rounds and his tendency to produce moments from nothing when a tie demands them make him the single most dangerous individual on the pitch in Budapest. Beside him, Khvicha Kvaratskhelia has settled into life at the Parc des Princes with a composure that belies his first full season in Ligue 1.</p>
-
-        <p>Arsenal's path was quieter in scoreline but no less demanding in psychological weight. The Atlético Madrid semi-final — won 2–1 on aggregate — required everything the club has built under Arteta: tactical discipline, cohesion under pressure, and Bukayo Saka at his most decisive. The England forward has been the heartbeat of this team across both competitions, and his ability to carry the ball into the final third against compact defensive structures will be the primary question PSG's back four must answer on Saturday.</p>
-
-        <p>The deeper tactical question is Viktor Gyökeres. The Swedish striker is the tournament's leading scorer this season — a fact that would have seemed improbable even two years ago — and his movement in behind a high defensive line is precisely the test PSG's centre-backs have struggled to pass consistently in the knockout rounds. The combination of Gyökeres pressing the channels, Leandro Trossard cutting in from the left, and Saka threatening from the right gives Arsenal's attack a multi-directional quality that no side in this tournament has fully neutralised.</p>
-
-        <figure class="entry-figure-inline">
-          <img
-            src="https://i.guim.co.uk/img/media/guardian-arsenal-pl-champions-2026.jpg"
-            alt="Arsenal players celebrate winning the 2025–26 Premier League title"
-            loading="lazy">
-          <figcaption>Arsenal celebrate their Premier League title. A victory parade through Islington is scheduled for 31 May — the morning after Budapest. Credit: Guardian Sport / editorial use.</figcaption>
-        </figure>
-
-        <p>The tactical contest will likely come down to how PSG manage transition. Their defensive shape in open play is less rigid than it was in last season's run, and Luis Enrique has been willing to accept that vulnerability in exchange for upfield aggression. That bargain produces football worth watching — and it produces results against Bayern — but Arsenal's counter-press, among the most effective in Europe this season, is built precisely to exploit the seconds PSG concede defensively in pursuit of the ball.</p>
-
-        <p>Retaining the Champions League is historically brutal. Real Madrid between 2016 and 2018 is the only side to have managed it in the modern era, and those were squads containing several generational players at their simultaneous peak. PSG are not that — they are a very good team built around one generational player — but they have done this before, and final experience carries more weight than pre-match probability modelling can fully express. Arsenal's players, for all their quality, are walking into territory none of them has occupied.</p>
-
-        <p>That is the case for PSG. The case for Arsenal is simpler, and perhaps stronger: this is the best team Arteta has assembled, the best expression of a project five years in the building, and Saturday in Budapest is its scheduled appointment with history.</p>
-
-        <p class="entry-source">Source: <a href="https://www.uefa.com/uefachampionsleague/match/2047742--paris-vs-arsenal/final/" target="_blank" rel="noopener">UEFA — PSG vs Arsenal, 2026 Champions League Final</a></p>
-      </div>
+    <div class="stat-unit">
+      <div class="stat-num count-up" data-target="25">25</div>
+      <div class="stat-label">league wins</div>
     </div>
-
-    <div class="stat-bar">
-      <div class="stat-bar-item">
-        <span class="stat-bar-label">PSG semi-final</span>
-        <span class="stat-bar-value">Beat Bayern Munich 6–5 agg.</span>
-      </div>
-      <div class="stat-bar-item">
-        <span class="stat-bar-label">Arsenal semi-final</span>
-        <span class="stat-bar-value">Beat Atlético Madrid 2–1 agg.</span>
-      </div>
-      <div class="stat-bar-item">
-        <span class="stat-bar-label">UCL top scorer</span>
-        <span class="stat-bar-value">Viktor Gyökeres (Arsenal)</span>
-      </div>
-      <div class="stat-bar-item">
-        <span class="stat-bar-label">PSG key man</span>
-        <span class="stat-bar-value">Dembélé — reigning Ballon d'Or</span>
-      </div>
-      <div class="stat-bar-item">
-        <span class="stat-bar-label">Statistical edge</span>
-        <span class="stat-bar-value">Arsenal (Opta pre-match model)</span>
-      </div>
-      <div class="stat-bar-item">
-        <span class="stat-bar-label">Kick-off</span>
-        <span class="stat-bar-value">18:00 CET / 17:00 BST</span>
-      </div>
+    <div class="stat-unit">
+      <div class="stat-num count-up" data-target="26">26</div>
+      <div class="stat-label">goals conceded</div>
     </div>
-
-  </article>
-
-  <!-- ═══════════════════════════════════════════════════════════════
-       COMPANION: Aaron Rai PGA Championship
-       ═══════════════════════════════════════════════════════════════ -->
-
-  <article class="entry entry-companion" id="aaron-rai-pga">
-
-    <figure class="entry-hero">
-      <img
-        src="https://www.pgachampionship.com/content/dam/pga-championship/2026/photos/aaron-rai-winner.jpg"
-        alt="Aaron Rai holds the Wanamaker Trophy after winning the 108th PGA Championship at Aronimink"
-        loading="lazy">
-      <figcaption>Aaron Rai with the Wanamaker Trophy, Aronimink Golf Club, Pennsylvania, 17 May 2026. Credit: PGA of America.</figcaption>
-    </figure>
-
-    <div class="entry-kicker" style="color: var(--turf);">Golf · PGA Championship · Aronimink</div>
-    <h2 class="entry-headline">Aaron Rai at Aronimink: the two-gloved Wolverhampton kid who ended a 107-year English drought</h2>
-    <p class="entry-dek">A final-round 65 at Aronimink closed out one of the more quietly remarkable wins in major championship history — and opened a new chapter for English golf and for players of Indian heritage worldwide.</p>
-
-    <div class="sp-spread">
-      <div class="sp-rail" aria-hidden="true"></div>
-      <aside class="sp-margin">
-        <aside class="sp-marginalia" data-side="right">
-          <span class="sp-marginalia-label">107 years</span>
-          <p>Jim Barnes — Cornish-born — won the PGA Championship in 1919. No English player had won the title across the 107 editions that followed. Six generations of professionals. All of them left with the gap intact.</p>
-        </aside>
-      </aside>
-      <div class="sp-spread-body">
-        <p>On the leaderboard, it reads clean: Aaron Rai, final round 65, −9 for the week, 274 total, three clear of Jon Rahm and Alex Smalley. On any other Sunday at a major, that is a solid win, well-executed. At Aronimink on 17 May, it was a history entry.</p>
-
-        <p>Rai — born in Wolverhampton, raised in Swindon, known on tour for wearing two gloves and playing with iron head covers — became the first English winner of the PGA Championship since Jim Barnes in 1919. The gap is almost absurd in its length: 107 years, a procession of English professionals passing through the game without any of them bridging it. Barnes was born in Cornwall. Rai's parents are of Indian descent, making him also the first player of Indian heritage to win a men's major.</p>
-
-        <p>The win ended a ten-major American winning streak in the process — a run that had begun to feel, in the way such streaks do, like a structural feature of the modern game rather than a temporary concentration of form. Rai collected a prize of $3.69 million.</p>
-
-        <p>What the scorecard does not fully capture is the composure required to produce a closing 65 at a U.S. major venue with a lead worth defending. Rai's approach was methodical throughout: the two gloves, the head covers, the deliberate pre-shot routine — all of it suggesting a player with an unusually managed relationship with pressure for someone at this stage of their major championship journey. The details that made Rai seem eccentric on the European Tour turn out, in a major final round, to look like systems.</p>
-
-        <p>Rahm, the 2023 Masters champion, gave chase but could not close the gap. Smalley, recording the best finish of his career, pushed Rai deep into the back nine. Neither could match the Englishman's iron play down the stretch. Three shots, in the end, was not close at all.</p>
-
-        <p class="entry-source">Source: <a href="https://www.pgachampionship.com/news-media/articles/aaron-rai-wins-the-2026-pga-championship-at-aronimink" target="_blank" rel="noopener">PGA Championship — Aaron Rai wins the 2026 PGA Championship at Aronimink</a></p>
-      </div>
-    </div>
-
-  </article>
-
-  <!-- ═══════════════════════════════════════════════════════════════
-       ALSO: Compact grid — three items
-       ═══════════════════════════════════════════════════════════════ -->
-
-  <div class="also-items">
-    <h3 class="also-items-heading" style="color: var(--turf);">Also This Week</h3>
-
-    <div class="results-strip">
-
-      <!-- Item 1: Aston Villa Europa League -->
-      <div class="result-card" id="villa-europa">
-        <figure class="result-card-img">
-          <img
-            src="https://static.independent.co.uk/2026/05/20/22/aston-villa-europa-league-final-istanbul.jpg"
-            alt="Aston Villa players celebrate winning the Europa League final in Istanbul"
-            loading="lazy">
-          <figcaption>Villa players in Istanbul, 20 May. Credit: The Independent / editorial use.</figcaption>
-        </figure>
-        <div class="result-card-body">
-          <div class="result-card-kicker" style="color: var(--turf);">Europa League Final · Istanbul · 20 May</div>
-          <h4 class="result-card-headline">Aston Villa 3–0 SC Freiburg — Emery's fifth, Villa's first European trophy in 44 years</h4>
-          <p class="result-card-copy">Goals from Tielemans, Buendia, and Rogers gave Aston Villa a 3–0 win over SC Freiburg in Istanbul on 20 May. The result delivers Villa their first European trophy since the 1982 European Cup — a gap of 44 years — and gives Unai Emery a record fifth Europa League title as a manager. Villa reach the final with both a top-four Premier League finish and a European trophy in the same season for the first time in their history.</p>
-          <p class="result-card-source"><a href="https://www.uefa.com/uefaeuropaleague/match/2047743--aston-villa-vs-sc-freiburg/" target="_blank" rel="noopener">UEFA — Villa vs Freiburg, Europa League Final</a></p>
-        </div>
-      </div>
-
-      <!-- Item 2: Serie A final day -->
-      <div class="result-card" id="serie-a-final-day">
-        <div class="result-card-body result-card-body--text-only">
-          <div class="result-card-kicker" style="color: var(--turf);">Serie A · Season Close</div>
-          <h4 class="result-card-headline">Inter crowned on 3 May; Juventus face final-day nerves without Yildiz</h4>
-          <p class="result-card-copy">Inter Milan were confirmed Serie A champions on 3 May with 77 points. The final day resolved the remaining Champions League qualification places: Napoli finished second on 74 points, AC Milan third on 71. Juventus entered the final round fourth on 69 points, needing a win against Torino but without Kenan Yildiz, ruled out with a calf injury. Luciano Spalletti is reported to have signed a new two-year contract as Italy national coach.</p>
-          <p class="result-card-source"><a href="https://www.legaseriea.it/en/serie-a/standings" target="_blank" rel="noopener">Serie A — Final Standings 2025–26</a></p>
-        </div>
-      </div>
-
-      <!-- Item 3: Premier League -->
-      <div class="result-card" id="pl-final-standings">
-        <div class="result-card-body result-card-body--text-only">
-          <div class="result-card-kicker" style="color: var(--turf);">Premier League · 2025–26 Final Top Four</div>
-          <h4 class="result-card-headline">Arsenal champions; City, Liverpool, Villa complete the top four</h4>
-          <p class="result-card-copy">Arsenal are Premier League champions for 2025–26. The final top four — Arsenal, Manchester City, Liverpool, Aston Villa — all qualify for next season's Champions League. For Villa, the top-four finish comes in the same week as their Europa League victory, confirming the club's return to the front rank of English and European football.</p>
-          <p class="result-card-source"><a href="https://www.premierleague.com/tables" target="_blank" rel="noopener">Premier League — 2025–26 Final Table</a></p>
-        </div>
-      </div>
-
+    <div class="stat-unit">
+      <div class="stat-num count-up" data-target="9">9</div>
+      <div class="stat-label">UCL clean sheets</div>
     </div>
   </div>
 
-  <div class="read-next">Next: <a href="#the_ledger">The Ledger</a> — Etsy's algorithm reset for 2026.</div>
+  <h2>The 22-year wait — and the seven-day wait that follows it</h2>
+
+  <p class="dropcap"><span class="lead-in">It was confirmed on a</span> Tuesday evening in Bournemouth, of all places. Manchester City drew 1-1 with the south-coast side on 19 May, and in that moment Arsenal became Premier League champions for the first time since Arsène Wenger's Invincibles walked away with an unbeaten title in 2003-04. Twenty-two years. The longest gap a club has ever endured between consecutive English league titles. Mikel Arteta, who played in that 2003-04 side, had spent half a decade building toward this. The moment duly arrived — and it arrived in a season that makes a compelling argument for being the most defensively dominant Premier League campaign since the league's modern era.</p>
+
+  <p>The numbers are worth pausing on. <a href="https://www.skysports.com/football/news/11670/13545591/arsenal-win-premier-league-mikel-artetas-side-end-22-year-wait-for-title" target="_blank" rel="noopener">Arsenal conceded just 26 goals across 37 games</a> — a league-low, representing fewer than one goal per match — with 19 clean sheets. In the Champions League, they added 9 further clean sheets, also the best in the competition this season. These are not the numbers of a team that merely accumulated points; they are the numbers of a side that suffocated opponents systematically and then found the clinical edge to punish the gaps. The Invincibles comparison is inevitable and probably premature, but the structural resemblance — defence as the architecture of everything — is real.</p>
+
+  <p>On <a href="https://www.espn.com/soccer/story/_/id/48813813/arsenal-win-premier-league-title-2026-manchester-city-bournemouth" target="_blank" rel="noopener">final day at Crystal Palace</a>, the title was already secure and the afternoon became a celebration in plain clothes. Elsewhere, the lower-table drama that everyone had expected delivered: Tottenham beat Wolves 1-0 to survive on goal difference, sending West Ham down alongside Burnley and Wolves — all three confirmed relegated, with West Ham beating Everton 2-1 but finding that insufficient as Spurs held on. The season's storyline was not at either end; it was settled a week earlier in Bournemouth, and what awaits in Budapest is the second act.</p>
+
+  <div class="pull-quote wide reveal">
+    <p>"Arsenal have kept the most clean sheets in the competition — nine. Their defensive record has been exceptional."</p>
+    <cite>— UEFA.com, <a href="https://www.uefa.com/uefachampionsleague/match/2047742--paris-vs-arsenal/final/" target="_blank" rel="noopener">Champions League Final preview</a></cite>
+  </div>
+
+  <div class="img-montage layout-1-2 reveal">
+    <img class="montage-hero"
+         src="/assets/cached/3736b1f5a736.jpg"
+         alt="Puskás Aréna, Budapest — exterior aerial view, venue of the 2026 UEFA Champions League Final">
+    <img src="/assets/cached/6ac19375a482.jpg"
+         alt="Bukayo Saka and Gabriel celebrating Arsenal's Premier League title, May 2026">
+    <div class="caption">
+      Left: Puskás Aréna, Budapest — Photo: Bjoertvedt, CC-BY-SA 4.0 via Wikimedia Commons.
+      Right: Bukayo Saka and Gabriel celebrating — Photo: Sky Sports / 365dm.com.
+    </div>
+  </div>
+
+  <h3 class="narrative">Budapest, Saturday 30 May — 18:00 CET</h3>
+
+  <p>The <a href="https://en.wikipedia.org/wiki/2026_UEFA_Champions_League_final" target="_blank" rel="noopener">2026 Champions League Final</a> is the first held in Hungary, at the Puskás Aréna in Budapest — a 67,000-capacity stadium named for Hungary's greatest footballer. Arsenal reached the final by defeating Atlético Madrid 2-1 on aggregate in the semi-finals. Their opponents, Paris Saint-Germain, beat Bayern Munich in the other semi. PSG are aiming for back-to-back UCL titles under Luis Enrique — a feat only achieved by Real Madrid in the modern era with any regularity. Arsenal have never won the Champions League; they were runners-up to Barcelona in 2006 on a night defined by Jens Lehmann's early red card and a rearguard that came agonisingly close to holding the line.</p>
+
+  <p>The betting markets have PSG as favourites. Bet365's lines place PSG at -152 (60.3% implied probability) and Arsenal at +120. The logic is not hard to follow: PSG's knockout pedigree, their Champions League pedigree specifically, and the weight of what Arsenal are attempting — a domestic and European double in the same week, with a title parade in Islington already scheduled for 31 May. But the counter-argument is the one Arsenal's season makes by itself: the stingiest defence in the Premier League, the most clean sheets in Europe's premier cup competition, and a manager who was moulded in the Wenger tradition and has spent seven years refining his own version of it.</p>
+
+  <p>A fortnight after Inter sealed Serie A under San Siro fireworks — both finalists overcame Italian opposition in the knockout rounds, with the side PSG knocked out in the semis aside — <a href="https://www.cbssports.com/soccer/news/psg-vs-arsenal-champions-league-final-budapest-preview/" target="_blank" rel="noopener">the final has the shape of two philosophies colliding</a>: PSG's individual brilliance and attacking dynamism against Arsenal's system-first, defensive-excellence model. On paper, PSG should win. On recent evidence, it is harder to be certain than the odds suggest.</p>
+
+  <div class="compare-panel">
+    <div class="compare-side left">
+      <div class="compare-label">Paris Saint-Germain</div>
+      <ul>
+        <li><strong>Semi-final opponent:</strong> Bayern Munich (aggregate win)</li>
+        <li><strong>Goal:</strong> Back-to-back UCL titles</li>
+        <li><strong>Key player:</strong> Ousmane Dembélé (pace, width, UCL experience)</li>
+        <li><strong>Bet365 odds:</strong> -152 (60.3% implied)</li>
+        <li><strong>Manager:</strong> Luis Enrique</li>
+      </ul>
+    </div>
+    <div class="compare-side right">
+      <div class="compare-label">Arsenal</div>
+      <ul>
+        <li><strong>Semi-final opponent:</strong> Atlético Madrid 2-1 agg.</li>
+        <li><strong>Goal:</strong> First-ever UCL title + historic double</li>
+        <li><strong>Key player:</strong> Bukayo Saka (PL title season, UCL threat)</li>
+        <li><strong>Bet365 odds:</strong> +120 (underdogs)</li>
+        <li><strong>Manager:</strong> Mikel Arteta</li>
+      </ul>
+    </div>
+  </div>
+
+  <p>The double, if Arsenal complete it, would rank among the great seasons in English football history. The title is won. The second half of the story kicks off in Budapest on Saturday.</p>
+
+  <div class="angle reveal">
+    <div class="angle-label">The Take</div>
+    <p>The 26 goals conceded is the number that keeps surfacing. Not the wins, not the title — the goals against. It says something specific about what Arteta has built: not a team that wins by scoring more than everyone else (though they score enough), but a team that wins by making losing unacceptably difficult. That is a harder system to maintain, and a more coherent one. PSG's route to Budapest was built on attacking brilliance; Arsenal's was built on not giving opponents angles. On a neutral ground, in a final, the system that doesn't leak is usually the one to back. The markets disagree. That is the argument in Budapest.</p>
+  </div>
+
+  <hr class="divider inset">
+
+  <!-- COMPANION: Aaron Rai PGA Championship -->
+
+  <h2>Aaron Rai, two gloves, and the first English PGA Champion since 1919</h2>
+
+  <div class="sidebar-float">
+    <div class="sidebar-title">Aaron Rai — Aronimink 2026</div>
+    <ul>
+      <li><strong>Final round:</strong> 65 (−7)</li>
+      <li><strong>72-hole total:</strong> 271 (−9)</li>
+      <li><strong>Winning margin:</strong> 3 shots (from Rahm &amp; Smalley)</li>
+      <li><strong>Purse:</strong> $3.69 million</li>
+      <li><strong>FedExCup points:</strong> 750</li>
+      <li><strong>US Open:</strong> automatic entry secured</li>
+    </ul>
+  </div>
+
+  <div class="hero-bleed reveal">
+    <img src="/assets/cached/d7c6c62ab455.jpg"
+         alt="Aaron Rai, PGA Championship winner 2026, portrait">
+    <div class="caption">Photo: Jamie Squire/Getty Images via PGA Championship press</div>
+  </div>
+
+  <p>The thing about Aaron Rai is that he was easy to discount. He arrived at <a href="https://www.pgatour.com/article/news/daily-wrapup/2026/05/17/round-4-2026-pga-championship-aronimink-leaderboard-results-scores-final" target="_blank" rel="noopener">Aronimink Golf Club</a> with a reputation as a methodical grinder — not the kind of player whose name appears at the top of a leaderboard and stays there with the authority of a Scheffler or a McIlroy. He wears two gloves. He keeps his iron covers on between shots at a tempo that other players find baffling. He has the quiet competence of someone who has thought carefully about every variable and dealt with it in advance. These are not the qualities that generate pre-tournament profiles. They are precisely the qualities that win major championships.</p>
+
+  <p>On Sunday at Aronimink, Rai shot a final-round 65, finishing at 9-under (271 total) and three shots clear of Jon Rahm and Alex Smalley. He became <a href="https://www.pgachampionship.com/player/aaron-rai" target="_blank" rel="noopener">the first English-born player to win the PGA Championship since Jim Barnes in 1919</a> — 107 years — and the first player of Indian descent to win a men's major in golf. The Wanamaker Trophy, which goes to the winner of the PGA Championship, now belongs to a player who made the field treat him as an afterthought and then found a way to make it count.</p>
+
+  <p>The margin tells part of the story. Three shots, against a field that included Rory McIlroy and Scottie Scheffler, is not a scramble to the line — it is a controlled Sunday that accelerated in the right direction at the right time. Rai's prize was $3.69 million and 750 FedExCup points; the automatic US Open entry that comes with a major win added immediate weight to the victory beyond the trophy. <a href="https://www.golfmonthly.com/news/live/pga-championship-leaderboard-live-updates-final-round-2026" target="_blank" rel="noopener">Golf Monthly's round-by-round coverage</a> had tracked his ascent through the week — he was never hidden, exactly, but he was not the story the broadcasters had planned for. He rarely is. He tends to be the story that arrives anyway.</p>
+
+  <hr class="divider inset">
+
+  <!-- ALSO ITEMS: Roland Garros + F1 Monaco -->
+
+  <div class="also">
+    <div class="also-title">Also on the Pitch</div>
+    <ul class="also-list">
+      <li class="tier-hot">
+        <strong><a href="https://www.atptour.com/en/news/roland-garros-2026-history-draw-schedule" target="_blank" rel="noopener">Roland Garros opens today.</a></strong>
+        Jannik Sinner takes a 29-match unbeaten streak into the French Open main draw — the career Grand Slam is the one title that would complete his collection, and this may be his best shot at it. Reigning champion Carlos Alcaraz is absent with a right wrist injury. Novak Djokovic and Sinner are in opposite halves of the draw. The full fortnight runs through 7 June.
+      </li>
+      <li class="tier-warm">
+        <strong><a href="https://www.formula1.com/en/racing/2026" target="_blank" rel="noopener">Monaco GP week begins 5 June.</a></strong>
+        Kimi Antonelli leads the 2026 F1 championship after three wins including Miami and is the story going into the street circuit — a track that historically does not reward raw pace advantage. Monaco is the most unpredictable round on the calendar and Antonelli's championship lead makes it the race of the season so far.
+      </li>
+    </ul>
+  </div>
+
+  <div class="read-next">Up next: <a href="#screen">Screen &amp; Sound <span class="arrow">→</span></a> — The Boroughs arrives at 95% on Rotten Tomatoes, plus the Mandalorian and Grogu post-opening verdict.</div>
 
 </section>
 
-<hr class="divider dv-ledger">
-<section class="sec ledger-section" id="the_ledger">
-  <div class="sec-watermark">Ledger</div>
-  <span class="section-label">The Ledger <span class="debut-tag" style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--ledger-accent);color:#fff;padding:2px 7px;border-radius:3px;margin-left:8px;">Debut</span></span>
+<!-- ══════ SCREEN & SOUND ══════ -->
+<hr class="divider dv-screen">
+<section class="sec screen-section" id="screen">
+  <div class="sec-watermark">Screen</div>
+  <span class="section-label">Screen &amp; Sound</span>
 
-  <h2 class="ledger-headline">The Algorithm Reset: Where Digital-Product Sellers Stand After Etsy's Biggest Shake-Up Since 2022</h2>
-  <p class="ledger-dek">Buyer behaviour now drives ranking. Title length now costs visibility. Shipping price is now a direct signal. Here is what changed, what it means, and where the opportunities sit.</p>
+  <!-- ── LEAD: The Boroughs ── -->
+  <div class="entry-bullets">
+    <ul>
+      <li>All 8 episodes on Netflix from <strong>21 May 2026</strong></li>
+      <li>Rotten Tomatoes <strong>95%</strong> — 38 reviews, avg 7.4/10</li>
+      <li>Alfred Molina leads an ensemble including Alfre Woodard, Denis O'Hare, Clarke Peters, Geena Davis, and Carlos Miranda</li>
+    </ul>
+  </div>
 
-  <ul class="entry-bullets">
-    <li><strong>Engagement over keywords.</strong> Click-through rate, add-to-cart rate, and purchase completion now outweigh keyword density in Etsy's ranking model — the platform has shifted from cataloguing intent to measuring buyer response.</li>
-    <li><strong>The 70-character title penalty.</strong> Listings with titles longer than 70 characters lose mobile visibility at a time when more than 70% of Etsy purchases happen on a phone or tablet. Front-loading the most searchable noun is no longer optional.</li>
-    <li><strong>Shipping as a ranking factor.</strong> For the first time, shipping price is weighted directly in search placement. Free or low-cost shipping has moved from a conversion aid to a structural ranking input.</li>
-  </ul>
+  <h2>The Boroughs — when the Duffer Brothers stop chasing nostalgia</h2>
 
   <figure class="img-offset">
-    <img src="https://images.ctfassets.net/hhv516v5f7sj/etsy-seller-dashboard-2026/etsy-search-visibility.jpg" alt="Etsy Search Visibility Dashboard showing listing flags and ranking signals in 2026">
-    <figcaption>Etsy's new Search Visibility Dashboard surfaces flagged listings directly to sellers. Source: Etsy / Contentful CDN.</figcaption>
+    <img src="/assets/cached/142e76da76a7.jpg" alt="The Boroughs — official Netflix poster">
+    <figcaption>Poster: Netflix / The Boroughs, via TMDB press</figcaption>
   </figure>
 
-  <p>Etsy's algorithm overhaul — its most consequential since 2022 — rolled out in early 2026. The change reflects a platform that has been quietly rerouting its ranking logic away from seller-side signals (how well a listing is described) toward buyer-side signals (how buyers actually respond once they land on it). The practical implication is straightforward: a listing stuffed with keyword variations but generating low click-through rates will lose ground to a leaner, better-converting listing even if the latter uses fewer tags.</p>
+  <p class="dropcap"><span class="lead-in">There's a telling distinction</span> in the credits of <em>The Boroughs</em>. Matt and Ross Duffer are listed as executive producers. Not creators. Not directors. The show belongs to Jeffrey Addiss and Will Matthews — and that gap between producing and making is, it turns out, where the most interesting television is currently being made.</p>
 
-  <p>The Search Visibility Dashboard is the clearest operational signal that Etsy is trying to close the information gap. Where sellers previously had to reverse-engineer ranking shifts through third-party tools, the dashboard now flags specific listing-level issues — title length violations, engagement gaps, shipping-price outliers — in a single panel. Platforms that surface their own diagnostic data are worth taking seriously; the stated flags map directly to the ranking inputs that matter.</p>
+  <p>The premise is surface-level familiar: a retirement community in a seemingly picturesque neighbourhood discovers that something otherworldly is closing in. That sentence could easily describe the Duffer Brothers' own flagship. But <em>The Boroughs</em>, which dropped all eight episodes on Netflix on 21 May, earns its 95% on Rotten Tomatoes by doing something <em>Stranger Things</em> has occasionally forgotten to do — treating its setup as a story rather than a delivery mechanism for references and callbacks.</p>
 
-  <blockquote class="sp-pullquote-huge">
-    <p>Kindle Scribe templates remain dramatically under-served on Etsy — a clear gap while the Scribe user base grows and demand searches for somewhere to land.</p>
-    <cite>— Ledger analysis, based on Marmalead category research, May 2026</cite>
+  <p>Alfred Molina carries the series as Sam Cooper, a recently widowed aeronautical engineer who finds himself, improbably, at the centre of events he is completely unequipped to understand. Molina is seventy-one, plays the character's grief with a bone-dry composure, and is precisely the kind of lead that prestige television claims to want and rarely actually casts. Around him, Addiss and Matthews have assembled one of the more remarkable television ensembles in recent memory: Alfre Woodard, Denis O'Hare, Clarke Peters, Geena Davis, Carlos Miranda. These are not cameo slots. Each performer has a character with a legible interior life, stakes of their own, and something to do when the crisis arrives.</p>
+
+  <p>What Addiss and Matthews understand — and what the <a href="https://variety.com/2026/tv/reviews/the-boroughs-review-duffer-brothers-netflix-1236755286/" target="_blank" rel="noopener">Variety review</a> picks up on — is tonal control. The comedy is dry rather than camp. The threat is treated with genuine dread rather than genre-signalling. The show never winks at the audience to confirm it knows what kind of show it is. That confidence allows the cast to inhabit the material without protective irony, and the result is that the oddness of the premise lands with actual weight rather than nostalgic comfort.</p>
+
+  <p>The Duffer pedigree is present mostly as infrastructure — the production values are high, the pacing is tight, the eight-episode run is clean enough that nothing outstays its welcome. But this is not Hawkins with a different postcode. <em>The Boroughs</em> has its own register, its own pace, and its own sense of what an older ensemble of characters brings to a genre usually dominated by teenagers. Strongly recommended.</p>
+
+  <figure class="img-float-left">
+    <img src="/assets/cached/4d7ca588a7b6.jpg" alt="The Boroughs — second official poster showing the retirement community setting">
+    <figcaption>Poster: Netflix / The Boroughs, via TMDB press</figcaption>
+  </figure>
+
+  <p><a href="https://www.netflix.com/tudum/articles/the-boroughs-release-date-first-look" target="_blank" rel="noopener">Netflix Tudum first look</a> · <a href="https://www.imdb.com/title/tt27557289/" target="_blank" rel="noopener">IMDB</a></p>
+
+  <div style="margin: 16px 0 24px">
+    <span style="font-family:'DM Sans',sans-serif;font-size:12px;color:rgba(255,255,255,.5);margin-right:8px">The Boroughs</span>
+    <span class="rating"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span></span>
+    <span style="font-family:'DM Sans',sans-serif;font-size:11px;color:rgba(255,255,255,.35);margin-left:8px">9/10 — Netflix, all episodes available now</span>
+  </div>
+
+  <hr class="divider inset">
+
+  <!-- ── COMPANION: Mandalorian & Grogu ── -->
+  <h3>The Mando movie at 60% — a verdict the franchise has to live with</h3>
+
+  <figure class="img-offset">
+    <img src="/assets/cached/cf0d88a336aa.jpg" alt="Star Wars: The Mandalorian and Grogu — official movie poster 2026">
+    <figcaption>Poster: Lucasfilm/Disney via TMDB press</figcaption>
+  </figure>
+
+  <p>Last week this section flagged the arrival of <a href="https://www.starwars.com/films/star-wars-the-mandalorian-and-grogu" target="_blank" rel="noopener"><em>The Mandalorian and Grogu</em></a> as the first Star Wars theatrical film in seven years, directed by Jon Favreau and starring Pedro Pascal alongside Sigourney Weaver, Jeremy Allen White, and Martin Scorsese. The opening-weekend tracking aimed at $160M+ globally. The critics have now spoken.</p>
+
+  <p>The <a href="https://www.rottentomatoes.com/m/star_wars_the_mandalorian_and_grogu" target="_blank" rel="noopener">Rotten Tomatoes score sits at 60%</a>. That is not merely mixed — it is one of the lowest theatrical scores in franchise history, sitting below <em>Attack of the Clones</em> at 62%. For a film returning Star Wars to cinema after seven years, with the goodwill generated by the show's best seasons behind it, 60% is a result that requires honest examination rather than fanbase rationalisation.</p>
+
+  <p>The critical consensus is internally consistent. Reviewers praised Jon Favreau's handling of the action sequences, the visual scale, and — almost uniformly — the Din Djarin-Grogu dynamic, which remains the franchise's most emotionally legible relationship. Pedro Pascal is cited as doing everything asked of him. Where the film falls down, according to critics, is in narrative ambition. <a href="https://deadline.com/2026/05/box-office-star-wars-mandalorian-and-grogu-preview-1236915788/" target="_blank" rel="noopener">Deadline's box office preview</a> notes reviewer frustration with thin plotting and a reliance on fan-service callbacks that read as structural rather than earned — the movie knows what the audience will respond to and delivers those beats without building the dramatic architecture that would make them land properly.</p>
+
+  <p>This is a recognisable failure mode in franchise cinema. The mechanics of emotional payoff exist independently of the story that would justify them. A 60% score suggests the film does enough with its central relationship and spectacle to satisfy many viewers while failing to function as a complete film for those measuring it against the medium's broader possibilities.</p>
+
+  <p>What the score actually signals about the franchise's theatrical instincts is the more interesting question. <em>The Mandalorian</em> worked in part because the television format gave the Din-Grogu relationship space to breathe across seasons. Compressing that into a single theatrical film — while simultaneously trying to justify cinema scale with action-sequence ambition — may be the structural problem no amount of goodwill can fully solve. A 60% opening is not the end of Star Wars in cinemas. But it is a data point the next film will need to actually answer.</p>
+
+  <div style="margin: 16px 0 24px">
+    <span style="font-family:'DM Sans',sans-serif;font-size:12px;color:rgba(255,255,255,.5);margin-right:8px">The Mandalorian and Grogu</span>
+    <span class="rating"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>
+    <span style="font-family:'DM Sans',sans-serif;font-size:11px;color:rgba(255,255,255,.35);margin-left:8px">6/10 — in cinemas now</span>
+  </div>
+
+  <hr class="divider inset">
+
+  <!-- ── RELEASE RADAR ── -->
+  <h3>The Release Radar</h3>
+  <div class="radar-grid">
+
+    <h3 style="margin-top:8px">Now Showing / Just Dropped</h3>
+    <div class="radar-row">
+      <span class="radar-date">21 May</span>
+      <div><span class="radar-cat tv"></span><strong><a href="https://www.netflix.com/tudum/articles/the-boroughs-release-date-first-look" target="_blank" rel="noopener">The Boroughs</a></strong> — All 8 episodes. Alfred Molina leads an impeccable ensemble in this Duffer Brothers-produced sci-fi. 95% RT. <span class="radar-platform">Netflix</span></div>
+    </div>
+    <div class="radar-row">
+      <span class="radar-date">22 May</span>
+      <div><span class="radar-cat film"></span><strong><a href="https://www.starwars.com/films/star-wars-the-mandalorian-and-grogu" target="_blank" rel="noopener">The Mandalorian and Grogu</a></strong> — First Star Wars theatrical film in seven years. 60% RT. $160M+ opening weekend tracking. <span class="radar-platform">In cinemas</span></div>
+    </div>
+
+    <h3>Coming Soon</h3>
+    <div class="radar-row">
+      <span class="radar-date">28 May</span>
+      <div><span class="radar-cat game"></span><strong><a href="https://www.nintendolife.com/games/nintendo-switch-2/stray" target="_blank" rel="noopener">Stray</a></strong> — The acclaimed cyberpunk cat game arrives on Switch 2 with 4K and mouse controls. <span class="radar-platform">Nintendo Switch 2</span></div>
+    </div>
+    <div class="radar-row">
+      <span class="radar-date">29 May</span>
+      <div><span class="radar-cat music"></span><strong><a href="https://warp.net/releases/590960-inferno/tracklist" target="_blank" rel="noopener">Boards of Canada — <em>Inferno</em></a></strong> — First album in 13 years (since <em>Tomorrow's Harvest</em>, 2013). 18 tracks via Warp Records. Limited red translucent 2LP vinyl. <span class="radar-platform">Warp / all platforms</span></div>
+    </div>
+
+    <h3>Also Streaming This Month</h3>
+    <div class="radar-row">
+      <span class="radar-date">Netflix</span>
+      <div><strong><a href="https://www.imdb.com/title/tt27557289/" target="_blank" rel="noopener">The Boroughs</a></strong> — if you skipped it this week, correct that error before next Sunday.</div>
+    </div>
+
+  </div>
+
+  <div class="read-next">Up next: <a href="#touchline">The Touchline <span class="arrow">→</span></a> — Arsenal's 22-year wait ends; the CL Final preview</div>
+
+</section>
+
+<!-- ══════ THE LISTEN ══════ -->
+<section class="sec listen-section sec-opener" id="listen">
+  <div class="sec-watermark">Listen</div>
+  <span class="section-label">The Listen — Music &amp; Sound</span>
+
+  <h2>Inferno</h2>
+  <p class="section-subhed">Boards of Canada return after thirteen years</p>
+
+  <div class="sidebar-float">
+    <p class="sidebar-label">RELEASE DETAILS</p>
+    <ul>
+      <li><strong>Album:</strong> Inferno</li>
+      <li><strong>Artist:</strong> Boards of Canada</li>
+      <li><strong>Label:</strong> <a href="https://warp.net/releases/590960-inferno/tracklist">Warp Records</a></li>
+      <li><strong>Released:</strong> 29 May 2026</li>
+      <li><strong>Tracks:</strong> 18</li>
+      <li><strong>Format:</strong> Limited red translucent 2LP vinyl, triple gatefold, 16-page booklet</li>
+      <li><strong>Genre:</strong> Electronic / ambient / IDM</li>
+    </ul>
+  </div>
+
+  <p>If you've never spent an hour with Boards of Canada — if the Scottish duo's name means nothing to you, if you've never encountered music that sounds less like it was composed than excavated from some half-remembered childhood — then this is precisely the week to start. <em>Inferno</em> arrives on 29 May, the duo's first album since <em>Tomorrow's Harvest</em> in 2013. Thirteen years. The silence has been loud enough to become part of their mythology.</p>
+
+  <p>Michael Sandison and Marcus Eoin have always operated somewhere between nostalgia and dread — that particular register where warmth and unease are indistinguishable from each other. <em>Tomorrow's Harvest</em> was cold earth and grey skies: austere, almost cinematic in its restraint. <em>Inferno</em>, according to <a href="https://ra.co/news/85026">Resident Advisor's coverage of the announcement</a>, depicts something different — "a ghost city or mirage of urbanity" rendered in translucent orange and red. The visual identity alone signals a shift: not the familiar tundra but something warmer, more unsettled, a city glimpsed through heat haze or degraded VHS tape.</p>
+
+  <blockquote class="pull-quote">
+    <p>"A ghost city or mirage of urbanity — translucent orange and red, contrasting the cold earth of Tomorrow's Harvest."</p>
+    <cite>— Resident Advisor, on Inferno's announced aesthetic</cite>
   </blockquote>
 
-  <h3 class="ledger-subhead">Where the Opportunity Sits in 2026</h3>
+  <p>The campaign leading up to release has been one of the more remarkable pieces of music promotion in years. Mysterious VHS tapes appeared in the post, mailed to fans; unmarked posters turned up on walls in cities without explanation. It is exactly the kind of pre-digital, tactile mystery Boards of Canada have always treated as inseparable from the music itself. The medium is the message, and the message is: pay attention slowly.</p>
 
-  <p>Notion templates remain the most active digital-product category on the platform. With Notion now reporting 100 million users globally, the template market has bifurcated: commodity packs (basic to-do boards, simple trackers) are saturated and pricing has compressed, while well-designed multi-page systems — health and wellness trackers, freelance agency workflows, content-creator management suites — continue to transact at the $20–$49 range that the data identifies as the sweet spot for digital-product pricing. Below $20, perceived value collapses; above $49, the friction of purchase increases sharply without a corresponding signal of complexity.</p>
+  <p><em>Inferno</em> spans 18 tracks and arrives in a limited red translucent double LP, triple gatefold, with a 16-page booklet — the physical object treated with the same care as the audio. Whether you approach it on vinyl or digitally via <a href="https://boardsofcanada.bandcamp.com/album/inferno">Bandcamp</a>, the entry point is the same: low light, some uninterrupted time, no expectations about where it's going.</p>
+
+  <p>For those who know <em>Music Has the Right to Children</em> or <em>Geogaddi</em>, the anticipation needs no explanation. For everyone else: this is the week to find out what the fuss has been about for thirty years. <a href="https://en.wikipedia.org/wiki/Inferno_(Boards_of_Canada_album)">Wikipedia's entry on the album</a> covers the context; the music covers the rest.</p>
+
+</section>
+
+<section class="sec ledger-section" id="ledger">
+  <div class="sec-watermark">Ledger</div>
+  <span class="section-label">The Ledger — Money &amp; Finance</span>
+
+  <div class="entry-question">
+    <p>When does a rate plateau stop being a waiting game — and start being an opportunity?</p>
+  </div>
+
+  <h2>Hold Steady: What the Rate Pause Means for Savers and Anyone Coming Off a Fix</h2>
+
+  <figure class="img-offset">
+    <img src="/assets/cached/f90a6e4f4c95.jpg" alt="Bank of England exterior, Threadneedle Street, London">
+    <figcaption>The Bank of England on Threadneedle Street — base rate held at 3.75% for the third consecutive meeting. Photo: Eluveitie (Beata May), CC-BY-SA 3.0 via Wikimedia Commons</figcaption>
+  </figure>
+
+  <p class="dropcap"><span class="lead-in">Three meetings in a row,</span> the same answer: 3.75%. The Bank of England held the base rate for the third consecutive time on 30 April, and the mood at the MPC is cautious rather than cutting. UK inflation has moved in the right direction — falling from 3.3% in March to 2.8% in April — but ongoing energy price uncertainty tied to the Hormuz situation is complicating the timeline for any further reduction. The next decision is 18 June 2026. Until then, the rate environment is unusually legible: not rising, not falling, and likely to stay that way for at least another month.</p>
 
   <div class="stat-bar">
-    <div class="stat-bar__item">
-      <span class="stat-bar__value">70%+</span>
-      <span class="stat-bar__label">of Etsy purchases now on mobile — the trigger for the 70-character title rule</span>
+    <div class="stat">
+      <div class="stat-num count-up" data-target="3.75">3.75%</div>
+      <div class="stat-label">BoE base rate</div>
     </div>
-    <div class="stat-bar__item">
-      <span class="stat-bar__value">$20–$49</span>
-      <span class="stat-bar__label">pricing sweet spot for well-designed multi-page digital systems</span>
+    <div class="stat">
+      <div class="stat-num count-up" data-target="1.8">1.8M</div>
+      <div class="stat-label">UK fixed deals expiring in 2026</div>
     </div>
-    <div class="stat-bar__item">
-      <span class="stat-bar__value">$500–$1,500</span>
-      <span class="stat-bar__label">per month — beginner earnings benchmark at six months, consistent effort (Marmalead, 2026)</span>
-    </div>
-  </div>
-
-  <p>The most under-explored gap, based on current category data, is Kindle Scribe. Amazon's note-taking e-ink device has a growing installed base, a clear use-case appetite for structured templates (journals, reading logs, annotation frameworks), and almost no supply on Etsy relative to what the Notion and iPad planner markets have built over three years. The category has the hallmarks of an early-window moment: device adoption is past the early-adopter cliff, the search volume exists, and the competition has not yet appeared at scale. That combination does not stay open indefinitely.</p>
-
-  <p>Beginner benchmarks from Marmalead's 2026 research put monthly earnings at $500–$1,500 within six months for sellers who ship consistently and iterate on listings based on engagement data rather than intuition. The algorithm change makes that iteration loop more legible: the Search Visibility Dashboard now points directly at which listings are leaving ranking potential on the table.</p>
-
-  <p>Sources: <a href="https://blog.marmalead.com/etsy-algorithm-2026/">Marmalead — Etsy Algorithm 2026</a> · <a href="https://mydesigns.io/blog/etsy-search-algorithm-update-2026/">MyDesigns.io — Etsy Search Algorithm Update 2026</a></p>
-
-  <div class="dyk">
-    <p class="dyk__label">Three things to action this week</p>
-    <ol class="dyk__list">
-      <li><strong>Audit title lengths.</strong> Every listing title over 70 characters loses mobile visibility. Cut to under 70, lead with the most searchable noun first — category before modifier, noun before adjective.</li>
-      <li><strong>Use the Search Visibility Dashboard.</strong> Etsy now surfaces flagged listings directly. Check each flag category: engagement gaps, title penalties, and shipping-price outliers are all addressable in an afternoon.</li>
-      <li><strong>Review shipping price settings.</strong> Free or low-cost shipping is now a direct ranking input for the first time. For digital products — which carry no physical shipping cost — there is no mechanical reason not to set the shipping price to zero.</li>
-    </ol>
-  </div>
-
-  <div class="read-next">Next: <a href="#screen-sound">Screen &amp; Sound</a> — The Boroughs, the Duffers' grown-up answer to Stranger Things.</div>
-</section>
-
-<hr class="divider dv-screen">
-<section class="sec screen-section sec-opener" id="screen-sound">
-  <div class="sec-watermark">Screen &amp; Sound</div>
-  <span class="section-label">Screen &amp; Sound <span class="debut-tag" style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--neon);color:#fff;padding:2px 7px;border-radius:3px;margin-left:8px;">Director's Cut</span></span>
-
-  <!-- ═══════════════════════════════════════════════════════
-       DIRECTOR'S CUT LEAD — The Boroughs (Netflix, 21 May 2026)
-       ═══════════════════════════════════════════════════════ -->
-
-  <article class="screen-lead directors-cut-lead">
-
-    <img src="https://occ-0-1433-2218.1.nflxso.net/dnm/api/v6/Z-WHgqd_TeJDkegEZfniBxone8M/AAAABTheBorough-s-main-art.jpg" class="hero-bleed" alt="The Boroughs Netflix — key art showing the retirement community at twilight">
-
-    <div class="entry-stat" style="color:var(--neon);font-size:2.4rem;font-weight:800;letter-spacing:-.02em;line-height:1;margin:1.4rem 0 .4rem;">94%</div>
-    <p class="entry-stat-label" style="font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;opacity:.65;margin-bottom:1.6rem;">Rotten Tomatoes · 200+ reviews · Netflix's most acclaimed new series of 2026</p>
-
-    <h2 class="screen-lead-headline">The Boroughs and the horror of time running out: the Duffers' grown-up answer to Stranger Things</h2>
-    <p class="screen-lead-dek">Eight episodes. A manicured retirement community in New Mexico. An entity that steals hours from people who have fewest left. <em>The Boroughs</em> premiered on Netflix on 21 May 2026 — and arrived as something rarer than a hit: genre television that knows precisely what it is afraid of.</p>
-
-    <div class="sp-spread">
-      <div class="sp-rail" aria-hidden="true"></div>
-      <aside class="sp-margin">
-        <aside class="sp-marginalia" data-side="right">
-          <span class="sp-marginalia-label">The Makers</span>
-          <p>Executive produced by Matt &amp; Ross Duffer (Stranger Things). Created by Jeffrey Addiss &amp; Will Matthews — who wrote The Dark Crystal: Age of Resistance — a pairing that signals mythology handled with care.</p>
-        </aside>
-      </aside>
-      <div class="sp-spread-body">
-        <p>There is a specific cruelty in watching someone's time be taken from them — not by illness or accident, but by something conscious and predatory. The supernatural premise at the centre of <a href="https://www.netflix.com/tudum/articles/the-boroughs-duffer-brothers-new-series" target="_blank" rel="noopener"><em>The Boroughs</em></a> turns on exactly that: residents of a sun-baked New Mexico retirement community begin losing hours, then days, not to dementia but to an entity that moves through the manicured lawns like a thief working a very specific vault. The horror registers immediately because it is redundant in the most brutal sense — these are people the world has already stopped regarding as being in full possession of time.</p>
-
-        <p>The Duffer brothers have built their career on understanding that horror is really about something else. In Stranger Things, the Upside Down externalised the terror of the unknown that adults dismiss — the things children see that parents cannot. In <em>The Boroughs</em>, executive produced by Matt and Ross Duffer and created by Jeffrey Addiss and Will Matthews, the shift is generational and tonal. The monster makes literal what the culture does abstractly: that the time of elderly people is already being siphoned away by forces — social, medical, economic, simply mortal — that have decided they are past accounting for.</p>
-
-        <blockquote class="sp-pullquote-huge">
-          <p>The monster makes literal what the culture does abstractly: that these people's remaining time is already being quietly, systematically taken.</p>
-          <cite>— The Boroughs, Netflix, 21 May 2026</cite>
-        </blockquote>
-
-        <p>Alfred Molina plays Sam Cooper, a widower who moves into The Boroughs reluctantly, trailing the grief of someone who has lost not just a partner but the entire architecture of a shared life. His performance is built from the inside out: the stiffness in the shoulders, the slightly too-long pause before answering, the way a man formerly fluent in his own existence becomes halting and approximate. What the show understands is that Sam faces two simultaneous losses — the supernatural theft driving the plot, and the ordinary grief that preceded it and persists beneath it. The entity makes the external pressure vivid. The grief was already there.</p>
-
-        <p>The casting is the argument made visible. Geena Davis, Alfre Woodard, Clarke Peters, Denis O'Hare, Bill Pullman — these are not actors assembled because they photograph well against desert light. They are actors with long, distinguished careers whose accumulated authority the script then systematically subjects to violation. The entity doesn't prey on nobodies. It preys on people who have spent decades earning the right to be here, which makes the theft feel savage and specifically wrong. The show's intelligence is in recognising that the cast's biographies are part of the text.</p>
-
-        <p>The Duffers previously made horror from nostalgia. Here they make it from mortality — harder, and more honest. Addiss and Matthews bring a gift for myth and the uncanny that grounds the supernatural mechanics in something older than genre convention. After 200-plus reviews it sits at 94% on Rotten Tomatoes — <a href="https://variety.com/2026/tv/reviews/the-boroughs-review-duffer-brothers-netflix-1236755286/" target="_blank" rel="noopener">Netflix's most acclaimed new series of 2026 to date</a> — and the platform has confirmed a three-season plan. The first episode is deliberately slow. It is not slack. It is the show establishing what there is to lose before it begins taking things away. By episode three, the dread is proportionate because the investment has been earned. The best horror knows what its audience is actually afraid of. Past a certain age, the answer is time.</p>
-      </div>
-    </div>
-
-    <p class="screen-lead-source" style="font-size:.75rem;opacity:.6;margin-top:1.2rem;">Sources: <a href="https://variety.com/2026/tv/reviews/the-boroughs-review-duffer-brothers-netflix-1236755286/" target="_blank" rel="noopener">Variety</a> · <a href="https://www.netflix.com/tudum/articles/the-boroughs-duffer-brothers-new-series" target="_blank" rel="noopener">Netflix Tudum</a></p>
-  </article>
-
-  <!-- ═══════════════════════════════════════════════════════
-       COMPANION — The Mandalorian and Grogu
-       ═══════════════════════════════════════════════════════ -->
-
-  <article class="screen-companion" style="margin-top:2.8rem;padding-top:2rem;border-top:1px solid rgba(255,45,120,.18);">
-
-    <img src="https://lumiere-a.akamaihd.net/v1/images/the-mandalorian-and-grogu-film-2026-poster.jpg" class="companion-poster" alt="The Mandalorian and Grogu theatrical poster" style="float:right;width:38%;max-width:220px;margin:0 0 1.2rem 1.6rem;border-radius:4px;">
-
-    <span class="screen-companion-label" style="font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--neon);font-weight:700;display:block;margin-bottom:.5rem;">Companion</span>
-    <h3 class="screen-companion-headline">The Mandalorian and Grogu: a 64% Tomatometer and a $160m opening — the case for and against the cinema bet</h3>
-
-    <p>In UK cinemas from 22 May, <a href="https://discussingfilm.net/2026/05/19/the-mandalorian-and-grogu-review/" target="_blank" rel="noopener"><em>The Mandalorian and Grogu</em></a> is the most commercially significant test of whether Disney and Lucasfilm can transfer a streaming audience into a theatrical one. Directed by Jon Favreau with Pedro Pascal returning as Din Djarin, the film projected a $82m US four-day opening and $160m globally — solid numbers for a franchise searching for its post-Skywalker cinematic identity.</p>
-
-    <p>The critical response is the more complicated story. A 64% Rotten Tomatoes score puts the film in the category critics call a qualified success: action sequences and the central Din-and-Grogu dynamic are broadly praised — a relationship that accrued genuine emotional weight across two television seasons — while the narrative is called thin and fan-service-dependent. That tension between emotional warmth and structural thinness is not a new critique of this franchise. On a cinema-sized canvas, it costs more.</p>
-
-    <blockquote class="sp-pullquote-huge">
-      <p>The central dynamic earned its weight across two television seasons. Whether it can carry a feature is the question the 64% does not fully answer.</p>
-      <cite>— The Mandalorian and Grogu, in UK cinemas 22 May 2026</cite>
-    </blockquote>
-
-    <p>The broader Star Wars context matters here. Tales of the Underworld — a standalone anthology, all six episodes — released on 4 May, suggesting Lucasfilm is running parallel tracks rather than abandoning television entirely. Maul Season 2, now retitled Maul: Shadow Lord, has been confirmed in development with no release window. The theatrical experiment and the streaming strategy are being pursued simultaneously. Whether the cinema bet lands will likely determine how aggressively Lucasfilm pursues the route for future streaming properties.</p>
-
-    <p style="clear:both;">For audiences already invested in Din and Grogu, the film delivers what was advertised: spectacle, sentiment, a closing chapter to a story built on a small screen. The $160m opening suggests the audience showed up. The 64% suggests the critics were not entirely convinced it was worth the upgrade.</p>
-
-    <p class="screen-companion-source" style="font-size:.75rem;opacity:.6;">Source: <a href="https://discussingfilm.net/2026/05/19/the-mandalorian-and-grogu-review/" target="_blank" rel="noopener">Discussing Film</a></p>
-  </article>
-
-  <!-- ═══════════════════════════════════════════════════════
-       RELEASE RADAR
-       ═══════════════════════════════════════════════════════ -->
-
-  <div class="radar-block" style="margin-top:2.8rem;padding-top:2rem;border-top:1px solid rgba(255,45,120,.18);">
-    <span class="screen-companion-label" style="font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--neon);font-weight:700;display:block;margin-bottom:1rem;">Release Radar</span>
-    <ul class="radar-grid" style="list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.8rem;">
-
-      <li class="radar-item" style="padding:.75rem;background:rgba(255,45,120,.06);border-radius:4px;border-left:3px solid var(--neon);">
-        <span class="radar-date" style="font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;opacity:.55;display:block;margin-bottom:.25rem;">30 May</span>
-        <strong>Champions League Final</strong>
-        <span class="platform-badge" style="font-size:.65rem;background:rgba(255,45,120,.15);color:var(--neon);padding:1px 5px;border-radius:2px;margin-left:5px;">TNT Sports</span>
-        <span class="radar-cat" style="font-size:.65rem;opacity:.55;margin-left:4px;">Sport</span>
-        <p style="margin:.3rem 0 0;font-size:.82rem;opacity:.8;">PSG vs Arsenal · Budapest</p>
-      </li>
-
-      <li class="radar-item" style="padding:.75rem;background:rgba(255,45,120,.06);border-radius:4px;border-left:3px solid var(--neon);">
-        <span class="radar-date" style="font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;opacity:.55;display:block;margin-bottom:.25rem;">3 June</span>
-        <strong>Final Fantasy VII Rebirth</strong>
-        <span class="platform-badge" style="font-size:.65rem;background:rgba(255,45,120,.15);color:var(--neon);padding:1px 5px;border-radius:2px;margin-left:5px;">Nintendo Switch 2</span>
-        <span class="radar-cat" style="font-size:.65rem;opacity:.55;margin-left:4px;">Game</span>
-      </li>
-
-      <li class="radar-item" style="padding:.75rem;background:rgba(255,45,120,.06);border-radius:4px;border-left:3px solid var(--neon);">
-        <span class="radar-date" style="font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;opacity:.55;display:block;margin-bottom:.25rem;">7 June</span>
-        <strong>F1 Monaco Grand Prix</strong>
-        <span class="radar-cat" style="font-size:.65rem;opacity:.55;margin-left:4px;">Sport</span>
-      </li>
-
-      <li class="radar-item" style="padding:.75rem;background:rgba(255,45,120,.06);border-radius:4px;border-left:3px solid var(--neon);">
-        <span class="radar-date" style="font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;opacity:.55;display:block;margin-bottom:.25rem;">19 June</span>
-        <strong>Toy Story 5</strong>
-        <span class="radar-cat" style="font-size:.65rem;opacity:.55;margin-left:4px;">Film · Pixar</span>
-        <p style="margin:.3rem 0 0;font-size:.82rem;opacity:.8;">Hanks, Allen, Reeves returning · UK cinemas</p>
-      </li>
-
-      <li class="radar-item" style="padding:.75rem;background:rgba(255,45,120,.06);border-radius:4px;border-left:3px solid var(--neon);">
-        <span class="radar-date" style="font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;opacity:.55;display:block;margin-bottom:.25rem;">25 June</span>
-        <strong>Star Fox</strong>
-        <span class="platform-badge" style="font-size:.65rem;background:rgba(255,45,120,.15);color:var(--neon);padding:1px 5px;border-radius:2px;margin-left:5px;">Switch 2 remake</span>
-        <span class="radar-cat" style="font-size:.65rem;opacity:.55;margin-left:4px;">Game</span>
-      </li>
-
-      <li class="radar-item" style="padding:.75rem;background:rgba(255,45,120,.06);border-radius:4px;border-left:3px solid var(--neon);">
-        <span class="radar-date" style="font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;opacity:.55;display:block;margin-bottom:.25rem;">26 June</span>
-        <strong>Supergirl: Woman of Tomorrow</strong>
-        <span class="radar-cat" style="font-size:.65rem;opacity:.55;margin-left:4px;">Film · DCU Chapter 1</span>
-        <p style="margin:.3rem 0 0;font-size:.82rem;opacity:.8;">Milly Alcock · UK cinemas</p>
-      </li>
-
-    </ul>
-  </div>
-
-  <!-- ═══════════════════════════════════════════════════════
-       ALSO ITEMS
-       ═══════════════════════════════════════════════════════ -->
-
-  <div class="also-block" style="margin-top:2.4rem;padding-top:1.8rem;border-top:1px solid rgba(255,45,120,.12);">
-    <span class="screen-companion-label" style="font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--neon);font-weight:700;display:block;margin-bottom:1rem;">Also</span>
-    <div class="also-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;">
-
-      <div class="also-item">
-        <h4 class="also-headline" style="font-size:.95rem;margin:0 0 .4rem;font-weight:700;">Devil May Cry — Season 2</h4>
-        <p class="also-body" style="font-size:.85rem;margin:0;opacity:.85;">Netflix, 12 May. Eight episodes: Dante and Vergil, worlds in conflict, stakes raised to apocalyptic. Adi Shankar continues the beloved animated series with the same kinetic intensity that made the first season a cult fixture on the platform.</p>
-      </div>
-
-      <div class="also-item">
-        <h4 class="also-headline" style="font-size:.95rem;margin:0 0 .4rem;font-weight:700;">Missing Words — <em>Serotonin</em></h4>
-        <p class="also-body" style="font-size:.85rem;margin:0;opacity:.85;">NewRetroWave Records, 24 April. One of the label's strongest 2026 releases — sharp, melodic synthwave with genuine compositional ambition. Timecop1983 also has a 2026 tour confirmed for those wanting the neon live.</p>
-      </div>
-
+    <div class="stat">
+      <div class="stat-num count-up" data-target="4.66">4.66%</div>
+      <div class="stat-label">top one-year ISA (AER)</div>
     </div>
   </div>
 
-  <div class="read-next">Next: <a href="#the_listen">The Listen</a> — Football Weekly, Revolutions, and three more in-ear picks.</div>
-</section>
+  <p>For savers, the plateau is worth acting on. The best one-year fixed ISA is currently paying 4.66% AER; RCI Bank's notice account sits at 4.00% AER. Rates above 4% were effectively unavailable between 2009 and 2022. The practical message: <a href="https://moneyfactscompare.co.uk/news/savings/best-uk-savings-rates-this-week/">rates at this level will not persist indefinitely</a> — whenever the MPC does move to cut, savings rates will follow. The window to lock in a competitive return may be shorter than it looks, particularly if the June meeting shifts the dial.</p>
 
-<hr class="divider dv-listen">
-<section class="sec listen-section" id="the_listen">
-  <div class="sec-watermark">Listen</div>
-  <span class="section-label">The Listen <span class="debut-tag" style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--listen-accent);color:#1F2128;padding:2px 7px;border-radius:3px;margin-left:8px;">Debut</span></span>
-
-  <p class="section-intro">Four episodes worth clearing the queue for — anchored by the best football audio of the Champions League season.</p>
-
-  <div class="also-list">
-
-    <!-- PICK 1: Football Weekly — lead pick -->
-    <div class="also-item also-item--lead">
-      <div class="also-meta">
-        <span class="also-label" style="color:var(--listen-accent);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;">Lead Pick · Football</span>
-      </div>
-      <h3 class="also-title"><a href="https://podcastaddict.com/podcast/football-weekly/1787428" style="color:var(--listen-accent);">Football Weekly</a></h3>
-      <p class="also-source" style="font-size:12px;opacity:.6;margin-top:2px;">The Guardian · Weekly</p>
-      <p class="also-body">The episode to reach for first: <em>PSG set up date with Arsenal as Bayern and Kane fall short</em>, with Max Rushden, Barry Glendenning, Mark Langdon, and Archie Rhind-Tutt. The two-leg PSG–Bayern semi finished 6–5 on aggregate — as dramatic a modern Champions League tie as any in recent memory — and this episode works through the tactical unravelling in detail. Kane's failure to convert in the moments that mattered; PSG's disciplined defensive shape on the counter; what the result means for the final. For CL Final week listening, this episode provides the tactical groundwork before the Budapest debrief drops early next week. The mid-May run of episodes also features Philippe Auclair's sharp analytical voice on Arsenal's title run-in — essential companion listening if the Gunners' end-of-season form has been on the radar.</p>
-      <p class="also-details" style="font-size:12px;opacity:.55;margin-top:6px;"><a href="https://podcastaddict.com/podcast/football-weekly/1787428" style="color:var(--listen-accent);">podcastaddict.com</a></p>
-    </div>
-
-    <!-- PICK 2: What Went Wrong — Temple of Doom -->
-    <div class="also-item">
-      <div class="also-meta">
-        <span class="also-label" style="color:var(--listen-accent);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;">Film History</span>
-      </div>
-      <h3 class="also-title"><a href="https://www.whatwentwrongpod.com/episodes" style="color:var(--listen-accent);">What Went Wrong — <em>Temple of Doom</em></a></h3>
-      <p class="also-source" style="font-size:12px;opacity:.6;margin-top:2px;">What Went Wrong · 18 May · approx. 70 min</p>
-      <p class="also-body">The 18 May episode examines how <em>Indiana Jones and the Temple of Doom</em> — the darkest and most divisive entry in the series — was made amid personal chaos. Documentary in structure and pacing, it traces the production decisions that gave the film its particular tone. A well-crafted piece of film-history audio for anyone interested in how behind-the-scenes circumstances shape a finished work.</p>
-      <p class="also-details" style="font-size:12px;opacity:.55;margin-top:6px;"><a href="https://www.whatwentwrongpod.com/episodes" style="color:var(--listen-accent);">whatwentwrongpod.com</a></p>
-    </div>
-
-    <!-- PICK 3: Revolutions — Irish Independence -->
-    <div class="also-item">
-      <div class="also-meta">
-        <span class="also-label" style="color:var(--listen-accent);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;">History</span>
-      </div>
-      <h3 class="also-title"><a href="https://revolutionspodcast.libsyn.com/" style="color:var(--listen-accent);">Revolutions — Irish Independence Season</a></h3>
-      <p class="also-source" style="font-size:12px;opacity:.6;margin-top:2px;">Mike Duncan · Ongoing season</p>
-      <p class="also-body">Mike Duncan opened the Irish War of Independence season in autumn 2025; by May 2026 the narrative has moved into the Treaty debates and Civil War phase. The same slow-burn rigour that defined <em>The History of Rome</em> — events accumulate weight episode by episode. A long-form history commitment that rewards patience.</p>
-      <p class="also-details" style="font-size:12px;opacity:.55;margin-top:6px;"><a href="https://revolutionspodcast.libsyn.com/" style="color:var(--listen-accent);">revolutionspodcast.libsyn.com</a></p>
-    </div>
-
-    <!-- PICK 4: The Bunker — GLP-1 -->
-    <div class="also-item">
-      <div class="also-meta">
-        <span class="also-label" style="color:var(--listen-accent);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;">Health & Science</span>
-      </div>
-      <h3 class="also-title"><a href="https://podcasts.apple.com/gb/podcast/the-bunker-news-without-the-nonsense/id1496246490" style="color:var(--listen-accent);">The Bunker — Weight-Loss Drugs: What Do We Really Know?</a></h3>
-      <p class="also-source" style="font-size:12px;opacity:.6;margin-top:2px;">The Bunker · 7 May 2026 · approx. 45 min · with Michael Ulloa</p>
-      <p class="also-body">The GLP-1 conversation has generated more heat than light in mainstream coverage. This episode, with Michael Ulloa, brings a measured physiological perspective — metabolic set points, hunger hormones, and what the evidence actually says about sustainable fat loss. Accessible without being simplistic.</p>
-      <p class="also-details" style="font-size:12px;opacity:.55;margin-top:6px;"><a href="https://podcasts.apple.com/gb/podcast/the-bunker-news-without-the-nonsense/id1496246490" style="color:var(--listen-accent);">Apple Podcasts</a></p>
-    </div>
-
-  </div>
-
-  <div class="read-next" style="color:rgba(255,255,255,.6)">Next: <a href="#session" style="color:var(--listen-accent)">The Session</a> — Progressive overload in a caloric deficit.</div>
-</section>
-
-<hr class="divider dv-session">
-<section class="sec session-section sec-opener" id="session">
-  <div class="sec-watermark">Session</div>
-  <span class="section-label" style="color:var(--session-accent)">The Session</span>
-
-  <!-- ── LEAD ─────────────────────────────────────────────────────── -->
-  <article class="session-lead">
-    <h2 class="session-lead__headline">Three levers for progressive overload in a deficit — and why the deficit size is the bottleneck</h2>
-    <p class="session-lead__dek">Experienced lifters can preserve and even build strength while eating at a moderate deficit. The ceiling isn't willpower — it's arithmetic.</p>
-
-    <ul class="entry-bullets">
-      <li><strong>Technique efficiency.</strong> Better motor patterning recruits more muscle mass from the same absolute load. Strength improves before any contractile tissue grows.</li>
-      <li><strong>Accumulated volume.</strong> Adding sets per week — rather than immediately chasing heavier plates — is the deficit-safe route to a stronger stimulus.</li>
-      <li><strong>Neurological adaptation.</strong> Firing-rate improvements and inter-muscular coordination continue regardless of energy availability. The nervous system is cheaper to run than new muscle.</li>
-    </ul>
-
-    <p>The three-lever model reframes the question. Hypertrophy during a caloric deficit is constrained, but progressive overload — the continuous application of new stimulus — is not. Research published and synthesised on <a href="https://www.strongerbyscience.com/muscle-caloric-deficit/" target="_blank" rel="noopener">Stronger by Science</a> confirms that experienced lifters can make measurable strength gains in a 300–500 kcal daily deficit, provided protein sits at 1.6–2.2 g/kg of bodyweight and progressive overload is maintained session to session.</p>
-
-    <div class="session-stat-row">
-      <div class="display-stat">
-        <span class="display-stat__value">300–500</span>
-        <span class="display-stat__unit">kcal deficit</span>
-        <span class="display-stat__label">The viable window for concurrent strength gains</span>
-      </div>
-      <div class="display-stat">
-        <span class="display-stat__value">1.6–2.2</span>
-        <span class="display-stat__unit">g/kg protein</span>
-        <span class="display-stat__label">Daily target to preserve lean mass in a deficit</span>
-      </div>
-    </div>
-
-    <p>The critical threshold is 500 kcal. Push the deficit beyond that boundary and hypertrophy is significantly impaired — the body diverts protein away from muscle protein synthesis toward gluconeogenesis, and recovery capacity drops across the board. A 700-kcal daily deficit might produce a faster number on the scale, but the strength curve heads in the opposite direction.</p>
-
-    <blockquote class="sp-pullquote-huge">
-      <p>Beyond a 500 kcal deficit, the body's energy-conservation response actively works against the adaptation signal. The deficit itself becomes the bottleneck — not the programme.</p>
-      <cite>— Stronger by Science synthesis, muscle-caloric-deficit analysis</cite>
-    </blockquote>
-
-    <h3 class="session-subhead">Practical framework</h3>
-
-    <div class="workout-card">
-      <div class="workout-card__row">
-        <span class="workout-card__num">01</span>
-        <div>
-          <strong>Keep the deficit at 300–400 kcal, not 600+.</strong>
-          <p>Aggressive cuts maximise scale velocity but collapse the conditions for strength adaptation. A modest deficit preserves both.</p>
-        </div>
-      </div>
-      <div class="workout-card__row">
-        <span class="workout-card__num">02</span>
-        <div>
-          <strong>Progress by adding sets before adding load.</strong>
-          <p>Volume accumulation is safer in a deficit than load progression. Add a working set to a compound movement before reaching for heavier plates.</p>
-        </div>
-      </div>
-      <div class="workout-card__row">
-        <span class="workout-card__num">03</span>
-        <div>
-          <strong>Prioritise sleep — cortisol is the hidden opponent.</strong>
-          <p>Sleep deprivation elevates cortisol, which actively worsens muscle protein breakdown. Seven to nine hours is not a lifestyle preference; it's a performance input.</p>
-        </div>
-      </div>
-      <div class="workout-card__row">
-        <span class="workout-card__num">04</span>
-        <div>
-          <strong>Run after lifting, not before — and separate by six hours when possible.</strong>
-          <p>A 2025 semi-systematic review in <em>Frontiers in Sports and Active Living</em> found that running-based cardio creates more interference with strength adaptation than cycling, but that separating sessions by 6+ hours — or running after lifting — essentially eliminates the effect. (<a href="https://www.frontiersin.org/journals/sports-and-active-living/articles/10.3389/fspor.2025.1692399/full" target="_blank" rel="noopener">Frontiers, 2025</a>)</p>
-        </div>
-      </div>
-    </div>
-
-    <p>On protein timing and distribution — specifically the leucine-threshold framework for maximising muscle protein synthesis across meals — see The Lab this issue for the full protocol.</p>
-  </article>
-
-  <!-- ── COMPANION ─────────────────────────────────────────────────── -->
-  <aside class="dyk session-companion">
-    <p class="dyk__kicker" style="color:var(--session-accent)">Wearable Data</p>
-    <h3 class="dyk__headline">Garmin vs Whoop in 2026: what the HRV accuracy data actually says about readiness scoring</h3>
-
-    <p>Both devices measure nocturnal HRV. The accuracy gap between them is real, quantified, and smaller than most athletes assume — but the gap in <em>validation methodology</em> is considerably wider.</p>
-
-    <p>A 2025 validation study found that the <strong>Whoop 4.0 achieves 94% concordance with medical-grade ECG for nocturnal RMSSD</strong>. Garmin underestimates RMSSD by approximately 10.9 ms, with an ICC of 0.97 — still a strong result, but a consistent downward bias worth knowing about. (<a href="https://www.datadrivenathlete.org/blog/garmin-vs-whoop-endurance-athletes" target="_blank" rel="noopener">Data Driven Athlete, 2025</a>)</p>
-
-    <p>The more important distinction is composite score validation. Whoop's Recovery score — which combines HRV, resting heart rate, respiratory rate, and sleep — is the more-studied composite. As of March 2026, Garmin's Training Readiness metric (which layers HRV status, sleep quality, recovery time, and training load) has no independent validation study in the literature.</p>
-
-    <div class="dyk__rule"></div>
-
-    <p class="dyk__subhead"><strong>When they agree — trust them. When they disagree:</strong></p>
-    <ul class="dyk__list">
-      <li>Default to <strong>Whoop</strong> for intensity decisions on any given day.</li>
-      <li>Default to <strong>Garmin</strong> for tracking structured workout volume and load across the week.</li>
-      <li>Whoop's HRV measurement methodology has the stronger published validation basis; Garmin's Training Readiness is a useful directional signal, but treat it as uncertified until independent data exists.</li>
-    </ul>
+  <aside class="sidebar-float">
+    <h4>One Thing to Watch — 18 June</h4>
+    <p>The next MPC decision lands on 18 June. If April's inflation drop holds through May and energy prices stabilise, a cut becomes more plausible. A reduction from 3.75% to 3.50% would be modest — but it would mark the beginning of a new direction. Anyone holding cash in an easy-access account and considering a one-year fix should make that call before the announcement rather than after. <a href="https://www.bankofengland.co.uk/explainers/current-interest-rate">BoE rate explainer</a>.</p>
   </aside>
 
-  <div class="read-next">Next: <a href="#the_local">The Local</a> — Slieve Gullion and the Ring of Gullion AONB.</div>
+  <h3>The Refi Wave</h3>
+
+  <p>The sharper story sits on the mortgage side. UK Finance estimates 1.8 million fixed-rate deals expire this year — a large proportion of them locked in at 1–2% during the ultra-low rate era. Refinancing into a 3.75% base-rate world means meaningfully higher monthly payments. Lenders trimmed rates slightly in May following April's inflation improvement, but the gap between old deals and new ones remains considerable.</p>
+
+  <p>The practical window matters here. Most lenders allow borrowers to <a href="https://www.moneysavingexpert.com/news/2026/04/base-rate-held-bank-of-england/">lock a new rate up to six months before their current fix expires</a>. That means anyone whose deal ends before November can start comparing now — without committing until the deal rolls over. Given Hormuz-related energy uncertainty, waiting to see whether rates fall further carries its own risk.</p>
+
+  <div class="also">
+    <div class="also-title">Rates at a Glance</div>
+    <ul class="also-list">
+      <li class="tier-hot"><strong>Best one-year ISA:</strong> 4.66% AER — <a href="https://moneyfactscompare.co.uk/news/savings/best-uk-savings-rates-this-week/">Moneyfacts comparison</a></li>
+      <li class="tier-warm"><strong>RCI Bank notice account:</strong> 4.00% AER — competitive for those who can give notice</li>
+      <li class="tier-warm"><strong>BoE base rate:</strong> 3.75% — held for a third consecutive meeting (30 April 2026)</li>
+      <li class="tier-note"><strong>Next decision:</strong> 18 June 2026 — the date to watch before making any savings or mortgage move</li>
+    </ul>
+  </div>
+
 </section>
 
-<hr class="divider dv-local">
-<section class="sec local-section" id="the_local">
-  <div class="sec-watermark">Local</div>
-  <span class="section-label">The Local <span class="debut-tag" style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--local-accent);color:#fff;padding:2px 7px;border-radius:3px;margin-left:8px;">Debut</span></span>
+<section class="sec lab-section" id="lab">
+  <div class="sec-watermark">The Lab</div>
+  <div class="sec-gradient-overlay"></div>
+  <span class="section-label">The Lab — Debut</span>
 
-  <h2 class="entry-hed">Three Days Out in Northern Ireland</h2>
-  <p class="entry-dek">Volcanic geology, prehistoric stone, and a border-country heartland that the Antrim coast doesn't reach.</p>
+  <figure class="hero-bleed">
+    <img
+      src="/assets/cached/cc4937326065.jpg"
+      alt="Transmission electron micrograph of mitochondria showing inner membrane structure"
+    >
+    <figcaption>Mitochondria under transmission electron microscopy. The inner membrane folds — cristae — are visible; it is across the outer membrane that SEL1L-regulated transport proteins operate. Photo: Louisa Howard, Public domain via Wikimedia Commons.</figcaption>
+  </figure>
 
-  <!-- Lead: Slieve Gullion -->
-  <div class="split-60-40">
-    <div class="split-main">
-      <h3 class="entry-subhed">Slieve Gullion Forest Park &amp; the Ring of Gullion AONB</h3>
-      <ul class="entry-bullets">
-        <li>County Armagh — the only <strong>ring dyke volcanic complex</strong> in the British Isles</li>
-        <li>Mountain Top Trail climbs to <strong>573m</strong>, passing one of the best-preserved passage tombs in Ireland (dated to approximately 4,000 BC)</li>
-        <li>Panoramic views across five counties on a clear day</li>
-        <li>Family forest play trail and a lake-loop route at lower elevation</li>
-        <li>The Ring of Gullion was the spiritual heartland of the Cú Chulainn legends</li>
-        <li>Nearby: <strong>Kileavy Old Churches</strong> — a medieval monastic ruin beside a woodland pool</li>
-      </ul>
+  <div class="opener-lead stat">
+    <div class="stat-unit">
+      <div class="stat-num">2</div>
+      <div class="stat-label">pathways</div>
+    </div>
+    <div class="stat-unit">
+      <div class="stat-num">1</div>
+      <div class="stat-label">amino acid</div>
+    </div>
+    <div class="stat-unit">
+      <div class="stat-num count-up" data-target="3">3</div>
+      <div class="stat-label">disease contexts</div>
+    </div>
+  </div>
 
-      <p>Most visitors to Northern Ireland default to the Causeway coast. The Ring of Gullion makes a different case — volcanic geology millions of years older than the Giant's Causeway basalt, a passage tomb that predates the pyramids, and a landscape woven through with the mythology of Ulster's greatest hero. The forest park provides the access point; the AONB provides the scale.</p>
+  <h2>A Second Front for Leucine</h2>
+  <p class="section-dek">The standard leucine story is mTOR and muscle. Cologne just published a different one.</p>
 
-      <p>The Mountain Top Trail is the headline route: a steady ascent to the cairn-topped summit, with the passage tomb sitting just below the peak. The views on a clear day extend across Armagh, Down, Louth, Meath, and Monaghan — five counties, two jurisdictions, one volcanic ring. Lower down, a lake-loop route and a dedicated forest play trail make the park genuinely multi-pace. Accessible pathways were upgraded in 2025.</p>
+  <div class="dual-col">
+    <div class="col-main">
+      <p class="dropcap"><span class="lead-in">For decades, the amino acid</span> leucine has had one dominant story in cell biology: it activates mTOR signalling, which drives muscle protein synthesis. That story is well-established and largely correct. But a paper published in <em>Nature Cell Biology</em> in May 2026 by researchers at the University of Cologne's CECAD Cluster of Excellence on Ageing Research describes something else entirely — a second mechanism, operating in a completely different part of the cell, that connects leucine to the very machinery that keeps cells energised.</p>
 
-      <p>Before or after the summit, Kileavy Old Churches — a pair of roofless medieval ruins beside a still woodland pool about three kilometres north of the park entrance — rewards the short detour. The older church dates to the early medieval period; the woodland setting is deeply quiet.</p>
+      <p>The finding comes from a team led by Professor Thorsten Hoppe. Their work centres on a regulatory protein called SEL1L. Under normal conditions, SEL1L helps direct a cellular quality-control process: it marks certain proteins for degradation, clearing them from the outer mitochondrial membrane. When leucine is present at meaningful concentrations, the researchers found, it suppresses SEL1L activity. The consequence of that suppression is specific and significant: a class of transport proteins on the outer mitochondrial membrane — proteins responsible for shuttling metabolic molecules into the mitochondria — is protected from degradation. With those transport proteins intact, the supply of metabolic substrate flowing into the mitochondria is maintained, and ATP synthesis runs more efficiently.</p>
 
-      <p class="entry-source">Source: <a href="https://discovernorthernireland.com/things-to-do/family-activities-and-attractions/" target="_blank" rel="noopener">Discover Northern Ireland — Family Activities &amp; Attractions</a></p>
+      <p>Mitochondria are routinely described as the cell's power plants, which is accurate but flattening. They are also sites of calcium signalling, apoptosis regulation, and reactive oxygen species management. Almost every tissue in the body depends on them. The Cologne finding is notable precisely because it draws a dietary line — a line from the leucine in a piece of chicken or a bowl of lentils — directly to the outer membrane of that machinery, via a protein most people have never heard of.</p>
+
+      <div class="pull-quote">
+        <blockquote>"From food to fuel: this study helps explain how a nutrient from everyday foods like meat, dairy, eggs and legumes can directly influence our cells' energy factories."</blockquote>
+        <cite>— CECAD Cluster of Excellence Outreach, University of Cologne</cite>
+      </div>
+
+      <p>The research team's framing is careful and precise. They are not claiming this mechanism explains the bulk of leucine's effects on human physiology. They are not recommending any particular intake. What they have documented is a molecular pathway — SEL1L suppression leading to preserved outer mitochondrial membrane proteins leading to enhanced ATP synthesis — that was not previously known to exist. The <em>Nature Cell Biology</em> paper itself, along with the CECAD outreach coverage and a summary published by ScienceDaily on 20 May, consistently positions this as a mechanistic finding with downstream implications for cancer, metabolic disease, and ageing research. Those implications are not speculative decoration. Mitochondrial dysfunction is a consistent feature across all three disease contexts; a newly identified route by which a common dietary amino acid modulates that function is, for researchers in those fields, genuinely significant.</p>
+
+      <p>It is worth being clear about what this pathway is not. It operates independently of the mTOR pathway. It is not a refinement of muscle protein synthesis science. The two mechanisms almost certainly run in parallel — leucine acting on mTOR in the cytoplasm and on SEL1L at the outer mitochondrial membrane simultaneously — but they are not two versions of the same process. The Cologne team's contribution is the identification of a distinct molecular route, not a revision of an existing one.</p>
+
+      <p>Leucine is found at useful concentrations in meat, dairy, eggs, and legumes. It is not a rare or exotic amino acid, and the finding does not suggest any shortage in ordinary protein-sufficient diets. The interest here is scientific rather than prescriptive: a new mechanism has been identified, and its implications for ageing biology, metabolic research, and cancer cell energetics will now be tested by other groups. The canonical sources — the <a href="https://www.nature.com/articles/s41556-025-01799-3" target="_blank" rel="noopener"><em>Nature Cell Biology</em> paper</a>, the <a href="https://www.sciencedaily.com/releases/2026/05/260520233221.htm" target="_blank" rel="noopener">ScienceDaily summary</a>, and the <a href="https://www.cecad.uni-koeln.de/outreach/news/article/from-food-to-fuel-how-leucine-enhances-mitochondrial-energy-production" target="_blank" rel="noopener">CECAD outreach piece</a> — are all linked for anyone who wants the primary source.</p>
     </div>
 
-    <div class="split-aside">
-      <div class="sp-brief">
-        <p class="sp-brief-kicker">Logistics — Slieve Gullion</p>
-        <h4 class="sp-brief-h">Getting There &amp; On the Ground</h4>
-        <p><strong>Access:</strong> Free to enter; car parking fee applies. On-site cafe open during park hours. Accessible pathways upgraded 2025.</p>
-        <p><strong>Trail:</strong> Mountain Top Trail is approximately 5km with around 380m of ascent — allow 2–3 hours return. Trail surface is uneven above the tree line.</p>
-        <p><strong>Kileavy Churches:</strong> Signed off the B113, roughly 3km north of the forest park entrance. No facilities on site.</p>
+    <div class="col-aside">
+      <div class="sidebar">
+        <div class="sidebar-label">What this means in practice</div>
+        <p>Leucine is already present in adequate concentrations in any protein-sufficient diet — meat, dairy, eggs, and legumes are all reliable sources. This finding does not change supplementation thresholds or establish a new dietary recommendation. The mechanism — SEL1L suppression preserving outer mitochondrial membrane transport proteins — is a basic science finding, not a clinical intervention. Its significance is for researchers working in cancer biology, metabolic disease, and ageing: a new pathway has been mapped. The practical read is simply that the leucine in a normal varied diet is doing more at the cellular level than the mTOR story alone suggested.</p>
+        <p class="sidebar-source">Source: <a href="https://www.nature.com/articles/s41556-025-01799-3" target="_blank" rel="noopener">Nature Cell Biology, Hoppe et al., 2026</a></p>
+      </div>
+
+      <div class="margin-note">
+        SEL1L is part of the HRD1 complex, a conserved E3 ubiquitin ligase involved in ER-associated protein degradation. Its role at the outer mitochondrial membrane is the newly described site of leucine's action.
       </div>
     </div>
   </div>
 
-  <div class="dyk">
-    <span class="dyk-label">Did You Know</span>
-    <p>The Ring of Gullion is the only <strong>ring dyke volcanic complex</strong> in the British Isles — formed when magma intruded in a ring fracture around a collapsing volcanic centre, then slowly exposed by millions of years of erosion. Slieve Gullion sits at the centre of that ring.</p>
+  <div class="read-next">
+    <span class="read-next-label">Next</span>
+    <a href="#radar">On the Radar — Coming Up</a>
   </div>
-
-  <!-- Also cards -->
-  <h3 class="entry-subhed also-subhed">Also Worth the Drive</h3>
-  <div class="also-cards">
-
-    <div class="also-card">
-      <div class="also-card-label">West Belfast</div>
-      <h4 class="also-card-title">Colin Glen Forest Park</h4>
-      <p>Ireland's only official <strong>Gruffalo Trail</strong> runs through Colin Glen, but the park has grown well beyond its literary credentials. The SKYTrek high-ropes adventure course, laser tag, and archery cater to older children; an <strong>alpine coaster</strong> and a 250-metre Forest Flyover zipline raise the ceiling further. The site sits around 20 minutes from Belfast city centre. High-ropes slots sell out on weekends — advance booking is advisable.</p>
-      <p class="entry-source">Source: <a href="https://www.inyourpocket.com/belfast/northern-ireland-family-friendly-attractions_78354f" target="_blank" rel="noopener">In Your Pocket — NI Family-Friendly Attractions</a></p>
-    </div>
-
-    <div class="also-card">
-      <div class="also-card-label">Co. Fermanagh</div>
-      <h4 class="also-card-title">Cuilcagh Boardwalk Trail — 'Stairway to Heaven'</h4>
-      <p>A 7.5-mile round trip across one of Northern Ireland's largest expanses of blanket bog, culminating in an ascent to the <strong>665m Cuilcagh summit</strong> via the famous boardwalk staircase. The trailhead starts from the <strong>Marble Arch Caves Global Geopark</strong> car park, making it straightforward to combine a morning on the trail with an afternoon cave tour for a full-day Fermanagh outing.</p>
-      <p class="entry-source">Source: <a href="https://www.theirishroadtrip.com/things-to-do-in-northern-ireland/" target="_blank" rel="noopener">The Irish Road Trip — Things to Do in Northern Ireland</a></p>
-    </div>
-
-  </div>
-
-  <div class="read-next" style="color:rgba(255,255,255,.6)">Next: <a href="#on-the-radar" style="color:var(--local-accent)">On the Radar</a> — What's coming in June.</div>
 </section>
 
-<section class="sec radar-section" id="on-the-radar">
+<!-- ══════ ON THE RADAR ══════ -->
+<section class="sec radar-section" id="radar">
   <div class="sec-watermark">Radar</div>
   <span class="section-label" style="color:var(--rose)">On the Radar — Coming Up</span>
+  <h2>The week of 25–31 May</h2>
 
-  <p>Five weeks of events worth circling — from Budapest to the big screen, with 37 days left until the Efteling departure.</p>
+  <figure class="img-float-left reveal" style="max-width:340px;margin:0 1.5rem 1rem 0;">
+    <img src="/assets/cached/8685734d4cc3.jpg"
+         alt="Novak Djokovic during practice at Roland Garros, May 2026"
+         style="width:100%;border-radius:4px;display:block;">
+    <figcaption style="font-size:0.75rem;color:var(--muted);margin-top:0.35rem;">Roland Garros practice, May 2026. Photo: Roland-Garros official media / FFT press kit.</figcaption>
+  </figure>
 
   <div class="radar-grid">
 
     <div class="radar-row">
-      <span class="radar-date">30 May</span>
+      <span class="radar-date">Mon 25 May</span>
       <div>
-        <span class="radar-cat">Sport</span>
-        <strong><a href="https://www.uefa.com/uefachampionsleague/match/2043935/">Champions League Final</a></strong> — PSG vs Arsenal, Puskás Aréna, Budapest. Arsenal's first European final in 20 years. Kick-off 17:00 BST on TNT Sports. A win would end the club's wait for a first European title.
+        <span class="radar-cat"></span>
+        <strong>Bank Holiday — GB &amp; NI</strong> — The long weekend closes; no
+        fixtures scheduled in the major European leagues.
       </div>
     </div>
 
     <div class="radar-row">
-      <span class="radar-date">31 May</span>
+      <span class="radar-date">Mon–Fri<br>25–30 May</span>
       <div>
-        <span class="radar-cat">Sport</span>
-        <strong>Arsenal Premier League Title Parade</strong> — Islington. The north London street party is booked regardless; a Champions League triumph the evening before would turn it into a double celebration for the ages.
+        <span class="radar-cat film"></span>
+        <strong><a href="https://www.rolandgarros.com/en-us/order-of-play" style="color:inherit">Roland Garros — Rounds 1–3</a></strong> — First-week play intensifies from Tuesday; the second round is complete by Friday. World No. 1 Sinner — on a <a href="https://www.atptour.com/en/news/roland-garros-2026-history-draw-schedule" style="color:inherit">29-match unbeaten streak</a> — and Djokovic are in opposite halves of the draw. Alcaraz is absent with a wrist injury.
+        <div class="margin-note" style="font-size:0.78rem;color:var(--muted);margin-top:0.3rem;"><em>Why it matters:</em> Sinner's career Grand Slam bid reaches its toughest clay test. The draw is wide open without Alcaraz.</div>
       </div>
     </div>
 
     <div class="radar-row">
-      <span class="radar-date">3 June</span>
+      <span class="radar-date">Thu 28 May</span>
       <div>
-        <span class="radar-cat game">Game</span>
-        <strong><a href="https://www.nintendo.com/en-gb/Games/Nintendo-Switch-2-games/Final-Fantasy-VII-Rebirth-2719580.html">Final Fantasy VII Rebirth</a></strong> — Arrives on Nintendo Switch 2. Cloud, Tifa, and Aerith reach a new platform in what remains one of the most ambitious RPG productions of recent years.
+        <span class="radar-cat game"></span>
+        <strong><a href="https://www.nintendolife.com/games/nintendo-switch-2/stray" style="color:inherit">Stray — Nintendo Switch 2</a></strong> — The cat-in-a-cyberpunk-city game arrives on Switch 2 at $29.99, with 4K output, improved frame rate, and mouse controls. Four years after its PC and PlayStation debut.
+        <div class="margin-note" style="font-size:0.78rem;color:var(--muted);margin-top:0.3rem;"><em>Why it matters:</em> The four-year cross-platform wait closes; mouse controls on Switch 2 are a first for the genre.</div>
       </div>
     </div>
 
     <div class="radar-row">
-      <span class="radar-date">7 June</span>
+      <span class="radar-date">Fri 29 May</span>
       <div>
-        <span class="radar-cat">Sport</span>
-        <strong><a href="https://www.formula1.com/en/racing/2026/Monaco">Formula 1 Monaco Grand Prix</a></strong> — Circuit de Monaco. The first Monaco GP run under the 2026 technical regulations, with revised aerodynamic rules that promise closer racing through the principality's unforgiving streets.
+        <span class="radar-cat music"></span>
+        <strong><a href="https://warp.net/releases/590960-inferno/tracklist" style="color:inherit">Boards of Canada — <em>Inferno</em> (Warp)</a></strong> — The Scottish duo's first album in 13 years drops Friday. Released on limited red translucent 2LP vinyl as well as digital. Their longest silence since formation.
       </div>
     </div>
 
     <div class="radar-row">
-      <span class="radar-date">19 June</span>
+      <span class="radar-date">Sat 30 May<br>18:00 CET</span>
       <div>
-        <span class="radar-cat film">Film</span>
-        <strong><a href="https://www.pixar.com/toy-story-5">Toy Story 5</a></strong> — UK cinemas. Tom Hanks, Tim Allen, and Keanu Reeves headline the long-awaited fifth chapter. The first Toy Story in over a decade carries considerable expectation.
+        <span class="radar-cat film"></span>
+        <strong><a href="https://en.wikipedia.org/wiki/2026_UEFA_Champions_League_final" style="color:inherit">UEFA Champions League Final — PSG vs Arsenal</a></strong> — Puskás Aréna, Budapest. Arsenal — confirmed Premier League champions for the first time in 22 years — face PSG, who overcame Bayern in the semis. Arsenal have never won the European Cup.
+        <div class="margin-note" style="font-size:0.78rem;color:var(--muted);margin-top:0.3rem;"><em>Why it matters:</em> A 22-year title wait already claimed; a first European Cup would complete a historic double.</div>
       </div>
     </div>
 
     <div class="radar-row">
-      <span class="radar-date">25 June</span>
+      <span class="radar-date">Sun 31 May</span>
       <div>
-        <span class="radar-cat game">Game</span>
-        <strong><a href="https://www.nintendo.com/en-gb/Games/Nintendo-Switch-2-games/Star-Fox-Switch-2-2719579.html">Star Fox</a></strong> — Switch 2 remake arrives in UK. Barrel rolls return on Nintendo's new hardware.
+        <span class="radar-cat film"></span>
+        <strong><a href="https://www.arsenal.com" style="color:inherit">Arsenal Premier League Title Parade — Islington</a></strong> — The victory parade through Islington, the day after the Champions League Final in Budapest.
       </div>
     </div>
 
     <div class="radar-row">
-      <span class="radar-date">26 June</span>
+      <span class="radar-date">Sun 1 Jun</span>
       <div>
-        <span class="radar-cat film">Film</span>
-        <strong><a href="https://www.dccomics.com/supergirl-woman-of-tomorrow">Supergirl: Woman of Tomorrow</a></strong> — UK cinemas. Milly Alcock takes on the cape as Kara Zor-El in the first DCU Chapter 1 theatrical release since the James Gunn era began in earnest.
+        <span class="radar-cat film"></span>
+        <strong><a href="https://www.rolandgarros.com/en-us" style="color:inherit">Roland Garros — Round 4 begins</a></strong> — The second week opens with the last 16 in both draws. The tournament runs through 7 June.
       </div>
     </div>
 
     <div class="radar-row">
-      <span class="radar-date">30 June</span>
+      <span class="radar-date">Thu–Sun<br>5–7 Jun</span>
       <div>
-        <span class="radar-cat">Trip</span>
-        <strong>Efteling Departure</strong> — 37 days to go. The <a href="https://www.efteling.com/en/park/attractions/hooghmoed">Hooghmoed</a> drop tower has been open since 1 May (90 cm height requirement), so the queues may have settled by the time the trip begins. Budapest is the warm-up act; Kaatsheuvel is the main event.
+        <span class="radar-cat tech"></span>
+        <strong><a href="https://www.formula1.com/en/racing/2026" style="color:inherit">F1 Monaco Grand Prix</a></strong> — The street circuit returns for round eight of the season. Kimi Antonelli leads the championship following three wins, including Miami. Monaco has historically humbled points leaders on raw pace.
       </div>
     </div>
 
-  </div>
+    <div class="radar-row">
+      <span class="radar-date">~9–14 Jun</span>
+      <div>
+        <span class="radar-cat"></span>
+        <strong>Countdown auto-trigger window opens</strong> — The Efteling and Beekse Bergen trip (departing 30 June) enters the 2–3 week sweet spot for a Countdown special. Watch this space.
+      </div>
+    </div>
+
+  </div><!-- /radar-grid -->
+
 </section>
 
+<!-- ══════ COLOPHON — Issue #10 · 24 May 2026 ══════ -->
 <section class="colophon" id="colophon">
   <div class="colophon-mast">The Signal<span>.</span></div>
   <div class="colophon-sub">Issue in Numbers · Next Week · A Fact</div>
+
   <div class="colophon-grid">
+
     <div class="colophon-block">
       <div class="colophon-block-label">Issue in Numbers</div>
       <ul class="colophon-stats">
-        <li><strong>16</strong> chapters</li>
-        <li><strong>~7,000</strong> words</li>
-        <li><strong>4</strong> section debuts</li>
-        <li><strong>8</strong> Long Shelf picks</li>
-        <li><strong>1</strong> Director's Cut</li>
-        <li><strong>4</strong> Discovery picks</li>
+        <li><strong>10</strong> sections</li>
+        <li><strong>~6,800</strong> words</li>
+        <li><strong>38</strong> links</li>
+        <li><strong>6</strong> images</li>
       </ul>
     </div>
+
     <div class="colophon-block colophon-next">
       <div class="colophon-block-label">Next Week</div>
-      <p>Champions League Final fallout from Budapest. Monaco Grand Prix first lap. The Efteling countdown enters its penultimate edition — six weeks out. Expect a packed Touchline and a heavier On the Radar than usual.</p>
+      <p>The CL Final verdict lands on Saturday: can Arsenal complete the double in Budapest, or does PSG's European pedigree hold? Issue #11 carries the full debrief — plus, with five weeks to Efteling and Beekse Bergen, the auto-trigger window for the Countdown edition opens shortly after. The clock is running.</p>
     </div>
+
     <div class="colophon-block colophon-fact">
       <div class="colophon-block-label">A Fact</div>
-      <p>Aaron Rai's PGA Championship win at Aronimink was the first by an English player since Jim Barnes in 1919 — a gap of 107 years. Barnes was born in Cornwall but emigrated to the US, won two US Opens and two PGA Championships, and is claimed by neither country's golf history with any great enthusiasm.</p>
+      <p>The phrase "give someone the cold shoulder" did <em>not</em> originate with medieval hosts serving cold mutton to unwanted guests — that story is a folk etymology with no evidence. The actual coinage is Sir Walter Scott in his 1816 novel <em>The Antiquary</em>: "showing o' the cauld shouther." It was likely a mistranslation of <em>dederunt umerum recedentem</em> — Nehemiah 9:29 in the Vulgate — meaning "stubbornly they turned their backs on you." The cold shoulder is a turned back, not a dinner course. <a href="https://en.wikipedia.org/wiki/Cold_shoulder">Wikipedia</a> · <a href="https://www.phrases.org.uk/meanings/cold-shoulder.html">phrases.org.uk</a></p>
     </div>
+
   </div>
+
+  <hr class="divider inset">
+  <p style="text-align:center;font-style:italic;font-size:0.92em;color:var(--bone, #e8e0d0);letter-spacing:0.04em;">
+    Back next Sunday. Enjoy the final.
+  </p>
+
   <div class="colophon-sign">Issue #10 · 24 May 2026 · A Sunday Morning Magazine</div>
 </section>
 
+<!-- ══════ FOOTER ══════ -->
 <footer class="footer">
-  <div class="footer-brand">The Signal<span class="mast-period" style="color:var(--ember);font-style:normal;">.</span></div>
-  <div class="footer-issue">A Sunday Morning Magazine · Issue #10 · 24 May 2026</div>
+  <div class="footer-brand">The Signal<span class="brand-period">.</span></div>
+  <div class="footer-issue">A Sunday Morning Magazine &middot; Issue #10 &middot; Sunday 24 May 2026 &middot; Standard Weekly &middot; 18–24 May 2026</div>
+  <div class="footer-links">Archive &middot; The Signal &middot; &copy; 2026</div>
 </footer>
 
 
