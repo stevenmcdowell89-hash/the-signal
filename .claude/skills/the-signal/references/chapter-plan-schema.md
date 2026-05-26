@@ -145,6 +145,12 @@ The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan
             "description": "Target word count for this chapter's prose. Guides writer length but is not a hard cap — cut if content doesn't support it."
           },
 
+          "dimensions_covered": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Deep Dive only (v8.22.14). For chapters that introduce a subject (a country, a person, an institution, a movement), the list of dimensions this chapter will cover. E.g. for a chapter on Germany in 1914: ['founding', 'constitutional', 'economic', 'military', 'naval', 'colonial', 'cultural_scientific', 'domestic_politics', 'foreign_policy']. The planner checks this list against the brief — if the brief asks for thorough coverage of a subject and the chapter declares fewer dimensions than a curious reader would expect, the planner adds them. Editorial discretion is allowed on depth-per-dimension (some get full paragraphs, some get a sentence) but no dimension may be silently omitted. Optional for non-introductory chapters (foreword, argument, keep-digging, conflict-walkthrough chapters that don't introduce new subjects)."
+          },
+
           "images_needed": {
             "type": "array",
             "description": "Images the writer should source for this chapter. Role describes what the image should show.",
