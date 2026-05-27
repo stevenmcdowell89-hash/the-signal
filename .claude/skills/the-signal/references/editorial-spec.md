@@ -72,6 +72,10 @@ The standing feature. **One curious fact, unrelated to any story in this issue.*
 
 The Colophon closes with a small sign-off line (`.colophon-sign`) — issue number, date, and the standing tagline.
 
+## Pipeline chrome (auto-injected, do not author)
+
+**Back-link pill ("← The Signal", v8.22.15).** Every issue carries a fixed-position pill at top-left linking back to `../` (the archive index). Self-contained: namespaced `.signal-back-to-archive` class with its own scoped `<style data-signal-back>` block, marker-wrapped (`<!-- the-signal:back --> … <!-- /the-signal:back -->`) so the stitcher can re-inject idempotently. Source-of-truth markup lives at `assets/template-parts/back-link.html`; the stitcher (`scripts/stitch-issue.sh`) injects it right after the real `<body>` tag on every run if the marker is not already present. Writers do not add it to chapter plans or to body prose — it is chrome, not editorial content. Originally added in PR #89 by a one-off direct-write script; v8.22.15 wired the same block into the stitch pipeline after the 24 May 2026 weekly and 26 May 2026 Deep Dive shipped without it (the one-off had never been integrated and freshly stitched issues stopped inheriting it).
+
 ---
 
 ## Article Structure: Lead + Companion
