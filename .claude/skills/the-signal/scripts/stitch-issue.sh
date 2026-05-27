@@ -647,6 +647,36 @@ else:
             print("ERROR: Cannot find JS placeholder or </body> in scaffold")
             sys.exit(1)
 
+# ── Inject "← The Signal" back link after <body> ──
+# Added v8.22.15: PR #89 originally added this block to every issue via a
+# one-off direct-write script. That script was never integrated into the
+# stitch pipeline, so issues stitched after the older HTMLs were written
+# shipped without the back link (24 May 2026 weekly, 26 May 2026 Deep Dive).
+# This step runs every stitch and is idempotent — if a scaffold ever starts
+# including the block natively, the marker check below skips re-injection.
+if '<!-- the-signal:back -->' not in html:
+    back_link_path = Path(__file__).resolve().parent.parent / "assets" / "template-parts" / "back-link.html"
+    if back_link_path.exists():
+        back_link_block = back_link_path.read_text(encoding="utf-8").rstrip() + "\n"
+        # Reuse the </head>-anchored body finder from the activation rewrite —
+        # the scaffold contains an example <body> string inside an HTML comment,
+        # so naive regex matching grabs the wrong one. Find </head> first.
+        bl_head_match = re.search(r'</head\s*>', html, re.IGNORECASE)
+        if not bl_head_match:
+            print("ERROR: No </head> tag found — cannot inject back link")
+            sys.exit(1)
+        bl_body_search = re.search(r'<body\b[^>]*>', html[bl_head_match.end():], re.IGNORECASE)
+        if not bl_body_search:
+            print("ERROR: No <body> tag after </head> — cannot inject back link")
+            sys.exit(1)
+        bl_insert_at = bl_head_match.end() + bl_body_search.end()
+        html = html[:bl_insert_at] + "\n" + back_link_block + html[bl_insert_at:]
+        print("BACK LINK: injected after <body>")
+    else:
+        print(f"WARNING: back-link template not found at {back_link_path} — skipping")
+else:
+    print("BACK LINK: marker already present in scaffold, skipping injection")
+
 # ── Write output ──
 out_path.write_text(html, encoding="utf-8")
 
