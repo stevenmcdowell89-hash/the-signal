@@ -58,6 +58,21 @@
       text-transform: uppercase;
       font-weight: 500;
     }
+    .quality-link {
+      display: inline-block;
+      margin-top: 0.85rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--ink-dim);
+      text-decoration: none;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.3rem 0.85rem;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .quality-link:hover { color: var(--coral); border-color: var(--line-strong); }
 
     /* ---------- Section label ---------- */
     .section-label {
@@ -520,6 +535,7 @@
     <header class="page-header">
       <div class="masthead">The Signal</div>
       <div class="tagline">Weekly Intelligence Brief</div>
+      <a class="quality-link" href="quality.html">Editorial quality &rarr;</a>
     </header>
 
     <!-- Continue reading (revealed by JS if localStorage has progress) -->

@@ -18,7 +18,7 @@ description: >-
 
 Generate issues of The Signal — a weekly personal magazine for Sunday morning reading.
 
-Version 8.23.0. See `CHANGELOG.md` next to this file for the full version-by-version history of editorial and visual changes. Editorial substance is defined in `references/editorial-spec.md` and its sliced views in `references/spec/`. This file describes only **how the pipeline runs on Claude Code**.
+Version 8.24.0. See `CHANGELOG.md` next to this file for the full version-by-version history of editorial and visual changes. Editorial substance is defined in `references/editorial-spec.md` and its sliced views in `references/spec/`. This file describes only **how the pipeline runs on Claude Code**.
 
 ## STEP ZERO — verify orchestrator model BEFORE ANYTHING ELSE
 
@@ -76,7 +76,7 @@ The Signal runs as a multi-subagent pipeline. Each role has different reasoning 
 
 The Signal runs ONE pipeline for every issue — standard weekly or special edition. The format is decided in Phase 0; Phases 3–10 then run for every format. The format only changes WHICH chapters get written and HOW writers are sequenced (parallel vs sequential), not WHICH phases run.
 
-The pipeline: Phase 0 (decide format) → Phase 3 (researcher subagent) → **Phase 3a-verify (orchestrator WebFetch every URL — v8.13.8)** → Phase 3b (research-bundle validator) → Phase 4 (planner subagent + validator) → Phase 5 (writer subagents, parallel or sequential) → Phase 6 (stitch) → Phase 7 (per-chapter Gate 1) → Phase 7.5 (release-date check) → **Phase 7.6 (structural + asset validator — `validate-issue.py`)** → Phase 7.7 (image-source diversity — `check-image-diversity.sh`) → **Phase 7.8 (DOM visual smoke test — `visual-smoke-test.py`)** → Phase 8 (stitched-issue Gate) → Phase 9 (repair if needed) → Phase 10 (deliver + publish + CI verification).
+The pipeline: Phase 0 (decide format) → Phase 3 (researcher subagent) → **Phase 3a-verify (orchestrator WebFetch every URL — v8.13.8)** → Phase 3b (research-bundle validator) → Phase 4 (planner subagent + validator) → Phase 5 (writer subagents, parallel or sequential) → Phase 6 (stitch) → Phase 7 (per-chapter Gate 1) → Phase 7.5 (release-date check) → **Phase 7.6 (structural + asset validator — `validate-issue.py`)** → Phase 7.7 (image-source diversity — `check-image-diversity.sh`) → **Phase 7.8 (DOM visual smoke test — `visual-smoke-test.py`)** → Phase 8 (stitched-issue Gate) → Phase 9 (repair if needed) → **Phase 9.5 (editorial-quality scoring — observational, logs the quality signal)** → Phase 10 (deliver + publish + CI verification).
 
 There is NO separate "lightweight" path. Standard weeklies run the full pipeline same as specials. Build dir is `/tmp/signal-build/`, cleared at the start of every run.
 
@@ -341,6 +341,20 @@ If gates STILL fail after auto-repair (or fail in non-image ways — release-dat
 
 **Cost log:** after each repair attempt, run `bash scripts/log-call.sh repair <model> <issue_id> <chapter_id> <round_number> <outcome>`. Outcome is `gate_fail` if the gate still fails and another round is coming, `ok` if the chapter now passes, `escalated` if all 3 rounds exhausted. See § Cost Logging.
 
+### Phase 9.5 — Editorial quality scoring (observational, before publish)
+
+This is the pipeline's only **quality** signal. Every gate before it (Phases 3b, 7–8) measures *compliance* — did the issue break a rule? None of them can tell whether the issue is actually *good*, which is the magazine's entire reason to exist. Phase 9.5 closes that blind spot, and it scores the **post-repair artifact** — the exact HTML about to ship.
+
+**Spawn a dedicated scorer `Agent`** (`subagent_type: "general-purpose"`, `model: "opus"`, fallback `"sonnet"`). It is NOT the orchestrator and NOT any writer that worked on this issue — a producer grading its own work drifts generous. In the prompt, pass the path to the final stitched HTML and tell it to read `references/quality-rubric.md` (the full rubric, with its archive-anchored examples) and nothing else. It scores the five dimensions (voice, density, structure, opening, throughline — `throughline` is `null` for parallel formats) and returns ONE JSON object exactly as specified in the rubric's "The JSON the scorer emits" section, including the mandatory `weakest` dimension and one-sentence `note`.
+
+The orchestrator then runs:
+```bash
+bash scripts/log-quality.sh '<scorer-json>'
+```
+which injects `ts`, computes `overall`, appends one line to `state/quality-log.jsonl`, and regenerates the public `quality.html` page. Set `writer_model` to the model the writers actually ran on this issue (the whole point is to compare writer models over time) and `scorer_model` to the scorer's model id.
+
+**This is observational, not a gate.** A low score never blocks or reverts the publish — Phase 10's cardinal rule (always publish) is absolute. Phase 9.5 exists to accumulate the signal, not to add a failure mode. Over a dozen issues the log answers what no single read can: did the stronger writer model actually score higher? Which dimension is chronically weakest (i.e. where the *spec* should change, not the model)? Review with `bash scripts/quality-summary.sh`. See § Editorial Quality below.
+
 ### Phase 10 — Deliver + publish (always publishes; CI is post-hoc)
 
 **Cardinal rule (v8.13.8):** Phase 10 ALWAYS publishes. Phase 9 has already done up to 3 rounds of self-healing repair; whatever survived is what ships. The reader gets a new issue every Sunday — degraded if necessary, broken-imperfect rather than missing. Last week's issue remains accessible at `/issues/<previous-filename>.html` via `index.html`, so the live site never lacks content even if this week's has minor defects.
@@ -353,6 +367,7 @@ If gates STILL fail after auto-repair (or fail in non-image ways — release-dat
 
 1. Copy the issue HTML into `/tmp/the-signal/issues/<filename>.html`.
 1a. **Mirror images + generate cover** (offline-PWA + archive thumbnail). Run `bash scripts/post-publish.sh issues/<filename>.html` from the repo root. The script (a) downloads every external image referenced by the new issue into `/assets/cached/<hash>.<ext>` and rewrites the issue HTML to reference the local copies, and (b) extracts a cover thumbnail at `/assets/covers/<slug>.jpg` for the archive page. Idempotent. Failed image downloads leave the original URL intact so the issue still works online. Add any new files under `/assets/cached/` and `/assets/covers/` to the publish push list. The PWA snippet and reading-progress tracker are already baked into `template-parts/` so no per-issue injection is needed.
+1b. **Refresh the quality page.** Phase 9.5 already appended this issue's score via `log-quality.sh` (which regenerates `quality.html`). If you skipped or re-ran scoring, run `python3 scripts/render-quality-page.py` once more from the repo root so `quality.html` reflects the full `state/quality-log.jsonl`. Both `quality.html` and `state/quality-log.jsonl` go in the publish push list.
 2. Update `/tmp/the-signal/index.html` — two changes:
 
    **(a) Promote the new issue to the hero slot.** Move whatever is currently in the `.hero` section (the `<a class="hero-card">`) down into the archive grid as its own `<li>` at the top of `<ul class="grid">`, converting its markup from hero-card to card. Then replace the hero with the new issue. The hero markup is:
@@ -388,7 +403,7 @@ If gates STILL fail after auto-repair (or fail in non-image ways — release-dat
    Slug = the issue filename without `.html`. Cover images and reading-progress all flow from `data-cover-slug` automatically — no other markup needed.
 3. Confirm `/tmp/the-signal/state/signal-state.json` reflects the updates above. The state file is committed alongside the issue HTML and archive index.
 4. **Push via the GitHub MCP server** (preferred — works without git auth in this environment):
-   - Call `mcp__github__push_files` with `owner: "stevenmcdowell89-hash"`, `repo: "the-signal"`, `branch: "main"`, the commit `message` (see below), and `files` listing every changed path with its contents read from disk. Three files in a standard run: `issues/<filename>.html`, `index.html`, `state/signal-state.json`. Plus the cost log if it lives in the repo (`state/cost-log.jsonl`).
+   - Call `mcp__github__push_files` with `owner: "stevenmcdowell89-hash"`, `repo: "the-signal"`, `branch: "main"`, the commit `message` (see below), and `files` listing every changed path with its contents read from disk. Standard-run files: `issues/<filename>.html`, `index.html`, `state/signal-state.json`, `quality.html`, `state/quality-log.jsonl`. Plus the cost log if it lives in the repo (`state/cost-log.jsonl`).
    - **Commit message format:** `Issue #N — <date range>: <headlines>` for standard weeklies; `<Format> — <Topic>: <date>` for specials.
    - If MCP push fails, fall back to plain `git push` from inside the cloned repo — credentials may be configured.
 5. Confirm publication by stating the GitHub Pages URL for the new issue in the closing summary. Include a note if Phase 9 had remaining defects (e.g. "Note: shipped with N image substitutions after auto-repair could not fully clear the bundle. CI will track."). Push notifications to installed PWAs are fired automatically by `.github/workflows/notify-on-publish.yml` on any push to `main` that adds a new `issues/*.html` file — the pipeline does not need to call `/api/notify` itself.
@@ -470,6 +485,21 @@ Every subagent call in the pipeline appends one line to the cost log via `script
 - Date floor: `bash scripts/cost-summary.sh --since 2026-05-01`
 
 The summary breaks calls down per issue by role and model, flags retries, and surfaces validator/gate failures + escalations across the fleet. After 4–6 real issues we'll have enough data to (a) confirm whether the role-intent fallback chains are sized right, (b) see which formats trigger the most repair rounds, (c) decide if any role should drop to a cheaper model or graduate to a more expensive one.
+
+## Editorial Quality (the quality signal)
+
+The cost log answers "what did this issue cost?" The quality log answers the question the cost log structurally **cannot**: "was the issue any good?" Every gate in Phases 3b–8 is a *compliance* check — it catches rule-breaks (bad markup, fabricated dates, mono-sourced images, performing prose). A clean gate record proves the issue is *shippable*, not that it's *good*; the two are different things, and a magazine's whole reason to exist is the second one. This is the system that measures it.
+
+**How it works.** At Phase 9.5 a dedicated scorer agent (never the orchestrator, never a writer on this issue) scores the post-repair artifact against `references/quality-rubric.md` — five 1–5 dimensions (voice, density, structure, opening, throughline) anchored to real archive examples, plus a mandatory `weakest` dimension and one-line `note`. The orchestrator pipes the scorer's JSON to `bash scripts/log-quality.sh`, which computes `overall`, appends to `state/quality-log.jsonl`, and regenerates `quality.html`.
+
+**Where it lives + is visible.**
+- `state/quality-log.jsonl` — append-only log, committed to the repo alongside `cost-log.jsonl`. Override path via `SIGNAL_QUALITY_LOG`.
+- `quality.html` — a static, baked page at the repo root, served on the live site and linked from `index.html` ("Editorial quality →"). It can't read `state/` at runtime (`.assetsignore` excludes it), so the page is regenerated from the log at publish time, same pattern as `index.html`. This is the reader-facing view — a readable table of every scored issue.
+- `bash scripts/quality-summary.sh [--since YYYY-MM-DD]` — terminal view.
+
+**Why `writer_model` is stamped on every row.** This is the payoff. The model-selection policy (see § Model Selection) was rewritten on the principle that we can't *prove* a cheaper writer hurts quality because nothing measured it. This log is that missing instrument: once issues written by different models are scored, `quality-summary.sh` shows average overall *by writer model* — turning the model-tier question from a judgment call into an evidence-based one. Re-run that comparison when the next model ships rather than re-arguing it.
+
+**The honest caveats (don't oversell this).** A sibling-model scorer removes the producer's bias, not all bias; the scorer model is itself part of the instrument (a score shift can be the magazine changing or the grader changing — hence `scorer_model` on every row); and the only thing that keeps it honest long-term is a ~monthly **human anchor** score (`scorer_model: "human"`) to detect drift. It is a trend instrument, not a verdict on any one issue. Scoring is observational — it never gates or reverts a publish.
 
 ## State Tracking
 
@@ -707,6 +737,10 @@ When the reader asks to tweak styling or structure rather than generate an issue
 | `scripts/log-call.sh` | Fire-and-forget logger — main loop calls this after each subagent returns. Appends one JSON line to the cost log (default `/tmp/the-signal/state/cost-log.jsonl`, override via `SIGNAL_COST_LOG`). Errors are silent so logging never blocks the pipeline. |
 | `scripts/auto-repair-images.py` | **Phase 9 round-0 programmatic repair.** Takes stitched HTML + research-bundle.json, identifies image defects (duplicates D6, unbundled D7, page-URL-as-image D3) and substitutes unused bundle URLs in-place. Pure Python — no subagent dependency. Exits 0 on clean / fully-repaired, 1 on partial (bundle exhausted). The orchestrator's Phase 9 loop absorbs partial failures via the 3-round budget; after 3, Phase 10 ships anyway. |
 | `scripts/cost-summary.sh` | Reads the cost log and prints a per-issue and aggregate breakdown (calls per role, model usage, retry rate, validator/gate failures, escalations). Run after a few issues to validate the model fallback chains. |
+| `references/quality-rubric.md` | The editorial-quality rubric scored at Phase 9.5: five 1–5 dimensions (voice, density, structure, opening, throughline) anchored to real archive examples, plus the scorer's JSON contract and the honest caveats. The pipeline's only quality signal — everything else is compliance. |
+| `scripts/log-quality.sh` | Phase 9.5 logger. Takes the scorer agent's JSON (arg or stdin), injects `ts`, computes `overall`, appends one line to the quality log (default `state/quality-log.jsonl`, override via `SIGNAL_QUALITY_LOG`), and regenerates `quality.html`. Non-fatal on error. |
+| `scripts/render-quality-page.py` | Bakes `state/quality-log.jsonl` into the static, reader-facing `quality.html` at the repo root (the log isn't served at runtime — `.assetsignore` excludes `state/`). Called by `log-quality.sh`; safe to re-run standalone. Paths overridable via `SIGNAL_QUALITY_LOG` / `SIGNAL_QUALITY_PAGE`. |
+| `scripts/quality-summary.sh` | Terminal view of the quality log: average overall, **average by writer model** (the model-tier comparison), per-dimension averages, weakest-dimension frequency. `--since YYYY-MM-DD` to floor by date. |
 
 **Rules for CSS edits:**
 - Never reorder or rename files — alphabetical order is the cascade.

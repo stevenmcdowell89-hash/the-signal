@@ -1,5 +1,56 @@
 # The Signal — Changelog
 
+8.24.0 — Editorial-quality signal: a measured rubric, logged and surfaced.
+  Follow-up to 8.23.0. The model-policy rewrite exposed a deeper gap:
+  the pipeline has NO quality signal. Every gate (Phases 3b–8) checks
+  compliance — markup, dates, image sourcing, performing prose — and a
+  clean record proves an issue is *shippable*, not *good*. The cost
+  log's zero-retry history was being read as quality evidence; it isn't.
+  Compliance and quality are different things, and nothing measured the
+  second.
+
+  New: a quality rubric scored every run, logged, and made visible.
+
+  - `references/quality-rubric.md` — five 1–5 dimensions (voice,
+    density, structure, opening, throughline) anchored to REAL archive
+    examples (the WWI Deep Dive performing essayism; the 24 May weekly's
+    structural incoherence; strong openers as the 5-anchors). Scorer
+    must always name the weakest dimension + a one-line reason, so the
+    log is actionable. Honest caveats baked in: sibling-scorer bias,
+    scorer-model-as-instrument, and a required ~monthly human anchor.
+
+  - Phase 9.5 (new) — a DEDICATED scorer agent (not the orchestrator,
+    not a writer on the issue) scores the post-repair artifact and emits
+    JSON. Observational only — never gates or reverts a publish; Phase
+    10's always-publish rule is untouched.
+
+  - `scripts/log-quality.sh` — appends the scorer JSON to
+    `state/quality-log.jsonl` (injects ts, computes overall) and
+    regenerates the page.
+
+  - `scripts/render-quality-page.py` — bakes the log into a static,
+    reader-facing `quality.html` at the repo root. The log lives under
+    state/ (excluded from the deployed site by .assetsignore), so the
+    page is regenerated at publish time, same pattern as index.html.
+
+  - `quality.html` + a header link from `index.html` ("Editorial
+    quality →") — a readable table of every scored issue, score-coloured,
+    with a summary strip including AVERAGE BY WRITER MODEL.
+
+  - `scripts/quality-summary.sh` — terminal view (overall, by writer
+    model, by dimension, weakest-frequency, --since).
+
+  Why writer_model is stamped on every row: it turns the model-tier
+  question 8.23.0 left open ("does a stronger writer actually write a
+  better magazine?") from a judgment call into an evidence base that
+  accumulates. Seeded with 3 honest backfill scores (WWI Deep Dive 3.8,
+  24 May weekly 3.5, 17 May Field Guide 4.2) from sampled prose, flagged
+  backfill:true so they read as indicative, not live-pipeline scores.
+
+  Phase 10 publish push list now includes quality.html +
+  state/quality-log.jsonl. No template/CSS/pipeline-shape changes to
+  issue output.
+
 8.23.0 — Model policy: standardise on Opus 4.8, invert the burden of proof.
   Opus 4.8 (1M context) shipped. Two problems with the old model
   policy surfaced:

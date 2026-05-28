@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>The Signal — Editorial Quality</title>
+  <meta name="robots" content="noindex">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#1A1A2E; --bg-2:#16213E; --bg-3:#20253E; --ink:#E8E8E8;
+      --ink-2:#B6BAC6; --ink-dim:#888; --coral:#E94560; --orange:#FF6B35;
+      --gold:#C9A66B; --line:rgba(255,255,255,0.08); --line-strong:rgba(255,255,255,0.16);
+      --s5:#3FA66A; --s4:#6FA84B; --s3:#C9A66B; --s2:#D2814A; --s1:#E94560;
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    body{background:var(--bg);color:var(--ink);font-family:'Source Sans 3',sans-serif;
+      min-height:100vh;padding:1.5rem 1.25rem 5rem;line-height:1.55;-webkit-font-smoothing:antialiased;}
+    .container{max-width:1180px;margin:0 auto;}
+    .back{display:inline-block;color:var(--ink-dim);text-decoration:none;font-size:0.8rem;
+      letter-spacing:0.06em;margin-bottom:1.5rem;}
+    .back:hover{color:var(--coral);}
+    header{text-align:center;padding:0.5rem 0 1.5rem;}
+    .masthead{font-family:'Playfair Display',serif;font-weight:900;
+      font-size:clamp(2rem,5vw,3rem);letter-spacing:0.05em;text-transform:uppercase;
+      background:linear-gradient(135deg,var(--coral),var(--orange));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
+    .tagline{font-size:0.72rem;color:var(--ink-dim);letter-spacing:0.28em;
+      text-transform:uppercase;font-weight:600;margin-top:0.4rem;}
+    .intro{max-width:760px;margin:1.5rem auto 0;color:var(--ink-2);font-size:0.95rem;}
+    .intro strong{color:var(--ink);}
+    .stats{display:flex;flex-wrap:wrap;gap:0.75rem;margin:2rem 0 1.5rem;}
+    .stat{background:var(--bg-2);border:1px solid var(--line);border-radius:10px;
+      padding:0.85rem 1.1rem;flex:1 1 220px;}
+    .stat-label{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.16em;
+      color:var(--ink-dim);font-weight:600;margin-bottom:0.35rem;}
+    .stat-val{font-size:1.05rem;color:var(--ink);font-weight:600;}
+    .muted{color:var(--ink-dim);font-weight:400;}
+    .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--bg-2);}
+    table{border-collapse:collapse;width:100%;font-size:0.88rem;}
+    th,td{padding:0.6rem 0.7rem;text-align:center;border-bottom:1px solid var(--line);white-space:nowrap;}
+    th{font-size:0.66rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-dim);
+      font-weight:700;background:var(--bg-3);position:sticky;top:0;}
+    th.left,td.left{text-align:left;white-space:normal;}
+    tbody tr:hover{background:rgba(255,255,255,0.03);}
+    td a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line-strong);}
+    td a:hover{color:var(--coral);}
+    td.left .muted{font-size:0.82rem;}
+    .score{font-weight:700;font-variant-numeric:tabular-nums;}
+    .s5{color:var(--s5);} .s4{color:var(--s4);} .s3{color:var(--s3);}
+    .s2{color:var(--s2);} .s1{color:var(--s1);} .s-na{color:var(--ink-dim);font-weight:400;}
+    .tag{font-size:0.6rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--gold);
+      border:1px solid var(--line-strong);border-radius:4px;padding:0.05rem 0.35rem;vertical-align:middle;}
+    .empty{padding:3rem 1rem;text-align:center;color:var(--ink-dim);}
+    .legend{margin-top:1rem;font-size:0.78rem;color:var(--ink-dim);}
+    .legend b{color:var(--ink-2);}
+    footer{margin-top:2.5rem;font-size:0.76rem;color:var(--ink-dim);text-align:center;line-height:1.7;}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="index.html">← The Signal archive</a>
+    <header>
+      <div class="masthead">Editorial Quality</div>
+      <div class="tagline">Quality signal · not compliance</div>
+    </header>
+
+    <p class="intro">Every automated gate in the pipeline checks whether an issue
+    broke a <strong>rule</strong>. This page is the one place that asks whether an issue
+    was <strong>good</strong> — scored at Phase 8.5 against a fixed rubric by a dedicated
+    scorer model, separate from the writer and the orchestrator. The number isn't the
+    point; the trend is. Each row stamps the <strong>writer model</strong> next to the
+    score, so over time this table answers the question a single read can't: did the
+    stronger model actually write a better magazine?</p>
+
+    <div class="stats"><div class="stat"><div class="stat-label">Issues scored</div><div class="stat-val">3</div></div><div class="stat"><div class="stat-label">Average overall</div><div class="stat-val">3.83</div></div><div class="stat"><div class="stat-label">Average by writer model</div><div class="stat-val">sonnet 3.83 <span class='muted'>(n=3)</span></div></div><div class="stat"><div class="stat-label">Weakest dimension (freq)</div><div class="stat-val">voice ×2, structure ×1</div></div></div>
+
+    <div class="table-wrap"><table><thead><tr><th>Date</th><th>Format</th><th class='left'>Issue</th><th>Writer</th><th>Voice</th><th>Density</th><th>Structure</th><th>Opening</th><th>Throughline</th><th>Overall</th><th class='left'>Weakest / note</th></tr></thead><tbody><tr><td class='nowrap'>2026-05-26</td><td>Deep Dive</td><td class='left'><a href="issues/signal_deep-dive_2026-05-26.html">World War One</a> <span class="tag">backfill</span></td><td class='nowrap'>sonnet</td><td class="score s3">3</td><td class="score s5">5</td><td class="score s3">3</td><td class="score s4">4</td><td class="score s4">4</td><td class="score s4">3.8</td><td class='left'><strong>voice</strong> — <span class='muted'>Dimensional rigour is the strength; the Argument chapter performs the essay by narrating its own structure, and the per-power chapters repeat one dimension order.</span></td></tr><tr><td class='nowrap'>2026-05-24</td><td>Weekly</td><td class='left'><a href="issues/signal_weekly_2026-05-24.html">Starmer endgame / Arsenal title</a> <span class="tag">backfill</span></td><td class='nowrap'>sonnet</td><td class="score s4">4</td><td class="score s4">4</td><td class="score s2">2</td><td class="score s4">4</td><td class="score s-na">—</td><td class="score s4">3.5</td><td class='left'><strong>structure</strong> — <span class='muted'>Strong leads and clear prose, but this is the run that leaked special-edition .sp-* components into a weekly and routed front-matter around the gates.</span></td></tr><tr><td class='nowrap'>2026-05-17</td><td>Field Guide</td><td class='left'><a href="issues/signal_field-guide_2026-05-17.html">Eating at Efteling &amp; Beekse Bergen</a> <span class="tag">backfill</span></td><td class='nowrap'>sonnet</td><td class="score s4">4</td><td class="score s5">5</td><td class="score s4">4</td><td class="score s4">4</td><td class="score s-na">—</td><td class="score s4">4.2</td><td class='left'><strong>voice</strong> — <span class='muted'>Vivid and concrete throughout; occasional adjective-led food writing edges toward performance but never loses the information.</span></td></tr></tbody></table></div>
+
+    <p class="legend"><b>Scores 1–5</b> per dimension
+    (<span class="score s5">5</span> best …
+    <span class="score s1">1</span> = the failure the spec warns about).
+    <b>Throughline</b> is scored only for sequential formats (Deep Dive, Versus,
+    Rewind, Season Review, Next); parallel formats show —.
+    <b>Overall</b> is the mean of scored dimensions.</p>
+
+    <footer>
+      Generated 2026-05-28 20:02 UTC · scored by claude-opus-4-8[1m].<br>
+      Backfilled rows were scored from sampled prose after the fact, by the
+      orchestrator rather than an independent scorer — treat them as indicative,
+      not as live-pipeline scores. Rubric: <code>references/quality-rubric.md</code>.
+    </footer>
+  </div>
+</body>
+</html>
