@@ -109,7 +109,12 @@
     "guardian.com": "news_cdn",
     "media.gettyimages.com": "press_kit",
     "image.shutterstock.com": "press_kit",
-    "images.squarespace-cdn.com": "news_cdn"
+    "images.squarespace-cdn.com": "news_cdn",
+    "images.metmuseum.org": "archive",
+    "collectionapi.metmuseum.org": "archive",
+    "www.metmuseum.org": "archive",
+    "www.worldhistory.org": "news_cdn",
+    "openaccess-cdn.clevelandart.org": "archive"
   },
   "ambiguous_domains": {
     "live.staticflickr.com": "Direct Flickr image host serves any user. Classify per the Flickr user (whitehouse, number10gov, ukparliament → government). When a researcher cites a live.staticflickr.com URL, the image_candidate entry MUST include an explicit source_type field — the validator cannot infer it from the URL."
