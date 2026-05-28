@@ -1,5 +1,47 @@
 # The Signal — Changelog
 
+8.23.0 — Model policy: standardise on Opus 4.8, invert the burden of proof.
+  Opus 4.8 (1M context) shipped. Two problems with the old model
+  policy surfaced:
+
+  (1) The Step Zero gate (`verify-orchestrator-model.sh`) was an
+      EXACT-string pin on `claude-opus-4-7[1m]`. A 4.8 1M session —
+      a strictly stronger model — would FAIL the gate and abort the
+      pipeline before Phase 0. The gate is meant to stop a *downgrade*
+      (the 24 May 2026 harness fallback to Opus 4.6), not forbid an
+      upgrade. Fixed: the gate is now an allowlist FLOOR accepting
+      both `claude-opus-4-7[1m]` and `claude-opus-4-8[1m]`; append
+      newer Opus 1M ids as they ship, never remove the floor.
+
+  (2) The per-role model choices (researcher/writer/repair on
+      Sonnet/Haiku) were set to limit cost under a cost-throttled
+      orchestrator, justified by the claim "Sonnet performs at the
+      same quality as Opus once the planner has done the hard
+      thinking." That claim was never tested. The pipeline has NO
+      quality signal — only compliance gates. The cost log's
+      zero-retry, zero-repair history proves the cheap roles stay
+      *compliant*; it says nothing about whether the prose is as
+      *good* as a stronger model would write. Compliance and quality
+      are different things, and the system is structurally blind to
+      the second.
+
+  Burden of proof inverted. New policy: a role keeps a cheaper model
+  ONLY if its work is mechanical enough that model strength provably
+  cannot affect the output. No LLM role clears that bar — the
+  genuinely mechanical work (stitching, validators, image
+  substitution) is already deterministic scripts with no model.
+  Every subagent role does generation or judgment a stronger model
+  could do better, undetectably. So all primaries are now Opus 4.8
+  (orchestrator, researcher, planner, writer, repair); Sonnet 4.6 is
+  retained as an availability/rate-limit FALLBACK only, never the
+  default. Haiku dropped from the chains. Re-run this analysis when
+  the next Opus ships rather than inheriting it.
+
+  Changed: `scripts/verify-orchestrator-model.sh` (allowlist floor),
+  SKILL.md Step Zero + Model Selection table + rationale + Phase 3a/5/9
+  spawn lines + pitfall #1. No template, CSS, or pipeline-shape
+  changes — issue output structure is unchanged.
+
 8.11.0 (current — installed version on Claude Code)
 
 8.9.1 — Hype-chapter visual variants (cheap, opt-in).

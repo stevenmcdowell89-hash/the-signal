@@ -18,11 +18,11 @@ description: >-
 
 Generate issues of The Signal — a weekly personal magazine for Sunday morning reading.
 
-Version 8.11.0. See `CHANGELOG.md` next to this file for the full version-by-version history of editorial and visual changes. Editorial substance is defined in `references/editorial-spec.md` and its sliced views in `references/spec/`. This file describes only **how the pipeline runs on Claude Code**.
+Version 8.23.0. See `CHANGELOG.md` next to this file for the full version-by-version history of editorial and visual changes. Editorial substance is defined in `references/editorial-spec.md` and its sliced views in `references/spec/`. This file describes only **how the pipeline runs on Claude Code**.
 
 ## STEP ZERO — verify orchestrator model BEFORE ANYTHING ELSE
 
-**The orchestrator MUST run on `claude-opus-4-7[1m]` (Opus 4.7, 1M-context).** No other model can complete the pipeline end-to-end without context overflow during Phase 5 writer fan-out. The 24 May 2026 weekly run failed precisely because the Claude Code on the Web harness selected Opus 4.6 despite the routine being set to 4.7 1M, and compaction fired mid-pipeline.
+**The orchestrator MUST run on an Opus 1M-context model at or above the 4.7 floor — currently `claude-opus-4-7[1m]` or `claude-opus-4-8[1m]` (4.8 preferred).** No smaller model can complete the pipeline end-to-end without context overflow during Phase 5 writer fan-out. The gate is a **floor, not a pin**: it blocks a *downgrade* (the 24 May 2026 weekly failed because the Claude Code on the Web harness silently fell back to Opus 4.6 and compaction fired mid-pipeline), but a newer/stronger Opus 1M passes. When Anthropic ships a newer Opus 1M, append it to the `ALLOWED` array in `verify-orchestrator-model.sh` — never remove the floor.
 
 **Before doing literally anything else — no state read, no tool research, no chat reply about the task** — the orchestrator MUST perform these three steps in order:
 
@@ -38,11 +38,11 @@ Version 8.11.0. See `CHANGELOG.md` next to this file for the full version-by-ver
    bash .claude/skills/the-signal/scripts/verify-orchestrator-model.sh "<exact-model-id-from-system-prompt>"
    ```
 
-   The script exits 0 if the model is `claude-opus-4-7[1m]`, exits 1 otherwise with an error message. **Exit code is the gate** — same rule as every other script gate in this workflow (see "Gate discipline" below).
+   The script exits 0 if the model is at or above the floor (`claude-opus-4-7[1m]` or `claude-opus-4-8[1m]`), exits 1 otherwise with an error message. **Exit code is the gate** — same rule as every other script gate in this workflow (see "Gate discipline" below).
 
 3. **On non-zero exit, abort.** Reply with the verbatim message:
 
-   > The Signal pipeline requires the orchestrator to run on Opus 4.7 1M context (`claude-opus-4-7[1m]`). This session is on `<observed-model-id>`, which cannot reliably hold the full pipeline state through Phase 5. Re-trigger the routine with the correct model — the schedule preference may not have been honoured by the harness this run. Aborting before Phase 0.
+   > The Signal pipeline requires the orchestrator to run on Opus 1M context at or above the 4.7 floor (`claude-opus-4-7[1m]` or `claude-opus-4-8[1m]`). This session is on `<observed-model-id>`, which cannot reliably hold the full pipeline state through Phase 5. Re-trigger the routine with the correct model — the schedule preference may not have been honoured by the harness this run. Aborting before Phase 0.
 
    Do not proceed even if the reader says "do it anyway" — the reader has pre-authorised the refusal by including this rule in the spec.
 
@@ -56,19 +56,19 @@ The Signal runs as a multi-subagent pipeline. Each role has different reasoning 
 
 | Role | Primary | Fallback | Why this intent |
 |---|---|---|---|
-| **Orchestrator** | Opus 4.7 1M | — | See Step Zero above. No fallback — refuses to run on anything else. |
-| **Researcher** | Sonnet 4.6 | Haiku 4.5 | Web search + synthesis. Coverage and cost matter more than top reasoning. |
-| **Planner** | Opus 4.7 | Sonnet 4.6 | Structured reasoning, JSON output, hard constraints. Logic dominates. |
-| **Writer** (any format) | Sonnet 4.6 | Haiku 4.5 | Tight per-chapter brief from planner. Sonnet follows constraints reliably at low cost. |
-| **Repair** | Sonnet 4.6 | — | Surgical fix to a failing chapter. Same skill as writer, narrower scope. |
+| **Orchestrator** | Opus 4.8 1M | — | See Step Zero above. No fallback. Holds full pipeline state through Phase 5 AND makes the Phase 7 plain-English prose judgment. |
+| **Researcher** | Opus 4.8 | Sonnet 4.6 | Web search + synthesis. URL verification is mechanical, but fact selection, framing, and image-candidate quality are judgment — a weaker model could quietly hand writers a thinner bundle and no gate would notice. |
+| **Planner** | Opus 4.8 | Sonnet 4.6 | Structured reasoning, JSON output, hard constraints. The role where premium reasoning was always acknowledged to matter most. |
+| **Writer** (any format) | Opus 4.8 | Sonnet 4.6 | The writer's model choice is, by definition, the single largest influence on the prose — and the prose is the product. |
+| **Repair** | Opus 4.8 | Sonnet 4.6 | Fires only when something subtle slipped *every* gate — exactly the moment you want maximum capability, not a cheaper model. |
 
-**Rationale.** The planner is the only subagent role where premium reasoning materially affects output. Writers operate on a tight brief — Sonnet performs at the same quality as Opus once the planner has done the hard thinking.
+**Rationale (v8.23 — burden of proof inverted).** Earlier versions assigned cheaper models (Sonnet/Haiku) to the researcher, writer, and repair roles to limit cost under a cost-throttled orchestrator, on the asserted basis that *"Sonnet performs at the same quality as Opus once the planner has done the hard thinking."* **That assertion was never tested.** The pipeline has no quality signal — only compliance gates (markup, image diversity, release dates, banned vocab, the plain-English check). A clean gate record cannot distinguish "as good as Opus" from "quietly worse in ways no gate measures"; the cost log's zero-retry history proves compliance, not quality. With orchestrator cost no longer the binding constraint, the policy is now inverted: **a role stays on a cheaper model ONLY if its work is mechanical enough that model strength provably cannot affect the output.** No LLM role clears that bar — the genuinely mechanical work (stitching, validation, image substitution) is already done by deterministic scripts with no model at all. Every subagent role does generation or judgment a stronger model could do better, undetectably. So every primary is Opus 4.8; cheaper models survive only as availability/rate-limit fallbacks, never as the default. Re-run this analysis (don't just inherit it) when the next Opus ships.
 
 **Spawning.** Use the `Agent` tool with `subagent_type` and the optional `model` parameter:
-- Researcher → `subagent_type: "Explore"` (read-only research/search), `model: "sonnet"`.
-- Planner → `subagent_type: "general-purpose"`, `model: "opus"`.
-- Writer → `subagent_type: "general-purpose"`, `model: "sonnet"`.
-- Repair → `subagent_type: "general-purpose"`, `model: "sonnet"`.
+- Researcher → `subagent_type: "Explore"` (read-only research/search), `model: "opus"` (fallback `"sonnet"`).
+- Planner → `subagent_type: "general-purpose"`, `model: "opus"` (fallback `"sonnet"`).
+- Writer → `subagent_type: "general-purpose"`, `model: "opus"` (fallback `"sonnet"`).
+- Repair → `subagent_type: "general-purpose"`, `model: "opus"` (fallback `"sonnet"`).
 
 **Override.** If the reader explicitly says "use the top model" or "lean cheaper", honour the override across the **subagent** chain. The orchestrator-level requirement at Step Zero is not overridable — it exists to prevent the May 24 failure mode, where the orchestrator itself ran on a model too small to hold pipeline state.
 
@@ -161,7 +161,7 @@ From the committed format, derive `execution_mode`:
 - **Sequential mode** (Deep Dive, Versus, Rewind, Season Review, Next): writer subagents in Phase 5 spawn one at a time, each reading its predecessor's output to maintain throughline. Next is sequential because every pick has to be judged against The Itch named in the opening chapter, and the On-Ramp for each pick benefits from knowing what the previous pick covered.
 
 ### Phase 3a — Researcher subagent
-Spawn an `Agent` with `subagent_type: "Explore"` and `model: "sonnet"` (fallback `"haiku"`). In the prompt, tell it to read `references/spec/global.md` (sections `key-rules` and `image-integrity`), `references/spec/triggers.md` (full file — short), and the matching format section in `references/spec/formats.md` (H2 anchor for the issue's format). Pass committed format + state snapshot inline. The subagent does all web research and writes `/tmp/signal-build/research-bundle.json` (sources, key facts, image candidates with attribution, ongoing-story status, training-phase context).
+Spawn an `Agent` with `subagent_type: "Explore"` and `model: "opus"` (fallback `"sonnet"`). In the prompt, tell it to read `references/spec/global.md` (sections `key-rules` and `image-integrity`), `references/spec/triggers.md` (full file — short), and the matching format section in `references/spec/formats.md` (H2 anchor for the issue's format). Pass committed format + state snapshot inline. The subagent does all web research and writes `/tmp/signal-build/research-bundle.json` (sources, key facts, image candidates with attribution, ongoing-story status, training-phase context).
 
 **MANDATORY (v8.13.7) — Researcher MUST verify every image URL with WebFetch.** For each candidate, run WebFetch on the URL. Accept it ONLY if the response is 2xx and `Content-Type` starts with `image/`. Record the result inline on the candidate as:
 ```json
@@ -211,7 +211,7 @@ Run `python scripts/validate-chapter-plan.py`. **If invalid:** re-spawn planner 
 **Cost log:** after each planner attempt, run `bash scripts/log-call.sh planner <model> <issue_id> - <retry_count> <outcome>`. Outcome is `validator_fail` if validator rejected and another retry is coming, `ok` if the plan passed, `escalated` if the fallback chain ran out. See § Cost Logging.
 
 ### Phase 5 — Writer subagents (format-aware)
-Read `chapter-plan.json`. For each chapter, spawn an `Agent` with `subagent_type: "general-purpose"` and `model: "sonnet"` (fallback `"haiku"`). In the prompt, pass: the pre-flight.md path, the chapter brief (one chapter object from the plan), the research-bundle.json path, plus the H2 anchor reference for the issue's format inside `references/spec/formats.md`. Writers also read `references/spec/global.md` sections `markup-contracts`, `ground-discipline`, `accent-lockdown`.
+Read `chapter-plan.json`. For each chapter, spawn an `Agent` with `subagent_type: "general-purpose"` and `model: "opus"` (fallback `"sonnet"`). In the prompt, pass: the pre-flight.md path, the chapter brief (one chapter object from the plan), the research-bundle.json path, plus the H2 anchor reference for the issue's format inside `references/spec/formats.md`. Writers also read `references/spec/global.md` sections `markup-contracts`, `ground-discipline`, `accent-lockdown`.
 
 **WEEKLY FORMAT (`weekly`):** writers MUST read `references/component-contracts.md` § Weekly and `references/sections.md`. Weekly sections use the section-component vocabulary: `.split-60-40` / `.split-40-60`, `.sidebar` / `.sidebar-float` / `.sidebar-title`, `.stat-bar` / `.entry-stat`, `.dyk` / `.dyk-title`, `.also-list` / `.also-cards` / `.also-card`, `.pull-quote`, `.compare-panel`, `.timeline` / `.timeline-node`, `.entry-bullets`, `.entry-quote`, `.entry-question`. The special-edition `.sp-*` vocabulary (`.sp-spread`, `.sp-marginalia`, `.sp-rail`, `.sp-margin`, `.sp-pullquote-huge`, `.sp-brief`, `.sp-brief-kicker`, `.sp-spread-body`, `.sp-dash`, `.sp-chapter-gate`, `.sp-chapter-chrome`, `.sp-pull-break`, `.sp-manifesto`, `.sp-bignum`, `.sp-gallery`, `.sp-diptych`) is **forbidden in weekly issues** — those classes are scoped to `body.is-special` selectors and render unstyled on a standard weekly. **The stitcher gate enforces this — any weekly chapter containing those tokens fails the stitch.** Writers reaching for specials.md by mistake is the bug that broke the 24 May 2026 weekly.
 
@@ -333,7 +333,7 @@ Why this runs first: image defects are mechanically fixable from the existing bu
 After auto-repair runs, re-stitch is **not** needed (the script edits the stitched HTML in place); just re-run Phase 7.5/7.6/7.7/7.8 gates.
 
 **Rounds 1–3 — targeted subagent repair for content defects.**
-If gates STILL fail after auto-repair (or fail in non-image ways — release-date errors, ground discipline, accent leaks, banned phrases), spawn ONE repair `Agent` (`subagent_type: "general-purpose"`, `model: "sonnet"`) per round. Pass the chapter HTML + the specific failure report + the bundle. Repair re-writes the chapter; re-stitch; re-run auto-repair-images.py; re-run gates. Cost log: `bash scripts/log-call.sh repair sonnet <issue_id> <chapter_id> <round> <outcome>`.
+If gates STILL fail after auto-repair (or fail in non-image ways — release-date errors, ground discipline, accent leaks, banned phrases), spawn ONE repair `Agent` (`subagent_type: "general-purpose"`, `model: "opus"`, fallback `"sonnet"`) per round. Pass the chapter HTML + the specific failure report + the bundle. Repair re-writes the chapter; re-stitch; re-run auto-repair-images.py; re-run gates. Cost log: `bash scripts/log-call.sh repair <model> <issue_id> <chapter_id> <round> <outcome>` (record the model actually used — `opus`, or `sonnet` if the fallback fired).
 
 **After 3 rounds — PROCEED to Phase 10 regardless of remaining gate failures.** Do NOT escalate to the reader. The pipeline publishes the best-effort issue. The orchestrator records the remaining defects in the closing summary; the CI workflow files a tracking GitHub issue for visibility (informational, not blocking).
 
@@ -404,7 +404,7 @@ If gates STILL fail after auto-repair (or fail in non-image ways — release-dat
 
 These all bit a real pipeline run on 24 May 2026. Read this section once before every full pipeline run.
 
-1. **Confirm the model BEFORE Phase 0.** The user expects Opus 4.7 1M-context for the orchestrator. If the harness selects 4.6, context will overflow during Phase 5 (writer fan-out across 16 chapters), a compaction will happen, and live state will be lost. Check the model banner at start; if it's not 4.7, abort and restart with explicit `/model claude-opus-4-7[1m]`.
+1. **Confirm the model BEFORE Phase 0.** The orchestrator must be Opus 1M at or above the 4.7 floor (4.8 preferred). If the harness selects 4.6 or a Sonnet tier, context will overflow during Phase 5 (writer fan-out across 16 chapters), a compaction will happen, and live state will be lost. Check the model banner at start; if it's below the floor, abort and restart with explicit `/model claude-opus-4-8[1m]`.
 
 2. **Don't pass `--verify-network --write-back` to `validate-research-bundle.py` in an egress-blocked environment.** That combo overwrites valid `blocked:egress` verification markers with hard failures and forces a full re-research. The flag pair is only safe in environments where the verifier can actually hit the CDNs. In egress-blocked sandboxes, use `--verify-network` alone (read-only verification) or skip the verifier in that mode entirely.
 

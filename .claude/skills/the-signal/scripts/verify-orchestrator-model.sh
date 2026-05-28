@@ -3,8 +3,9 @@
 #
 # Called by the orchestrator as its FIRST tool call when a Signal pipeline
 # run starts. Exits non-zero (and prints to stderr) if the orchestrator's
-# model is not Opus 4.7 1M-context, blocking the pipeline before any
-# real work happens.
+# model is below the Opus 4.7 1M-context FLOOR, blocking the pipeline
+# before any real work happens. A newer Opus 1M (4.8+) passes — the gate
+# stops a downgrade, it does not forbid an upgrade.
 #
 # Why this exists: the 24 May 2026 Sunday run was scheduled with the
 # routine's model preference set to Opus 4.7 1M, but the Claude Code on
@@ -26,7 +27,15 @@
 
 set -euo pipefail
 
-ALLOWED="claude-opus-4-7[1m]"
+# Allowlist, not a single pin. The gate is a FLOOR — it exists to stop a
+# *downgrade* (e.g. the harness silently falling back to Opus 4.6 or a
+# Sonnet tier), not to forbid a stronger model. When Anthropic ships a
+# newer Opus 1M, append its identifier here — never remove the floor.
+ALLOWED=(
+  "claude-opus-4-7[1m]"
+  "claude-opus-4-8[1m]"
+)
+ALLOWED_DISPLAY="Opus 4.7 1M or newer (one of: ${ALLOWED[*]})"
 
 if [ "$#" -ne 1 ]; then
   echo "verify-orchestrator-model.sh: usage: $0 <model-id>" >&2
@@ -44,10 +53,12 @@ OBSERVED="${OBSERVED#\'}"
 OBSERVED="${OBSERVED%\'}"
 OBSERVED="$(echo "$OBSERVED" | xargs)"
 
-if [ "$OBSERVED" = "$ALLOWED" ]; then
-  echo "✓ Orchestrator model verified: $OBSERVED"
-  exit 0
-fi
+for m in "${ALLOWED[@]}"; do
+  if [ "$OBSERVED" = "$m" ]; then
+    echo "✓ Orchestrator model verified: $OBSERVED"
+    exit 0
+  fi
+done
 
 cat >&2 <<EOF
 
@@ -55,10 +66,10 @@ cat >&2 <<EOF
 ORCHESTRATOR MODEL CHECK FAILED — PIPELINE ABORTING
 ═══════════════════════════════════════════════════════════════════════
 
-The Signal pipeline requires the orchestrator to run on Opus 4.7
-1M-context. The exact model identifier the skill expects is:
+The Signal pipeline requires the orchestrator to run at or above the
+Opus 4.7 1M-context floor. Accepted identifiers:
 
-    $ALLOWED
+    $ALLOWED_DISPLAY
 
 The orchestrator reported:
 
