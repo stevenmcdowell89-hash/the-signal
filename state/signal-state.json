@@ -1,9 +1,10 @@
 {
   "last_issue_number": 10,
-  "last_issue_date": "2026-05-26",
+  "last_issue_date": "2026-05-31",
   "last_issue_format": "deep_dive",
-  "last_cover_lead": "Deep Dive — World War One",
+  "last_cover_lead": "Deep Dive — The First Roman Emperors",
   "topics_covered_recently": [
+    "Deep Dive: First Roman Emperors — Augustus's Principate to hereditary autocracy, ending with Nero",
     "Starmer 95+ MP resignation calls / Streeting resignation 14 May",
     "Arsenal Premier League champions 19 May, 22-year wait ended",
     "PSG vs Arsenal Champions League Final 30 May Puskás Aréna Budapest",
@@ -62,14 +63,7 @@
     "Eurovision 2026 Bulgaria Dara Bangaranga Vienna",
     "Iran ceasefire massive life support Hormuz",
     "Google I/O 2026 Gemini 4 Android 17 XR glasses",
-    "Yoshi and the Mysterious Book Switch 2 21 May",
-    "Mandalorian and Grogu cinema 22 May mixed first reactions",
-    "PSG Arsenal Champions League final Budapest 30 May",
-    "Arsenal Man City Premier League title race two games",
-    "Antonelli F1 championship lead Canadian GP",
-    "Revolut full UK banking licence FSCS 13 million",
-    "Body recomposition caloric deficit 200-400 kcal zone",
-    "Brown v. Board of Education 72nd anniversary"
+    "Yoshi and the Mysterious Book Switch 2 21 May"
   ],
   "rotating_sections": {
     "the_shelf": {
@@ -327,11 +321,16 @@
       }
     }
   ],
-  "last_special_date": "2026-05-26",
+  "last_special_date": "2026-05-31",
   "last_special_format": "deep_dive",
-  "consecutive_specials_count": 1,
+  "consecutive_specials_count": 2,
   "editorial_picks_used": [],
   "recent_special_formats": [
+    {
+      "date": "2026-05-31",
+      "format": "deep_dive",
+      "topic": "The First Roman Emperors"
+    },
     {
       "date": "2026-05-26",
       "format": "deep_dive",
@@ -356,11 +355,6 @@
       "date": "2026-04-12",
       "format": "starterkit",
       "topic": "Switch 2 co-op games"
-    },
-    {
-      "date": "2026-04-05",
-      "format": "starterkit",
-      "topic": "Audio dramas"
     }
   ],
   "recent_facts": [
@@ -370,13 +364,14 @@
     "Dutch tulip mania (1637 financial bubble)",
     "honeymoon etymology Babylonian honey month",
     "cold shoulder etymology (Sir Walter Scott 1816 / Vulgate Nehemiah)",
-    "Hohenzollern Wilhelm II abdication / Dutch exile death 1941"
+    "Hohenzollern Wilhelm II abdication / Dutch exile death 1941",
+    "Roman emperors held no office called 'emperor' (princeps; imperator = battlefield acclamation)"
   ],
   "recent_next_week_themes": [
-    "Deep Dive on WWI; back to standard weekly next Sunday",
     "Standard weekly post-Field-Guide; Countdown auto-trigger 7 June",
     "CL Final week + Countdown approaching",
-    "CL Final Saturday + Countdown auto-trigger window opening"
+    "CL Final Saturday + Countdown auto-trigger window opening",
+    "Deep Dive on the first Roman emperors; back to standard weekly next Sunday"
   ],
   "issue_numbering_note": "Canonical: standard weeklies are sequentially numbered. Specials are referenced by format and topic, NOT by issue number. The ledger of standard weeklies starts from Issue #1 (15-21 March 2026) and increments by 1 each Sunday.",
   "section_topics_recently": {
@@ -428,9 +423,9 @@
       12,
       14
     ],
-    "next_due": "2026-08-18",
+    "next_due": "2026-08-23",
     "rationale": "Quarterly-ish cadence with conflict avoidance. The Phase 0 trigger fires a Deep Dive on the next eligible Sunday that satisfies ALL of: (a) at least cadence_weeks[0] weeks since last_fired (or since the schedule was created); (b) no P1 special is due that Sunday (Field Guide / Countdown / Season Review take priority); (c) Sunday is not inside a trip window from upcoming_trips; (d) the backlog is non-empty. If a candidate Sunday fails any check, defer one week. 2026-08-30 is the first clear Sunday after the Efteling/Beekse Bergen trip window (30 Jun - 7 Jul) and the post-trip recovery weeks, giving the format room to breathe in before the autumn news cadence picks up. Manual trigger always available — running /signal with 'deep dive on [topic]' pulls forward and resets the clock.",
-    "last_fired": "2026-05-26",
+    "last_fired": "2026-05-31",
     "skip_if_no_backlog": true
   },
   "deep_dive_backlog": [
