@@ -3202,8 +3202,8 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
   --rule-on-dark:   rgba(250, 250, 248, 0.20);
 
   /* Measure */
-  --measure:      36rem;   /* body column, ~620px */
-  --measure-wide: 50rem;   /* spreads, tables */
+  --measure:      40rem;   /* body column, ~680px — readable but not a thin ribbon */
+  --measure-wide: 52rem;   /* spreads, tables, figures */
   --measure-tight: 30rem;  /* asides */
 
   /* Type stack */
@@ -3569,9 +3569,15 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
   margin: 0 auto;
 }
 
-/* Wider variants — for figures + tables + the occasional spread */
+/* Wider variants — for figures + tables + the occasional spread.
+   v8.24.1: an explicit width is REQUIRED — max-width alone can't widen a child
+   past its containing block, so without it .is-wide silently collapsed back to
+   the body measure (tables crushed, figures narrow). width:min(wide, 92vw) makes
+   the breakout real and responsive; the margin/transform pair recentres it. */
 body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .chapter-body > .is-wide,
-body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .chapter-body > figure.is-wide {
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .chapter-body > figure.is-wide,
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .foreword-body > .is-wide {
+  width: min(var(--measure-wide), 92vw);
   max-width: var(--measure-wide);
   margin-left: 50%;
   transform: translateX(-50%);
@@ -11340,6 +11346,11 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
 
 <p>Teutoburg fixed the frontiers. After it, the Rhine became a permanent border rather than a line to advance past, and Augustus advised his successors to keep the empire within its existing bounds. The system that had made the army safe at home had also made it cautious abroad. A professional standing army with fixed pay and fixed terms was an instrument for holding ground, not endlessly taking more.</p>
 
+<figure class="fig is-wide">
+  <img src="/assets/cached/c08d6c2df450.png" alt="Map of the Roman Empire in AD 14 showing the provinces and the Rhine, Danube and Euphrates frontiers">
+  <figcaption><span class="fig-caption">The empire at Augustus's death in AD 14. The provinces with legions on them — along the Rhine, the Danube and the Euphrates — were the ones he kept under his own command; the peaceful interior was left to the Senate. This is the map the rest of the story is fought over.</span> <span class="fig-credit">via Wikimedia Commons</span></figcaption>
+</figure>
+
 <figure class="fig is-half is-left"><img src="/assets/cached/3f6fae36a8eb.jpg" alt="A Roman gold aureus coin bearing the portrait of Augustus"><figcaption><span class="fig-caption">A gold aureus of Augustus. His profile on the coinage carried the new order into every market and barracks in the empire.</span> <span class="fig-credit">The Metropolitan Museum of Art, Open Access</span></figcaption></figure>
 
 <p class="sp-kicker">RELIGION AND IMAGE</p>
@@ -11725,8 +11736,9 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
 
     <p>The five Julio-Claudian rulers each answered the succession question a different way, and the differences trace the mask slipping. Set them side by side and the pattern is plain: every transfer of power was an improvisation, and the route to the throne drifted steadily away from the Senate and toward the army.</p>
 
-    <table class="is-wide" style="border-collapse:collapse; width:100%; margin:2rem 0;">
-      <caption style="font-family:var(--sp-ff-mono,monospace); font-size:0.75rem; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:0.75rem; text-align:left;">The five Julio-Claudians, compared</caption>
+    <div class="is-wide" style="overflow-x:auto; margin:2rem 0; -webkit-overflow-scrolling:touch;">
+    <table style="border-collapse:collapse; width:100%; min-width:46rem;">
+      <caption style="font-family:var(--sp-ff-mono,monospace); font-size:0.75rem; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:0.75rem; text-align:left;">The five Julio-Claudians, compared <span style="text-transform:none; letter-spacing:0;">(scroll →)</span></caption>
       <thead>
         <tr style="border-bottom:2px solid currentColor;">
           <th style="text-align:left; padding:0.5rem 0.75rem 0.5rem 0; font-family:var(--sp-ff-mono,monospace); font-size:0.72rem; letter-spacing:0.05em; text-transform:uppercase;">Emperor</th>
@@ -11780,6 +11792,7 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
         </tr>
       </tbody>
     </table>
+    </div>
         <figure class="fig is-wide" style="margin:2.5rem 0;">
       <svg viewBox="0 0 680 286" role="img" aria-label="Bar chart of Julio-Claudian reign lengths in years" style="width:100%; height:auto; color:inherit;">
         <text x="0" y="22" font-family="var(--sp-ff-mono,monospace)" font-size="12" letter-spacing="1.4" fill="currentColor" style="text-transform:uppercase;">Reign lengths · years on the throne</text>
