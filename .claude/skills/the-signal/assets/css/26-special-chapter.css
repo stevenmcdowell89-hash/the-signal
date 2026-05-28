@@ -63,17 +63,18 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
 }
 
 /* Wider variants — for figures + tables + the occasional spread.
-   v8.24.1: an explicit width is REQUIRED — max-width alone can't widen a child
-   past its containing block, so without it .is-wide silently collapsed back to
-   the body measure (tables crushed, figures narrow). width:min(wide, 92vw) makes
-   the breakout real and responsive; the margin/transform pair recentres it. */
+   v8.24.2: the old margin-left:50% + translateX(-50%) breakout proved unreliable
+   in the field (it flung wide blocks off-screen on some viewports), so .is-wide
+   now simply fills its column reliably and stays centred with the prose. No
+   transform, no percentage margins — it cannot drift off-screen. */
 body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .chapter-body > .is-wide,
 body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .chapter-body > figure.is-wide,
 body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .foreword-body > .is-wide {
-  width: min(var(--measure-wide), 92vw);
-  max-width: var(--measure-wide);
-  margin-left: 50%;
-  transform: translateX(-50%);
+  width: 100%;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  transform: none;
 }
 body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .chapter-body > .is-fullbleed,
 body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .chapter-body > figure.is-fullbleed {

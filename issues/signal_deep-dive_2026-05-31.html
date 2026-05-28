@@ -3570,17 +3570,18 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
 }
 
 /* Wider variants — for figures + tables + the occasional spread.
-   v8.24.1: an explicit width is REQUIRED — max-width alone can't widen a child
-   past its containing block, so without it .is-wide silently collapsed back to
-   the body measure (tables crushed, figures narrow). width:min(wide, 92vw) makes
-   the breakout real and responsive; the margin/transform pair recentres it. */
+   v8.24.2: the old margin-left:50% + translateX(-50%) breakout proved unreliable
+   in the field (it flung wide blocks off-screen on some viewports), so .is-wide
+   now simply fills its column reliably and stays centred with the prose. No
+   transform, no percentage margins — it cannot drift off-screen. */
 body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .chapter-body > .is-wide,
 body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .chapter-body > figure.is-wide,
 body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .foreword-body > .is-wide {
-  width: min(var(--measure-wide), 92vw);
-  max-width: var(--measure-wide);
-  margin-left: 50%;
-  transform: translateX(-50%);
+  width: 100%;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  transform: none;
 }
 body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .chapter-body > .is-fullbleed,
 body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .chapter-body > figure.is-fullbleed {
@@ -11841,11 +11842,12 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
   </div>
 </section>
 
-<section class="chapter keep-digging" id="keep-digging">
+<section class="chapter" id="keep-digging">
   <header class="chapter-head"><span class="chapter-numeral">XII</span><h2 class="chapter-title">Keep Digging</h2></header>
   <div class="chapter-body">
     <p class="lede">If you want to follow the mask and the missing succession rule past this issue, here is where the same story keeps surfacing in podcasts, on screen, in a strategy game, and on the page.</p>
-    <div class="kd-grid">
+  </div>
+  <div class="keep-digging">
 
       <article class="kd-item" data-medium="podcast">
         <span class="kd-medium">Podcast</span>
@@ -11903,7 +11905,6 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
         <p class="kd-why">Augustus through Nero in a single narrative for general readers, alert to where the ancient sources should not be trusted &mdash; this issue's arc in book form.</p>
       </article>
 
-    </div>
   </div>
 </section>
 
