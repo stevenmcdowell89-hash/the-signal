@@ -3233,7 +3233,10 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
 body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) {
   margin: 0;
   font-family: var(--serif);
-  background: var(--paper);
+  /* v8.24.3: a contrasting canvas so the centred .mag paper sheet reads as a
+     page floating on a background — the portrait framing the weeklies and the
+     pre-v8.21 specials had, which the full-bleed redesign had flattened away. */
+  background: #E6E0D2;
   color: var(--ink);
   font-size: 19px;
   line-height: 1.62;
@@ -3321,6 +3324,41 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
   letter-spacing: 0.22em;
   color: var(--accent);
   font-weight: 600;
+}
+
+/* ============================================================
+   v8.24.3 — restore special-edition character (non-holiday)
+   The .mag sheet, scroll-reveal motion, and ground rhythm that the
+   v8.21 flatten-to-one-column redesign had removed.
+   ============================================================ */
+
+/* The centred paper sheet floats on the body canvas. .mag already supplies
+   max-width + paper + shadow (01-base); here we deepen the shadow a touch so
+   the page reads as a physical sheet, and let the dark cover bleed to the
+   sheet edges. */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .mag {
+  box-shadow: 0 2px 10px rgba(20,16,10,.10), 0 24px 80px rgba(20,16,10,.18);
+}
+
+/* Gentle scroll-reveal. JS (script.js, special-rise IIFE) tags figures, quote
+   panels, stat rows, tables, the argument block and chapter heads with
+   .sp-rise, then adds .sp-rise--in as they enter the viewport. Belt-and-braces:
+   anything still hidden after the JS safety timeout is forced visible, and the
+   whole effect is off under reduced-motion and on small screens. */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-rise {
+  opacity: 1;
+}
+@media (min-width: 700px) and (prefers-reduced-motion: no-preference) {
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-rise {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity .65s cubic-bezier(.2,.6,.2,1), transform .65s cubic-bezier(.2,.6,.2,1);
+    will-change: opacity, transform;
+  }
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-rise--in {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* ============================================================
@@ -11176,6 +11214,41 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
 
 <div class="progress-bar" id="progressBar"></div>
 
+<!-- ══════ ROTATING WAX-STAMP SEAL (Enhancement 19C) ══════
+  Fixed seal top-right of the viewport. The outer ring rotates; the
+  inner numeral stays upright. Agent: update .numeral to the current
+  section's roman numeral via scroll (see script.js), and set the
+  issue-tag to "Nº [ISSUE_NUMBER_PADDED]" e.g. "Nº 003".
+  Auto-hidden below 720px.
+-->
+<div class="stamp-fixed" aria-hidden="true">
+  <div class="ring">
+    <svg viewBox="0 0 120 120">
+      <defs>
+        <path id="stamp-curve" d="M60,60 m-46,0 a46,46 0 1,1 92,0 a46,46 0 1,1 -92,0"/>
+      </defs>
+      <circle cx="60" cy="60" r="54" fill="none" stroke="currentColor" stroke-width="0.75" opacity="0.9"/>
+      <circle cx="60" cy="60" r="50" fill="none" stroke="currentColor" stroke-width="0.5" stroke-dasharray="1 3" opacity="0.7"/>
+      <text font-family="JetBrains Mono, monospace" font-size="7" letter-spacing="3" fill="currentColor" opacity="0.85">
+        <textPath href="#stamp-curve" startOffset="0">THE · SIGNAL · SUNDAY · DISPATCH · THE · SIGNAL · SUNDAY · DISPATCH · </textPath>
+      </text>
+    </svg>
+  </div>
+  <div class="hub">
+    <span>
+      <span class="numeral" id="stampNumeral">I</span>
+      <span class="issue-tag">Deep Dive</span>
+    </span>
+  </div>
+</div>
+
+<!-- Film grain overlay (Enhancement 22A) — pinned to viewport, subtle noise.
+     Sits outside .mag so it spans full width. Opt-in: omit if an issue wants
+     a cleaner look. -->
+<div class="grain-overlay" aria-hidden="true"></div>
+
+<div class="mag">
+
 <div class="mast">
   <span class="mast-wordmark">The Signal</span>
   <span class="mast-sep">·</span>
@@ -11310,7 +11383,7 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
 <section class="chapter"><header class="chapter-head"><div class="chapter-numeral">V</div><h2 class="chapter-title">Inventing the Princeps</h2></header><div class="chapter-body has-dropcap">
 <p>In 30 BC Octavian held the Roman world by force. Antony and Cleopatra were dead, his rivals were gone, and the legions answered to him alone. The problem was that everyone could see this, and recent history told him exactly where naked power led. His adoptive father, Julius Caesar, had taken a lifetime dictatorship and the public manners of a king, and a group of senators had stabbed him to death for it. Octavian had won the war. Now he had to win the peace, which meant solving a harder puzzle: how to keep everything while appearing to give it back. The system he built to do that is the Principate, and it is the most successful political disguise in Western history.</p>
 
-<figure class="fig is-wide"><img src="/assets/cached/1f44309d2f08.jpg" alt="The Augustus of Prima Porta, a marble statue of the emperor in military cuirass with arm raised"><figcaption><span class="fig-caption">The Augustus of Prima Porta: the first emperor as an ageless commander, his breastplate carved into a panel of imperial propaganda.</span> <span class="fig-credit">via Wikimedia Commons (public domain)</span></figcaption></figure>
+<figure class="fig is-half"><img src="/assets/cached/1f44309d2f08.jpg" alt="The Augustus of Prima Porta, a marble statue of the emperor in military cuirass with arm raised"><figcaption><span class="fig-caption">The Augustus of Prima Porta: the first emperor as an ageless commander, his breastplate carved into a panel of imperial propaganda.</span> <span class="fig-credit">via Wikimedia Commons (public domain)</span></figcaption></figure>
 
 <p class="sp-kicker">THE FIRST SETTLEMENT, 27 BC</p>
 <p>On 13 January 27 BC, Octavian stood before the Senate and handed the Republic back. He gave up his extraordinary powers and announced that he was returning the state to the Senate and the Roman people. This was the performance, and it was meant to be seen as one. The Senate, in turn, begged him to stay on and pressed an enormous package of authority on him: command of a single vast province covering most of the frontier, granted for ten years, and a new honorific name, Augustus, a word with religious weight meaning something like "the revered one." He had been Octavian, the warlord; now he was Augustus, the man who had saved the state and given it back.</p>
@@ -11549,7 +11622,7 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
 
     <p>The succession itself ran on the same logic Tiberius's had. Caligula held no legal office of emperor, because none existed, but he was the obvious dynastic heir, and the Senate confirmed him with relief rather than reluctance. The handover worked again. The interesting thing this time was not the transfer of power but what the new holder chose to do with it.</p>
 
-    <figure class="fig is-wide"><img src="/assets/cached/36f387f89c98.jpg" alt="A marble portrait bust of the emperor Gaius, known as Caligula"><figcaption><span class="fig-caption">Gaius, called Caligula. The official portrait keeps the dynastic calm the reign abandoned.</span> <span class="fig-credit">The Metropolitan Museum of Art, Open Access</span></figcaption></figure>
+    <figure class="fig is-half is-left"><img src="/assets/cached/36f387f89c98.jpg" alt="A marble portrait bust of the emperor Gaius, known as Caligula"><figcaption><span class="fig-caption">Gaius, called Caligula. The official portrait keeps the dynastic calm the reign abandoned.</span> <span class="fig-credit">The Metropolitan Museum of Art, Open Access</span></figcaption></figure>
 
     <p class="sp-kicker">THE TURN</p>
 
@@ -11619,7 +11692,7 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
 
     <p>He found it across the sea. In AD 43 Claudius launched the conquest of Britain, sending some 40,000 troops and travelling to the front himself to take the surrender of the British town of Camulodunum. Britain had defeated Julius Caesar's attempts a century before, which made the conquest a prize Augustus and his successors had never claimed. It gave Claudius the military glory his unexpected rise had lacked, and it converted a man hauled out from behind a curtain into a conqueror with a triumph to his name. The arch raised in Rome to mark the victory appears on his coins, a piece of legitimacy struck in gold.</p>
 
-    <figure class="fig is-wide"><img src="/assets/cached/4b98d6bf330b.jpg" alt="A Roman gold aureus of Claudius showing a triumphal arch commemorating the conquest of Britain"><figcaption><span class="fig-caption">A gold aureus of Claudius showing the arch that celebrated his conquest of Britain — legitimacy bought with a victory the Senate could not deny him.</span> <span class="fig-credit">Cleveland Museum of Art (CC0)</span></figcaption></figure>
+    <figure class="fig is-half"><img src="/assets/cached/4b98d6bf330b.jpg" alt="A Roman gold aureus of Claudius showing a triumphal arch commemorating the conquest of Britain"><figcaption><span class="fig-caption">A gold aureus of Claudius showing the arch that celebrated his conquest of Britain — legitimacy bought with a victory the Senate could not deny him.</span> <span class="fig-credit">Cleveland Museum of Art (CC0)</span></figcaption></figure>
 
     <p>At home he governed actively. He extended Roman citizenship outward and admitted leading men from Gaul into the Senate, arguing that Rome had always grown stronger by absorbing outsiders. Part of the speech he gave defending this survives, carved on a bronze tablet found at Lyon — the words of a reflective, historically literate ruler, not the idiot of the gossip. He built on a scale his predecessors had avoided, draining marshland, raising aqueducts to water the city, and constructing a new harbour at Ostia so that grain ships could supply Rome more safely. These were the works of a man running an empire, and he ran it for thirteen years.</p>
 
@@ -11687,7 +11760,7 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
 
     <p>The deeper offence to the Roman elite was not the building but the man's idea of himself. Nero wanted to be an artist. He sang in public, played the lyre, drove chariots in races, and competed for prizes as if he were a hired performer rather than the ruler of the world. To the senators this was an emperor degrading his office, doing in public the things a Roman of rank paid slaves and foreigners to do. To the crowds of the city it was something else entirely: spectacle, generosity, an emperor who entertained them. This split in how Nero was received outlived him. He was genuinely popular with the urban poor and the soldiers, even as the elite came to loathe him. The hostile sources speak for the elite, which is why the monster they describe is so hard to square with the man the people mourned.</p>
 
-    <figure class="fig is-wide"><img src="/assets/cached/0e8cf0692dcb.jpg" alt="A marble bust of the emperor Nero"><figcaption><span class="fig-caption">Nero, c. AD 60 — the face the hostile sources turned into a monster, and that recent scholarship has tried to read again.</span> <span class="fig-credit">Smithsonian Magazine</span></figcaption></figure>
+    <figure class="fig is-half is-left"><img src="/assets/cached/0e8cf0692dcb.jpg" alt="A marble bust of the emperor Nero"><figcaption><span class="fig-caption">Nero, c. AD 60 — the face the hostile sources turned into a monster, and that recent scholarship has tried to read again.</span> <span class="fig-credit">Smithsonian Magazine</span></figcaption></figure>
 
     <aside class="marginalia"><span class="m-label">NOTE</span><p>The British Museum's 2021 exhibition, "Nero: the man behind the myth", argued that the hostile senatorial tradition badly distorts him. Nero was popular with the common people and the army, and for decades after his death "false Neros" appeared in the eastern provinces claiming he was still alive — a reception impossible to explain if everyone had hated him.</p></aside>
 
@@ -14202,6 +14275,53 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
     updateHalves();
   }
 
+})();
+
+/* ============================================================
+   v8.24.3 — Non-holiday special editions: gentle scroll-reveal.
+   Tags content blocks with .sp-rise and reveals them on entry. Self-contained;
+   does not touch the universal .reveal observer. Off under reduced-motion and
+   on small screens (CSS gates the actual animation); a 2.6s safety timeout
+   force-reveals everything if observers never fire.
+   ============================================================ */
+(function () {
+  var b = document.body;
+  if (!b || !b.classList.contains('is-special')) return;
+  var ds = b.getAttribute('data-special');
+  if (ds === 'countdown' || ds === 'field-guide') return;
+
+  var sel = [
+    '.chapter figure',
+    '.chapter blockquote.pullquote',
+    '.chapter .bignum-row',
+    '.chapter .argument, .argument',
+    '.chapter table',
+    '.chapter .is-wide',
+    '.keep-digging .kd-item',
+    '.chapter .chapter-head'
+  ].join(', ');
+
+  var els = [].slice.call(document.querySelectorAll(sel));
+  if (!els.length) return;
+  els.forEach(function (el) { el.classList.add('sp-rise'); });
+
+  function showAll() { els.forEach(function (el) { el.classList.add('sp-rise--in'); }); }
+
+  if (!('IntersectionObserver' in window)) { showAll(); return; }
+
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) {
+        e.target.classList.add('sp-rise--in');
+        io.unobserve(e.target);
+      }
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+
+  els.forEach(function (el) { io.observe(el); });
+
+  // Safety: never leave content hidden if something goes wrong.
+  setTimeout(showAll, 2600);
 })();
 
 </script>

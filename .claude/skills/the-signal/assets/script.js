@@ -2242,3 +2242,50 @@
   }
 
 })();
+
+/* ============================================================
+   v8.24.3 — Non-holiday special editions: gentle scroll-reveal.
+   Tags content blocks with .sp-rise and reveals them on entry. Self-contained;
+   does not touch the universal .reveal observer. Off under reduced-motion and
+   on small screens (CSS gates the actual animation); a 2.6s safety timeout
+   force-reveals everything if observers never fire.
+   ============================================================ */
+(function () {
+  var b = document.body;
+  if (!b || !b.classList.contains('is-special')) return;
+  var ds = b.getAttribute('data-special');
+  if (ds === 'countdown' || ds === 'field-guide') return;
+
+  var sel = [
+    '.chapter figure',
+    '.chapter blockquote.pullquote',
+    '.chapter .bignum-row',
+    '.chapter .argument, .argument',
+    '.chapter table',
+    '.chapter .is-wide',
+    '.keep-digging .kd-item',
+    '.chapter .chapter-head'
+  ].join(', ');
+
+  var els = [].slice.call(document.querySelectorAll(sel));
+  if (!els.length) return;
+  els.forEach(function (el) { el.classList.add('sp-rise'); });
+
+  function showAll() { els.forEach(function (el) { el.classList.add('sp-rise--in'); }); }
+
+  if (!('IntersectionObserver' in window)) { showAll(); return; }
+
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) {
+        e.target.classList.add('sp-rise--in');
+        io.unobserve(e.target);
+      }
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+
+  els.forEach(function (el) { io.observe(el); });
+
+  // Safety: never leave content hidden if something goes wrong.
+  setTimeout(showAll, 2600);
+})();

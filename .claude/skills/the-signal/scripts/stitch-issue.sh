@@ -146,6 +146,23 @@ if [[ "$FORMAT" =~ $HOLIDAY_FORMATS_RE ]]; then
   fi
 fi
 
+# v8.24.3: non-holiday special editions get the wax-stamp seal scaffold part.
+# 02-wax-seal.html supplies the rotating seal + film-grain overlay AND opens the
+# centred <div class="mag"> paper sheet that 19-closing.html closes. Without it,
+# specials had no sheet (full-bleed flat paper) and a stray </div>. Inject it
+# right after 00-head-open.html if the plan didn't list it.
+NONHOLIDAY_SPECIAL_RE="^(deep_dive|versus|rewind|season_review|starter_kit|shortlist|next|lookahead)$"
+if [[ "$FORMAT" =~ $NONHOLIDAY_SPECIAL_RE ]]; then
+  if [[ ",$SCAFFOLD_PARTS," != *",02-wax-seal.html,"* ]]; then
+    if [[ ",$SCAFFOLD_PARTS," == *",00-head-open.html,"* ]]; then
+      SCAFFOLD_PARTS="${SCAFFOLD_PARTS/00-head-open.html,/00-head-open.html,02-wax-seal.html,}"
+    else
+      SCAFFOLD_PARTS="02-wax-seal.html,$SCAFFOLD_PARTS"
+    fi
+    echo "  NON-HOLIDAY SPECIAL — injected 02-wax-seal.html (opens .mag sheet + seal + grain): $SCAFFOLD_PARTS"
+  fi
+fi
+
 # Collect chapters in order
 CHAPTER_IDS_ORDERED=()
 while IFS= read -r line; do
@@ -342,6 +359,18 @@ def _substitute_footer_placeholders(text):
     text = text.replace("[YEAR]", _pretty_date.split()[-1] if _pretty_date else "")
     if issue_number_str:
         text = text.replace("[N]", issue_number_str)
+    # Wax-seal issue tag. Weeklies are numbered (Nº 011); specials are not, so
+    # show a short format label instead of a literal [NNN] placeholder.
+    if _issue_fmt == "weekly" and issue_number_str:
+        text = text.replace("[NNN]", str(issue_number_str).zfill(3))
+    else:
+        _fmt_label = {
+            "deep_dive": "Deep Dive", "versus": "Versus", "rewind": "Rewind",
+            "season_review": "Season", "starter_kit": "Starter Kit",
+            "shortlist": "Shortlist", "next": "Next", "lookahead": "Lookahead",
+        }.get(_issue_fmt, "Special")
+        text = text.replace("Nº [NNN]", _fmt_label)
+        text = text.replace("[NNN]", "")
     return text
 
 # ── Assemble middle scaffold parts (everything between head and closing) ──

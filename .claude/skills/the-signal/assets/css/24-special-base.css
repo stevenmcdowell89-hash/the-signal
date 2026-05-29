@@ -8,7 +8,10 @@
 body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) {
   margin: 0;
   font-family: var(--serif);
-  background: var(--paper);
+  /* v8.24.3: a contrasting canvas so the centred .mag paper sheet reads as a
+     page floating on a background — the portrait framing the weeklies and the
+     pre-v8.21 specials had, which the full-bleed redesign had flattened away. */
+  background: #E6E0D2;
   color: var(--ink);
   font-size: 19px;
   line-height: 1.62;
@@ -96,4 +99,39 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
   letter-spacing: 0.22em;
   color: var(--accent);
   font-weight: 600;
+}
+
+/* ============================================================
+   v8.24.3 — restore special-edition character (non-holiday)
+   The .mag sheet, scroll-reveal motion, and ground rhythm that the
+   v8.21 flatten-to-one-column redesign had removed.
+   ============================================================ */
+
+/* The centred paper sheet floats on the body canvas. .mag already supplies
+   max-width + paper + shadow (01-base); here we deepen the shadow a touch so
+   the page reads as a physical sheet, and let the dark cover bleed to the
+   sheet edges. */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .mag {
+  box-shadow: 0 2px 10px rgba(20,16,10,.10), 0 24px 80px rgba(20,16,10,.18);
+}
+
+/* Gentle scroll-reveal. JS (script.js, special-rise IIFE) tags figures, quote
+   panels, stat rows, tables, the argument block and chapter heads with
+   .sp-rise, then adds .sp-rise--in as they enter the viewport. Belt-and-braces:
+   anything still hidden after the JS safety timeout is forced visible, and the
+   whole effect is off under reduced-motion and on small screens. */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-rise {
+  opacity: 1;
+}
+@media (min-width: 700px) and (prefers-reduced-motion: no-preference) {
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-rise {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity .65s cubic-bezier(.2,.6,.2,1), transform .65s cubic-bezier(.2,.6,.2,1);
+    will-change: opacity, transform;
+  }
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-rise--in {
+    opacity: 1;
+    transform: none;
+  }
 }
