@@ -231,6 +231,8 @@ A short chapter (200-400 words) sitting between the Foreword and the body, namin
 
 **Pipeline note.** Validators do not yet enforce the visual-taxonomy mix automatically — the planner is responsible for honouring it in the chapter plan, and the orchestrator should reject plans that show fewer than 5 of the 8 types or any single type over 40%. Validator enforcement is a future enhancement.
 
+**Layout variety + cover (v8.24 — MANDATORY).** A Deep Dive must read as a designed magazine, not a wall of identical paragraphs. The framing, chrome (wax seal, grain, progress bar) and scroll-reveal apply automatically (see `references/spec/specials.md` § Special-edition visual character). The writer/planner is responsible for: (a) a full cover — `.cover-tags` key-theme pills + a three-part `.cover-foot` (see `component-contracts.md` § The special cover); and (b) breaking up every long chapter with a mix of floated figures (`figure.fig.is-half`, alternating sides), right-gutter marginalia, image-quote panels, stat rows and pull-quotes — a visual break every 2–4 paragraphs. Do NOT reintroduce the retired left-rail three-column spread.
+
 
 
 ---

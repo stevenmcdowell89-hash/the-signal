@@ -301,6 +301,47 @@ Cross-media closing chapter. **Lean non-print** — aim for 5-9 items with at le
 
 `data-medium` accepts `podcast | tv | film | game | video | book`. **Podcasts must always carry a `<span class="kd-episode">` line naming the specific episode** — series-only references are forbidden. The same rule applies to TV where only a couple of episodes touch the topic. Every item must be real and verifiable; the researcher surfaces these in Phase 3 with URLs.
 
+### The special cover contract (v8.24 — all non-holiday specials)
+
+A bare title + deck cover reads as unfinished. The full cover:
+
+```html
+<header class="cover" id="top">
+  <div class="cover-meta"><span>Deep Dive</span><span>31 May 2026</span></div>
+  <div class="cover-body">
+    <p class="cover-eyebrow">Section / series mark</p>
+    <h1 class="cover-title">The headline with an <em>accent</em> word</h1>
+    <p class="cover-deck">A one-to-two sentence deck — what the issue is.</p>
+    <div class="cover-slogan"><p>A single epigraph line — the thesis in one breath.</p></div>
+    <div class="cover-tags">
+      <span class="tag">Key theme</span><span class="tag">Another</span>
+      <span class="tag">Five to eight</span><span class="tag">keyword pills</span>
+    </div>
+  </div>
+  <div class="cover-foot">
+    <span class="cf-left">Left meta — e.g. "Twelve chapters · one sitting"</span>
+    <span class="cover-scroll">Begin reading ↓</span>
+    <span class="cf-right">Right meta — e.g. "Augustus → Nero · sourced"</span>
+  </div>
+</header>
+```
+
+`.cover-tags` (5–8 short keyword pills) and the three-part `.cover-foot` are required on every non-holiday special. `.mast` precedes the cover as before.
+
+### Layout-variety components (v8.24 — break up the prose)
+
+A literary special (Deep Dive, Versus, Rewind, Season Review) must not be an unbroken column. Within `.chapter-body`, mix these to land a visual break every 2–4 paragraphs:
+
+| Component | Markup | Use for |
+|---|---|---|
+| Floated figure | `<figure class="fig is-half">` (add `.is-left` to alternate) | a portrait/coin/object beside the prose; text wraps |
+| Gutter marginalia | `<aside class="marginalia"><span class="m-label">Label</span><p>…</p></aside>` | a short context note / definition; floats into the RIGHT gutter |
+| Image-quote | `<figure class="image-quote"><img …><blockquote><p>quote</p><cite>— src</cite></blockquote></figure>` | a portrait with a primary-source line across it |
+| Stat row | `<div class="bignum-row"><div class="bignum"><div class="bignum-value">15,000</div><div class="bignum-label">…</div></div>…</div>` | 2–4 headline numbers |
+| Pull-quote | `<blockquote class="pullquote"><p>…</p><cite>— …</cite></blockquote>` | a resonant line on its own |
+
+Do **not** use the retired `.sp-spread`/`.sp-rail` three-column layout (the empty left rail wastes space). Marginalia always floats right.
+
 ## The Countdown
 
 | Section | Section class | Pattern |

@@ -106,6 +106,21 @@ Every non-holiday special edition obeys these rules. Holiday specials (Countdown
 
 
 
+### Special-edition visual character (v8.24 — MANDATORY for non-holiday specials)
+
+The v8.21 redesign simplified the non-holiday specials so hard it stripped the character that made them feel special. v8.24 restores it. Some of this is automatic; some the writer/planner must author. Holiday formats (Countdown, Field Guide) are unaffected — they keep their own identity.
+
+**Automatic (fires on every non-holiday special — author does nothing):**
+- **Centred paper sheet on a canvas.** `body.is-special:not(holiday)` paints a warm-grey canvas; `02-wax-seal.html` (auto-injected by `stitch-issue.sh` for non-holiday specials) opens the `<div class="mag">` paper sheet that `19-closing.html` closes. The issue reads as a page floating on a background — the portrait framing weeklies have.
+- **Chrome:** the rotating wax-stamp seal, the film-grain overlay, and the reading-progress bar (all from `02-wax-seal.html` + `00-head-open.html`). The stamp's issue-tag shows the format label for unnumbered specials.
+- **Scroll-reveal motion:** the `special-rise` IIFE in `script.js` tags figures, quote panels, stat rows, tables, the argument block and chapter heads with `.sp-rise` and fades them up on entry. Off under reduced-motion / small screens.
+- **Reliable wide blocks:** `.is-wide` fills the column (no off-screen transform); `.keep-digging` is the real grid.
+
+**Author-required (the planner briefs it; the writer builds it):**
+- **Cover must be full, not bare.** Beyond eyebrow → title → deck → slogan, every special cover carries a **`.cover-tags`** row of 5–8 key-theme keyword pills, and a three-part **`.cover-foot`** (`.cf-left` meta · `.cover-scroll` cue · `.cf-right` meta). See `component-contracts.md` § The special cover.
+- **Layout variety is mandatory — break up the prose.** A literary special must NOT be an unbroken column of identical paragraphs. Every long chapter uses a mix of: **floated figures** (`figure.fig.is-half`, alternating `.is-left`/right so text wraps beside images), **right-gutter marginalia** (`.marginalia` — short context notes/definitions that fill the side space), **image-quote panels** (`figure.image-quote` — a portrait with a primary-source line across it), **stat rows** (`.bignum-row`), and **pull-quotes** (`.pullquote`). Aim for a visual break every 2–4 paragraphs.
+- **What stays culled.** Do NOT reintroduce the retired three-column `.sp-spread` with its left `.sp-rail` — the near-empty left column wastes space and reads as an accident. Gutter content goes on the RIGHT (`.marginalia`). No giant Roman-numeral chapter-gate slabs.
+
 
 ---
 
