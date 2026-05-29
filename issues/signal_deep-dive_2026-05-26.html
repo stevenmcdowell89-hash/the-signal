@@ -3202,8 +3202,8 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
   --rule-on-dark:   rgba(250, 250, 248, 0.20);
 
   /* Measure */
-  --measure:      36rem;   /* body column, ~620px */
-  --measure-wide: 50rem;   /* spreads, tables */
+  --measure:      40rem;   /* body column, ~680px — readable but not a thin ribbon */
+  --measure-wide: 52rem;   /* spreads, tables, figures */
   --measure-tight: 30rem;  /* asides */
 
   /* Type stack */
@@ -3233,7 +3233,10 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
 body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) {
   margin: 0;
   font-family: var(--serif);
-  background: var(--paper);
+  /* v8.24.3: a contrasting canvas so the centred .mag paper sheet reads as a
+     page floating on a background — the portrait framing the weeklies and the
+     pre-v8.21 specials had, which the full-bleed redesign had flattened away. */
+  background: #E6E0D2;
   color: var(--ink);
   font-size: 19px;
   line-height: 1.62;
@@ -3321,6 +3324,41 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
   letter-spacing: 0.22em;
   color: var(--accent);
   font-weight: 600;
+}
+
+/* ============================================================
+   v8.24.3 — restore special-edition character (non-holiday)
+   The .mag sheet, scroll-reveal motion, and ground rhythm that the
+   v8.21 flatten-to-one-column redesign had removed.
+   ============================================================ */
+
+/* The centred paper sheet floats on the body canvas. .mag already supplies
+   max-width + paper + shadow (01-base); here we deepen the shadow a touch so
+   the page reads as a physical sheet, and let the dark cover bleed to the
+   sheet edges. */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .mag {
+  box-shadow: 0 2px 10px rgba(20,16,10,.10), 0 24px 80px rgba(20,16,10,.18);
+}
+
+/* Gentle scroll-reveal. JS (script.js, special-rise IIFE) tags figures, quote
+   panels, stat rows, tables, the argument block and chapter heads with
+   .sp-rise, then adds .sp-rise--in as they enter the viewport. Belt-and-braces:
+   anything still hidden after the JS safety timeout is forced visible, and the
+   whole effect is off under reduced-motion and on small screens. */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-rise {
+  opacity: 1;
+}
+@media (min-width: 700px) and (prefers-reduced-motion: no-preference) {
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-rise {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity .65s cubic-bezier(.2,.6,.2,1), transform .65s cubic-bezier(.2,.6,.2,1);
+    will-change: opacity, transform;
+  }
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-rise--in {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* ============================================================
@@ -3506,6 +3544,45 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
 }
 
 /* ============================================================
+   v8.24.4 — cover key-themes row + decorative foot meta
+   Restores the fuller, decorative-but-tidy cover the pre-v8.21 specials had:
+   title + deck + a row of key-theme keywords + a three-part foot
+   (left meta · scroll cue · right meta). Non-holiday specials only.
+   ============================================================ */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .cover-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.6rem;
+  margin-top: clamp(1.4rem, 2.6vw, 2.2rem);
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .cover-tags .tag {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: rgba(250, 250, 248, 0.82);
+  border: 1px solid var(--rule-on-dark);
+  border-radius: 999px;
+  padding: 0.34em 0.9em;
+  white-space: nowrap;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .cover-foot .cf-left,
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .cover-foot .cf-right {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--ink-on-dark-mu);
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .cover-foot .cf-right {
+  text-align: right;
+}
+@media (max-width: 640px) {
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .cover-foot .cf-left,
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .cover-foot .cf-right { display: none; }
+}
+
+/* ============================================================
    SPECIAL EDITION — CHAPTERS  (non-holiday)
 
    Each chapter has:
@@ -3569,12 +3646,19 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
   margin: 0 auto;
 }
 
-/* Wider variants — for figures + tables + the occasional spread */
+/* Wider variants — for figures + tables + the occasional spread.
+   v8.24.2: the old margin-left:50% + translateX(-50%) breakout proved unreliable
+   in the field (it flung wide blocks off-screen on some viewports), so .is-wide
+   now simply fills its column reliably and stays centred with the prose. No
+   transform, no percentage margins — it cannot drift off-screen. */
 body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .chapter-body > .is-wide,
-body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .chapter-body > figure.is-wide {
-  max-width: var(--measure-wide);
-  margin-left: 50%;
-  transform: translateX(-50%);
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .chapter-body > figure.is-wide,
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .foreword-body > .is-wide {
+  width: 100%;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  transform: none;
 }
 body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .chapter-body > .is-fullbleed,
 body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .chapter-body > figure.is-fullbleed {
@@ -11169,6 +11253,41 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
 
 <div class="progress-bar" id="progressBar"></div>
 
+<!-- ══════ ROTATING WAX-STAMP SEAL (Enhancement 19C) ══════
+  Fixed seal top-right of the viewport. The outer ring rotates; the
+  inner numeral stays upright. Agent: update .numeral to the current
+  section's roman numeral via scroll (see script.js), and set the
+  issue-tag to "Nº [ISSUE_NUMBER_PADDED]" e.g. "Nº 003".
+  Auto-hidden below 720px.
+-->
+<div class="stamp-fixed" aria-hidden="true">
+  <div class="ring">
+    <svg viewBox="0 0 120 120">
+      <defs>
+        <path id="stamp-curve" d="M60,60 m-46,0 a46,46 0 1,1 92,0 a46,46 0 1,1 -92,0"/>
+      </defs>
+      <circle cx="60" cy="60" r="54" fill="none" stroke="currentColor" stroke-width="0.75" opacity="0.9"/>
+      <circle cx="60" cy="60" r="50" fill="none" stroke="currentColor" stroke-width="0.5" stroke-dasharray="1 3" opacity="0.7"/>
+      <text font-family="JetBrains Mono, monospace" font-size="7" letter-spacing="3" fill="currentColor" opacity="0.85">
+        <textPath href="#stamp-curve" startOffset="0">THE · SIGNAL · SUNDAY · DISPATCH · THE · SIGNAL · SUNDAY · DISPATCH · </textPath>
+      </text>
+    </svg>
+  </div>
+  <div class="hub">
+    <span>
+      <span class="numeral" id="stampNumeral">I</span>
+      <span class="issue-tag">Deep Dive</span>
+    </span>
+  </div>
+</div>
+
+<!-- Film grain overlay (Enhancement 22A) — pinned to viewport, subtle noise.
+     Sits outside .mag so it spans full width. Opt-in: omit if an issue wants
+     a cleaner look. -->
+<div class="grain-overlay" aria-hidden="true"></div>
+
+<div class="mag">
+
 <div class="mast">
   <span class="mast-wordmark">The Signal</span>
   <span class="mast-sep">·</span>
@@ -11189,9 +11308,15 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
     <div class="cover-slogan">
       <p>Europe in 1914 was not sleepwalking. It had built the machinery of catastrophe over forty years and then, in thirty-eight days, switched it on.</p>
     </div>
+  
+    <div class="cover-tags">
+      <span class="tag">The July Crisis</span><span class="tag">Mobilisation</span><span class="tag">The Western Front</span><span class="tag">Four Empires</span><span class="tag">Versailles</span><span class="tag">1914 – 1918</span>
+    </div>
   </div>
-  <div class="cover-foot">
+    <div class="cover-foot">
+    <span class="cf-left">Thirteen chapters · one sitting</span>
     <span class="cover-scroll">Begin reading ↓</span>
+    <span class="cf-right">Six powers · four years · sourced</span>
   </div>
 </header>
 
@@ -12641,15 +12766,15 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
   </div>
 </section>
 
-<section class="chapter keep-digging" id="keep-digging">
+<section class="chapter" id="keep-digging">
   <header class="chapter-head">
     <span class="chapter-numeral">XIII</span>
     <h2 class="chapter-title">Keep Digging</h2>
   </header>
   <div class="chapter-body">
     <p class="lede">The systemic trap this issue named has lived in other media too — some of it for decades before the centenary wave arrived. Here is where to go next, weighted toward audio and screen.</p>
-
-    <div class="kd-grid">
+  </div>
+  <div class="keep-digging">
 
       <article class="kd-item" data-medium="podcast">
         <span class="kd-medium">Podcast</span>
@@ -12708,7 +12833,7 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
       </article>
 
     </div>
-  </div>
+
 </section>
 
 <footer class="sp-footer">
@@ -14976,6 +15101,53 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
     updateHalves();
   }
 
+})();
+
+/* ============================================================
+   v8.24.3 — Non-holiday special editions: gentle scroll-reveal.
+   Tags content blocks with .sp-rise and reveals them on entry. Self-contained;
+   does not touch the universal .reveal observer. Off under reduced-motion and
+   on small screens (CSS gates the actual animation); a 2.6s safety timeout
+   force-reveals everything if observers never fire.
+   ============================================================ */
+(function () {
+  var b = document.body;
+  if (!b || !b.classList.contains('is-special')) return;
+  var ds = b.getAttribute('data-special');
+  if (ds === 'countdown' || ds === 'field-guide') return;
+
+  var sel = [
+    '.chapter figure',
+    '.chapter blockquote.pullquote',
+    '.chapter .bignum-row',
+    '.chapter .argument, .argument',
+    '.chapter table',
+    '.chapter .is-wide',
+    '.keep-digging .kd-item',
+    '.chapter .chapter-head'
+  ].join(', ');
+
+  var els = [].slice.call(document.querySelectorAll(sel));
+  if (!els.length) return;
+  els.forEach(function (el) { el.classList.add('sp-rise'); });
+
+  function showAll() { els.forEach(function (el) { el.classList.add('sp-rise--in'); }); }
+
+  if (!('IntersectionObserver' in window)) { showAll(); return; }
+
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) {
+        e.target.classList.add('sp-rise--in');
+        io.unobserve(e.target);
+      }
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+
+  els.forEach(function (el) { io.observe(el); });
+
+  // Safety: never leave content hidden if something goes wrong.
+  setTimeout(showAll, 2600);
 })();
 
 </script>
