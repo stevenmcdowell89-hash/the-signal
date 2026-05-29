@@ -3544,6 +3544,45 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
 }
 
 /* ============================================================
+   v8.24.4 — cover key-themes row + decorative foot meta
+   Restores the fuller, decorative-but-tidy cover the pre-v8.21 specials had:
+   title + deck + a row of key-theme keywords + a three-part foot
+   (left meta · scroll cue · right meta). Non-holiday specials only.
+   ============================================================ */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .cover-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.6rem;
+  margin-top: clamp(1.4rem, 2.6vw, 2.2rem);
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .cover-tags .tag {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: rgba(250, 250, 248, 0.82);
+  border: 1px solid var(--rule-on-dark);
+  border-radius: 999px;
+  padding: 0.34em 0.9em;
+  white-space: nowrap;
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .cover-foot .cf-left,
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .cover-foot .cf-right {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--ink-on-dark-mu);
+}
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .cover-foot .cf-right {
+  text-align: right;
+}
+@media (max-width: 640px) {
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .cover-foot .cf-left,
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .cover-foot .cf-right { display: none; }
+}
+
+/* ============================================================
    SPECIAL EDITION — CHAPTERS  (non-holiday)
 
    Each chapter has:
@@ -11269,9 +11308,20 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
     <div class="cover-slogan">
       <p>Rome never created an office called emperor. That, in the end, was the whole problem.</p>
     </div>
+    <div class="cover-tags">
+      <span class="tag">The Principate</span>
+      <span class="tag">Augustus</span>
+      <span class="tag">Succession</span>
+      <span class="tag">The Julio-Claudians</span>
+      <span class="tag">The Praetorian Guard</span>
+      <span class="tag">Caesar → Nero</span>
+      <span class="tag">49 BC – AD 69</span>
+    </div>
   </div>
   <div class="cover-foot">
+    <span class="cf-left">Twelve chapters · one sitting</span>
     <span class="cover-scroll">Begin reading ↓</span>
+    <span class="cf-right">Augustus → Nero · sourced</span>
   </div>
 </header>
 
