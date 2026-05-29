@@ -2244,48 +2244,79 @@
 })();
 
 /* ============================================================
-   v8.24.3 — Non-holiday special editions: gentle scroll-reveal.
-   Tags content blocks with .sp-rise and reveals them on entry. Self-contained;
-   does not touch the universal .reveal observer. Off under reduced-motion and
-   on small screens (CSS gates the actual animation); a 2.6s safety timeout
-   force-reveals everything if observers never fire.
+   v8.24.5 — Non-holiday special editions: scroll-reveal + count-up.
+   (1) Reveals content blocks on entry with a gentle rise, staggered within
+       groups (stat cells, Keep Digging cards), and a sideways slide for gutter
+       marginalia. (2) Counts stat numbers up when a stat row enters view.
+   Self-contained; does not touch the universal .reveal observer. Off under
+   reduced-motion; a 2.6s safety timeout force-reveals everything if observers
+   never fire.
    ============================================================ */
 (function () {
   var b = document.body;
   if (!b || !b.classList.contains('is-special')) return;
   var ds = b.getAttribute('data-special');
   if (ds === 'countdown' || ds === 'field-guide') return;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // ---- 1. Reveal on scroll ----
   var sel = [
-    '.chapter figure',
-    '.chapter blockquote.pullquote',
-    '.chapter .bignum-row',
-    '.chapter .argument, .argument',
-    '.chapter table',
-    '.chapter .is-wide',
-    '.keep-digging .kd-item',
-    '.chapter .chapter-head'
+    '.chapter figure', '.chapter blockquote.pullquote', '.chapter .bignum-row',
+    '.chapter .argument, .argument', '.chapter table', '.chapter .is-wide',
+    '.keep-digging .kd-item', '.chapter .chapter-head', '.chapter .marginalia'
   ].join(', ');
-
   var els = [].slice.call(document.querySelectorAll(sel));
-  if (!els.length) return;
-  els.forEach(function (el) { el.classList.add('sp-rise'); });
-
-  function showAll() { els.forEach(function (el) { el.classList.add('sp-rise--in'); }); }
-
-  if (!('IntersectionObserver' in window)) { showAll(); return; }
-
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (e) {
-      if (e.isIntersecting) {
-        e.target.classList.add('sp-rise--in');
-        io.unobserve(e.target);
-      }
+  els.forEach(function (el) {
+    el.classList.add('sp-rise');
+    if (el.classList.contains('marginalia')) el.classList.add('sp-rise--right');
+  });
+  // Stagger cascade within groups (Keep Digging cards, stat cells).
+  [['.keep-digging', '.kd-item'], ['.bignum-row', '.bignum']].forEach(function (g) {
+    [].slice.call(document.querySelectorAll(g[0])).forEach(function (group) {
+      [].slice.call(group.querySelectorAll(g[1])).forEach(function (item, i) {
+        item.classList.add('sp-rise');
+        item.style.transitionDelay = (i * 90) + 'ms';
+      });
     });
-  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+  });
 
-  els.forEach(function (el) { io.observe(el); });
+  function showAll() { document.querySelectorAll('.sp-rise').forEach(function (el) { el.classList.add('sp-rise--in'); }); }
 
-  // Safety: never leave content hidden if something goes wrong.
-  setTimeout(showAll, 2600);
+  if (reduce || !('IntersectionObserver' in window)) {
+    showAll();
+  } else {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('sp-rise--in'); io.unobserve(e.target); }
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+    document.querySelectorAll('.sp-rise').forEach(function (el) { io.observe(el); });
+    setTimeout(showAll, 2600);
+
+    // ---- 2. Count-up on stat numbers ----
+    var nums = [].slice.call(document.querySelectorAll('.bignum-value'));
+    if (nums.length) {
+      var cio = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          var el = e.target; cio.unobserve(el);
+          var txt = (el.getAttribute('data-target') || el.textContent).trim();
+          var raw = txt.replace(/[^0-9.]/g, '');
+          var num = parseFloat(raw);
+          if (isNaN(num)) return;
+          var pre = txt.match(/^[^0-9.]*/)[0] || '';
+          var suf = txt.match(/[^0-9.]*$/)[0] || '';
+          var isInt = num === Math.floor(num);
+          var t0 = performance.now();
+          (function step(now) {
+            var p = Math.min((now - t0) / 900, 1);
+            var c = num * (1 - Math.pow(1 - p, 3));
+            el.textContent = pre + (isInt ? Math.round(c).toLocaleString() : c.toFixed(1)) + suf;
+            if (p < 1) requestAnimationFrame(step); else el.textContent = txt;
+          })(performance.now());
+        });
+      }, { threshold: 0.2 });
+      nums.forEach(function (el) { cio.observe(el); });
+    }
+  }
 })();

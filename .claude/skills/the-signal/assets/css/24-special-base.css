@@ -134,4 +134,11 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
     opacity: 1;
     transform: none;
   }
+  /* Gutter marginalia slides in from the right margin it lives in. */
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-rise--right {
+    transform: translateX(30px);
+  }
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-rise--right.sp-rise--in {
+    transform: none;
+  }
 }
