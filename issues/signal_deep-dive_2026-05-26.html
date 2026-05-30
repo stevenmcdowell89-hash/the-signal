@@ -3369,26 +3369,47 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
 }
 
 /* ============================================================
-   v8.24.6 — subtle parallax (non-holiday specials)
-   Floated portraits/coins and image-quotes drift within an overflow clip as
-   they cross the viewport; the cover content parallaxes as you scroll past.
-   Only floated (is-half) and image-quote photos are zoomed/clipped — wide
-   maps, charts and diagrams are left untouched so no label is cropped.
-   The crop/scale only applies once JS adds .sp-parallax-ready, so no-JS and
-   reduced-motion readers see the image un-zoomed and static.
+   v8.24.7 — figure parallax (whole-figure drift) + body flair
+   Parallax now drifts the WHOLE figure (image stays correctly framed — no
+   crop, no within-frame misalignment), set as an inline transform by JS.
+   Figures therefore reveal with OPACITY only (.sp-fade) so the fade doesn't
+   fight the parallax transform. The body itself gets flair: paragraphs ease
+   up as they enter, and sub-section labels slide in with their accent.
+   All gated behind reduced-motion; JS adds .sp-parallax-ready.
    ============================================================ */
 @media (prefers-reduced-motion: no-preference) {
-  body.is-special.sp-parallax-ready:not([data-special="countdown"]):not([data-special="field-guide"]) figure.fig.is-half,
-  body.is-special.sp-parallax-ready:not([data-special="countdown"]):not([data-special="field-guide"]) figure.image-quote {
-    overflow: hidden;
-  }
-  body.is-special.sp-parallax-ready:not([data-special="countdown"]):not([data-special="field-guide"]) figure.fig.is-half img,
-  body.is-special.sp-parallax-ready:not([data-special="countdown"]):not([data-special="field-guide"]) figure.image-quote img {
-    transform: scale(1.06) translateY(var(--sp-px, 0px));
+  body.is-special.sp-parallax-ready:not([data-special="countdown"]):not([data-special="field-guide"]) .chapter figure {
     will-change: transform;
   }
   body.is-special.sp-parallax-ready:not([data-special="countdown"]):not([data-special="field-guide"]) .cover-body {
     will-change: transform, opacity;
+  }
+}
+/* Figures fade in (opacity only — parallax owns the transform). */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-fade { opacity: 1; }
+@media (min-width: 700px) and (prefers-reduced-motion: no-preference) {
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-fade {
+    opacity: 0;
+    transition: opacity .7s ease;
+  }
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-fade--in { opacity: 1; }
+
+  /* Body paragraphs: a soft, quick ease-up as they enter view — flair, not theatre. */
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-rise--soft {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity .55s ease, transform .55s ease;
+  }
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-rise--soft.sp-rise--in {
+    opacity: 1;
+    transform: none;
+  }
+  /* Sub-section labels slide in from the left with their accent colour. */
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-kicker.sp-rise {
+    transform: translateX(-16px);
+  }
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-kicker.sp-rise.sp-rise--in {
+    transform: none;
   }
 }
 
@@ -11440,7 +11461,9 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
 
     <p>French naval strategy reflected an agreement rather than an ambition. Under the Anglo-French naval convention of 1912, France concentrated its fleet in the Mediterranean while Britain took the North Sea — a practical division for a third-rank naval power, but one that created an implied obligation: Britain would protect France's Atlantic coastline, deepening the entente beyond its formal terms. The Dreyfus Affair — the wrongful conviction of a Jewish army officer in 1894 and the decade of political conflict over his rehabilitation — had left deep divisions between the republican left and the Catholic-monarchist right over the army's reliability. Those divisions were still live in 1914.</p>
 
-    <p>Domestic politics after 1900 were shaped by the Dreyfus aftermath: Radical-Socialist governments implemented the separation of Church and state in 1905, breaking the Concordat with the Vatican. The socialist left, led by Jean Jaurès, was a significant anti-war force; his assassination by a nationalist fanatic on 31 July 1914 symbolically silenced that opposition on the eve of mobilisation. Within days the Union Sacrée — the sacred union — brought socialists into government for the war's duration. Cultural life was centred in Paris: Marie Curie held two Nobel Prizes, Bergson dominated philosophy, and the decade before the war produced Impressionism's last phase and the early Cubist work of artists gathered from across Europe.</p>
+    <div class="sp-ornament" aria-hidden="true"></div>
+
+<p>Domestic politics after 1900 were shaped by the Dreyfus aftermath: Radical-Socialist governments implemented the separation of Church and state in 1905, breaking the Concordat with the Vatican. The socialist left, led by Jean Jaurès, was a significant anti-war force; his assassination by a nationalist fanatic on 31 July 1914 symbolically silenced that opposition on the eve of mobilisation. Within days the Union Sacrée — the sacred union — brought socialists into government for the war's duration. Cultural life was centred in Paris: Marie Curie held two Nobel Prizes, Bergson dominated philosophy, and the decade before the war produced Impressionism's last phase and the early Cubist work of artists gathered from across Europe.</p>
 
     <p>Foreign policy was organised around two commitments: the alliance with Russia, signed in 1894, which broke France's isolation after 1871; and the Entente Cordiale with Britain, concluded in 1904. Neither arrangement was comfortable. France depended on Britain's decision in a way French leaders could not fully control — Foreign Secretary Grey's private commitment to France was not fully disclosed even to his own Cabinet until August 1914. The Franco-Russian Alliance obligated France to mobilise against Germany if Russia was attacked; what that meant in practice was that France's security rested on two relationships it could not wholly direct.</p>
 
@@ -11456,11 +11479,15 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
 
     <p>The naval strategy, conceived by Admiral Alfred von Tirpitz, was the Risikoflotte — the risk fleet. The logic was deterrence: build enough dreadnoughts that Britain could not attack without unacceptable losses, forcing British neutrality. Britain launched HMS Dreadnought in 1906, rendering all existing battleships obsolete; Germany responded with its own programme. By 1912 the race had ended without Tirpitz's aim achieved — Britain held 29 dreadnoughts to Germany's 17, and the contest had pushed Britain firmly into the French camp rather than out of it.</p>
 
-    <p>The colonial empire was modest — Germany had acquired South-West Africa, East Africa, Cameroon, and Togo from 1884, a latecomer's portfolio that functioned more as a symbol of great-power status than an economic asset. The two Morocco crises of 1905 and 1911 were not really about Morocco: Germany was using colonial disputes to test the Anglo-French entente and assert a seat at every table where European power was distributed. Both ended in German diplomatic retreats.</p>
+    <div class="sp-ornament" aria-hidden="true"></div>
+
+<p>The colonial empire was modest — Germany had acquired South-West Africa, East Africa, Cameroon, and Togo from 1884, a latecomer's portfolio that functioned more as a symbol of great-power status than an economic asset. The two Morocco crises of 1905 and 1911 were not really about Morocco: Germany was using colonial disputes to test the Anglo-French entente and assert a seat at every table where European power was distributed. Both ended in German diplomatic retreats.</p>
 
     <p>Domestic politics had reached a structural impasse. The SPD won 34 percent of the vote in the 1912 Reichstag elections, making it the largest single party; the constitution kept it from power. The Zabern Affair of 1913 — a German officer in Alsace insulted local civilians, faced no legal sanction, and the Reichstag's protests changed nothing — illustrated the gap between parliamentary complaint and military authority. Some historians, most prominently Fritz Fischer, argued that war in 1914 was partly a Flucht nach vorn — a flight forward to forestall internal reform. The evidence for that as a conscious plan is contested; that the constitutional deadlock was real is not.</p>
 
-    <p>The systemic trap the argument identifies was already visible in these constitutional asymmetries. Germany had a parliament with no power over the government; Britain had a parliament that was the government; France had a parliament that cycled through ministries while the state beneath remained continuous. When August 1914 came, each structure shaped the entry differently: Britain's Cabinet debated to the last; France's government presented mobilisation as a treaty obligation already agreed; Germany's decision moved through the court and the General Staff, the Reichstag informed rather than consulted.</p>
+    <div class="sp-ornament" aria-hidden="true"></div>
+
+<p>The systemic trap the argument identifies was already visible in these constitutional asymmetries. Germany had a parliament with no power over the government; Britain had a parliament that was the government; France had a parliament that cycled through ministries while the state beneath remained continuous. When August 1914 came, each structure shaped the entry differently: Britain's Cabinet debated to the last; France's government presented mobilisation as a treaty obligation already agreed; Germany's decision moved through the court and the General Staff, the Reichstag informed rather than consulted.</p>
 
     <table class="is-wide" style="border-collapse: collapse; width: 100%; margin: 2rem 0;">
       <caption style="font-family: var(--sp-ff-mono, monospace); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.75rem; text-align: left;">The Three Western Powers — Selected Indicators, 1914</caption>
@@ -11548,7 +11575,9 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
 
     <p>The Austrian half's parliament, the Reichsrat — the imperial council — was periodically paralysed by nationality conflicts that reduced plenary sessions to organised noise. Czech and German deputies filibustered each other with procedural motions. The Hungarian half's political class had no interest in democratic reform that might dilute Magyar dominance. Franz Joseph's solution was to govern by imperial decree when parliament failed, which was often. The economy had real industrial weight — the Škoda works in Bohemia produced artillery and armaments, Vienna and the Austrian crownlands had a sophisticated banking system and manufacturing sector — but the Hungarian agricultural half pulled in a different direction. The common currency functioned; common economic policy rarely did.</p>
 
-    <p>Military planning sat with Conrad von Hötzendorf, Chief of the General Staff from 1906. Conrad had proposed preventive war against Serbia twenty-five times before 1914, arguing that the Austro-Hungarian state could not survive the national-liberation movement that Serbian ambitions represented. His army was organised by language — Austrian-German regiments, Hungarian-Croat regiments — with officer corps that operated in the relevant languages. The navy was modest: the Adriatic-focused Austro-Hungarian fleet included Tegetthoff-class dreadnoughts from 1912, built for coastal and Mediterranean defence rather than Atlantic or global reach. Austria-Hungary had no overseas colonial empire. Its only territorial expansion in fifty years had been the 1908 annexation of Bosnia-Herzegovina, a province it had administered since 1878, which became the single most consequential piece of territory in pre-war Europe.</p>
+    <div class="sp-ornament" aria-hidden="true"></div>
+
+<p>Military planning sat with Conrad von Hötzendorf, Chief of the General Staff from 1906. Conrad had proposed preventive war against Serbia twenty-five times before 1914, arguing that the Austro-Hungarian state could not survive the national-liberation movement that Serbian ambitions represented. His army was organised by language — Austrian-German regiments, Hungarian-Croat regiments — with officer corps that operated in the relevant languages. The navy was modest: the Adriatic-focused Austro-Hungarian fleet included Tegetthoff-class dreadnoughts from 1912, built for coastal and Mediterranean defence rather than Atlantic or global reach. Austria-Hungary had no overseas colonial empire. Its only territorial expansion in fifty years had been the 1908 annexation of Bosnia-Herzegovina, a province it had administered since 1878, which became the single most consequential piece of territory in pre-war Europe.</p>
 
     <p>Vienna around 1900 was the most concentrated intellectual environment of any European city in that decade. Sigmund Freud published The Interpretation of Dreams in 1900 and was building the institutional structure of psychoanalysis. Gustav Klimt and Egon Schiele were redefining figure painting. Gustav Mahler conducted the Vienna Court Opera until 1907; Arnold Schoenberg was moving toward atonality; Alban Berg was his student. Ernst Mach's philosophy of science influenced Einstein. Ludwig Wittgenstein was a child in the city. Karl Kraus published Die Fackel — the Torch — a satirical journal he wrote largely alone, dissecting the Habsburg press and political class with unbroken intensity from 1899 until his death in 1936. The density is difficult to explain and was not lost on contemporaries. Foreign policy aligned Vienna with Berlin and Rome in the Triple Alliance — the Dreibund — signed in 1882. Italy's membership was nominal by 1914, as Rome was pursuing territorial claims on Habsburg-held lands (the irredenta). Vienna's actual strategic concern was the Balkans, Russia, and the slow dissolution of South Slav national identity into a movement its Serbian neighbour was actively encouraging.</p>
 
@@ -11636,7 +11665,9 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
 
     <p>The United States in 1914 was a federal constitutional republic with a population of around 100 million and the world's largest economy. Woodrow Wilson had been president since 1913. American foreign policy carried no alliance obligations to European powers; when war began Wilson declared neutrality, and he was re-elected in 1916 on the slogan "He Kept Us Out of War." The economic relationship with the war did not match the political position. From 1915, J.P. Morgan and Co. acted as purchasing agent and loan arranger for Britain and France in the American market. Munitions exports from the United States rose from roughly $20 million in 1914 to $1.3 billion in 1916. Germany had no equivalent access to American credit; the Royal Navy's blockade had cut it off from Atlantic trade.</p>
 
-    <p>Germany's response was unrestricted submarine warfare. The Sussex Pledge of 1916 — Germany's agreement to warn ships before firing — suspended the policy temporarily after American pressure. In January 1917, Germany resumed unrestricted submarine warfare. In February, British intelligence made public the Zimmermann Telegram, from German Foreign Minister Arthur Zimmermann to the German ambassador in Mexico, proposing that if Mexico declared war on the United States, Germany would support Mexican recovery of Texas, New Mexico, and Arizona. Wilson asked Congress for a declaration of war on 6 April 1917. Under General John Pershing, two million American troops were in France by the end of 1918.</p>
+    <div class="sp-ornament" aria-hidden="true"></div>
+
+<p>Germany's response was unrestricted submarine warfare. The Sussex Pledge of 1916 — Germany's agreement to warn ships before firing — suspended the policy temporarily after American pressure. In January 1917, Germany resumed unrestricted submarine warfare. In February, British intelligence made public the Zimmermann Telegram, from German Foreign Minister Arthur Zimmermann to the German ambassador in Mexico, proposing that if Mexico declared war on the United States, Germany would support Mexican recovery of Texas, New Mexico, and Arizona. Wilson asked Congress for a declaration of war on 6 April 1917. Under General John Pershing, two million American troops were in France by the end of 1918.</p>
 
     <blockquote class="pullquote">
       <p>"The world must be made safe for democracy. Its peace must be planted upon the tested foundations of political liberty."</p>
@@ -12136,7 +12167,9 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
 
     <p>The year 1917 — Russia's revolution, France's mutinies, America's entry, and the U-boat campaign that nearly broke Britain — is where the next chapter begins.</p>
 
-    <p class="source-strip">Sources: Strachan, <em>The First World War</em> (2003); Keegan, <em>The First World War</em> (1998); Prior &amp; Wilson, <em>The Somme</em> (2005); IWM consensus figures; Australian War Memorial; Gilbert, <em>The Somme</em> (2006).</p>
+    <div class="sp-ornament" aria-hidden="true"></div>
+
+<p class="source-strip">Sources: Strachan, <em>The First World War</em> (2003); Keegan, <em>The First World War</em> (1998); Prior &amp; Wilson, <em>The Somme</em> (2005); IWM consensus figures; Australian War Memorial; Gilbert, <em>The Somme</em> (2006).</p>
 
   </div>
 </section>
@@ -12162,11 +12195,15 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
 
     <p>Vladimir Lenin had been in exile in Zurich when the revolution happened. The German High Command, calculating that getting Lenin back to Russia would accelerate its exit from the war, arranged for a sealed train to carry him through Germany to Petrograd. He arrived on 3 April (NS) and announced his April Theses the next day: no support for the Provisional Government, immediate peace, immediate land redistribution. His slogan was "peace, land, bread" — exactly the three things the government was withholding.</p>
 
-    <p>The Kerensky Offensive in June 1917 collapsed within days. Soldiers deserted in numbers no government could reverse. The October Revolution on 25 October (7 November NS) was less a mass uprising than a coup against a government that had already lost the country. Lenin's party took Petrograd with little fighting and announced an armistice the following day.</p>
+    <div class="sp-ornament" aria-hidden="true"></div>
+
+<p>The Kerensky Offensive in June 1917 collapsed within days. Soldiers deserted in numbers no government could reverse. The October Revolution on 25 October (7 November NS) was less a mass uprising than a coup against a government that had already lost the country. Lenin's party took Petrograd with little fighting and announced an armistice the following day.</p>
 
     <p>By December, Russian and German delegations were negotiating at Brest-Litovsk. The treaty signed in March 1918 was punishing: Russia surrendered Poland, the Baltic states, Finland, Ukraine, and parts of the Caucasus. Germany gained territory and food supply that briefly shifted the war's balance. The consequence that matters for 1917 is immediate: Russia left the war. Germany could shift divisions west.</p>
 
-    <p>The structural point connects to the Argument this issue has been making. The Provisional Government's choice to continue the war operated inside a system that had already removed the exits: a Russian government in 1917 could not continue the war without an army that had stopped fighting. The Bolshevik seizure of power followed from that collapse.</p>
+    <div class="sp-ornament" aria-hidden="true"></div>
+
+<p>The structural point connects to the Argument this issue has been making. The Provisional Government's choice to continue the war operated inside a system that had already removed the exits: a Russian government in 1917 could not continue the war without an army that had stopped fighting. The Bolshevik seizure of power followed from that collapse.</p>
 
     <h3 class="sp-kicker">The French Mutinies and Passchendaele</h3>
 
@@ -12203,7 +12240,9 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
 
     <h3 class="sp-kicker">The Wider War</h3>
 
-    <p>In late October, German and Austro-Hungarian forces broke through the Italian lines at Caporetto on the Isonzo Front. The Italian Second Army disintegrated: 275,000 prisoners taken, 350,000 deserters. Anglo-French divisions were sent south to stabilise a line that had nearly ceased to exist. Under a new commander, Armando Diaz, the Italians would recover — but that is 1918's story.</p>
+    <div class="sp-ornament" aria-hidden="true"></div>
+
+<p>In late October, German and Austro-Hungarian forces broke through the Italian lines at Caporetto on the Isonzo Front. The Italian Second Army disintegrated: 275,000 prisoners taken, 350,000 deserters. Anglo-French divisions were sent south to stabilise a line that had nearly ceased to exist. Under a new commander, Armando Diaz, the Italians would recover — but that is 1918's story.</p>
 
     <p>In Palestine, General Edmund Allenby entered Jerusalem in December 1917 on foot, through the Jaffa Gate. The contrast was deliberate: Kaiser Wilhelm II had ridden in on horseback in 1898, in full imperial display. Allenby entered as a pilgrim. It was the first time a Christian force had taken the city since the Crusades.</p>
 
@@ -12308,7 +12347,9 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
 
     <p>On 29 October 1918, the German High Seas Fleet was ordered to sortie for a final battle against the Royal Navy. Sailors at Wilhelmshaven and Kiel refused to sail. The Kiel mutiny spread inland. Workers' and soldiers' councils — Räte, modelled on the Russian soviets of 1917 — formed across Germany in early November, though without the Bolshevik political direction the Russian councils had carried. The home front that had been under strain since the "turnip winter" of 1916–17, under the Allied blockade's pressure, was no longer willing to continue.</p>
 
-    <p>On 9 November 1918, Philipp Scheidemann of the SPD declared the German Republic from a window of the Reichstag. Kaiser Wilhelm II, who had been at Spa in Belgium, abdicated the same day and crossed into the Netherlands, where he would live in exile until his death in 1941. He formally renounced his rights to both thrones on 28 November.</p>
+    <div class="sp-ornament" aria-hidden="true"></div>
+
+<p>On 9 November 1918, Philipp Scheidemann of the SPD declared the German Republic from a window of the Reichstag. Kaiser Wilhelm II, who had been at Spa in Belgium, abdicated the same day and crossed into the Netherlands, where he would live in exile until his death in 1941. He formally renounced his rights to both thrones on 28 November.</p>
 
     <p>At 5:10 in the morning of 11 November 1918, the Armistice was signed in a railway carriage in the Compiègne forest. Fighting on the Western Front ceased at 11am.</p>
 
@@ -12358,7 +12399,9 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
 
     <p>Orlando pushed Italy's claims from the Treaty of London (1915), which promised Dalmatia, and also demanded Fiume — a port not covered by the treaty at all. Wilson, who had not signed the Treaty of London, refused both. Orlando walked out, returned weakened, and Italy came away with far less than its public had been told to expect. The "mutilated victory" framing followed, and with it the resentment that drove Italian politics toward Mussolini within three years.</p>
 
-    <p>The structural point the Argument made about 1914 applies equally here. Clemenceau's security demands, Lloyd George's election promises, and Orlando's secret-treaty claims were all commitments made during the war, before Wilson arrived. The conference was constrained before it opened. The shape of Versailles was partly what the four men decided in 1919, and partly what their governments had promised between 1914 and 1918.</p>
+    <div class="sp-ornament" aria-hidden="true"></div>
+
+<p>The structural point the Argument made about 1914 applies equally here. Clemenceau's security demands, Lloyd George's election promises, and Orlando's secret-treaty claims were all commitments made during the war, before Wilson arrived. The conference was constrained before it opened. The shape of Versailles was partly what the four men decided in 1919, and partly what their governments had promised between 1914 and 1918.</p>
 
     <figure class="fig is-wide">
       <img src="/assets/cached/e46c345bb960.jpg"
@@ -12446,7 +12489,9 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
 
     <p>Germany's delegation was summoned to Paris in May 1919. They could submit written comments but could not negotiate. On 28 June 1919 — five years to the day after Sarajevo — the treaty was signed in the Hall of Mirrors, the room where the German Empire had been proclaimed after the defeat of France in 1871. The ch1-1 chapter covered that founding. Clemenceau's venue choice required no explanation.</p>
 
-    <p>The German public's response rested on a false premise: that Germany had not been defeated in the field. The ch2-4 chapter established what actually happened. By August 1918, the German army's offensive capacity was exhausted, divisions were surrendering in mass, and Ludendorff himself had told the political leadership in late September that the military situation was hopeless. The army sued for peace because it was losing.</p>
+    <div class="sp-ornament" aria-hidden="true"></div>
+
+<p>The German public's response rested on a false premise: that Germany had not been defeated in the field. The ch2-4 chapter established what actually happened. By August 1918, the German army's offensive capacity was exhausted, divisions were surrendering in mass, and Ludendorff himself had told the political leadership in late September that the military situation was hopeless. The army sued for peace because it was losing.</p>
 
     <p>But Germany was not invaded. German troops were still on French and Belgian soil when the armistice took effect on 11 November. The armistice was signed by the civilian republic declared two days earlier. This gap — military defeat in France, political collapse in Berlin, armistice signed by civilians — created the space for the Dolchstoßlegende, the stab-in-the-back legend: the claim that the German army was undefeated in the field and was betrayed from behind by socialist politicians and Jews.</p>
 
@@ -12552,7 +12597,9 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
 
     <h3 class="sp-kicker">Ottoman / Turkey</h3>
 
-    <p>The Ottoman Empire received the harshest settlement at Sèvres in 1920, and then uniquely among the defeated powers, fought its way out of it. Mustafa Kemal — the Gallipoli commander whose order held the line against the ANZAC landing, as ch2-2 covered — led nationalist resistance from Ankara against the Sèvres terms. The Greek army had landed at Smyrna in 1919 and advanced deep into Anatolia. By 1922 it had been defeated and driven to the sea. The Treaty of Lausanne of July 1923 replaced Sèvres and recognised the Republic of Turkey in Anatolia and Eastern Thrace. Turkey is the only defeated power that overturned its peace settlement by force of arms.</p>
+    <div class="sp-ornament" aria-hidden="true"></div>
+
+<p>The Ottoman Empire received the harshest settlement at Sèvres in 1920, and then uniquely among the defeated powers, fought its way out of it. Mustafa Kemal — the Gallipoli commander whose order held the line against the ANZAC landing, as ch2-2 covered — led nationalist resistance from Ankara against the Sèvres terms. The Greek army had landed at Smyrna in 1919 and advanced deep into Anatolia. By 1922 it had been defeated and driven to the sea. The Treaty of Lausanne of July 1923 replaced Sèvres and recognised the Republic of Turkey in Anatolia and Eastern Thrace. Turkey is the only defeated power that overturned its peace settlement by force of arms.</p>
 
     <p>The 1923 population exchange — conducted under League of Nations supervision — expelled approximately 1.2 million Greeks from Anatolia to Greece and approximately 400,000 Muslims from Greece to Turkey. Formally administered by international agreement, it was the first internationally sanctioned mass ethnic transfer in modern history. The Kemalist programme then remade Turkey's internal structure: the Republic was proclaimed in October 1923, the Caliphate abolished in 1924, the Latin alphabet substituted for Arabic script in 1928, women given the vote in 1934. The Ottoman Empire was gone; the Turkish Republic was something structurally different, and it had been built by defeating the peace through arms.</p>
 
@@ -12572,7 +12619,9 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
 
     <p>The United States emerged from the war as the world's leading creditor nation. Allied war debts owed to the US totalled approximately $10 billion in 1919 dollars; American trade ran a consistent surplus; gold flowed toward New York. Financially, the war had transferred the centre of gravity of the global economy westward.</p>
 
-    <p>Politically, the United States withdrew. The Senate rejected the Treaty of Versailles in November 1919 and again in March 1920. America never joined the League of Nations its own president had designed. Republican administrations through the 1920s — Harding, Coolidge, Hoover — pursued security isolation while remaining engaged in international finance: American banks underwrote the Dawes Plan of 1924; American capital funded much of Europe's mid-1920s recovery. The two postures — financial engagement, political non-commitment — produced a Versailles system without its architect and without enforcement. The Immigration Acts of 1921 and 1924 reduced annual European migration from over a million to roughly 150,000. The structural fact for this chapter: the League operated without American membership from its first day, and the Versailles settlement was unenforceable without the power that had made the Allied victory possible.</p>
+    <div class="sp-ornament" aria-hidden="true"></div>
+
+<p>Politically, the United States withdrew. The Senate rejected the Treaty of Versailles in November 1919 and again in March 1920. America never joined the League of Nations its own president had designed. Republican administrations through the 1920s — Harding, Coolidge, Hoover — pursued security isolation while remaining engaged in international finance: American banks underwrote the Dawes Plan of 1924; American capital funded much of Europe's mid-1920s recovery. The two postures — financial engagement, political non-commitment — produced a Versailles system without its architect and without enforcement. The Immigration Acts of 1921 and 1924 reduced annual European migration from over a million to roughly 150,000. The structural fact for this chapter: the League operated without American membership from its first day, and the Versailles settlement was unenforceable without the power that had made the Allied victory possible.</p>
 
     <h3 class="sp-kicker">Japan, Confirmed</h3>
 
@@ -12702,7 +12751,9 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
 
     <h3 class="sp-kicker">The Colonial Reverberation</h3>
 
-    <p>Wilson's self-determination principle was intended for European peoples. The Versailles conference applied it to European peoples. The rest of the world watched and drew conclusions.</p>
+    <div class="sp-ornament" aria-hidden="true"></div>
+
+<p>Wilson's self-determination principle was intended for European peoples. The Versailles conference applied it to European peoples. The rest of the world watched and drew conclusions.</p>
 
     <p>Ho Chi Minh — then known as Nguyễn Ái Quốc — arrived in Paris during the Peace Conference in a rented suit and submitted a petition requesting Vietnamese rights within the French Empire: freedom of assembly, a free press, legal equality, Vietnamese parliamentary representation. He was not received. The delegates remaking European borders had no mechanism and little inclination to apply the same principle elsewhere. The encounter shaped him; he joined the French Communist Party shortly after and turned to Marxism as the framework that Wilsonian liberalism had refused to provide.</p>
 
@@ -12716,7 +12767,9 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
 
     <p class="source-strip">Sources: MacMillan, <em>Paris 1919</em> (2001); Fromkin, <em>A Peace to End All Peace</em> (1989); Manela, <em>The Wilsonian Moment</em> (2007); Rogan, <em>The Arabs</em> (2009); Mazower, <em>Governing the World</em> (2012); James, <em>The Rise and Fall of the British Empire</em> (1994); League of Nations Covenant, Articles 10, 16, 22; Balfour Declaration, 2 November 1917; Hussein-McMahon correspondence 1915–16; Sykes-Picot Agreement 1916.</p>
 
-    <p>What these borders, these institutions, and these unresolved claims produced across the following decades is the subject of ch3-4.</p>
+    <div class="sp-ornament" aria-hidden="true"></div>
+
+<p>What these borders, these institutions, and these unresolved claims produced across the following decades is the subject of ch3-4.</p>
 
   </div>
 </section>
@@ -12742,7 +12795,9 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
 
     <p>The war against Hitler from June 1941 was the defining experience of the Soviet state. Twenty-seven million Soviet citizens died. The Red Army entered Berlin in May 1945. The boundary of Soviet control in Central and Eastern Europe after the war was the line where the Red Army had stopped advancing — not drawn by diplomats at a conference table, but held by armies in the field at the moment of German surrender.</p>
 
-    <p>The four decades of bipolar Cold War order — the arms race, the proxy wars, the Berlin Wall, the Cuban Missile Crisis, nuclear parity, the Reagan-Gorbachev summits — were the working-out of the strategic geography established when the Red Army reached the Elbe in 1945. That position was won by an industrialised socialist state. That state existed because Lenin seized power in October 1917. He seized power because the Provisional Government's decision to continue the war had destroyed its authority over an army that had already stopped fighting. The army had stopped fighting because the Tsarist state was destroyed by a war it could not survive.</p>
+    <div class="sp-ornament" aria-hidden="true"></div>
+
+<p>The four decades of bipolar Cold War order — the arms race, the proxy wars, the Berlin Wall, the Cuban Missile Crisis, nuclear parity, the Reagan-Gorbachev summits — were the working-out of the strategic geography established when the Red Army reached the Elbe in 1945. That position was won by an industrialised socialist state. That state existed because Lenin seized power in October 1917. He seized power because the Provisional Government's decision to continue the war had destroyed its authority over an army that had already stopped fighting. The army had stopped fighting because the Tsarist state was destroyed by a war it could not survive.</p>
 
     <p>The Soviet collapse in 1991 arrived through its own causes — economic dysfunction, political delegitimation, the strain of Afghanistan — inside a system the First World War had built. The war Russia has been fighting in Ukraine since 2022 is one negotiation in the still-unfinished dissolution of that inheritance.</p>
 
@@ -12786,7 +12841,9 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
 
     <p>The mobilisation timetables were overtaken by nuclear deterrence, which replaced the timetable problem with a different one: the capacity for catastrophic retaliation existed at all times. Nuclear parity produced its own stability, at enormous risk and cost, but the mechanism by which 1914's crisis escalated automatically from mobilisation to war was gone.</p>
 
-    <p>The Balkans returned to the news in the 1990s as Yugoslavia dissolved. The European Union framework absorbed most of the successor states in the decades that followed — Slovenia in 2004, Croatia in 2013, Serbia in accession negotiations by 2025. The region that had been the detonator for 1914 was, by the 2020s, substantially inside an institutional structure built for the purpose of making detonation structurally unavailable.</p>
+    <div class="sp-ornament" aria-hidden="true"></div>
+
+<p>The Balkans returned to the news in the 1990s as Yugoslavia dissolved. The European Union framework absorbed most of the successor states in the decades that followed — Slovenia in 2004, Croatia in 2013, Serbia in accession negotiations by 2025. The region that had been the detonator for 1914 was, by the 2020s, substantially inside an institutional structure built for the purpose of making detonation structurally unavailable.</p>
 
     <p>Great-power competition continues. The current configuration — the United States, China, Russia, the European Union as an economic bloc, India rising — shares the structural challenge that 1914 ran up against: how to keep great powers' contests below the threshold of catastrophic war when their interests genuinely conflict.</p>
 
@@ -15150,38 +15207,45 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
   if (ds === 'countdown' || ds === 'field-guide') return;
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // ---- 1. Reveal on scroll ----
-  var sel = [
-    '.chapter figure', '.chapter blockquote.pullquote', '.chapter .bignum-row',
-    '.chapter .argument, .argument', '.chapter table', '.chapter .is-wide',
-    '.keep-digging .kd-item', '.chapter .chapter-head', '.chapter .marginalia'
-  ].join(', ');
-  var els = [].slice.call(document.querySelectorAll(sel));
-  els.forEach(function (el) {
-    el.classList.add('sp-rise');
-    if (el.classList.contains('marginalia')) el.classList.add('sp-rise--right');
-  });
+  // ---- 1. Reveal on scroll (incl. body flair) ----
+  // Figures fade in (opacity only) so the parallax transform isn't overwritten.
+  [].slice.call(document.querySelectorAll('.chapter figure, .foreword figure'))
+    .forEach(function (el) { el.classList.add('sp-fade'); });
+  // Body paragraphs ease up as they enter — flair through the prose itself.
+  [].slice.call(document.querySelectorAll('.chapter-body > p, .foreword-body > p, .argument-stance > p'))
+    .forEach(function (el) { el.classList.add('sp-rise', 'sp-rise--soft'); });
+  // Other blocks rise; marginalia slides from the right; sub-labels from the left.
+  [].slice.call(document.querySelectorAll('.chapter blockquote.pullquote, .chapter .bignum-row, .chapter .argument, .argument, .chapter table, .chapter-body > .is-wide:not(figure), .keep-digging .kd-item, .chapter .chapter-head, .chapter .marginalia, .chapter .sp-kicker'))
+    .forEach(function (el) {
+      el.classList.add('sp-rise');
+      if (el.classList.contains('marginalia')) el.classList.add('sp-rise--right');
+    });
   // Stagger cascade within groups (Keep Digging cards, stat cells).
   [['.keep-digging', '.kd-item'], ['.bignum-row', '.bignum']].forEach(function (g) {
     [].slice.call(document.querySelectorAll(g[0])).forEach(function (group) {
       [].slice.call(group.querySelectorAll(g[1])).forEach(function (item, i) {
         item.classList.add('sp-rise');
-        item.style.transitionDelay = (i * 90) + 'ms';
+        item.style.transitionDelay = (i * 80) + 'ms';
       });
     });
   });
 
-  function showAll() { document.querySelectorAll('.sp-rise').forEach(function (el) { el.classList.add('sp-rise--in'); }); }
+  function showAll() {
+    document.querySelectorAll('.sp-rise').forEach(function (el) { el.classList.add('sp-rise--in'); });
+    document.querySelectorAll('.sp-fade').forEach(function (el) { el.classList.add('sp-fade--in'); });
+  }
 
   if (reduce || !('IntersectionObserver' in window)) {
     showAll();
   } else {
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
-        if (e.isIntersecting) { e.target.classList.add('sp-rise--in'); io.unobserve(e.target); }
+        if (!e.isIntersecting) return;
+        e.target.classList.add(e.target.classList.contains('sp-fade') ? 'sp-fade--in' : 'sp-rise--in');
+        io.unobserve(e.target);
       });
-    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
-    document.querySelectorAll('.sp-rise').forEach(function (el) { io.observe(el); });
+    }, { rootMargin: '0px 0px -7% 0px', threshold: 0.06 });
+    document.querySelectorAll('.sp-rise, .sp-fade').forEach(function (el) { io.observe(el); });
     setTimeout(showAll, 2600);
 
     // ---- 2. Count-up on stat numbers ----
@@ -15228,10 +15292,12 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
   if (ds === 'countdown' || ds === 'field-guide') return;
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  var imgs = [].slice.call(document.querySelectorAll(
-    '.chapter figure.fig.is-half img, .chapter figure.image-quote img'));
+  // Parallax only FULL-WIDTH figures (no text beside them), so the drift can be
+  // bold and never reads as a floated image misaligned against wrapping text.
+  // The whole figure moves (image stays correctly framed — no crop). Plus the cover.
+  var figs = [].slice.call(document.querySelectorAll('.chapter figure.is-wide, .chapter figure.is-fullbleed'));
   var cover = document.querySelector('header.cover .cover-body');
-  if (!imgs.length && !cover) return;
+  if (!figs.length && !cover) return;
 
   b.classList.add('sp-parallax-ready');
 
@@ -15239,18 +15305,18 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
   function update() {
     ticking = false;
     var vh = window.innerHeight || document.documentElement.clientHeight;
-    for (var i = 0; i < imgs.length; i++) {
-      var im = imgs[i];
-      var r = im.getBoundingClientRect();
-      if (r.bottom < -80 || r.top > vh + 80) continue;
+    for (var i = 0; i < figs.length; i++) {
+      var f = figs[i];
+      var r = f.getBoundingClientRect();
+      if (r.bottom < -160 || r.top > vh + 160) continue;
       var ratio = ((r.top + r.height / 2) - vh / 2) / vh;   // -0.5 .. 0.5
-      var px = Math.max(-9, Math.min(9, -ratio * 18));
-      im.style.setProperty('--sp-px', px.toFixed(1) + 'px');
+      var px = Math.max(-22, Math.min(22, -ratio * 44));
+      f.style.transform = 'translateY(' + px.toFixed(1) + 'px)';
     }
     if (cover) {
       var sy = window.pageYOffset || document.documentElement.scrollTop || 0;
-      cover.style.transform = 'translateY(' + Math.min(sy * 0.18, 140).toFixed(1) + 'px)';
-      cover.style.opacity = String(Math.max(0, 1 - sy / 720));
+      cover.style.transform = 'translateY(' + Math.min(sy * 0.22, 160).toFixed(1) + 'px)';
+      cover.style.opacity = String(Math.max(0, 1 - sy / 680));
     }
   }
   function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(update); } }

@@ -144,25 +144,46 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
 }
 
 /* ============================================================
-   v8.24.6 — subtle parallax (non-holiday specials)
-   Floated portraits/coins and image-quotes drift within an overflow clip as
-   they cross the viewport; the cover content parallaxes as you scroll past.
-   Only floated (is-half) and image-quote photos are zoomed/clipped — wide
-   maps, charts and diagrams are left untouched so no label is cropped.
-   The crop/scale only applies once JS adds .sp-parallax-ready, so no-JS and
-   reduced-motion readers see the image un-zoomed and static.
+   v8.24.7 — figure parallax (whole-figure drift) + body flair
+   Parallax now drifts the WHOLE figure (image stays correctly framed — no
+   crop, no within-frame misalignment), set as an inline transform by JS.
+   Figures therefore reveal with OPACITY only (.sp-fade) so the fade doesn't
+   fight the parallax transform. The body itself gets flair: paragraphs ease
+   up as they enter, and sub-section labels slide in with their accent.
+   All gated behind reduced-motion; JS adds .sp-parallax-ready.
    ============================================================ */
 @media (prefers-reduced-motion: no-preference) {
-  body.is-special.sp-parallax-ready:not([data-special="countdown"]):not([data-special="field-guide"]) figure.fig.is-half,
-  body.is-special.sp-parallax-ready:not([data-special="countdown"]):not([data-special="field-guide"]) figure.image-quote {
-    overflow: hidden;
-  }
-  body.is-special.sp-parallax-ready:not([data-special="countdown"]):not([data-special="field-guide"]) figure.fig.is-half img,
-  body.is-special.sp-parallax-ready:not([data-special="countdown"]):not([data-special="field-guide"]) figure.image-quote img {
-    transform: scale(1.06) translateY(var(--sp-px, 0px));
+  body.is-special.sp-parallax-ready:not([data-special="countdown"]):not([data-special="field-guide"]) .chapter figure {
     will-change: transform;
   }
   body.is-special.sp-parallax-ready:not([data-special="countdown"]):not([data-special="field-guide"]) .cover-body {
     will-change: transform, opacity;
+  }
+}
+/* Figures fade in (opacity only — parallax owns the transform). */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-fade { opacity: 1; }
+@media (min-width: 700px) and (prefers-reduced-motion: no-preference) {
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-fade {
+    opacity: 0;
+    transition: opacity .7s ease;
+  }
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-fade--in { opacity: 1; }
+
+  /* Body paragraphs: a soft, quick ease-up as they enter view — flair, not theatre. */
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-rise--soft {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity .55s ease, transform .55s ease;
+  }
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-rise--soft.sp-rise--in {
+    opacity: 1;
+    transform: none;
+  }
+  /* Sub-section labels slide in from the left with their accent colour. */
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-kicker.sp-rise {
+    transform: translateX(-16px);
+  }
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-kicker.sp-rise.sp-rise--in {
+    transform: none;
   }
 }

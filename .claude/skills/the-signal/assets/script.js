@@ -2259,38 +2259,45 @@
   if (ds === 'countdown' || ds === 'field-guide') return;
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // ---- 1. Reveal on scroll ----
-  var sel = [
-    '.chapter figure', '.chapter blockquote.pullquote', '.chapter .bignum-row',
-    '.chapter .argument, .argument', '.chapter table', '.chapter .is-wide',
-    '.keep-digging .kd-item', '.chapter .chapter-head', '.chapter .marginalia'
-  ].join(', ');
-  var els = [].slice.call(document.querySelectorAll(sel));
-  els.forEach(function (el) {
-    el.classList.add('sp-rise');
-    if (el.classList.contains('marginalia')) el.classList.add('sp-rise--right');
-  });
+  // ---- 1. Reveal on scroll (incl. body flair) ----
+  // Figures fade in (opacity only) so the parallax transform isn't overwritten.
+  [].slice.call(document.querySelectorAll('.chapter figure, .foreword figure'))
+    .forEach(function (el) { el.classList.add('sp-fade'); });
+  // Body paragraphs ease up as they enter — flair through the prose itself.
+  [].slice.call(document.querySelectorAll('.chapter-body > p, .foreword-body > p, .argument-stance > p'))
+    .forEach(function (el) { el.classList.add('sp-rise', 'sp-rise--soft'); });
+  // Other blocks rise; marginalia slides from the right; sub-labels from the left.
+  [].slice.call(document.querySelectorAll('.chapter blockquote.pullquote, .chapter .bignum-row, .chapter .argument, .argument, .chapter table, .chapter-body > .is-wide:not(figure), .keep-digging .kd-item, .chapter .chapter-head, .chapter .marginalia, .chapter .sp-kicker'))
+    .forEach(function (el) {
+      el.classList.add('sp-rise');
+      if (el.classList.contains('marginalia')) el.classList.add('sp-rise--right');
+    });
   // Stagger cascade within groups (Keep Digging cards, stat cells).
   [['.keep-digging', '.kd-item'], ['.bignum-row', '.bignum']].forEach(function (g) {
     [].slice.call(document.querySelectorAll(g[0])).forEach(function (group) {
       [].slice.call(group.querySelectorAll(g[1])).forEach(function (item, i) {
         item.classList.add('sp-rise');
-        item.style.transitionDelay = (i * 90) + 'ms';
+        item.style.transitionDelay = (i * 80) + 'ms';
       });
     });
   });
 
-  function showAll() { document.querySelectorAll('.sp-rise').forEach(function (el) { el.classList.add('sp-rise--in'); }); }
+  function showAll() {
+    document.querySelectorAll('.sp-rise').forEach(function (el) { el.classList.add('sp-rise--in'); });
+    document.querySelectorAll('.sp-fade').forEach(function (el) { el.classList.add('sp-fade--in'); });
+  }
 
   if (reduce || !('IntersectionObserver' in window)) {
     showAll();
   } else {
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
-        if (e.isIntersecting) { e.target.classList.add('sp-rise--in'); io.unobserve(e.target); }
+        if (!e.isIntersecting) return;
+        e.target.classList.add(e.target.classList.contains('sp-fade') ? 'sp-fade--in' : 'sp-rise--in');
+        io.unobserve(e.target);
       });
-    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
-    document.querySelectorAll('.sp-rise').forEach(function (el) { io.observe(el); });
+    }, { rootMargin: '0px 0px -7% 0px', threshold: 0.06 });
+    document.querySelectorAll('.sp-rise, .sp-fade').forEach(function (el) { io.observe(el); });
     setTimeout(showAll, 2600);
 
     // ---- 2. Count-up on stat numbers ----
@@ -2337,10 +2344,12 @@
   if (ds === 'countdown' || ds === 'field-guide') return;
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  var imgs = [].slice.call(document.querySelectorAll(
-    '.chapter figure.fig.is-half img, .chapter figure.image-quote img'));
+  // Parallax only FULL-WIDTH figures (no text beside them), so the drift can be
+  // bold and never reads as a floated image misaligned against wrapping text.
+  // The whole figure moves (image stays correctly framed — no crop). Plus the cover.
+  var figs = [].slice.call(document.querySelectorAll('.chapter figure.is-wide, .chapter figure.is-fullbleed'));
   var cover = document.querySelector('header.cover .cover-body');
-  if (!imgs.length && !cover) return;
+  if (!figs.length && !cover) return;
 
   b.classList.add('sp-parallax-ready');
 
@@ -2348,18 +2357,18 @@
   function update() {
     ticking = false;
     var vh = window.innerHeight || document.documentElement.clientHeight;
-    for (var i = 0; i < imgs.length; i++) {
-      var im = imgs[i];
-      var r = im.getBoundingClientRect();
-      if (r.bottom < -80 || r.top > vh + 80) continue;
+    for (var i = 0; i < figs.length; i++) {
+      var f = figs[i];
+      var r = f.getBoundingClientRect();
+      if (r.bottom < -160 || r.top > vh + 160) continue;
       var ratio = ((r.top + r.height / 2) - vh / 2) / vh;   // -0.5 .. 0.5
-      var px = Math.max(-9, Math.min(9, -ratio * 18));
-      im.style.setProperty('--sp-px', px.toFixed(1) + 'px');
+      var px = Math.max(-22, Math.min(22, -ratio * 44));
+      f.style.transform = 'translateY(' + px.toFixed(1) + 'px)';
     }
     if (cover) {
       var sy = window.pageYOffset || document.documentElement.scrollTop || 0;
-      cover.style.transform = 'translateY(' + Math.min(sy * 0.18, 140).toFixed(1) + 'px)';
-      cover.style.opacity = String(Math.max(0, 1 - sy / 720));
+      cover.style.transform = 'translateY(' + Math.min(sy * 0.22, 160).toFixed(1) + 'px)';
+      cover.style.opacity = String(Math.max(0, 1 - sy / 680));
     }
   }
   function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(update); } }

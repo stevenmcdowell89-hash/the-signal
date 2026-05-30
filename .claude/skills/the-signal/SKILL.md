@@ -303,6 +303,10 @@ Unknown domains (not in the lookup) trigger an advisory rather than a hard fail 
 
 This gate exists as a downstream catch for what Phase 3b missed — writers omitting some bundle images and skewing the final ratio, or new domains slipping in via writer prose that weren't in the bundle. The upstream validator (Phase 3b) is the primary defence; this is defence in depth.
 
+### Phase 7.75 — Prose-rhythm (literary specials only — mandatory before publish)
+
+Run `python3 scripts/check-prose-rhythm.py <stitched-html>` for literary special formats (deep_dive, versus, rewind, season_review). It walks each chapter and counts body paragraphs since the last **visual** break (figure, pull-quote, gutter marginalia, stat row, image-quote, ornament, table, list, card) — a text sub-heading does NOT count. **Non-zero exit (any chapter > 9 such paragraphs) = a paragraph wall; not shippable as-is.** Fix by adding visual breaks to the offending chapters (the planner should have briefed enough; if not, the repair writer adds a marginalia / image-quote / stat row / pull-quote / ornament every 2–4 paragraphs). This gate exists because the WW1 Deep Dive shipped chapters with 15–20 unbroken paragraphs. **The orchestrator runs this script directly and reads the exit code** — gate-discipline rule applies.
+
 ### Phase 7.8 — DOM visual smoke test (mandatory before publish)
 Run `python3 scripts/visual-smoke-test.py <stitched-html-path> --format <format> [--multi-venue] --bundle /tmp/signal-build/research-bundle.json`. A pure-Python DOM analyser that catches seven shipping-defect classes the earlier gates miss because they check structure or HTTP status, not what would render:
 
