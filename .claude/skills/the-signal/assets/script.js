@@ -2329,15 +2329,16 @@
 })();
 
 /* ============================================================
-   v8.24.9 — "Window" parallax for non-holiday special editions.
-   Instead of sliding whole figures up/down (pointless float), big PHOTO figures
-   become a fixed-height window: the image is taller than the frame and PANS
-   within it as you scroll — like a moving background layer seen through a slot.
-   Only applied to large photographic figures (is-wide/is-fullbleed with a real
-   <img>); SVG diagrams, charts, maps and the family tree are never windowed, so
-   nothing with edge labels is cropped. The cover content also drifts + fades.
-   rAF + passive scroll; off under reduced-motion (CSS only crops once JS adds
-   .sp-parallax-ready, so reduced-motion / no-JS readers see whole static images).
+   v8.24.10 — Cinematic parallax BANDS for non-holiday special editions.
+   Parallax is reserved for purpose-built full-bleed bands: a figure marked
+   .sp-parallax-band becomes a FIXED-HEIGHT slot (CSS) whose image is larger
+   than the slot and pans behind it as the band crosses the viewport — a real
+   background-layer effect, never a whole image floating over text. Ordinary
+   inline figures (busts, coins, the map, charts, the family tree, floated
+   half-figures) get NO parallax at all — they just sit and reveal. The band is
+   opt-in via the .sp-parallax-band class on a full-bleed figure; the JS picks
+   those up. Plus the cover content drifts + fades. rAF + passive; off under
+   reduced-motion (the slot/crop only applies once JS adds .sp-parallax-ready).
    ============================================================ */
 (function () {
   var b = document.body;
@@ -2346,40 +2347,32 @@
   if (ds === 'countdown' || ds === 'field-guide') return;
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  // Eligible = full-width figures that contain a raster <img> (not inline SVG
-  // charts/diagrams). These become parallax windows.
-  var figs = [].slice.call(
-    document.querySelectorAll('.chapter figure.is-wide, .chapter figure.is-fullbleed'))
-    .filter(function (f) { return f.querySelector('img') && !f.querySelector('svg'); });
-  figs.forEach(function (f) { f.classList.add('sp-parallax'); });
-
+  // Only purpose-built bands parallax. Nothing else moves.
+  var bands = [].slice.call(document.querySelectorAll('figure.sp-parallax-band'))
+    .filter(function (f) { return f.querySelector('img'); });
   var cover = document.querySelector('header.cover .cover-body');
-  if (!figs.length && !cover) { return; }
+  if (!bands.length && !cover) return;
 
   b.classList.add('sp-parallax-ready');
-
-  // OVERSCAN: how much taller the image is than its frame (matches CSS scale).
-  // We pan within that slack so the frame is always fully covered.
-  var OVER = 0.18; // 18% taller
 
   var ticking = false;
   function update() {
     ticking = false;
     var vh = window.innerHeight || document.documentElement.clientHeight;
-    for (var i = 0; i < figs.length; i++) {
-      var f = figs[i], img = f.querySelector('img');
+    for (var i = 0; i < bands.length; i++) {
+      var f = bands[i], img = f.querySelector('img');
       if (!img) continue;
       var r = f.getBoundingClientRect();
-      if (r.bottom < -40 || r.top > vh + 40) continue;
-      // progress 0 (entering bottom) .. 1 (leaving top)
+      if (r.bottom < 0 || r.top > vh) continue;
+      // The image is 130% of the slot height (CSS). Slack = the 30% overflow.
+      var slack = f.offsetHeight * 0.30;
+      // progress: 0 when the band's top hits the bottom of the screen,
+      // 1 when the band's bottom leaves the top of the screen.
       var prog = (vh - r.top) / (vh + r.height);
       prog = Math.max(0, Math.min(1, prog));
-      // Pan from +slack/2 to -slack/2 of the overscan, in px. Keep the scale
-      // (CSS sets scale(1.18) for the overscan; we must re-include it or the
-      //  inline transform would drop it and expose gaps).
-      var slack = img.offsetHeight * OVER;
-      var y = (0.5 - prog) * slack;
-      img.style.transform = 'translateY(' + y.toFixed(1) + 'px) scale(1.18)';
+      // Pan the image from -slack (top aligned) to 0 (bottom aligned).
+      var y = -slack * (1 - prog);
+      img.style.transform = 'translate3d(0,' + y.toFixed(1) + 'px,0)';
     }
     if (cover) {
       var sy = window.pageYOffset || document.documentElement.scrollTop || 0;
@@ -2390,7 +2383,6 @@
   function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(update); } }
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll, { passive: true });
-  // Recompute once images have measured height.
   window.addEventListener('load', update);
   update();
 })();

@@ -152,16 +152,25 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
    are windowed. Figures still reveal (fade+slide) on entry. Body paragraphs are
    deliberately NOT animated. All gated behind reduced-motion.
    ============================================================ */
+/* Parallax BAND: a full-bleed figure whose image sits in a fixed-height slot
+   and pans behind it (JS). The caption lives BELOW the slot, outside the clip.
+   Static fallback (no JS / reduced-motion): the slot rule below only applies
+   once JS adds .sp-parallax-ready, so otherwise the band is a normal figure. */
+body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) figure.sp-parallax-band {
+  margin: 2.5rem 0;
+}
 @media (prefers-reduced-motion: no-preference) {
-  /* The window: clip to a fixed aspect; the image overscans and is panned by JS. */
-  body.is-special.sp-parallax-ready:not([data-special="countdown"]):not([data-special="field-guide"]) figure.sp-parallax {
+  body.is-special.sp-parallax-ready:not([data-special="countdown"]):not([data-special="field-guide"]) figure.sp-parallax-band .sp-band-frame {
+    position: relative;
+    height: clamp(240px, 46vh, 460px);
     overflow: hidden;
   }
-  body.is-special.sp-parallax-ready:not([data-special="countdown"]):not([data-special="field-guide"]) figure.sp-parallax img {
+  body.is-special.sp-parallax-ready:not([data-special="countdown"]):not([data-special="field-guide"]) figure.sp-parallax-band .sp-band-frame img {
+    position: absolute;
+    top: 0; left: 0;
     width: 100%;
-    height: auto;
-    transform: scale(1.18);          /* overscan — matches JS OVER=0.18 */
-    transform-origin: center;
+    height: 130%;                 /* 30% taller than the slot — the pan slack */
+    object-fit: cover;
     will-change: transform;
   }
   body.is-special.sp-parallax-ready:not([data-special="countdown"]):not([data-special="field-guide"]) .cover-body {

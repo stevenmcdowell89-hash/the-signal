@@ -339,6 +339,9 @@ A literary special (Deep Dive, Versus, Rewind, Season Review) must not be an unb
 | Image-quote | `<figure class="image-quote"><img …><blockquote><p>quote</p><cite>— src</cite></blockquote></figure>` | a portrait with a primary-source line across it |
 | Stat row | `<div class="bignum-row"><div class="bignum"><div class="bignum-value">15,000</div><div class="bignum-label">…</div></div>…</div>` | 2–4 headline numbers |
 | Pull-quote | `<blockquote class="pullquote"><p>…</p><cite>— …</cite></blockquote>` | a resonant line on its own |
+| Parallax band | `<figure class="fig is-wide sp-parallax-band"><div class="sp-band-frame"><img …></div><figcaption>…</figcaption></figure>` | ONE big cinematic SCENE image per issue — sits in a fixed-height slot and pans behind it on scroll |
+
+**Parallax discipline.** The `.sp-parallax-band` is the *only* element that parallaxes, and it is reserved for **one or two genuinely cinematic full-width SCENE photos/paintings per issue** (a battlefield, an assassination scene, a wide cityscape) — never portraits, busts, coins, maps, charts or diagrams (those stay static and whole, so nothing crops). The `<img>` MUST be wrapped in `<div class="sp-band-frame">` so the caption stays outside the clip. Do not put `.sp-parallax-band` on more than ~2 figures; over-using it makes the issue seasick.
 
 Do **not** use the retired `.sp-spread`/`.sp-rail` three-column layout (the empty left rail wastes space). Marginalia always floats right.
 
