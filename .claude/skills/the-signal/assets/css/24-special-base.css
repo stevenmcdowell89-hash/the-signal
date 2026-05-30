@@ -165,9 +165,10 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
 @media (prefers-reduced-motion: no-preference) {
   body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-fade {
     opacity: 0;
-    transition: opacity .7s ease;
+    transform: translateY(20px);
+    transition: opacity .7s ease, transform .7s ease;
   }
-  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-fade--in { opacity: 1; }
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-fade--in { opacity: 1; transform: none; }
 
   /* Body paragraphs: a soft, quick ease-up as they enter view — flair, not theatre. */
   body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-rise--soft {

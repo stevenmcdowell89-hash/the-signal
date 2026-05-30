@@ -2298,7 +2298,8 @@
       });
     }, { rootMargin: '0px 0px -7% 0px', threshold: 0.06 });
     document.querySelectorAll('.sp-rise, .sp-fade').forEach(function (el) { io.observe(el); });
-    setTimeout(showAll, 2600);
+    // (no blanket reveal timeout — the observer reveals on entry; a timeout would
+    //  pre-reveal the whole body while the full-screen cover is still on screen.)
 
     // ---- 2. Count-up on stat numbers ----
     var nums = [].slice.call(document.querySelectorAll('.bignum-value'));
@@ -2362,12 +2363,12 @@
       var r = f.getBoundingClientRect();
       if (r.bottom < -160 || r.top > vh + 160) continue;
       var ratio = ((r.top + r.height / 2) - vh / 2) / vh;   // -0.5 .. 0.5
-      var px = Math.max(-22, Math.min(22, -ratio * 44));
+      var px = Math.max(-30, Math.min(30, -ratio * 60));
       f.style.transform = 'translateY(' + px.toFixed(1) + 'px)';
     }
     if (cover) {
       var sy = window.pageYOffset || document.documentElement.scrollTop || 0;
-      cover.style.transform = 'translateY(' + Math.min(sy * 0.22, 160).toFixed(1) + 'px)';
+      cover.style.transform = 'translateY(' + Math.min(sy * 0.28, 200).toFixed(1) + 'px)';
       cover.style.opacity = String(Math.max(0, 1 - sy / 680));
     }
   }
