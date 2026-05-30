@@ -3348,7 +3348,7 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
 body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-rise {
   opacity: 1;
 }
-@media (min-width: 700px) and (prefers-reduced-motion: no-preference) {
+@media (prefers-reduced-motion: no-preference) {
   body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-rise {
     opacity: 0;
     transform: translateY(22px);
@@ -3387,7 +3387,7 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
 }
 /* Figures fade in (opacity only — parallax owns the transform). */
 body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-fade { opacity: 1; }
-@media (min-width: 700px) and (prefers-reduced-motion: no-preference) {
+@media (prefers-reduced-motion: no-preference) {
   body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-fade {
     opacity: 0;
     transition: opacity .7s ease;
