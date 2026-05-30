@@ -2320,3 +2320,50 @@
     }
   }
 })();
+
+/* ============================================================
+   v8.24.6 — Subtle parallax for non-holiday special editions.
+   Floated portraits/coins + image-quotes drift vertically within their
+   overflow clip as they cross the viewport; the cover content drifts and
+   fades as you scroll past it. Wide maps/charts/diagrams are NOT selected,
+   so nothing with edge labels gets cropped. rAF + passive scroll; fully off
+   under reduced-motion (the CSS crop/scale only applies once this adds
+   .sp-parallax-ready, so reduced-motion / no-JS readers see static images).
+   ============================================================ */
+(function () {
+  var b = document.body;
+  if (!b || !b.classList.contains('is-special')) return;
+  var ds = b.getAttribute('data-special');
+  if (ds === 'countdown' || ds === 'field-guide') return;
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  var imgs = [].slice.call(document.querySelectorAll(
+    '.chapter figure.fig.is-half img, .chapter figure.image-quote img'));
+  var cover = document.querySelector('header.cover .cover-body');
+  if (!imgs.length && !cover) return;
+
+  b.classList.add('sp-parallax-ready');
+
+  var ticking = false;
+  function update() {
+    ticking = false;
+    var vh = window.innerHeight || document.documentElement.clientHeight;
+    for (var i = 0; i < imgs.length; i++) {
+      var im = imgs[i];
+      var r = im.getBoundingClientRect();
+      if (r.bottom < -80 || r.top > vh + 80) continue;
+      var ratio = ((r.top + r.height / 2) - vh / 2) / vh;   // -0.5 .. 0.5
+      var px = Math.max(-9, Math.min(9, -ratio * 18));
+      im.style.setProperty('--sp-px', px.toFixed(1) + 'px');
+    }
+    if (cover) {
+      var sy = window.pageYOffset || document.documentElement.scrollTop || 0;
+      cover.style.transform = 'translateY(' + Math.min(sy * 0.18, 140).toFixed(1) + 'px)';
+      cover.style.opacity = String(Math.max(0, 1 - sy / 720));
+    }
+  }
+  function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(update); } }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+  update();
+})();

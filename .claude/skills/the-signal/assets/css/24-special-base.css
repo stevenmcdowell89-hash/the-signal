@@ -142,3 +142,27 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
     transform: none;
   }
 }
+
+/* ============================================================
+   v8.24.6 — subtle parallax (non-holiday specials)
+   Floated portraits/coins and image-quotes drift within an overflow clip as
+   they cross the viewport; the cover content parallaxes as you scroll past.
+   Only floated (is-half) and image-quote photos are zoomed/clipped — wide
+   maps, charts and diagrams are left untouched so no label is cropped.
+   The crop/scale only applies once JS adds .sp-parallax-ready, so no-JS and
+   reduced-motion readers see the image un-zoomed and static.
+   ============================================================ */
+@media (prefers-reduced-motion: no-preference) {
+  body.is-special.sp-parallax-ready:not([data-special="countdown"]):not([data-special="field-guide"]) figure.fig.is-half,
+  body.is-special.sp-parallax-ready:not([data-special="countdown"]):not([data-special="field-guide"]) figure.image-quote {
+    overflow: hidden;
+  }
+  body.is-special.sp-parallax-ready:not([data-special="countdown"]):not([data-special="field-guide"]) figure.fig.is-half img,
+  body.is-special.sp-parallax-ready:not([data-special="countdown"]):not([data-special="field-guide"]) figure.image-quote img {
+    transform: scale(1.06) translateY(var(--sp-px, 0px));
+    will-change: transform;
+  }
+  body.is-special.sp-parallax-ready:not([data-special="countdown"]):not([data-special="field-guide"]) .cover-body {
+    will-change: transform, opacity;
+  }
+}
