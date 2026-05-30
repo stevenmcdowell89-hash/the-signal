@@ -144,23 +144,31 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
 }
 
 /* ============================================================
-   v8.24.7 — figure parallax (whole-figure drift) + body flair
-   Parallax now drifts the WHOLE figure (image stays correctly framed — no
-   crop, no within-frame misalignment), set as an inline transform by JS.
-   Figures therefore reveal with OPACITY only (.sp-fade) so the fade doesn't
-   fight the parallax transform. The body itself gets flair: paragraphs ease
-   up as they enter, and sub-section labels slide in with their accent.
-   All gated behind reduced-motion; JS adds .sp-parallax-ready.
+   v8.24.9 — "window" parallax + figure reveal + label slide
+   Big photo figures become a fixed-height WINDOW: the image is scaled taller
+   than its frame and PANS within it as you scroll (JS sets the img transform),
+   reading like a moving background layer rather than a block sliding up/down.
+   Only JS-tagged .sp-parallax figures (large rasters; never SVG charts/maps)
+   are windowed. Figures still reveal (fade+slide) on entry. Body paragraphs are
+   deliberately NOT animated. All gated behind reduced-motion.
    ============================================================ */
 @media (prefers-reduced-motion: no-preference) {
-  body.is-special.sp-parallax-ready:not([data-special="countdown"]):not([data-special="field-guide"]) .chapter figure {
+  /* The window: clip to a fixed aspect; the image overscans and is panned by JS. */
+  body.is-special.sp-parallax-ready:not([data-special="countdown"]):not([data-special="field-guide"]) figure.sp-parallax {
+    overflow: hidden;
+  }
+  body.is-special.sp-parallax-ready:not([data-special="countdown"]):not([data-special="field-guide"]) figure.sp-parallax img {
+    width: 100%;
+    height: auto;
+    transform: scale(1.18);          /* overscan — matches JS OVER=0.18 */
+    transform-origin: center;
     will-change: transform;
   }
   body.is-special.sp-parallax-ready:not([data-special="countdown"]):not([data-special="field-guide"]) .cover-body {
     will-change: transform, opacity;
   }
 }
-/* Figures fade in (opacity only — parallax owns the transform). */
+/* Figures reveal with a fade + gentle slide as they enter view. */
 body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-fade { opacity: 1; }
 @media (prefers-reduced-motion: no-preference) {
   body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-fade {
@@ -170,16 +178,6 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
   }
   body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-fade--in { opacity: 1; transform: none; }
 
-  /* Body paragraphs: a soft, quick ease-up as they enter view — flair, not theatre. */
-  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-rise--soft {
-    opacity: 0;
-    transform: translateY(14px);
-    transition: opacity .55s ease, transform .55s ease;
-  }
-  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-rise--soft.sp-rise--in {
-    opacity: 1;
-    transform: none;
-  }
   /* Sub-section labels slide in from the left with their accent colour. */
   body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .sp-kicker.sp-rise {
     transform: translateX(-16px);
