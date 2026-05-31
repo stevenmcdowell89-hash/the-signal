@@ -18,7 +18,7 @@ description: >-
 
 Generate issues of The Signal — a weekly personal magazine for Sunday morning reading.
 
-Version 8.24.0. See `CHANGELOG.md` next to this file for the full version-by-version history of editorial and visual changes. Editorial substance is defined in `references/editorial-spec.md` and its sliced views in `references/spec/`. This file describes only **how the pipeline runs on Claude Code**.
+Version 8.27.0. See `CHANGELOG.md` next to this file for the full version-by-version history of editorial and visual changes. Editorial substance is defined in `references/editorial-spec.md` and its sliced views in `references/spec/`. This file describes only **how the pipeline runs on Claude Code**. **v8.27 is an editorial reset** — Lead earns its slot by a two-factor test, section shape is Lead + Catch-Up (Companion optional), the roster is redesigned to one-home-per-domain (fixed: World · Pixel & Byte · Toolkit · Touchline · Screen & Sound · Session; rotating: Shelf · History · Listening · Money · Places; The Saga is trigger-driven), UK politics is out-by-default, and rotating slots drop to 2-3. The pipeline phases are unchanged.
 
 ## STEP ZERO — verify orchestrator model BEFORE ANYTHING ELSE
 
@@ -546,19 +546,14 @@ The state file at `/tmp/the-signal/state/signal-state.json` has this shape:
   "rotating_sections": {
     "the_shelf": { "last_appeared": null, "cadence_weeks": [2, 3] },
     "this_week_in_history": { "last_appeared": null, "cadence_weeks": [2, 3] },
-    "the_listen": { "last_appeared": null, "cadence_weeks": [3, 4] },
-    "the_workshop": { "last_appeared": null, "cadence_weeks": [3, 4] },
-    "the_toolkit": { "last_appeared": null, "cadence_weeks": [3, 4] },
-    "the_ledger": { "last_appeared": null, "cadence_weeks": [3, 4] },
-    "the_long_game": { "last_appeared": null, "cadence_weeks": [4, 4] },
-    "the_wallet": { "last_appeared": null, "cadence_weeks": [3, 4] },
-    "the_itinerary": { "last_appeared": null, "cadence_weeks": [3, 4] },
-    "the_local": { "last_appeared": null, "cadence_weeks": [3, 4] },
-    "the_brickyard": { "last_appeared": null, "cadence_weeks": [4, 6] },
-    "the_saga": { "last_appeared": null, "cadence_weeks": [6, 6] },
-    "the_lab": { "last_appeared": null, "cadence_weeks": [4, 4] },
-    "the_channel": { "last_appeared": null, "cadence_weeks": [6, 6] }
+    "the_listening": { "last_appeared": null, "cadence_weeks": [3, 4] },
+    "the_money": { "last_appeared": null, "cadence_weeks": [3, 4] },
+    "the_places": { "last_appeared": null, "cadence_weeks": [3, 4] },
+    "the_saga": { "last_appeared": null, "trigger_driven": true }
   },
+  "the_toolkit": { "last_appeared": null },
+  "currently_reading": null,
+  "currently_watching": null,
   "down_the_rabbit_hole": { "last_appeared": null, "cadence_weeks": [3, 4] },
   "last_toolkit_app": null,
   "last_session_topic": null,
@@ -633,7 +628,7 @@ When this block is present, both the Field Guide and the Countdown honour it str
 When generating an issue:
 1. Read state file at start
 2. Evaluate auto-trigger logic (Priority 1 → 2 → 3) and guardrails
-3. If standard weekly: select 3-4 rotating sections based on cadence priority (most overdue first)
+3. If standard weekly: select 2-3 rotating sections based on cadence priority (most overdue first), from {the_shelf, this_week_in_history, the_listening, the_money, the_places}. The Saga is NOT picked here — it runs only when a peg fires it (public peg found in research, or a private peg from `currently_reading`/`currently_watching` or a manual trigger). The Toolkit is a fixed-but-yields section, not a rotating pick — include it when there's tech news (covering the full gap since its last appearance), yield it when the week is thin.
 4. Research accordingly (full groups for weekly, topic + light news pass for specials)
 5. After generation, update:
    - `last_issue_date` (always)

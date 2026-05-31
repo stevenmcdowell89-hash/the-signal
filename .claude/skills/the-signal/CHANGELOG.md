@@ -1,5 +1,85 @@
 # The Signal — Changelog
 
+8.27.0 — Editorial reset: a reduction, not a feature. The magazine had
+  drifted from its purpose — "save the reader from trawling the feeds:
+  catch what he missed and tell him what he's interested in." An audit of
+  five May weeklies found ~35–45% of a typical issue was recap of the
+  already-known (Starmer led the World section three weeks running, each a
+  holding pattern), the discovery/evergreen half was genuinely good, and
+  the damage was concentrated in the forced fixed Leads and a hollowed-out
+  body. Root causes: the v8.15 mandatory two-deep-anchor Lead + Companion
+  spent the section budget on depth and starved the catch-up roundup; a
+  v8.x over-correction made UK politics "Lead-grade, cover fully" (it had
+  originally been banned as noise); the roster had grown to 14 rotating
+  sections by splitting, so one interest could flood an issue; and
+  governance was patch-on-patch (two reactive rules added the same day the
+  bad issue shipped). This release changes the few settings that force the
+  recap and folds the patches into durable principles. It does NOT touch
+  the ~40% that works, adds no new gate scripts, and leaves the template /
+  CSS / visual system and the formats roster alone.
+
+  Four moves:
+
+  1. The Lead earns its slot by reward-per-attention, not "most important".
+     Two-factor test (both required): did it move this week (a datable
+     development, not a holding pattern) AND can we add something beyond the
+     headline he already has. Promoted to a Cardinal-tier rule in
+     editorial-spec § Key Rules ("What to Lead With") and § Article
+     Structure. Search Group 1 no longer auto-promotes any story (incl. UK
+     politics) to a Lead-1 candidate — it must pass the test like anything
+     else. The topic-lock script + development test remain the mechanical
+     backstop.
+
+  2. UK / national politics back to OUT BY DEFAULT. In only for a genuine
+     landscape shift (an election result that changes the picture, a
+     government actually falling) that also passes the two-factor test;
+     reshuffles, leadership will-he-won't-he, resignation-call counts,
+     Stormont process, polling chatter are out (a one-line safety-net
+     mention at most). The "Lead-grade — cover fully" framing is deleted.
+
+  3. Section shape is now Lead + Catch-Up (retires the v8.15 two-anchor
+     mandate). One angled Lead + a substantive Catch-Up roundup of missable
+     domain news (every item what/why/link — no bare namedrops) plus
+     one-line safety-net headlines so demoting a known story out of the
+     Lead never drops it. The Companion becomes optional. Sections may run
+     short or yield. Enforced by the rewritten `check_section_shape` in
+     `validate-chapter-plan.py` (Lead + a second substantive element:
+     Catch-Up roundup, Companion, or explicit yield_reason; namedrop
+     Catch-Up items hard-fail) and Gate 1G / Gate 2 in the checklist. No
+     hard word target any more — issues flex to the news.
+
+  4. Roster redesigned from the reader's interest-domains (one home per
+     domain), collapsing 14 rotating sections to 5 + 1 trigger-driven:
+       - Fixed: World · Pixel & Byte (gaming + LEGO) · The Toolkit (tech &
+         tools — fixed-but-yields, full gap-coverage on return) · The
+         Touchline · Screen & Sound · The Session (absorbs Workshop + Lab).
+       - Rotating (pick 2-3, was 3-4): The Shelf · This Week in History ·
+         Listening (Listen + Channel) · Money (Long Game + Wallet + Ledger)
+         · Places (Itinerary + Local).
+       - The Saga is now TRIGGER-DRIVEN, not on a 6-week clock: it runs on a
+         public peg the researcher finds (a finale aired, a new book/season
+         in a followed series, an author AMA) or a private peg the reader
+         supplies (`currently_reading` / `currently_watching` in state, or a
+         manual trigger). Generalised principle written into the spec:
+         sections that depend on private context are reader-triggerable, not
+         calendar-driven (the same reason Next and Lookahead are
+         manual-only).
+
+  Governance: the freshness / topic-lock (v8.18→v8.25) / theme-clustering
+  (v8.26) patches collapse into one "what to lead with" principle, with a
+  meta-rule — when an issue disappoints, adjust the principle, don't bolt on
+  another rule or script. A `novelty` dimension is added to the quality
+  rubric (Phase 9.5, observational, no new gate) to measure "did the Lead
+  tell him something he already knew?" going forward.
+
+  Files: `references/editorial-spec.md` (master; slices regenerated via
+  `scripts/slice-spec.sh`), `references/sections.md`,
+  `references/chapter-plan-schema.md`, `scripts/validate-chapter-plan.py`
+  (+ tests, all 47 pass), `references/compliance-checklist.md`,
+  `references/quality-rubric.md`, `state/signal-state.json` (new roster +
+  `currently_reading` / `currently_watching`), `SKILL.md`. No CSS/template
+  changes; no new scripts.
+
 8.24.0 — Editorial-quality signal: a measured rubric, logged and surfaced.
   Follow-up to 8.23.0. The model-policy rewrite exposed a deeper gap:
   the pipeline has NO quality signal. Every gate (Phases 3b–8) checks

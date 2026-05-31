@@ -75,6 +75,7 @@
     "Field Guide: Efteling food (Polles Keuken, Eigenheymer, stroopwafel, Krumel, Raveleijn, mini donuts, De Gebrande Boon)",
     "Field Guide: Beekse Bergen food (Breakfast Delivery Box, Moto, Nommos, Amma, Wanyama)"
   ],
+  "rotating_sections_note": "v8.27 roster reset (one home per domain): 5 rotating sections + 1 trigger-driven (The Saga). Folded: Listen+Channel -> Listening; Long Game+Wallet+Ledger -> Money; Itinerary+Local -> Places; Workshop+Lab -> the fixed Session; LEGO -> Pixel & Byte; Toolkit -> fixed-but-yields (no longer rotating). last_appeared carried over from the most recent contributing section.",
   "rotating_sections": {
     "the_shelf": {
       "last_appeared": "2026-05-10",
@@ -90,91 +91,40 @@
         3
       ]
     },
-    "the_listen": {
+    "the_listening": {
       "last_appeared": "2026-05-24",
       "cadence_weeks": [
         3,
         4
       ]
     },
-    "the_workshop": {
-      "last_appeared": "2026-05-31",
-      "cadence_weeks": [
-        3,
-        4
-      ]
-    },
-    "the_toolkit": {
-      "last_appeared": "2026-05-31",
-      "cadence_weeks": [
-        3,
-        4
-      ]
-    },
-    "the_ledger": {
+    "the_money": {
       "last_appeared": "2026-05-24",
       "cadence_weeks": [
         3,
         4
       ]
     },
-    "the_long_game": {
-      "last_appeared": "2026-05-10",
-      "cadence_weeks": [
-        4,
-        4
-      ]
-    },
-    "the_wallet": {
-      "last_appeared": "2026-05-17",
-      "cadence_weeks": [
-        3,
-        4
-      ]
-    },
-    "the_itinerary": {
+    "the_places": {
       "last_appeared": "2026-05-03",
       "cadence_weeks": [
         3,
         4
       ]
     },
-    "the_local": {
-      "last_appeared": null,
-      "cadence_weeks": [
-        3,
-        4
-      ]
-    },
-    "the_brickyard": {
-      "last_appeared": null,
-      "cadence_weeks": [
-        4,
-        6
-      ]
-    },
     "the_saga": {
       "last_appeared": null,
-      "cadence_weeks": [
-        6,
-        6
-      ]
-    },
-    "the_lab": {
-      "last_appeared": "2026-05-24",
-      "cadence_weeks": [
-        4,
-        4
-      ]
-    },
-    "the_channel": {
-      "last_appeared": null,
-      "cadence_weeks": [
-        6,
-        6
-      ]
+      "trigger_driven": true,
+      "note": "NO cadence_weeks by design — The Saga is trigger-driven (v8.27). It is never floor-checked or deficit-promoted. It runs on a public peg (researcher-found) or a private peg (currently_reading / currently_watching below, or a manual trigger). last_appeared is tracked for reference only."
     }
   },
+  "the_toolkit_note": "v8.27 — The Toolkit is now a FIXED-but-yields section (not rotating). Tracked here for the catch-up-on-return rule (cover the full gap since last_appeared).",
+  "the_toolkit": {
+    "last_appeared": "2026-05-31"
+  },
+  "currently_reading": null,
+  "currently_watching": null,
+  "currently_reading_watching_note": "v8.27 — the reader's private reading/watching context, which the pipeline cannot otherwise know. Update occasionally (e.g. 'Malazan Book 6: The Bonehunters', 'Andor S2'). The researcher reads these as PEG SOURCES for The Saga (and as hints for The Shelf / Screen & Sound). Leave null when there's nothing to note; an empty value simply means no private peg this week.",
   "down_the_rabbit_hole": {
     "last_appeared": "2026-05-31",
     "cadence_weeks": [

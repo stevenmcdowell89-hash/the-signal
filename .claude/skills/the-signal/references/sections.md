@@ -7,7 +7,7 @@ Only read the sections appearing in this issue.
 
 ## Cross-cutting principle: Lens, not Filter (v8.19)
 
-Applies to every recommendation section below (Shelf, Listen, Workshop, Toolkit, Ledger, Long Game, Wallet, Brickyard, Saga, Lab, Channel, plus Long Shelf and the Companion pieces in fixed sections):
+Applies to every recommendation section below (Shelf, Listening, Money, Places, Toolkit, Saga, plus Long Shelf and any Companion / Catch-Up picks in fixed sections):
 
 - **50/50 Discovery vs. Reinforcement target.** Roughly half the picks reinforce something the reader already engages with; the other half surface something genuinely new. "New" = an app the reader doesn't use, a writer they haven't read, a label/artist they haven't heard of, a training method adjacent to but distinct from their current programme, a corner of personal finance they don't already follow, a podcast they don't subscribe to. Track in the chapter plan; writer self-audits via RT-23.
 - **No drift-to-defaults.** If the last appearance of this section featured a specific brand/app/series (e.g. Todoist, Efteling, Cosmere), the next appearance should NOT default to the same. Anti-repetition rules in state file (`last_toolkit_app` etc.) catch the obvious cases; editorial judgement catches the rest.
@@ -38,7 +38,7 @@ Hero image. White background, rose accent.
 - The Angle box only for genuinely significant stories
 - **Also This Week: 4-6 items, not throwaway one-liners.** Each Also item gets 2-3 sentences minimum: what happened, why it matters, and a link. A one-liner that nobody remembers five minutes later isn't worth including. Cut the count and increase the quality.
 
-**Lead + Companion structure:** Every World This Week runs a Lead piece (400–700 words) AND a Companion piece (250–450 words) on a distinct topic family. If the Lead is on Iran, the Companion cannot be on Iran (no matter how much there is to say). Ongoing-story tracker boxes are *in addition to* Lead + Companion.
+**Lead + Catch-Up structure (v8.27):** World This Week runs one angled Lead (400–700 words) that passes the two-factor test (did it move this week + can we add something) plus a substantive Catch-Up roundup — the *other* interesting world news the reader missed (every item what/why/link), with one-line safety-net headlines for the week's majors so nothing big is dropped. An optional Companion (250–450 words, distinct topic family — if the Lead is Iran, the Companion can't be Iran) only when there's a genuine second deep story. Ongoing-story tracker boxes are *in addition*. The Starmer ×3 failure was the Lead crowding out the Catch-Up — don't repeat it.
 
 **Ongoing Story Tracker**
 When a single topic has led The World This Week for 2 consecutive weeks, it graduates from headline coverage to a dedicated **"Ongoing"** subsection within World This Week. Rules:
@@ -55,17 +55,30 @@ When a single topic has led The World This Week for 2 consecutive weeks, it grad
 
 **Track in state file:** add `ongoing_stories` array. Each entry: `{ "topic": "Iran War", "section": "world", "weeks_as_lead": 4, "weeks_as_ongoing": 2, "last_status": "ongoing" }`. Update weekly.
 
-### Pixel & Byte
-Gaming, consumer tech, AI tools, LEGO, Steam Deck, e-readers. Warm background, ember accent.
-- LEGO goes here (not Screen & Sound)
-- Use "Family Picks" or "For the Kids" sidebars — don't sprinkle "your son will love" through prose
-- 4+ Also in Tech & Gaming items
-- **Consumer-only test for the AI sub-section ("In AI This Week").** This is a CONSUMER tech section, not a work / dev / enterprise section. Every AI item must pass the test: "would a non-developer, non-IT-professional reader actually encounter or use this?"
-  - **In:** consumer-facing AI products (ChatGPT / Claude / Gemini features the reader might actually use, image and video generation tools, AI in tablets and phones, AI in everyday apps like Todoist / Spotify / WhatsApp / Google Maps, AI search changes (SGE, Perplexity, You.com), agent-led purchasing platforms like Visa Intelligent Commerce Connect, on-device AI features in Pixel / Xiaomi / iPhone, AI in browsers, consumer AI hardware (Rabbit, Humane, Friend pendants, Meta Ray-Bans), AI features in games or streaming services).
-  - **Out:** developer tooling (GitHub Copilot / Workflow Agent / Cursor / Windsurf / IDE integrations, AI for code review, AI test generation, AI for DevOps), enterprise AI (workflow automation for businesses, AI ops, AI governance frameworks for companies, AI in CRMs / ERPs, AI in BI tools, customer-service AI deployments, AI for compliance / legal / HR), pure-research announcements (new model benchmarks, paper releases) unless they ship as a consumer product the same week, regulatory rulemaking UNLESS it directly affects something a consumer would notice (e.g. model-output labelling rules, content-provenance marks, chatbot warnings, consumer-facing transparency notices).
-  - The rule of thumb: if the news item would feel at home in the Engineering Digest, it does not belong in The Signal.
+### Pixel & Byte *(fixed — the dedicated gaming section, v8.27)*
+Gaming + LEGO. Warm background, ember accent. **Consumer tech / AI / apps moved to The Toolkit** — Pixel & Byte is now gaming's own home.
+- **Scope:** Nintendo Switch 2, Steam Deck / Steam Machine, GeForce Now, high-quality tablet games, **plus generalist** — the biggest game of the year gets covered even if it's not on Switch.
+- **Floor (the section minimum, write it every week):** *what came out this week, plus highlights of the next month* — with **real explainers, never namedrops.** "Namedropped three game releases and moved on" is the exact failure this section exists to prevent: tell the reader what each one is, why it matters, and link it.
+- **Upside on top of the floor (the Lead):** a *new* rumour-with-analysis, or a release genuinely worth playing — the angled Lead that passes the two-factor test. Months-old rumours the reader already knows (the CIRQA-leak failure) don't qualify.
+- **LEGO folds in here** as an occasional "play"-cluster beat (new set announcements, build reviews, retiring sets). Use "Family Picks" sidebars — don't sprinkle "your son will love" through prose.
+- **Catch-Up roundup:** 4+ gaming items, each with what/why/link.
 
-**Lead + Companion structure:** Lead (300–500 words, can be gaming) plus Companion (250–400 words, non-gaming consumer tech if Lead is gaming, gaming if Lead is consumer tech).
+**Lead + Catch-Up structure:** one angled gaming Lead (300–500 words) + the Catch-Up roundup (releases-this-week + next-month + new rumours). A Companion is optional — only if a second distinct gaming topic genuinely earns a full piece.
+
+### The Toolkit *(fixed slot — but yields strictly, v8.27)*
+Tech & tools: consumer tech, consumer AI, apps, tablet productivity, digital workflows. Light blue-grey background, cyan accent. **Absorbs the consumer-tech + AI that used to live in Pixel & Byte, alongside its existing apps/productivity beat.**
+- **Fixed only in the sense it is considered every week.** It is **expected to disappear regularly** — yield entirely when the week is thin (roughly appears every other week). Do NOT pad it to appear weekly.
+- **Catch-up rule on return:** cover the entire gap since its last appearance (track `last_appeared`), not just the past 7 days — so yielding batches a fortnight of tech news into one good roundup rather than dropping it.
+- **The Lead stays a discovery** — "a tool/app/feature worth finding", not an app-store roundup. The **Catch-Up roundup carries the consumer-tech news** (hardware, AI products, app updates), each item what/why/link.
+- **Consumer-only test for AI items.** This is a CONSUMER section, not work/dev/enterprise. Every AI item must pass: "would a non-developer reader actually encounter or use this?"
+  - **In:** consumer-facing AI (ChatGPT / Claude / Gemini features, image/video generation, AI in tablets/phones, AI in everyday apps like Spotify / WhatsApp / Google Maps, AI search (Perplexity, SGE), on-device AI in Pixel / Xiaomi / iPhone, consumer AI hardware, AI in games or streaming).
+  - **Out:** developer tooling (Copilot / Cursor / IDE integrations, code review, DevOps), enterprise AI (business workflow automation, AI ops/governance, CRM/ERP/BI AI, customer-service AI, compliance/legal/HR AI), pure-research announcements (benchmarks, paper releases) unless they ship as a consumer product the same week. Rule of thumb: if it would feel at home in an Engineering Digest, it doesn't belong.
+- **Consumer tech & wearables hardware:** Pixel/Xiaomi/e-readers; wearable *hardware/firmware/app* news (Whoop, Garmin, Oura) belongs here as consumer tech. Fitness *training* angles off that data belong in The Session.
+- Reader uses: Xiaomi Pad (Android), Todoist, Perplexity, split-screen productivity. Builds (but doesn't personally use) Notion templates — that's Money's territory.
+- **Anti-repetition:** same app/tool cannot anchor two consecutive Toolkit appearances. Track `last_toolkit_app` in state.
+- Good sources: r/Android, r/Todoist, Product Hunt, 9to5Google, The Verge, XDA, DC Rainmaker (wearables).
+
+**Lead + Catch-Up structure:** discovery Lead (300–500 words) + Catch-Up roundup of the period's consumer-tech/AI news. Companion optional.
 
 ### The Touchline
 **Data first, then narrative.** Dark background, green accents.
@@ -98,7 +111,7 @@ Gaming, consumer tech, AI tools, LEGO, Steam Deck, e-readers. Warm background, e
 - Football reads like editorial, not match reports — the reader already knows the scores
 - Image montage for match photos
 
-**Lead + Companion structure:** Lead + Companion mandatory. When Lead is football, **Companion is non-football** (golf, F1, rugby, tennis, snooker, governance/structural). When Lead is a Priority-2 or Priority-3 non-football story, Companion may be football.
+**Lead + Catch-Up structure (v8.27):** one angled Lead (the most compelling sport story that passes the two-factor test — lead with the angle, never a play-by-play recap of a match the reader watched) + a substantive Catch-Up roundup. **The Catch-Up must carry the football the reader actually wants** — transfer rumours and confirmations, squad/World-Cup announcements, what's coming up — plus one-line safety-net results for the week's majors. The old failure was spending the whole section on "Arsenal won" and dropping the transfer catch-up entirely. An optional Companion: when the Lead is football, a Companion must be a non-football sport (golf, F1, rugby, tennis, snooker, governance/structural); when the Lead is a Priority-2/3 non-football story, a Companion may be football.
 
 ### Screen & Sound
 Film, TV, streaming, Star Wars (always search). Dark purple background, neon accent.
@@ -111,30 +124,32 @@ Film, TV, streaming, Star Wars (always search). Dark purple background, neon acc
 - "For the Kids" sidebar when relevant
 - **No overlap with On the Radar** — Release Radar covers product/media releases only
 
-**Lead + Companion structure:** Lead + Companion mandatory. Companion is forbidden from sharing the Lead's franchise.
+**Lead + Catch-Up structure (v8.27):** one angled Lead (a review or culture-critic take that passes the two-factor test) + a Catch-Up roundup of the week's releases/news (what/why/link). The Release Radar is in addition. An optional Companion is forbidden from sharing the Lead's franchise.
 
 **Sub-format: Director's Cut (monthly).** Every 4th standard weekly, the Screen & Sound Lead runs in Director's Cut mode — a 550-750 word essay on a show, film, director, or arc rather than the week's news beat. Voice: culture critic, not news reviewer. Examples: "What Andor Season 2 understood that the prequels didn't" / "Why Severance's pacing is the show's secret weapon" / "The Coen Brothers' grammar of disappointment". Companion remains standard (250-450 words, distinct topic family, may carry the week's main beat the Director's Cut displaced). State file tracks `last_directors_cut_date`; planner-side hard rule `weeks_since_last_directors_cut >= 4`. Tagged in chapter plan as `sub_format: "directors_cut"`. Optionally marked in the rendered section header with `<span class="sub-format-tag">Director's Cut</span>` inside `.section-label`.
 
 ### The Shelf *(rotating — every 2-3 weeks)*
 Books and music. Dark brown background, gold accent.
-- **Now owns books (primary) and music (secondary).** Podcasts and audio drama split out to The Listen (see below).
+- **Owns books (primary).** Podcasts, audio drama, and music live in **Listening**; The Shelf may mention a notable music release in passing when Listening isn't running, but the dedicated music read is Listening's.
 - **Catch-up rule:** when The Shelf appears, research covers the entire period since it last appeared (not just the past 7 days). Check state file for `last_shelf_date`. No good book news or music release should fall through the cracks.
 - **Write as a general editorial reviewer.** The reader profile tells you what genres and topics to research and select from — it does NOT belong in the prose. Review books the way any book column would: premise, tone, what makes it worth reading. Never open with "since you're into Malazan" or "as a Cosmere fan." The selection already signals relevance.
 - Books: features, recommendations, book cards with rating dots. Both epic series AND short fiction. Occasional narrative history (Dan Jones, Tom Holland, Mary Beard).
 - **CRITICAL: No spoilers.** Never reveal plot twists, character deaths, endings for any book. This rule is absolute but invisible — never announce compliance with it.
-- Music: light-touch when The Channel isn't running. Synthwave/retrowave or a notable release noted in passing — the deep music read lives in The Channel.
+- Music: light-touch when Listening isn't running. Synthwave/retrowave or a notable release noted in passing — the deep music read lives in Listening.
 
-### The Listen *(rotating — every 3-4 weeks)*
-Podcasts + audio drama. Warm slate background, brass accent.
-- **Owns podcasts and audio drama.** Splits out of The Shelf so The Shelf can focus on books. The Listen covers episode-of-the-week picks, audio drama recommendations, podcast deep-cuts (forgotten gems, niche shows), and one-off recommendations from the reader's known feed (Football Weekly, The Bunker, What Went Wrong, History of Rome/Revolutions).
+### Listening *(rotating — every 3-4 weeks; absorbs the old Listen + Channel, v8.27)*
+Podcasts + audio drama + music. Warm slate background, brass accent.
+- **Owns podcasts, audio drama, and music.** Merges the old The Listen (podcasts/audio drama) and The Channel (synthwave/soundtracks/retro). On a given week it leans whichever way the news pushes — a podcast-and-audio-drama issue, or a music issue — but the section is one home for "things to listen to".
+- **Podcasts/audio drama:** episode-of-the-week picks, audio drama recommendations, podcast deep-cuts (forgotten gems, niche shows), one-offs from the reader's known feed (Football Weekly, The Bunker, What Went Wrong, History of Rome/Revolutions).
 - **Episode specificity.** Flag specific new episodes by title and date — never the show in the abstract. "What Went Wrong: 'The Day the Music Industry Sued Its Customers' (released 14 May)" not "What Went Wrong covers tech disasters".
-- **Only describe content you can verify.** Same rule as the old Shelf podcast guidance: don't invent episode content. If you can't confirm what an episode discussed, link it without a content summary.
+- **Music:** new synthwave/retrowave releases (album of the period; label news from FiXT / Lakeshore / Aphasia / Lazerdiscs), soundtrack picks (film/game, recent or evergreen), retro-listening (a 70s/80s album having a moment, a reissue worth knowing). **Embed the music itself** — Bandcamp/Spotify/YouTube links, not the article about the music.
+- **Only describe content you can verify.** Don't invent episode content. If you can't confirm what an episode discussed, link it without a content summary.
 - **Audio drama recs cross-reference with The Shelf.** When an audio drama adapts a book also reviewed in The Shelf, cross-link.
-- **Catch-up rule:** research window is since The Listen last appeared. Track in state file `the_listen.last_appeared`.
-- Good sources: Apple Podcasts Charts (UK/IE), Pocket Casts Discover, Audible originals, BBC Sounds, the show's own social.
+- **Catch-up rule:** research window is since Listening last appeared. Track in state file `the_listening.last_appeared`.
+- Good sources: Apple Podcasts Charts (UK/IE), Pocket Casts Discover, Audible originals, BBC Sounds; Bandcamp Daily synthwave tag, RetroSynth, /r/outrun, /r/synthwave, /r/SoundtrackCollection.
 
-### The Session
-Sourced fitness feature. Light green background, orange accent.
+### The Session *(fixed — now the single home for all fitness, v8.27)*
+Sourced fitness feature. Light green background, orange accent. **Absorbs the old Workshop (home-gym gear, equipment & recovery-tool reviews) and The Lab (training-science deep dives) as rotating *angles within* Session** — fitness now has one home, not four (Session / Workshop / Lab / a Pixel & Byte wearable lead). On a given week the Session can be a training feature, a gear review, or a science deep-dive — rotate the angle (track `last_session_topic`).
 - **Write as a fitness journalist, not a personal trainer.** The reader profile tells you which training modalities to cover — it does NOT belong in the prose. Don't write "for someone following the Ibex programme" or "as a runner training for a 10k." Write about the topic in a way any fitness-interested reader would find useful.
 - **Check state file `training_phase`** to know what's currently relevant. Research topics that align with the current phase — this sharpens research without leaking into prose.
 - **Rotate across these topics, prioritising what's relevant to current phase:**
@@ -154,7 +169,7 @@ Sourced fitness feature. Light green background, orange accent.
 - No generic advice ("stay hydrated", "warm up properly").
 - **Good Session topics:** concurrent training (lifting + running without interference), rate of loss and muscle retention during a cut, how to interpret Garmin training readiness and HRV trends, mobility routines for runners, protein timing and distribution, the science of deload weeks, progressive overload with kettlebells at home, running economy and zone 2 benefits, managing fatigue across multiple training modalities, fitness gear and tech (running shoes, kettlebells, home gym equipment, wearables, recovery tools — only stuff relevant to the reader's actual training), home gym setup and equipment reviews (reader is building out a home gym — currently has competition KBs, dip bars, slant board, resistance band; interested in expanding).
 
-**Lead + Companion deep note:** Lead (400–500 words) + a Companion "Also worth reading" deep note (200–250 words) on a different training-topic cluster. **Same cluster cannot anchor two consecutive Session Leads** — track in state-file `last_session_topic`.
+**Lead + Catch-Up / deep note (v8.27):** Lead (400–500 words) + a Companion "Also worth reading" deep note (200–250 words) on a different training-topic cluster (Session is the one section where a Companion is still strongly encouraged, since it now carries the absorbed Workshop gear angle and Lab science angle). A light Catch-Up of fitness-gear/wearable-data notes can stand in for the deep note on a thin week. **Same cluster cannot anchor two consecutive Session Leads** — track in state-file `last_session_topic`.
 
 ### This Week in History *(rotating — every 2-3 weeks)*
 Warm parchment background, gold accent.
@@ -165,123 +180,41 @@ Warm parchment background, gold accent.
 
 **Sub-format: A Closer Look (every 6 weeks).** Every 6 weeks (when History is scheduled AND `weeks_since_last_closer_look >= 6`), the section runs as A Closer Look — a single 600-800 word narrative deep dive on one event or figure, replacing the standard "one featured event + 3-4 also-this-weeks" pattern. Pre-WW2 strongly preferred — this format is ideal for ancient/medieval/early modern. Wikipedia link mandatory; additional sources welcome (long-form articles, podcast episodes, primary sources). Voice: narrative historian — tell the story, ground it in specifics, surface what's surprising. Not encyclopedic. Examples: "The Anglo-Zanzibar War: How a 38-Minute Conflict Set the Edges of Empire" / "Hatshepsut and the Erasure: What Happened to Egypt's Lost Pharaoh" / "The Year Without a Summer: 1816 and the Origin of Frankenstein". State file tracks `last_closer_look_date`. Tagged in chapter plan as `sub_format: "closer_look"`. Validator enforces single-item structure (no `also_items`) and 600-word floor.
 
-### The Workshop *(rotating — every 3-4 weeks)*
-Home gym gear, equipment reviews, recovery tools. Light grey background, steel accent.
-- Reader is building a home gym. Current kit: competition kettlebells, dip bars, slant board, resistance bands. Interested in expanding.
-- Cover: equipment reviews, setup ideas, recovery tool reviews (massage guns, foam rollers, mobility tools), running gear (shoes, watches, vests), wearable tech.
-- Only stuff relevant to the reader's actual training (structured gym via Ibex, recreational running, kettlebells at home, Pliability mobility).
-- Good sources: Garage Gym Reviews, r/homegym, Stronger by Science gear reviews, Running Warehouse, DC Rainmaker (wearables).
-- Not generic "best home gym 2026" listicles. Specific, opinionated recommendations.
-- Research window: since last Workshop appearance.
+### Money *(rotating — every 3-4 weeks; absorbs Long Game + Wallet + Ledger, v8.27)*
+The money domain — personal finance, consumer fintech, and the side-hustle. Warm cream background, amber accent. Three streams that lean whichever way the week pushes:
+1. **Personal finance & investing** (the old Long Game): editorial takes on saving, investing, ISA/pension news, market trends explained simply, interesting finance reads. UK-relevant (ISAs, pensions, Vanguard, Trading 212). Not financial advice; not day-trading or crypto speculation — long-term, sensible perspective. Sources: Monevator, r/UKPersonalFinance, Money Saving Expert, FT (free), This Is Money.
+2. **Consumer fintech** (the old Wallet): Monzo / Revolut / Starling features, cashback cards, switching deals, fintech launches. Practical — "Revolut launched X, here's whether it's worth it" — not industry analysis. Sources: r/UKPersonalFinance, MSE forum, Head for Points, the banks' own changelogs.
+3. **Side-hustle / digital products** (the old Ledger): Etsy seller trends, Notion/Kindle Scribe template ideas and strategy, passive income, print-on-demand. The reader builds templates to sell (he doesn't use Notion himself). Frame as creative/business-building, not corporate or "work content". No MLM, no crypto schemes, no get-rich-quick. Sources: r/Etsy, r/passive_income, indie-maker communities, Starter Story.
+- **It's all one domain** — don't run all three streams every time; pick what actually has news. Research window: since Money last appeared (catch-up rule). Track `the_money.last_appeared`.
 
-### The Toolkit *(rotating — every 3-4 weeks)*
-Apps, tablet productivity, digital workflow discoveries. Light blue-grey background, cyan accent.
-- Reader uses: Xiaomi Pad (Android), Todoist, Perplexity, multi-screen setups, split-screen productivity. Does NOT use Notion (but builds Notion templates to sell — that's The Ledger's territory).
-- Cover: new Android apps worth trying, Todoist tips and workflows, productivity tools, tablet accessories, interesting AI tools (consumer, not enterprise), digital organisation.
-- Should feel like discoveries — "here's something you might not have found" — not app store roundups.
-- Good sources: r/Android, r/Todoist, Product Hunt, 9to5Google, The Verge (apps/tools coverage), XDA Developers.
-- Research window: since last Toolkit appearance.
-- **Anti-repetition:** Same app cannot anchor two consecutive Toolkit appearances. Track `last_toolkit_app` in state.
+### Places *(rotating — every 3-4 weeks, more near trips; absorbs Itinerary + Local, v8.27)*
+Travel, theme parks, and Northern Ireland local. Warm sand background, coral accent. Owns all travel/parks/NI content when present; one-liners in On the Radar when absent.
+- **Three streams, weighted by what's available:**
+  1. **Travel abroad:** destination profiles, flight deals, European family trips, logistics.
+  2. **Theme parks:** Disney Parks, Efteling, Beekse Bergen, other parks worth knowing about.
+  3. **NI local (the old Local):** hidden gems (a forgotten walk, an underrated café, a quirky museum, a coastal find), unusual family events (search forward 2-4 weeks), light NI context (an NI-set book, artist, or history piece). **Test:** would a NI local find this genuinely surprising or useful? Excludes the zoo, leisure centres, anything on page one of "things to do in Belfast".
+- **Frequency:** every 3-4 weeks normally; increases to every issue (or every other) when a trip is approaching — check state file `upcoming_trips`.
+- **Research:** since Places last appeared, plus 2-4 weeks forward for events. Track `the_places.last_appeared`. Sources: Disney/Efteling/Beekse Bergen official, European travel deals; Visit Belfast, Discover Northern Ireland, r/northernireland, Belfast Live / Irish News for events, local food blogs.
 
-### The Ledger *(rotating — every 3-4 weeks)*
-Passive income, side hustle strategy, digital product sales. Warm cream background, amber accent.
-- Reader explores selling digital templates on Etsy (Notion templates, Kindle Scribe templates) as a side income stream. Note: the reader doesn't use Notion personally — he builds templates for others to use.
-- Cover: Etsy seller trends, template ideas, digital product strategies, marketplace news, passive income tactics, print-on-demand, content monetisation.
-- This is the reader's entrepreneurial hobby, not "work content." Frame as creative/business-building, not corporate.
-- Good sources: r/Etsy, r/passive_income, Etsy seller forums, indie maker communities, Starter Story.
-- No MLM, no crypto schemes, no get-rich-quick. Practical, grounded strategies.
-- Research window: since last Ledger appearance.
-
-### The Long Game *(rotating — monthly)*
-Personal finance and investing, framed editorially. Cool grey background, navy accent.
-- Editorial takes on saving, investing, financial trends. Not financial advice — interesting reads and perspectives.
-- Cover: market trends explained simply, savings strategies, ISA/pension news, interesting finance reads, investment ideas framed as editorial.
-- UK-relevant (ISAs, pensions, UK platforms like Vanguard, Trading 212, etc.).
-- Good sources: Monevator, r/UKPersonalFinance, Money Saving Expert, FT (free articles), This Is Money.
-- Not day-trading, not crypto speculation. Long-term, sensible perspective.
-- Research window: since last Long Game appearance.
-
-### The Wallet *(rotating — every 3-4 weeks)*
-Consumer fintech news, features, and deals. Clean white background, teal accent.
-- The reader cares about: Monzo, Revolut, Starling, cashback cards, new account features, switching deals, fintech product launches.
-- Cover: new features in banking apps (Monzo Pots updates, Revolut credit cards, Starling Spaces), cashback deals, new cards worth considering, interesting fintech product launches, comparison insights.
-- Practical and consumer-focused. "Revolut just launched X and here's whether it's worth it" — not fintech industry analysis.
-- Good sources: r/UKPersonalFinance, MSE forum, Head for Points (cards/rewards), Monzo/Revolut/Starling blogs and changelogs.
-- Research window: since last Wallet appearance.
-
-### The Itinerary *(rotating — every 3-4 weeks, more near trips)*
-Travel and theme parks. Warm sand background, coral accent.
-- **Now owns European travel and theme parks only.** NI local content splits to The Local (see below).
-- **Two content streams:**
-  1. Travel abroad: destination profiles, flight deals, European trips with a kid, logistics
-  2. Theme parks: Disney Parks, Efteling, Beekse Bergen, other parks worth knowing about
-- **Frequency:** appears every 3-4 weeks normally. Increases to every issue (or every other) when a trip is approaching. Check state file for upcoming trips.
-- Research window: since last Itinerary appearance.
-
-### The Local *(rotating — every 3-4 weeks)*
-Northern Ireland hidden gems and unusual family events. Earthy green background, copper accent.
-- **Owns NI local content.** Splits out of The Itinerary so The Itinerary can focus on European travel and theme parks. The Local covers hidden gems (places, walks, food), unusual family events (rare finds, quirky seasonal happenings), and one-off discoveries a local might not have heard of.
-- **Test for inclusion:** would a Northern Ireland local find this genuinely surprising or useful? Excludes the zoo, leisure centres, generic tourist spots, anything that turns up on the first page of "things to do in Belfast."
-- **Three content streams, weighted by what's available:**
-  1. Hidden places (a forgotten walk, an underrated cafe, a quirky museum, a coastal find)
-  2. Unusual events (a one-off, an obscure annual, a pop-up worth knowing about) — search forward 2-4 weeks
-  3. Local context (a NI-set book, an NI artist or musician, a NI history piece) — light touch
-- **Research:** since The Local last appeared, plus 2-4 weeks forward for events.
-- Good sources: Visit Belfast, Discover Northern Ireland, r/northernireland for word-of-mouth, local news (Belfast Live, Newsletter, Irish News for events), local food blogs.
-- Track in state file `the_local.last_appeared`.
-
-### The Brickyard *(rotating — every 4-6 weeks)*
-LEGO releases, build reviews, displays. Warm beige background, brick-red accent.
-- **Splits LEGO out of Pixel & Byte.** LEGO gets a dedicated breathing space rather than living as a sidebar inside the tech section.
-- **Content streams:**
-  1. New set announcements (Star Wars, Icons, Architecture, Botanicals, Technic — whatever the wave is)
-  2. Build reviews (worth-the-money, worth-the-time, the surprise hits)
-  3. MOC highlights (My Own Creation — community builds worth showing)
-  4. Sales and availability ("X retiring soon, get it before it goes")
-- **Family-friendly framing.** The reader has a 10-year-old; sets that suit shared builds are flagged via "Family build" sidebar, not narrated.
-- Good sources: Brickset, The Brothers Brick, /r/lego, BrickInsights, LEGO Star Wars community, LAN Game.
-- Track in state file `the_brickyard.last_appeared`.
-
-### The Saga *(rotating — every 6 weeks)*
-Lore deep dives — Star Wars universe, fantasy book worlds, show analysis. Deep purple background, antique gold accent.
-- **Splits the deep-lore reads out of Screen & Sound and The Shelf.** Lets Screen & Sound stay current-week culture critic, lets The Shelf focus on what to read next; The Saga is where you go for long-form universe writing.
+### The Saga *(trigger-driven — NO cadence timer, v8.27)*
+Lore deep dives — Star Wars universe, fantasy book worlds, show analysis. Deep purple background, antique gold accent. The long-form universe-writing read that keeps Screen & Sound current-week and The Shelf focused on what to read next.
+- **Runs on a peg, not a clock.** It is NOT scheduled by cadence and is NOT deficit-promoted. It appears only when there is a *reason*:
+  - **Public peg** the researcher finds: a finale aired, a new book/season in a series the reader follows released, an author AMA.
+  - **Private peg** the reader supplies: a `currently_reading` / `currently_watching` note in state (the researcher reads it as a peg source), or a manual trigger ("run a Saga on the Cosmere"). The pipeline cannot know what the reader is personally reading/watching — the same boundary that makes Next and Lookahead manual-only.
+  - If neither peg is live, The Saga simply doesn't run that week.
 - **Three content modes:**
-  1. Star Wars universe deep dives (Maul's arc across Clone Wars / Rebels / Mandalorian; what Ahsoka's relationship to the Force changes; lore connecting recent shows to older canon)
-  2. Fantasy book-universe lore (Cosmere magic systems, Malazan worldbuilding — **never plot, never characters' fates, never endings**)
-  3. Show analysis with optional spoilers (a 1,200-word essay on a finished arc; spoilers behind a `<details>` collapsible labelled "Spoilers below")
-- **Spoiler rule is absolute.** Plot, deaths, endings, betrayals, twists — all forbidden in book content, all behind `<details>` in show content. Violation = Gate 1 hard fail.
-- **Tone is essayistic, not breathless.** This is a Sunday-magazine essay, not a fan-blog hot take. Cite where you're getting lore from (canonical sources, author interviews, episode references).
+  1. Star Wars universe deep dives (Maul's arc across Clone Wars / Rebels / Mandalorian; lore connecting recent shows to older canon).
+  2. Fantasy book-universe lore (Cosmere magic systems, Malazan worldbuilding — **never plot, never characters' fates, never endings**).
+  3. Show analysis with optional spoilers (an essay on a finished arc; spoilers behind a `<details>` collapsible labelled "Spoilers below").
+- **Spoiler rule is absolute.** Plot, deaths, endings, betrayals, twists — forbidden in book content, behind `<details>` in show content. Violation = Gate 1 hard fail.
+- **Tone is essayistic, not breathless** — a Sunday-magazine essay, not a fan-blog hot take. Cite lore sources (canonical databanks, author interviews, episode references).
 - Good sources: Wookieepedia, official Star Wars databank, author Q&As (Brandon Sanderson AMAs, Steven Erikson interviews), Tor.com, /r/cosmere, /r/Malazan, /r/StarWars.
-- Track in state file `the_saga.last_appeared`.
-
-### The Lab *(rotating — every 4 weeks)*
-Training-science deep dive — slower, more rigorous than the weekly Session. Light cool grey background, lab-blue accent.
-- **Complement to The Session, not replacement.** Where The Session is a 400-700 word feature on this week's training topic, The Lab is a monthly 600-900 word essay on the science underneath — what the literature actually says, what the data shows, what the practical takeaway is.
-- **Content modes:**
-  1. Garmin / wearable data analysis (what HRV trends actually tell you; how to read Training Readiness; what Body Battery is really measuring)
-  2. Training-block design science (the case for/against linear periodisation; concurrent training meta-analyses; deload-week timing)
-  3. Race-prep deep dives (10K pacing models; lactate threshold; carbohydrate timing for endurance)
-  4. Recovery research (sleep as a recovery tool; cold exposure evidence; foam rolling evidence)
-- **Citations matter.** Link to the studies, the meta-analyses, the author podcasts. This is the section where Stronger by Science / Galpin / Helms shine.
-- **No fitness-influencer pop-science.** No Layne Norton vs Mike Israetel beef. No Renaissance Periodization marketing. Stronger by Science, Barbell Medicine, Andy Galpin podcast, peer-reviewed studies, Examine.com — those are the level.
-- Track in state file `the_lab.last_appeared`.
-
-### The Channel *(rotating — every 6 weeks)*
-Music — synthwave, retrowave, soundtracks, retro-listening. Dark navy background, neon-magenta accent.
-- **Music has been absent from the magazine; The Channel brings it back.** The Shelf can mention music in passing but The Channel is where music gets a dedicated read.
-- **Content modes:**
-  1. New synthwave / retrowave releases (album of the period, label news from FiXT / Lakeshore / Aphasia / Lazerdiscs)
-  2. Soundtrack picks (a film or game soundtrack worth the listen — recent or evergreen)
-  3. Retro-listening (an album from the 70s/80s that's having a moment; a re-issue worth knowing about)
-  4. Live & touring (notable shows / tour dates within reach — light touch)
-- **Embed sources.** Bandcamp, Spotify, YouTube — link to the music itself, not the article about the music.
-- Good sources: Bandcamp Daily synthwave tag, RetroSynth Records, The Synthwave Channel (YouTube), FiXT label, /r/outrun, /r/synthwave, /r/SoundtrackCollection.
-- Track in state file `the_channel.last_appeared`.
+- Track in state file `the_saga.last_appeared` (for "when did it last run", not for cadence scheduling).
 
 ### On the Radar — Coming Up
 8-10 upcoming items: fixtures, sporting events, local NI events, parkruns, dates to know, personal milestones, deadlines, cultural events. Compact grid with date + event + detail. Category dots.
 - **No overlap with Release Radar.** Product/media releases go in Release Radar. This is for everything else.
-- When The Itinerary is absent, parks and travel news can appear here as one-liners.
+- When Places is absent, parks and travel news can appear here as one-liners.
 
 **Mandatory links + "Why it matters" lines:** Every item links to its canonical source. The 2-3 most important items per issue get a 10–15 word "Why it matters" line below the date+event line.
 
@@ -290,13 +223,13 @@ Masthead echo, issue info line.
 
 ### Topic Families & Recent Leads
 
-**Topic families** are closed-vocabulary tags on every Lead and Companion piece in the chapter plan. Used by the planner-side validator to enforce Lead ≠ Companion topic family within a section. Used by the Gate 1 grep to enforce the recent-leads bar on repeat-promoted ongoing stories.
+**Topic families** are closed-vocabulary tags on every Lead (and any optional Companion) piece in the chapter plan. Used by the planner-side validator to enforce Lead ≠ Companion topic family within a section *when a companion is present*. Used by the Gate 1 grep to enforce the recent-leads bar on repeat-promoted ongoing stories.
 
 The full enumeration lives in `references/chapter-plan-schema.md`. Adding a new family requires spec amendment.
 
 **Recent leads (sliding-window cap, v8.18).** Every time a topic family anchors any fixed section's Lead, the date is appended to that topic's `lead_history` array in state. `recent_leads` = count of entries within the last **26 weeks** of the current issue date. A topic with `recent_leads >= 3` requires `weeks_since_last_lead >= recent_leads × 2` before it can lead again. Older entries age out of the window automatically, so a topic that goes quiet for 6 months becomes promotable again without manual override.
 
-**The Long Game ↔ The Session boundary** is enforced: Long Game is finance only; fitness deep-dives go to The Session. Cross-classification fails Gate 2.
+**Money ↔ The Session boundary** is enforced: Money's finance content is finance only; fitness deep-dives go to The Session. Cross-classification fails Gate 2.
 
 ---
 
@@ -308,20 +241,13 @@ The full enumeration lives in `references/chapter-plan-schema.md`. Adding a new 
 
 | Section | Primary Components | Why |
 |---|---|---|
-| **The Workshop** | `.compare-panel` (product A vs B), `.also-cards` (gear picks), `.big-number` (price/specs), `.img-offset` (product photos) | Compare panels are natural for gear reviews |
-| **The Toolkit** | `.also-cards` (app picks), `.compact-grid` (2 app reviews side by side), `.sidebar-float` ("What it replaces"), `.entry-stat` ("3M downloads") | Card-based layout suits app discovery |
-| **The Ledger** | `.stat-bar` (revenue/trend numbers), `.entry-stat` or `.entry-bullets`, `.pull-quote` (seller insight), `.also-list` with tiers | Data-forward; stat bars make trends scannable |
-| **The Long Game** | `.big-number-row` (ISA allowance, rate), `.pull-quote` (editorial take), `.sidebar` ("One Thing to Do This Month"), `.entry-question` | Editoral framing; big numbers for rates/returns |
-| **The Wallet** | `.compare-panel` (card A vs card B), `.also-cards` (feature roundup), `.entry-bullets` (key changes), `.stat-bar` (rates/cashback %) | Compare panels natural for card/account comparisons |
-| **The Itinerary** | `.timeline` (trip countdown or event dates), `.split-60-40` (destination + image), `.dyk` ("Did you know Efteling..."), `.img-montage` (destination photos), `.sidebar` (logistics) | Timeline for trip countdowns; images sell destinations |
-| **The Local** | `.split-60-40` (find + image), `.dyk` ("Did you know"), `.sidebar` (logistics for events), `.entry-bullets` (event details) | Image-led for places, bulleted for events |
+| **The Toolkit** *(fixed-but-yields)* | `.also-cards` (app/tech picks), `.compact-grid` (2 reviews side by side), `.compare-panel` (product A vs B), `.sidebar-float` ("What it replaces"), `.entry-stat` ("3M downloads") | Card-based layout suits app/tech discovery; compare panels for hardware |
 | **The Shelf** | `.book-card` / `.book-grid`, `.card-stack`, `.rating`, `.pull-quote`, `.collapsible` | Already well-defined from weekly version |
-| **The Listen** | `.also-cards` (episodes), `.entry-bullets` (show notes), `.rating` (episode quality), `.pull-quote` (memorable line from episode) | Card layout suits episodic recs |
-| **The Brickyard** | `.split-60-40` (set + image), `.compare-panel` (set A vs B), `.also-cards` (multi-set roundup), `.sidebar` (family build) | Image-led for sets; comparison frames for sales |
-| **The Saga** | `.dual-col` (essay layout), `.pull-quote` (memorable lore line), `.collapsible` (spoilers), `.timeline` (multi-show arc) | Essay-shaped; collapsibles isolate spoiler content |
-| **The Lab** | `.dual-col`, `.big-number-row` (stat-led opener), `.pull-quote` (researcher line), `.timeline` (training block), `.sidebar` ("What this means for you") | Long-form science with data-rich callouts |
-| **The Channel** | `.also-cards` (album picks), `.rating`, `.pull-quote` (artist line), `.entry-bullets` (label news) | Cards for albums; bullets for label changes |
 | **This Week in History** | `.timeline`, `.year-badge`, `.img-offset`, `.sec-opener` | Already well-defined from weekly version |
+| **Listening** *(podcasts + audio drama + music)* | `.also-cards` (episodes/albums), `.entry-bullets` (show notes / label news), `.rating` (episode/album quality), `.pull-quote` (memorable line) | Cards suit episodic + album recs |
+| **Money** *(finance + fintech + side-hustle)* | `.big-number-row` (ISA allowance, rate, revenue), `.compare-panel` (card/account A vs B), `.stat-bar` (rates/cashback %), `.pull-quote` (editorial take), `.sidebar` ("One Thing to Do This Month") | Data-forward; big numbers and compare panels make money scannable |
+| **Places** *(travel + parks + NI local)* | `.timeline` (trip/event dates), `.split-60-40` (destination/find + image), `.img-montage` (destination photos), `.dyk` ("Did you know Efteling…"), `.sidebar` (logistics) | Timeline for trips; images sell destinations |
+| **The Saga** *(trigger-driven)* | `.dual-col` (essay layout), `.pull-quote` (memorable lore line), `.collapsible` (spoilers), `.timeline` (multi-show arc) | Essay-shaped; collapsibles isolate spoiler content |
 
 
 ### Down the Rabbit Hole (recurring sidebar)
@@ -347,30 +273,18 @@ Only research topics for the rotating sections selected for this issue. This sav
 
 Only search the groups for sections appearing in this issue.
 
-**Group R1 — The Shelf:** fantasy/sci-fi book news + r/Fantasy, narrative history (Dan Jones / Tom Holland / Mary Beard), occasional music context when The Channel isn't running. Research window: since last Shelf appearance.
+**Group R1 — The Shelf:** fantasy/sci-fi book news + r/Fantasy, narrative history (Dan Jones / Tom Holland / Mary Beard), occasional music context when Listening isn't running. Research window: since last Shelf appearance.
 
 **Group R2 — This Week in History:** history this week (ancient/medieval preferred). Research window: current week.
 
-**Group R4 — The Workshop:** home gym equipment reviews, recovery tools, running gear, kettlebell gear, r/homegym, Garage Gym Reviews, DC Rainmaker. Research window: since last Workshop appearance.
+**Group R3 — Listening** *(podcasts + audio drama + music)*: podcast episodes (Football Weekly, The Bunker, What Went Wrong, History of Rome/Revolutions, plus discover), audio drama releases, niche podcast finds; synthwave/retrowave releases (Bandcamp Daily, RetroSynth, FiXT, Lakeshore, Aphasia, Lazerdiscs), soundtrack picks, retro-listening reissues, /r/outrun, /r/synthwave, /r/SoundtrackCollection. Research window: since last Listening appearance.
 
-**Group R5 — The Toolkit:** new Android apps, Todoist tips/workflows, productivity tools, tablet accessories, AI tools (consumer), r/Android, r/Todoist, Product Hunt. Research window: since last Toolkit appearance.
+**Group R4 — Money** *(finance + fintech + side-hustle)*: UK personal finance / ISA / pension / investment reads (Monevator, r/UKPersonalFinance, MSE, This Is Money); consumer fintech — Monzo/Revolut/Starling updates, cashback cards, switching deals (MSE forum, Head for Points); side-hustle — Etsy seller trends, Notion/Kindle Scribe template market, passive income (r/Etsy, r/passive_income). Research window: since last Money appearance.
 
-**Group R6 — The Ledger:** Etsy seller trends, digital product strategies, Notion template market (seller perspective — what sells, pricing, niches), Kindle Scribe template market, passive income ideas, r/Etsy, r/passive_income. Research window: since last Ledger appearance.
+**Group R5 — Places** *(travel + parks + NI local)*: Disney Parks / Efteling / Beekse Bergen news, European travel deals; NI hidden gems, unusual family events, NI cultural happenings (Visit Belfast, Discover NI, r/northernireland, Belfast Live / Irish News). Search forward 2-4 weeks for events. Research window: since last Places appearance.
 
-**Group R7 — The Long Game:** UK personal finance news, ISA/pension updates, investment reads, Monevator, r/UKPersonalFinance. Research window: since last Long Game appearance.
+**Group R-Toolkit — The Toolkit** *(fixed-but-yields; search every issue it's due)*: consumer tech (Pixel/Xiaomi/e-readers, wearable hardware/firmware — Whoop/Garmin/Oura), consumer AI tools, new Android apps, Todoist tips/workflows, productivity tools, tablet accessories. Sources: r/Android, r/Todoist, Product Hunt, 9to5Google, The Verge, XDA, DC Rainmaker. Research window: since last Toolkit appearance (catch-up rule — cover the full gap).
 
-**Group R8 — The Wallet:** Monzo/Revolut/Starling updates, new fintech features, cashback cards, switching deals, MSE forum, Head for Points. Research window: since last Wallet appearance.
+**Group R-Saga — The Saga** *(trigger-driven only — search ONLY when a public or private peg has fired it)*: Star Wars lore deep-dives (Wookieepedia, official databank, /r/StarWars), fantasy book-universe lore (Cosmere — /r/cosmere, Brandon Sanderson AMAs; Malazan — /r/Malazan, Steven Erikson interviews), Tor.com long-reads, show-arc essays. Spoiler-policed. Peg sources also include the reader's `currently_reading` / `currently_watching` state. Research window: scoped to the peg.
 
-**Group R9 — The Itinerary:** Disney Parks news, Efteling updates, Beekse Bergen, European travel deals. Research window: since last Itinerary appearance.
-
-**Group R10 — The Listen:** podcast episodes (Football Weekly, The Bunker, What Went Wrong, History of Rome/Revolutions, plus discover), audio drama releases, niche podcast finds. Research window: since last Listen appearance.
-
-**Group R11 — The Local:** NI hidden gems, unusual family events, NI cultural happenings (search forward 2-4 weeks for upcoming).
-
-**Group R12 — The Brickyard:** LEGO releases (Star Wars, Icons, Architecture, Botanicals, Technic), build reviews, MOC highlights, retirement/availability news. Sources: Brickset, The Brothers Brick, /r/lego, BrickInsights. Research window: since last Brickyard appearance.
-
-**Group R13 — The Saga:** Star Wars lore deep-dives (Wookieepedia, official databank, /r/StarWars), fantasy book-universe lore (Cosmere — /r/cosmere, Brandon Sanderson AMAs; Malazan — /r/Malazan, Steven Erikson interviews), Tor.com long-reads, show-arc essays. Spoiler-policed. Research window: since last Saga appearance.
-
-**Group R14 — The Lab:** Stronger by Science, Barbell Medicine, Andy Galpin podcast, Examine.com, peer-reviewed training/recovery research, wearable-data interpretation pieces. Research window: since last Lab appearance.
-
-**Group R15 — The Channel:** synthwave/retrowave releases (Bandcamp Daily, RetroSynth, FiXT, Lakeshore, Aphasia, Lazerdiscs), notable soundtrack picks, retro-listening reissues, /r/outrun, /r/synthwave, /r/SoundtrackCollection. Research window: since last Channel appearance.
+> Gaming and tech&tools are no longer rotating search groups — Gaming is core Group 2a (Pixel & Byte, every issue); Tech & tools is the Toolkit group above. LEGO is searched within Group 2a. Fitness gear/science is searched within core Group 5 (The Session, which absorbed Workshop + Lab).

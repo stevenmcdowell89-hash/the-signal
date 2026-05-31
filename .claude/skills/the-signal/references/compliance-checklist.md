@@ -191,16 +191,19 @@ awk '/<figcaption/,/<\/figcaption>/' FILE | grep -v -E 'Photo:|Still:|Credit:|Im
 
 **Why this is Gate 1, not Gate 2:** image-caption mismatch is fabrication of visual claims, parallel to fabrication of factual claims (1B). One v8.10.x issue had the same YouTube thumbnail captioned as two different venues in two different chapters — a confident lie the reader would only notice on close inspection. Mechanical detection prevents the class entirely.
 
-### 1G. Lead + Companion structural compliance (new v8.15)
+### 1G. Lead + Catch-Up structural compliance (v8.27 — replaces the v8.15 two-anchor rule)
 
-For every fixed section in the stitched HTML, grep for two distinct article anchors (each with a substantial H2 + body). A section with only one substantial article is a hard fail.
+For every fixed section in the stitched HTML, confirm the **Lead + Catch-Up** shape: one angled Lead, plus a substantive Catch-Up roundup (or an optional Companion, or — for a section running short, especially The Toolkit — a visible yield). The old rule hard-failed any section without *two deep anchors*; that mandate is retired. The new failure modes are: (a) a bare Lead with no Catch-Up roundup and no companion; (b) a Catch-Up that is bare namedrops (items naming a thing with no "why it matters" and no link). The chapter-plan validator (`check_section_shape`) catches both at Phase 4; this is the stitched-HTML reading pass.
 
 ```bash
 # Sketch:
-# For each fixed section (world, pixel_byte, touchline, screen_sound, session):
-#   - Count <h2> tags inside the section: must be >= 2
-#   - For each h2-anchored block: word count must be >= 200
-# Mismatch = topic-lock or single-anchor regression — hard fail.
+# For each fixed section (world, pixel_byte, toolkit, touchline, screen_sound, session) that APPEARS:
+#   - A Lead (substantial H2 + body, >= 300 words).
+#   - PLUS a second element: a Catch-Up roundup (several items, each what/why/link),
+#     OR a Companion article (>= 200 words, distinct topic), OR a visible short/yield note.
+#   - Catch-Up items must NOT be bare namedrops: each names a thing, says why it matters, and links.
+# A bare Lead alone, or a namedrop-only roundup, is a hard fail.
+# The Toolkit may be ABSENT entirely (it yields on thin weeks) — absence is not a failure.
 ```
 
 ### 1H. Recent-leads sliding-window cap (v8.15, refined v8.18)
@@ -263,10 +266,13 @@ See `references/spec/global.md` § image-integrity → "Image URL verification c
 Only proceed here after Gate 1 passes clean.
 
 ### Coverage
-- [ ] Word count meets format target (see editorial spec Issue Formats)
+- [ ] Issue is a healthy Sunday read sized to the week — no hard word target; don't pad to a number, don't pad a thin section (v8.27).
 - [ ] Every major section has at least one relevant image
-- [ ] Every fixed section has TWO substantive articles (Lead + Companion), not one big + listicle.
-- [ ] Lead and Companion within the same section are on visibly different topics (not just different framings of the same story).
+- [ ] **Every fixed section that appears runs Lead + Catch-Up** (v8.27): one angled Lead plus a substantive Catch-Up roundup (or an optional Companion, or a visible short/yield on a thin week). A bare Lead with no roundup is a fail.
+- [ ] **The Lead passes the two-factor test** (§ Article Structure / § Key Rules "What to lead with"): it *moved this week* AND *we add something beyond the headline he already has*. A holding-pattern lead ("still in crisis", "clings on", "waiting on the vote") is a fail — demote it to a Catch-Up line. (The Starmer ×3 run is the anchor failure.)
+- [ ] **The Catch-Up has real substance, not namedrops** — every item says what it is, why it matters, and links. "Namedropped three game releases and moved on" is the failure this checks for. The Catch-Up also carries one-line safety-net headlines for the week's majors, so demoting a known story out of the Lead never drops it.
+- [ ] **UK politics is out by default** (v8.27). It appears only as a genuine landscape shift (an election *result* that changes the picture, a government actually falling) that also passes the two-factor Lead test; reshuffles / leadership will-he-won't-he / resignation-call counts / Stormont process / polling chatter are out (a one-line safety-net mention at most). It is never auto-promoted to the Lead.
+- [ ] If a Companion runs, it's on a visibly different topic from the Lead (not a re-framing of the same story).
 - [ ] No fixed section reads as 70%+ about one story when there's been substantial coverage of that story across recent issues.
 - [ ] Touchline: lead story is most compelling sport of the week. Serie A ≥ PL depth on normal domestic weeks. Full table (top 10 + relegation zone). Coverage beyond Juve. Doesn't exceed ~30% of issue.
 - [ ] **Touchline diversity rule.** Even in a Scudetto-clinching, title-decided, or otherwise once-a-season football week, Touchline must surface at least THREE distinct sport beats — not one big football story plus scraps. The bar: either (a) three different football competitions covered with real substance (e.g. Serie A + Champions League + an FA Cup or Coppa beat), OR (b) at least one beat clearly outside top-flight football (F1 race weekend, snooker/golf/tennis major, NBA / Euroleague playoffs, NFL draft, Six Nations rugby, world athletics, NW200, GAA championship). When a single story (a title clinch, a CL final, a Coppa final) genuinely dominates the week, the lead can take the lion's share — but the section still needs two other meaningfully-treated beats below it. The Also on the Pitch list does NOT count toward the three; it complements them. If the week is genuinely thin outside the headline, surface a non-football sport rather than padding the football coverage.
@@ -277,14 +283,16 @@ Only proceed here after Gate 1 passes clean.
 - [ ] On the Radar: 8-10 items, no overlap with Release Radar, specific and non-patronising
 
 ### Rotating Sections
-- [ ] 3-4 rotating sections selected from state file cadence priority
+- [ ] 2-3 rotating sections selected from state file cadence priority (v8.27 — was 3-4). Roster: The Shelf, This Week in History, Listening, Money, Places.
+- [ ] The Saga is trigger-driven, NOT scheduled by cadence — present only if a public peg (researcher-found) or private peg (`currently_reading`/`currently_watching` or manual trigger) fired it.
+- [ ] The Toolkit (fixed-but-yields) appears only when there's tech news; on return it covers the full gap since last appearance, not just 7 days.
 - [ ] Only selected sections researched — no wasted research
-- [ ] Catch-up rule respected (Shelf, etc. — full gap since last appearance)
+- [ ] Catch-up rule respected (Shelf, Toolkit, Listening, Money, Places — full gap since last appearance)
 - [ ] Navigator only shows sections present in this issue
 - [ ] Down the Rabbit Hole included as sidebar if due (3-4 weeks)
 
 ### Sub-formats (v8.17)
-- [ ] If Screen & Sound's chapter plan was Director's Cut (`sub_format: "directors_cut"`), the rendered Lead reads as an essay (not a current-week news beat), is 550+ words, and the Companion carries a substantive distinct topic. `last_directors_cut_date` is updated post-publish.
+- [ ] If Screen & Sound's chapter plan was Director's Cut (`sub_format: "directors_cut"`), the rendered Lead reads as an essay (not a current-week news beat), is 550+ words, and the section still carries its Catch-Up roundup (a Companion may carry the displaced current-week beat, but the week's releases are covered either way). `last_directors_cut_date` is updated post-publish.
 - [ ] If This Week in History was A Closer Look (`sub_format: "closer_look"`), the rendered section is a single 600-800 word narrative on one event/figure, no also-this-weeks timeline, Wikipedia link present. `last_closer_look_date` is updated post-publish.
 
 ### Ongoing Stories
@@ -300,10 +308,10 @@ Only proceed here after Gate 1 passes clean.
 - [ ] Foreword: 50-80 words, one thread
 - [ ] LEGO in Pixel & Byte, not Screen & Sound
 - [ ] History prefers pre-WW2; images match the historical event (no reusing images from other sections)
-- [ ] Music only when relevant within The Shelf's rotation; music releases still in Release Radar when Shelf absent
+- [ ] Music lives in Listening when it runs; light-touch in The Shelf otherwise; music releases still in Release Radar when neither present
 - [ ] Session: only sourced content, or omitted entirely
 - [ ] Podcast recs are episode-specific: title, date, reason — verified content only
-- [ ] The Itinerary owns all travel/parks/NI content when present; On the Radar one-liners when absent
+- [ ] Places owns all travel/parks/NI content when present; On the Radar one-liners when absent
 
 ### Voice
 - [ ] Opinions present throughout — not neutral press releases
@@ -336,7 +344,7 @@ Only proceed here after Gate 1 passes clean.
 ### Lens-not-Filter (v8.19)
 - [ ] `plan.discovery_picks` carries >= 3 entries (weekly format). Each entry has chapter_id, headline_hint, discovery_rationale.
 - [ ] Every discovery_pick item appears in the rendered HTML at the chapter it's tagged to. (Spot-check: open the named chapter, find the item.)
-- [ ] Each recommendation section appearing this issue (Shelf, Listen, Workshop, Toolkit, Ledger, Long Game, Wallet, Brickyard, Saga, Lab, Channel) shows visible Discovery vs. Reinforcement balance — not 100% reinforcement of known brands/apps/series.
+- [ ] Each recommendation section appearing this issue (Shelf, Listening, Money, Places, Toolkit, Saga) shows visible Discovery vs. Reinforcement balance — not 100% reinforcement of known brands/apps/series.
 - [ ] No recommendation section repeats the dominant brand/app/series from its previous appearance (cross-reference state file `last_toolkit_app`, `last_session_topic`, and the latest issue of each section in `issues/`).
 - [ ] World This Week (or another news section) carries any genuinely major world story that landed this week, regardless of whether it maps to a declared interest. Story missing = Gate 2 fail.
 

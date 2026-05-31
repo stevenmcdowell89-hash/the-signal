@@ -447,29 +447,27 @@ done
 
 ---
 
-### RT-18: Lead + Companion topic discipline (v8.15)
+### RT-18: Lead + Catch-Up shape discipline (v8.27 — replaces the v8.15 Lead + Companion mandate)
 
-When you write a fixed-section chapter, you write BOTH the Lead AND the Companion (or you receive them as two pieces from the planner — confirm both are present). Self-check before submission:
+When you write a fixed-section chapter you write the **Lead + Catch-Up** shape from your chapter plan. The Companion is now OPTIONAL — the mandatory second element is the Catch-Up roundup. Self-check before submission:
 
-1. Is there a Lead piece (300-700 words) AND a Companion piece (200-450 words)?
-2. Are they on visibly different topics, not two framings of the same story?
-3. Does each have a substantive body, not a stub?
-4. Does each link to at least one canonical source?
-5. If your section is World This Week and the Lead is about an ongoing tracked story (Iran, Ukraine), the Companion MUST be on a topic family from a different cluster (not just a different war).
-6. If your section is Touchline and the Lead is football, the Companion MUST be a non-football sport.
-7. If your section is Screen & Sound and the Lead is Star Wars (or any single franchise), the Companion MUST be from a different franchise.
+1. **The Lead passes the two-factor test:** it moved this week (a datable development, not "still in crisis / clings on / waiting on the vote") AND you add something beyond the headline the reader already has. A holding-pattern lead is not a lead — flag it back to the planner.
+2. **There is a substantive second element:** a Catch-Up roundup OR (optionally) a Companion OR an explicit short/yield note from the plan's `yield_reason`. A bare Lead alone is not submittable.
+3. **The Catch-Up has real substance, not namedrops:** every roundup item says what it is, why it matters, and links. "Three game releases named and moved on" is a fail. Include one-line safety-net headlines for the week's majors so a known story demoted out of the Lead is never dropped.
+4. **If you DO write an optional Companion:** it's on a visibly different topic family from the Lead (not two framings of one story), substantive (200-450 words), and linked. Section rules when a companion runs: World This Week — different cluster, not just a different war; Touchline — a non-football sport when the Lead is football; Screen & Sound — a different franchise from the Lead.
+5. Each piece and each Catch-Up item links to at least one canonical source.
 
-If any of the above is false, do NOT submit — escalate back to the planner.
+If 1, 2, or 3 is false, do NOT submit — escalate back to the planner.
 
-### RT-19: Section link discipline (v8.15)
+### RT-19: Section link discipline (v8.15, v8.27)
 
-Before submission, count outbound `<a href="http...">` links in your chapter. For sections in {World This Week, Pixel & Byte, Touchline, Screen & Sound, On the Radar}: every substantial item — every Lead, every Companion, every Also item, every Quick Review, every On the Radar entry — must link to its specific canonical source. Category pages and homepages do not count. If you can't find a link for an item, find a different item.
+Before submission, count outbound `<a href="http...">` links in your chapter. For sections in {World This Week, Pixel & Byte, The Toolkit, Touchline, Screen & Sound, On the Radar}: every substantial item — the Lead, any Companion, every Catch-Up roundup item, every Also item, every Quick Review, every On the Radar entry — must link to its specific canonical source. Category pages and homepages do not count. If you can't find a link for an item, find a different item.
 
 ### RT-20: Director's Cut mode discipline (v8.17)
 
 If your Screen & Sound chapter plan has `sub_format: "directors_cut"`:
 1. Lead must be 550-750 words and read as an essay on a show / film / director / arc — NOT a current-week news beat.
-2. Companion remains mandatory: 250-450 words, on a different topic family. The Companion can carry the current-week news beat that the Director's Cut displaced.
+2. The section still carries its Catch-Up roundup of the week's releases. A Companion (250-450 words, different topic family) is optional and may carry the current-week news beat the Director's Cut displaced — but the week's releases get covered either way (Catch-Up or Companion).
 3. Voice for the Lead: culture critic essayist. Not "what dropped this week".
 4. Cite where appropriate (link to the show / film, link to interviews if quoted, link to other essays you're responding to).
 5. After publish, update state file `last_directors_cut_date`.
@@ -514,7 +512,7 @@ The reader profile is a lens, not a filter. Two checks every recommendation-sect
 
 **2. The anti-drift check.** If you can name the dominant brand/app/series your section featured last appearance (look at the state file: `last_toolkit_app`, `last_session_topic`, or the last appearance in `issues/`), this appearance MUST NOT default to the same. Different app, different artist, different angle. The whole point of rotating sections is that they don't become single-topic columns.
 
-If your section is one of the recommendation sections (Shelf, Listen, Workshop, Toolkit, Ledger, Long Game, Wallet, Brickyard, Saga, Lab, Channel, Long Shelf, Companion pieces in fixed sections): apply both checks before submitting.
+If your section is one of the recommendation sections (Shelf, Listening, Money, Places, Toolkit, Saga, Long Shelf, Companion / Catch-Up picks in fixed sections): apply both checks before submitting.
 
 If your section is World This Week or any news section: **a major world story that landed this week is covered even when it falls outside the declared interest profile.** A vacuum on a story everyone else is reading is a failure mode. Cover at the appropriate weight — Lead, Companion, or substantive Also item — based on the story's actual significance.
 

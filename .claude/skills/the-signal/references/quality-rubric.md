@@ -10,7 +10,7 @@ It is scored at **Phase 9.5**, after the repair loop (so it scores the
 artifact that actually ships) and before publish, by a **dedicated scorer
 agent** — never the orchestrator that ran the pipeline and never the writer
 that produced the prose (a producer grading its own work drifts generous).
-The scorer reads only this rubric and the finished issue, applies the five
+The scorer reads only this rubric and the finished issue, applies the six
 dimensions below, and emits one JSON object. **Scoring is observational, not
 a gate** — it never blocks or reverts a publish (Phase 10's cardinal rule
 still holds: always publish). It exists to accumulate the signal, not to add
@@ -127,6 +127,30 @@ pile of independent sections under one cover?
 - **1** — Disconnected; reordering the chapters would change nothing.
 - **`null`** — parallel format; not applicable.
 
+## Dimension 6 — Novelty *(v8.27)*
+
+Did the issue tell the reader things he *didn't already know*, or did it
+recap what he'd already seen? This is the dimension the v8.27 reset exists
+to move — the magazine's core promise is "catch what he missed", and the
+audit found ~35-45% of a typical issue was recap of the already-known. It
+applies to every format; score it for the issue as a whole, weighted toward
+the Leads and the Catch-Up roundups.
+
+- **5** — Almost everything is missable: Leads that moved this week and add
+  an angle beyond the headline; Catch-Up roundups full of developments the
+  reader would otherwise have to trawl for; genuine discovery. Nothing reads
+  as "I already knew that."
+- **3** — A mix: some genuinely new, some recap of headlines the reader
+  almost certainly saw. The odd holding-pattern Lead.
+- **1** — Mostly recap. *Anchor: the Starmer ×3 run (17-31 May 2026)* — a
+  leadership holding pattern led the World section three weeks running, each
+  re-telling what the reader already knew; *Anchor:* a Pixel & Byte that led
+  on a months-old rumour and namedropped three releases without saying what
+  they were. The reader finishes knowing nothing he didn't on Saturday.
+
+The scorer names `novelty` in `weakest`/`note` when it's the drag, the same
+as any other dimension. This is observational — it never gates a publish.
+
 ---
 
 ## The JSON the scorer emits
@@ -140,7 +164,7 @@ pile of independent sections under one cover?
   "date": "2026-05-26",
   "writer_model": "opus",
   "scorer_model": "claude-opus-4-8[1m]",
-  "scores": { "voice": 3, "density": 5, "structure": 3, "opening": 4, "throughline": 4 },
+  "scores": { "voice": 3, "density": 5, "structure": 3, "opening": 4, "throughline": 4, "novelty": 3 },
   "weakest": "voice",
   "note": "Dimensional rigour is the strength; the Argument chapter performs the essay by narrating its own structure."
 }

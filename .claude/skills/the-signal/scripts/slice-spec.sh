@@ -167,8 +167,8 @@ echo "── global/ ──"
 # Identity is H2 "Identity" + "The Reader" (the reader intro continues identity)
 extract_h2_multi "$OUT_DIR/global/01-identity.md" "Identity" "The Reader"
 extract_heading  "$OUT_DIR/global/02-key-rules.md" "Key Rules"
-# v8.15 — Article Structure (Lead + Companion) — added to global so planner reads it
-extract_heading  "$OUT_DIR/global/02a-article-structure.md" "Article Structure: Lead + Companion"
+# v8.15 / v8.27 — Article Structure (Lead + Catch-Up) — added to global so planner reads it
+extract_heading  "$OUT_DIR/global/02a-article-structure.md" "Article Structure: Lead + Catch-Up"
 # v8.15 / v8.18 — Topic Lock (sliding-window cap on repeat ongoing-story Leads)
 extract_heading  "$OUT_DIR/global/02b-topic-lock.md" "Topic Lock: Recent Leads & Sliding-Window Cap"
 # v8.15 — Per-section discipline rules (Toolkit / Session / Long Game ↔ Session boundary)

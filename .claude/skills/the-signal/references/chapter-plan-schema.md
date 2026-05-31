@@ -1,10 +1,12 @@
-# Chapter Plan Schema (v8.17)
+# Chapter Plan Schema (v8.27)
 
 The planner subagent writes `/tmp/signal-build/chapter-plan.json`. This file defines the contract between the planner and the writer subagents. Every field here is required unless marked optional.
 
 The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan that fails validation cannot proceed to Phase 5 (writer subagents).
 
-**v8.15 additions:** every fixed-section chapter (`world`, `pixel_byte`, `touchline`, `screen_sound`, `session`) carries a `pieces` array of exactly two entries (Lead + Companion) on distinct `topic_family` values. The `long_shelf` chapter carries an `items` array of 6–8 entries with at least two `wildcard: true`. Topic families are a closed enumeration — see § Topic Family Enumeration at the bottom of this file.
+**v8.27 — Lead + Catch-Up (replaces the v8.15 mandatory two-anchor Lead + Companion).** Every fixed-section chapter (`world`, `pixel_byte`, `toolkit`, `touchline`, `screen_sound`, `session`) carries a `pieces` array of **1 or 2 entries**: exactly one `role: "lead"` (floor 300 words) and an **optional** `role: "companion"` (floor 200 words; if present, on a `topic_family` distinct from the Lead). The mandatory *second* element is no longer a Companion — it is a **substantive `catch_up` roundup** (or, where a section genuinely runs short, an explicit `yield_reason` string). A chapter with only a bare Lead — no `catch_up`, no companion, no `yield_reason` — is a hard fail. Each `catch_up` item must carry `headline_hint`, `why_it_matters`, and a non-empty `link_targets` (the "no bare namedrops" rule). The `long_shelf` chapter still carries an `items` array of 6–8 entries with at least two `wildcard: true`. Topic families are a closed enumeration — see § Topic Family Enumeration at the bottom of this file.
+
+> **Note (v8.27):** `toolkit` is now a fixed-but-yields section; when it does not appear in an issue it is simply omitted from `chapters`. The Saga is trigger-driven and is never a rotating cadence chapter.
 
 **v8.17 additions:** optional `sub_format` field on the `screen_sound` and `history` chapters. Allowed values: `null` (default), `"directors_cut"` (screen_sound only), `"closer_look"` (history only). When `sub_format = "directors_cut"`, the Lead piece's word_count_target.min must be ≥ 550. When `sub_format = "closer_look"`, the history chapter must carry a single `featured_item` with word_count_target.min ≥ 600 and NO `items`/`also_items` array.
 
@@ -194,8 +196,8 @@ The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan
 
           "pieces": {
             "type": "array",
-            "description": "REQUIRED for fixed-section weekly chapters with chapter_id in {world, pixel_byte, touchline, screen_sound, session}. Exactly two pieces: one role=lead, one role=companion. Lead.topic_family MUST differ from Companion.topic_family. Validator hard-fails any plan where a fixed-section chapter omits this array or includes pieces with the same topic_family.",
-            "minItems": 2,
+            "description": "REQUIRED for fixed-section weekly chapters with chapter_id in {world, pixel_byte, toolkit, touchline, screen_sound, session}. v8.27: 1 or 2 pieces — exactly one role=lead, plus an OPTIONAL role=companion. If a companion is present, Lead.topic_family MUST differ from Companion.topic_family. The mandatory second element of the section is the `catch_up` roundup (or a `yield_reason`), NOT the companion — see below. Validator hard-fails a fixed-section chapter that omits this array, has no lead, has >1 companion, or has a companion sharing the lead's topic_family.",
+            "minItems": 1,
             "maxItems": 2,
             "items": {
               "type": "object",
@@ -204,11 +206,11 @@ The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan
                 "role": {
                   "type": "string",
                   "enum": ["lead", "companion"],
-                  "description": "'lead' is the section's centrepiece. 'companion' is the mandatory second substantive piece."
+                  "description": "'lead' is the section's centrepiece (required, exactly one). 'companion' is an OPTIONAL second deep piece (at most one) — run it only when the section genuinely has a second topic worth a full article."
                 },
                 "topic_family": {
                   "type": "string",
-                  "description": "Must be drawn from the closed enumeration in § Topic Family Enumeration below. Lead.topic_family != Companion.topic_family within the same chapter."
+                  "description": "Must be drawn from the closed enumeration in § Topic Family Enumeration below. When a companion is present, Lead.topic_family != Companion.topic_family within the same chapter."
                 },
                 "word_count_target": {
                   "type": "object",
@@ -230,6 +232,25 @@ The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan
                 }
               }
             }
+          },
+
+          "catch_up": {
+            "type": "array",
+            "description": "v8.27 — the substantive Catch-Up roundup for a fixed section: missable domain news + one-line safety-net headlines. The mandatory second element of a fixed section (a chapter needs one of: a non-empty catch_up, a companion piece, or a yield_reason). Each item carries what/why/link — NO bare namedrops. Validator hard-fails any item missing headline_hint, why_it_matters, or a non-empty link_targets.",
+            "items": {
+              "type": "object",
+              "required": ["headline_hint", "why_it_matters", "link_targets"],
+              "properties": {
+                "headline_hint": { "type": "string", "description": "What it is — the one-line framing of the development." },
+                "why_it_matters": { "type": "string", "description": "Why it matters to the reader. Non-empty — this is the anti-namedrop field." },
+                "link_targets": { "type": "array", "items": { "type": "string", "format": "uri" }, "description": "At least one specific link. Every Catch-Up item must be followable." }
+              }
+            }
+          },
+
+          "yield_reason": {
+            "type": ["string", "null"],
+            "description": "v8.27 — Optional. When a fixed section genuinely runs short (thin week — especially The Toolkit, which is fixed-but-yields), set a one-line reason here instead of padding. Satisfies the 'second substantive element' requirement so a Lead-only section can pass. Don't use it to dodge a real Catch-Up when there is news."
           },
 
           "items": {
@@ -473,7 +494,9 @@ Families are grouped by cluster for readability; the cluster name is editorial s
 
 ---
 
-## Fixed-Section Lead + Companion Example (v8.15)
+## Fixed-Section Lead + Catch-Up Example (v8.27)
+
+A Lead that passes the two-factor test, plus a substantive Catch-Up roundup (what/why/link, no namedrops). The Companion is omitted here — it's optional. The Catch-Up's last item shows the one-line safety-net pattern for a big known headline that didn't earn the Lead.
 
 ```json
 {
@@ -481,11 +504,11 @@ Families are grouped by cluster for readability; the cluster name is editorial s
   "chapter_num": 4,
   "chapter_type": "opener",
   "chapter_title": "The World This Week",
-  "chapter_arc": "Two stories that shaped the week",
+  "chapter_arc": "The story that moved, plus what else he missed",
   "ground": "paper",
   "is_hype": false,
   "data_venue": null,
-  "target_word_count": 1100,
+  "target_word_count": 1000,
   "images_needed": [],
   "key_facts": [],
   "forbidden_topics": [],
@@ -495,17 +518,57 @@ Families are grouped by cluster for readability; the cluster name is editorial s
       "role": "lead",
       "topic_family": "us_politics",
       "word_count_target": { "min": 400, "max": 700 },
-      "headline_hint": "The Senate vote and what it means for the midterms",
+      "headline_hint": "The Senate vote and what it means for the midterms (it moved this week + we add the analysis)",
       "link_targets": ["https://www.nytimes.com/...", "https://www.economist.com/..."]
+    }
+  ],
+  "catch_up": [
+    {
+      "headline_hint": "COP intersessional concludes",
+      "why_it_matters": "Widens the gap between pledges and plans before the autumn summit",
+      "link_targets": ["https://unfccc.int/..."]
     },
     {
-      "role": "companion",
-      "topic_family": "climate_environment",
-      "word_count_target": { "min": 250, "max": 450 },
-      "headline_hint": "COP intersessional concludes — the gap between pledges and plans",
-      "link_targets": ["https://unfccc.int/..."]
+      "headline_hint": "Ukraine's biggest weekly territorial gain of the year",
+      "why_it_matters": "Shifts the front line for the first time in months",
+      "link_targets": ["https://www.bbc.co.uk/..."]
+    },
+    {
+      "headline_hint": "Safety-net line: UK PM survives confidence vote",
+      "why_it_matters": "A known headline kept as a line so it's never dropped — didn't earn the Lead (holding pattern, no new development)",
+      "link_targets": ["https://www.bbc.co.uk/..."]
     }
   ]
+}
+```
+
+A fixed section that genuinely runs short omits `catch_up` and sets a `yield_reason` instead — e.g. The Toolkit on a thin tech week:
+
+```json
+{
+  "chapter_id": "toolkit",
+  "chapter_num": 6,
+  "chapter_type": "literary",
+  "chapter_title": "The Toolkit",
+  "chapter_arc": "One discovery worth finding",
+  "ground": "paper",
+  "is_hype": false,
+  "data_venue": null,
+  "target_word_count": 350,
+  "images_needed": [],
+  "key_facts": [],
+  "forbidden_topics": [],
+  "cross_refs": [],
+  "pieces": [
+    {
+      "role": "lead",
+      "topic_family": "productivity_workflows",
+      "word_count_target": { "min": 300, "max": 500 },
+      "headline_hint": "A split-screen gesture worth setting up on the tablet",
+      "link_targets": ["https://www.xda-developers.com/..."]
+    }
+  ],
+  "yield_reason": "Thin consumer-tech week; running a single discovery Lead rather than padding a roundup."
 }
 ```
 
