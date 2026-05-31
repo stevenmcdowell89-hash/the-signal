@@ -166,46 +166,53 @@ Rotating sections use their existing single-feature shape — they don't need Le
 
 ## 02b-topic-lock
 
-## Topic Lock: Recent Leads & Sliding-Window Cap
+## Topic Lock: the "what's new" test + frequency cap
 
-Re-promoting an ongoing story to the Lead slot is gated by a **sliding-window frequency cap**. The cap tightens with the topic's recent lead history and decays as that history ages, so a story that has been in heavy rotation cools off automatically without needing editorial override.
+Re-promoting an ongoing story to the Lead slot is gated by **two** tests, and a story must pass **both**. Test 1 (new in v8.25) is the primary one: a story may only re-lead on a genuine **development**. Test 2 is a long-run frequency backstop.
 
-### State-file shape per `ongoing_stories` entry
+### Why two tests (read this first)
 
-- `lead_history` (array of ISO date strings) — every date this topic anchored any fixed section's Lead. Example: `["2026-03-15", "2026-03-22", "2026-04-19", "2026-05-03"]`. Append each new lead date; never trim (entries age out of the window automatically).
-- `weeks_since_last_lead` (int, derived) — ticks +1 each weekly the topic is NOT the lead; resets to 0 when it is. The planner can compute this from `lead_history` or read a cached value.
+The frequency cap alone was the original rule, and it failed in a specific, real way: it counts *how often* a story has led, not *whether each lead earned its place with something new*. That let UK politics / Starmer anchor the World Lead **three weeks running** (17, 24, 31 May 2026) on what was essentially the same situation — "still in crisis", "clings on", "waiting on the Makerfield by-election" — before any check fired. The reader who read last week's lead got a near-identical lead this week and stopped reading. That is the exact failure this rule now exists to prevent.
 
-### The recent-leads window
+The cap was always *meant* to model something different. A story like the Iran War genuinely develops week to week in its opening fortnight (invasion → strikes → Hormuz closure → ceasefire talks); each lead carries real new information, so leading several weeks running is legitimate. Once it plateaus into a status quo, the bar should rise so only a *meaningful new development* re-surfaces it to the Lead. Counting frequency approximated that badly. The development test does it directly.
 
-`recent_leads` = count of entries in `lead_history` with date within the last **26 weeks** (6 months) of the issue date. Older entries are ignored for cap purposes.
+### Test 1 — The "what's new" development test (PRIMARY; applies from the 2nd consecutive lead)
 
-### Planner enforcement
+If a topic anchored the Lead in the **immediately preceding issue** (a weekly Lead, or the Meanwhile #1 beat of a special — see § Scope), it may anchor the Lead again **only if there is a specific, datable development within the last 7 days that materially changes the state of the story.** The planner records that development in `ongoing_stories[topic].last_development` — a one-line "what changed this week, and the date". The writer's Lead must be *about* that development.
 
-A topic with `recent_leads >= 3` cannot anchor the Lead unless `weeks_since_last_lead >= recent_leads × 2`.
+**Counts as a development (re-lead permitted):** a vote actually held, a resignation or sacking that happened, an election *result* declared, a policy enacted, territory taken or lost, a court ruling handed down, a ceasefire signed or broken, a named new actor entering, a hard number that moved materially.
 
-**Worked example.** Iran has 5 leads in the last 26 weeks. Re-promoting Iran to Lead requires 10 weeks of not-leading first. Until then, Iran lives in the tracker box.
+**Does NOT count (must yield the Lead — goes to the tracker box, the Companion, or an Also item):** "still in crisis", "clings on", "continues to face pressure", "waiting on [a future event]", "ahead of next week's vote", "no breakthrough", "tensions remain high", "the standoff continues", "speculation grows". Holding-pattern coverage of a story everyone is *talking about* but where nothing *happened* this week is exactly what must not lead. **Being the most-discussed story is not a development.**
 
-**Decay in action.** Six months after Iran's last lead in the active window, every one of those 5 leads has aged out. `recent_leads` falls to 0. The cap no longer fires. Iran becomes promotable again without needing a new escalation — but the magazine has been forced to give every other story breathing room in the meantime.
+**The honest test the orchestrator applies, out loud:** *"If a reader read last week's lead on this topic, does this week's lead tell them something that actually happened since — or does it tell them the same situation still obtains?"* If the latter, it does not lead, even if it is the biggest story in the world. It is still covered (tracker / Companion / Also), so the reader who wants it isn't starved — it just doesn't take the marquee.
 
-A topic that broke out, dominated for a few weeks, then settled into the tracker will naturally re-emerge in the Lead rotation once enough time has passed; a topic in sustained active coverage will hit the cap hard and stay in the tracker.
+**Future-event framing is the tell.** A lead whose hook is an event that *hasn't happened yet* ("waiting on the Makerfield by-election", "ahead of the confidence vote") is a holding pattern by definition: the development is in the future, so there is nothing new now. Cover it as a forward-look Also item; lead with it the week the event actually lands and produces a result.
 
-### Topics this rule applies to
+### Test 2 — Frequency backstop (sliding-window cap)
 
-`ongoing_stories` is not limited to World This Week — it's a tracking concept for any topic that has anchored any section's Lead. Track:
+Independent of Test 1, so a story that genuinely keeps developing still can't monopolise the Lead indefinitely.
 
-- World This Week: Iran War, Ukraine, US-China trade, etc.
-- Pixel & Byte: Switch 2 ecosystem, Steam Deck, consumer AI launches
-- Touchline: Serie A title race, Champions League knockout, WC qualifying campaign
-- Screen & Sound: long-running show arcs (Star Wars: Maul, Daredevil, House of the Dragon, etc.)
-- Session: running-race build-up, hypertrophy block, etc.
+- `lead_history` (array of ISO date strings) — every date this topic anchored any fixed section's Lead. **Append the new lead date in the same run it leads; never trim** (entries age out automatically). A dropped append silently disables the cap — see § Self-correcting below.
+- `recent_leads` = count of `lead_history` entries within the last **26 weeks** of the issue date.
+- A topic with `recent_leads >= 3` cannot anchor the Lead unless `weeks_since_last_lead >= recent_leads × 2`.
+
+**Worked example.** Iran has 5 leads in the last 26 weeks. Returning Iran to the Lead requires 10 weeks of not-leading first — AND, by Test 1, a real development the week it returns.
+
+### Self-correcting the counter (v8.25 — guard against the dropped-append bug)
+
+The hand-maintained `lead_history` has dropped entries in practice: the 17 May 2026 Starmer lead was never appended, which kept `recent_leads` below the `>=3` trigger and was a direct cause of the three-week run slipping through. **The planner must not trust the cached counter alone.** At Phase 0 it recomputes `recent_leads` for each tracked topic by scanning the last 26 weeks of published issues in `issues/` for that topic's named entities in a Lead position, reconciles `lead_history` to match, and only then applies the tests. The archive is the source of truth; the state file is a cache.
+
+### Scope
+
+Both tests apply to any topic that has anchored any section's Lead — World This Week, Pixel & Byte (Switch 2 etc.), Touchline (a title race), Screen & Sound (a show arc), Session. **They also apply to the Meanwhile #1 beat of a special edition:** the lead item of a special's Meanwhile catch-up counts as a Lead for tracking, so a story can't dodge the cap by leading two weeklies and then topping the Meanwhile list of the special in between. Record it in `lead_history` like any other lead.
 
 ### Gate 1 grep check
 
-After generation, scan each fixed section's Lead H2 + first paragraph for the topic's named entities. If `recent_leads >= 3` for any tracked topic AND that topic's named entities appear in the Lead (≥3 mentions or in H2), Gate 1 fails with reason "topic-lock: <topic> exceeds recent-leads bar". Re-plan the Lead.
+After generation, scan each fixed section's Lead H2 + first paragraph. **(a)** If `recent_leads >= 3` for a tracked topic AND its named entities appear in the Lead (≥3 mentions or in H2), fail with "topic-lock: <topic> exceeds recent-leads bar". **(b)** If the topic led the immediately preceding issue AND the Lead's H2/first paragraph contains holding-pattern language (`still | continues to | clings on | waiting on | ahead of | no breakthrough | remains | standoff | speculation`) without a datable development named in `last_development`, fail with "topic-lock: <topic> re-led with no development". Re-plan the Lead. The script `scripts/check-topic-lock.py` runs both checks.
 
 ### Tuning
 
-The 26-week window is the single knob. Shorter window (e.g. 13 weeks) → topics return more easily; cap feels light. Longer window (e.g. 52 weeks) → strong forcing function; topics blocked for years. 26 weeks chosen as the editorial sweet spot: "a story can't be in the Lead rotation more than ~5 times in any 6-month period." Adjust here if real-world runs show the window is wrong.
+The 26-week window is the frequency knob. The development test (Test 1) has no knob — it is a yes/no editorial judgment the orchestrator makes honestly, calibrated by the examples above.
 
 ---
 
