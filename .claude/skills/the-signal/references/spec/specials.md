@@ -106,21 +106,6 @@ Every non-holiday special edition obeys these rules. Holiday specials (Countdown
 
 
 
-### Special-edition visual character (v8.24 — MANDATORY for non-holiday specials)
-
-The v8.21 redesign simplified the non-holiday specials so hard it stripped the character that made them feel special. v8.24 restores it. Some of this is automatic; some the writer/planner must author. Holiday formats (Countdown, Field Guide) are unaffected — they keep their own identity.
-
-**Automatic (fires on every non-holiday special — author does nothing):**
-- **Centred paper sheet on a canvas.** `body.is-special:not(holiday)` paints a warm-grey canvas; `02-wax-seal.html` (auto-injected by `stitch-issue.sh` for non-holiday specials) opens the `<div class="mag">` paper sheet that `19-closing.html` closes. The issue reads as a page floating on a background — the portrait framing weeklies have.
-- **Chrome:** the rotating wax-stamp seal, the film-grain overlay, and the reading-progress bar (all from `02-wax-seal.html` + `00-head-open.html`). The stamp's issue-tag shows the format label for unnumbered specials.
-- **Scroll-reveal motion:** the `special-rise` IIFE in `script.js` tags figures, quote panels, stat rows, tables, the argument block and chapter heads with `.sp-rise` and fades them up on entry. Off under reduced-motion / small screens.
-- **Reliable wide blocks:** `.is-wide` fills the column (no off-screen transform); `.keep-digging` is the real grid.
-
-**Author-required (the planner briefs it; the writer builds it):**
-- **Cover must be full, not bare.** Beyond eyebrow → title → deck → slogan, every special cover carries a **`.cover-tags`** row of 5–8 key-theme keyword pills, and a three-part **`.cover-foot`** (`.cf-left` meta · `.cover-scroll` cue · `.cf-right` meta). See `component-contracts.md` § The special cover.
-- **Layout variety is mandatory — break up the prose.** A literary special must NOT be an unbroken column of identical paragraphs. Every long chapter uses a mix of: **floated figures** (`figure.fig.is-half`, alternating `.is-left`/right so text wraps beside images), **right-gutter marginalia** (`.marginalia` — short context notes/definitions that fill the side space), **image-quote panels** (`figure.image-quote` — a portrait with a primary-source line across it), **stat rows** (`.bignum-row`), and **pull-quotes** (`.pullquote`). Aim for a visual break every 2–4 paragraphs. **Hard limit (enforced): no chapter may run more than ~9 body paragraphs with no visual break** — a text sub-heading does not count. The Phase 7 gate `scripts/check-prose-rhythm.py` fails any issue that breaches this; the planner should brief enough figures/quotes/marginalia/stat rows per chapter to satisfy it, and the writer must place them.
-- **What stays culled.** Do NOT reintroduce the retired three-column `.sp-spread` with its left `.sp-rail` — the near-empty left column wastes space and reads as an accident. Gutter content goes on the RIGHT (`.marginalia`). No giant Roman-numeral chapter-gate slabs.
-
 
 ---
 
@@ -179,6 +164,17 @@ If no Priority 1 or 2 trigger has fired in the last 5 weeks, the editor picks a 
 **Manual-only formats — Next and Lookahead.** Two formats never auto-trigger; they require the reader to call them because they depend on specific context that only the reader holds.
 - **Next** ("Run a Next — after [the thing you finished]") — needs the anchor: what the reader just finished. The magazine can't reliably detect "finished" status for podcasts/books/seasons from external signals.
 - **Lookahead** ("Run a Lookahead — [window]") — needs the window: what stretch the reader wants surveyed. Default is 6-8 weeks; reader can shorten ("the next ten days") or lengthen ("the rest of the quarter").
+
+### The Saga (trigger-driven, v8.27 — no cadence timer)
+
+The Saga (lore deep-dive — worldbuilding essays: Maul's arc across the shows, how Allomancy/the Cosmere connect, Malazan Warrens; **strictly no plot/endings**) used to fire on a 6-week clock. It no longer does. It runs only on a **reason**, of which there are two kinds — this is the general model for any section that depends on context the orchestrator can't infer:
+
+- **Public peg (the researcher can find it).** A finale aired this week, a new book/season in a series the reader follows released, an author did an AMA. The scout/researcher detects this in Phase 0f/3 and pegs a Saga. This is the only Saga trigger that fires automatically.
+- **Private peg (the pipeline cannot know it).** What the reader is *personally* reading or watching right now is invisible to the pipeline — the same boundary that makes Next and Lookahead manual-only. Surface it two ways: (a) the reader keeps a lightweight **`currently_reading` / `currently_watching`** note in `state/signal-state.json`, which the researcher reads as a peg source; (b) a **manual trigger** ("run a Saga on the Cosmere", "a Next after Deadhouse Gates") — zero-maintenance, on-demand.
+
+If neither peg is live, The Saga simply doesn't run that week — it is never scheduled to fill a slot.
+
+**Generalised principle: sections that depend on private context are reader-triggerable, not calendar-driven.** The magazine asks for / reads that context rather than guessing. This is the same reason The Session reads `training_phase` and Places reads `upcoming_trips`; v8.27 extends the pattern to reading/watching (`currently_reading` / `currently_watching`) for The Saga, and lets it inform Shelf and Screen & Sound pegs too.
 
 ### Guardrails
 

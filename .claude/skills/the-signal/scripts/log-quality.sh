@@ -11,7 +11,9 @@
 #
 # The scorer emits a JSON object with: issue_id, issue_file, title, format,
 # date, writer_model, scorer_model, scores{voice,density,structure,opening,
-# throughline}, weakest, note. (throughline is null for parallel formats.)
+# throughline,novelty}, weakest, note. (throughline is null for parallel formats;
+# novelty added v8.27 — `overall` is the mean of all numeric scores, so new
+# dimensions are averaged in automatically.)
 #
 # This script injects `ts`, computes `overall` (mean of non-null scores,
 # 1 dp), appends one line to the quality log, and regenerates quality.html.

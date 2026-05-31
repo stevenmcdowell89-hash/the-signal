@@ -75,12 +75,17 @@ VALID_CHAPTER_TYPES = {
     "closer",
 }
 
-# v8.15 — fixed-section chapter IDs that REQUIRE the Lead + Companion `pieces` array.
+# v8.15 / v8.27 — fixed-section chapter IDs that run the Lead + Catch-Up shape.
+# v8.27: the mandatory two-anchor Lead + Companion is retired — these chapters now
+# require a Lead plus a second substantive element (a Catch-Up roundup OR an optional
+# Companion OR an explicit yield_reason). See check_section_shape().
 # Accept both the underscored convention (spec) and existing single-word / kebab variants
 # observed in real issue markup (id="world", id="tech", id="football", id="screen").
+# v8.27 adds The Toolkit (now a fixed-but-yields section, was rotating).
 FIXED_SECTION_CHAPTER_IDS = {
     "world", "world-this-week",
     "pixel_byte", "pixel-byte", "tech",
+    "toolkit", "the_toolkit", "the-toolkit",
     "touchline", "football",
     "screen_sound", "screen-sound", "screen",
     "session",
@@ -145,46 +150,35 @@ TOPIC_FAMILIES = {
 KEBAB_RE = re.compile(r'^[a-z0-9]+([-_][a-z0-9]+)*$')  # v8.15: underscores allowed alongside hyphens (e.g. pixel_byte, screen_sound, long_shelf)
 DATE_RE  = re.compile(r'^\d{4}-\d{2}-\d{2}$')
 
-# v8.16 — canonical rotating-section roster and cadence bands.
+# v8.16 / v8.27 — canonical rotating-section roster and cadence bands.
 # Mirrors state-file schema in SKILL.md and editorial-spec § Cadence Table.
 # Used by the cadence-floor and deficit-promote enforcement.
+# v8.27 redesigned the roster (one home per domain): Listen+Channel -> Listening;
+# Long Game+Wallet+Ledger -> Money; Itinerary+Local -> Places. Workshop+Lab folded
+# into the fixed Session; the Toolkit became a fixed-but-yields section; LEGO folded
+# into Pixel & Byte. The Saga is now TRIGGER-DRIVEN (no cadence) — deliberately NOT in
+# this map, so it is never floor-checked or deficit-promoted.
 ROTATING_SECTION_CADENCE = {
     "the_shelf":            [2, 3],
     "this_week_in_history": [2, 3],
-    "the_listen":           [3, 4],
-    "the_workshop":         [3, 4],
-    "the_toolkit":          [3, 4],
-    "the_ledger":           [3, 4],
-    "the_long_game":        [4, 4],
-    "the_wallet":           [3, 4],
-    "the_itinerary":        [3, 4],
-    "the_local":            [3, 4],
-    "the_brickyard":        [4, 6],
-    "the_saga":             [6, 6],
-    "the_lab":              [4, 4],
-    "the_channel":          [6, 6],
+    "the_listening":        [3, 4],
+    "the_money":            [3, 4],
+    "the_places":           [3, 4],
 }
 
 # Map chapter_id (planner output) back to canonical rotating-section key.
 # Accept both underscored (spec) and single-word (markup) forms; ignore prefixes.
+# v8.27: The Saga maps here harmlessly (for archival last_appeared tracking) but is
+# absent from ROTATING_SECTION_CADENCE, so cadence enforcement skips it.
 CHAPTER_ID_TO_ROTATING_KEY = {
     "the_shelf": "the_shelf", "shelf": "the_shelf",
-    "the_listen": "the_listen", "listen": "the_listen",
     "this_week_in_history": "this_week_in_history",
     "this-week-in-history": "this_week_in_history",
     "history": "this_week_in_history",
-    "the_workshop": "the_workshop", "workshop": "the_workshop",
-    "the_toolkit": "the_toolkit", "toolkit": "the_toolkit",
-    "the_ledger": "the_ledger", "ledger": "the_ledger",
-    "the_long_game": "the_long_game", "the-long-game": "the_long_game",
-    "long_game": "the_long_game", "longgame": "the_long_game",
-    "the_wallet": "the_wallet", "wallet": "the_wallet",
-    "the_itinerary": "the_itinerary", "itinerary": "the_itinerary",
-    "the_local": "the_local", "local": "the_local",
-    "the_brickyard": "the_brickyard", "brickyard": "the_brickyard",
+    "the_listening": "the_listening", "listening": "the_listening", "listen": "the_listening",
+    "the_money": "the_money", "money": "the_money",
+    "the_places": "the_places", "places": "the_places",
     "the_saga": "the_saga", "saga": "the_saga",
-    "the_lab": "the_lab", "lab": "the_lab",
-    "the_channel": "the_channel", "channel": "the_channel",
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -247,29 +241,36 @@ def check_issue_meta(meta):
                 )
 
 
-def check_pieces(ch, cpath):
-    """v8.15: fixed-section chapters require a `pieces` array (Lead + Companion).
+def check_section_shape(ch, cpath):
+    """v8.27: fixed-section chapters run the Lead + Catch-Up shape.
+
+    Replaces the v8.15 mandatory two-anchor Lead + Companion. The Companion is now
+    OPTIONAL; the mandatory second element is a substantive Catch-Up roundup.
 
     Rules:
-      - Exactly 2 entries.
-      - One role='lead', one role='companion'.
-      - Each piece has topic_family (in TOPIC_FAMILIES), word_count_target.min meeting
-        the per-role floor (lead>=300, companion>=200).
-      - Lead.topic_family != Companion.topic_family.
+      - `pieces` array: 1 or 2 entries. Exactly one role='lead'; at most one role='companion'.
+      - Lead floor 300, Companion floor 200 (per-role).
+      - Each piece: topic_family in enum, valid word_count_target, headline_hint, link_targets.
+      - If a Companion is present, Lead.topic_family != Companion.topic_family.
+      - A second substantive element is required — one of: a non-empty `catch_up` roundup,
+        a Companion piece, or an explicit `yield_reason` string (for a section running short).
+        A bare Lead with nothing else is a hard fail.
+      - Catch-Up "no bare namedrops" rule: every `catch_up` item must carry a headline_hint,
+        a why_it_matters, and a non-empty link_targets.
     """
     pieces = ch.get("pieces")
     if pieces is None:
-        err(f"[PIECES] {cpath}: fixed-section chapter '{ch.get('chapter_id')}' is missing required 'pieces' array (v8.15 Lead + Companion).")
+        err(f"[PIECES] {cpath}: fixed-section chapter '{ch.get('chapter_id')}' is missing required 'pieces' array (needs at least a Lead — v8.27 Lead + Catch-Up).")
         return
     if not isinstance(pieces, list):
         err(f"[PIECES] {cpath}.pieces must be an array.")
         return
-    if len(pieces) != 2:
-        err(f"[PIECES] {cpath}.pieces must contain exactly 2 entries (lead + companion). Found {len(pieces)}.")
+    if not (1 <= len(pieces) <= 2):
+        err(f"[PIECES] {cpath}.pieces must contain 1 (lead) or 2 (lead + optional companion) entries. Found {len(pieces)}.")
         return
 
     roles_seen = []
-    topic_families_seen = []
+    tf_by_role = {}
     for j, p in enumerate(pieces):
         ppath = f"{cpath}.pieces[{j}]"
         if not isinstance(p, dict):
@@ -286,8 +287,8 @@ def check_pieces(ch, cpath):
             err(f"[PIECES] {ppath}: missing required field 'topic_family'.")
         elif tf not in TOPIC_FAMILIES:
             err(f"[PIECES] {ppath}.topic_family='{tf}' is not in the closed enumeration (see references/chapter-plan-schema.md § Topic Family Enumeration).")
-        else:
-            topic_families_seen.append(tf)
+        elif role in ("lead", "companion"):
+            tf_by_role[role] = tf
 
         wct = p.get("word_count_target")
         if wct is None:
@@ -310,13 +311,44 @@ def check_pieces(ch, cpath):
             if key not in p:
                 err(f"[PIECES] {ppath}: missing required field '{key}'.")
 
-    # Role coverage: one lead + one companion
-    if sorted(roles_seen) != ["companion", "lead"]:
-        err(f"[PIECES] {cpath}.pieces must contain exactly one 'lead' and one 'companion'. Found roles: {roles_seen}.")
+    # Role coverage: exactly one lead; at most one companion.
+    if roles_seen.count("lead") != 1:
+        err(f"[PIECES] {cpath}.pieces must contain exactly one 'lead'. Found roles: {roles_seen}.")
+    if roles_seen.count("companion") > 1:
+        err(f"[PIECES] {cpath}.pieces may contain at most one 'companion'. Found roles: {roles_seen}.")
 
-    # Distinct topic families
-    if len(topic_families_seen) == 2 and topic_families_seen[0] == topic_families_seen[1]:
-        err(f"[PIECES] {cpath}: Lead.topic_family and Companion.topic_family are both '{topic_families_seen[0]}'. They MUST differ within a section (v8.15 topic-family discipline).")
+    # Distinct topic families when a companion is present.
+    if "lead" in tf_by_role and "companion" in tf_by_role and tf_by_role["lead"] == tf_by_role["companion"]:
+        err(f"[PIECES] {cpath}: Lead.topic_family and Companion.topic_family are both '{tf_by_role['lead']}'. When a Companion runs it MUST be on a different topic family (topic-family discipline).")
+
+    # v8.27 — a substantive second element is required: Catch-Up roundup, Companion, or yield_reason.
+    catch_up = ch.get("catch_up")
+    has_companion = "companion" in roles_seen
+    has_catchup = isinstance(catch_up, list) and len(catch_up) >= 1
+    yield_reason = ch.get("yield_reason")
+    if not (has_companion or has_catchup or yield_reason):
+        err(
+            f"[SHAPE] {cpath}: fixed section needs a substantive second element beyond the Lead — "
+            f"a non-empty `catch_up` roundup, a `companion` piece, or an explicit `yield_reason` "
+            f"(string) when the section genuinely runs short. A bare Lead is a fail (v8.27 Lead + Catch-Up)."
+        )
+
+    # v8.27 — Catch-Up "no bare namedrops": every roundup item carries what + why + link.
+    if catch_up is not None:
+        if not isinstance(catch_up, list):
+            err(f"[CATCH_UP] {cpath}.catch_up must be an array of roundup items.")
+        else:
+            for k, item in enumerate(catch_up):
+                ipath = f"{cpath}.catch_up[{k}]"
+                if not isinstance(item, dict):
+                    err(f"[CATCH_UP] {ipath} must be an object.")
+                    continue
+                for key in ("headline_hint", "why_it_matters"):
+                    if not item.get(key):
+                        err(f"[CATCH_UP] {ipath}: missing or empty '{key}' — Catch-Up items must say what it is and why it matters (no bare namedrops, v8.27).")
+                links = item.get("link_targets")
+                if not (isinstance(links, list) and len(links) > 0):
+                    err(f"[CATCH_UP] {ipath}: 'link_targets' must be a non-empty array — every Catch-Up item needs a link (v8.27).")
 
 
 def check_long_shelf_items(ch, cpath):
@@ -483,9 +515,9 @@ def check_chapters(chapters, issue_meta):
             # (if fmt not in HYPE_ALLOWED_FORMATS but also not banned, allow with no error
             #  to be permissive for weekly/blueprint/shortlist/starter_kit if planner chooses)
 
-        # 13. v8.15 — fixed-section Lead + Companion `pieces` array (weekly format only)
+        # 13. v8.27 — fixed-section Lead + Catch-Up shape (weekly format only)
         if fmt == "weekly" and ch_id in FIXED_SECTION_CHAPTER_IDS:
-            check_pieces(ch, cpath)
+            check_section_shape(ch, cpath)
 
         # 14. v8.15 — long_shelf `items` array with wildcard discipline (weekly format only)
         if fmt == "weekly" and ch_id in LONG_SHELF_CHAPTER_IDS:
@@ -1145,6 +1177,58 @@ def run_inline_tests():
     run_test("countdown chapter without pieces (not bound by Lead+Companion)",
              make_plan(), expect_pass=True)
 
+    # ── v8.27 Lead + Catch-Up shape cases ──
+
+    lead_only = [
+        {"role": "lead", "topic_family": "us_politics", "word_count_target": {"min": 400, "max": 700}, "headline_hint": "x", "link_targets": ["https://example.com"]}
+    ]
+    good_catch_up = [
+        {"headline_hint": "Transfer confirmed", "why_it_matters": "Reshapes the title race", "link_targets": ["https://example.com"]},
+        {"headline_hint": "Squad announced", "why_it_matters": "First call-up for X", "link_targets": ["https://example.com"]}
+    ]
+
+    # FAIL: bare Lead with no Catch-Up, no Companion, no yield_reason
+    run_test("bare lead with no second element fails", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[weekly_fixed_chapter("world", pieces=lead_only)]
+    ), expect_pass=False)
+
+    # PASS: Lead + non-namedrop Catch-Up (companion optional, omitted)
+    run_test("lead + substantive catch_up passes (no companion)", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[weekly_fixed_chapter("world", pieces=lead_only, extra={"catch_up": good_catch_up})]
+    ), expect_pass=True)
+
+    # PASS: Lead + yield_reason (section runs short)
+    run_test("lead + yield_reason passes (section yields)", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[weekly_fixed_chapter("toolkit", pieces=lead_only, extra={"yield_reason": "thin tech week"})]
+    ), expect_pass=True)
+
+    # FAIL: Catch-Up item is a bare namedrop (missing why_it_matters)
+    namedrop_catch_up = [
+        {"headline_hint": "New game out", "why_it_matters": "", "link_targets": ["https://example.com"]}
+    ]
+    run_test("catch_up bare namedrop (no why) fails", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[weekly_fixed_chapter("pixel_byte", pieces=lead_only, extra={"catch_up": namedrop_catch_up})]
+    ), expect_pass=False)
+
+    # FAIL: Catch-Up item missing link
+    nolink_catch_up = [
+        {"headline_hint": "New game out", "why_it_matters": "Sequel to a cult hit", "link_targets": []}
+    ]
+    run_test("catch_up item without link fails", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[weekly_fixed_chapter("pixel_byte", pieces=lead_only, extra={"catch_up": nolink_catch_up})]
+    ), expect_pass=False)
+
+    # PASS: The Toolkit is now a fixed section running Lead + Catch-Up
+    run_test("toolkit fixed section with lead + catch_up passes", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[weekly_fixed_chapter("toolkit", pieces=lead_only, extra={"catch_up": good_catch_up})]
+    ), expect_pass=True)
+
     # ── v8.16 rotating-section cadence cases ──
 
     def rotating_chapter(chapter_id, num):
@@ -1164,15 +1248,15 @@ def run_inline_tests():
             "cross_refs": []
         }
 
-    # PASS — rotating section scheduled outside its floor (the_workshop with weeks_since=4, cadence [3,4])
+    # PASS — rotating section scheduled outside its floor (the_shelf with weeks_since=4, cadence [3,4])
     run_test("rotating cadence floor — workshop at 4 weeks (above floor=3)", make_plan(
         issue_meta=weekly_meta,
         chapters=[
             weekly_fixed_chapter("world", pieces=valid_pieces),
-            rotating_chapter("the_workshop", 2)
+            rotating_chapter("the_shelf", 2)
         ],
         rotating_sections={
-            "the_workshop": {"weeks_since_last_appeared": 4, "cadence_weeks": [3, 4]}
+            "the_shelf": {"weeks_since_last_appeared": 4, "cadence_weeks": [3, 4]}
         }
     ), expect_pass=True)
 
@@ -1181,15 +1265,15 @@ def run_inline_tests():
         issue_meta=weekly_meta,
         chapters=[
             weekly_fixed_chapter("world", pieces=valid_pieces),
-            rotating_chapter("the_workshop", 2)
+            rotating_chapter("the_shelf", 2)
         ],
         rotating_sections={
-            "the_workshop": {"weeks_since_last_appeared": 1, "cadence_weeks": [3, 4]}
+            "the_shelf": {"weeks_since_last_appeared": 1, "cadence_weeks": [3, 4]}
         }
     ), expect_pass=False)
 
     # PASS — rotating section inside floor BUT carries deficit_override_reason
-    floor_override_ch = rotating_chapter("the_workshop", 2)
+    floor_override_ch = rotating_chapter("the_shelf", 2)
     floor_override_ch["deficit_override_reason"] = "no other eligible rotating section"
     run_test("rotating cadence floor — override allowed", make_plan(
         issue_meta=weekly_meta,
@@ -1198,7 +1282,7 @@ def run_inline_tests():
             floor_override_ch
         ],
         rotating_sections={
-            "the_workshop": {"weeks_since_last_appeared": 1, "cadence_weeks": [3, 4]}
+            "the_shelf": {"weeks_since_last_appeared": 1, "cadence_weeks": [3, 4]}
         }
     ), expect_pass=True)
 
@@ -1207,11 +1291,11 @@ def run_inline_tests():
         issue_meta=weekly_meta,
         chapters=[
             weekly_fixed_chapter("world", pieces=valid_pieces),
-            rotating_chapter("the_workshop", 2)
+            rotating_chapter("the_shelf", 2)
         ],
         rotating_sections={
-            "the_workshop": {"weeks_since_last_appeared": 4, "cadence_weeks": [3, 4]},
-            "the_wallet":   {"weeks_since_last_appeared": 10, "cadence_weeks": [3, 4]}
+            "the_shelf": {"weeks_since_last_appeared": 4, "cadence_weeks": [3, 4]},
+            "the_money":   {"weeks_since_last_appeared": 10, "cadence_weeks": [3, 4]}
         }
     ), expect_pass=False)
 
@@ -1220,19 +1304,19 @@ def run_inline_tests():
         issue_meta=weekly_meta,
         chapters=[
             weekly_fixed_chapter("world", pieces=valid_pieces),
-            rotating_chapter("the_workshop", 2)
+            rotating_chapter("the_shelf", 2)
         ],
         rotating_sections={
-            "the_workshop": {"weeks_since_last_appeared": 4, "cadence_weeks": [3, 4]},
-            "the_wallet":   {"weeks_since_last_appeared": 10, "cadence_weeks": [3, 4]}
+            "the_shelf": {"weeks_since_last_appeared": 4, "cadence_weeks": [3, 4]},
+            "the_money":   {"weeks_since_last_appeared": 10, "cadence_weeks": [3, 4]}
         },
-        deficit_overrides={"the_wallet": "no fintech news this week"}
+        deficit_overrides={"the_money": "no fintech news this week"}
     ), expect_pass=True)
 
     # PASS — cadence rules do not fire on non-weekly formats
     run_test("cadence rules skipped on countdown format", make_plan(
         rotating_sections={
-            "the_workshop": {"weeks_since_last_appeared": 1, "cadence_weeks": [3, 4]}
+            "the_shelf": {"weeks_since_last_appeared": 1, "cadence_weeks": [3, 4]}
         }
     ), expect_pass=True)
 
@@ -1241,10 +1325,10 @@ def run_inline_tests():
         issue_meta=weekly_meta,
         chapters=[
             weekly_fixed_chapter("world", pieces=valid_pieces),
-            rotating_chapter("the_workshop", 2)
+            rotating_chapter("the_shelf", 2)
         ],
         rotating_sections={
-            "the_workshop": {"last_appeared": None, "cadence_weeks": [3, 4]}
+            "the_shelf": {"last_appeared": None, "cadence_weeks": [3, 4]}
         }
     ), expect_pass=True)
 

@@ -8,7 +8,7 @@ _This file consolidates the weekly/ subdir into one file. Each former file becom
 ## overview
 
 ### Standard Weekly (default)
-The full Sunday edition. **6,000-8,000 words, 20-30 pages.** Section order as listed above.
+The full Sunday edition. **No hard word target — a healthy Sunday read sized to the week's news, typically ~20-30 pages.** Held by per-section shape (Lead + Catch-Up), not a word quota; flex to the news and yield thin sections rather than padding to a number (v8.27). Section order as listed above.
 
 
 
@@ -18,15 +18,19 @@ The full Sunday edition. **6,000-8,000 words, 20-30 pages.** Section order as li
 
 ## Section Structure (Standard Weekly)
 
-Sections are divided into **fixed** (appear every issue) and **rotating** (appear on a cadence, selected per issue). Each issue includes all fixed sections plus 3-4 rotating sections. The Navigator adapts to show only the sections present in that issue. The issue ends with a Colophon (sign-off block) before the Footer — see § End-of-Issue Colophon.
+Sections are divided into **fixed** (appear every issue, except where noted) and **rotating** (appear on a cadence, selected per issue). Each issue includes the fixed sections plus **2-3 rotating sections**. The Navigator adapts to show only the sections present in that issue. The issue ends with a Colophon (sign-off block) before the Footer — see § End-of-Issue Colophon.
 
-> **Why 3-4 rotating slots (v8.16).** The roster grew from 9 rotating sections to 14 in v8.16. With per-section cadence targets ranging from every 2-3 weeks (Shelf, History) to every 6 weeks (Saga, Channel), each issue needs 3-4 slots to keep every section near its target cadence.
+> **Why 2-3 rotating slots (v8.27, was 3-4 in v8.16).** The v8.16 roster grew to 14 rotating sections by *splitting* (The Listen out of The Shelf, The Local out of The Itinerary, plus Brickyard / Saga / Lab / Channel), which made several sections compete for the same content and let one interest flood an issue. v8.27 redesigns the roster around the reader's actual interest-domains — one home per domain — collapsing to **5 rotating sections plus one trigger-driven section**. Fewer sections + fewer slots = less slot-filling pressure and a shorter, less-padded issue, back toward the "good era" size.
 
 ### Fixed vs Rotating
 
-**Fixed (every issue):** Cover, Navigator, Foreword, The Long Shelf, The World This Week, Pixel & Byte, The Touchline, Screen & Sound (with Release Radar), The Session (omit if nothing found), On the Radar, Footer.
+**Fixed (every issue):** Cover, Navigator, Foreword, The Long Shelf, The World This Week, Pixel & Byte (gaming + LEGO), The Toolkit (tech & tools — *fixed slot but routinely yields*; see its brief), The Touchline, Screen & Sound (with Release Radar), The Session (omit if nothing found), On the Radar, Footer.
 
-**Rotating (cadence-based):** The Shelf, The Listen, This Week in History, The Workshop, The Toolkit, The Ledger, The Long Game, The Wallet, The Itinerary, The Local, The Brickyard, The Saga, The Lab, The Channel.
+> **The Toolkit is a fixed slot that is expected to disappear regularly.** It is "fixed" only in the sense that it is always *considered* every week — but it carries consumer-tech / AI / apps news, which is not weekly. When the week is thin it **yields entirely** (don't pad it to appear). When it returns it must cover the **entire gap since its last appearance** (the catch-up rule, as The Shelf has), so yielding never drops a fortnight of tech news — it batches it into one good roundup. In practice it appears roughly every other week.
+
+**Rotating (cadence-based, pick 2-3 per issue):** The Shelf (books), This Week in History, Listening (podcasts + audio drama + music), Money (personal finance + fintech + side-hustle), Places (European travel + theme parks + NI local).
+
+**Trigger-driven (no cadence timer):** The Saga (lore deep-dive). It does NOT rotate on a clock — it runs only on a *reason*: a live public peg the researcher finds (a finale aired, a new book/season in a series the reader follows released, an author AMA), or a private peg the reader supplies (`currently_reading` / `currently_watching` in state, or a manual "run a Saga on …" trigger). See its brief in `references/sections.md` and the trigger note under § Auto-Triggered Specials.
 
 See **Rotation Mechanics** below for scheduling rules.
 
@@ -42,37 +46,31 @@ For individual section content rules, voice notes, and research guidance, see `r
 
 ## Rotation Mechanics
 
-Each issue includes **all fixed sections** plus **3-4 rotating sections** selected based on cadence and editorial judgement.
+Each issue includes the **fixed sections** plus **2-3 rotating sections** selected based on cadence and editorial judgement.
 
-### Cadence Table
+### Cadence Table (v8.27 — redesigned roster, one home per domain)
 
 | Section | Target Cadence | Research Window | Notes |
 |---|---|---|---|
-| The Shelf | Every 2-3 weeks | Since last appearance | Catch-up rule: covers full gap |
+| The Shelf | Every 2-3 weeks | Since last appearance | Books (primary), narrative history. Catch-up rule: covers full gap |
 | This Week in History | Every 2-3 weeks | Current week | History is date-bound |
-| The Listen | Every 3-4 weeks | Since last appearance | Podcasts + audio drama; episodic + retrospective |
-| The Workshop | Every 3-4 weeks | Since last appearance | Home gym, gear, recovery tools |
-| The Toolkit | Every 3-4 weeks | Since last appearance | Apps, productivity, workflows |
-| The Ledger | Every 3-4 weeks | Since last appearance | Side hustle, Etsy, templates |
-| The Long Game | Monthly (~every 4 weeks) | Since last appearance | Personal finance, investing |
-| The Wallet | Every 3-4 weeks | Since last appearance | Consumer fintech, banking apps |
-| The Itinerary | Every 3-4 weeks (more near trips) | Since last appearance + forward 2-4 weeks for events | European travel + theme parks |
-| The Local | Every 3-4 weeks | Since last appearance + forward 2-4 weeks for events | NI hidden gems + unusual family events |
-| The Brickyard | Every 4-6 weeks | Since last appearance | LEGO sets, builds, MOCs, availability |
-| The Saga | Every 6 weeks | Since last appearance | Star Wars + fantasy lore deep dives (no spoilers) |
-| The Lab | Monthly (~every 4 weeks) | Since last appearance | Training-science deep dive, slower than The Session |
-| The Channel | Every 6 weeks | Since last appearance | Music — synthwave, soundtracks, retro listening |
+| Listening | Every 3-4 weeks | Since last appearance | Podcasts + audio drama + music (absorbs the old Listen + Channel) |
+| Money | Every 3-4 weeks | Since last appearance | Personal finance + consumer fintech + side-hustle/Etsy (absorbs Long Game + Wallet + Ledger) |
+| Places | Every 3-4 weeks (more near trips) | Since last appearance + forward 2-4 weeks for events | European travel + theme parks + NI local (absorbs Itinerary + Local) |
+
+**Trigger-driven (NOT on this table):** **The Saga** (lore deep-dive) has no cadence timer — it runs on a live peg, not a clock. See § Auto-Triggered Specials → "The Saga (trigger-driven)" and its brief in `references/sections.md`. The planner does not deficit-promote it.
+
+**Folded away in v8.27 (do not schedule — they no longer exist as standalone sections):** The Workshop and The Lab fold into **The Session** (training science + gear are now rotating angles within it); LEGO folds into **Pixel & Byte**; The Listen + The Channel → **Listening**; The Long Game + The Wallet + The Ledger → **Money**; The Itinerary + The Local → **Places**. The Toolkit is no longer rotating — it is a fixed-but-yields section (see § Section Structure).
 
 ### Selection Rules
 
 1. **Check the state file** (`signal-state.json`) for `rotating_sections` — each entry has `last_appeared` date.
-2. **Pick the most overdue sections first.** If The Shelf last appeared 3 weeks ago and The Wallet 2 weeks ago, The Shelf has priority.
-3. **Cap at 3-4 rotating sections per issue** to maintain pacing. Rotating sections should be substantive (300-600 words each, except The Shelf which can be longer). The 6,500+ word target is met primarily by the fixed sections' Lead + Companion structure; rotating sections add variety on top, not bulk.
-4. **The Itinerary overrides normal cadence** when a trip is approaching — it appears every issue or every other issue in the lead-up. Check state file for `upcoming_trips`.
+2. **Pick the most overdue sections first.** If The Shelf last appeared 3 weeks ago and Money 2 weeks ago, The Shelf has priority.
+3. **Cap at 2-3 rotating sections per issue** to maintain pacing. Rotating sections should be substantive (300-600 words each, except The Shelf which can be longer). The issue's bulk comes from the fixed sections' Lead + Catch-Up; rotating sections add variety on top, not bulk. Fewer slots is deliberate (v8.27) — it keeps the issue from padding.
+4. **Places overrides normal cadence** when a trip is approaching — it appears every issue or every other issue in the lead-up. Check state file for `upcoming_trips`.
 5. **Don't force it.** If research for a rotating section turns up nothing worthwhile, skip it even if it's overdue. The cadence is a guide, not a mandate.
-6. **Ensure variety across a month.** Over any 4-issue stretch, aim for every rotating section to appear at least once (except The Long Game / The Lab, which are monthly, and The Itinerary, which is event-driven, and The Saga / The Channel, which run on a 6-week cadence).
+6. **Ensure variety across a month.** Over any 4-issue stretch, aim for each of the 5 rotating sections (The Shelf, This Week in History, Listening, Money, Places) to appear at least once. The Saga is excluded — it is trigger-driven, not on a cadence (see Cadence Table).
 7. **Hard cadence floor (planner-enforced).** A rotating section CANNOT be scheduled unless `weeks_since_last_appeared >= cadence_low` (the lower bound of its cadence band). The planner-side validator rejects any chapter plan that schedules a section inside its floor. Override: if no other rotating section is eligible (rare; only happens when most of the roster is too-soon AND the issue still needs slots), the planner picks the most-overdue section and the validator emits a warning instead of a hard fail.
-8. **No single theme may own the issue (v8.26 — theme-clustering cap).** Keeping the rotating *count* right (3-4) is not enough: a theme can still dominate by landing in several sections at once. The 31 May 2026 weekly ran The Workshop ("the science of recovery"), The Toolkit ("how to read a running watch"), and the Pixel & Byte lead (Garmin CIRQA) all on wearables/recovery, alongside the fixed Session — Garmin appeared 19 times, HRV 12, recovery 14. It read as a wearables special, not a varied Sunday weekly. **Rule: no single topic theme (wearables, one sport, one franchise, AI, UK politics, etc.) may own 3+ sections in one issue when 2+ of them are rotating/discretionary.** The genuine news flow is exempt — the week's biggest story legitimately threading the World Lead and being named in On the Radar is fine (those are fixed, not chosen). The failure is the planner *choosing* rotating sections that pile onto a theme already covered by a fixed section. When two overdue rotating sections both pull toward the same theme (Workshop + Toolkit both → fitness gear), re-angle one (Toolkit → a non-fitness app) or pick the next-most-overdue section instead. Enforced by `scripts/check-theme-clustering.py` at Phase 7; the planner should also pre-check it when selecting rotating sections so a re-plan isn't needed.
 
 8. **Deficit promotion (mandatory force-include).** A rotating section with `weeks_since_last_appeared >= 2 * cadence_high` is force-included in the next eligible issue, regardless of editorial preference. The planner must include it; the validator rejects any plan that leaves a deficit-eligible section out without an explicit reason field (`"deficit_override_reason"`). Prevents the Ledger / Wallet droughts seen in early v8.x.
 
@@ -85,21 +83,15 @@ Each issue includes **all fixed sections** plus **3-4 rotating sections** select
 | Rotating Section | Preferred Slot | Reasoning |
 |---|---|---|
 | The Shelf | Between Screen & Sound and The Session (original position) | Natural flow from entertainment to books |
-| The Listen | Between Screen & Sound and The Session | Pairs with entertainment, breaks before fitness |
-| The Workshop | Between The Session and the next section | Gear/gym pairs naturally with fitness |
-| The Toolkit | Between The World This Week and Pixel & Byte | Productivity/apps feel at home near the tech section |
-| The Ledger | Between The Touchline and Screen & Sound | Change of pace between sport and entertainment |
-| The Long Game | Between The Touchline and Screen & Sound | Finance as a breather between dense sections |
-| The Wallet | Between Pixel & Byte and The Touchline | Fintech pairs with the tech section |
-| The Itinerary | Between The Session and On the Radar | Travel/events naturally leads into the calendar |
-| The Local | Between The Session and On the Radar | NI events lead naturally into the calendar |
-| The Brickyard | Between Pixel & Byte and Screen & Sound | Sits in the "play" cluster |
-| The Saga | Between Screen & Sound and The Shelf | Sits in the "story" cluster |
-| The Lab | Between The Session and the next section | Pairs with fitness; deeper than the weekly Session |
-| The Channel | Between Screen & Sound and The Shelf | Sits in the "listen" cluster (or before The Listen if both present) |
+| Listening | Between Screen & Sound and The Session | Pairs with entertainment, breaks before fitness |
+| Money | Between The Touchline and Screen & Sound | A breather between dense sections |
+| Places | Between The Session and On the Radar | Travel/events naturally leads into the calendar |
 | This Week in History | Between The Session and On the Radar (original position) | Reflective close before the forward-looking calendar |
+| The Saga *(trigger-driven)* | Between Screen & Sound and The Shelf | Sits in the "story" cluster when a peg fires it |
 
-**When 3-4 rotating sections appear in the same issue:**
+The Toolkit, when it appears (fixed-but-yields), sits between The World This Week and Pixel & Byte — productivity/tech feels at home near the gaming section.
+
+**When 2-3 rotating sections appear in the same issue:**
 - Spread them across different slots — never place two rotating sections back-to-back.
 - If two sections share a preferred slot, move one to its alternate position.
 - The read-next connectors chain naturally through whatever sections are present.
@@ -141,9 +133,11 @@ Run the **core groups** every issue. Run **rotating groups** only when that sect
 
 ### Core Groups (every issue)
 
-**Group 1 — News & Geopolitics:** dominant running story, world news, UK / national politics, NI news briefly. Within this group, the scout phase MUST explicitly check for: (a) any UK / Irish / Scottish / Welsh / European elections held in the past 7 days (general, devolved, council aggregate); (b) live PM or opposition-leader leadership challenges (MPs calling for resignation, named challengers emerging, union pressure); (c) Cabinet-level resignations or sackings; (d) major government policy events (Budget, headline legal rulings, immigration policy changes). If any of (a)-(d) fired in the last 7 days, that story is automatically a candidate for Lead 1 unless an even bigger world story crowds it out. See the UK / national politics rule in this spec for the full Lead-grade vs parish-pump test.
+**Group 1 — News & Geopolitics:** dominant running story, world news. **UK / national politics is out by default** (see the UK / national politics rule in § Key Rules) — scan for it only to catch the rare genuine landscape shift (an election *result* that changes the picture, a government actually falling) and to surface a one-line safety-net mention of any big Westminster story in the Catch-Up roundup. **No story is auto-promoted to the Lead.** A UK-politics development — even a leadership challenge or a cabinet resignation — is *not* automatically a Lead-1 candidate (the v8.x auto-promote mandate was the direct engine of the Starmer ×3 run). It is covered like anything else, and it leads only if it passes the two-factor Lead test (§ Article Structure: did it move this week AND can we add something beyond the headline). The news-breadth floor (Lens-not-Filter) still holds: a genuinely big world story always gets *covered*, in the Lead if it clears the test, otherwise as a Catch-Up line.
 
-**Group 2 — Tech & Gaming:** Nintendo Switch 2, Steam Deck, GeForce Now, consumer AI tools, Pixel/Xiaomi/e-readers, LEGO news and releases, gaming news and releases
+**Group 2a — Gaming (for Pixel & Byte, every issue):** Nintendo Switch 2, Steam Deck / Steam Machine, GeForce Now, high-quality tablet games, plus generalist gaming (the biggest game of the year gets covered even if it's not on Switch) — what came out this week + highlights of the next month + *new* rumours-with-analysis. LEGO news and releases (LEGO now lives in Pixel & Byte as an occasional "play" beat).
+
+**Group 2b — Tech & tools (for The Toolkit, when it runs):** consumer tech (Pixel/Xiaomi/e-readers, wearables hardware as consumer news), consumer AI tools, Android apps / tablet productivity / workflows. The Toolkit yields when thin; when it runs, cover the full gap since its last appearance.
 
 **Group 3 — Football & Sport:** First, check: are World Cup qualifiers, Euro qualifiers, World Cup finals, Euros, CL/EL knockout stages, or other major tournaments active this week? If yes, search for those first — they lead the section. Then search domestic (Juventus + Serie A, Premier League) only for significant news. If no tournament is active, search Serie A + Juventus, Premier League, CL/EL (in season), golf majors/Ryder Cup (when in season).
 

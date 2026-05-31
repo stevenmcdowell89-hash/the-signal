@@ -59,13 +59,18 @@ CLUSTERS = {
 }
 
 # Section markers (weekly): label text → canonical section name.
+# v8.27 roster: fixed (World, Pixel & Byte, The Toolkit, Touchline, Screen & Sound,
+# Session) + rotating (Shelf, This Week in History, Listening, Money, Places) +
+# trigger-driven (The Saga). Legacy labels kept so the gate still parses archived
+# issues generated under the old roster.
 SECTION_LABELS = [
-    "The World This Week", "Pixel & Byte", "Pixel &amp; Byte", "The Touchline",
-    "Screen & Sound", "Screen &amp; Sound", "The Session", "The Long Shelf",
-    "On the Radar", "The Shelf", "The Listen", "This Week in History",
-    "The Workshop", "The Toolkit", "The Ledger", "The Long Game", "The Wallet",
-    "The Itinerary", "The Local", "The Brickyard", "The Saga", "The Lab",
-    "The Channel", "Down the Rabbit Hole",
+    "The World This Week", "Pixel & Byte", "Pixel &amp; Byte", "The Toolkit",
+    "The Touchline", "Screen & Sound", "Screen &amp; Sound", "The Session",
+    "The Long Shelf", "On the Radar", "The Shelf", "This Week in History",
+    "Listening", "Money", "Places", "The Saga", "Down the Rabbit Hole",
+    # legacy labels (pre-v8.27 archived issues)
+    "The Listen", "The Workshop", "The Ledger", "The Long Game", "The Wallet",
+    "The Itinerary", "The Local", "The Brickyard", "The Lab", "The Channel",
 ]
 
 
