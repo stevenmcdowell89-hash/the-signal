@@ -62,7 +62,11 @@ pass/fail.
   adding information, no rhetorical pose. Reads like someone who knows the
   subject explaining it clearly.
 - **3** — Mostly clear with occasional performance: a stray "And yet…", a
-  withheld-word ending, a triplet reached for rhythm.
+  withheld-word ending, a triplet reached for rhythm, or a **hollow
+  connective sentence** (v8.30 — one that comments on the content's
+  significance instead of adding to it: "that framing is what makes this a
+  discovery"), or a **hedged answer** (a posed "how many" question answered
+  as mush — "somewhere in the region of…" — rather than landed).
 - **1** — Performs throughout. *Anchor: the WWI Deep Dive (2026-05-26)*
   describes its own structure in the body ("This Deep Dive covers… in
   three roughly equal sections", "The chapters that follow will support
