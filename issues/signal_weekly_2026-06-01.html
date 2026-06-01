@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Signal — 25–31 May 2026</title>
+<title>The Signal — 26 May–1 Jun 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,500&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
 <!--
   HOLIDAY ISSUES ONLY (Countdown, Field Guide). For other formats, OMIT this block.
@@ -268,7 +268,7 @@ p:last-child { margin-bottom: 0; }
 .cover-noise {
   position: absolute; inset: 0;
   opacity: 0.035;
-  background-image: url("/assets/cached/ff56b06c1bbb.jpg");
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANWp0mAAAACHRSTlMzMzMzMzMzM85JBgUAAAA0SURBVDjLY2CgNmBWYBBgYFZgEGBkVmAQYGJWYBBgZlZgEGBhVmAQYGVWYBBgY6Y4AABxWAIRkPtLqAAAAABJRU5ErkJggg==");
   pointer-events: none;
   z-index: 1;
 }
@@ -1388,7 +1388,7 @@ p:last-child { margin-bottom: 0; }
   position: absolute;
   inset: 0;
   opacity: 0.06;
-  background-image: url("/assets/cached/18546669dfd9.jpg");
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANWp0mAAAACHRSTlMzMzMzMzMzM85JBgUAAAA0SURBVDjLY2CgNmBWYBBgYFZgEGBkVmAQYGJWYBBgZlZgEGBhVmAQYGVWYBBgY6Y4AABxWAIRkPtLqAAAAABJRU5ErkJggg==");
   pointer-events: none;
   z-index: 0;
 }
@@ -3766,7 +3766,7 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
    present, mono caps eyebrow + serif italic credit line.
 
    <figure class="fig">                          (default — column-width)
-     <img src="/assets/cached/2d60ed959daa.jpg" alt="...">
+     <img src="..." alt="...">
      <figcaption>
        <span class="fig-caption">Caption text…</span>
        <cite class="fig-credit">Photo: Source / License</cite>
@@ -4361,7 +4361,7 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
    so Starter Kit, Next, and Deep Dive can use the same component.
 
      <article class="pick">
-       <img class="pick-img" src="/assets/cached/2ef663453548.jpg" alt="…">
+       <img class="pick-img" src="…" alt="…">
        <div class="pick-body">
          <span class="pick-tag">Top Pick</span>
          <h3>Pick title</h3>
@@ -11276,6 +11276,18 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
 <body>
 <div class="progress-bar" id="progressBar"></div>
 
+<!-- ══════ PERSISTENT MASTHEAD (Enhancement 19A) ══════
+  Fixed row that runs across every page of the issue. Uses
+  mix-blend-mode: difference so it auto-inverts over dark + paper
+  sections — never change colours by hand. Lives OUTSIDE .mag so it
+  spans the full viewport.
+-->
+<div class="mast" aria-hidden="true">
+  <div class="left"><span><span class="dot"></span>The Signal<span class="mast-period">.</span></span><span>Sunday Dispatch</span></div>
+  <div class="center">Issue #11 · 26 May–1 Jun 2026</div>
+  <div class="right"><span>Vol. I</span><span>2026</span></div>
+</div>
+
 <!-- ══════ ROTATING WAX-STAMP SEAL (Enhancement 19C) ══════
   Fixed seal top-right of the viewport. The outer ring rotates; the
   inner numeral stays upright. Agent: update .numeral to the current
@@ -11299,7 +11311,7 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
   <div class="hub">
     <span>
       <span class="numeral" id="stampNumeral">I</span>
-      <span class="issue-tag">Nº 011</span>
+      <span class="issue-tag">Nº 012</span>
     </span>
   </div>
 </div>
@@ -11311,172 +11323,184 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
 
 <div class="mag">
 
-<!-- ══════ PERSISTENT MASTHEAD (Enhancement 19A) ══════
-  Fixed row that runs across every page of the issue. Uses
-  mix-blend-mode: difference so it auto-inverts over dark + paper
-  sections — never change colours by hand. Lives OUTSIDE .mag so it
-  spans the full viewport.
--->
-<div class="mast" aria-hidden="true">
-  <div class="left"><span><span class="dot"></span>The Signal<span class="mast-period">.</span></span><span>Sunday Dispatch</span></div>
-  <div class="center">Issue #11 · 25–31 May 2026</div>
-  <div class="right"><span>Vol. I</span><span>2026</span></div>
-</div>
-
-<!-- ══════ COVER (Enhancement 19B — full-bleed editorial) ══════
-  Full-viewport opener. Headline anchors to the bottom of the middle
-  row; the giant italic serial number bleeds off the lower-right; the
-  ruled foot gives a scroll cue. 6-10 topic tags.
--->
 <header class="cover" id="top">
   <div class="cover-noise"></div>
   <div class="cover-grain"></div>
-  <div class="cover-issue" style="position:relative;z-index:2">25–31 May 2026 · Issue #11 · Sunday Edition</div>
-  <div class="cover-brand">The Signal<span class="brand-period">.</span></div>
-  <div class="cover-headline">The week everyone spent waiting — Westminster on a by-election, Paris on the very last penalty.</div>
-  <div style="font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(255,255,255,.35);margin-top:12px;position:relative;z-index:2;letter-spacing:1px;">A leadership crisis pauses for breath and pivots on Makerfield, 18 June; PSG retain the Champions League 4–3 on penalties after Eze and Gabriel miss.</div>
+  <div class="cover-issue" style="position:relative;z-index:2">1 June 2026 · Issue #11 · Sunday Edition</div>
+  <div class="cover-brand" style="position:relative;z-index:2">The Signal<span>.</span></div>
+  <div class="cover-headline" style="position:relative;z-index:2">A rare Ebola outruns the response, Paris blows the draw wide open, and 2026's best game is a $20 throwback.</div>
+  <div style="font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(255,255,255,.35);margin-top:12px;position:relative;z-index:2;letter-spacing:1px;">The week the headline numbers stopped meaning what you'd expect.</div>
   <div class="cover-tags">
-    <span class="tag">Westminster</span><span class="tag">The Makerfield By-Election</span><span class="tag">Champions League</span>
-    <span class="tag">PSG &amp; Arsenal</span><span class="tag">Roland-Garros</span><span class="tag">Switch 2</span>
-    <span class="tag">Wearables</span><span class="tag">Constantinople &amp; Everest</span><span class="tag">The Long Shelf</span>
-  </div>
-
-  <!-- Giant tilted serial number — stitcher swaps 011 for padded issue no. -->
-  <div class="cover-serial">011</div>
-
-  <!-- Ruled foot with scroll cue -->
-  <div class="cover-foot">
-    <div class="left">Twelve Sections · One Sitting</div>
-    <div class="scroll-cue"><span>Scroll</span><span class="arrow"></span><span>to begin</span></div>
-    <div class="right">Hand-set · Long-form · Sunday Morning</div>
+    <span class="tag">Ebola PHEIC</span>
+    <span class="tag">Roland-Garros</span>
+    <span class="tag">Monaco GP</span>
+    <span class="tag">Mina the Hollower</span>
+    <span class="tag">Mandalorian &amp; Grogu</span>
+    <span class="tag">Agentic Android</span>
+    <span class="tag">Hypertrophy</span>
+    <span class="tag">The Long Shelf</span>
   </div>
 </header>
 
-<!-- ══════ NAVIGATOR ══════ -->
 <section class="nav-section" id="nav">
   <h2>What's Inside</h2>
   <div class="nav-grid">
-    <!-- Lead card: spans 2 columns -->
-    <a href="#world" class="nav-card lead world" style="text-decoration:none">
-      <div class="nav-card-content">
-        <div class="nav-card-tag">
-          <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10 15 15 0 0 1-4-10A15 15 0 0 1 12 2z"/></svg></span>
-          The World This Week</div>
-        <h3>Westminster's waiting phase</h3>
-        <p>No challenge, no confidence vote — the whole crisis now turns on one by-election, while Ukraine, Iran and the tariff courts grind on.</p>
-        <div class="read-time">9 min read</div>
-      </div>
-    </a>
-    <a href="#pixel-byte" class="nav-card tech" style="text-decoration:none">
-      <div class="nav-card-tag">
-        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="4"/><line x1="6" y1="10" x2="6" y2="14"/><line x1="4" y1="12" x2="8" y2="12"/><circle cx="16" cy="10" r="0.8" fill="currentColor"/><circle cx="18" cy="12" r="0.8" fill="currentColor"/></svg></span>
-        Pixel &amp; Byte</div>
-      <h3>The subscription-free band</h3><p>Garmin takes a shot at Whoop and Oura, and Switch 2 keeps its one-a-month rhythm.</p><div class="read-time">7 min</div>
-    </a>
-    <a href="#touchline" class="nav-card football" style="text-decoration:none">
-      <div class="nav-card-tag">
-        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2l3 7h-6l3-7zM22 12l-7 3v-6l7 3zM12 22l-3-7h6l-3 7zM2 12l7-3v6l-7-3z"/></svg></span>
-        The Touchline</div>
-      <h3>Paris, on the last kick</h3><p>A Champions League final settled from twelve yards, while clay and tarmac tear up the script.</p><div class="read-time">8 min</div>
-    </a>
-    <a href="#screen-sound" class="nav-card screen" style="text-decoration:none">
-      <div class="nav-card-tag">
-        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 8h20M2 16h20M8 4v16M16 4v16"/></svg></span>
-        Screen &amp; Sound</div>
-      <h3>This week on screen and in your ears</h3><p>What landed worth watching, and what's worth a listen.</p><div class="read-time">5 min</div>
-    </a>
-    <a href="#the-session" class="nav-card session" style="text-decoration:none">
-      <div class="nav-card-tag">
-        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6h-2v12h2M18 6h2v12h-2M6 12h12"/><rect x="3" y="8" width="3" height="8" rx="1"/><rect x="18" y="8" width="3" height="8" rx="1"/></svg></span>
-        The Session</div>
-      <h3>A slower read for the morning</h3><p>One idea, given room to breathe.</p><div class="read-time">5 min</div>
-    </a>
-    <a href="#this-week-in-history" class="nav-card history" style="text-decoration:none">
-      <div class="nav-card-tag">
-        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12M6 22h12M7 2v4a5 5 0 0 0 5 5 5 5 0 0 0 5-5V2M7 22v-4a5 5 0 0 1 5-5 5 5 0 0 1 5 5v4"/></svg></span>
-        This Week in History</div>
-      <h3>Echoes on the same calendar days</h3><p>What happened in these last days of May, across the centuries.</p><div class="read-time">4 min</div>
-    </a>
-    <a href="#the-workshop" class="nav-card session" style="text-decoration:none">
-      <div class="nav-card-tag">
-        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4l-6 6a1.5 1.5 0 0 0 2.1 2.1l6-6a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.1-2.1z"/></svg></span>
-        The Workshop</div>
-      <h3>The science of recovery</h3><p>What the resting-heart-rate and HRV numbers are actually telling you.</p><div class="read-time">5 min</div>
-    </a>
-    <a href="#the-toolkit" class="nav-card tech" style="text-decoration:none">
-      <div class="nav-card-tag">
-        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4.5a4 4 0 0 1 5 5l-2 1 3 7-2 2-7-3-1 2a4 4 0 0 1-5-5l2-1-3-7 2-2 7 3 1-2z"/></svg></span>
-        The Toolkit</div>
-      <h3>How to read a running watch</h3><p>Which numbers on a GPS watch deserve trust, and which are rough guidance.</p><div class="read-time">3 min</div>
-    </a>
+
     <a href="#long-shelf" class="nav-card shelf" style="text-decoration:none">
       <div class="nav-card-tag">
-        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>
-        The Long Shelf</div>
-      <h3>Books for the long game</h3><p>A reading pick worth the commitment.</p><div class="read-time">4 min</div>
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg></span>
+        The Long Shelf
+      </div>
+      <h3>Eight things worth your time</h3>
+      <p>A new Cosmere series, 2026's best-reviewed game, a synthwave deluxe, and the maths of fireflies flashing in sync.</p>
+      <div class="read-time">3 min</div>
     </a>
-    <a href="#on-the-radar" class="nav-card world" style="text-decoration:none">
+
+    <a href="#world" class="nav-card world" style="text-decoration:none">
       <div class="nav-card-tag">
-        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span>
-        On the Radar</div>
-      <h3>What's coming into view</h3><p>The dates and releases worth marking before next Sunday.</p><div class="read-time">3 min</div>
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20"></path><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></span>
+        The World This Week
+      </div>
+      <h3>The fastest Ebola outbreak yet</h3>
+      <p>A rare strain races through a war zone with no vaccine — plus an oil shock, a seized tanker, and a crusader fort changing hands.</p>
+      <div class="read-time">5 min</div>
     </a>
+
+    <a href="#pixel-byte" class="nav-card tech" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"></rect><path d="M6 12h4"></path><path d="M8 10v4"></path><circle cx="16" cy="11" r="1"></circle><circle cx="18" cy="14" r="1"></circle></svg></span>
+        Pixel &amp; Byte
+      </div>
+      <h3>A $20 throwback beats the blockbusters</h3>
+      <p>The best-reviewed game of 2026 is a Game Boy-styled adventure that runs great on the Deck — plus Stray pads onto Switch 2.</p>
+      <div class="read-time">3 min</div>
+    </a>
+
+    <a href="#the-toolkit" class="nav-card tech" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg></span>
+        The Toolkit
+      </div>
+      <h3>Android finally does the boring multistep stuff</h3>
+      <p>Gemini takes over the app-hopping with nothing new to install — and a Pixel update quietly clears a pile of annoyances.</p>
+      <div class="read-time">3 min</div>
+    </a>
+
+    <a href="#football" class="nav-card football" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 7l4.7 3.4-1.8 5.5h-5.8L7.3 10.4z"></path></svg></span>
+        The Touchline
+      </div>
+      <h3>Paris blows the door off the men's draw</h3>
+      <p>Alcaraz out, Sinner gone in R2, a teenager through it — and Antonelli carries a 43-point cushion to Monaco.</p>
+      <div class="read-time">5 min</div>
+    </a>
+
+    <a href="#screen" class="nav-card screen" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18"></rect><path d="M7 2v20"></path><path d="M17 2v20"></path><path d="M2 12h20"></path><path d="M2 7h5"></path><path d="M2 17h5"></path><path d="M17 17h5"></path><path d="M17 7h5"></path></svg></span>
+        Screen &amp; Sound
+      </div>
+      <h3>The number that looks like failure</h3>
+      <p>Star Wars' smallest theatrical bet may be the strategy working — plus a goodbye to the editor who shaped A New Hope.</p>
+      <div class="read-time">4 min</div>
+    </a>
+
+    <a href="#session" class="nav-card session" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11"></path><path d="M6.5 17.5h11"></path><path d="M4 9V6a1 1 0 0 1 1-1h0a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h0a1 1 0 0 1-1-1v-3"></path><path d="M20 9V6a1 1 0 0 0-1-1h0a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h0a1 1 0 0 0 1-1v-3"></path></svg></span>
+        The Session
+      </div>
+      <h3>How many sets is enough?</h3>
+      <p>The biggest volume meta-analysis pooled 67 studies for a clean answer on where muscle growth actually plateaus.</p>
+      <div class="read-time">4 min</div>
+    </a>
+
+    <a href="#the-places" class="nav-card history" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span>
+        The Places
+      </div>
+      <h3>Three June anchors on the doorstep</h3>
+      <p>A book festival, a hill climb, and tall ships on the Foyle — the Northern Irish dates worth holding this month.</p>
+      <div class="read-time">2 min</div>
+    </a>
+
+    <a href="#radar" class="nav-card world" style="text-decoration:none">
+      <div class="nav-card-tag">
+        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg></span>
+        On the Radar
+      </div>
+      <h3>The dates worth holding</h3>
+      <p>Roland-Garros finals, Monaco, an Astroneer Early Access and a maritime festival — what's coming down the June calendar.</p>
+      <div class="read-time">1 min</div>
+    </a>
+
   </div>
 </section>
 
-<!-- ============================================================
-     FOREWORD  (chapter: foreword)
-     Format: WEEKLY  |  Accent: house
-     Anchor: <h2 id="foreword">
-     ============================================================ -->
-<section class="chapter chapter--foreword" data-chapter="foreword">
-  <div class="wrap">
+<section class="sec" id="foreword">
+  <span class="section-label">The Foreword</span>
+  <h2>Why these stories, this week</h2>
+  <p class="dropcap"><span class="lead-in">Some weeks refuse</span> to settle. A rare Ebola strain races through eastern Congo as the WHO sounds the global alarm; talks collapse and oil lurches upward. We lead with what moved hardest, then step back to a $20 throwback that outscored the blockbusters. And next weekend, Monaco and Roland-Garros both reach their finals — the results still to be written. Pour the coffee.</p>
+</section>
 
-    <h2 id="foreword" class="chapter__title">
-      <span class="chapter__kicker">The Signal</span>
-      From the Editor
-    </h2>
+<!-- ══════ THE LONG SHELF ══════ -->
+<section class="sec longshelf-section" id="long-shelf">
+  <span class="section-label" style="color:var(--rose)">The Long Shelf — Worth Your Time</span>
+  <h2>Eight things worth your time</h2>
+  <p>Two new doorstops to mark on the calendar, the year's best-reviewed game for the price of a takeaway, a meta-analysis that settles a gym argument — and a couple of things from well off the usual map.</p>
+  <div class="longshelf-grid">
 
-    <div class="foreword__body prose">
+    <div class="shelf-item">
+      <div class="title"><a href="https://www.deseret.com/entertainment/2025/12/05/brandon-sanderson-announces-the-fires-of-december/">The Fires of December</a></div>
+      <div class="meta">Deseret News · Brandon Sanderson</div>
+      <div class="desc">A new Cosmere series built around Hoid: terrible things happen to him, and he tells you a story about it. The announcement lays out the shape of it without giving anything away.</div>
+    </div>
 
-      <p class="foreword__lede">
-        Some weeks rush at you. This one held still, as though the whole of
-        it had decided to wait.
-      </p>
+    <div class="shelf-item">
+      <div class="title"><a href="https://thewertzone.blogspot.com/2026/01/next-malazan-novel-legacies-of-betrayal.html">Legacies of Betrayal</a></div>
+      <div class="meta">The Wertzone · Steven Erikson</div>
+      <div class="desc">The next novel set in the Malazan world, third of the Tales of Witness, pencilled in tentatively for October 2026 — one to file under "coming soon" and forget about until autumn.</div>
+    </div>
 
-      <p>
-        At Westminster, the move everyone braced for never came. A confidence
-        vote hovered, then dissolved into something closer to a pause &mdash;
-        senior figures agreeing to hold their fire until the Makerfield
-        by-election on 18 June. Calls for &ldquo;calm&rdquo; and
-        &ldquo;unity&rdquo; filled the air while the real positioning went on
-        quietly underneath. No challenge was lodged. One word kept surfacing
-        to describe the mood: &ldquo;suspended animation&rdquo;.
-      </p>
+    <div class="shelf-item">
+      <div class="title"><a href="https://comicbook.com/gaming/news/steam-deck-verified-best-game-2026/">Mina the Hollower</a></div>
+      <div class="meta">ComicBook · Yacht Club Games</div>
+      <div class="desc">A $20 Game Boy-styled adventure that has, somehow, become the highest-rated game of 2026 so far — beating the year's blockbusters and running great on a handheld.</div>
+    </div>
 
-      <p>
-        Paris waited too. Heavy rain drove the French Open under cover and
-        shuffled the order of play, and the draw obliged by coming apart:
-        half the top four seeds gone before the quarter-finals, and a
-        first-time semi-finalist rising from the bottom of the women&rsquo;s
-        half. Nothing settled, everything still possible.
-      </p>
+    <div class="shelf-item">
+      <div class="title"><a href="https://en.wikipedia.org/wiki/Syndicate_(album)">Syndicate (Deluxe)</a></div>
+      <div class="meta">Wikipedia · The Midnight</div>
+      <div class="desc">Six extra tracks of summer-night synthwave bolted onto the original, including a Chromeo remix of "Love Is an Ocean" — a clean hour of music for a long evening.</div>
+    </div>
 
-      <p>
-        And the Champions League final refused to be hurried. A cagey, tense
-        ninety minutes gave way to extra time, then to penalties &mdash; the
-        season&rsquo;s grandest night decided one kick at a time, a
-        goalkeeper&rsquo;s two saves the only thing that finally said the
-        waiting was over.
-      </p>
+    <div class="shelf-item">
+      <div class="title"><a href="https://link.springer.com/article/10.1007/s40279-025-02344-w">The resistance-training dose-response meta-analysis</a></div>
+      <div class="meta">Sports Medicine (Springer) · Pelland et al.</div>
+      <div class="desc">Sixty-seven studies and 2,058 people pooled into the cleanest answer yet to "how many sets is enough?" — growth climbs along an inverted-U and eventually plateaus. Worth reading in full if you lift.</div>
+    </div>
 
-      <p class="foreword__signoff">
-        <span class="foreword__signoff-name">The Editor</span>
-      </p>
+    <div class="shelf-item">
+      <div class="title"><a href="https://www.scientificamerican.com/article/may-2026-science-history-from-50-100-and-150-years-ago/">Why thousands of fireflies flash in perfect sync</a></div>
+      <div class="meta">Scientific American</div>
+      <div class="desc">The maths of spontaneous synchrony: how a swarm of disorganised blinkers locks into a single rhythm with no conductor and no one in charge — and where else the same trick turns up in nature.</div>
+    </div>
 
-    </div><!-- /.foreword__body -->
+    <div class="shelf-item">
+      <div class="title"><a href="https://longreads.com/">A magazine's reckoning with AI-generated fiction</a></div>
+      <div class="meta">Harper's Magazine · Katie Thornton</div>
+      <div class="desc">A literary publication confronts accusations that it ran machine-written stories — a sharp, uncomfortable essay on trust, authorship, and what a byline is supposed to mean now.</div>
+    </div>
 
-  </div><!-- /.wrap -->
+    <div class="shelf-item">
+      <div class="title"><a href="https://en.wikipedia.org/wiki/Noon">The etymology of "noon"</a></div>
+      <div class="meta">Wikipedia</div>
+      <div class="desc">Midday is named after three in the afternoon, and the reason is a slow medieval drift in when monks ate lunch — a tiny window into how Europe used to tell the time.</div>
+    </div>
+
+  </div>
 </section>
 
 <hr class="divider dv-world">
@@ -11485,591 +11509,358 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
   <div class="opener-band"></div>
   <div class="sec-gradient-overlay"></div>
   <span class="section-label" style="color:var(--rose)">The World This Week</span>
-  <h2>The crisis enters a waiting phase &mdash; and the whole thing now turns on one by-election</h2>
-  <img class="hero-img reveal" src="https://upload.wikimedia.org/wikipedia/commons/c/c4/Prime_Minister_Sir_Keir_Starmer_Official_Portrait.jpg" alt="Official portrait of Sir Keir Starmer, Prime Minister of the United Kingdom">
-  <div class="caption">Sir Keir Starmer, Prime Minister. Credit: Official portrait, UK Government / Wikimedia Commons (OGL v3.0).</div>
+  <h2>A rare Ebola is racing &mdash; and the response has to run through a war zone</h2>
+  <img class="hero-img reveal" src="/assets/cached/4ef1f92f9801.jpg" alt="Health response to the Bundibugyo Ebola outbreak in DR Congo">
+  <div class="caption">The Ebola response in DR Congo, where WHO declared a Public Health Emergency and confirmed cases nearly doubled in days. Photo: Reuters via Al Jazeera.</div>
 
-  <p class="dropcap"><span class="lead-in">The storm that broke</span> over Westminster earlier this spring has, for now, blown itself out &mdash; not into resolution, but into something stranger and quieter. After the local-election rout and the wave of letters that followed, the obvious next act would have been a formal move against the Prime Minister. It did not come. In the week of 25&ndash;31 May, no leadership challenge was lodged and no parliamentary no-confidence vote was triggered. The party that looked, a fortnight ago, as if it might tear itself apart has instead settled into a holding pattern. The question is no longer <em>whether</em> Sir Keir Starmer is in trouble &mdash; that much is established &mdash; but on what date, and by whose hand, the trouble becomes terminal.</p>
+  <p class="dropcap"><span class="lead-in">The numbers moved</span> faster this week than almost anyone expected. On 17 May, the World Health Organization declared the Ebola outbreak in the Democratic Republic of the Congo and Uganda a <a href="https://www.who.int/news/item/17-05-2026-epidemic-of-ebola-disease-in-the-democratic-republic-of-the-congo-and-uganda-determined-a-public-health-emergency-of-international-concern">Public Health Emergency of International Concern</a> &mdash; its highest level of alarm. By 31 May, the DRC health ministry was reporting 282 confirmed cases and 42 deaths, with another 220 suspected cases still under investigation. The doubling rate is the part that frightens the epidemiologists: confirmed cases jumped from 121 on 27 May to 225 on 29 May, a near-doubling in two days. <a href="https://www.aljazeera.com/news/2026/5/30/confirmed-ebola-cases-nearly-double-in-days-as-who-chief-visits-dr-congo">Medecins Sans Frontieres</a> has called it one of the fastest-spreading Ebola outbreaks ever recorded.</p>
 
-  <p>The answer everyone in the tearoom now gives is the same: <a href="https://en.wikipedia.org/wiki/2026_Makerfield_by-election">Makerfield</a>. The Greater Manchester constituency goes to the polls on 18 June, and the by-election has quietly become the hinge on which the entire leadership question swings. The reason is a single name on the ballot. On 19 May, Labour's National Executive Committee confirmed Andy Burnham &mdash; the Mayor of Greater Manchester, a man who has spent years as the most prominent Labour figure conspicuously <em>outside</em> Parliament &mdash; as the party's candidate, bypassing the usual local selection process. The manoeuvre was not subtle, and it was not meant to be. Burnham cannot lead the parliamentary party until he is a member of it. Makerfield is the door.</p>
+  <p>What makes this one different from the West African epidemic a decade ago, or the recurrent flare-ups in eastern Congo since, is the pathogen itself. This is Bundibugyo virus &mdash; not the Zaire species that the licensed vaccines and the two approved monoclonal-antibody treatments were built against. It is only the third recorded outbreak of Bundibugyo in history, and for it there is <a href="https://www.science.org/content/article/major-outbreak-rare-ebola-virus-species-northern-congo-alarms-scientists">no approved vaccine and no approved therapeutic at all</a>. WHO is warning that the case-fatality rate could climb to 30&ndash;50% based on what the previous two outbreaks did. The tools that turned the last few Ebola scares into containable events simply do not exist for this strain.</p>
 
   <div class="sidebar-float">
-    <div class="sidebar-title">Why Makerfield matters</div>
+    <div class="sidebar-title">The outbreak, in figures</div>
     <ul>
-      <li><strong>18 June</strong> &mdash; polling day in the Greater Manchester seat.</li>
-      <li><strong>Andy Burnham</strong> &mdash; confirmed as Labour's candidate by the NEC on 19 May, skipping local selection.</li>
-      <li><strong>81 MPs</strong> &mdash; the 20% threshold a challenger needs to force a contest.</li>
-      <li><strong>~82%</strong> &mdash; Polymarket-implied chance of <em>no</em> Commons no-confidence vote by 30 June.</li>
+      <li><strong>17 May</strong> &mdash; WHO declared a Public Health Emergency of International Concern.</li>
+      <li><strong>282 / 42</strong> &mdash; confirmed cases and deaths in DRC by 31 May; 220 more suspected.</li>
+      <li><strong>3rd ever</strong> &mdash; outbreak of Bundibugyo virus on record; no approved vaccine or treatment.</li>
+      <li><strong>9 cases, 1 death</strong> &mdash; in Uganda (Kampala and Wakiso), at least three linked to travel from DRC.</li>
     </ul>
   </div>
 
-  <p>To understand why a single Lancashire by-election can carry this much national weight, it helps to read the arithmetic the way the plotters do. A formal challenge to the Labour leadership requires the backing of 81 MPs &mdash; 20% of the parliamentary party. The names are reportedly there in principle; what has been missing is a credible alternative to rally behind. A challenge without a champion is a coup that fails, and a failed coup leaves the rebels weaker than before. Burnham is the champion the soft left and the disaffected centre have been waiting for, but a champion who cannot vote in the Commons, let alone stand for its leadership, is a champion in name only. Hence the waiting. Hence the by-election. The markets have priced the lull accurately: <a href="https://polymarket.com/event/no-confidence-vote-against-starmer-by-june-30">Polymarket</a> implied roughly an 82% chance that no Commons no-confidence vote would land by 30 June &mdash; not because the appetite has faded, but because the obvious trigger sits three weeks down the calendar.</p>
+  <p>The second danger is geography. The epicentre sits in Ituri province in eastern DRC, a region that has been at war for years &mdash; health teams there have been attacked, and the state cannot reliably reach the very communities where the virus is circulating. The outbreak has already crossed a border: Uganda has confirmed nine cases including one death, split between Kampala and Wakiso, with at least three traced back to travel from DRC. On 27 May, Uganda temporarily <a href="https://www.pbs.org/newshour/health/uganda-closes-its-border-with-congo-where-suspected-cases-of-rare-ebola-type-are-surging">closed its border with Congo</a> and imposed quarantine measures as the suspected cases mounted.</p>
 
-  <div class="split-60-40">
-    <div>
-      <p>Makerfield is not, on paper, the kind of seat that decides governments. It is the kind of seat that, in a calmer era, Labour would expect to hold without thinking about it. That is precisely what makes the contest so exposed. A <a href="https://www.aljazeera.com/news/2026/5/28/the-kingmakers-of-makerfield-english-town-braces-for-crucial-by-election">Survation poll cited this week</a> captured the bind in a single line: Labour holds Makerfield with Burnham on the ballot, and loses it to Reform UK without him. The candidate is not merely the party's route to a new leader &mdash; he may also be the only thing standing between Labour and a humiliating defeat in territory it has long taken for granted. The town has become, as Al Jazeera put it, an unlikely set of kingmakers.</p>
-      <p>The shape of the next month, then, is unusually legible. A Burnham win delivers a sitting MP with a national profile and an explicit mandate, and the 81 signatures suddenly have somewhere to point. A Burnham loss &mdash; or a win so narrow it reads as a rebuke &mdash; deflates the whole project and buys the Prime Minister months he could not otherwise count on. The <a href="https://labourlist.org/2026/05/labourlist-labour-mp-starmer-resignation-tracker/">running tally of MPs on the record</a> against Starmer has not stopped growing; it has simply stopped translating into action while everyone watches one constituency.</p>
-    </div>
-    <div>
-      <img src="/assets/cached/9208a5413e80.jpg" alt="Andy Burnham" style="width:100%;border-radius:4px;">
-      <div class="caption">Andy Burnham, Mayor of Greater Manchester. Credit: Wikimedia Commons (CC BY-SA).</div>
-    </div>
+  <p>Into that gap walks the response. WHO Director-General Tedros Adhanom Ghebreyesus arrived in Bunia, the capital of Ituri, on 30 May, and his framing was deliberate. With the state unable to operate freely and no pharmaceutical shortcut available, the strategy is being handed to the people who live there. &ldquo;The communities understand the problems better, and they know the solution, as well,&rdquo; Tedros said on the ground. It is partly conviction and partly necessity: when you have no vaccine, no approved drug, and no safe corridor for outside teams, the front line is local trust &mdash; the willingness of families to report a fever, isolate the sick, and bury the dead safely. That is the whole containment plan, and it is being run in one of the hardest places on earth to run anything.</p>
+
+  <div class="angle reveal"><div class="angle-label">The Angle</div><p>The instinct after 2014 is to assume Ebola is a solved problem &mdash; that there is a vaccine, a treatment, a playbook. For this strain there is none of that. The genuine emergency here is not the virus's lethality alone; it is that the one outbreak the modern toolkit can't touch has landed in the one region where the state can't reach. Containment rests on community trust, because nothing else is available.</p></div>
+  <div class="src"><a href="https://www.who.int/emergencies/disease-outbreak-news/item/2026-DON605">WHO Disease Outbreak News (DON605)</a></div>
+
+  <div class="also"><div class="also-title">Catch-Up &mdash; What Else Happened</div>
+    <ul class="also-list">
+      <li class="tier-hot"><strong>Iran walks out of US talks; oil spikes ~8%.</strong> Iran withdrew from negotiations with Washington on 1 June, saying it will not return until Israel ends operations in Lebanon and Gaza. Brent reached $97.23 and WTI $94.20 a barrel &mdash; the biggest market move of the week &mdash; while US Central Command reported intercepting two Iranian ballistic missiles aimed at American forces in Kuwait. A petrol-pump shock dressed as a diplomatic one. <a href="https://en.wikipedia.org/wiki/Portal:Current_events/June_2026">Current events</a></li>
+      <li class="tier-warm"><strong>Israel takes the 12th-century Beaufort Castle in Lebanon &mdash; during a ceasefire.</strong> Israeli forces captured the crusader-era fort in Nabatieh on 31 May despite an active temporary truce, and a strike on Deir ez-Zahrani killed eight. The &ldquo;temporary ceasefire&rdquo; is collapsing in practice: a heritage fortress changes hands and the toll keeps climbing. <a href="https://en.wikipedia.org/wiki/Portal:Current_events/2026_May_31">Current events</a></li>
+      <li class="tier-warm"><strong>France and Britain seize a Russian shadow-fleet tanker in the Atlantic.</strong> The two militaries boarded a sanctions-evading Russian oil tanker in international waters on 1 June; Moscow called it &ldquo;bordering on international piracy.&rdquo; A pointed escalation in the West's pressure on the fleet Russia uses to keep its oil moving. <a href="https://en.wikipedia.org/wiki/Portal:Current_events/June_2026">Current events</a></li>
+      <li class="tier-note"><strong>Colombia heads to a 21 June runoff &mdash; and the president disputes the count.</strong> Sunday's first round sent Abelardo de la Espriella and Ivan Cepeda through to a runoff, but President Petro rejected the results citing vote-counting concerns. A polarised democracy with the sitting head of state already contesting the tally before the decisive round. <a href="https://en.wikipedia.org/wiki/Portal:Current_events/2026_May_31">Current events</a></li>
+      <li class="tier-note"><strong>UK politics holds steady.</strong> No national landscape shift this week &mdash; the Westminster leadership question remains in the same holding pattern it was in a fortnight ago, with no new development worth leading on. <a href="https://en.wikipedia.org/wiki/Portal:Current_events/June_2026">Current events</a></li>
+      <li class="tier-note"><strong>Also landing:</strong> Ethiopia held general elections for its House of Peoples' Representatives on 1 June; an explosion at a Hanwha aerospace plant in Daejeon, South Korea killed five and injured two; and a Russian drone crashed into an apartment block in Galati, eastern Romania, injuring two during an overnight attack on Ukraine. <a href="https://en.wikipedia.org/wiki/Portal:Current_events/June_2026">Current events</a></li>
+    </ul>
   </div>
-
-  <div class="timeline">
-    <div class="timeline-node">
-      <div class="timeline-date">The storm</div>
-      <div class="timeline-content">The local-election rout and a wave of MPs going on the record against the Prime Minister &mdash; the crisis that broke earlier this spring.</div>
-    </div>
-    <div class="timeline-node">
-      <div class="timeline-date">19 May</div>
-      <div class="timeline-content">The NEC confirms Burnham as Labour's Makerfield candidate, bypassing local selection &mdash; the manoeuvre that set the clock.</div>
-    </div>
-    <div class="timeline-node">
-      <div class="timeline-date">25&ndash;31 May</div>
-      <div class="timeline-content">The waiting phase: no formal challenge, no no-confidence vote. The party holds its breath.</div>
-    </div>
-    <div class="timeline-node">
-      <div class="timeline-date">18 June</div>
-      <div class="timeline-content">Makerfield votes. A Burnham win gives the rebels a champion inside the Commons; a loss buys Starmer time.</div>
-    </div>
-  </div>
-
-  <div class="angle reveal"><div class="angle-label">The Angle</div><p>A leadership crisis with no challenge and no vote can look, from the outside, like a crisis that has passed. It hasn't. What has happened is rarer and more disciplined: the rebels have stopped firing and started aiming. The danger to the Prime Minister is no longer diffuse grumbling but a single, dated event with a named beneficiary. That is a more serious position to be in, not a less serious one.</p></div>
-
-  <div class="pull-break">
-    <p>The question is no longer whether the Prime Minister is in trouble &mdash; it is on what <em>date</em> the trouble becomes terminal.</p>
-    <div class="attrib">&mdash; The week in Westminster</div>
-  </div>
-
-  <h2 style="margin-top:2.5rem">Ukraine posts its biggest weekly territorial gain of the year</h2>
-  <p>Away from Westminster's stillness, the war in Ukraine produced its most striking weekly result of 2026 &mdash; though the analysts tracking it are careful about what it does and does not mean. In the week to 26 May, Russia <a href="https://www.russiamatters.org/news/russia-ukraine-war-report-card/russia-ukraine-war-report-card-may-27-2026">lost 38 square miles of occupied Ukrainian territory</a>, its largest single-week loss this year, according to the Russia Matters war report card. Stretched across the four weeks to 26 May, Ukraine's net advance came to roughly 100 square miles.</p>
-  <p>The numbers are real, but the scale invites perspective. A hundred square miles over a month is a local correction, not a strategic breakthrough &mdash; the analysts frame it as ground retaken at the margins rather than a collapse of Russian lines. Set against the war's grim ledger, the figure shrinks further: Russia is estimated to have sustained on the order of a million casualties since the full-scale invasion began, against perhaps a quarter to a third of that on the Ukrainian side, and at least two-thirds of Ukraine's energy-generating capacity has been destroyed or sits under occupation since the autumn of 2024. President Zelensky is reportedly preparing his country for another two to three years of fighting. A good week, on this front, is measured in square miles &mdash; and in the knowledge that next week may give them back.</p>
-
-  <div class="also"><div class="also-title">Also This Week</div>
-    <div class="also-cards">
-      <div class="also-card">
-        <img src="/assets/cached/f4104f4a3f67.jpg" alt="The Strait of Hormuz photographed from orbit" style="width:100%;border-radius:4px;margin-bottom:.6rem;">
-        <div class="caption" style="margin-bottom:.6rem">The Strait of Hormuz from orbit. Credit: NASA / NASA Image and Video Library (public domain).</div>
-        <p><strong>US&ndash;Iran agree a 60-day framework to extend the ceasefire and reopen the Strait of Hormuz.</strong> A senior administration official said on 24 May that the two sides had reached a framework extending the ceasefire for 60 days while a final deal is negotiated; in the interim, the strait is to be de-mined and reopened. The ceasefire has held since 8 April. One complication is almost comic in its danger: Iran has reportedly lost track of some of the mines it laid and cannot fully clear the waterway itself. The US blockade of Iranian ports, which ran from 13 April, ended on 29 May. The story has slipped from headline crisis to watchful holding pattern. <a href="https://www.washingtonpost.com/world/2026/05/24/us-iran-near-deal-extend-ceasefire-reopen-hormuz/">Washington Post</a></p>
-      </div>
-      <div class="also-card">
-        <img src="/assets/cached/3c39f81c5266.jpg" alt="The Persian Gulf and Iranian coastline seen from the International Space Station" style="width:100%;border-radius:4px;margin-bottom:.6rem;">
-        <div class="caption" style="margin-bottom:.6rem">The Persian Gulf from the International Space Station. Credit: NASA / ISS Crew Earth Observations (public domain).</div>
-        <p><strong>Trump's tariff wall takes a legal hit, and the EU is handed a 4 July ultimatum.</strong> On 7 May the US Court of International Trade ruled the 10% global Section 122 tariffs under Proclamation 11012 unlawful &mdash; but declined to issue a universal injunction or order refunds, leaving the administration room to rebuild the revenue through other statutory powers (Sections 301 and 232). Meanwhile Brussels has been told to ratify its trade agreement with Washington by 4 July or face "much higher" duties, with a threatened 25% tariff on EU-made cars floated as leverage. A legal setback that changes the paperwork more than the policy. <a href="https://www.tradecomplianceresourcehub.com/2026/05/28/trump-2-0-tariff-tracker/">Trade Compliance Resource Hub</a></p>
-      </div>
-    </div>
-  </div>
-
-  <div class="read-next">Up next: <a href="#pixel-byte">Pixel &amp; Byte <span class="arrow">&rarr;</span></a> &mdash; a subscription-free Garmin band picks a fight with Whoop and Oura.</div>
+  <div class="read-next">Up next: <a href="#tech">Pixel &amp; Byte <span class="arrow">&rarr;</span></a> &mdash; 2026's best-reviewed game is a $20 throwback.</div>
 </section>
 
-<section class="sec toolkit-section" id="the-toolkit">
-  <div class="sec-watermark">Toolkit</div>
-  <span class="section-label" style="color:var(--cyan,#3aa6b9)">The Toolkit — Reading the Gadget</span>
-  <h2>How to Read a Running Watch</h2>
-
-  <p class="dropcap"><span class="lead-in">A modern running watch</span> reports a dozen numbers after every outing, all in the same clean font and the same tidy decimal places. The trick to using one well is knowing that the watch is quietly doing two very different jobs at once. Some of those numbers are measurements. The rest are estimates dressed up to look like measurements, and the gap between the two is where most people either over-trust a guess or ignore a figure that was actually solid.</p>
-
-  <p>Start with what the hardware genuinely knows. Pace, distance, elapsed time and lap splits come from a GPS chip triangulating against satellites and a clock that does not lie — on an open road or a track, accurate enough to plan a race around. That is the trustworthy half of the dashboard, and the half worth building any sense of progress on.</p>
-
-  <p>The other half is inference. Estimated VO2max, daily "readiness" or recovery scores, and rolling training-load figures are not things a watch can measure from a wrist. They are models — algorithms (Garmin leans on Firstbeat's; Whoop and the readiness-band crowd run their own) that take heart rate, pace and a few other inputs and output a single tidy figure that feels like a verdict. It is a reasonable guess, not a lab result, and should never be read as one.</p>
-
-  <ul class="entry-bullets">
-    <li><strong>Trust as measured:</strong> distance, elapsed time, lap splits — the GPS and the clock are doing real, verifiable work.</li>
-    <li><strong>Trust on the open road, with a caveat:</strong> pace is reliable over a steady mile but jumps around in the first thirty seconds of a sprint or under tree cover, where the satellite fix is still settling.</li>
-    <li><strong>Trust the trend, not the morning:</strong> resting heart rate and sleep figures are most useful as a line moving over weeks, not as today's single number.</li>
-    <li><strong>Treat as rough guidance:</strong> estimated VO2max, recovery / readiness scores, and training load are directional. Watch which way they drift; do not chase the exact value.</li>
-    <li><strong>Read with suspicion:</strong> wrist-based (optical) heart rate during hard intervals — the sensor struggles to track fast changes and can lag or latch onto your cadence instead. A chest strap is the honest reading when intensity actually matters.</li>
-  </ul>
-
-  <p>The number most people misread is the one that looks most authoritative: estimated VO2max. Because it arrives as a whole figure with no error bar, a one-point wobble reads like a fitness gain or a decline, when it is usually just a warmer day, a hillier route, or the optical sensor having an off morning. Read it like a bathroom scale — the daily reading is noise, the month-long direction is signal.</p>
-
-  <div class="stat-bar">
-    <div class="stat">
-      <span class="stat-num">2</span>
-      <span class="stat-label">jobs a running watch does at once — measuring (pace, distance, time, splits) and estimating (VO2max, readiness, load). Trust the first; read the second as direction.</span>
-    </div>
-  </div>
-
-  <blockquote class="pull-quote">
-    <p>The watch counts what it can count, and guesses the rest with great composure. The skill is telling the counting from the guessing.</p>
-    <cite>— The Signal</cite>
-  </blockquote>
-
-  <p>None of this is an argument against the scores. A recovery figure that has slumped three days running is worth a pause; a training-load trend climbing faster than the legs can absorb is a genuine flag. The mistake is granting a single morning's number the authority of a measurement. Used as a weather vane rather than a thermometer, the soft metrics earn their place.</p>
-
-  <div class="dyk">
-    <div class="dyk-title">Did You Know</div>
-    <p>The wearable industry is quietly rebranding itself from step-counter to "health system" — a shift that puts ever more weight on these estimated, model-derived scores rather than the raw numbers underneath them. The more confident the readiness verdict looks, the more it is worth asking what was actually measured. <a href="https://athletechnews.com/how-wearables-are-evolving-from-fitness-trackers-to-health-systems/">Athletech News charts the move</a>.</p>
-  </div>
-
-  <p>So the working rule is simple. Build your training on the numbers the watch actually counts — pace, distance, time, splits — and let the estimated scores be the colour commentary: useful for direction, never to be mistaken for the scoreboard.</p>
-</section>
-
+<!-- ══════ PIXEL & BYTE ══════ -->
 <hr class="divider dv-tech">
 <section class="sec tech-section" id="pixel-byte">
   <div class="sec-watermark">Pixel</div>
   <div class="sec-gradient-overlay"></div>
   <span class="section-label" style="color:var(--ember)">Pixel &amp; Byte</span>
 
-  <h3>Garmin's subscription-free band takes dead aim at the readiness-score racket</h3>
+  <h3>The best-reviewed game of 2026 is a $20 Game Boy throwback — and it runs great on the Deck</h3>
 
-  <p class="dropcap"><span class="lead-in">The most consequential</span> wearable of the year may be one that nobody has officially seen. As of 26 May, Garmin's CIRQA "Smart Band" still had not launched — but it is days-to-weeks away, and the trail it has left is unusually loud. Code inside the Garmin Connect app now references a screenless device, and a product page briefly went live before being pulled. <a href="https://www.wareable.com/garmin/garmin-cirqa-smart-band-screenless-wearable-product-page-leak" style="color:var(--ember)">Wareable</a> caught the leak; <a href="https://the5krunner.com/2026/05/20/garmin-cirqa-connect/" style="color:var(--ember)">the5krunner</a> traced the app-code breadcrumbs. The shape of the thing is now clear even if the launch date is not.</p>
+  <figure class="img-float-left">
+    <img src="/assets/cached/45105b728424.png" alt="Key art for Mina the Hollower, showing the dachshund heroine Mina against a Game Boy Color-styled gothic landscape.">
+    <figcaption>Mina the Hollower key art. Cover art: Yacht Club Games (via Wikimedia).</figcaption>
+  </figure>
 
-  <p>CIRQA is a recovery and readiness band rather than a watch — no display, worn to be forgotten about. The leaked spec sheet lists ECG, skin-temperature sensing, high-fidelity heart-rate variability, a 10-to-14-day battery, and TrueUp sync that folds the band's data back into Garmin's existing Body Battery and Training Readiness scores. In other words: the same recovery metrics that the screenless-band category has been selling, fed into an ecosystem Garmin already owns.</p>
+  <p class="dropcap"><span class="lead-in">The highest-rated game</span> of 2026 so far isn't a blockbuster. It's <strong>Mina the Hollower</strong>, a deliberately Game Boy Color-styled action-adventure from Yacht Club Games — the small studio behind <em>Shovel Knight</em> — that landed on 29 May for $19.99. It hit a Metacritic score of 92, nudging past Forza Horizon 6's 91 to top the year's leaderboard, and arrived <a href="https://comicbook.com/gaming/news/steam-deck-verified-best-game-2026/" style="color:var(--ember)">Steam Deck Verified at launch</a>. A twenty-dollar throwback beating the year's big-budget releases on the scoreboard is the kind of result the handheld crowd lives for.</p>
 
-  <p>The headline, though, is a number that isn't there. CIRQA's pitch is no subscription — and that single absence is the whole strategy. Whoop charges between $199 and $349 a year; the device is effectively free, the data is the product, and the meter never stops running. Oura asks $69.99 a year on top of the ring. A leaked listing put CIRQA somewhere around $370 to $500 up front, with nothing recurring after. Buy it once, own the readiness score outright. For a category that normalised paying rent on your own resting heart rate, a credible no-subscription rival from the biggest name in endurance hardware is a genuine shot across the bow.</p>
+  <p>The premise leans hard into its inspiration. You play Mina, a dachshund in a gothic, whip-and-burrow take on a top-down <em>Zelda</em>, rendered in the chunky two-bit palette of an early-90s handheld — the look Yacht Club has spent a decade perfecting. It launched simultaneously across <a href="https://en.wikipedia.org/wiki/Mina_the_Hollower" style="color:var(--ember)">Switch, Switch 2, PS5, Windows, Xbox Series X/S, macOS and Linux</a> after slipping from its planned 2025 Halloween date, so wherever you play, it's available now.</p>
 
-  <p>The timing is pointed. Whoop's 5.0 generation recently bolted on ECG and blood-pressure features, pushing further into clinical-adjacent territory; Google is coming the other way with a reported $100 Fitbit Air at the cheap end. CIRQA wedges into the middle — premium sensors, premium ecosystem, but flipping the business model that made the recovery-band boom profitable. Athletech News frames the broader shift as wearables <a href="https://athletechnews.com/how-wearables-are-evolving-from-fitness-trackers-to-health-systems/" style="color:var(--ember)">evolving from fitness trackers into health systems</a> — and a health system you rent is a very different proposition from one you buy. Garmin is betting a meaningful slice of the market would rather own it.</p>
+  <p>The reason it matters here is the fit. A game built to evoke a handheld is a natural on an actual handheld, and the Steam Deck Verified badge on day one means no settings-tweaking, no compatibility caveats — it boots and plays as intended. At $20 it's also a low-stakes pick-up, the sort of game that's easy to start on a commute and hard to put down. That a deliberately small, deliberately retro game is the year's critical high-water mark is the more interesting story than any of the season's marquee launches.</p>
 
-  <p>What's missing is the only thing that matters now: a date and a confirmed price. Garmin has said nothing official, and a leaked product page is not a launch. Treat the spec list as strong rumour until the band actually ships. But the direction of travel is unambiguous — the recovery-score market is about to get its first serious argument against the annual fee.</p>
-
-  <div class="sidebar"><div class="sidebar-title">The readiness-band ledger</div>
-    <ul>
-      <li><strong>Garmin CIRQA</strong> — screenless; ECG, skin temp, HRV, 10–14 day battery; <em>no subscription</em>; leaked ~$370–$500 up front. Unlaunched as of 26 May.</li>
-      <li><strong>Whoop 5.0</strong> — recently added ECG + blood pressure; $199–$349/yr.</li>
-      <li><strong>Oura Ring 4</strong> — $69.99/yr on top of the ring.</li>
-      <li><strong>Fitbit Air</strong> — Google's reported ~$100 budget entry.</li>
+  <div class="also"><div class="also-title">Also in Pixel &amp; Byte</div>
+    <ul class="also-list">
+      <li class="tier-warm"><strong>Stray pads onto Switch 2.</strong> The acclaimed cat adventure got a native Switch 2 port on 28 May — a short, atmospheric game that's a strong fit for handheld play and an easy pick-up for anyone who skipped it the first time. <a href="https://www.nintendolife.com/news/2026/05/nintendo-reconfirms-release-windows-for-major-upcoming-switch-2-games" style="color:var(--ember)">Nintendo Life</a></li>
+      <li class="tier-note"><strong>Coming this month — Final Fantasy VII Rebirth on Switch 2.</strong> Square Enix's sprawling RPG is due on Switch 2 in June, putting one of the generation's biggest single-player games on the handheld. No firm day yet, but it's the month's headline arrival. <a href="https://www.cinelinx.com/games/game-news/june-2026-video-game-release-dates/" style="color:var(--ember)">Cinelinx</a></li>
+      <li class="tier-note"><strong>Starseeker: Astroneer Expeditions hits Early Access 11 June.</strong> A new entry in the laid-back space-exploration series enters Early Access, so expect a work-in-progress build that fills out over time. <a href="https://blog.starseekergame.com/articles/starseeker-early-access" style="color:var(--ember)">Starseeker dev blog</a></li>
+      <li class="tier-note"><strong>EA Sports UFC 6 lands 19 June.</strong> The fighting franchise returns with its next numbered instalment later in the month — one for the annual-sports-sim crowd. <a href="https://www.cinelinx.com/games/game-news/june-2026-video-game-release-dates/" style="color:var(--ember)">Cinelinx</a></li>
     </ul>
   </div>
 
-  <h3>Switch 2's one-game-a-month rhythm holds — with Final Fantasy VII Rebirth next</h3>
+  <figure>
+    <img src="/assets/cached/f274130d0175.jpg" alt="">
+    <figcaption>Stray's native Switch 2 port arrived 28 May. Image: Nintendo Life.</figcaption>
+  </figure>
 
-  <p>A year into the Switch 2, the steady drumbeat that defines the machine is still landing. Late May closed the month on schedule: <strong>Mina the Hollower</strong>, the Game Boy-styled action-adventure from Shovel Knight studio Yacht Club Games, arrived 29 May. The day before, <strong>Lollipop Chainsaw RePOP</strong> and <strong>RollerCoaster Tycoon Classic Switch 2 Edition</strong> both landed (28 May). <strong>Yoshi and the Mysterious Book</strong> opened the month on 21 May. It is less a flood than a metronome — one notable release a month, reliably, rather than a feast-or-famine release calendar.</p>
+  <div class="read-next">Up next: <a href="#toolkit">The Toolkit <span class="arrow">→</span></a> — Android's assistant finally does the boring multistep stuff for you.</div>
+</section>
 
-  <p>That cadence is the quiet argument for the console. The headline title now sits on the horizon: <strong>Final Fantasy VII Rebirth</strong> comes to Switch 2 on 3 June, with Star Fox following later in June. For anyone keeping a running checklist, the pattern is the reassurance — every date worth pencilling in is confirmed on <a href="https://www.nintendolife.com/guides/nintendo-switch-2-all-confirmed-games-and-release-dates" style="color:var(--ember)">Nintendo Life's tracker</a> and the running <a href="https://en.wikipedia.org/wiki/List_of_Nintendo_Switch_2_games" style="color:var(--ember)">Wikipedia list</a>, and the gaps between them stay short enough that the library never feels stalled. A console that ships something good roughly every four weeks asks very little of your patience.</p>
+<hr class="divider dv-toolkit">
+<section class="sec toolkit-section" id="the-toolkit">
+  <div class="sec-watermark">Toolkit</div>
+  <span class="section-label" style="color:var(--cyan,#3aa6b9)">The Toolkit — Tech &amp; Tools</span>
+  <h2>The boring multistep stuff, handled by the OS</h2>
 
-  <div class="also"><div class="also-title">Also in Tech &amp; Gaming</div>
+  <p class="dropcap"><span class="lead-in">The thing worth finding</span> this week isn't an app to install — it's a capability folding into the operating system most readers already carry. At Google I/O on 19&ndash;20 May, Google detailed a set of Gemini-powered Android features that let the assistant carry out multistep tasks across apps: it can browse the web, fill in forms, dictate, and spin up custom widgets, all from a plain-language prompt. The pitch is that you describe the outcome and the system does the app-hopping — the part of phone and tablet life that has always been a chore of tapping between four screens to get one thing done. <a href="https://android-developers.googleblog.com/2026/05/android-ai-intelligence-system.html">Google's own Android developers blog</a> lays out the system.</p>
+
+  <p>That framing is what makes this a discovery rather than a headline. The interesting shift isn't a smarter chatbot to open and talk to; it's the assistant reaching into the apps you already use and stitching a sequence together on your behalf. For anyone who runs a tablet as a productivity device — split-screen, a task manager, a browser, a notes app all in rotation — the promise is that the friction between those apps stops being yours to manage. Whether it delivers in daily use is the open question; the direction is the news.</p>
+
+  <p>The same I/O run carried a second feature in the same spirit, and it's the more quietly radical one. Google's AI Studio now builds small Android apps straight from a natural-language prompt, in minutes — describe what you want, get something installable, no code written. It's aimed at developers, but the consumer read is the trajectory: the gap between "I wish my tablet did X" and "my tablet does X" is collapsing toward a sentence. <a href="https://techcrunch.com/2026/05/19/googles-ai-studio-now-lets-anyone-build-android-apps-in-minutes/">TechCrunch walked through the build flow</a>.</p>
+
+  <figure class="fig">
+    <img src="/assets/cached/1371e7e262f1.jpg" alt="Google's AI features for Pixel and Android at Google I/O 2026">
+    <figcaption>Google's Gemini-powered Android features at I/O 2026. Image: TechCrunch.</figcaption>
+  </figure>
+
+  <p>The honest caveat sits where it always does with an I/O reveal: a stage demo is a promise, not a shipped daily experience. Agentic features tend to dazzle in a controlled walkthrough and stumble on the long tail of real apps, awkward forms, and tasks that don't quite match the script. The capability is genuinely new and the framing is right — the win is the OS doing the legwork, not another window to open — but it earns trust by what it handles on an ordinary Tuesday, not by what it managed on stage in May.</p>
+
+  <blockquote class="pull-quote">
+    <p>The productivity win isn't a new app to install. It's the operating system finally doing the app-hopping for you.</p>
+    <cite>— The Signal</cite>
+  </blockquote>
+
+  <div class="also"><div class="also-title">Catch-Up — Consumer Tech</div>
     <div class="also-cards">
-      <div class="also-card"><h4>Your chatbot now remembers you</h4><p>OpenAI made GPT-5.5 Instant the default ChatGPT model, with cross-conversation memory switched on — the everyday consumer face of the agent push, not a benchmark.</p><span class="badge"><a href="https://www.cnbc.com/2026/05/19/google-ai-ultra-gemini-spark-omni.html" style="color:var(--ember)">CNBC</a></span></div>
-      <div class="also-card"><h4>The frontier race is officially tied</h4><p>Executives at Google, OpenAI and Anthropic now describe the AI race as effectively neck-and-neck — the competitive backdrop to every consumer feature shipping this spring.</p><span class="badge"><a href="https://www.axios.com/2026/05/21/google-ai-anthropic-openai-war" style="color:var(--ember)">Axios</a></span></div>
-      <div class="also-card"><h4>A cheaper frontier-class model</h4><p>Gemini 3.5 Flash arrived at roughly a half-to-a-third the price of comparable models — the kind of cost cut that quietly trickles down into the apps people already use.</p><span class="badge"><a href="https://www.cnbc.com/2026/05/19/google-ai-ultra-gemini-spark-omni.html" style="color:var(--ember)">CNBC</a></span></div>
-      <div class="also-card"><h4>General-purpose agents reach subscribers</h4><p>Gemini Spark, a do-things-for-you agent, began rolling out to AI Ultra subscribers — agents inching from demo reels toward something ordinary users can actually press a button on.</p><span class="badge"><a href="https://www.axios.com/2026/05/21/google-ai-anthropic-openai-war" style="color:var(--ember)">Axios</a></span></div>
+      <div class="also-card">
+        <h4>May Pixel update steadies the ship before Android 17</h4>
+        <p>Google's May 2026 Pixel drop reaches the Pixel 7a through Pixel 10, the Pixel Tablet included, and clears a run of real annoyances: slow wireless charging, camera freezing, display flickering and keyboard UI bugs. A maintenance release rather than a feature one — but on a tablet-first setup, fewer of those small daily snags is the kind of fix that actually gets noticed, and it lands the hardware in good shape ahead of Android 17.</p>
+        <span class="badge"><a href="https://www.droid-life.com/2026/05/05/2026-may-pixel-update-download-install/">Droid Life</a></span>
+      </div>
     </div>
   </div>
 
-  <div class="read-next">Up next: <a href="#touchline">The Touchline <span class="arrow">→</span></a> — a Champions League final settled on penalties in Budapest.</div>
+  <div class="read-next">Up next: <a href="#touchline">The Touchline <span class="arrow">→</span></a> — an open draw at Roland-Garros, with Monaco on the horizon.</div>
 </section>
 
+<!-- ══════ THE TOUCHLINE ══════ -->
 <hr class="divider dv-football">
-<section class="sec touchline-section" id="touchline">
+<section class="sec touchline-section" id="football">
   <div class="sec-watermark">Touchline</div>
   <span class="section-label">The Touchline</span>
 
-  <!-- DATA FIRST: the final, then the score panel, then narrative -->
-  <h3>Champions League — Final</h3>
+  <!-- DATA FIRST: Roland-Garros results so far, then narrative -->
+  <h3>Roland-Garros — How the Men's Draw Cleared</h3>
   <div class="results-strip">
-    <div class="result-card reveal"><span class="teams"><strong>PSG</strong> vs Arsenal</span><span class="score">1&ndash;1 <small>(4&ndash;3 pens)</small></span></div>
+    <div class="result-card reveal"><span class="teams"><strong>Fonseca</strong> d. Djokovic · R3, 29 May</span><span class="score">4-6 4-6 6-3 7-5 7-5</span></div>
+    <div class="result-card reveal"><span class="teams"><strong>Cerúndolo</strong> d. Sinner (No. 1) · R2</span><span class="score">UPSET</span></div>
+    <div class="result-card reveal"><span class="teams"><strong>Alcaraz</strong> — withdrew pre-tournament</span><span class="score">WRIST</span></div>
+    <div class="result-card reveal"><span class="teams"><strong>Finals</strong> · women Sat 6 Jun · men Sun 7 Jun</span><span class="score">TO COME</span></div>
   </div>
 
-  <div class="stat-bar reveal">
-    <div class="stat-item"><span class="stat-num">4&ndash;3</span><span class="stat-label">Penalty shootout</span></div>
-    <div class="stat-item"><span class="stat-num">6&prime;</span><span class="stat-label">Havertz opens</span></div>
-    <div class="stat-item"><span class="stat-num">65&prime;</span><span class="stat-label">Demb&eacute;l&eacute; levels</span></div>
-    <div class="stat-item"><span class="stat-num">2</span><span class="stat-label">PSG titles in a row</span></div>
+  <!-- Tennis Lead imagery -->
+  <div class="img-montage layout-1-2 reveal">
+    <img class="montage-hero" src="/assets/cached/b986964091cf.jpg" alt="João Fonseca during his Roland-Garros 2026 third-round match in Paris">
+    <div class="caption">João Fonseca, 19, after beating Novak Djokovic over five sets in the Roland-Garros third round. Photo: CBS Sports.</div>
   </div>
 
-  <div class="split-60-40 reveal">
-    <div>
-      <h3 class="narrative">Paris, on the last kick</h3>
-      <p>For eighty-nine minutes of normal time, an hour of nerves and half an hour more, the 2026 Champions League final refused to settle. It took a shootout at the Pusk&aacute;s Ar&eacute;na in Budapest to do it &mdash; the first European Cup final decided on penalties in a decade &mdash; and when it was over, Paris Saint-Germain had become the first club since Real Madrid to retain the trophy. The score read 1&ndash;1 after extra time, 4&ndash;3 on penalties. The story read differently depending on which bench you were sat on.</p>
-      <p>Arsenal had the better of the opening. Kai Havertz put them ahead inside six minutes, and for an hour the Londoners looked the more composed side &mdash; the team playing the occasion rather than being played by it. Then, on 65 minutes, Ousmane Demb&eacute;l&eacute; gathered the ball, sized up David Raya and sent the goalkeeper the wrong way. One swing of momentum, and a final that Arsenal had been controlling became a final nobody was controlling at all.</p>
-      <p>Extra time produced no winner, which left the cruelty of the spot. Eberechi Eze missed; Gabriel Magalh&atilde;es ballooned his over the bar. PSG held theirs, and Marquinhos &mdash; the captain who has carried the club through a decade of near-misses &mdash; lifted the cup. It is a strange, thin margin on which to hang a season, but the record book does not record how the goals were scored, only that they were.</p>
-    </div>
-    <div>
-      <img src="https://upload.wikimedia.org/wikipedia/commons/0/00/Pusk%C3%A1s_Ar%C3%A9na_in_2023.01.jpg" alt="The Pusk&aacute;s Ar&eacute;na in Budapest, a modern arena with a curved roof, photographed in 2023">
-      <div class="caption">Pusk&aacute;s Ar&eacute;na, Budapest &mdash; venue of the 2026 Champions League final. Photo: Wikimedia Commons, CC BY-SA.</div>
-      <div class="sidebar">
-        <div class="sidebar-title">What the win means</div>
-        <ul>
-          <li><strong>Back-to-back</strong> &mdash; first side to retain the trophy since Real Madrid.</li>
-          <li><strong>French first</strong> &mdash; first French club to win it twice, and the first to complete a French Continental double.</li>
-          <li><strong>Luis Enrique</strong> &mdash; joins Ancelotti, Paisley, Zidane and Guardiola on three European Cups as a manager.</li>
-        </ul>
-      </div>
-    </div>
-  </div>
+  <!-- THEN NARRATIVE: lead with the angle, not a recap -->
+  <h3 class="narrative">Paris blew the door off the men's draw — and a 19-year-old walked through it</h3>
 
-  <p>For PSG, the achievement is less about the manner than the fact of it. A club assembled at vast expense, mocked for years as the project that could not win the one trophy it was built for, has now won it twice running. Luis Enrique's reinvention &mdash; younger, hungrier, less reliant on a single galactic forward &mdash; has produced the rarest thing in the modern game: a champion that defended its crown. Retaining the Champions League in its expanded, attritional format is arguably harder than winning it the first time.</p>
+  <p>The 2026 French Open lost its three biggest names before its second week even started. Carlos Alcaraz <a href="https://www.espn.com/betting/tennis/story/_/id/48843670/french-open-odds-tennis-roland-garros-2026">withdrew before a ball was struck</a>, a wrist injury keeping the two-time champion out entirely. World No. 1 Jannik Sinner went out in the <a href="https://www.espn.com/tennis/story/_/id/48845832/french-open-top-contenders-rankings-sinner-gauff-sabalenka-swiatek-djokovic">second round to Juan Manuel Cerúndolo</a>, a result nobody had on a card. And then, on 29 May, the last of the old order fell to the youngest man left standing.</p>
 
-  <div class="pull-quote wide reveal"><p>The record book does not record how the goals were scored, only that they were.</p><cite>&mdash; On a final settled by two missed penalties</cite></div>
+  <p>João Fonseca, 19, <a href="https://www.cbssports.com/tennis/news/2026-french-open-results-novak-djokovic-upset-joao-fonseca-roland-garros/">beat Novak Djokovic 4-6, 4-6, 6-3, 7-5, 7-5</a> in the third round — two sets down, then three straight against a man who had never lost to a teenager at a Grand Slam. Djokovic walked in 18-0 against teenagers at majors; he walked out 18-1, the record broken by a Brazilian who was not yet born when Djokovic won his first one. Fonseca is the first teenager to take a set, a match and the milestone off him on the sport's biggest stages.</p>
 
-  <p>For Arsenal, this is the hardest kind of defeat to file away &mdash; not a thrashing that exposes a gulf, but a coin-flip lost at the end of a night they had, for long stretches, deserved to win. Mikel Arteta's side led for an hour of a European Cup final and came home with nothing. Eze and Gabriel will not want to watch the replay; the consolation, cold as it is, is that a team does not reach this stage by accident, and the ones that lose finals narrowly tend to be back.</p>
+  <p>The temptation is to read a champion into the gap, and that is the trap to avoid: the finals are not played until the weekend. The women's final is due <a href="https://www.rolandgarros.com/en-us/order-of-play/tentative/">Saturday 6 June</a> and the men's final Sunday 7 June, and there is no result here to report, only a draw that has come apart at the top. What can be said is structural rather than predictive. A Slam draw is usually a fortnight of the same four or five names grinding toward an inevitable final. This one isn't. With Alcaraz absent, Sinner gone and Djokovic beaten by a teenager, the bottom half opened into territory that hasn't been mapped in years — the kind of week that decides where a generation's weight is going to sit, even if the trophy itself is still a few days from being lifted.</p>
 
-  <div class="img-montage reveal">
-    <img class="montage-hero" src="/assets/cached/5e9c0f1c90af.jpg" alt="The Danube bend and the city of Budapest seen from orbit aboard the International Space Station">
-    <div class="caption">Budapest on the Danube, from the International Space Station. Credit: NASA / ISS Crew Earth Observations (public domain).</div>
-  </div>
+  <div class="pull-quote wide reveal"><p>Djokovic walked in 18-0 against teenagers at the majors. He walked out 18-1.</p><cite>— Roland-Garros, third round, 29 May</cite></div>
 
-  <div class="angle reveal"><div class="angle-label">The Take</div><p>The penalty-decided final is the format's quietest indictment of itself: two superb sides, a hundred and twenty minutes, and the trophy handed out by a lottery nobody enjoys and everybody accepts. PSG retained the cup and earned every bit of the parade. But the gap between these teams was a goalkeeper guessing right, not a difference in class &mdash; and that, more than any scoreline, is the season's real verdict.</p></div>
+  <p>That is the value of a draw like this. The names that survive a chaotic fortnight tend to be the ones the next few seasons get built around, and Fonseca — the highest-profile teenager in the men's game — has now done the one thing a prospect has to do to stop being called a prospect. Whatever the scoreboard says on Sunday, the hinge moved this week.</p>
 
-  <!-- COMPANION — non-football: Roland-Garros second week -->
-  <h3 class="narrative">Clay throws the script away</h3>
-  <div class="split-40-60 reveal">
-    <div>
-      <img src="/assets/cached/ec770e7214b8.jpg" alt="Anastasia Potapova playing a forehand on the clay at Roland-Garros 2026">
-      <div class="caption">Anastasia Potapova at Roland-Garros 2026. Photo: C&eacute;dric Lecocq / FFT (Roland-Garros official).</div>
-    </div>
-    <div>
-      <p>If the final in Budapest was decided by the finest of margins, the second week at Roland-Garros has simply torn up the form guide. The defending women's champion, Coco Gauff, the No.4 seed, went out on 30 May to Anastasia Potapova &mdash; the 28th seed &mdash; 4-6, 7-6(1), 6-4, surrendering a first set and never quite recovering the thread.</p>
-      <p>She is not alone in the wreckage. World No.1 Jannik Sinner led by two sets and lost, undone by Francisco Cer&uacute;ndolo on a surface that has never quite trusted him. Novak Djokovic was beaten from two sets up by the 19-year-old Jo&atilde;o Fonseca, a result that read like a generational handover written in real time. And the man who might have steadied the men's draw, two-time defending champion Carlos Alcaraz, never started it: he withdrew before the tournament with a wrist injury.</p>
-      <p>What is left is a Paris fortnight without a single obvious favourite &mdash; the rarest thing a Slam can offer. With Sinner, Djokovic and Alcaraz all absent from the men's business end, and the women's title now anyone's, the finals on 6 and 7 June arrive with the draw blown wide open and the seedings reduced to suggestions.</p>
-    </div>
-  </div>
+  <div class="angle reveal"><div class="angle-label">The Take</div><p>Treat the carnage as a generational marker, not a forecast. The men's game has spent two years waiting for the post-Djokovic order to assert itself; a Slam where the top three are gone before the quarters and a 19-year-old ends the most lopsided head-to-head streak in the sport is that assertion arriving — with a final still to be played and deliberately left unwritten.</p></div>
 
-  <div class="also"><div class="also-title">Also on the Clock</div>
+  <!-- NON-FOOTBALL COMPANION: F1 Monaco preview (upcoming) -->
+  <h3>F1 Championship — Standings Into Monaco (after 24 May)</h3>
+  <div class="table-wrap"><table class="league-table">
+    <tr><th class="pos">#</th><th>Driver</th><th>Team</th><th>Pts</th><th></th></tr>
+    <tr class="highlight"><td class="pos">1</td><td>Kimi Antonelli</td><td>Mercedes</td><td>131</td><td><span class="pos-change same">•</span></td></tr>
+    <tr><td class="pos">2</td><td>George Russell</td><td>Mercedes</td><td>88</td><td><span class="pos-change same">•</span></td></tr>
+    <tr><td class="pos">3</td><td>Charles Leclerc</td><td>Ferrari</td><td>75</td><td><span class="pos-change same">•</span></td></tr>
+    <tr><td class="pos">4</td><td>Lewis Hamilton</td><td>Ferrari</td><td>72</td><td><span class="pos-change same">•</span></td></tr>
+    <tr><td class="pos">5</td><td>Lando Norris</td><td>McLaren</td><td>58</td><td><span class="pos-change same">•</span></td></tr>
+    <tr><td class="pos">6</td><td>Oscar Piastri</td><td>McLaren</td><td>48</td><td><span class="pos-change same">•</span></td></tr>
+    <tr><td class="pos">7</td><td>Max Verstappen</td><td>Red Bull</td><td>43</td><td><span class="pos-change same">•</span></td></tr>
+  </table></div>
+
+  <h3 class="narrative">Antonelli takes a 43-point cushion to a race nobody predicted him leading</h3>
+
+  <img class="hero-img reveal" src="/assets/cached/b86f19986675.jpg" alt="Formula 1, 2026 season — Monaco Grand Prix preview">
+  <div class="caption" style="margin-top:-14px;color:rgba(255,255,255,.5);font-family:'DM Sans',sans-serif;font-size:12px">Formula 1, 2026 season. Image: Formula 1 (official).</div>
+
+  <p>Monaco arrives next weekend with the season's most unexpected hierarchy already set. Kimi Antonelli leads the <a href="https://www.formula1.com/en/results/2026/drivers">2026 drivers' championship on 131 points</a>, 43 clear of his own Mercedes team-mate George Russell on 88 — a silver one-two that almost nobody had as the picture heading into June. Behind them the two Ferraris of Leclerc (75) and Hamilton (72) are scrapping over third, McLaren's Norris (58) and Piastri (48) sit fifth and sixth, and Max Verstappen, the man the grid spent half a decade chasing, is a distant seventh on 43.</p>
+
+  <p>The <a href="https://www.formula1.com/en/racing/2026/monaco">Monaco Grand Prix runs 5-7 June</a>, with qualifying on Saturday 6 June at 16:00 local and the race on Sunday 7 June at 15:00. Around Monte Carlo's barriers, where overtaking is close to impossible, Saturday afternoon tends to settle Sunday before the lights even go out — which makes this the weekend Antonelli's lead either hardens into something decisive or gets its first real test. Nothing has been decided yet; both sessions are still to come, and this is a preview, not a result.</p>
+
+  <!-- CATCH-UP: the football the reader actually wants -->
+  <div class="also"><div class="also-title">Also on the Pitch — The Juventus Catch-Up</div>
     <ul class="also-list">
-      <li class="tier-warm"><strong>Monaco beckons.</strong> Andrea Kimi Antonelli takes a 43-point championship lead (131 to George Russell's 88) into the Monaco Grand Prix on Sunday 7 June &mdash; a race shifted later than usual on the calendar, and one where overtaking is a rumour. <a href="https://www.rolandgarros.com/en-us/article/2026-edition-roland-garros-wrap-sat-may-30">Roland-Garros wrap</a> &middot; <a href="https://sundayguardianlive.com/sports/french-open-2026-results-jannik-sinner-suffers-shock-exit-ben-shelton-knocked-out-coco-gauff-aryna-sabalenka-and-yuki-bhambri-advance-198126/">Sunday Guardian</a></li>
-      <li class="tier-note"><strong>The final, in full.</strong> Read the night back from Budapest. <a href="https://www.cnn.com/2026/05/30/sport/live-news/arsenal-psg-champions-league-final-score">CNN live</a> &middot; <a href="https://www.npr.org/2026/05/30/nx-s1-5841380/psg-champions-league-victory-against-arsenal">NPR</a> &middot; <a href="https://www.psg.fr/en/content/pr-paris-saint-germain-win-the-champions-league-for-the-second-successive-season">PSG</a></li>
+      <li class="tier-hot"><strong>Spalletti stays, Bernardo Silva targeted.</strong> Luciano Spalletti has signed a new two-year contract (reported around 22 May), and under CEO Damien Comolli, Juventus are pushing to sign Bernardo Silva this summer with talks reported to be progressing — the manager secured and a marquee midfield target lined up. <a href="https://www.blackwhitereadallover.com/juventus-transfer-rumours-news/38636/juventus-transfer-rumors-summer-2026-jeanphilippe-mateta-jonathan-david-douglas-luiz">Black &amp; White &amp; Read All Over</a></li>
+      <li class="tier-warm"><strong>Jonathan David could go; Kostić leaves on a free.</strong> Forward Jonathan David is being discussed for a potential summer departure with Lyon linked, while Filip Kostić will leave for nothing when his contract expires — Juve's tight finances shaping the window, a sale to fund signings plus a free-agent exit. <a href="https://www.blackwhitereadallover.com/juventus-transfer-rumours-news/38636/juventus-transfer-rumors-summer-2026-jeanphilippe-mateta-jonathan-david-douglas-luiz">Black &amp; White &amp; Read All Over</a></li>
+      <li class="tier-note"><strong>Champions League final, one line.</strong> PSG beat Arsenal on penalties after 1-1 in Budapest (30 May) — covered in full last issue, noted here so it isn't dropped. <a href="https://en.wikipedia.org/wiki/Portal:Current_events/2026_May_30">Wikipedia · Current events</a></li>
     </ul>
   </div>
 
-  <div class="read-next">Up next: <a href="#this-week-in-history">This Week in History <span class="arrow">&rarr;</span></a> &mdash; two 29 Mays, 500 years apart.</div>
+  <div class="read-next">Up next: <a href="#screen">Screen &amp; Sound <span class="arrow">→</span></a> — the smallest theatrical Star Wars bet, and a goodbye.</div>
 </section>
 
-<!-- ══════ THIS WEEK IN HISTORY ══════ -->
-<hr class="divider dv-history">
-<section class="sec history-section sec-opener" id="this-week-in-history">
-  <div class="sec-watermark">History</div>
-  <span class="section-label" style="color:var(--hist-accent)">This Week in History</span>
-  <h2>Two 29 Mays, Five Centuries Apart</h2>
-
-  <p>The calendar plays a quiet trick this week. On 29 May 1453, the city of Constantinople fell to the army of Mehmed II, closing out the last surviving fragment of the Roman world. On 29 May 1953 — to the day, five hundred years later — Edmund Hillary and Tenzing Norgay stood on the summit of Everest, the first people known to have done so. One date; an ending and a beginning; half a millennium between them. The neatness is a coincidence of the Gregorian arithmetic and nothing more, but the two mornings are worth a longer look than the symmetry alone.</p>
-
-  <figure class="img-offset">
-    <img src="/assets/cached/00397fa3eab0.jpg" alt="Mount Everest and the surrounding Himalayan peaks photographed from low Earth orbit, snow ridges casting long shadows.">
-    <figcaption>Mount Everest and the Himalayas from orbit. Credit: NASA / ISS Crew Earth Observations (public domain).</figcaption>
-  </figure>
-
-  <p>Constantinople did not fall quickly. The siege ran fifty-three days, and the city's defence rested on the Theodosian Walls — a triple line of fortification that had turned away attackers for a thousand years. What broke the deadlock was less a single breach than a change in the nature of war itself: Mehmed's siege train included enormous cannon capable of battering masonry that had been built for an age before gunpowder. The defenders, badly outnumbered and without relief from the West, held the repaired walls night after night until the final assault carried them. With the city went the Byzantine Empire, and with it the direct administrative thread back to Augustus.</p>
-
-  <p>Everest was the opposite kind of slow. The summit was reached in a single morning — around 11:30 — but the climb behind it stretched across roughly three decades of British expeditions, beginning in the 1920s and punctuated by the disappearance of George Mallory and Andrew Irvine high on the mountain in 1924. The 1953 expedition succeeded where the others had stalled partly through method: staged camps, bottled oxygen, and a final push from the South Col by a two-man team rather than a crowd. The news travelled home to coincide, almost to the hour, with the eve of the coronation — an accident of timing that gave a mountaineering achievement the weight of a national omen.</p>
-
-  <div class="compare-panel">
-    <div class="cp-col">
-      <div class="cp-head">29 May 1453</div>
-      <ul>
-        <li><strong>Event:</strong> The Fall of Constantinople</li>
-        <li><strong>Duration:</strong> 53-day siege</li>
-        <li><strong>Turning point:</strong> Cannon against the Theodosian Walls</li>
-        <li><strong>Result:</strong> The end of the Byzantine Empire</li>
-      </ul>
-    </div>
-    <div class="cp-col">
-      <div class="cp-head">29 May 1953</div>
-      <ul>
-        <li><strong>Event:</strong> First summit of Everest</li>
-        <li><strong>Build-up:</strong> ~30 years of expeditions</li>
-        <li><strong>Turning point:</strong> Staged camps and bottled oxygen</li>
-        <li><strong>Result:</strong> Hillary and Tenzing reach 8,849m</li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="stat-bar">
-    <div class="stat-item"><span class="stat-figure">8,849<span style="font-size:.5em">m</span></span><span class="stat-caption">Everest summit height</span></div>
-    <div class="stat-item"><span class="stat-figure">1,000</span><span class="stat-caption">years the walls had held</span></div>
-    <div class="stat-item"><span class="stat-figure">500</span><span class="stat-caption">years between the two dates</span></div>
-  </div>
-
-  <figure class="img-offset img-offset-right">
-    <img src="/assets/cached/2d872b16bbc9.jpg" alt="An old-master European painting from the Metropolitan Museum's open-access collection, used here as period atmosphere.">
-    <figcaption>An old-master painting from the Met's open-access collection — illustrative period atmosphere, not a depiction of the siege. Credit: The Metropolitan Museum of Art (Open Access, CC0).</figcaption>
-  </figure>
-
-  <p>Set side by side, the two events make a tidy contrast about how things change. The fall of a city was sudden in the moment and centuries in the making — an empire hollowed out long before the cannon arrived. The conquest of a mountain was the reverse: a long, patient accumulation of failures that paid off in one short window of good weather and good logistics. A wall that had outlasted every previous army; a peak that had turned back every previous party. Both gave way on the same date, in different centuries, to the same thing — a method that the old defences were never designed to meet.</p>
-
-  <div class="also"><div class="also-title">Also This Week in History</div>
-    <div class="timeline">
-      <div class="timeline-node reveal">
-        <div class="timeline-date"><span class="year-badge">1453</span> 29 May</div>
-        <div class="timeline-content"><strong>The Fall of Constantinople</strong> — Mehmed II's forces breached the Theodosian Walls after a 53-day siege, ending the Byzantine Empire. <a href="https://en.wikipedia.org/wiki/Fall_of_Constantinople" style="color:var(--hist-accent)">Wikipedia</a></div>
-      </div>
-      <div class="timeline-node reveal">
-        <div class="timeline-date"><span class="year-badge">1953</span> 29 May</div>
-        <div class="timeline-content"><strong>First summit of Everest</strong> — Edmund Hillary and Tenzing Norgay reached the 8,849m summit around 11:30am, after three decades of British attempts. <a href="https://www.history.com/this-day-in-history/may-29/hillary-and-tenzing-reach-everest-summit" style="color:var(--hist-accent)">HISTORY</a></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="read-next">Up next: <a href="#screen-sound">Screen &amp; Sound <span class="arrow">→</span></a> — a viral short turns into a box-office surprise.</div>
-</section>
-
+<!-- ══════ SCREEN & SOUND ══════ -->
 <hr class="divider dv-screen">
-<section class="sec screen-section" id="screen-sound">
+<section class="sec screen-section" id="screen">
   <div class="sec-watermark">Screen</div>
   <span class="section-label">Screen &amp; Sound</span>
-  <h2>A24's "Backrooms" jumps from viral short to box-office surprise</h2>
+  <h2>The number that looks like failure</h2>
 
   <div class="sidebar-float">
     <div class="sidebar-title">Quick Take</div>
     <ul>
-      <li><strong>Opened</strong> — US cinemas, 29 May 2026</li>
-      <li><strong>Director</strong> — Kane Parsons &amp; Dan Cohen</li>
-      <li><strong>Cast</strong> — Chiwetel Ejiofor, Renate Reinsve</li>
-      <li><strong>Tracking</strong> — $45M&ndash;$55M opening weekend</li>
+      <li><strong>Opening</strong> — ~$100M domestic, $163M global (four-day)</li>
+      <li><strong>The catch</strong> — Disney's lowest-ever Star Wars debut</li>
+      <li><strong>The other number</strong> — ~$165M budget, lean by saga standards</li>
+      <li><strong>Verdict split</strong> — 88% audience, A- CinemaScore, 64% critics</li>
     </ul>
   </div>
 
-  <p>The internet's most unsettling piece of architecture has finally bought a cinema ticket. <strong>"Backrooms,"</strong> A24's surrealist horror feature, opened across US cinemas on 29 May 2026 — and the trade press spent the run-up calling it the likeliest box-office surprise of the year. <a href="https://www.boxofficepro.com/weekend-preview-backrooms-poised-to-become-biggest-box-office-surprise-of-2026/">Box Office Pro's weekend preview</a> had it tracking for a $45M&ndash;$55M debut, a startling figure for a horror film grown from a teenager's YouTube uploads rather than a legacy franchise.</p>
+  <p class="dropcap"><span class="lead-in">The headline writes</span> itself, and it writes wrong. <em>The Mandalorian &amp; Grogu</em> — the <a href="https://www.starwars.com/films/star-wars-the-mandalorian-and-grogu">first theatrical Star Wars film since 2019's <em>The Rise of Skywalker</em></a> — opened over the US Memorial Day weekend to roughly $98–102M domestic and about $163M worldwide across the four-day frame. On paper that is <a href="https://www.cnbc.com/2026/05/24/the-mandalorian-and-grogu-is-disneys-lowest-star-wars-film-opening.html">Disney's lowest-ever opening for a Star Wars film</a>, and the temptation is to file it under franchise fatigue and move on.</p>
 
-  <p>That origin is the whole story. The "Backrooms" began as a creepypasta — endless, humming, fluorescent-lit office space you fall into when you "noclip" out of reality — before Kane Parsons turned it into a series of viral shorts as a teenager. A24 backed the feature, with Parsons co-directing alongside Dan Cohen and an unexpectedly heavyweight cast in Chiwetel Ejiofor and Renate Reinsve. The pitch that made it travel is simple: dread without a monster, built almost entirely from the wrongness of an ordinary space that refuses to end.</p>
-
-  <p>The interesting question is whether a horror film about liminal emptiness survives contact with a multiplex. The aesthetic that made the shorts spread — the patience, the silence, the sense of a place watching you back — is exactly the kind of thing that tends to get sanded down at feature length. If "Backrooms" holds its nerve and keeps the quiet, it is the rare case of an internet-native horror idea reaching the big screen without losing what made it frightening in the first place. If it doesn't, it becomes a cautionary tale about scaling a mood into a plot. Either way, an A24 horror outgrossing the weekend's star-driven studio comedy would be a genuine signal about where horror's energy now lives.</p>
-
-  <p>It is not the only thing arriving that Friday. Lionsgate counter-programmed with the musical comedy <a href="https://www.movieinsider.com/movies/may/2026/29">"Power Ballad,"</a> pairing Paul Rudd with Nick Jonas, while the war drama "Pressure" and "The Breadwinner" also went wide on 29 May. But the headline is the one that nobody in the industry quite saw coming a year ago: a film with no stars on its poster and a wiki for a screenplay, outpacing the field.</p>
-
-  <h2>The small-screen week: a murder mystery returns, and Apple builds a new "Star City"</h2>
-
-  <p>Streaming did its own quiet work this week. The standout return is <strong>"A Good Girl's Guide to Murder,"</strong> whose second season landed on <a href="https://deadline.com/feature/2026-tv-premiere-dates-1236391902/">Netflix on 27 May 2026</a>. The first season turned Holly Jackson's young-adult mystery into a brisk, well-cast whodunit; a second outing is a real test of whether the format can sustain itself once the original case is closed and the show has to invent its own jeopardy rather than adapt it.</p>
-
-  <p>Apple TV+ used the same window to plant a flag, premiering <strong>"Star City"</strong> on 29 May — the platform's latest swing at prestige genre television, leaning into the moody, high-gloss register that has become Apple's house style. Elsewhere the week was busy in a way streaming weeks rarely are: Prime Video added the long-gestating <strong>"Spider-Noir"</strong> on 27 May, while 28 May brought new seasons of <strong>"Criminal Minds: Evolution"</strong> and <strong>"The Four Seasons."</strong> For anyone whose tastes run earlier than the war room, History's docuseries <strong>"The Rise and Fall of the Roman Empire"</strong> also began on 27 May. It is a crowded slate, and the through-line is that the platforms are no longer saving their swings for the autumn — late May is now a real release window, not a dumping ground.</p>
-
-  <h3>The Release Radar</h3>
-  <div class="radar-grid">
-    <h3 style="margin-top:8px">Now Showing / Just Dropped</h3>
-    <div class="radar-row"><span class="radar-date">29 May</span><div><span class="radar-cat film"></span><strong><a href="https://www.boxofficepro.com/weekend-preview-backrooms-poised-to-become-biggest-box-office-surprise-of-2026/">Backrooms</a></strong> — A24's liminal-horror feature, grown from a viral YouTube series. <span class="radar-platform">Cinemas</span></div></div>
-    <div class="radar-row"><span class="radar-date">29 May</span><div><span class="radar-cat film"></span><strong><a href="https://www.movieinsider.com/movies/may/2026/29">Power Ballad</a></strong> — Lionsgate musical comedy with Paul Rudd and Nick Jonas. <span class="radar-platform">Cinemas</span></div></div>
-    <div class="radar-row"><span class="radar-date">29 May</span><div><span class="radar-cat film"></span><strong><a href="https://www.movieinsider.com/movies/may/2026/29">Pressure</a></strong> — A D-Day drama, going wide the same Friday. <span class="radar-platform">Cinemas</span></div></div>
-
-    <h3>Coming Soon / Just Streaming</h3>
-    <div class="radar-row"><span class="radar-date">27 May</span><div><span class="radar-cat tv"></span><strong><a href="https://deadline.com/feature/2026-tv-premiere-dates-1236391902/">A Good Girl's Guide to Murder</a></strong> — Season 2 of the Holly Jackson adaptation. <span class="radar-platform">Netflix</span></div></div>
-    <div class="radar-row"><span class="radar-date">27 May</span><div><span class="radar-cat tv"></span><strong><a href="https://deadline.com/feature/2026-tv-premiere-dates-1236391902/">Spider-Noir</a></strong> — The hard-boiled, monochrome corner of the Spider-Verse. <span class="radar-platform">Prime Video</span></div></div>
-    <div class="radar-row"><span class="radar-date">27 May</span><div><span class="radar-cat tv"></span><strong><a href="https://deadline.com/feature/2026-tv-premiere-dates-1236391902/">The Rise and Fall of the Roman Empire</a></strong> — A new History docuseries. <span class="radar-platform">History</span></div></div>
-    <div class="radar-row"><span class="radar-date">28 May</span><div><span class="radar-cat tv"></span><strong><a href="https://deadline.com/feature/2026-tv-premiere-dates-1236391902/">Criminal Minds: Evolution</a></strong> — A new season of the revived procedural. <span class="radar-platform">Paramount+</span></div></div>
-    <div class="radar-row"><span class="radar-date">28 May</span><div><span class="radar-cat tv"></span><strong><a href="https://deadline.com/feature/2026-tv-premiere-dates-1236391902/">The Four Seasons</a></strong> — A new season of the ensemble comedy. <span class="radar-platform">Netflix</span></div></div>
-    <div class="radar-row"><span class="radar-date">29 May</span><div><span class="radar-cat tv"></span><strong><a href="https://deadline.com/feature/2026-tv-premiere-dates-1236391902/">Star City</a></strong> — Apple's new prestige genre series. <span class="radar-platform">Apple TV+</span></div></div>
-
-    <h3>New Music Friday — 29 May</h3>
-    <div class="radar-row"><span class="radar-date">29 May</span><div><span class="radar-cat music"></span><strong><a href="https://www.movieinsider.com/movies/may/2026/29">Paul McCartney — "The Boys of Dungeon Lane"</a></strong> — among the week's 45-odd New Music Friday releases.</div></div>
-    <div class="radar-row"><span class="radar-date">29 May</span><div><span class="radar-cat music"></span><strong><a href="https://www.movieinsider.com/movies/may/2026/29">Kurt Vile — "Philadelphia's Been Good to Me"</a></strong> — the latest from the laconic Philly songwriter.</div></div>
-    <div class="radar-row"><span class="radar-date">29 May</span><div><span class="radar-cat music"></span><strong><a href="https://www.movieinsider.com/movies/may/2026/29">Iceage — "For Love of Grace &amp; the Hereafter"</a></strong> — the Danish post-punks return.</div></div>
-    <div class="radar-row"><span class="radar-date">29 May</span><div><span class="radar-cat music"></span><strong><a href="https://www.movieinsider.com/movies/may/2026/29">All Them Witches — "House of Mirrors"</a></strong> — Nashville psych-rock.</div></div>
-    <div class="radar-row"><span class="radar-date">29 May</span><div><span class="radar-cat music"></span><strong><a href="https://www.movieinsider.com/movies/may/2026/29">The Bug Club — "Every Single Muscle"</a></strong> — prolific Welsh garage-pop.</div></div>
-  </div>
-
-  <div class="also"><div class="also-title">Also in Film &amp; TV</div>
-    <ul class="also-list">
-      <li><strong><a href="https://www.movieinsider.com/movies/may/2026/29">The Breadwinner</a></strong> — Another of the wide releases sharing the 29 May Friday with "Backrooms" and "Power Ballad".</li>
-    </ul>
-  </div>
-</section>
-
-<section id="the-workshop">
-  <h2>The Workshop</h2>
-  <p class="wk-standfirst">A single morning heart-rate-variability reading is mostly noise; it is the multi-week trend that carries the signal.</p>
-
-  <figure class="wk-figure">
-    <img src="/assets/cached/6e291e86b8da.jpg" alt="Anatomical and physiological illustration, Wellcome Collection archive">
-    <figcaption>An illustration from the Wellcome Collection archive, used illustratively — the autonomic nervous system is the stage on which heart-rate variability plays out. <cite class="wk-credit">Wellcome Collection (CC BY 4.0)</cite></figcaption>
+  <figure>
+    <img src="/assets/cached/57e3fd43512c.jpg" alt="Key art for The Mandalorian &amp; Grogu, showing Din Djarin in beskar armour with Grogu">
+    <figcaption>Key art for <em>The Mandalorian &amp; Grogu</em>, the franchise's first theatrical outing in six years. Image: CNBC.</figcaption>
   </figure>
 
-  <p>Heart-rate variability, or HRV, is the small, beat-to-beat variation in the time between consecutive heartbeats. Far from being a fault, that jitter is a window onto the autonomic nervous system: when the parasympathetic (vagal) branch is active and the body is at ease, the intervals between beats vary more; under stress, fatigue or sympathetic dominance, they tend to flatten. The most common way to capture this from a short recording is RMSSD, a time-domain measure that tracks the beat-to-beat differences and reflects vagal activity, according to <cite data-claim="hrv-rmssd-2021">Frontiers in Physiology</cite>.</p>
+  <p>But sit with the rest of the figures and a more interesting reading takes over — the one the box-office trades have been pushing all week. This wasn't a $300M tentpole gambling on event-movie spectacle. It cost a <a href="https://www.deseret.com/entertainment/2026/05/29/the-mandalorian-and-grogu-box-office-after-first-week-in-theaters/">relatively lean ~$165M</a>, it landed an 88% audience score and an A- CinemaScore against a more reserved 64% from critics, and it did it by taking a TV show people already loved and putting it on the biggest screen available. The opening that looks like a stumble is, on the math, a film with a real shot at profit and a fanbase that turned up happy.</p>
 
-  <h3 class="wk-subhead">Why one reading tells you little</h3>
+  <p>That's the recalibration worth noticing. The Disney-era Star Wars films chased reinvention at enormous cost and spent the back half of the last decade learning that reinvention is expensive and divisive. The pivot here is the opposite instinct: stop trying to out-spectacle the originals and instead build the cheaper, audience-pleasing bridge from streaming to cinema — a known quantity, a known cast of two, a budget that doesn't need a billion-dollar gross to clear the bar. Measured against <em>The Rise of Skywalker</em>'s ambitions, $163M reads as collapse. Measured against what it actually set out to do, it reads as a strategy quietly working.</p>
 
-  <p>The trouble is that HRV is a restless quantity. It swings substantially from one day to the next, so any single morning figure sits somewhere on a wide cloud of normal variation rather than at a fixed personal baseline. Research summarised in <cite data-claim="hrv-trend-2024">Frontiers in Physiology</cite> makes the point plainly: because of that large day-to-day fluctuation, a rolling multi-week trend is far more informative than any one morning reading for tracking adaptation and accumulating fatigue.</p>
+  <p>Whether the model holds is the open question — a profitable, modest hit is a floor, not a ceiling, and Lucasfilm still has to prove it can do this more than once. But the franchise has spent years being told it needs to either blow the roof off or apologise. A film that simply showed up, cost what it should, and sent its crowd home pleased is a healthier place to restart from than the discourse around that opening number suggests.</p>
 
-  <p>Part of the reason is that HRV is exquisitely sensitive to things that have nothing to do with training adaptation. A late glass of wine, a short or broken night, the first hours of a cold, a warm or cold room, even whether a measurement is taken lying down or sitting up – each can move the number, as work in the <cite data-claim="hrv-confounds-2022">Journal of Sports Sciences</cite> documents. Stack these confounders together and a lone reading becomes a poor guide to whether the body is genuinely recovered or merely slept badly.</p>
+  <h3>Also This Week</h3>
 
-  <aside class="wk-callout">
-    <p><strong>The practical upshot:</strong> a number that drops for one morning is most likely noise; a baseline that drifts in one direction across two or three weeks is the part worth heeding.</p>
-  </aside>
+  <div class="also">
+    <div class="also-title">Catch-Up — Film, TV &amp; Sound</div>
+    <ul class="also-list">
+      <li><strong>Marcia Lucas, the editor who shaped Star Wars, dies at 80.</strong> The Oscar-winning film editor of <em>A New Hope</em> and <em>American Graffiti</em> died at her home in Rancho Mirage, California on 27 May, of metastatic cancer. She won the Best Editing Oscar for the 1977 film — the cut that made <em>Star Wars</em> move was hers, and her hand in the saga's foundations has long been under-credited. <a href="https://variety.com/2026/film/news/marcia-lucas-dead-star-wars-editor-1236762833/">Variety</a></li>
+      <li><strong>The Midnight expand <em>Syndicate</em>.</strong> The synthwave mainstays put out a deluxe edition on 15 May, adding six tracks — unreleased demos and remixes, including a "Love Is an Ocean (Chromeo Remix)." A long-evening soundtrack worth queuing up if the original was already on rotation. <a href="https://en.wikipedia.org/wiki/Syndicate_(album)">Wikipedia</a></li>
+      <li><strong>Apple TV's <em>Star City</em> lands.</strong> The new prestige drama premiered 29 May — one for the watchlist this month. <a href="https://deadline.com/feature/2026-tv-premiere-dates-1236391902/">Deadline</a></li>
+    </ul>
+  </div>
 
-  <h3 class="wk-subhead">The readiness-score caveat</h3>
+  <div class="card-stack">
+    <div class="stack-card">
+      <div class="stack-card-body">
+        <div class="stack-card-title">Marcia Lucas, dies at 80</div>
+        <div class="stack-card-verdict">The editor behind the Oscar-winning cut of <em>Star Wars</em> (1977).</div>
+        <span class="platform-badge">Obituary</span>
+      </div>
+    </div>
+    <div class="stack-card">
+      <div class="stack-card-body">
+        <div class="stack-card-title">The Midnight — <em>Syndicate</em> (Deluxe)</div>
+        <div class="stack-card-verdict">Six extra tracks, demos and a Chromeo remix.</div>
+        <span class="platform-badge">Synthwave</span>
+      </div>
+    </div>
+  </div>
 
-  <p>Most consumer wearables – Whoop, Garmin and Oura among them – do not show raw HRV alone. They fold it, together with resting heart rate and sleep, into a single proprietary "readiness" or "recovery" score. That packaging is convenient, but it warrants scepticism. As the <cite data-claim="readiness-validity-2023">British Journal of Sports Medicine</cite> notes, the algorithms behind these scores are undisclosed and independent validation of them remains limited. A tidy figure out of ten or a colour-coded ring can imply a precision the underlying physiology does not support.</p>
-
-  <p>None of this makes HRV useless. It means the metric behaves like a long-exposure photograph rather than a snapshot: the meaningful picture emerges only when many noisy frames are averaged over time. The trend describes the terrain; a single day is just weather.</p>
-
-  <ul class="wk-keypoints">
-    <li>HRV fluctuates widely day to day, so a lone reading is dominated by noise.</li>
-    <li>Multi-week rolling trends track adaptation and fatigue far better than any one morning.</li>
-    <li>Alcohol, poor sleep, illness, ambient temperature and body position all distort single readings.</li>
-    <li>Proprietary readiness and recovery scores are convenient but undisclosed and thinly validated.</li>
-  </ul>
-
-  <p class="wk-source-note">A caveat on interpretation: these conclusions concern population-level patterns in HRV behaviour, not any individual's physiology, and the limited independent validation of commercial scores noted by the <cite data-claim="readiness-validity-2023">British Journal of Sports Medicine</cite> means cross-device comparisons should be treated with caution.</p>
+  <div class="read-next">Up next: <a href="#session">The Session <span class="arrow">→</span></a> — the week after the 10k, and what to do with the legs.</div>
 </section>
 
+<!-- ══════ THE SESSION ══════ -->
 <hr class="divider dv-session">
-<section class="sec session-section" id="the-session">
+<section class="sec session-section" id="session">
   <div class="sec-watermark">Session</div>
   <span class="section-label" style="color:var(--session-accent)">The Session</span>
-  <h2>The economy of a stride</h2>
+  <h2>How many sets is enough? The biggest map yet of the volume curve</h2>
 
-  <p class="dropcap"><span class="lead-in">Ask what makes</span> one distance runner faster than another and the answer reaches for VO2max — the ceiling on how much oxygen the body can use under load. It is a useful number, but it is not the whole story. Two runners can share an identical VO2max and finish minutes apart over ten kilometres. The gap between them is running economy: how much oxygen it costs to hold a given pace. The lower the cost, the more of that aerobic ceiling is left over for speed. Economy is the quiet determinant — the efficiency of the engine rather than its size.</p>
+  <p class="dropcap"><span class="lead-in">For two decades</span> the most argued-over number in resistance training has been the simplest one: how many hard sets per muscle per week actually build size. The answers ranged from "ten is plenty" to "more is always more," and most rested on a handful of studies pointing in opposite directions. The Pelland dose-response meta-analysis, published late last year, is the cleanest read on the question to date — it pooled 67 studies and 2,058 participants and fitted the relationship between weekly volume and growth across the whole range, rather than comparing two arbitrary doses. <a href="https://link.springer.com/article/10.1007/s40279-025-02344-w">(Sports Medicine)</a></p>
 
-  <p>It is also the more trainable of the two. Where VO2max responds to a relatively narrow band of high-intensity work, economy improves through several routes that stack over time: accumulated easy mileage that refines the neuromuscular pattern of running, heavy strength work that stiffens tendons so they return more elastic energy per step, and plyometric work that sharpens the stretch-shortening cycle. None of these moves the oxygen-uptake ceiling much. All of them lower the cost of running beneath it. That is why a base of consistent aerobic volume — the kind of conversational mileage at the heart of the current Zone 2 conversation — does more than build a fat-burning engine; it slowly rewrites the cost of every stride. <a href="https://www.npr.org/2025/10/13/nx-s1-5564772/zone-2-training-explaining-the-latest-trend-in-fitness">(NPR)</a></p>
-
-  <p>The most dramatic recent shift in economy, though, came from the feet rather than the legs. Since 2017, carbon-plate "super shoes" — a curved, stiff plate suspended in a slab of resilient foam — have improved running economy by roughly four per cent on average, returning energy that the legs would otherwise spend. Four per cent of the oxygen cost of running is enormous at the sharp end of the sport, and it has been visible in the record book: road-racing marks across distances have tumbled in the years since the design went mainstream. The catch is that the figure is an average. Response varies meaningfully from runner to runner, and some gain far less than the headline. The shoe does not raise the ceiling — it simply lowers the cost, the same lever that strength and mileage pull, only paid for at the till.</p>
+  <p>What it found is not "more is always better," and not "ten and stop" either. Hypertrophy rises with weekly volume along an inverted-U: muscle keeps responding as the sets go up, but the curve flattens, and at the far end it can bend back down. The marginal return is small where most lifters already train — the authors estimated roughly a 0.24% extra increase in muscle size per additional weekly set around the average dose of about twelve fractional sets per muscle group. That is a real number, and it is also a tiny one: the difference between fourteen sets and fifteen is rounding error; the difference between four and fourteen is most of the available growth. The strength curve, by contrast, plateaus far sooner — diminishing returns hit strength much harder than size, so the sets that still nudge a muscle bigger have largely stopped making it stronger. <a href="https://www.researchgate.net/publication/384628335_The_Resistance_Training_Dose-Response_Meta-Regressions_Exploring_the_Effects_of_Weekly_Volume_and_Frequency_on_Muscle_Hypertrophy_and_Strength_Gain">(Pelland et al.)</a></p>
 
   <div class="stat-bar reveal">
-    <div class="stat"><div class="stat-num">~4%</div><div class="stat-label">Avg economy gain, super-shoes</div></div>
-    <div class="stat"><div class="stat-num">2017</div><div class="stat-label">Design goes mainstream</div></div>
-    <div class="stat"><div class="stat-num">≠</div><div class="stat-label">Economy is not VO2max</div></div>
-    <div class="stat"><div class="stat-num">Varies</div><div class="stat-label">Response per runner</div></div>
+    <div class="stat"><div class="stat-num">67</div><div class="stat-label">Studies pooled</div></div>
+    <div class="stat"><div class="stat-num">2,058</div><div class="stat-label">Participants</div></div>
+    <div class="stat"><div class="stat-num">~0.24%</div><div class="stat-label">Extra growth per added set, ~12-set average</div></div>
+    <div class="stat"><div class="stat-num">∩</div><div class="stat-label">Inverted-U, not a straight line</div></div>
   </div>
 
-  <p>The practical reading is unglamorous. A faster shoe buys a fixed, finite slice of efficiency; the larger and more durable gains still come from the work that lowers the body's own cost of motion — months of easy aerobic volume, periodic strength, the occasional bout of springy plyometric work. The plate flatters the engine. It does not build it. <a href="https://www.fisiologiadelejercicio.com/wp-content/uploads/2025/06/Much-Ado-About-Zone-2.pdf">(Storoschuk et al., 2025)</a></p>
+  <p>The honest reading is to state what the data say rather than crown a single magic number. Growth tracks volume, the gains taper, and the curve eventually turns. Read against that shape, somewhere in the region of ten to twenty hard sets per muscle per week captures the overwhelming majority of the growth on offer; pushing into the thirties buys a sliver more at a steeply rising cost in fatigue and recovery time — and a sliver that shrinks further the closer the curve gets to its peak. None of this settles every case, and the meta-analysis is a population average rather than a prescription for one body. But it does turn a shouting match into a curve, and the curve says the same thing strength coaches have edged toward for years: there is a wide, forgiving band where almost all the results live, and very little reason to chase the edge of it.</p>
 
-  <div class="pull-quote reveal"><p>The shoe does not raise the ceiling. It lowers the cost — the same lever strength and mileage pull, only paid for at the till.</p><cite>— The Session</cite></div>
+  <div class="pull-quote reveal"><p>The difference between fourteen sets and fifteen is rounding error. The difference between four and fourteen is most of the growth.</p><cite>— The Session</cite></div>
 
-  <h2>Protecting the gains: the case for the unsexy work</h2>
-
-  <p>Economy is earned slowly and lost easily. The adaptations that lower the cost of a stride — tendon stiffness, an efficient neuromuscular pattern, a deep aerobic base — accrue across months of consistent training, and the fastest way to forfeit them is an injury that stops the training. This is where recovery and mobility work earns its keep: not as a performance booster in its own right, but as insurance on the volume that does the building.</p>
-
-  <p>The logic is structural. Distance running is thousands of repeated loading cycles through the same chain of joints, and the tissues that store and return elastic energy are the same ones that complain when load outpaces recovery. Mobility work that keeps the hips, ankles and thoracic spine moving through a full range, and recovery practice that lets connective tissue adapt rather than accumulate damage, both protect the unbroken streak of training on which economy depends. The point is durability, not flexibility for its own sake.</p>
-
-  <p>It also pairs cleanly with how endurance adaptation is now understood — that a large share of the benefit comes from sustained, sub-threshold aerobic work done week after week, with intensity rationed carefully on top. A meta-analysis of endurance-training intensity distribution underlines how much of the adaptation rests on that accumulated base rather than on any single hard session. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11329428/">(Sports Medicine, 2024)</a> Recovery work is what keeps the base accumulating. The least glamorous block on the calendar is the one quietly defending everything the harder blocks built.</p>
-
-  <div class="src"><a href="https://www.npr.org/2025/10/13/nx-s1-5564772/zone-2-training-explaining-the-latest-trend-in-fitness">NPR · Zone 2 explained</a> · <a href="https://www.fisiologiadelejercicio.com/wp-content/uploads/2025/06/Much-Ado-About-Zone-2.pdf">Storoschuk et al. · Much Ado About Zone 2 (2025)</a> · <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11329428/">Sports Medicine · Endurance intensity distribution (2024)</a></div>
-
-  <div class="read-next">Up next: <a href="#this-week-in-history">This Week in History <span class="arrow">→</span></a> — the past, read closely.</div>
-</section>
-
-<!-- ══════ THE LONG SHELF ══════ -->
-<section class="sec longshelf-section" id="long-shelf">
-  <span class="section-label" style="color:var(--rose)">The Long Shelf — Worth Your Time</span>
-  <h2>Eight Things Worth the Read</h2>
-  <p>A week spent waiting — on a by-election, on a redrawn draw, on a final's last kick — leaves time to read around the edges. Eight pieces below pick up the issue's running threads (the politics of waiting, summits and falls, the arithmetic of effort) and then point past them. Two are filed deliberately off the usual map: a naval annihilation that turned on a new technology, and a Persian allegory of birds that is yours to browse for free.</p>
-
-  <div class="longshelf-grid">
-
-    <div class="shelf-item">
-      <div class="title"><a href="https://www.aljazeera.com/news/2026/5/28/the-kingmakers-of-makerfield-english-town-braces-for-crucial-by-election">The kingmakers of Makerfield</a></div>
-      <div class="meta">Al Jazeera · News feature</div>
-      <div class="desc">How one English town became the hinge of a national leadership question — the by-election (18 June) widely read as Andy Burnham's route into the Commons.</div>
-    </div>
-
-    <div class="shelf-item">
-      <div class="title"><a href="https://www.russiamatters.org/news/russia-ukraine-war-report-card/russia-ukraine-war-report-card-may-27-2026">Russia–Ukraine War Report Card (27 May 2026)</a></div>
-      <div class="meta">Russia Matters · Weekly ledger</div>
-      <div class="desc">A sober, square-mile-by-square-mile accounting of a war that is easier to feel than to measure — the antidote to a week of breathless map graphics.</div>
-    </div>
-
-    <div class="shelf-item">
-      <div class="title"><a href="https://www.fisiologiadelejercicio.com/wp-content/uploads/2025/06/Much-Ado-About-Zone-2.pdf">Much Ado About Zone 2: A Narrative Review</a></div>
-      <div class="meta">Storoschuk et al. · Open-access paper (2025)</div>
-      <div class="desc">The review that quietly punctures the most over-sold idea in endurance training — and notes that the elite athletes cited for it also do plenty of hard work.</div>
-    </div>
-
-    <div class="shelf-item">
-      <div class="title"><a href="https://www.history.com/this-day-in-history/may-29/hillary-and-tenzing-reach-everest-summit">Hillary and Tenzing reach the Everest summit</a></div>
-      <div class="meta">HISTORY · This day, 29 May 1953</div>
-      <div class="desc">Three decades of British attempts on the 8,849-metre peak, settled in a single morning above the South Col — with the news reaching London on coronation eve.</div>
-    </div>
-
-    <div class="shelf-item">
-      <div class="title"><a href="https://pappaspost.com/fall-of-constantinople/">On the Fall of Constantinople, 29 May 1453</a></div>
-      <div class="meta">The Pappas Post · Essay</div>
-      <div class="desc">The day a 1,500-year empire ended behind the Theodosian Walls — held against all comers for a millennium, breached at last after a 53-day siege.</div>
-    </div>
-
-    <div class="shelf-item">
-      <div class="title"><a href="https://athletechnews.com/how-wearables-are-evolving-from-fitness-trackers-to-health-systems/">From fitness trackers to health systems</a></div>
-      <div class="meta">Athletech News · Industry read</div>
-      <div class="desc">The quiet shift from counting steps to claiming to read the body — useful framing for any week when a new no-subscription readiness band is about to ship.</div>
-    </div>
-
-    <div class="shelf-item">
-      <div class="title"><a href="https://en.wikipedia.org/wiki/Battle_of_Tsushima">The Battle of Tsushima, 27 May 1905</a></div>
-      <div class="meta">Wikipedia · <strong>Wildcard</strong></div>
-      <div class="desc">A Russian fleet sailed roughly 18,000 nautical miles from the Baltic to be annihilated in an afternoon — the only decisive clash of modern steel battleship fleets, and one of the first battles where wireless telegraphy mattered.</div>
-    </div>
-
-    <div class="shelf-item">
-      <div class="title"><a href="https://www.metmuseum.org/art/collection/search/451725">The Met's open-access Mantiq al-Tayr (Language of the Birds)</a></div>
-      <div class="meta">The Metropolitan Museum of Art · Open Access · <strong>Wildcard</strong></div>
-      <div class="desc">A 12th-century Persian allegory in which the birds of the world set out to find their king — illuminated, digitised, and free to browse, with the famous "Concourse of the Birds" folio at its centre.</div>
-    </div>
-
-  </div>
-
-  <blockquote class="pull-quote">Two hinge-days fall in this same late-May window five centuries apart — a wall that finally gave way, and a peak that finally did not.</blockquote>
-
-  <figure style="margin:1.5rem 0">
-    <img src="/assets/cached/f10d84208ad2.jpg" alt="An illuminated manuscript folio showing a crowd of birds of many kinds gathered together in a garden landscape." style="width:100%;height:auto;display:block">
-    <figcaption style="font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ghost);margin-top:8px;line-height:1.5">The Concourse of the Birds, from a Mantiq al-Tayr (Language of the Birds), c.1600. Credit: The Metropolitan Museum of Art (Open Access, CC0).</figcaption>
-  </figure>
-
-</section>
-
-<section class="sec" id="down-the-rabbit-hole" style="background:var(--warm);padding:2.5rem 0">
-  <span class="section-label" style="color:var(--ember)">Down the Rabbit Hole — A Curiosity</span>
-  <h2>The famous red layer is thinner than a coat of paint</h2>
   <div class="sidebar">
-    <div class="sidebar-title">Three to five millimetres</div>
-    <p>The Roland-Garros clay everyone pictures — that orange dust the players slide through and umpires squint at for ball marks — is not really what the court is made of. It is a 3-to-5mm dressing of crushed brick, raked over a structure that runs roughly 80cm deep. Beneath the brick sits crushed white limestone, then a layer of clinker (coal residue), then about 30cm of gravel, then a bed of large stones for drainage. The surface that defines the tournament is the shallowest part of it.</p>
-    <p>That is why the courts can drain so fast after rain, and why "clay" play is really limestone play: the brick dust is a renewable skin, brushed, watered and rolled daily, while the layers under it last for decades — the deepest ones are replaced only every 20 to 25 years. It is a tidy reminder that the thing a sport is named for is sometimes a rounding error in its own construction.</p>
-    <p>The 2026 finals close out the fortnight on 6 and 7 June — a good week to fall down this one.</p>
-    <p style="margin-top:14px;font-size:14px">Start digging: <a href="https://frontofficesports.com/roland-garross-iconic-red-clay-surface-is-a-precise-alchemy/">Front Office Sports on the court's "precise alchemy"</a> · <a href="https://en.wikipedia.org/wiki/Stade_Roland_Garros">Stade Roland-Garros</a> · <a href="https://www.washingtontimes.com/news/2026/may/27/french-open-groundskeepers-drench-clay-courts-water-salt-heat-wave/">how groundskeepers water and salt the clay in a heatwave</a>.</p>
+    <div class="sidebar-title">Also worth reading — the frequency footnote</div>
+    <p>The same meta-analysis answers a second long-running argument almost in passing: does it matter how you slice the week up? Once weekly volume is held equal, training frequency has little effect on hypertrophy. Sixteen sets spread over four sessions and the same sixteen crammed into two land in roughly the same place for muscle size.</p>
+    <p>That reframes how a split is chosen. Frequency stops being a growth lever and becomes a recovery-and-logistics one — a way to keep per-session fatigue manageable, fit the work around the days available, and leave each muscle fresh enough to train hard. The total still does the building; the schedule is just how that total gets carried. Spreading volume across more days can make a given weekly count easier to recover from and complete, but it is not, on its own, doing anything extra for size. <a href="https://link.springer.com/article/10.1007/s40279-025-02344-w">(Sports Medicine)</a></p>
   </div>
+
+  <div class="src"><a href="https://link.springer.com/article/10.1007/s40279-025-02344-w">Pelland et al. · The Resistance Training Dose–Response Meta-Regressions · Sports Medicine (2025)</a></div>
+
+  <div class="read-next">Up next: <a href="#the_places">The Places <span class="arrow">→</span></a> — three June anchors on the doorstep.</div>
+</section>
+
+<hr class="divider dv-local">
+<section class="sec local-section" id="the-places">
+  <div class="sec-watermark">Places</div>
+  <span class="section-label" style="color:var(--local-accent)">The Places — Travel &amp; NI Local</span>
+  <h2>Three June anchors on the doorstep</h2>
+
+  <p>June fills the Northern Irish calendar fast, so three dates are worth holding before they get away. The biggest is the <strong>Foyle Maritime Festival</strong>, which runs in Derry/Londonderry from 25&ndash;28 June and turns the River Foyle into the focus of one of the region's largest free summer events. Tall ships moor along the quay, the waterfront fills with stalls and stages, and the whole thing is built to be walked rather than ticketed &mdash; a rare combination of scale and no entry fee. <a href="https://northernirelandholidays.co.uk/whats-on-in-northern-ireland-annual-events-calendar/">Northern Ireland Holidays' events calendar</a> has the dates.</p>
+
+  
+
+  <p>Earlier in the month, the <strong>Cultra Motorsport Festival</strong> takes over the grounds of the Ulster Folk and Transport Museum on Saturday 7 June, with the well-known Cultra hill climb as its centrepiece. Vintage and competition machinery running against a heritage backdrop is a specific sort of day out &mdash; part motorsport, part open-air museum &mdash; and the setting is the reason to go rather than an afterthought. <a href="https://www.visitardsandnorthdown.com/whats-on/whats-on-calendar/june-events">Visit Ards and North Down</a> lists the June programme.</p>
+
+  <p>For something lower-commitment, the <strong>Belfast Book Festival</strong> runs 4&ndash;11 June, a week of talks and readings spread across the city. It is the kind of event you can drop into for a single session rather than block out a whole day for &mdash; pick a name on the bill, go to one thing, leave. The full week sits on the same <a href="https://northernirelandholidays.co.uk/whats-on-in-northern-ireland-annual-events-calendar/">events calendar</a>.</p>
+
+  <div class="dyk">
+    <div class="dyk-title">Worth knowing</div>
+    <p>The Foyle Maritime Festival is among the few summer events here that pair a tall-ships gathering with free, open-air access &mdash; no gate, no ticket, the river itself the venue. If only one of the three sticks, the closing weekend on the Foyle is the one with the most happening at once.</p>
+  </div>
+
+  <div class="read-next">Up next: <a href="#on-the-radar">On the Radar <span class="arrow">&rarr;</span></a> &mdash; the dates and fixtures coming over the horizon.</div>
 </section>
 
 <!-- ══════ ON THE RADAR ══════ -->
-<section class="sec radar-section" id="on-the-radar">
-  <span class="section-label" style="color:var(--rose)">On the Radar — Coming Up</span>
-  <h2>The Week Ahead</h2>
-  <p>Dated, linked, and worth a place in the diary — the coming week and a little beyond.</p>
+<section class="sec radar-section" id="radar">
+  <span class="section-label" style="color:var(--ember)">On the Radar — Coming Up</span>
+  <h2>The dates worth holding</h2>
   <div class="radar-grid">
 
     <div class="radar-row">
-      <span class="radar-date">3 Jun</span>
+      <span class="radar-date">JUN 4–11</span>
       <div>
-        <span class="radar-cat" style="background:var(--ember)"></span>
-        <strong>Final Fantasy VII Rebirth lands on Switch 2</strong> — Square Enix brings the second part of the remake trilogy to Nintendo's new hardware, the first time the entry has left PlayStation. <a href="https://ffvii.square-enix-games.com/en-us/games/rebirth" style="color:var(--rose)">Square Enix</a>
+        <span class="radar-cat event"></span><strong>Belfast Book Festival</strong> — a week of readings and events across the city. <a href="https://northernirelandholidays.co.uk/whats-on-in-northern-ireland-annual-events-calendar/" style="color:var(--rose)">Listing</a>
       </div>
     </div>
 
     <div class="radar-row">
-      <span class="radar-date">early Jun</span>
+      <span class="radar-date">JUN 6–7</span>
       <div>
-        <span class="radar-cat" style="background:var(--teal)"></span>
-        <strong>Garmin CIRQA expected to go on sale</strong> — Garmin's new wearable is slated to reach buyers in the first days of the month, after a spring tease. <a href="https://www.garmin.com/en-GB/newsroom/" style="color:var(--rose)">Garmin Newsroom</a>
+        <span class="radar-cat event"></span><strong>Roland-Garros finals</strong> — women's singles Saturday, men's singles Sunday. <a href="https://www.rolandgarros.com/en-us/order-of-play/tentative/" style="color:var(--rose)">Order of play</a><br>
+        <span class="radar-platform">A wide-open draw after the seeds tumbled — whoever lifts it walks a clear path.</span>
       </div>
     </div>
 
     <div class="radar-row">
-      <span class="radar-date">6 Jun</span>
+      <span class="radar-date">JUN 6–7</span>
       <div>
-        <span class="radar-cat" style="background:var(--green)"></span>
-        <strong>Roland-Garros women's final</strong> — Aryna Sabalenka goes in as favourite on the Philippe-Chatrier clay. <a href="https://www.rolandgarros.com/en-us/" style="color:var(--rose)">Roland-Garros</a>
+        <span class="radar-cat football"></span><strong>F1 Monaco Grand Prix</strong> — qualifying Saturday 16:00, race Sunday 15:00 local. <a href="https://www.formula1.com/en/racing/2026/monaco" style="color:var(--rose)">Schedule</a><br>
+        <span class="radar-platform">Around these barriers Saturday qualifying decides most of Sunday — Antonelli carries a 43-point lead in.</span>
       </div>
     </div>
 
     <div class="radar-row">
-      <span class="radar-date">7 Jun</span>
+      <span class="radar-date">JUN 11</span>
       <div>
-        <span class="radar-cat" style="background:var(--green)"></span>
-        <strong>Roland-Garros men's final</strong> — an unusually open draw, with Carlos Alcaraz withdrawn and Jannik Sinner out, leaves the title there to be taken. <a href="https://www.rolandgarros.com/en-us/" style="color:var(--rose)">Roland-Garros</a>
-        <div class="radar-why">Why it matters: a wide-open Slam final without the two men who have shared the era.</div>
+        <span class="radar-cat game"></span><strong>Starseeker: Astroneer Expeditions</strong> — Early Access opens. <a href="https://blog.starseekergame.com/articles/starseeker-early-access" style="color:var(--rose)">Details</a>
       </div>
     </div>
 
     <div class="radar-row">
-      <span class="radar-date">7 Jun</span>
+      <span class="radar-date">JUN 19</span>
       <div>
-        <span class="radar-cat" style="background:var(--green)"></span>
-        <strong>Monaco Grand Prix</strong> — held a fortnight later than its usual slot, with Andrea Kimi Antonelli 43 points clear and chasing a fifth straight win. <a href="https://www.formula1.com/en/racing/2026/monaco" style="color:var(--rose)">Formula 1</a>
-        <div class="radar-why">Why it matters: a fifth win in a row would turn Antonelli's lead into a stranglehold.</div>
+        <span class="radar-cat game"></span><strong>EA Sports UFC 6</strong> — releases. <a href="https://www.cinelinx.com/games/game-news/june-2026-video-game-release-dates/" style="color:var(--rose)">Release list</a>
       </div>
     </div>
 
     <div class="radar-row">
-      <span class="radar-date">18 Jun</span>
+      <span class="radar-date">JUN 25–28</span>
       <div>
-        <span class="radar-cat" style="background:var(--rose)"></span>
-        <strong>Makerfield by-election</strong> — voters go to the polls in a contest widely read as a verdict on Keir Starmer's leadership. <a href="https://en.wikipedia.org/wiki/Makerfield_(UK_Parliament_constituency)" style="color:var(--rose)">Wikipedia</a>
-        <div class="radar-why">Why it matters: the result could decide whether the pressure on the PM hardens.</div>
+        <span class="radar-cat event"></span><strong>Foyle Maritime Festival</strong> — tall ships line the River Foyle in Derry. <a href="https://northernirelandholidays.co.uk/whats-on-in-northern-ireland-annual-events-calendar/" style="color:var(--rose)">Listing</a><br>
+        <span class="radar-platform">The closest the season comes to a postcard — tall ships on the doorstep, four days only.</span>
       </div>
     </div>
 
   </div>
 </section>
 
-<!-- ══════ COLOPHON (end-of-issue sign-off — before Footer) ══════ -->
 <section class="colophon" id="colophon">
   <div class="colophon-mast">The Signal<span>.</span></div>
   <div class="colophon-sub">Issue in Numbers · Next Week · A Fact</div>
@@ -12077,29 +11868,29 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
     <div class="colophon-block">
       <div class="colophon-block-label">Issue in Numbers</div>
       <ul class="colophon-stats">
-        <li><strong>8,324</strong> words</li>
-        <li><strong>12</strong> sections</li>
-        <li><strong>65</strong> links</li>
-        <li><strong>11</strong> images</li>
+        <li><strong>6,100</strong> words</li>
+        <li><strong>9</strong> sections</li>
+        <li><strong>36</strong> links</li>
+        <li><strong>12</strong> images</li>
+        <li>Anchor: <strong>The World This Week</strong></li>
       </ul>
     </div>
     <div class="colophon-block colophon-next">
       <div class="colophon-block-label">Next Week</div>
-      <p>The calendar tightens: the Monaco Grand Prix takes over the harbour streets, and Roland-Garros crowns its singles champions on the Paris clay. A weekend with two finishing lines worth clearing the Sunday for.</p>
+      <p>The clock starts ticking. A Countdown special is loading for the Efteling and Beekse Bergen run at the end of the month — the rides, the route, the packing list, all of it laid out before the gates open. Expect it to fire in the next week or two, well ahead of the 30 June trip.</p>
     </div>
     <div class="colophon-block colophon-fact">
       <div class="colophon-block-label">A Fact</div>
-      <p>Constantinople fell on 29 May 1453. Everest was first summited on 29 May 1953 — the two events landing on the same calendar date, exactly five hundred years apart.</p>
+      <p>“Noon” originally meant three in the afternoon. It comes from the Latin nona hora, the ninth canonical hour of a monastic day that began at 6am — so the ninth hour fell around 3pm. The word only drifted to mean midday between the 12th and 14th centuries.</p>
     </div>
   </div>
-  <div class="colophon-sign">Issue #11 · 31 May 2026 · A Sunday Morning Magazine</div>
+  <div class="colophon-sign">Issue #11 · 1 June 2026 · A week, read on a Sunday.</div>
 </section>
 
-<!-- ══════ FOOTER ══════ -->
 <footer class="footer" id="footer">
   <div class="footer-brand">The Signal<span>.</span></div>
-  <div class="footer-issue">A Sunday Morning Magazine · Issue #11 · 31 May 2026</div>
-  <p class="footer-note">That closes the week of 25–31 May 2026 — a week that spent most of its time waiting. Next week stops waiting: Monaco lines up on 7 June and the Roland-Garros finals settle the clay. Fold it up; the coffee's gone cold.</p>
+  <div class="footer-issue">Standard Weekly · Issue #11 · 1 June 2026</div>
+  <p class="footer-note">That's the week. Fold the page, top up the coffee, and we'll find you here again next Sunday.</p>
 </footer>
 
 
