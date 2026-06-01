@@ -109,6 +109,8 @@ The WWI Deep Dive (May 2026, post-mortem) failed by performing magazine essayism
 
 Different costumes; same failure. The prose was busy performing a register instead of communicating the subject.
 
+**(v8.30) Not Deep-Dive-only.** Though written for the Deep Dive, the principle below and both trope lists apply to **every format** — the Phase 7 plain-English read now samples all issues, weeklies included. A weekly's hollow connective sentences and hedged answers (see the last two trope bullets) are the same "perform instead of deliver" failure and fail the same read.
+
 **The principle: write plainly.**
 
 A Deep Dive should read like a competent person sitting next to the reader and explaining the subject as well as they can. Not the voice of a graduate student trying to impress a supervisor. Not the voice of a magazine writer trying to win a writing prize. Just someone who knows the material and is telling the reader what it is.
@@ -141,6 +143,8 @@ Concretely:
 - **Characteristic-listing as institution introduction.** Five sentences each saying "Britain was big" in a different way. State the structure of the institution plainly in one or two sentences; don't pile up adjectives.
 - **Domino lists of recognisable nouns.** "No Iron Curtain, no Korea, no Vietnam, no Berlin Wall, no 1989, no fifteen post-Soviet republics…" Performance of comprehensiveness; teaching of nothing. Pick one consequence; walk through its causal chain in plain prose; gesture at the rest in one sentence.
 - **"What is striking…", "What is interesting…", "The reality is…"** Magazine-essayist filler. Cut and just say what's striking or interesting or real.
+- **Hollow connective sentences (v8.30 — the weekly filler class).** A sentence that comments on the content's *significance* rather than adding a fact, mechanism, or answer: "That framing is what makes this a discovery rather than a headline." / "The premise leans hard into its inspiration." / "The appeal here is exactly its restraint." It performs insight without carrying any. Test every sentence: does it add information, or just talk *about* information already given? If the latter, cut it.
+- **The hedged answer (v8.30 — the evidence-explainer failure).** A piece poses a "how much / how many / which" question, has the sourced numbers, then dissolves the takeaway into mush ("somewhere in the region of ten to twenty…", "none of this settles every case") instead of landing it. State the number or range the sources support, plainly; the methodology caveats go in a footnote or aside, never wrapped around the answer itself. Hedging the answer where the sources support a clear range performs scientific caution instead of delivering the finding the headline promised.
 
 **Sources discipline.** Cite a scholar in body prose only when you're drawing on a specific argument they made and that argument is helping the reader understand what's in front of them. Survey-of-the-literature gestures belong in marginalia, the colophon, or Keep Digging — not in the running text.
 

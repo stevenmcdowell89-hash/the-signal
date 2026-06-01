@@ -98,6 +98,10 @@ FIXED_SECTION_CHAPTER_IDS = {
 # form only.
 LONG_SHELF_CHAPTER_IDS = {"long_shelf", "long-shelf"}
 
+# v8.30 — Release Radar (upcoming media releases) is a required weekly chapter.
+RELEASE_RADAR_CHAPTER_IDS = {"release_radar", "release-radar"}
+RELEASE_RADAR_CATEGORIES = {"film", "tv", "game", "lego", "tech", "book", "music"}
+
 # v8.17 — sub-format mapping: chapter_id -> allowed sub_format values
 SCREEN_SOUND_CHAPTER_IDS = {"screen_sound", "screen-sound", "screen"}
 HISTORY_CHAPTER_IDS = {"history", "this_week_in_history", "this-week-in-history"}
@@ -444,6 +448,45 @@ def check_long_shelf_items(ch, cpath):
         err(f"[ITEMS] {cpath}: long_shelf needs >=2 items with wildcard=true. Found {wildcard_count} (v8.15 wildcard discipline).")
 
 
+def check_release_radar(ch, cpath):
+    """v8.30: release_radar chapter requires a `radar_items` array of >=15 upcoming-weighted
+    media releases across >=4 distinct categories. Mirrors check_long_shelf_items; this is the
+    structural gate that stops Release Radar being silently dropped (the 1 June test gap)."""
+    items = ch.get("radar_items")
+    if items is None:
+        err(f"[RADAR] {cpath}: release_radar chapter is missing required 'radar_items' array (v8.30).")
+        return
+    if not isinstance(items, list):
+        err(f"[RADAR] {cpath}.radar_items must be an array.")
+        return
+    if len(items) < 15:
+        err(f"[RADAR] {cpath}.radar_items must contain >=15 entries (15-20 target). Found {len(items)}.")
+
+    cats = set()
+    for j, it in enumerate(items):
+        ipath = f"{cpath}.radar_items[{j}]"
+        if not isinstance(it, dict):
+            err(f"[RADAR] {ipath} must be an object.")
+            continue
+        for key in ("title", "category", "date", "status", "link"):
+            if not it.get(key):
+                err(f"[RADAR] {ipath}: missing required field '{key}'.")
+        cat = it.get("category")
+        if cat is not None and cat not in RELEASE_RADAR_CATEGORIES:
+            err(f"[RADAR] {ipath}: category='{cat}' must be one of {sorted(RELEASE_RADAR_CATEGORIES)}.")
+        elif cat:
+            cats.add(cat)
+        st = it.get("status")
+        if st is not None and st not in ("happened", "upcoming"):
+            err(f"[RADAR] {ipath}: status='{st}' must be 'happened' or 'upcoming'.")
+        d = it.get("date")
+        if d and not DATE_RE.match(str(d)):
+            err(f"[RADAR] {ipath}: date='{d}' must be YYYY-MM-DD.")
+
+    if len(cats) < 4:
+        err(f"[RADAR] {cpath}: release_radar needs >=4 distinct categories. Found {len(cats)} ({sorted(cats)}).")
+
+
 def check_sub_format(ch, cpath, ch_id):
     """v8.17: validate optional sub_format field.
 
@@ -588,12 +631,20 @@ def check_chapters(chapters, issue_meta):
         if fmt == "weekly" and ch_id in LONG_SHELF_CHAPTER_IDS:
             check_long_shelf_items(ch, cpath)
 
+        # 14b. v8.30 — release_radar `radar_items` array (weekly format only)
+        if fmt == "weekly" and ch_id in RELEASE_RADAR_CHAPTER_IDS:
+            check_release_radar(ch, cpath)
+
         # 15. v8.17 — optional sub_format field (Director's Cut on screen_sound, A Closer Look on history)
         if fmt == "weekly" and ("sub_format" in ch or "featured_item" in ch):
             check_sub_format(ch, cpath, ch_id)
 
         # 16. v8.29 — structured key_facts records (all formats)
         check_key_facts(ch, cpath)
+
+    # 16b. v8.30 — Release Radar is a mandatory weekly chapter (presence check).
+    if fmt == "weekly" and not (chapter_id_set & RELEASE_RADAR_CHAPTER_IDS):
+        err("[RADAR] weekly plan is missing the required 'release_radar' chapter (v8.30 — Release Radar owns upcoming media releases and must always run; it was silently dropped before this gate).")
 
     # 7. chapter_num is 1..N, no gaps
     if chapter_nums:
@@ -1032,9 +1083,35 @@ def run_inline_tests():
                 {"chapter_id": "screen_sound", "headline_hint": "new-to-reader show", "discovery_rationale": "not in their viewing list"}
             ]
         }
+        no_radar = overrides.pop("_no_radar", False)
         for k, v in overrides.items():
             plan[k] = v
+        # v8.30 — weekly plans now require a release_radar chapter. Auto-inject a valid one
+        # for any weekly fixture that doesn't already supply (or explicitly opt out of) one,
+        # so the pre-existing weekly tests keep passing; release-radar-specific tests pass
+        # their own radar chapter or set _no_radar=True.
+        if (not no_radar and isinstance(plan.get("issue_meta"), dict)
+                and plan["issue_meta"].get("format") == "weekly"
+                and isinstance(plan.get("chapters"), list)
+                and not any(isinstance(c, dict) and c.get("chapter_id") in RELEASE_RADAR_CHAPTER_IDS
+                            for c in plan["chapters"])):
+            nums = [c.get("chapter_num", 0) for c in plan["chapters"] if isinstance(c, dict)]
+            plan["chapters"].append(valid_release_radar_chapter(max(nums or [0]) + 1))
         return plan
+
+    def valid_release_radar_chapter(num):
+        cats = ["film", "tv", "game", "lego", "tech", "book", "music"]
+        items = [
+            {"title": f"Release {i}", "category": cats[i % len(cats)], "date": "2026-06-20",
+             "status": "upcoming", "link": "https://example.com", "note": "why"}
+            for i in range(15)
+        ]
+        return {
+            "chapter_id": "release_radar", "chapter_num": num, "chapter_type": "closer",
+            "chapter_title": "Release Radar", "chapter_arc": "what's coming", "ground": "paper",
+            "is_hype": False, "data_venue": None, "target_word_count": 300, "images_needed": [],
+            "key_facts": [], "forbidden_topics": [], "cross_refs": [], "radar_items": items
+        }
 
     def run_test(name, plan_dict, expect_pass):
         global errors
@@ -1612,6 +1689,37 @@ def run_inline_tests():
         {"claim": "Norris took pole", "status": "happened", "date": "2026-05-24",
          "source_url": "https://formula1.com/x", "type": "opinion", "speaker": "Lando Norris"}
     ])]), expect_pass=False)
+
+    # ── v8.30 release_radar enforcement ──
+    rr_world = weekly_fixed_chapter("world", pieces=valid_pieces, extra={"catch_up": good_catch_up, "chapter_num": 1})
+
+    def radar_chapter(items, num=2):
+        return {"chapter_id": "release_radar", "chapter_num": num, "chapter_type": "closer",
+                "chapter_title": "Release Radar", "chapter_arc": "coming", "ground": "paper",
+                "is_hype": False, "data_venue": None, "target_word_count": 300, "images_needed": [],
+                "key_facts": [], "forbidden_topics": [], "cross_refs": [], "radar_items": items}
+
+    run_test("weekly missing release_radar fails", make_plan(
+        _no_radar=True, issue_meta=weekly_meta, chapters=[dict(rr_world)]
+    ), expect_pass=False)
+
+    few_items = [{"title": f"R{i}", "category": ["film", "tv", "game", "book"][i % 4], "date": "2026-06-20",
+                  "status": "upcoming", "link": "https://example.com"} for i in range(10)]
+    run_test("release_radar <15 items fails", make_plan(
+        _no_radar=True, issue_meta=weekly_meta, chapters=[dict(rr_world), radar_chapter(few_items)]
+    ), expect_pass=False)
+
+    onecat_items = [{"title": f"R{i}", "category": "film", "date": "2026-06-20",
+                     "status": "upcoming", "link": "https://example.com"} for i in range(15)]
+    run_test("release_radar <4 categories fails", make_plan(
+        _no_radar=True, issue_meta=weekly_meta, chapters=[dict(rr_world), radar_chapter(onecat_items)]
+    ), expect_pass=False)
+
+    valid_items = [{"title": f"R{i}", "category": ["film", "tv", "game", "book", "music"][i % 5], "date": "2026-06-20",
+                    "status": "upcoming", "link": "https://example.com"} for i in range(16)]
+    run_test("valid release_radar passes", make_plan(
+        _no_radar=True, issue_meta=weekly_meta, chapters=[dict(rr_world), radar_chapter(valid_items)]
+    ), expect_pass=True)
 
     # ── Summary ──
     print("\n=== INLINE TEST RESULTS ===")

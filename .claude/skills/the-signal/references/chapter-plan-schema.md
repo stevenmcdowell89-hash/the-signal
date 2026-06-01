@@ -4,6 +4,8 @@ The planner subagent writes `/tmp/signal-build/chapter-plan.json`. This file def
 
 The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan that fails validation cannot proceed to Phase 5 (writer subagents).
 
+**v8.30 — Release Radar is a required, enforced weekly chapter.** Every `weekly` plan MUST include a `release_radar` chapter (rendered immediately after `screen_sound`) carrying a `radar_items` array of **15-20 upcoming-weighted media releases across ≥4 categories** (film/tv/game/lego/tech/book/music). The validator hard-fails a weekly plan that omits it or that ships a thin one. This closes the silent-drop gap that lost release coverage from the 1 June test issue — Release Radar was "tail content" with no schema field and no gate. (On the Radar stays events-only; Release Radar owns product/media releases.)
+
 **v8.28 — Lead optional + length follows material.** The Lead is no longer required: a fixed-section chapter may carry **0-2 pieces** (an optional `lead` + an optional `companion`; a companion requires a lead). A section may be pure Catch-Up (facts) with no `pieces` at all. Word floors are relaxed to small *sanity* minimums (lead 150, companion 120) — not targets; length follows the material. The section must still contain *something* substantive (a non-empty `catch_up`, a Lead, or a `yield_reason`), and a bare Lead with no second element still fails. Facts in any piece/catch_up item must trace to a researched source (carried as `link_targets`).
 
 **v8.27 — Lead + Catch-Up (replaces the v8.15 mandatory two-anchor Lead + Companion).** Every fixed-section chapter (`world`, `pixel_byte`, `toolkit`, `touchline`, `screen_sound`, `session`) carries a `pieces` array (v8.28: 0-2 entries): an optional `role: "lead"` and an optional `role: "companion"` (if present, on a `topic_family` distinct from the Lead). The mandatory *second* element is the **substantive `catch_up` roundup** (or, where a section genuinely runs short, an explicit `yield_reason` string). Each `catch_up` item must carry `headline_hint`, `why_it_matters`, and a non-empty `link_targets` (the "no bare namedrops" rule — and the item must carry a real specific fact, not a beat-label). The `long_shelf` chapter still carries an `items` array of 6–8 entries with at least two `wildcard: true`. Topic families are a closed enumeration — see § Topic Family Enumeration at the bottom of this file.
@@ -286,6 +288,25 @@ The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan
                 "link": { "type": "string", "format": "uri", "description": "Specific item URL — not a category page." },
                 "hook": { "type": "string", "description": "One-sentence hook selling the content on its merit (no reader-profile leaks)." },
                 "wildcard": { "type": "boolean", "description": "true if this item is outside the magazine's usual coverage areas (not gaming, sport, Star Wars, fantasy/sci-fi, fitness, UK consumer fintech, theme parks, history podcasts). At least 2 of the 6-8 items must be wildcards." }
+              }
+            }
+          },
+
+          "radar_items": {
+            "type": "array",
+            "description": "v8.30 — REQUIRED for chapter_id 'release_radar'. The weekly Release Radar: 15-20 upcoming-weighted media releases across ALL categories. Validator (check_release_radar) hard-fails if radar_items.length < 15 or if fewer than 4 distinct categories are represented. A weekly plan with NO release_radar chapter also hard-fails (the section is mandatory — it was silently dropped before v8.30). Distinct from `items` (the long_shelf field) by design — release items carry category/date/status, not source/hook/wildcard.",
+            "minItems": 15,
+            "maxItems": 24,
+            "items": {
+              "type": "object",
+              "required": ["title", "category", "date", "status", "link"],
+              "properties": {
+                "title": { "type": "string", "description": "The release title (linked in the final markup)." },
+                "category": { "type": "string", "enum": ["film", "tv", "game", "lego", "tech", "book", "music"], "description": "Closed media category — drives the .radar-cat colour dot. At least 4 distinct categories must appear across the section." },
+                "date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$", "description": "Release date (YYYY-MM-DD)." },
+                "status": { "type": "string", "enum": ["happened", "upcoming"], "description": "Reuses the v8.29 fact-status tag. Release Radar is upcoming-weighted; a just-released item may be 'happened' (Now Showing / Out Now), everything else 'upcoming' (Coming Soon)." },
+                "link": { "type": "string", "format": "uri", "description": "Specific source/store/trailer URL — not a category page." },
+                "note": { "type": "string", "description": "Optional one-line why-it-matters / platform note." }
               }
             }
           },
