@@ -58,27 +58,28 @@ The structural mechanics that enforce this:
 
 Reinforcement still dominates the magazine because that's what makes it feel curated. Discovery has a guaranteed floor.
 
-### What to Lead With (v8.27 — Cardinal-tier, sits alongside Lens-not-Filter)
+### What to Lead With (Cardinal-tier, with Lens-not-Filter & Borrowed-angles)
 
-**The Lead earns its slot by reward-per-attention, not by being "the most important story."** This is the core editorial principle of the reset. It is *not* "prefer novelty" — sometimes the most interesting story IS the biggest. Judge every candidate Lead on two factors together:
+**A Lead earns its slot by reward-per-attention, and it is optional.** The full two-factor test (did it move this week + can we add a *sourced, not invented* something beyond the headline), the optional-Lead rule, and the fallback-to-facts hierarchy all live in § Article Structure → "The Lead"; the script backstop is § Topic Lock. Summary: *lead with what he missed; never re-lead a story without a datable new development; no single theme owns the issue.* `check-topic-lock.py` and `check-theme-clustering.py` are the mechanical backstops — keep them, **add no new ones.** **Meta-rule: when an issue disappoints, adjust these principles — do not bolt on another rule or script** (the accretion v8.27 ended; v8.28 held the line by consolidating, not adding).
 
-1. **Did it actually move this week?** A datable development — not a holding pattern ("still in crisis", "clings on", "waiting on the vote").
-2. **Can we add something beyond the headline he already has?** An angle, the part nobody covered, real analysis, context.
+### Borrowed angles, our voice (v8.28 — Cardinal-tier, sits alongside Lens-not-Filter)
 
-**It leads only when it scores on both.** The editor's test: *"Did this move this week, and can I tell him something the BBC headline didn't? If both yes, it can lead — biggest or not. If not, it's a Catch-Up line, not a Lead."* The full mechanics live in § Article Structure (the Lead) and § Topic Lock (the script backstop).
+**The magazine never invents its own opinion — it borrows real ones and voices them as its own.** Take a clear, confident, opinionated angle and read like a magazine, but the **angle / opinion / conclusion / counterargument must be one real sources or commentators actually hold**, surfaced in the research. Express it in our voice *as if it were ours*, with **no obligation to quote, attribute, or cite** (this is a personal magazine, not journalism) and **no robotic "X said, then Y said"** framing. The only constraint is *provenance*: the take is borrowed from the real world, the wording is ours. It's the no-taste *spirit* of the Field Guide generalised ("opinions are reported, not held") — but NOT its attribution machinery; there's no quote-density or sourcing-display duty, only "don't invent it."
 
-**One short governance principle replaces the patch pile-up (freshness / topic-lock v8.18→v8.25 / theme-clustering v8.26):** *lead with what he missed; never re-lead a story without a datable new development; no single theme owns the issue.* The existing scripts (`check-topic-lock.py`, `check-theme-clustering.py`) are mechanical backstops for this principle — keep them, **add no new ones.** **Meta-rule: when an issue disappoints, adjust these principles — do not bolt on another rule or script.** That accretion (two reactive rules added the same day the bad issue shipped) is the pattern v8.27 ends.
+- **The writer's test:** *"Is this angle something real people actually argue — that I found in research — or did I make it up?"* Invented → cut it. Real → express it well, in our voice. **Invent nothing beyond what the sources support** — this also stops analysis being built on a premise that isn't there (the Monaco "Norris on pole" leap).
+- **Not everything needs an angle.** Gaming releases, a results roundup, an evidence explainer (the muscle-in-a-deficit piece) are often *better* as plain facts — "study X found A, Y found B, Z found C, it leans toward W", no invented conclusion. State the studies; let them speak. A posed question must still be answered from what the sources show, never left hanging.
+- **Length follows the material.** A 30-second idea gets ~30 seconds of words. Padding a thin topic and inventing an angle to fill a slot are the same disease — kill both.
 
 ### Editorial Voice
-- **Opinions mandatory.** The reader wants editorial voice, not neutrality.
-- **Reader opinions ≠ editorial fact.** The reader's personal experiences and preferences are context, not conclusions. If the magazine makes a critical claim ("the show declined"), it must be backed by external evidence, not just the reader's view. The magazine brings the wider world in — creating a bubble is the worst failure mode.
-- **No spoilers.** Never, ever, for any book or show. This rule is absolute but invisible — never announce compliance.
-- **Confident, not defensive.** No "it's not X, it's Y" crutches. No justifying why content was selected. Present things well and let them stand.
+- **Confident and opinionated, but the opinion is borrowed, not invented** (see "Borrowed angles, our voice" above) — voice real takes as our own; never neutral, never a take you made up.
+- **No bubble.** A critical claim ("the show declined") rests on what external coverage says, not the reader's view — the reader's preferences are context, not conclusions.
+- **No spoilers.** Never, ever, for any book or show. Absolute but invisible — never announce compliance.
+- **No defensive crutches.** No "it's not X, it's Y"; no justifying why content was selected. Present it well and let it stand.
 
 ### Content Standards
 - **Sunday timing** — Saturday results are hours old. This should feel current.
 - **7-day freshness rule.** News must be from this week. Evergreen features are fine when clearly framed as features. Don't force content from the reader profile when there's no current news to support it.
-- **Verify everything.** Scorelines, fixture dates, media items, podcast episode content. If you can't verify it, don't include it. A fabricated Football Weekly summary or a made-up 7-0 draw is an unforgivable error.
+- **Facts come from the research bundle; verify everything (v8.28).** The writer states only facts that are in the research bundle — it never introduces new ones (the prose analog of the image rule: every image must trace to `image_candidates`; every load-bearing fact must trace to a researched source). A stated result / fixture outcome / standing must have **actually happened by the issue date** and trace to a source that reports it as happened — a preview or a prior-year result asserted as fact is fabrication (the Monaco "Norris on pole" failure for a qualifying session a week away). Scorelines, fixture dates, media items, podcast content: if it isn't in the bundle and verifiable, it doesn't go in. A fabricated Football Weekly summary or a made-up 7-0 draw is an unforgivable error.
 - **Links are for the reader.** Every substantial item needs at least one outbound link. The reader should never think "I want to read more" and have nowhere to go. Wikipedia for history, original sources for news, specific URLs not category pages.
 - **Images mandatory.** Maps are high-value visuals when relevant — conflict zones, historical sieges, park layouts, race routes. Source from Wikimedia Commons, news outlets, official sources. Never AI-generated.
 - **2-3 wildcard items** per issue — things the reader didn't ask for. "Taste is a lens, not a filter."
@@ -130,39 +131,38 @@ Every fixed content section runs the **Lead + Catch-Up** shape (§ Article Struc
 
 ## Article Structure: Lead + Catch-Up
 
-> **v8.27 — this replaces the v8.15 mandatory two-deep-anchor "Lead + Companion".** That mandate forced every fixed section into two deep pieces on distinct topic families every week. It spent the whole section budget on depth and starved breadth — the "here's what happened in your world this week" roundup — so the catch-up that the reader actually wants decayed into one-line namedrops while the Leads chased the week's biggest headline. The new shape redirects the budget toward missable domain news.
+The **Catch-Up roundup is the spine** of every fixed section that appears: a substantive roundup of the week's real domain news. On top of it, a **Lead** (an angled centrepiece) and a **Companion** (a second deep piece) are **both optional (v8.28)** — run a Lead only when a story earns one, a Companion only when a second topic does; a section may be pure Catch-Up facts with neither. (This replaces the v8.15 mandatory two-deep-anchor "Lead + Companion", which forced two deep pieces every week and starved the catch-up into namedrops.) Tail content (tables, quick reviews, the AI block, Release Radar) is in addition.
 
-Every fixed section that appears in a standard weekly runs **one angled Lead** AND a **substantive Catch-Up roundup**. A **Companion** (a second deep piece) is now **optional**, not mandatory — run one only when the section genuinely has a second topic worth a full article that week. Tail content (tables, quick reviews, sub-sections like the AI block or Release Radar) is in addition.
+### The Lead — optional, earned by reward-per-attention, never invented
 
-### The Lead — earns its slot by reward-per-attention
+A Lead is the angled centrepiece of a section — but it is **not mandatory (v8.28)**: a section may run as a pure Catch-Up roundup of facts with no Lead at all when no story earns one (forcing a Lead where there's no real angle is what produces fluff). **Per-section fallback hierarchy:** a genuine angled Lead *if a good one exists* → otherwise just state the facts → otherwise (nothing real this week) the section yields. **Inventing an angle to fill the slot is never the answer.**
 
-The Lead is **not** "the most important story" and **not** "prefer novelty" (sometimes the most interesting IS the biggest). It earns its slot by being the **best reward for the reader's attention**, judged on two factors *together*:
+When a Lead does run, it earns its slot by **reward-per-attention** (not "most important", not "prefer novelty" — sometimes the most interesting IS the biggest), judged on two factors *together*:
 
 1. **Did the story actually move this week?** A datable development — not "still in crisis / clings on / waiting on the vote" (a holding pattern fails this).
-2. **Can we add something beyond the headline he already has?** An angle, the part nobody covered, real analysis, context he won't get from the BBC push notification.
+2. **Can we add something beyond the headline — that we did not invent?** The angle, the part nobody covered, the analysis *real commentators have actually put on it*. Per the Cardinal rule **"Borrowed angles, our voice"** (§ Key Rules), factor 2 is met by **synthesising viewpoints that exist in the research**, voiced as our own — never by an opinion, thesis, or counterargument the writer made up. An invented angle is a fail even when it reads well (the Star Wars "nothing" essay is the anchor failure).
 
-**A story leads only when it scores on both.** This deliberately lets the biggest story lead when it genuinely developed AND we bring something (war breaks out → leads; a three-week leadership holding pattern → doesn't; a Champions League final → leads only if we have the off-pitch/tactical angle, else it's a Catch-Up line). The editor's test: **"Did this move this week, and can I tell him something the headline didn't? If both yes, it can lead — biggest or not. If not, it's a Catch-Up line, not a Lead."**
+**A Lead that runs scores on both.** Editor's test: *"Did this move this week, and can I tell him something real coverage said that the BBC headline didn't? If both yes, lead with it. If not, it's a Catch-Up line."*
 
-| Piece | Floor | Typical | Ceiling |
-|---|---|---|---|
-| Lead | 300 words | 400–700 words | 1,000+ on a genuinely massive week |
-| Companion (optional) | 200 words | 250–450 words | 600 words |
+**Length follows the material (v8.28).** The bands below are *guidance, not quotas* — a tight, fully-substantive 150-word Lead is fine; padding a thin topic to hit a floor is banned (the 3000-words-for-a-30-second-idea failure is the same disease as the invented angle). Say it in as many words as the substance earns, no more.
 
-### The Catch-Up roundup — the section's second mandatory element
+| Piece | Typical (as the material warrants) | Ceiling |
+|---|---|---|
+| Lead | 250–700 words | 1,000+ on a genuinely massive week |
+| Companion (optional) | 200–450 words | 600 words |
 
-The Catch-Up carries the missable domain news that the old two-anchor shape crowded out. It does **two** jobs:
+### The Catch-Up roundup — the spine of the section
 
-1. **Missable domain news** — the developments in this section's world the reader would otherwise have to trawl for: transfer rumours/confirmations and squad announcements (Touchline), what actually launched this week and *new* rumours-with-analysis (Pixel & Byte / Toolkit), the other interesting world news (World), and so on. **Every item gives what it is, why it matters, and a link. No bare namedrops** — "namedropped three game releases and moved on" is the exact failure this rule exists to kill.
+The Catch-Up carries the missable domain news, and does **two** jobs:
+
+1. **Missable domain news** — the developments in this section's world the reader would otherwise have to trawl for: transfer rumours/confirmations and squad announcements (Touchline), what actually launched this week and *new* rumours-with-analysis (Pixel & Byte / Toolkit), the other interesting world news (World), and so on. **Every item must carry a *specific fact from the research* — a name, a number, a dated event — plus why it matters and a link (v8.28). An item that is only a beat-label ("Juventus transfer latest") with no actual transfer in it is CUT, not dressed up in prose.** "Namedropped three game releases and moved on" is the exact failure this rule exists to kill.
 2. **One-line safety-net headlines** — brief one-liners of the week's *major* headlines (e.g. *"Arsenal lose the Champions League final on penalties"*), so that demoting a known story out of the Lead **never means dropping it**. This is what makes the Lead reframe safe: the big headline always survives as a line; it just isn't a forced 700-word recap. (This satisfies the Lens-not-Filter news-breadth floor — see § Key Rules.)
 
 **No play-by-play recap of an event the reader watched** (the Touchline especially): lead with the angle, or give it a few sharp lines in the Catch-Up. **Sections may run short or yield** when the week is genuinely thin there — but the *normal* case is a healthy Catch-Up roundup, not emptiness.
 
 ### The optional Companion — topic-family discipline still applies
 
-When a section runs a Companion, the Lead and Companion MUST be on different `topic_family` values (closed enumeration in `references/chapter-plan-schema.md`; the planner-side validator enforces it whenever a companion is present). Section-specific companion rules when one is run:
-- **The Touchline** — when the Lead is football, a Companion must be a non-football sport. When the Lead is a Priority-2/3 non-football story, the Companion may be football.
-- **Screen & Sound** — a Companion cannot be the same franchise as the Lead.
-- **The Session** — its "Companion deep note" (200–250 words on a different training-topic cluster) is the one place a companion is still strongly encouraged, because Session absorbs the old Workshop/Lab science-and-gear angles.
+When a section runs a Companion, the Lead and Companion MUST be on different `topic_family` values (closed enumeration in `references/chapter-plan-schema.md`; the planner-side validator enforces it whenever a companion is present). Per-section companion rules (non-football for Touchline, different-franchise for Screen & Sound, the encouraged training-cluster "deep note" for Session) live in § Section Rules.
 
 ### Sections exempted from the Lead + Catch-Up shape
 

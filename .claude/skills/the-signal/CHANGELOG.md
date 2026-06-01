@@ -1,5 +1,70 @@
 # The Signal — Changelog
 
+8.28.0 — Substance & trust: stop the magazine writing confident fluff.
+  v8.27 fixed *what* gets covered; a no-publish test weekly (7 June 2026)
+  then read as "a lot of editorialising, telling me little" — invented
+  angles (a Screen & Sound essay on "the year Star Wars went quiet" that
+  said nothing), padding (3000 words for a 30-second idea), generic
+  catch-up that named a beat without the fact ("Juventus transfer latest"),
+  an empty Shelf (placeholder titles), and — worst — a fabricated result:
+  the Monaco companion asserted "Norris on pole" for qualifying that hadn't
+  happened, then built two paragraphs of analysis on it.
+
+  Diagnosed to TWO root causes and fixed at source (not patched per-symptom):
+
+  CAUSE 1 — structure demanded generation. A lead-per-section + word floors
+  made the writer invent angles and pad. Fixes:
+  - The **Lead is now optional**: a section may be pure Catch-Up (facts) with
+    no Lead. `check_section_shape` allows 0 leads; a companion requires a lead;
+    a bare lead with no second element still fails; an empty section fails.
+  - **Word floors relaxed** to sanity minimums (lead 150 / companion 120, were
+    300/200) — length follows the material; padding to a band is banned.
+  - New Cardinal rule **"Borrowed angles, our voice"**: the magazine never
+    invents an opinion/thesis/counterargument; it borrows ones real
+    commentators hold (from research) and voices them as its own — no quoting,
+    no attribution duty, no robotic "X said Y". Not everything needs an angle
+    (gaming releases, the cut-piece "state the studies" form are better as
+    plain facts); a posed question is answered from sources. Replaces the
+    "Opinions mandatory" line and the per-section "culture critic / reviewer"
+    instructions.
+  - Fallback hierarchy: sourced angle → state the facts → yield. Catch-Up items
+    must carry a real specific fact or be cut. Recommendation sections with no
+    real items yield rather than invent.
+
+  CAUSE 2 — nothing verified inbound facts (images were a fortress, facts wide
+  open). Fixes:
+  - The writer states only facts in the research bundle (RT-22 already; now
+    reinforced in § Content Standards + Gate 1B).
+  - **Temporal check**: a stated result/fixture/standing must have happened by
+    the issue date and trace to a source — `check-release-dates.sh` extended
+    from media-only to results/fixtures (+ takes an issue-date arg); Gate 1B
+    gains a hard "no result that hasn't happened" check. Closes the Monaco class.
+
+  PROCESS — the test issue was starved because the researcher was spawned as a
+  read-only `Explore` agent that couldn't write the bundle, so its real
+  findings were lost and rebuilt lossily from a summary. Fix: researcher spawns
+  as a **writable `general-purpose`** agent; new Phase 3a-guard verifies the
+  bundle file exists and re-runs research rather than hand-rebuilding; the
+  researcher brief now demands specific facts + real viewpoints, not beat-labels.
+
+  SPECIALS — the Cardinal rule reaches every format; the interpretive chapters
+  reconciled: Deep Dive "The Argument", Rewind "The Throughline", Versus "The
+  Verdict" must reflect a frame real coverage supports, not an invented thesis.
+  The Field Guide was already compliant and is the template.
+
+  CONSOLIDATION (governance meta-rule — every change leaves the corpus the same
+  size or smaller): the one Cardinal rule replaced four per-section opinion
+  blurbs and collapsed the Gate 2 banned-phrase list; the new substance rules
+  folded into RT-18/RT-22 rather than adding RTs. Net line count across
+  editorial-spec + references + pre-flight held at/below the pre-v8.28 baseline
+  (3481 lines). Validator: 50/50.
+
+  Files: `references/editorial-spec.md` (+ re-slice), `references/sections.md`,
+  `references/pre-flight.md`, `references/compliance-checklist.md`,
+  `references/quality-rubric.md`, `references/chapter-plan-schema.md`,
+  `scripts/validate-chapter-plan.py` (+ tests), `scripts/check-release-dates.sh`,
+  `SKILL.md`. No CSS/template changes; no new gate scripts.
+
 8.27.0 — Editorial reset: a reduction, not a feature. The magazine had
   drifted from its purpose — "save the reader from trawling the feeds:
   catch what he missed and tell him what he's interested in." An audit of

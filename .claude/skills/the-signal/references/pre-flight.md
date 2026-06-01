@@ -447,17 +447,19 @@ done
 
 ---
 
-### RT-18: Lead + Catch-Up shape discipline (v8.27 — replaces the v8.15 Lead + Companion mandate)
+### RT-18: Lead + Catch-Up shape + the substance rules (v8.28 — absorbs the old voice/padding RTs)
 
-When you write a fixed-section chapter you write the **Lead + Catch-Up** shape from your chapter plan. The Companion is now OPTIONAL — the mandatory second element is the Catch-Up roundup. Self-check before submission:
+You write the **Lead + Catch-Up** shape. Both the **Lead and the Companion are optional** — a section can be pure Catch-Up (facts). Self-check before submission:
 
-1. **The Lead passes the two-factor test:** it moved this week (a datable development, not "still in crisis / clings on / waiting on the vote") AND you add something beyond the headline the reader already has. A holding-pattern lead is not a lead — flag it back to the planner.
-2. **There is a substantive second element:** a Catch-Up roundup OR (optionally) a Companion OR an explicit short/yield note from the plan's `yield_reason`. A bare Lead alone is not submittable.
-3. **The Catch-Up has real substance, not namedrops:** every roundup item says what it is, why it matters, and links. "Three game releases named and moved on" is a fail. Include one-line safety-net headlines for the week's majors so a known story demoted out of the Lead is never dropped.
-4. **If you DO write an optional Companion:** it's on a visibly different topic family from the Lead (not two framings of one story), substantive (200-450 words), and linked. Section rules when a companion runs: World This Week — different cluster, not just a different war; Touchline — a non-football sport when the Lead is football; Screen & Sound — a different franchise from the Lead.
-5. Each piece and each Catch-Up item links to at least one canonical source.
+1. **Borrowed angles, our voice — never invent.** Any angle/opinion/conclusion must be one *real commentators actually hold*, found in the research. Voice it confidently as ours (no need to quote or attribute, no robotic "X said Y") — but if you made it up, cut it. **Invent nothing beyond what the sources support** (this is what stops "Norris on pole"–style analysis built on a non-fact).
+2. **Not everything needs an angle; fall back to facts.** A real sourced angle *if a good one exists* → else just state the facts (gaming releases, a results roundup, an evidence explainer like the cut piece are better as plain facts: "study X found A, Y found B, it leans toward W") → else the section yields. Never invent an angle to fill a slot. If you pose a question, answer it from the sources.
+3. **Length follows the material.** As many words as the substance earns — a 30-second idea is not 600 words. No padding to a band.
+4. **If a Lead runs, two-factor test:** moved this week (datable, not "still in crisis / clings on / waiting on the vote") AND adds a *sourced* something beyond the headline. A holding-pattern or invented-angle lead is not a lead.
+5. **Facts trace to the bundle.** State only facts in the research bundle; a stated result/fixture/standing must have actually happened by the issue date.
+6. **Catch-Up = specific facts, not namedrops:** every item carries a real fact (name/number/date) + why it matters + a link; a beat-label with no fact is cut. Add one-line safety-net headlines for the week's majors.
+7. **Optional Companion:** different topic family from the Lead; Touchline non-football when Lead is football; Screen & Sound a different franchise.
 
-If 1, 2, or 3 is false, do NOT submit — escalate back to the planner.
+If 1, 2, 3, or 5 is violated, do NOT submit — cut it or escalate.
 
 ### RT-19: Section link discipline (v8.15, v8.27)
 
@@ -493,10 +495,11 @@ If your This Week in History chapter plan has `sub_format: "closer_look"`:
 - Inventing source names ("according to The Guardian…" when no Guardian article is in the bundle).
 - Inventing relationships between things ("X collaborated with Y" without a bundle source confirming).
 - "Plausible-sounding" placeholder facts to round out a paragraph.
+- **Stating a result / score / fixture outcome / standing that has not actually happened by the issue date** — or pulling a prior-year result forward as current. The Monaco "Norris on pole" failure (qualifying that hadn't happened yet) is this. A stated outcome must trace to a source reporting it as *happened*, not a preview; if the event is in the future relative to the issue date, write it as upcoming, never as a result.
 
 **Required:**
 - Every named title, date, price, stat, or quoted line must be present in `research-bundle.json` (the `sources`, `key_facts`, `image_candidates`, or topic-specific arrays). Trace before you write.
-- If the bundle doesn't carry enough material for a piece, do NOT invent — instead: (a) shorten the piece toward the floor (200-word minimum for Companion, 300 for Lead), (b) escalate via the planner for additional research, or (c) suggest a different topic entirely. **Compressed-but-true beats expanded-but-fabricated.** Always.
+- If the bundle doesn't carry enough material for a piece, do NOT invent — instead: (a) shorten the piece (length follows the material — there is no padding floor; a tight true piece beats a padded one), (b) escalate via the planner for additional research, or (c) drop the piece / let the section yield. **Compressed-but-true beats expanded-but-fabricated.** Always.
 - Quotes must carry attribution AND a link to the source.
 - When in doubt about whether a fact is supported, omit it.
 
