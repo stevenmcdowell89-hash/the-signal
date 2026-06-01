@@ -472,6 +472,32 @@ An optional single-line conviction band closing Why This Matters. One mono eyebr
 </div>
 ```
 
+### The Pick component (cross-format — Starter Kit Essentials, Shortlist, Next)
+
+A rich recommendation block. The image **floats** and the writeup wraps beside it, then reflows to full width once it clears the image bottom — so a short image next to long text leaves **no dead column** (and a pick with no image is simply full-width text). The image MUST be a `figure`-wrapped `.pick-img` — **never a bare `<img>`** (a bare img breaks the float hook and the caption/credit contract). Image side alternates automatically by pick order; on narrow screens it stacks on top. Every Essentials pick must carry a real, sourced image.
+
+```html
+<article class="pick">
+  <figure class="fig pick-img-fig">
+    <img class="pick-img" src="…" alt="…">
+    <figcaption class="fig-caption">Caption <span class="fig-credit">Source</span></figcaption>
+  </figure>
+  <div class="pick-body">
+    <span class="pick-tag">Top Pick</span>
+    <h3>Pick title</h3>
+    <p>Multi-paragraph writeup…</p>
+    <aside class="pick-stats">
+      <dl>
+        <dt>Seasons</dt><dd>3</dd>
+        <dt>Episodes</dt><dd>61</dd>
+        <dt>Rating</dt><dd>TV-Y7</dd>
+        <dt>Where</dt><dd>Netflix</dd>
+      </dl>
+    </aside>
+  </div>
+</article>
+```
+
 ## The Rewind
 
 ## The Versus

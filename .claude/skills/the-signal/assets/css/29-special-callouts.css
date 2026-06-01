@@ -170,6 +170,20 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
 body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .bignum-row .bignum-value {
   font-size: clamp(2.6rem, 6vw, 4rem);
 }
+/* Narrow-width fallback: auto-fit can squeeze 3-4 bignums below their min on
+   tablet/phone, leaving cramped columns or an awkward orphan. Force two-up
+   (then one-up on the smallest screens) so the row reads cleanly. */
+@media (max-width: 640px) {
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .bignum-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+}
+@media (max-width: 400px) {
+  body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]) .bignum-row {
+    grid-template-columns: 1fr;
+  }
+}
 
 /* ---------- Source strip ---------- */
 /* Row of citations at the end of a chapter or piece. Mono caps. */

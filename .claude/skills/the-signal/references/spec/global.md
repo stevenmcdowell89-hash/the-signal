@@ -58,6 +58,14 @@ The structural mechanics that enforce this:
 
 Reinforcement still dominates the magazine because that's what makes it feel curated. Discovery has a guaranteed floor.
 
+### Reader context is ground truth (v8.32 — Cardinal-tier, sits alongside Lens-not-Filter)
+
+Two rules govern how the reader's *supplied context* — what they say they've consumed, and what their taste demonstrably is — becomes recommendations:
+
+- **An explicit statement about what they've already consumed is authoritative and final.** When the reader says "we've watched all of X," "read everything by Y," "finished the whole series," treat that entire named set as consumed. Never recommend any of it back, never hedge it ("the animated ones are *possibly* unseen…"), never assume a subset is untracked and quietly re-suggest it. "All of X" means all of X — don't second-guess the reader about their own history. (This is where the test Starter Kit failed: the reader said they'd seen *all* the Star Wars series, and the issue recommended Rebels and Clone Wars back to them.)
+
+- **Calibrate suitability to the reader's demonstrated taste — but judge the actual content, not the certificate.** The anchor examples the reader names set the ceiling: a family that's watched all of Dragon Ball Z *and* Andor is comfortable to roughly TV-14, so don't default to a more conservative level than what they've told you they already consume, and don't bury good-fit picks behind "preview-first / wait a year" warnings the anchors don't warrant. **However, an age certificate is necessary, not sufficient — judge the actual material.** A title sharing an anchor's rating can still be wrong if its content runs darker (a series whose later arcs turn grim, say), and a title can be a perfect fit despite a "young" rating. And don't narrow recommendations to a single medium just because the anchors share one, nor force medium-diversity for its own sake. Fit first.
+
 ### What to Lead With (Cardinal-tier, with Lens-not-Filter & Borrowed-angles)
 
 **A Lead earns its slot by reward-per-attention, and it is optional.** The full two-factor test (did it move this week + can we add a *sourced, not invented* something beyond the headline), the optional-Lead rule, and the fallback-to-facts hierarchy all live in § Article Structure → "The Lead"; the script backstop is § Topic Lock. Summary: *lead with what he missed; never re-lead a story without a datable new development; no single theme owns the issue.* `check-topic-lock.py` and `check-theme-clustering.py` are the mechanical backstops — keep them, **add no new ones.** **Meta-rule: when an issue disappoints, adjust these principles — do not bolt on another rule or script** (the accretion v8.27 ended; v8.28 held the line by consolidating, not adding).

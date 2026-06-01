@@ -1,5 +1,36 @@
 # The Signal — Changelog
 
+8.32.0 — Four fixes surfaced by a Starter-Kit test run (TV for a 10-year-old who'd
+  finished all Dragon Ball and all Star Wars). Spec + CSS only; no gate added.
+
+  - **`.pick` layout (CSS).** `assets/css/32-special-format-flair.css` — the pick
+    component was a rigid two-column grid (`14rem 1fr`), which stretched the image
+    column to the full row height: a short image beside a tall body left a dead empty
+    strip ("empty half page"), and a pick with no image reserved 14rem of empty space
+    and squashed the text. Replaced with a **float layout** — the lead media floats
+    (left, right on alternating picks) and the body wraps beside it then reflows to full
+    width below; `.pick::after` clearfix contains it; `.pick-stats` gets a BFC so its
+    bordered box sits cleanly beside the float; narrow-width rule stacks the image on top.
+    Fixes both bugs and is robust to a missing image. Affects every `.pick` format
+    (Starter Kit, Shortlist, Next).
+  - **`.bignum-row` responsive (CSS).** `assets/css/29-special-callouts.css` — added a
+    two-up (then one-up) narrow-width fallback so 3–4 big-number rows don't squash.
+  - **Reader context is ground truth (Rule, v8.32).** `spec/global.md` + `editorial-spec.md`
+    key-rules, mirrored into the SKILL.md Phase 3a researcher brief: (a) an explicit
+    "we've watched all of X" is authoritative — never recommend it back, never hedge it
+    (the test issue recommended Star Wars Rebels and Clone Wars back to a reader who'd
+    said they'd seen all the Star Wars series); (b) calibrate suitability to the reader's
+    demonstrated taste — the anchor examples set the content ceiling, don't default lower —
+    but judge the *actual content*, not the age certificate (a same-rated title can be too
+    dark; the test issue went TV-Y7-safe and buried good TV-14 fits). Don't narrow to one
+    medium, don't force diversity.
+  - **Per-pick image coverage.** `spec/formats.md` starter-kit + SKILL.md Phase 3a:
+    every Essentials pick must carry a real, sourced image; research must find one per
+    named title (the test bundle had art for only 3 of 6 picks).
+  - **`.pick` markup contract.** `references/component-contracts.md` — added the
+    cross-format `.pick` contract: figure-wrapped `.pick-img` (no bare `<img>`), documents
+    the float behavior.
+
 8.31.0 — Enforced visual-component variety for non-holiday special editions.
   Per-format visual richness was never an enforced rule — only soft "use 8-14
   component types" guidance in formats.md, a manual checklist item, and an
