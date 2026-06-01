@@ -86,6 +86,30 @@ This reference defines the exact HTML component patterns for every section in ev
 ```
 **Placement:** between On the Radar and the Footer. Single full-width block on paper background. Standard weekly only — special editions already have their own sign-off via Meanwhile.
 
+### Release Radar & On the Radar (Standard Weekly — shared `.radar-*` markup)
+
+Both use the same date-grid vocabulary; they differ only in `id`, category set, and what they list. **Release Radar (v8.30 — mandatory, its own chapter, rendered right after Screen & Sound)** lists 15-20 upcoming media releases; **On the Radar** lists events. Never duplicate items between them.
+
+```html
+<section class="sec radar-section" id="release-radar">   <!-- On the Radar uses id="radar" -->
+  <span class="section-label">Release Radar — What's Coming</span>
+  <h2>Out Now &amp; Coming Soon</h2>
+  <div class="radar-grid">
+    <div class="radar-row">
+      <span class="radar-cat game">Game</span>           <!-- category modifier paints the dot -->
+      <span class="radar-date">11 Jun</span>
+      <a href="https://…">Starseeker: Astroneer Expeditions — Early Access</a>
+      <span class="radar-platform">Steam / Switch 2</span>
+    </div>
+    <!-- 15-20 rows for Release Radar; chronological within sub-sections -->
+  </div>
+</section>
+```
+
+- **`.radar-cat` category modifiers — Release Radar (media):** `film`, `tv`, `game`, `lego`, `tech`, `book`, `music`. **On the Radar (events):** `event`, `football`, plus the sport/event types. ≥4 distinct media categories must appear in Release Radar (validator-enforced).
+- **Row parts:** `.radar-cat` (dot + label) · `.radar-date` · the linked title (`<a href>` — every item links) · optional `.radar-platform`. On the Radar's 2-3 most important rows add a 10-15 word "why it matters" half-line.
+- **Wrong patterns:** `radar-item`, `radar-tag`, `radar-cell` — not in CSS. Use `.radar-row` / `.radar-cat` / `.radar-date` / `.radar-platform` only.
+
 ### Anchor Piece (Standard Weekly — every 4th issue)
 
 The anchored section adds `.is-anchor` to its `<section>` and its matching `.toc-row` in the Navigator:

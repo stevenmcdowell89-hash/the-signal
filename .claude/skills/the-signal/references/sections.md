@@ -127,7 +127,7 @@ Film, TV, streaming, Star Wars (always search). Dark purple background, neon acc
 - Rating dots for reviews
 - Card stack for Quick Reviews
 - Collapsible sections for spoiler content
-- **The Release Radar:** 15-20+ items across ALL categories (film, TV, games, LEGO, tech, books, music). Sub-sections: Now Showing, Coming Soon, Leaving Soon, Also Streaming. Category dots for visual scanning. **Items within each sub-section must be in chronological date order** (earliest first for Coming Soon, most recent first for Now Showing/Also Streaming).
+- **The Release Radar (mandatory + enforced, v8.30):** 15-20+ items across ALL categories (film, TV, games, LEGO, tech, books, music; **≥4 categories must appear**). Sub-sections: Now Showing, Coming Soon, Leaving Soon, Also Streaming. Category dots for visual scanning. **Items within each sub-section must be in chronological date order** (earliest first for Coming Soon, most recent first for Now Showing/Also Streaming). Each item carries a date and a `status` (`happened`/`upcoming`, reusing the v8.29 tag). It is its own `release_radar` chapter rendered right after Screen & Sound; `validate-chapter-plan.py` hard-fails a weekly that omits it or ships fewer than 15 items / 4 categories. (It used to be unenforced "tail content" and silently dropped — that gap is now closed.)
 - "For the Kids" sidebar when relevant
 - **No overlap with On the Radar** — Release Radar covers product/media releases only
 

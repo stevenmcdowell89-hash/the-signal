@@ -1,5 +1,42 @@
 # The Signal — Changelog
 
+8.30.0 — Deliver, don't gesture: filler, hedged answers, the dropped Release Radar.
+  A third no-publish test weekly (1 June 2026, all gates green) read "a good bit
+  better" but surfaced three delivery failures. Fixed at source, spec-only (no
+  issue regeneration), no new scripts:
+
+  A — Deliver, don't gesture (two failures, one root cause: the magazine
+  *performs* a quality instead of having it). (1) Hollow connective sentences —
+  "that framing is what makes this a discovery rather than a headline" — that
+  comment on the content instead of adding to it. (2) The hedged answer — the
+  Session "how many sets?" lead had the numbers (67 studies, ~0.24%/set, the
+  inverted-U) then dissolved the takeaway into "somewhere in the region of ten
+  to twenty…". The principle ("every sentence adds information"; "answer the
+  posed question, never left hanging") already existed; what was missing was
+  REACH — the plain-English reading-pass was Deep-Dive-only. Fixes:
+  - SKILL.md Phase 7 plain-English spot check: scope Deep-Dive-only -> ALL
+    formats (weeklies now get the same honest read). One-line scope change.
+  - editorial-spec trope list (+ SKILL.md): name the hollow connective sentence
+    and the hedged answer as explicit failures; rescoped as all-format guidance.
+  - Answer-the-question rule sharpened: LAND the answer (state the number/range);
+    caveats go in an aside, never wrapped around the answer.
+  - pre-flight self-audit folded into existing RTs (no new RT); quality-rubric
+    notes both score down on voice. No new script (a regex can't judge hollowness).
+
+  B — Release Radar reinstated as first-class and enforced. It was real in the
+  spec but only "tail content" of Screen & Sound with NO schema field and NO
+  validator check, so it silently dropped from the test issue. Now:
+  - chapter-plan-schema.md: a required weekly `release_radar` chapter with a
+    `radar_items` array (15-20 entries, {title,category,date,status,link,note},
+    >=4 categories), reusing the v8.29 status tag; rendered after screen_sound.
+  - validate-chapter-plan.py: check_release_radar() (mirrors check_long_shelf_items)
+    + a weekly-presence check (a weekly with no release_radar hard-fails) + 4 inline
+    tests; test harness auto-injects a valid radar into weekly fixtures (59/59 green).
+  - editorial-spec § Section Rules + sections.md: elevated from "tail content" to a
+    mandatory enforced element; On the Radar stays events-only.
+  - SKILL.md researcher/planner briefs + component-contracts.md radar markup contract.
+  Reuses the existing validator — no new gate script.
+
 8.29.0 — Fact provenance moved upstream: close the prose trust holes.
   v8.28 named the failure (the Monaco "Norris on pole" result asserted before
   qualifying; a State-of-Play showcase written as "delivered" before it aired)
