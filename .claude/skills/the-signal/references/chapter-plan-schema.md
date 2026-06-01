@@ -4,7 +4,9 @@ The planner subagent writes `/tmp/signal-build/chapter-plan.json`. This file def
 
 The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan that fails validation cannot proceed to Phase 5 (writer subagents).
 
-**v8.27 — Lead + Catch-Up (replaces the v8.15 mandatory two-anchor Lead + Companion).** Every fixed-section chapter (`world`, `pixel_byte`, `toolkit`, `touchline`, `screen_sound`, `session`) carries a `pieces` array of **1 or 2 entries**: exactly one `role: "lead"` (floor 300 words) and an **optional** `role: "companion"` (floor 200 words; if present, on a `topic_family` distinct from the Lead). The mandatory *second* element is no longer a Companion — it is a **substantive `catch_up` roundup** (or, where a section genuinely runs short, an explicit `yield_reason` string). A chapter with only a bare Lead — no `catch_up`, no companion, no `yield_reason` — is a hard fail. Each `catch_up` item must carry `headline_hint`, `why_it_matters`, and a non-empty `link_targets` (the "no bare namedrops" rule). The `long_shelf` chapter still carries an `items` array of 6–8 entries with at least two `wildcard: true`. Topic families are a closed enumeration — see § Topic Family Enumeration at the bottom of this file.
+**v8.28 — Lead optional + length follows material.** The Lead is no longer required: a fixed-section chapter may carry **0-2 pieces** (an optional `lead` + an optional `companion`; a companion requires a lead). A section may be pure Catch-Up (facts) with no `pieces` at all. Word floors are relaxed to small *sanity* minimums (lead 150, companion 120) — not targets; length follows the material. The section must still contain *something* substantive (a non-empty `catch_up`, a Lead, or a `yield_reason`), and a bare Lead with no second element still fails. Facts in any piece/catch_up item must trace to a researched source (carried as `link_targets`).
+
+**v8.27 — Lead + Catch-Up (replaces the v8.15 mandatory two-anchor Lead + Companion).** Every fixed-section chapter (`world`, `pixel_byte`, `toolkit`, `touchline`, `screen_sound`, `session`) carries a `pieces` array (v8.28: 0-2 entries): an optional `role: "lead"` and an optional `role: "companion"` (if present, on a `topic_family` distinct from the Lead). The mandatory *second* element is the **substantive `catch_up` roundup** (or, where a section genuinely runs short, an explicit `yield_reason` string). Each `catch_up` item must carry `headline_hint`, `why_it_matters`, and a non-empty `link_targets` (the "no bare namedrops" rule — and the item must carry a real specific fact, not a beat-label). The `long_shelf` chapter still carries an `items` array of 6–8 entries with at least two `wildcard: true`. Topic families are a closed enumeration — see § Topic Family Enumeration at the bottom of this file.
 
 > **Note (v8.27):** `toolkit` is now a fixed-but-yields section; when it does not appear in an issue it is simply omitted from `chapters`. The Saga is trigger-driven and is never a rotating cadence chapter.
 
@@ -196,8 +198,8 @@ The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan
 
           "pieces": {
             "type": "array",
-            "description": "REQUIRED for fixed-section weekly chapters with chapter_id in {world, pixel_byte, toolkit, touchline, screen_sound, session}. v8.27: 1 or 2 pieces — exactly one role=lead, plus an OPTIONAL role=companion. If a companion is present, Lead.topic_family MUST differ from Companion.topic_family. The mandatory second element of the section is the `catch_up` roundup (or a `yield_reason`), NOT the companion — see below. Validator hard-fails a fixed-section chapter that omits this array, has no lead, has >1 companion, or has a companion sharing the lead's topic_family.",
-            "minItems": 1,
+            "description": "For fixed-section weekly chapters with chapter_id in {world, pixel_byte, toolkit, touchline, screen_sound, session}. v8.28: 0-2 pieces — an OPTIONAL role=lead plus an OPTIONAL role=companion (a companion requires a lead). A section may omit pieces entirely and be pure catch_up (facts). If a companion is present, Lead.topic_family MUST differ from Companion.topic_family. The mandatory second element of a section is a non-empty `catch_up` roundup (or a `yield_reason`); a bare Lead with no second element fails. Validator hard-fails: >1 lead, >1 companion, a companion without a lead, a companion sharing the lead's topic_family, or an empty section (no lead + no catch_up + no yield_reason).",
+            "minItems": 0,
             "maxItems": 2,
             "items": {
               "type": "object",
@@ -216,7 +218,7 @@ The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan
                   "type": "object",
                   "required": ["min", "max"],
                   "properties": {
-                    "min": { "type": "integer", "minimum": 200, "description": "Floor word count. Lead floor 300; Companion floor 200." },
+                    "min": { "type": "integer", "minimum": 120, "description": "v8.28 sanity floor only (not a target): lead 150, companion 120. Length follows material; don't pad to a number." },
                     "max": { "type": "integer", "minimum": 200, "description": "Ceiling. Lead typical 700, can run to 1000+. Companion typical 450, ceiling 600." }
                   },
                   "description": "Word-count band for this piece. Validator rejects Lead with min < 300 or Companion with min < 200."

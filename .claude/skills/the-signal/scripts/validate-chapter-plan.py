@@ -111,8 +111,12 @@ SUB_FORMAT_LEAD_FLOOR = {
     "closer_look": 600,
 }
 
-# v8.15 — per-role minimum word-count floor (spec § Article Structure)
-PIECE_MIN_FLOOR = {"lead": 300, "companion": 200}
+# v8.15 / v8.28 — per-role minimum word-count floor (spec § Article Structure).
+# v8.28: floors relaxed to small SANITY minimums (was lead 300 / companion 200). "Length
+# follows material" — a tight, fully-substantive 150-word lead must pass; the old floor
+# forced padding. These are sanity bounds only, not targets. (Sub-format floors like
+# directors_cut=550 are separate and still apply.)
+PIECE_MIN_FLOOR = {"lead": 150, "companion": 120}
 
 # v8.15 — closed topic-family enumeration. See references/chapter-plan-schema.md.
 TOPIC_FAMILIES = {
@@ -244,29 +248,32 @@ def check_issue_meta(meta):
 def check_section_shape(ch, cpath):
     """v8.27: fixed-section chapters run the Lead + Catch-Up shape.
 
-    Replaces the v8.15 mandatory two-anchor Lead + Companion. The Companion is now
-    OPTIONAL; the mandatory second element is a substantive Catch-Up roundup.
+    Replaces the v8.15 mandatory two-anchor Lead + Companion. v8.28: the LEAD is now optional
+    too — a section may be pure Catch-Up (facts) with no pieces at all.
 
     Rules:
-      - `pieces` array: 1 or 2 entries. Exactly one role='lead'; at most one role='companion'.
-      - Lead floor 300, Companion floor 200 (per-role).
+      - `pieces` array: 0-2 entries. 0 or 1 role='lead'; at most one role='companion'; a
+        Companion requires a Lead.
+      - Sanity word floors only (lead 150, companion 120) — length follows material, no padding.
       - Each piece: topic_family in enum, valid word_count_target, headline_hint, link_targets.
       - If a Companion is present, Lead.topic_family != Companion.topic_family.
-      - A second substantive element is required — one of: a non-empty `catch_up` roundup,
-        a Companion piece, or an explicit `yield_reason` string (for a section running short).
-        A bare Lead with nothing else is a hard fail.
+      - The section must contain something substantive: a non-empty `catch_up`, a Lead, or a
+        `yield_reason`. A bare Lead with no second element is a hard fail; a pure Catch-Up
+        (no Lead) is fine.
       - Catch-Up "no bare namedrops" rule: every `catch_up` item must carry a headline_hint,
         a why_it_matters, and a non-empty link_targets.
     """
+    # v8.28 — the Lead is OPTIONAL: a section may be pure Catch-Up (facts) with no pieces at
+    # all. `pieces` may therefore be absent or empty; if present it holds 0-2 entries
+    # (an optional Lead + an optional Companion).
     pieces = ch.get("pieces")
     if pieces is None:
-        err(f"[PIECES] {cpath}: fixed-section chapter '{ch.get('chapter_id')}' is missing required 'pieces' array (needs at least a Lead — v8.27 Lead + Catch-Up).")
-        return
+        pieces = []
     if not isinstance(pieces, list):
         err(f"[PIECES] {cpath}.pieces must be an array.")
         return
-    if not (1 <= len(pieces) <= 2):
-        err(f"[PIECES] {cpath}.pieces must contain 1 (lead) or 2 (lead + optional companion) entries. Found {len(pieces)}.")
+    if len(pieces) > 2:
+        err(f"[PIECES] {cpath}.pieces may contain at most 2 entries (an optional Lead + an optional Companion). Found {len(pieces)}.")
         return
 
     roles_seen = []
@@ -311,26 +318,37 @@ def check_section_shape(ch, cpath):
             if key not in p:
                 err(f"[PIECES] {ppath}: missing required field '{key}'.")
 
-    # Role coverage: exactly one lead; at most one companion.
-    if roles_seen.count("lead") != 1:
-        err(f"[PIECES] {cpath}.pieces must contain exactly one 'lead'. Found roles: {roles_seen}.")
-    if roles_seen.count("companion") > 1:
+    # Role coverage (v8.28): 0 or 1 lead; at most one companion; a Companion requires a Lead.
+    lead_count = roles_seen.count("lead")
+    companion_count = roles_seen.count("companion")
+    if lead_count > 1:
+        err(f"[PIECES] {cpath}.pieces may contain at most one 'lead'. Found roles: {roles_seen}.")
+    if companion_count > 1:
         err(f"[PIECES] {cpath}.pieces may contain at most one 'companion'. Found roles: {roles_seen}.")
+    if companion_count >= 1 and lead_count == 0:
+        err(f"[PIECES] {cpath}: a Companion requires a Lead. A section with no Lead is pure Catch-Up/facts — drop the companion or add a lead.")
 
     # Distinct topic families when a companion is present.
     if "lead" in tf_by_role and "companion" in tf_by_role and tf_by_role["lead"] == tf_by_role["companion"]:
         err(f"[PIECES] {cpath}: Lead.topic_family and Companion.topic_family are both '{tf_by_role['lead']}'. When a Companion runs it MUST be on a different topic family (topic-family discipline).")
 
-    # v8.27 — a substantive second element is required: Catch-Up roundup, Companion, or yield_reason.
+    # v8.28 — the section must contain SOMETHING substantive, and a Lead is never alone:
+    #   valid: a non-empty catch_up (pure facts, no lead) | a Lead + (catch_up|companion|yield_reason) | yield_reason.
+    #   invalid: nothing at all, or a bare Lead with no second element.
     catch_up = ch.get("catch_up")
-    has_companion = "companion" in roles_seen
+    has_lead = lead_count >= 1
+    has_companion = companion_count >= 1
     has_catchup = isinstance(catch_up, list) and len(catch_up) >= 1
     yield_reason = ch.get("yield_reason")
-    if not (has_companion or has_catchup or yield_reason):
+    if not (has_lead or has_catchup or yield_reason):
         err(
-            f"[SHAPE] {cpath}: fixed section needs a substantive second element beyond the Lead — "
-            f"a non-empty `catch_up` roundup, a `companion` piece, or an explicit `yield_reason` "
-            f"(string) when the section genuinely runs short. A bare Lead is a fail (v8.27 Lead + Catch-Up)."
+            f"[SHAPE] {cpath}: section is empty — it needs at least one of: a Catch-Up roundup, a Lead, "
+            f"or a `yield_reason` (v8.28)."
+        )
+    elif has_lead and not (has_companion or has_catchup or yield_reason):
+        err(
+            f"[SHAPE] {cpath}: a Lead alone is a fail — add a substantive `catch_up` roundup, an optional "
+            f"`companion`, or a `yield_reason` when the section genuinely runs short (v8.28 Lead + Catch-Up)."
         )
 
     # v8.27 — Catch-Up "no bare namedrops": every roundup item carries what + why + link.
@@ -1227,6 +1245,32 @@ def run_inline_tests():
     run_test("toolkit fixed section with lead + catch_up passes", make_plan(
         issue_meta=weekly_meta,
         chapters=[weekly_fixed_chapter("toolkit", pieces=lead_only, extra={"catch_up": good_catch_up})]
+    ), expect_pass=True)
+
+    # v8.28: a PURE Catch-Up section (no Lead at all) passes
+    pure_catchup_ch = weekly_fixed_chapter("pixel_byte", extra={"catch_up": good_catch_up})
+    pure_catchup_ch.pop("pieces", None)
+    run_test("pure catch_up section with no lead passes (v8.28)", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[pure_catchup_ch]
+    ), expect_pass=True)
+
+    # v8.28: a Companion with no Lead fails
+    companion_only = [
+        {"role": "companion", "topic_family": "f1", "word_count_target": {"min": 200, "max": 400}, "headline_hint": "x", "link_targets": ["https://example.com"]}
+    ]
+    run_test("companion without a lead fails (v8.28)", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[weekly_fixed_chapter("touchline", pieces=companion_only, extra={"catch_up": good_catch_up})]
+    ), expect_pass=False)
+
+    # v8.28: a tight 150-word lead passes (floor relaxed from 300)
+    tight_lead = [
+        {"role": "lead", "topic_family": "us_politics", "word_count_target": {"min": 150, "max": 250}, "headline_hint": "x", "link_targets": ["https://example.com"]}
+    ]
+    run_test("tight 150-word lead passes (v8.28 floor relaxed)", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[weekly_fixed_chapter("world", pieces=tight_lead, extra={"catch_up": good_catch_up})]
     ), expect_pass=True)
 
     # ── v8.16 rotating-section cadence cases ──

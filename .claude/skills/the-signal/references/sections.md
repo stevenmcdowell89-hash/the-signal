@@ -15,6 +15,14 @@ Applies to every recommendation section below (Shelf, Listening, Money, Places, 
 
 For news sections (World This Week especially): **major world stories are covered regardless of profile fit.** A war, election upset, regulatory change with broad consumer impact, or major scientific breakthrough lands in the issue whether or not it maps to a declared interest. See § Lens, Not Filter in editorial-spec.md.
 
+## Cross-cutting principle: Borrowed angles, our voice (v8.28)
+
+Applies to **every** section (replaces the old per-section "opinions mandatory / culture critic / write as a reviewer" lines — full rule in editorial-spec.md § Borrowed angles, our voice):
+
+- **Confident voice, borrowed opinion — never invented.** Voice a take real commentators hold (found in research) as if it were ours; no citation duty, no robotic "X said Y"; a take you made up is cut. **Not everything needs an angle** — gaming releases, results roundups, evidence explainers are often better as plain facts ("study X found A, Y found B, it leans toward W"); answer any question you pose from the sources.
+- **Length follows the material; facts come from the bundle.** As many words as the substance earns (no padding); state only what research found, and a stated result must have happened by the issue date.
+- **Reader-profile invisibility holds:** the profile drives *selection*, never the prose (no "since you're into Malazan", "as a runner").
+
 ---
 
 ### Cover
@@ -34,7 +42,6 @@ Visual card grid linking to each section. Top 1-2 cards use `.nav-card.lead` (tw
 ### The World This Week
 Hero image. White background, rose accent.
 - **One or two lead stories depending on the week.** If one story is genuinely massive (war breaks out, leader assassinated, major treaty), it gets the section to itself as a single lead. Most weeks, run two properly developed stories (300-500 words each) -- the world rarely has just one thing worth knowing about. The reader should come away knowing 3-4 things that happened, not just one.
-- Opinions mandatory -- give editorial takes
 - The Angle box only for genuinely significant stories
 - **Also This Week: 4-6 items, not throwaway one-liners.** Each Also item gets 2-3 sentences minimum: what happened, why it matters, and a link. A one-liner that nobody remembers five minutes later isn't worth including. Cut the count and increase the quality.
 
@@ -115,7 +122,7 @@ Tech & tools: consumer tech, consumer AI, apps, tablet productivity, digital wor
 
 ### Screen & Sound
 Film, TV, streaming, Star Wars (always search). Dark purple background, neon accent.
-- **Write as a culture critic.** Review films, shows, and music the way any entertainment column would. The reader profile drives topic selection, not prose.
+- **Culture-desk voice, borrowed takes** (cross-cutting rule): synthesise the views critics actually hold; never invent a verdict.
 - Opinions are mandatory — not press-release summaries
 - Rating dots for reviews
 - Card stack for Quick Reviews
@@ -132,7 +139,7 @@ Film, TV, streaming, Star Wars (always search). Dark purple background, neon acc
 Books and music. Dark brown background, gold accent.
 - **Owns books (primary).** Podcasts, audio drama, and music live in **Listening**; The Shelf may mention a notable music release in passing when Listening isn't running, but the dedicated music read is Listening's.
 - **Catch-up rule:** when The Shelf appears, research covers the entire period since it last appeared (not just the past 7 days). Check state file for `last_shelf_date`. No good book news or music release should fall through the cracks.
-- **Write as a general editorial reviewer.** The reader profile tells you what genres and topics to research and select from — it does NOT belong in the prose. Review books the way any book column would: premise, tone, what makes it worth reading. Never open with "since you're into Malazan" or "as a Cosmere fan." The selection already signals relevance.
+- **Review like a book column, borrowed takes:** premise, tone, what makes it worth reading — synthesised from real reviews, not invented. **Real, named titles or the section yields (v8.28)** — never write about empty categories or invent book names; if research found no real books, The Shelf doesn't run this week.
 - Books: features, recommendations, book cards with rating dots. Both epic series AND short fiction. Occasional narrative history (Dan Jones, Tom Holland, Mary Beard).
 - **CRITICAL: No spoilers.** Never reveal plot twists, character deaths, endings for any book. This rule is absolute but invisible — never announce compliance with it.
 - Music: light-touch when Listening isn't running. Synthwave/retrowave or a notable release noted in passing — the deep music read lives in Listening.
@@ -150,7 +157,7 @@ Podcasts + audio drama + music. Warm slate background, brass accent.
 
 ### The Session *(fixed — now the single home for all fitness, v8.27)*
 Sourced fitness feature. Light green background, orange accent. **Absorbs the old Workshop (home-gym gear, equipment & recovery-tool reviews) and The Lab (training-science deep dives) as rotating *angles within* Session** — fitness now has one home, not four (Session / Workshop / Lab / a Pixel & Byte wearable lead). On a given week the Session can be a training feature, a gear review, or a science deep-dive — rotate the angle (track `last_session_topic`).
-- **Write as a fitness journalist, not a personal trainer.** The reader profile tells you which training modalities to cover — it does NOT belong in the prose. Don't write "for someone following the Ibex programme" or "as a runner training for a 10k." Write about the topic in a way any fitness-interested reader would find useful.
+- **Fitness-desk voice, evidence-led:** state what the studies actually found ("X found A, Y found B, it leans toward W") — often better as plain findings than a baked-in angle; answer the question you pose. No invented conclusions; sources are Stronger by Science / Barbell Medicine / Examine / Galpin tier.
 - **Check state file `training_phase`** to know what's currently relevant. Research topics that align with the current phase — this sharpens research without leaking into prose.
 - **Rotate across these topics, prioritising what's relevant to current phase:**
   - Hypertrophy-focused programming in a deficit (double progression, RPE management, volume landmarks, when to deload)

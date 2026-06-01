@@ -84,7 +84,9 @@ promise is a substantive Sunday read, not a vibe.
 - **3** — Solid, informative, but padded in places — paragraphs that
   restate rather than advance.
 - **1** — Thin. Atmosphere and adjectives standing in for content; the
-  reader finishes knowing little they didn't.
+  reader finishes knowing little they didn't. *(v8.28: an **invented angle**
+  with no facts beneath it — the Star Wars "nothing" essay — and **padding** a
+  30-second idea both score 1–2 here.)*
 
 ## Dimension 3 — Structural variety
 
