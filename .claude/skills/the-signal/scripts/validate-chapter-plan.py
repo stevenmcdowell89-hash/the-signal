@@ -369,6 +369,53 @@ def check_section_shape(ch, cpath):
                     err(f"[CATCH_UP] {ipath}: 'link_targets' must be a non-empty array — every Catch-Up item needs a link (v8.27).")
 
 
+def check_key_facts(ch, cpath):
+    """v8.29: validate structured `key_facts` records carried from the bundle.
+
+    Each entry is either a bare string (back-compat) or a structured fact record
+    {claim, status, date, source_url, [type, speaker, quote]}. The structured
+    form carries the researcher's happened/upcoming decision down to the writer
+    (see references/spec/global.md § fact-provenance). We mirror the bundle gate
+    (validate-research-bundle.py) so a malformed record can't slip through the
+    planner even though the bundle gate already ran upstream.
+
+    Note: the run-date temporal check (status=happened in the future) lives in the
+    bundle gate, which has --run-date; the plan validator is run without a date
+    anchor, so here we validate shape + status/date well-formedness + opinion
+    provenance only.
+    """
+    facts = ch.get("key_facts")
+    if not isinstance(facts, list):
+        return  # presence/type already covered by required_fields
+    for k, f in enumerate(facts):
+        ipath = f"{cpath}.key_facts[{k}]"
+        if isinstance(f, str):
+            continue  # bare string is accepted for back-compat
+        if not isinstance(f, dict):
+            err(f"[KEY_FACTS] {ipath}: must be a string or a structured fact object.")
+            continue
+        for key in ("claim", "status", "date", "source_url"):
+            if not f.get(key):
+                err(f"[KEY_FACTS] {ipath}: structured fact missing/empty '{key}'.")
+        status = f.get("status")
+        if status is not None and status not in ("happened", "upcoming"):
+            err(f"[KEY_FACTS] {ipath}: status='{status}' must be 'happened' or 'upcoming'.")
+        date = f.get("date")
+        if date and not DATE_RE.match(str(date)):
+            err(f"[KEY_FACTS] {ipath}: date='{date}' must be YYYY-MM-DD.")
+        src = f.get("source_url")
+        if src and not str(src).startswith(("http://", "https://")):
+            err(f"[KEY_FACTS] {ipath}: source_url='{src}' must be an http(s) URL.")
+        ftype = f.get("type", "fact")
+        if ftype not in ("fact", "opinion"):
+            err(f"[KEY_FACTS] {ipath}: type='{ftype}' must be 'fact' or 'opinion'.")
+        if ftype == "opinion":
+            if not f.get("speaker"):
+                err(f"[KEY_FACTS] {ipath}: type=opinion requires a non-empty 'speaker'.")
+            if not f.get("quote"):
+                err(f"[KEY_FACTS] {ipath}: type=opinion requires a non-empty 'quote' (the real words).")
+
+
 def check_long_shelf_items(ch, cpath):
     """v8.15: long_shelf chapter requires an `items` array of 6-8 entries with >=2 wildcards."""
     items = ch.get("items")
@@ -544,6 +591,9 @@ def check_chapters(chapters, issue_meta):
         # 15. v8.17 — optional sub_format field (Director's Cut on screen_sound, A Closer Look on history)
         if fmt == "weekly" and ("sub_format" in ch or "featured_item" in ch):
             check_sub_format(ch, cpath, ch_id)
+
+        # 16. v8.29 — structured key_facts records (all formats)
+        check_key_facts(ch, cpath)
 
     # 7. chapter_num is 1..N, no gaps
     if chapter_nums:
@@ -1531,6 +1581,37 @@ def run_inline_tests():
             {"chapter_id": "screen_sound", "headline_hint": "x3", "discovery_rationale": "ok"}
         ]
     ), expect_pass=False)
+
+    # ── v8.29 structured key_facts ──
+    def kf_chapter(key_facts):
+        return {
+            "chapter_id": "by-the-numbers", "chapter_num": 1, "chapter_type": "opener",
+            "chapter_title": "By the Numbers", "chapter_arc": "The shape of the trip",
+            "ground": "ink", "is_hype": True, "data_venue": None, "target_word_count": 400,
+            "images_needed": [{"role": "hero", "source_constraint": "Wikimedia", "alt_required": True}],
+            "key_facts": key_facts, "forbidden_topics": [], "cross_refs": []
+        }
+
+    run_test("structured key_fact (valid) passes", make_plan(chapters=[kf_chapter([
+        {"claim": "State of Play airs", "status": "upcoming", "date": "2026-06-05", "source_url": "https://blog.playstation.com/x"}
+    ])]), expect_pass=True)
+
+    run_test("bare-string key_fact still passes (back-compat)", make_plan(chapters=[kf_chapter([
+        "Efteling founded 1952"
+    ])]), expect_pass=True)
+
+    run_test("structured key_fact missing source_url fails", make_plan(chapters=[kf_chapter([
+        {"claim": "Juve beat Inter 2-1", "status": "happened", "date": "2026-05-30"}
+    ])]), expect_pass=False)
+
+    run_test("structured key_fact bad status fails", make_plan(chapters=[kf_chapter([
+        {"claim": "x", "status": "maybe", "date": "2026-05-30", "source_url": "https://x.com/y"}
+    ])]), expect_pass=False)
+
+    run_test("opinion key_fact without quote fails", make_plan(chapters=[kf_chapter([
+        {"claim": "Norris took pole", "status": "happened", "date": "2026-05-24",
+         "source_url": "https://formula1.com/x", "type": "opinion", "speaker": "Lando Norris"}
+    ])]), expect_pass=False)
 
     # ── Summary ──
     print("\n=== INLINE TEST RESULTS ===")

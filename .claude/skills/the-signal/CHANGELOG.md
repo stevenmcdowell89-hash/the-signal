@@ -1,5 +1,45 @@
 # The Signal — Changelog
 
+8.29.0 — Fact provenance moved upstream: close the prose trust holes.
+  v8.28 named the failure (the Monaco "Norris on pole" result asserted before
+  qualifying; a State-of-Play showcase written as "delivered" before it aired)
+  but left the "has this happened / who said it?" judgment where it kept
+  leaking: in the writer's head, mid-sentence, checked against the issue's
+  cover date. Two structural root causes, fixed at source — NOT a new gate
+  (the § Key Rules meta-rule forbids accreting scripts; the two existing gates
+  were extended instead):
+
+  CAUSE 1 — the judgment lived downstream, in the prose. Fix: facts are now
+  STRUCTURED RECORDS in research-bundle.json, decided upstream by the
+  researcher while the sources are open:
+    { "claim", "status": "happened|upcoming", "date", "source_url",
+      "type": "fact|opinion", "speaker"+"quote" (iff opinion) }
+  The writer renders the pre-decided `status` tag (upcoming ⇒ forthcoming,
+  never past tense) rather than re-judging it. The planner copies the records
+  into each chapter's `key_facts` (now string OR structured, back-compatible).
+
+  CAUSE 2 — the temporal gate compared against the issue's COVER date, so an
+  event between the pipeline run and the cover Sunday looked safely past. Fix:
+  re-anchor on the RUN date (when facts were knowable).
+
+  Enforcement (existing gates extended, no new script):
+  - `validate-research-bundle.py` — new `facts[]` block + `--run-date`:
+    rejects a fact missing claim/status/date/source_url; a `status:"happened"`
+    fact dated AFTER the run date (can't have happened yet); a `type:"opinion"`
+    fact with no real speaker+quote (you may only NAME a commentator when the
+    real words are in the bundle — otherwise the borrowed angle is voiced
+    unattributed in our own voice).
+  - `check-release-dates.sh` — takes a run-date (defaults to today) and the
+    bundle path; anchors the result check on the run date and lists every
+    `status:"upcoming"` fact so the agent confirms the prose renders it as
+    forthcoming.
+  - `validate-chapter-plan.py` — validates structured `key_facts` records
+    (shape + status/date/source + opinion provenance); bare strings still pass.
+  Spec: global.md gains a "Fact provenance chain" (the prose analog of the
+  image verification chain) + run-date anchoring in §Content Standards and the
+  "naming needs a quote" rule in §Borrowed angles; SKILL.md Phase 3a/3b/7.5,
+  chapter-plan-schema, pre-flight RT-22, and compliance-checklist 1B updated.
+
 8.28.0 — Substance & trust: stop the magazine writing confident fluff.
   v8.27 fixed *what* gets covered; a no-publish test weekly (7 June 2026)
   then read as "a lot of editorialising, telling me little" — invented

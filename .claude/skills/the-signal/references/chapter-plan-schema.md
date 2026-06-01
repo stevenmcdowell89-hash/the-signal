@@ -180,8 +180,25 @@ The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan
 
           "key_facts": {
             "type": "array",
-            "items": { "type": "string" },
-            "description": "Specific facts from research-bundle.json the writer MUST include in this chapter. Verified facts only — planner pulls these from the research bundle."
+            "items": {
+              "oneOf": [
+                { "type": "string" },
+                {
+                  "type": "object",
+                  "required": ["claim", "status", "date", "source_url"],
+                  "properties": {
+                    "claim": { "type": "string" },
+                    "status": { "type": "string", "enum": ["happened", "upcoming"] },
+                    "date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+                    "source_url": { "type": "string", "format": "uri" },
+                    "type": { "type": "string", "enum": ["fact", "opinion"], "default": "fact" },
+                    "speaker": { "type": "string", "description": "Required iff type=='opinion'." },
+                    "quote": { "type": "string", "description": "Required iff type=='opinion' — the real words." }
+                  }
+                }
+              ]
+            },
+            "description": "Specific facts from research-bundle.json the writer MUST include in this chapter. Verified facts only — the planner pulls these from the bundle's `facts` array. v8.29: each entry SHOULD be the structured fact record (copied from the bundle, carrying status/date/source_url so the writer renders the happened/upcoming tag rather than judging it mid-sentence; type=='opinion' carries speaker+quote). A bare string is still accepted for back-compat, but a fact whose timing or attribution is load-bearing must be the structured form. The validator hard-fails a structured record missing claim/status/date/source_url, a bad status/date, or an opinion missing speaker/quote."
           },
 
           "forbidden_topics": {

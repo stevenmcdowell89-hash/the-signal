@@ -103,6 +103,128 @@ def classify_domain(url: str, lookup: dict, explicit_type: str | None = None) ->
     return "unknown"
 
 
+VALID_FACT_STATUS = ("happened", "upcoming")
+VALID_FACT_TYPES = ("fact", "opinion")
+
+
+def parse_iso_date(s: str) -> datetime.date | None:
+    """Parse a YYYY-MM-DD date. Returns None if unparseable."""
+    try:
+        return datetime.date.fromisoformat(str(s)[:10])
+    except (ValueError, TypeError):
+        return None
+
+
+def validate_facts(bundle: dict, run_date: datetime.date) -> tuple[list[str], list[str]]:
+    """Phase 3b fact-provenance gate (mirror of the image verification chain).
+
+    Each entry in the bundle's `facts` array is a structured record the
+    researcher fills in *while the sources are open* — moving the
+    "has this happened / who said it?" judgment upstream, out of the writer's
+    prose. Required shape:
+
+      {
+        "claim":      "<one-line statement>",
+        "status":     "happened" | "upcoming",
+        "date":       "YYYY-MM-DD",          # the date of the event/claim
+        "source_url": "https://…",
+        "type":       "fact" | "opinion",    # optional, defaults to "fact"
+        "speaker":    "<name>",              # REQUIRED iff type == "opinion"
+        "quote":      "<the real words>"     # REQUIRED iff type == "opinion"
+      }
+
+    Rules enforced:
+      F1  claim / status / date / source_url present and well-typed.
+      F2  status in {happened, upcoming}; date parses as YYYY-MM-DD;
+          source_url is an http(s) URL.
+      F3  TEMPORAL CATCH — a fact tagged status=happened whose date is AFTER
+          the run date cannot have occurred yet. This is the structural close
+          of the State-of-Play / "Norris on pole" hole: the determination is
+          made here, upstream, against when facts were knowable — not deferred
+          to the writer rendering past tense against the issue's cover date.
+      F4  BORROWED-ANGLE PROVENANCE — a fact with type=opinion must carry a
+          non-empty `speaker` AND `quote`. You can only name a person (or hang
+          an angle on them) when the real words are in the bundle; otherwise
+          the angle is voiced unattributed in our own voice (see editorial-spec
+          § "Borrowed angles, our voice").
+
+    Returns (failures, warnings). An absent/empty `facts` array is a WARNING,
+    not a failure — a thin-news section may legitimately carry none — but a
+    malformed entry is always a hard fail.
+    """
+    failures: list[str] = []
+    warnings: list[str] = []
+
+    facts = bundle.get("facts", [])
+    if not isinstance(facts, list):
+        return ([f"  `facts` must be an array, got {type(facts).__name__}."], [])
+    if not facts:
+        warnings.append(
+            "  bundle has no `facts` array — load-bearing claims cannot be "
+            "provenance-checked upstream. Acceptable only for a genuinely fact-thin issue."
+        )
+        return (failures, warnings)
+
+    for i, f in enumerate(facts):
+        ctx = f.get("claim", f"facts[{i}]") if isinstance(f, dict) else f"facts[{i}]"
+        ctx = (ctx[:60] + "…") if len(str(ctx)) > 61 else ctx
+        if not isinstance(f, dict):
+            failures.append(f"  facts[{i}]: must be an object, got {type(f).__name__}.")
+            continue
+
+        # F1 / F2 — required fields + types
+        claim = f.get("claim")
+        if not isinstance(claim, str) or not claim.strip():
+            failures.append(f"  facts[{i}] ({ctx}): missing/empty `claim`.")
+
+        status = f.get("status")
+        if status not in VALID_FACT_STATUS:
+            failures.append(
+                f"  facts[{i}] ({ctx}): status={status!r}, must be one of {VALID_FACT_STATUS}.\n"
+                f"    The researcher decides happened-vs-upcoming while the sources are open; the writer renders the tag."
+            )
+
+        date_raw = f.get("date")
+        fdate = parse_iso_date(date_raw)
+        if fdate is None:
+            failures.append(f"  facts[{i}] ({ctx}): date={date_raw!r} is not a YYYY-MM-DD date.")
+
+        src = f.get("source_url")
+        if not (isinstance(src, str) and src.startswith(("http://", "https://"))):
+            failures.append(
+                f"  facts[{i}] ({ctx}): source_url={src!r} must be an http(s) URL — "
+                f"every load-bearing fact traces to a source, same discipline as image candidates."
+            )
+
+        # F3 — temporal catch (only meaningful when status + date are valid)
+        if status == "happened" and fdate is not None and fdate > run_date:
+            failures.append(
+                f"  facts[{i}] ({ctx}): status=happened but date {fdate} is AFTER the run date {run_date}.\n"
+                f"    It cannot have happened yet. Tag it status=upcoming (writer renders it as forthcoming),\n"
+                f"    or drop it. This is the State-of-Play / 'Norris on pole' temporal hole, caught upstream."
+            )
+
+        # F4 — borrowed-angle provenance
+        ftype = f.get("type", "fact")
+        if ftype not in VALID_FACT_TYPES:
+            failures.append(f"  facts[{i}] ({ctx}): type={ftype!r}, must be one of {VALID_FACT_TYPES}.")
+        if ftype == "opinion":
+            speaker = f.get("speaker")
+            quote = f.get("quote")
+            if not (isinstance(speaker, str) and speaker.strip()):
+                failures.append(
+                    f"  facts[{i}] ({ctx}): type=opinion requires a non-empty `speaker`.\n"
+                    f"    Name a person only when the real words back it; otherwise voice the angle unattributed."
+                )
+            if not (isinstance(quote, str) and quote.strip()):
+                failures.append(
+                    f"  facts[{i}] ({ctx}): type=opinion requires a non-empty `quote` (the real words).\n"
+                    f"    Borrowed angle = real provenance: no quote in the bundle ⇒ the writer cannot attribute it."
+                )
+
+    return (failures, warnings)
+
+
 def main():
     ap = argparse.ArgumentParser(description="Phase 3b research-bundle validator.")
     ap.add_argument("bundle_path", help="Path to research-bundle.json")
@@ -115,6 +237,12 @@ def main():
     ap.add_argument("--write-back", action="store_true",
                     help="When used with --verify-network, write the rewritten bundle back to disk "
                          "so subsequent phases see the orchestrator-verified URLs.")
+    ap.add_argument("--run-date", default=None,
+                    help="The date the pipeline is RUNNING (YYYY-MM-DD), i.e. when facts are knowable. "
+                         "Defaults to today (UTC). The facts gate uses this — not the issue's cover date — "
+                         "as the 'has this happened?' anchor: a fact tagged status=happened but dated AFTER "
+                         "the run date cannot have occurred yet and is rejected (the State-of-Play / "
+                         "'Norris on pole' temporal hole).")
     args = ap.parse_args()
 
     bundle_path = Path(args.bundle_path)
@@ -129,9 +257,22 @@ def main():
     bundle = json.loads(bundle_path.read_text())
     candidates = bundle.get("image_candidates", [])
 
+    # Resolve the run-date anchor for the facts temporal gate (F3).
+    if args.run_date:
+        run_date = parse_iso_date(args.run_date)
+        if run_date is None:
+            print(f"ERROR: --run-date {args.run_date!r} is not YYYY-MM-DD", file=sys.stderr)
+            sys.exit(2)
+    else:
+        run_date = datetime.datetime.utcnow().date()
+
+    # Facts gate runs regardless of whether image_candidates is populated — a
+    # bundle can be fact-heavy and image-light. Collected now, reported below
+    # alongside the image findings under one exit code.
+    fact_failures, fact_warnings = validate_facts(bundle, run_date)
+
     if not candidates:
         print("ADVISORY: research-bundle.json has no image_candidates — skipping image-source validation.")
-        sys.exit(0)
 
     # ── v8.13.8 orchestrator-side HEAD verification ───────────────────────
     # When --verify-network is on (always in CI; in pipeline whenever egress
@@ -170,8 +311,8 @@ def main():
         print(f"  verified: {ok} OK / {blocked} egress-blocked / {bad} bad")
         print()
 
-    failures = []
-    warnings = []
+    failures = list(fact_failures)
+    warnings = list(fact_warnings)
 
     # Per-entry validation
     valid_entries = []
@@ -340,6 +481,8 @@ def main():
 
     # Report
     print("=== Phase 3b: validate-research-bundle.py ===")
+    print(f"run-date (facts anchor):  {run_date}")
+    print(f"facts entries:            {len(bundle.get('facts', []))}")
     print(f"image_candidates entries: {len(candidates)}")
     print(f"valid URL entries:        {len(valid_entries)}")
     if valid_entries:
@@ -361,7 +504,7 @@ def main():
         print("Re-spawn the researcher with this report so the bundle can be corrected before Phase 4 (planner).")
         sys.exit(1)
 
-    print("PASS — research bundle image_candidates comply with image-integrity rules.")
+    print("PASS — research bundle complies with image-integrity AND fact-provenance rules.")
     sys.exit(0)
 
 

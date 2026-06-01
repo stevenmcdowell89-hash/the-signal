@@ -897,6 +897,7 @@ Reinforcement still dominates the magazine because that's what makes it feel cur
 **The magazine never invents its own opinion — it borrows real ones and voices them as its own.** Take a clear, confident, opinionated angle and read like a magazine, but the **angle / opinion / conclusion / counterargument must be one real sources or commentators actually hold**, surfaced in the research. Express it in our voice *as if it were ours*, with **no obligation to quote, attribute, or cite** (this is a personal magazine, not journalism) and **no robotic "X said, then Y said"** framing. The only constraint is *provenance*: the take is borrowed from the real world, the wording is ours. It's the no-taste *spirit* of the Field Guide generalised ("opinions are reported, not held") — but NOT its attribution machinery; there's no quote-density or sourcing-display duty, only "don't invent it."
 
 - **The writer's test:** *"Is this angle something real people actually argue — that I found in research — or did I make it up?"* Invented → cut it. Real → express it well, in our voice. **Invent nothing beyond what the sources support** — this also stops analysis being built on a premise that isn't there (the Monaco "Norris on pole" leap).
+- **Naming a person requires the real words (v8.29).** Voicing a borrowed angle as our own carries *no* duty to attribute. But the moment you *name* a commentator (or hang the angle explicitly on them), the bundle must carry that person as a `type:"opinion"` fact with a real `speaker` + `quote`. No quote in the bundle ⇒ don't name them — voice the take unattributed. This is enforced upstream: the Phase 3b gate rejects an opinion fact missing its speaker/quote, so the writer can only attribute what research actually surfaced.
 - **Not everything needs an angle.** Gaming releases, a results roundup, an evidence explainer (the muscle-in-a-deficit piece) are often *better* as plain facts — "study X found A, Y found B, Z found C, it leans toward W", no invented conclusion. State the studies; let them speak. A posed question must still be answered from what the sources show, never left hanging.
 - **Length follows the material.** A 30-second idea gets ~30 seconds of words. Padding a thin topic and inventing an angle to fill a slot are the same disease — kill both.
 
@@ -909,7 +910,7 @@ Reinforcement still dominates the magazine because that's what makes it feel cur
 ### Content Standards
 - **Sunday timing** — Saturday results are hours old. This should feel current.
 - **7-day freshness rule.** News must be from this week. Evergreen features are fine when clearly framed as features. Don't force content from the reader profile when there's no current news to support it.
-- **Facts come from the research bundle; verify everything (v8.28).** The writer states only facts that are in the research bundle — it never introduces new ones (the prose analog of the image rule: every image must trace to `image_candidates`; every load-bearing fact must trace to a researched source). A stated result / fixture outcome / standing must have **actually happened by the issue date** and trace to a source that reports it as happened — a preview or a prior-year result asserted as fact is fabrication (the Monaco "Norris on pole" failure for a qualifying session a week away). Scorelines, fixture dates, media items, podcast content: if it isn't in the bundle and verifiable, it doesn't go in. A fabricated Football Weekly summary or a made-up 7-0 draw is an unforgivable error.
+- **Facts come from the research bundle; verify everything (v8.28, structured v8.29).** The writer states only facts that are in the research bundle — it never introduces new ones (the prose analog of the image rule: every image must trace to `image_candidates`; every load-bearing fact must trace to a `facts` record). Load-bearing facts are **structured records** carrying `status` (`happened`/`upcoming`), `date`, and `source_url` — the researcher decides happened-vs-upcoming *while the sources are open*, and the writer renders that pre-decided tag rather than judging it mid-sentence (see § fact-provenance below). A stated result / fixture outcome / standing must have **actually happened by the run date** (when facts were knowable — not merely by the issue's cover date; an event between the run and the cover date is still in the future at research time) and trace to a source that reports it as happened — a preview or a prior-year result asserted as fact is fabrication (the Monaco "Norris on pole" failure for a qualifying session a week away; the State-of-Play showcase written as "delivered" before it aired). Scorelines, fixture dates, media items, podcast content: if it isn't in the bundle and verifiable, it doesn't go in. A fabricated Football Weekly summary or a made-up 7-0 draw is an unforgivable error.
 - **Links are for the reader.** Every substantial item needs at least one outbound link. The reader should never think "I want to read more" and have nowhere to go. Wikipedia for history, original sources for news, specific URLs not category pages.
 - **Images mandatory.** Maps are high-value visuals when relevant — conflict zones, historical sieges, park layouts, race routes. Source from Wikimedia Commons, news outlets, official sources. Never AI-generated.
 - **2-3 wildcard items** per issue — things the reader didn't ask for. "Taste is a lens, not a filter."
@@ -1149,6 +1150,30 @@ A candidate the researcher cannot verify is **dropped**, not passed through with
 **Layer 6 — CI workflow (`.github/workflows/issue-validation.yml`).** Runs all gates on every push and PR in an unrestricted-egress environment. The image-URL HEAD check that degrades to a warning in the sandboxed pipeline runs for real here. On failure, auto-files a GitHub issue labelled `validation-failed`. For full enforcement, branch protection on `main` requires this workflow to pass before merge (one-time UI setup).
 
 This is the complete chain. Each layer is enforced by code, not by writer discipline. Adding a new image-shipping defect class means adding a new layer here.
+
+
+**Fact provenance chain (v8.29) — the prose analog of the image chain.**
+
+Trust holes in the *prose* (a future event written as done; a name pinned to words nobody said) shipped for the same reason image bugs did: the "is this real / has it happened / who said it?" judgment lived in the writer's head, mid-sentence, where it just had to be remembered. This chain moves that judgment **upstream to the researcher** — who has the sources open — and records it as a machine-checkable field, so the writer renders a pre-decided answer. It deliberately **reuses the existing two gates** (`validate-research-bundle.py`, `check-release-dates.sh`) rather than adding a new script — per the § Key Rules meta-rule, *adjust the structure, don't accrete gates.*
+
+**Layer 1 — Researcher (Phase 3a).** Every load-bearing claim is a structured record in `bundle.facts`, decided against the **run date** (today), not the issue's cover date:
+```json
+{ "claim": "…", "status": "happened|upcoming", "date": "YYYY-MM-DD", "source_url": "https://…",
+  "type": "fact|opinion", "speaker": "<iff opinion>", "quote": "<iff opinion — the real words>" }
+```
+A claim the researcher can't source is dropped; an event still in the future at run time is `status:"upcoming"`, never `happened`.
+
+**Layer 2 — Bundle gate (Phase 3b, `validate-research-bundle.py --run-date <today>`).** Rejects a fact missing `claim`/`status`/`date`/`source_url`; a `status:"happened"` fact dated *after* the run date (it cannot have occurred — the State-of-Play / "Norris on pole" temporal hole, caught upstream); a `type:"opinion"` fact without a real `speaker` + `quote`.
+
+**Layer 3 — Planner.** Copies the relevant fact records into each chapter's `key_facts` (structured), so the tag travels to the writer.
+
+**Layer 4 — Writer contract.** Renders the tag: a `status:"upcoming"` fact reads as forthcoming ("coming Thursday"), never past tense; a person is named only when the fact carries a `quote`; no fact outside the bundle (RT-22).
+
+**Layer 5 — Release-date gate (Phase 7.5, `check-release-dates.sh <html> <issue-date> <run-date> <bundle>`).** Surfaces every date/result claim in the rendered prose for verification against the **run date**, and lists the bundle's `status:"upcoming"` facts so the agent confirms each reads as forthcoming, not as a result.
+
+**Layer 6 — CI workflow.** Re-runs the gates on every push with full network.
+
+Each layer alone is bypassable; together they make "future event written as done" and "name pinned to words nobody said" structurally hard to ship. Adding a new prose-trust defect class means adding a layer here — not a new standalone script.
 
 **Editorial body kit (tier 5 — magazine-spread structure):**
 - `.sp-ground-paper` / `.sp-ground-ink` — alternating-ground wrapper for chapters. Apply to each major section so chapters alternate between paper (cream) and ink (deep) grounds. The shift of value on scroll IS the transition between chapters; no bridge component needed when alternating. Variants: `.sp-ground-warm` (warm cream), `.sp-ground-tint` (rose-tinted paper), `.sp-ground-deep` (pitch black).
