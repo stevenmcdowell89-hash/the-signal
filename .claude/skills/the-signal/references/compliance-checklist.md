@@ -323,7 +323,7 @@ Only proceed here after Gate 1 passes clean.
 - [ ] Football reads as editorial, not match reports; writes like a magazine journalist, not a personal assistant
 
 ### Visual Variety
-- [ ] 10+ different component types
+- [ ] **Component variety.** Weeklies: 10+ different component types (manual count). **Non-holiday specials: MECHANIZED** — satisfied by a PASS on `validate-issue.py` → `special-variety` (hard floor 9 for deep-dive/rewind/starter-kit; 7 for versus/season-review/shortlist/lookahead/next). Read the gate's exit code; don't hand-count specials.
 - [ ] No two consecutive sections use the same layout pattern
 - [ ] No 3+ screen-heights of unbroken prose
 - [ ] At least 3 pull quotes, 2 big-number callouts, 3-5 DYK boxes

@@ -415,11 +415,11 @@ Do **not** use the retired `.sp-spread`/`.sp-rail` three-column layout (the empt
 | Section | Section class | Pattern |
 |---|---|---|
 | Foreword | `chapter` | Short prose |
-| Why This Matters | `chapter` | Prose, 200-300 words |
-| The Essentials | `chapter` | `.essentials` ordered list with numbered ring badges (5-7 items) |
-| Common Mistakes | `chapter` | Prose with `.pullquote` and `.marginalia` for callouts |
+| Why This Matters | `chapter` | Prose, 200-300 words; close with an optional `.sk-takeaway` conviction band — see contract below |
+| The Essentials | `chapter` | Detailed picks (5-7) as cross-format `.pick` + `.pick-stats`; the `.essentials` numbered-ring list is only for short concept sub-lists |
+| Common Mistakes | `chapter` | `.sk-mistake` callout list (ringed × badge + optional `.sk-mistake-fix` line) — see contract below |
 | The One-Week Plan | `chapter` | `.week-plan` vertical timeline — see contract below |
-| Where to Go Deeper | `chapter` | Brief horizon list (3-5 items) |
+| Where to Go Deeper | `chapter` | `.also-cards` grid (3-5 items) |
 | Meanwhile | `chapter` | See universal pattern above |
 
 ### The One-Week Plan contract
@@ -444,6 +444,32 @@ The killer feature. Seven `.wp-day` items in an ordered list, day-badged on the 
   </li>
   <!-- … through Day 7 -->
 </ol>
+```
+
+### Common Mistakes contract
+
+A `.sk-mistake` list. Each `<li>` gets a ringed × badge; the warning is the lead text, and an optional `.sk-mistake-fix` span gives the "do this instead" correction (rendered with a → marker). Warnings must be genuinely useful and specific — not generic "don't give up".
+
+```html
+<ul class="sk-mistake">
+  <li>Starting with the most acclaimed series first — you'll burn out on density before you've built the listening habit.
+    <span class="sk-mistake-fix">Start with a tight, plot-driven show and earn the harder ones.</span>
+  </li>
+  <li>Treating every episode as mandatory — completionism kills the casual entry point.
+    <span class="sk-mistake-fix">Skip the filler arcs; the on-ramp matters more than coverage.</span>
+  </li>
+</ul>
+```
+
+### The Takeaway contract
+
+An optional single-line conviction band closing Why This Matters. One mono eyebrow + one italic sentence on a hairline-bordered paper band. The lighter, paper-ground cousin of Deep Dive's `.argument` — use once, not repeatedly.
+
+```html
+<div class="sk-takeaway">
+  <span class="sk-takeaway-mark">The Takeaway</span>
+  <p>You don't need to listen to everything — you need the three that prove the medium is worth your commute.</p>
+</div>
 ```
 
 ## The Rewind

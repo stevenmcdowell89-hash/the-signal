@@ -1,5 +1,40 @@
 # The Signal — Changelog
 
+8.31.0 — Enforced visual-component variety for non-holiday special editions.
+  Per-format visual richness was never an enforced rule — only soft "use 8-14
+  component types" guidance in formats.md, a manual checklist item, and an
+  observational quality score that never blocks. The one place "this format must
+  actually contain these components" was hard-enforced was `check_holiday_components`
+  in `validate-issue.py`, and it covered only the two holiday formats. So a special
+  could ship as a plain page and pass every gate, and the special-edition Starter
+  Kit had drifted far thinner than the beloved old Starter Kits (audio-dramas #4,
+  switch2-coop #7). The holiday formats are excellent and were left untouched.
+
+  - `scripts/validate-issue.py` — new `check_special_component_variety()` gate
+    (parallels `check_holiday_components`): counts distinct presentational component
+    GROUPS in the rendered body (via `body_text_only`, immune to the inlined CSS
+    bundle) and hard-fails a non-holiday special below a per-format floor
+    (deep-dive/rewind/starter-kit = 9; versus/season-review/shortlist/lookahead/next
+    = 7 — guidance lower bound minus 1). Scaffold/animation/modifier classes are
+    excluded; a component counts once. Allow-list + floor are single dicts, tunable.
+  - `scripts/validate-issue.py` — fixed a pre-existing bug in `SPECIAL_FORMATS`:
+    added live slugs `lookahead` and `next` (a `lookahead` issue previously died at
+    "unknown format") and removed retired `blueprint`.
+  - `assets/css/32-special-format-flair.css` — Starter Kit enrichment: two new
+    distinctive components, `.sk-mistake` (Common Mistakes callout list with ringed ×
+    badge + `.sk-mistake-fix` line) and `.sk-takeaway` (single-line conviction band),
+    and accent changed off the low-contrast `--bone-soft` to warm `--accent-tan`.
+  - Docs (visual portions only — no written-content rules touched): `references/spec/
+    formats.md` (Starter Kit kit + gated-floor note), `references/spec/specials.md`
+    (SK flair + the cross-format floor table), `references/component-contracts.md`
+    (HTML contracts for `.sk-mistake` / `.sk-takeaway`), `references/compliance-
+    checklist.md` (variety item → mechanized pointer), `SKILL.md` (Phase 7.6 now lists
+    the variety check).
+  Verified: the two shipped Deep Dives PASS (12 and 10 ≥ floor 9); a stripped
+  plain-page special FAILS; a Starter Kit reaches 9 with the documented kit and fails
+  at 7; the old `.mag`-template Starter Kits auto-detect as weekly and are not gated;
+  holiday issues are exempt. No shipped non-holiday special regresses.
+
 8.30.0 — Deliver, don't gesture: filler, hedged answers, the dropped Release Radar.
   A third no-publish test weekly (1 June 2026, all gates green) read "a good bit
   better" but surfaced three delivery failures. Fixed at source, spec-only (no

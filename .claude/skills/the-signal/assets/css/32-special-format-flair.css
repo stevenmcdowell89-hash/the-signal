@@ -193,7 +193,7 @@ body.is-special:not([data-special="countdown"]):not([data-special="field-guide"]
    ============================================================ */
 
 body.is-special[data-special="deep-dive"]   { --accent: var(--accent-ember); }
-body.is-special[data-special="starter-kit"] { --accent: var(--bone-soft); }
+body.is-special[data-special="starter-kit"] { --accent: var(--accent-tan); }
 
 /* Starter Kit: ordered "Essentials" list with numbered ringed badges */
 body.is-special[data-special="starter-kit"] .essentials {
@@ -229,6 +229,87 @@ body.is-special[data-special="starter-kit"] .essentials > li::before {
   display: grid;
   place-items: center;
   letter-spacing: 0.05em;
+}
+
+/* Starter Kit: "Common Mistakes" callout — a ringed × badge per item with an
+   optional "do this instead" fix line. Same ring family as .essentials so the
+   two read as a set, in a caution register. */
+body.is-special[data-special="starter-kit"] .sk-mistake {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0;
+  display: grid;
+  gap: 1rem;
+}
+body.is-special[data-special="starter-kit"] .sk-mistake > li {
+  display: grid;
+  grid-template-columns: 2.4rem 1fr;
+  gap: 1rem;
+  align-items: start;
+  padding: 1rem 1.1rem;
+  background: color-mix(in oklab, var(--accent) 7%, var(--paper-warm));
+  border-left: 4px solid var(--accent);
+  border-radius: 0 6px 6px 0;
+}
+body.is-special[data-special="starter-kit"] .sk-mistake > li::before {
+  content: '\00D7';   /* × — the mistake marker */
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 1.2rem;
+  text-align: center;
+  border: 1px solid var(--accent);
+  border-radius: 50%;
+  color: var(--accent);
+  width: 2.4rem;
+  height: 2.4rem;
+  display: grid;
+  place-items: center;
+  line-height: 1;
+}
+body.is-special[data-special="starter-kit"] .sk-mistake-fix {
+  display: block;
+  margin-top: 0.4rem;
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--ink-soft);
+}
+body.is-special[data-special="starter-kit"] .sk-mistake-fix::before {
+  content: '\2192\00A0';   /* →  do-this-instead marker */
+  font-style: normal;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* Starter Kit: "The Takeaway" — a quiet single-line conviction band closing
+   the Why-This-Matters chapter. Paper-ground, lighter than Deep Dive's
+   .argument: one mark + one sentence. */
+body.is-special[data-special="starter-kit"] .sk-takeaway {
+  margin: 2rem auto;
+  max-width: var(--measure);
+  padding: 1.5rem 1.75rem;
+  background: var(--paper-warm);
+  border-top: 2px solid var(--accent);
+  border-bottom: 2px solid var(--accent);
+  text-align: center;
+}
+body.is-special[data-special="starter-kit"] .sk-takeaway-mark {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+body.is-special[data-special="starter-kit"] .sk-takeaway p {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+  line-height: 1.4;
+  color: var(--ink);
+  margin: 0;
+  text-wrap: pretty;
 }
 
 

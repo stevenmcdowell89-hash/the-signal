@@ -9,8 +9,8 @@ USAGE
 
 OPTIONS
     --format <name>      Issue format: weekly | countdown | field-guide | rewind |
-                         versus | season-review | deep-dive | blueprint | shortlist |
-                         starter-kit. Underscores are accepted (field_guide → field-guide).
+                         versus | season-review | deep-dive | shortlist | starter-kit |
+                         lookahead | next. Underscores are accepted (field_guide → field-guide).
     --multi-venue        Assert body has data-multi-venue="true" and at least two
                          distinct data-venue values are present.
     --skip-image-urls    Skip HTTP HEAD checks on image URLs. Use only when offline
@@ -45,8 +45,8 @@ from pathlib import Path
 HOLIDAY_FORMATS = {"countdown", "field-guide"}
 SPECIAL_FORMATS = {
     "countdown", "field-guide", "rewind", "versus", "season-review",
-    "deep-dive", "blueprint", "shortlist", "starter-kit",
-}
+    "deep-dive", "shortlist", "starter-kit", "lookahead", "next",
+}  # v8.31: +lookahead/+next (live slugs); -blueprint (retired v8.22)
 KNOWN_FORMATS = {"weekly"} | SPECIAL_FORMATS
 
 # Literal placeholder strings that must never ship.
@@ -266,6 +266,125 @@ def check_holiday_components(html: str, report: Report) -> None:
                 f".{token}: {len(matches)} class variant(s) present ({', '.join(sorted(matches)[:3])}"
                 + (f", +{len(matches)-3} more" if len(matches) > 3 else "") + ")",
             )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Check: non-holiday special component variety
+#
+# Parallels check_holiday_components: turns the soft "use N-M component types"
+# guidance in formats.md into a hard gate so a special edition cannot ship as a
+# plain page. Counts DISTINCT presentational component GROUPS in the rendered
+# body (immune to the inlined CSS bundle via body_text_only).
+# ─────────────────────────────────────────────────────────────────────────────
+
+# group-name -> set of anchor classes. A group counts ONCE if ANY anchor is
+# present. Anchors are DOM-only component markers — never utility or scaffold.
+#
+# Deliberately NOT listed (so they can never inflate the count):
+#   • scaffold:   chapter*, cover*, foreword*, mast*, sp-footer*
+#   • animation:  reveal, sp-rise*, sp-fade*, sp-parallax*, sp-band*
+#   • modifiers:  is-left, is-wide, is-fullbleed, is-half, is-low, is-wildcard,
+#                 is-throughline, is-special
+#   • children:   wp-day, kd-medium, sc-bar, cal-row … (their PARENT group is
+#                 the single source of truth, so a component counts exactly once)
+SPECIAL_COMPONENT_GROUPS: dict[str, set[str]] = {
+    # baseline editorial flair (available to every non-holiday special)
+    "dropcap":       {"has-dropcap", "lede"},
+    "pullquote":     {"pullquote"},
+    "marginalia":    {"marginalia"},
+    "bignum":        {"bignum", "bignum-row"},
+    "source-strip":  {"source-strip"},
+    "ornament":      {"sp-ornament"},
+    "kicker":        {"sp-kicker"},
+    "figure":        {"fig"},
+    "image-quote":   {"image-quote"},
+    "sp-number":     {"sp-number"},
+    # cross-format rich containers
+    "pick":          {"pick"},
+    "pick-stats":    {"pick-stats"},
+    "also-cards":    {"also-cards"},
+    "meanwhile":     {"meanwhile-list"},
+    # Deep Dive
+    "argument":      {"argument"},
+    "keep-digging":  {"keep-digging", "kd-item"},
+    # Versus
+    "vs-tape":       {"vs-tape"},
+    "vs-pair":       {"vs-pair"},
+    "vs-verdict":    {"vs-verdict"},
+    "vs-scoreboard": {"vs-scoreboard"},
+    # Rewind
+    "year-band":     {"year-band"},
+    "rewind-cards":  {"rewind-cards", "rewind-card"},
+    "memory-test":   {"memory-test"},
+    "throughline":   {"throughline-mark"},
+    # Season Review
+    "scorecards":    {"scorecards", "scorecard"},
+    "rating":        {"rating", "rating-bar"},
+    "scoreboard":    {"scoreboard"},
+    "milestones":    {"milestones", "milestone"},
+    # Shortlist
+    "lens":          {"lens"},
+    "tier-band":     {"tier-band"},
+    "cheat-sheet":   {"cheat-sheet"},
+    # Next
+    "next-tier":     {"next-tier"},
+    "on-ramp":       {"on-ramp"},
+    "only-one":      {"only-one"},
+    # Lookahead
+    "calendar":      {"calendar"},
+    "crunch-week":   {"crunch-week"},
+    # Starter Kit
+    "essentials":    {"essentials"},
+    "week-plan":     {"week-plan"},
+    "sk-mistake":    {"sk-mistake"},
+    "sk-takeaway":   {"sk-takeaway"},
+}
+
+# Enforced floor = (formats.md guidance lower bound) − 1, honoring the old
+# Starter-Kit variety bar (~10) while leaving a small margin against false fails.
+SPECIAL_VARIETY_FLOOR: dict[str, int] = {
+    "deep-dive":     9,   # guidance "10-14"
+    "rewind":        9,   # guidance "10-14"
+    "starter-kit":   9,   # guidance "10-14"
+    "season-review": 7,   # guidance "8-12"
+    "shortlist":     7,   # guidance "8-12"
+    "versus":        7,   # guidance "8-12"
+    "lookahead":     7,   # guidance "8-12"
+    "next":          7,   # guidance "8-12"
+}
+
+
+def check_special_component_variety(html: str, fmt: str, report: Report) -> None:
+    """Hard-fail a non-holiday special that deploys too few distinct
+    presentational component types — the rule that stops a plain-page Deep Dive
+    (or a thin Starter Kit) from passing every other gate.
+    """
+    floor = SPECIAL_VARIETY_FLOOR.get(fmt)
+    if floor is None:
+        return  # weekly / holiday / unknown — not gated here
+    tokens = extract_class_tokens(body_text_only(html))
+    present = sorted(
+        group for group, anchors in SPECIAL_COMPONENT_GROUPS.items()
+        if anchors & tokens
+    )
+    n = len(present)
+    if n < floor:
+        report.fail(
+            "special-variety",
+            f"{fmt} deploys only {n} distinct presentational component type(s); "
+            f"floor is {floor}. Present: {', '.join(present) or '(none)'}. "
+            f"A special edition must render with real visual variety — see the "
+            f"'{fmt}' kit in references/spec/formats.md and the component list in "
+            f"references/spec/specials.md. Add components from the format's flair "
+            f"kit (e.g. .pick + .pick-stats, .bignum-row, .pullquote, .also-cards, "
+            f"figure.image-quote), not just prose chapters.",
+        )
+    else:
+        report.ok(
+            "special-variety",
+            f"{fmt}: {n} distinct component type(s) (floor {floor}) — "
+            + ", ".join(present[:8]) + (f", +{n-8} more" if n > 8 else ""),
+        )
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -692,6 +811,11 @@ def main(argv: list[str]) -> int:
         check_holiday_components(html, report)
         if multi_venue:
             check_multi_venue(html, report)
+
+    # Non-holiday special component-variety gate (parallel to the holiday
+    # component gate; holiday formats keep their own check above).
+    if fmt in SPECIAL_FORMATS and fmt not in HOLIDAY_FORMATS:
+        check_special_component_variety(html, fmt, report)
 
     # Image URL static check — runs ALWAYS, even in restricted environments.
     # Catches page URLs used as image src regardless of egress policy.
