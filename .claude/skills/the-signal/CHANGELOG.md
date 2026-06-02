@@ -1,7 +1,9 @@
 # The Signal — Changelog
 
-8.32.0 — Four fixes surfaced by a Starter-Kit test run (TV for a 10-year-old who'd
-  finished all Dragon Ball and all Star Wars). Spec + CSS only; no gate added.
+8.32.0 — Visual fixes surfaced by a Starter-Kit test run (TV for a 10-year-old who'd
+  finished all Dragon Ball and all Star Wars). CSS + visual-contract only; no gate, no
+  editorial/narrative-rule changes (those were considered and deliberately left out —
+  these fixes are scoped to visuals).
 
   - **`.pick` layout (CSS).** `assets/css/32-special-format-flair.css` — the pick
     component was a rigid two-column grid (`14rem 1fr`), which stretched the image
@@ -15,15 +17,6 @@
     (Starter Kit, Shortlist, Next).
   - **`.bignum-row` responsive (CSS).** `assets/css/29-special-callouts.css` — added a
     two-up (then one-up) narrow-width fallback so 3–4 big-number rows don't squash.
-  - **Reader context is ground truth (Rule, v8.32).** `spec/global.md` + `editorial-spec.md`
-    key-rules, mirrored into the SKILL.md Phase 3a researcher brief: (a) an explicit
-    "we've watched all of X" is authoritative — never recommend it back, never hedge it
-    (the test issue recommended Star Wars Rebels and Clone Wars back to a reader who'd
-    said they'd seen all the Star Wars series); (b) calibrate suitability to the reader's
-    demonstrated taste — the anchor examples set the content ceiling, don't default lower —
-    but judge the *actual content*, not the age certificate (a same-rated title can be too
-    dark; the test issue went TV-Y7-safe and buried good TV-14 fits). Don't narrow to one
-    medium, don't force diversity.
   - **Per-pick image coverage.** `spec/formats.md` starter-kit + SKILL.md Phase 3a:
     every Essentials pick must carry a real, sourced image; research must find one per
     named title (the test bundle had art for only 3 of 6 picks).
