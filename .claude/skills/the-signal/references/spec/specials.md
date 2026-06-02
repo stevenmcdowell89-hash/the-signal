@@ -571,6 +571,11 @@ The Countdown and Field Guide formats use a **separate visual identity** from ev
 | `.hol-dont-miss` (`__kicker`, `__title`, `__list`) | Rotated ruby block with tilted shadow numerals |
 | `.hol-marquee` (`__track`) | Kinetic horizontal scroll banner. Reduced-motion safe |
 | `.hol-chalkboard` (`__tag`, `__title`, `__items`, `__row`, `__item`, `__price`, `__note`) | Half II tilted chalkboard menu card |
+| `.hol-trip-numbers` / `.hol-tminus` | Brass "By the Numbers" stat band / countdown banner |
+| `.hol-rank-slot` (`__list`, `__item`, `__entry-header`, `__rank`, `__name`, `__tier`, `__facts`) | Ranked list (rank badge + tier pill + facts). Alias of `.hol-meal-slot`; use for attractions / animal encounters / moments / eats (v8.33) |
+| `.hol-moodboard` + `--masonry` / `--scrapbook` (`__item`, `__caption`) | Captions-only 8–12 image gallery for the Mood Board (v8.33) |
+| `.hol-day-beats` (`__beat`, `__day`, `__title`, `__body`) | Day-by-day itinerary timeline — only when the reader supplied one (v8.33) |
+| `.hol-ticket` / `.hol-coaster` / `.hol-banner-strip` / `.hol-pull--big` (+ colour variants) | Decorative kit — tickets, beer-mat tags, display bands, dramatic pull-quotes |
 | `.hol-meanwhile` (`__giant-bg`, `__inner`, `__title`, `__body`) | Closing dark block |
 | `.hol-subscribe` (`__inner`, `__title`, `__form`, `__input`, `__btn`, `__hand`) | Rotated subscribe card |
 | `.hol-footer-row` (`__brand`, `__links`, `__tagline`) | Page-bottom brand mark + links + tagline |

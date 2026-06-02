@@ -670,9 +670,57 @@ Countdown and Field Guide use a separate visual identity from every other specia
 | Don't miss | `.hol-dont-miss` | Rotated ruby block with tilted shadow numerals |
 | Marquee | `.hol-marquee` | Kinetic horizontal scroll banner (also the single-venue rhythm beat) |
 | Chalkboard | `.hol-chalkboard` | Half II tilted menu/list card |
+| Trip numbers | `.hol-trip-numbers` | Brass "By the Numbers" stat band (chunky figures + mono labels) |
+| T-minus banner | `.hol-tminus` | Brass-bordered countdown banner (chunky title + italic message) |
+| Ranked slot | `.hol-rank-slot` (alias of `.hol-meal-slot`) | Ranked list — rank badge + tier pill + facts `<dl>`. For attractions / animal encounters / moments / eats (v8.33) |
+| Mood board | `.hol-moodboard` (+ `--masonry` / `--scrapbook`) | Captions-only 8–12 image gallery (v8.33) |
+| Day beats | `.hol-day-beats` | Day-by-day itinerary timeline — only when the reader supplied one (v8.33) |
+| Ticket | `.hol-ticket` (+ colour variants) | Perforated ticket-stub row (Watch/Read/Play, listings) |
+| Coaster | `.hol-coaster` (+ colour variants) | Circular beer-mat tag/fact chip |
+| Banner strip | `.hol-banner-strip` (+ colour variants) | Full-width chunky display band |
+| Big pull | `.hol-pull--big` | Centred dramatic pull-quote with brass quote marks |
 | Meanwhile | `.hol-meanwhile` | Closing dark block with mega watermark |
 | Subscribe | `.hol-subscribe` | Rotated subscribe card inside `.hol-meanwhile` |
 | Footer row | `.hol-footer-row` | Page-bottom brand + links + hand-script tagline |
+
+**Countdown ≥ Field Guide (v8.33).** Every `.hol-*` component above is dual-scoped — it renders on a Countdown exactly as on a Field Guide. A Countdown is no longer a thinner holiday issue; use the full kit. (See `formats.md` § countdown for the section→component map.)
+
+### New component contracts (v8.33)
+
+```html
+<!-- Mood Board — 8–12 captioned images, no prose -->
+<div class="hol-moodboard hol-moodboard--masonry">
+  <figure class="hol-moodboard__item">
+    <img src="…" alt="…">
+    <figcaption class="hol-moodboard__caption">Fairytale Forest at dusk <span>Efteling press</span></figcaption>
+  </figure>
+  <!-- … 8–12 items … -->
+</div>
+
+<!-- Ranked slot — attractions / animal encounters / moments, ranked -->
+<div class="hol-rank-slot">
+  <h3 class="hol-rank-slot__title">The Safari, Ranked</h3>
+  <ol class="hol-rank-slot__list">
+    <li class="hol-rank-slot__item">
+      <div class="hol-rank-slot__entry-header">
+        <span class="hol-rank-slot__rank">01</span>
+        <h4 class="hol-rank-slot__name">The walking safari</h4>
+        <span class="hol-rank-slot__tier tier-hot">Must-do</span>
+      </div>
+      <p>…why it's worth it…</p>
+      <dl class="hol-rank-slot__facts"><dt>Best time</dt><dd>09:00</dd></dl>
+    </li>
+  </ol>
+</div>
+
+<!-- Day-by-day timeline — only when the reader supplied an itinerary -->
+<ol class="hol-day-beats">
+  <li class="hol-day-beats__beat">
+    <span class="hol-day-beats__day">Day 1</span>
+    <div><h4 class="hol-day-beats__title">Arrive · Fairytale Forest</h4><p>…</p></div>
+  </li>
+</ol>
+```
 
 ### Full snippets
 
@@ -684,6 +732,8 @@ See `references/pre-flight.md` § 3 *Canonical Markup Snippets* → *Holiday iss
 - `<aside class="sp-marginalia">` — use `.hol-stamp` or `.hol-polaroid` instead.
 - `<div class="sp-spread">` — holiday issues do not use the three-column spread. Use `.hol-half__inner` plus content components.
 - `<div class="unmissables">...<div class="unmissable">` — holiday issues use `.hol-unmissable` (one row at a time, alternating sides).
+- `.also-cards` / `.pick` — **unstyled on holiday issues** (tier 32 scopes them to `:not([data-special=...])`). Use `.hol-ticket` or `.hol-rank-slot` instead.
+- `.sp-image-strip` / `.sp-gallery` / `.sp-ground-gallery` — not holiday components. Use `.hol-moodboard` for image walls.
 - `<section data-sp-chapter ...>` — not needed; holiday halves are plain `<section class="hol-half hol-half--one">` and `<section class="hol-half hol-half--two">`.
 - Coral colour anywhere (`#E8384F`, `var(--sp-accent-primary)`) — not used on holiday issues. Use brass (`var(--hol-brass)` or `var(--hol-brass-light)`) for the primary accent role.
 - More than one `.hol-transit` in an issue — exactly one for multi-venue, none for single-venue.

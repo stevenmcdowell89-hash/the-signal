@@ -273,11 +273,15 @@ Each trigger: what it looks like, why it's banned, what to do instead.
 | `.sp-pull-break` | `.hol-marquee` or `.hol-dont-miss` |
 | `.sp-marginalia` | `.hol-stamp` or `.hol-polaroid` |
 | `.sp-brief` | `.hol-anchor` (for a feature) or `.hol-postcard` (for a small aside) |
-| `.sp-dash` | `.hol-countdown` (live grid) or inline big numbers within `.hol-anchor__meta` |
+| `.sp-dash` / `.sp-number-huge` | `.hol-trip-numbers` (brass stat band) + `.hol-tminus` banner |
 | `.unmissables` / `.unmissable` | `.hol-unmissable` (alternating left/right rotated photo + parchment card) |
+| `.sp-gallery` / `.sp-image-strip` | `.hol-moodboard` (`--masonry` / `--scrapbook`) |
+| `.also-cards` / `.pick` | `.hol-ticket` or `.hol-rank-slot` (the `.sp`-system cards are unstyled on holiday) |
+| a ranked list (attractions / animals / moments) | `.hol-rank-slot` (rank badge + tier pill + facts) |
+| a day-by-day plan | `.hol-day-beats` timeline |
 | `.sp-ground-paper` | nothing on the wrapper; cream grounds happen inside specific components |
 | `.sp-ground-ink` | nothing on the wrapper; indigo is Half I's default ground |
-| `.sp-ground-gallery` | not legal on holiday issues |
+| `.sp-ground-gallery` | not legal on holiday issues — use `.hol-moodboard` for image walls |
 
 **Halves and the transit:** every multi-venue holiday issue uses exactly TWO halves (`.hol-half--one`, `.hol-half--two`) separated by exactly ONE `.hol-transit`. Single-venue issues use ONE `.hol-half--one` with one or two `.hol-marquee` interior breaks. Adding extra transits, omitting the transit on a multi-venue issue, or stacking halves of the same type is a hard fail.
 

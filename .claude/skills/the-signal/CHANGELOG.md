@@ -1,5 +1,30 @@
 # The Signal — Changelog
 
+8.33.0 — Countdown visual parity with the Field Guide. The holiday `.hol-*` system
+  was built out as a Field-Guide showcase: component base rules were dual-scoped, but
+  the whole polish layer (variant colours, hover/animation, internal elements) was
+  `[data-special="field-guide"]`-only, so a Countdown rendered the rich components as
+  half-styled skeletons — and the Countdown guidance still routed sections to `.sp-*`/
+  `.also-cards` classes that the holiday stitch-gate bans or leaves unstyled.
+
+  - CSS — dual-scoped the FG-only polish layer to Countdown across tiers 40–44
+    (meal-slot, decorations, savannah Half II, hype `.hol-trip-numbers`/`.hol-tminus`/
+    `.hol-countdown__num` pulse, sprinkles `.hol-pull--big`/fleuron/ribbon-tab).
+    **Additive only** — every edit appends a `[data-special="countdown"]` selector to an
+    existing field-guide selector list; no field-guide rule was removed or altered
+    (verified: all FG rules byte-identical across every tier). Motion tiers 37–39 were
+    already balanced.
+  - New components (dual-scoped): `.hol-moodboard` (new tier `45-holiday-moodboard.css` —
+    captions-only 8–12 image masonry/scrapbook gallery for the Mood Board), `.hol-rank-slot`
+    (a semantic-neutral alias of `.hol-meal-slot` for ranked attractions/animals/moments;
+    meal-slot kept as back-compat), and `.hol-day-beats` (a day-by-day timeline that was
+    referenced in tier 43 but never defined).
+  - Guidance remap: `formats.md` (countdown) now points at the `.hol-*` kit with a
+    section→component map and explicitly forbids `.sp-spread`/`.sp-dash`/`.sp-number-huge`/
+    `.sp-gallery`/`.sp-image-strip`/`.unmissables`/`.also-cards`/`.pick`; `component-
+    contracts.md`, `specials.md`, and `pre-flight.md` RT-13 updated with the new components
+    and swaps. No Field Guide CSS or editorial change; no new gate.
+
 8.32.0 — Visual fixes surfaced by a Starter-Kit test run (TV for a 10-year-old who'd
   finished all Dragon Ball and all Star Wars). CSS + visual-contract only; no gate, no
   editorial/narrative-rule changes (those were considered and deliberately left out —

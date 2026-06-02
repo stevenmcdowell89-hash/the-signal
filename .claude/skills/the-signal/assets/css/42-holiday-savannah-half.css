@@ -83,7 +83,8 @@ body.is-special[data-special="countdown"] .hol-half--two .hol-half__inner {
   z-index: 1;
 }
 
-body.is-special[data-special="field-guide"] .hol-half--two .hol-half__inner::before {
+body.is-special[data-special="field-guide"] .hol-half--two .hol-half__inner::before,
+body.is-special[data-special="countdown"] .hol-half--two .hol-half__inner::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -106,7 +107,8 @@ body.is-special[data-special="field-guide"] .hol-half--two .hol-half__inner::bef
 }
 
 @media (prefers-reduced-motion: reduce) {
-  body.is-special[data-special="field-guide"] .hol-half--two .hol-half__inner::before {
+  body.is-special[data-special="field-guide"] .hol-half--two .hol-half__inner::before,
+body.is-special[data-special="countdown"] .hol-half--two .hol-half__inner::before {
     animation: none;
   }
 }
@@ -120,7 +122,8 @@ body.is-special[data-special="countdown"] .hol-half--two .hol-half__opener {
   margin-top: 1rem;
 }
 
-body.is-special[data-special="field-guide"] .hol-half--two .hol-half__opener::after {
+body.is-special[data-special="field-guide"] .hol-half--two .hol-half__opener::after,
+body.is-special[data-special="countdown"] .hol-half--two .hol-half__opener::after {
   content: "";
   position: absolute;
   left: 50%;
@@ -136,7 +139,9 @@ body.is-special[data-special="field-guide"] .hol-half--two .hol-half__opener::af
 
 /* Subtle terracotta block-quote accent on Half II prose */
 body.is-special[data-special="field-guide"] .hol-half--two blockquote,
-body.is-special[data-special="field-guide"] [data-venue="beekse-bergen"] blockquote {
+body.is-special[data-special="field-guide"] [data-venue="beekse-bergen"] blockquote,
+body.is-special[data-special="countdown"] .hol-half--two blockquote,
+body.is-special[data-special="countdown"] [data-venue="beekse-bergen"] blockquote {
   border-left-color: var(--hol-burnt);
   background: color-mix(in srgb, var(--hol-burnt) 6%, var(--hol-bone));
 }

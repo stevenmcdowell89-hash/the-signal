@@ -40,7 +40,8 @@ body.is-special[data-special="countdown"] .hol-trip-numbers {
     0 1px 0 rgba(255,255,255,0.06) inset;
 }
 
-body.is-special[data-special="field-guide"] .hol-trip-numbers::before {
+body.is-special[data-special="field-guide"] .hol-trip-numbers::before,
+body.is-special[data-special="countdown"] .hol-trip-numbers::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -53,7 +54,8 @@ body.is-special[data-special="field-guide"] .hol-trip-numbers::before {
   pointer-events: none;
 }
 
-body.is-special[data-special="field-guide"] .hol-trip-numbers__kicker {
+body.is-special[data-special="field-guide"] .hol-trip-numbers__kicker,
+body.is-special[data-special="countdown"] .hol-trip-numbers__kicker {
   display: block;
   text-align: center;
   font-family: var(--hol-t-mono, "JetBrains Mono", monospace);
@@ -65,7 +67,8 @@ body.is-special[data-special="field-guide"] .hol-trip-numbers__kicker {
   position: relative;
 }
 
-body.is-special[data-special="field-guide"] .hol-trip-numbers__title {
+body.is-special[data-special="field-guide"] .hol-trip-numbers__title,
+body.is-special[data-special="countdown"] .hol-trip-numbers__title {
   display: block;
   text-align: center;
   font-family: var(--hol-t-chunk, "Bowlby One", sans-serif);
@@ -77,24 +80,28 @@ body.is-special[data-special="field-guide"] .hol-trip-numbers__title {
   position: relative;
 }
 
-body.is-special[data-special="field-guide"] .hol-trip-numbers__grid {
+body.is-special[data-special="field-guide"] .hol-trip-numbers__grid,
+body.is-special[data-special="countdown"] .hol-trip-numbers__grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 1.25rem;
   position: relative;
 }
 
-body.is-special[data-special="field-guide"] .hol-trip-numbers__cell {
+body.is-special[data-special="field-guide"] .hol-trip-numbers__cell,
+body.is-special[data-special="countdown"] .hol-trip-numbers__cell {
   text-align: center;
   padding: 0.5rem 0.75rem;
   border-left: 1px solid color-mix(in srgb, var(--hol-brass) 35%, transparent);
 }
 
-body.is-special[data-special="field-guide"] .hol-trip-numbers__cell:first-child {
+body.is-special[data-special="field-guide"] .hol-trip-numbers__cell:first-child,
+body.is-special[data-special="countdown"] .hol-trip-numbers__cell:first-child {
   border-left: none;
 }
 
-body.is-special[data-special="field-guide"] .hol-trip-numbers__num {
+body.is-special[data-special="field-guide"] .hol-trip-numbers__num,
+body.is-special[data-special="countdown"] .hol-trip-numbers__num {
   display: block;
   font-family: var(--hol-t-chunk, "Bowlby One", sans-serif);
   font-size: clamp(2.2rem, 5vw, 3.4rem);
@@ -107,7 +114,8 @@ body.is-special[data-special="field-guide"] .hol-trip-numbers__num {
   margin-bottom: 0.35rem;
 }
 
-body.is-special[data-special="field-guide"] .hol-trip-numbers__label {
+body.is-special[data-special="field-guide"] .hol-trip-numbers__label,
+body.is-special[data-special="countdown"] .hol-trip-numbers__label {
   display: block;
   font-family: var(--hol-t-mono, "JetBrains Mono", monospace);
   font-size: 0.68rem;
@@ -118,7 +126,8 @@ body.is-special[data-special="field-guide"] .hol-trip-numbers__label {
   line-height: 1.3;
 }
 
-body.is-special[data-special="field-guide"] .hol-trip-numbers__sub {
+body.is-special[data-special="field-guide"] .hol-trip-numbers__sub,
+body.is-special[data-special="countdown"] .hol-trip-numbers__sub {
   display: block;
   font-family: var(--hol-t-body, "DM Sans", sans-serif);
   font-size: 0.7rem;
@@ -129,12 +138,14 @@ body.is-special[data-special="field-guide"] .hol-trip-numbers__sub {
 }
 
 @media (max-width: 540px) {
-  body.is-special[data-special="field-guide"] .hol-trip-numbers__cell {
+  body.is-special[data-special="field-guide"] .hol-trip-numbers__cell,
+body.is-special[data-special="countdown"] .hol-trip-numbers__cell {
     border-left: none;
     border-top: 1px solid color-mix(in srgb, var(--hol-brass) 25%, transparent);
     padding-top: 1rem;
   }
-  body.is-special[data-special="field-guide"] .hol-trip-numbers__cell:first-child {
+  body.is-special[data-special="field-guide"] .hol-trip-numbers__cell:first-child,
+body.is-special[data-special="countdown"] .hol-trip-numbers__cell:first-child {
     border-top: none;
     padding-top: 0;
   }
@@ -161,13 +172,16 @@ body.is-special[data-special="countdown"] .hol-tminus {
 }
 
 body.is-special[data-special="field-guide"] .hol-tminus::before,
-body.is-special[data-special="field-guide"] .hol-tminus::after {
+body.is-special[data-special="field-guide"] .hol-tminus::after,
+body.is-special[data-special="countdown"] .hol-tminus::before,
+body.is-special[data-special="countdown"] .hol-tminus::after {
   content: "★";
   font-size: 1.2rem;
   color: var(--hol-brass-light);
 }
 
-body.is-special[data-special="field-guide"] .hol-tminus__label {
+body.is-special[data-special="field-guide"] .hol-tminus__label,
+body.is-special[data-special="countdown"] .hol-tminus__label {
   font-family: var(--hol-t-chunk, "Bowlby One", sans-serif);
   font-size: clamp(1.6rem, 3.5vw, 2.4rem);
   color: var(--hol-brass-light);
@@ -176,7 +190,8 @@ body.is-special[data-special="field-guide"] .hol-tminus__label {
   text-shadow: 3px 3px 0 var(--hol-ruby-deep, #4a0f1a);
 }
 
-body.is-special[data-special="field-guide"] .hol-tminus__msg {
+body.is-special[data-special="field-guide"] .hol-tminus__msg,
+body.is-special[data-special="countdown"] .hol-tminus__msg {
   font-family: var(--hol-t-display, "Cormorant Garamond", serif);
   font-style: italic;
   font-size: 1.1rem;
@@ -208,7 +223,8 @@ body.is-special[data-special="field-guide"] .hol-tminus__msg {
 /* ─────────────────────────────────────────────────────────────
    HYPE MARQUEE — bigger, brass-tinted scrolling banner
    ───────────────────────────────────────────────────────────── */
-body.is-special[data-special="field-guide"] .hol-hype-marquee {
+body.is-special[data-special="field-guide"] .hol-hype-marquee,
+body.is-special[data-special="countdown"] .hol-hype-marquee {
   margin: 2.5rem 0;
   padding: 1.25rem 0;
   background: linear-gradient(180deg, var(--hol-brass) 0%, var(--hol-brass-light) 50%, var(--hol-brass) 100%);
@@ -219,7 +235,8 @@ body.is-special[data-special="field-guide"] .hol-hype-marquee {
   position: relative;
 }
 
-body.is-special[data-special="field-guide"] .hol-hype-marquee__track {
+body.is-special[data-special="field-guide"] .hol-hype-marquee__track,
+body.is-special[data-special="countdown"] .hol-hype-marquee__track {
   display: flex;
   gap: 2rem;
   align-items: center;
@@ -231,7 +248,8 @@ body.is-special[data-special="field-guide"] .hol-hype-marquee__track {
   width: max-content;
 }
 
-body.is-special[data-special="field-guide"] .hol-hype-marquee__track > * {
+body.is-special[data-special="field-guide"] .hol-hype-marquee__track > *,
+body.is-special[data-special="countdown"] .hol-hype-marquee__track > * {
   flex-shrink: 0;
 }
 
@@ -241,7 +259,8 @@ body.is-special[data-special="field-guide"] .hol-hype-marquee__track > * {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  body.is-special[data-special="field-guide"] .hol-hype-marquee__track {
+  body.is-special[data-special="field-guide"] .hol-hype-marquee__track,
+body.is-special[data-special="countdown"] .hol-hype-marquee__track {
     animation: none;
     justify-content: center;
   }
@@ -250,7 +269,8 @@ body.is-special[data-special="field-guide"] .hol-hype-marquee__track > * {
 /* ─────────────────────────────────────────────────────────────
    SPARKLE SVG anchors — decorative gold stars on ink chapters
    ───────────────────────────────────────────────────────────── */
-body.is-special[data-special="field-guide"] .hol-sparkle {
+body.is-special[data-special="field-guide"] .hol-sparkle,
+body.is-special[data-special="countdown"] .hol-sparkle {
   display: inline-block;
   width: 1.2em;
   height: 1.2em;
@@ -262,7 +282,8 @@ body.is-special[data-special="field-guide"] .hol-sparkle {
 /* ─────────────────────────────────────────────────────────────
    COUNTDOWN PULSE — subtle motion on the cover countdown
    ───────────────────────────────────────────────────────────── */
-body.is-special[data-special="field-guide"] .hol-countdown__num {
+body.is-special[data-special="field-guide"] .hol-countdown__num,
+body.is-special[data-special="countdown"] .hol-countdown__num {
   animation: hol-countdown-pulse 2.5s ease-in-out infinite;
 }
 
@@ -272,7 +293,84 @@ body.is-special[data-special="field-guide"] .hol-countdown__num {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  body.is-special[data-special="field-guide"] .hol-countdown__num {
+  body.is-special[data-special="field-guide"] .hol-countdown__num,
+body.is-special[data-special="countdown"] .hol-countdown__num {
     animation: none;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   .hol-day-beats — holiday day-by-day timeline (v8.33). Vertical
+   accent rail with day badges; only used when the reader supplied
+   an itinerary. Dual-scoped; Half II adopts the savannah palette.
+   ───────────────────────────────────────────────────────────── */
+body.is-special[data-special="field-guide"] .hol-day-beats,
+body.is-special[data-special="countdown"] .hol-day-beats {
+  --beat-accent: var(--hol-brass);
+  --beat-ink: var(--hol-cream);
+  list-style: none;
+  margin: 1.75rem 0 2rem;
+  padding: 0 0 0 1.25rem;
+  position: relative;
+  display: grid;
+  gap: 1.25rem;
+}
+body.is-special[data-special="field-guide"] .hol-half--two .hol-day-beats,
+body.is-special[data-special="countdown"] .hol-half--two .hol-day-beats,
+[data-venue="beekse-bergen"] .hol-day-beats {
+  --beat-accent: var(--hol-burnt);
+  --beat-ink: var(--hol-savannah-ink);
+}
+body.is-special[data-special="field-guide"] .hol-day-beats::before,
+body.is-special[data-special="countdown"] .hol-day-beats::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.4rem;
+  bottom: 0.4rem;
+  width: 2px;
+  background: color-mix(in srgb, var(--beat-accent) 60%, transparent);
+}
+body.is-special[data-special="field-guide"] .hol-day-beats__beat,
+body.is-special[data-special="countdown"] .hol-day-beats__beat {
+  position: relative;
+  display: grid;
+  grid-template-columns: 4.75rem 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+body.is-special[data-special="field-guide"] .hol-day-beats__day,
+body.is-special[data-special="countdown"] .hol-day-beats__day {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem 0.4rem;
+  background: var(--beat-accent);
+  color: var(--beat-ink);
+  font-family: var(--hol-t-chunk, "Bowlby One", sans-serif);
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  border-radius: 3px;
+  text-align: center;
+}
+body.is-special[data-special="field-guide"] .hol-day-beats__title,
+body.is-special[data-special="countdown"] .hol-day-beats__title {
+  margin: 0 0 0.25rem;
+  font-family: var(--hol-t-serif, "Cinzel", serif);
+  font-size: 1.05rem;
+  line-height: 1.2;
+}
+body.is-special[data-special="field-guide"] .hol-day-beats__body,
+body.is-special[data-special="countdown"] .hol-day-beats__body {
+  margin: 0;
+  font-family: var(--hol-t-body, "DM Sans", sans-serif);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+@media (max-width: 540px) {
+  body.is-special[data-special="field-guide"] .hol-day-beats__beat,
+  body.is-special[data-special="countdown"] .hol-day-beats__beat {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
   }
 }

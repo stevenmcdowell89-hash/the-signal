@@ -65,7 +65,9 @@ body.is-special[data-special="countdown"] .hol-fleuron {
 }
 
 body.is-special[data-special="field-guide"] .hol-fleuron::before,
-body.is-special[data-special="field-guide"] .hol-fleuron::after {
+body.is-special[data-special="field-guide"] .hol-fleuron::after,
+body.is-special[data-special="countdown"] .hol-fleuron::before,
+body.is-special[data-special="countdown"] .hol-fleuron::after {
   content: "";
   flex: 1;
   height: 1px;
@@ -73,7 +75,8 @@ body.is-special[data-special="field-guide"] .hol-fleuron::after {
   opacity: 0.4;
 }
 
-body.is-special[data-special="field-guide"] .hol-fleuron__glyph {
+body.is-special[data-special="field-guide"] .hol-fleuron__glyph,
+body.is-special[data-special="countdown"] .hol-fleuron__glyph {
   flex-shrink: 0;
   font-family: var(--hol-t-display, "Cormorant Garamond", serif);
   font-size: 1.3rem;
@@ -83,17 +86,21 @@ body.is-special[data-special="field-guide"] .hol-fleuron__glyph {
 
 /* SVG fleuron variant — a stylized vine / curl ornament */
 body.is-special[data-special="field-guide"] .hol-fleuron--svg::before,
-body.is-special[data-special="field-guide"] .hol-fleuron--svg::after {
+body.is-special[data-special="field-guide"] .hol-fleuron--svg::after,
+body.is-special[data-special="countdown"] .hol-fleuron--svg::before,
+body.is-special[data-special="countdown"] .hol-fleuron--svg::after {
   content: none;
 }
 
-body.is-special[data-special="field-guide"] .hol-fleuron--svg {
+body.is-special[data-special="field-guide"] .hol-fleuron--svg,
+body.is-special[data-special="countdown"] .hol-fleuron--svg {
   display: block;
   text-align: center;
   margin: 2rem auto;
 }
 
-body.is-special[data-special="field-guide"] .hol-fleuron--svg svg {
+body.is-special[data-special="field-guide"] .hol-fleuron--svg svg,
+body.is-special[data-special="countdown"] .hol-fleuron--svg svg {
   width: 180px;
   height: auto;
   color: currentColor;
@@ -113,7 +120,8 @@ body.is-special[data-special="field-guide"] .hol-fleuron--svg svg {
 /* ─────────────────────────────────────────────────────────────
    MARGIN MARK — small brass asterisk in the gutter for anchor moments
    ───────────────────────────────────────────────────────────── */
-body.is-special[data-special="field-guide"] .hol-margin-mark {
+body.is-special[data-special="field-guide"] .hol-margin-mark,
+body.is-special[data-special="countdown"] .hol-margin-mark {
   display: inline-block;
   vertical-align: super;
   font-size: 0.75em;
@@ -130,7 +138,8 @@ body.is-special[data-special="field-guide"] .hol-margin-mark {
 /* ─────────────────────────────────────────────────────────────
    RIBBON TAB — decorative anchor badge hanging from a section
    ───────────────────────────────────────────────────────────── */
-body.is-special[data-special="field-guide"] .hol-ribbon-tab {
+body.is-special[data-special="field-guide"] .hol-ribbon-tab,
+body.is-special[data-special="countdown"] .hol-ribbon-tab {
   display: inline-block;
   background: linear-gradient(180deg,
     var(--hol-ruby) 0%,
@@ -157,7 +166,8 @@ body.is-special[data-special="field-guide"] .hol-ribbon-tab {
    ADDITIONAL PULL-QUOTE — bigger / more dramatic variant for use
    sparingly mid-pick to break up a wall of prose
    ───────────────────────────────────────────────────────────── */
-body.is-special[data-special="field-guide"] .hol-pull--big {
+body.is-special[data-special="field-guide"] .hol-pull--big,
+body.is-special[data-special="countdown"] .hol-pull--big {
   font-family: var(--hol-t-display, "Cormorant Garamond", serif);
   font-style: italic;
   font-weight: 600;
@@ -174,7 +184,9 @@ body.is-special[data-special="field-guide"] .hol-pull--big {
 }
 
 body.is-special[data-special="field-guide"] .hol-pull--big::before,
-body.is-special[data-special="field-guide"] .hol-pull--big::after {
+body.is-special[data-special="field-guide"] .hol-pull--big::after,
+body.is-special[data-special="countdown"] .hol-pull--big::before,
+body.is-special[data-special="countdown"] .hol-pull--big::after {
   position: absolute;
   font-family: var(--hol-t-display, "Cormorant Garamond", serif);
   font-style: italic;
@@ -184,13 +196,15 @@ body.is-special[data-special="field-guide"] .hol-pull--big::after {
   opacity: 0.75;
 }
 
-body.is-special[data-special="field-guide"] .hol-pull--big::before {
+body.is-special[data-special="field-guide"] .hol-pull--big::before,
+body.is-special[data-special="countdown"] .hol-pull--big::before {
   content: "\201C";
   top: -0.2rem;
   left: 0.5rem;
 }
 
-body.is-special[data-special="field-guide"] .hol-pull--big::after {
+body.is-special[data-special="field-guide"] .hol-pull--big::after,
+body.is-special[data-special="countdown"] .hol-pull--big::after {
   content: "\201D";
   bottom: -0.8rem;
   right: 0.5rem;
@@ -212,7 +226,8 @@ body.is-special[data-special="field-guide"] .hol-pull--big::after {
   color: var(--hol-burnt);
 }
 
-body.is-special[data-special="field-guide"] .hol-pull--big__cite {
+body.is-special[data-special="field-guide"] .hol-pull--big__cite,
+body.is-special[data-special="countdown"] .hol-pull--big__cite {
   display: block;
   margin-top: 0.75rem;
   font-family: var(--hol-t-mono, "JetBrains Mono", monospace);

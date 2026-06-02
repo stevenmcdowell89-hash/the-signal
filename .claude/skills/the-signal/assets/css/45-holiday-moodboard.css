@@ -1,0 +1,95 @@
+/* ============================================================
+   TIER 45 — HOLIDAY MOOD BOARD (v8.33)
+   A captions-only multi-image gallery for the Countdown "Mood Board"
+   chapter (and Field Guide atmosphere spreads). Two looks:
+     .hol-moodboard--masonry   — clean multi-column magazine grid (default)
+     .hol-moodboard--scrapbook — tilted, washi-taped photo wall
+   Dual-scoped (countdown + field-guide); Half II adopts the savannah
+   palette automatically via .hol-half--two / [data-venue="beekse-bergen"].
+   ============================================================ */
+
+body.is-special[data-special="field-guide"] .hol-moodboard,
+body.is-special[data-special="countdown"] .hol-moodboard {
+  --mb-frame: var(--hol-cream);
+  --mb-edge: color-mix(in srgb, var(--hol-ink-deep) 18%, transparent);
+  --mb-ink: var(--hol-ink-deep);
+  margin: 2rem 0 2.5rem;
+  column-count: 3;
+  column-gap: 1rem;
+}
+body.is-special[data-special="field-guide"] .hol-half--two .hol-moodboard,
+body.is-special[data-special="countdown"] .hol-half--two .hol-moodboard,
+[data-venue="beekse-bergen"] .hol-moodboard {
+  --mb-frame: var(--hol-bone);
+  --mb-edge: color-mix(in srgb, var(--hol-savannah-ink) 20%, transparent);
+  --mb-ink: var(--hol-savannah-ink);
+}
+
+body.is-special[data-special="field-guide"] .hol-moodboard__item,
+body.is-special[data-special="countdown"] .hol-moodboard__item {
+  break-inside: avoid;
+  margin: 0 0 1rem;
+  padding: 0.5rem 0.5rem 0.65rem;
+  background: var(--mb-frame);
+  border: 1px solid var(--mb-edge);
+  box-shadow: 0 8px 18px -10px rgba(0, 0, 0, 0.45);
+  position: relative;
+}
+body.is-special[data-special="field-guide"] .hol-moodboard__item img,
+body.is-special[data-special="countdown"] .hol-moodboard__item img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 2px;
+}
+body.is-special[data-special="field-guide"] .hol-moodboard__caption,
+body.is-special[data-special="countdown"] .hol-moodboard__caption {
+  display: block;
+  margin-top: 0.4rem;
+  font-family: var(--hol-t-hand, "Caveat", cursive);
+  font-size: 1.05rem;
+  line-height: 1.2;
+  color: var(--mb-ink);
+}
+body.is-special[data-special="field-guide"] .hol-moodboard__caption span,
+body.is-special[data-special="countdown"] .hol-moodboard__caption span {
+  display: block;
+  font-family: var(--hol-t-mono, "Space Mono", monospace);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  opacity: 0.6;
+}
+
+/* Scrapbook variant — tilt + washi tape */
+body.is-special[data-special="field-guide"] .hol-moodboard--scrapbook .hol-moodboard__item:nth-child(3n+1),
+body.is-special[data-special="countdown"] .hol-moodboard--scrapbook .hol-moodboard__item:nth-child(3n+1) { rotate: -2.2deg; }
+body.is-special[data-special="field-guide"] .hol-moodboard--scrapbook .hol-moodboard__item:nth-child(3n+2),
+body.is-special[data-special="countdown"] .hol-moodboard--scrapbook .hol-moodboard__item:nth-child(3n+2) { rotate: 1.6deg; }
+body.is-special[data-special="field-guide"] .hol-moodboard--scrapbook .hol-moodboard__item:nth-child(3n),
+body.is-special[data-special="countdown"] .hol-moodboard--scrapbook .hol-moodboard__item:nth-child(3n) { rotate: -0.8deg; }
+body.is-special[data-special="field-guide"] .hol-moodboard--scrapbook .hol-moodboard__item::before,
+body.is-special[data-special="countdown"] .hol-moodboard--scrapbook .hol-moodboard__item::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 64px;
+  height: 22px;
+  transform: translateX(-50%) rotate(-3deg);
+  background: color-mix(in srgb, var(--hol-mustard) 55%, transparent);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 820px) {
+  body.is-special[data-special="field-guide"] .hol-moodboard,
+  body.is-special[data-special="countdown"] .hol-moodboard { column-count: 2; }
+}
+@media (max-width: 480px) {
+  body.is-special[data-special="field-guide"] .hol-moodboard,
+  body.is-special[data-special="countdown"] .hol-moodboard { column-count: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.is-special[data-special="field-guide"] .hol-moodboard--scrapbook .hol-moodboard__item,
+  body.is-special[data-special="countdown"] .hol-moodboard--scrapbook .hol-moodboard__item { rotate: none; }
+}
