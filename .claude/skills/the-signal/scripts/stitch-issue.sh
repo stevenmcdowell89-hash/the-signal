@@ -721,6 +721,11 @@ if '<style>' not in final:
     checks.append("FAIL: No <style> tag in output — CSS not injected")
 if '<script>' not in final:
     checks.append("FAIL: No <script> tag in output — JS not injected")
+# Back link ("Return to The Signal" pill) must have landed. The injection step
+# above is the only thing that adds it; verifying it here turns a silent miss
+# into a hard stitch failure (the gap that shipped 3 issues without the button).
+if '<!-- the-signal:back -->' not in final or 'signal-back-to-archive' not in final:
+    checks.append("FAIL: 'Return to The Signal' back link missing from output — injection did not land")
 
 if checks:
     for c in checks:
