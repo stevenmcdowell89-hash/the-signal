@@ -1,5 +1,29 @@
 # The Signal — Changelog
 
+8.33.0 — Enforced the "Return to The Signal" back-link button. The fixed top-left
+  pill that returns the reader to the archive index was added to the stitch pipeline
+  in v8.22.15 (injected after `<body>`), but its presence was never *verified* — not
+  by the stitcher's own post-write checks, not by the `validate-issue.py` gate. So any
+  issue assembled through a path that skipped or bypassed that single injection step
+  shipped without the button, and nothing caught it. Three issues had silently lost it
+  (`signal_next_2026-05-31`, `signal_weekly_2026-06-01`, `signal_weekly_2026-06-07`).
+  No new gate script — the existing validator and stitcher were extended (per the
+  no-accretion meta-rule).
+
+  - `scripts/validate-issue.py` — new universal `check_back_link()` gate (runs for
+    every format, alongside `check_structure`). Hard-fails if the `<!-- the-signal:back -->`
+    marker is absent, if there's no `.signal-back-to-archive` anchor in the DOM, or if
+    that anchor's `href` isn't `../` (the archive index). Asserts both marker and anchor
+    so a half-present block also fails. The button's presence is now a hard ship
+    requirement independent of how the HTML was assembled.
+  - `scripts/stitch-issue.sh` — the post-write verification block now asserts the back
+    link landed (marker + `signal-back-to-archive` anchor), turning a silent injection
+    miss into a hard stitch failure.
+  - `references/compliance-checklist.md` — documented the back link in the mechanized
+    coverage list and added a Gate 2 → Technical item pointing at the `back-link` gate.
+  - **Retrofit:** injected the back link into the three issues that had shipped without
+    it. All 24 archived issues now carry it exactly once, placed right after `<body>`.
+
 8.32.0 — Visual fixes surfaced by a Starter-Kit test run (TV for a 10-year-old who'd
   finished all Dragon Ball and all Star Wars). CSS + visual-contract only; no gate, no
   editorial/narrative-rule changes (those were considered and deliberately left out —

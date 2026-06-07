@@ -9,7 +9,7 @@ Two gates. Gate 1 is a mechanical text scan — run it BEFORE reading Gate 2. If
   - `scripts/validate-chapter-plan.py` — Phase 4 plan validity.
   - `scripts/stitch-issue.sh` — Phase 6 holiday-activation rewrite + banned-vocabulary scan (`sp-*` tokens on holiday formats) + positive `.hol-half` presence.
   - `scripts/check-release-dates.sh` — Phase 7.5 date/release-fact surface.
-  - `scripts/validate-issue.py` — Phase 7.6 structural well-formedness, banned literal placeholders in DOM, holiday-identity body activation (real `<body>` after `</head>`, not example in comment), required holiday components (`.hol-masthead` / `.hol-cover` / `.hol-half`), multi-venue body flag + two distinct `data-venue` values, and image-URL HEAD-checks.
+  - `scripts/validate-issue.py` — Phase 7.6 structural well-formedness, the **"Return to The Signal" back-link button** (marker + `.signal-back-to-archive` anchor → `../`, universal across every format), banned literal placeholders in DOM, holiday-identity body activation (real `<body>` after `</head>`, not example in comment), required holiday components (`.hol-masthead` / `.hol-cover` / `.hol-half`), multi-venue body flag + two distinct `data-venue` values, and image-URL HEAD-checks.
 - **Manual** (still requires a reading pass — no script can judge prose):
   - **1A Reader-profile leaks** below.
   - **1B Fabrication** of facts, dates, quotes, attribution (date register is partially mechanized via `check-release-dates.sh`; the agent still walks the surface).
@@ -410,6 +410,7 @@ Only proceed here after Gate 1 passes clean.
 - [ ] **League tables MUST use the `.league-table` component class.** Never use inline `style=""` on table cells, never invent ad-hoc table styling, never use a generic `<table>` for league tables. The component class handles backgrounds, text colour, row striping, and qualifying/relegation tinting via the existing CSS in `09-section-touchline.css`. Inline white text on cream background = invisible table = visible failure. If a row needs special treatment (highlighted team, qualifying band, relegation band), use the existing modifier classes (`.is-highlighted`, `.qual-cl`, `.qual-el`, `.relegation`) — do not write inline styles. After generation, search the output for `<table` and verify every match either uses `.league-table` or has a documented reason not to.
 - [ ] Navigator cards anchor-link to sections with matching `id` attributes
 - [ ] Progress bar and back-to-top button functional
+- [ ] **"Return to The Signal" back link present (MECHANIZED).** The fixed top-left pill that returns the reader to the archive index must appear on every issue, every format. Satisfied by a PASS on `validate-issue.py` → `back-link` (asserts the `<!-- the-signal:back -->` marker + a `.signal-back-to-archive` anchor pointing at `../`). It's injected automatically by `scripts/stitch-issue.sh` after `<body>`; if the gate fails, re-run the stitcher (idempotent) or inject `assets/template-parts/back-link.html`. Don't hand-check — read the gate's exit code.
 - [ ] No rendering artefacts: no stray numbers, no garbled sections, no broken layouts
 
 ---

@@ -195,6 +195,63 @@ def check_structure(html: str, report: Report) -> None:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Check: back-to-archive link ("Return to The Signal" main-menu button)
+# ─────────────────────────────────────────────────────────────────────────────
+
+BACK_LINK_MARKER = "<!-- the-signal:back -->"
+BACK_LINK_ANCHOR_RE = re.compile(
+    r'<a\b[^>]*class\s*=\s*"[^"]*\bsignal-back-to-archive\b[^"]*"[^>]*>',
+    re.IGNORECASE,
+)
+
+
+def check_back_link(html: str, report: Report) -> None:
+    """Every issue must carry the fixed "Return to The Signal" pill — the
+    top-left button that takes the reader back to the archive index.
+
+    History: the button was added to the stitch pipeline in v8.22.15 (injected
+    after <body>), but nothing ever VERIFIED that injection landed — not the
+    stitcher's own post-write checks, not this gate. So any issue assembled
+    through a path that skipped or bypassed that single step shipped without the
+    button (signal_next_2026-05-31, signal_weekly_2026-06-01 and
+    signal_weekly_2026-06-07 all missed it). This gate closes the hole: the
+    button is now a hard ship requirement, independent of HOW the HTML was
+    assembled. To re-add it to a stitched issue, re-run scripts/stitch-issue.sh
+    (idempotent — keys off the marker below) or inject
+    assets/template-parts/back-link.html right after <body>.
+
+    Asserts BOTH the injection marker and the rendered anchor: a half-present
+    block (marker but no <a>, or an <a> with the wrong href) also fails, and a
+    missing marker would make the stitcher re-inject and duplicate the pill.
+    """
+    has_marker = BACK_LINK_MARKER in html
+    anchor = BACK_LINK_ANCHOR_RE.search(html)
+    href_ok = bool(anchor and re.search(r'href\s*=\s*"\.\./?"', anchor.group(0)))
+
+    problems = []
+    if not has_marker:
+        problems.append(f"injection marker '{BACK_LINK_MARKER}' absent")
+    if anchor is None:
+        problems.append("no <a class=\"signal-back-to-archive\"> anchor in DOM")
+    elif not href_ok:
+        problems.append(
+            "back-link anchor present but href is not \"../\" (the archive index) — "
+            f"tag is: {anchor.group(0)}"
+        )
+
+    if problems:
+        report.fail(
+            "back-link",
+            "the 'Return to The Signal' archive button is missing or malformed: "
+            + "; ".join(problems)
+            + ". Re-run scripts/stitch-issue.sh (idempotent) or inject "
+            "assets/template-parts/back-link.html right after <body>.",
+        )
+    else:
+        report.ok("back-link", "'Return to The Signal' archive button present (marker + anchor → \"../\")")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Check: holiday activation
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -799,6 +856,7 @@ def main(argv: list[str]) -> int:
 
     # Universal checks
     check_structure(html, report)
+    check_back_link(html, report)
     check_placeholders(html, report)
     check_css_class_sanity(html, report)
     check_toc_anchors(html, report)
