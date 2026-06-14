@@ -11468,6 +11468,16 @@ body.is-special[data-special="countdown"] .hol-half--one .hol-pull cite {
   color: color-mix(in srgb, var(--hol-cream) 70%, transparent);
 }
 
+/* Postcard fronts carry a photo (v8.34) — dark gradient overlay keeps the
+   greeting/place text legible; tiny credit sits bottom-right. */
+body.is-special[data-special="countdown"] .hol-postcard__front { position: relative; }
+body.is-special[data-special="countdown"] .hol-postcard__credit {
+  position: absolute; bottom: 6px; right: 9px; z-index: 3;
+  font-family: var(--hol-t-mono); font-size: 8px; letter-spacing: 0.03em;
+  color: rgba(252, 245, 237, 0.72); text-shadow: 0 1px 3px rgba(0,0,0,0.85);
+  max-width: 78%; text-align: right; line-height: 1.25; pointer-events: none;
+}
+
 </style>
 <!-- the-signal:pwa -->
 <link rel="manifest" href="/manifest.json">
@@ -11879,9 +11889,16 @@ body.is-special[data-special="countdown"] .hol-half--one .hol-pull cite {
 
     <p>Efteling opened in 1952 and is one of the oldest theme parks in the world, and it has never read like its American cousins. The register here is celestial rather than corporate: a moon with a face, a castle that seems to float, fairy tales walked rather than queued. First-timers tend to reach for the same two words. Lydia Storks of the Disney Food Blog landed on "weird and wonderful" and meant both as the highest praise.</p>
 
+  <figure class="hol-polaroid hol-polaroid--right">
+    <span class="hol-polaroid__tape" aria-hidden="true"></span>
+    <div class="hol-polaroid__photo" style="background-image:url('/assets/cached/9b96068a59a4.jpg');" role="img" aria-label="A crooked gingerbread cottage in Efteling's Sprookjesbos, in the Anton Pieck storybook style."></div>
+    <figcaption class="hol-polaroid__caption">Anton Pieck's hand all over it &mdash; a storybook cottage in the Sprookjesbos. <span class="hol-polaroid__credit">Photo: Richard Poppelaars / About Pixels</span></figcaption>
+  </figure>
+
     <div class="hol-postcard">
-      <div class="hol-postcard__front">
+      <div class="hol-postcard__front" style="background-image: linear-gradient(rgba(13,19,48,0.42), rgba(13,19,48,0.82)), url('/assets/cached/b923244ee8d4.jpg'); background-size:cover; background-position:center;">
         <div class="hol-postcard__place">Efteling · Kaatsheuvel</div>
+        <span class="hol-postcard__credit">Photo: meteorry / Flickr</span>
       </div>
       <div class="hol-postcard__back">
         <p class="hol-postcard__greeting">"As soon as we stepped through the gates we knew we were set to experience a day like no other."</p>
@@ -11892,8 +11909,9 @@ body.is-special[data-special="countdown"] .hol-half--one .hol-pull cite {
     <p>What follows in this half is the case for the overnight, the rides worth the queue and the early access, the living world of the Sprookjesbos, and the Wonder Hotel that keeps you inside the gates. Sixteen sleeps out, the floating castle is the first place this countdown lands.</p>
 
     <div class="hol-postcard">
-      <div class="hol-postcard__front">
+      <div class="hol-postcard__front" style="background-image: linear-gradient(rgba(13,19,48,0.42), rgba(13,19,48,0.82)), url('/assets/cached/f5b9f67d2ee7.jpg'); background-size:cover; background-position:center;">
         <div class="hol-postcard__place">Efteling · The Old Park</div>
+        <span class="hol-postcard__credit">Photo: meteorry / Flickr</span>
       </div>
       <div class="hol-postcard__back">
         <p class="hol-postcard__greeting">"The Efteling still breathes that same sense of beautiful, whimsical design as it did when I was little."</p>
@@ -11968,10 +11986,11 @@ body.is-special[data-special="countdown"] .hol-half--one .hol-pull cite {
   <p>The overnight also reshapes the mornings. Wonder Hotel guests get a <strong>half-hour head start</strong> into the park before the public each day, so two nights means two unhurried openings — Symbolica or Baron 1898 walked straight onto while the turnstiles outside are still filling. The evenings belong to guests too: when the day crowds drain out, the Sprookjesbos goes quiet and the lit storybook scenes hold the light. A single day spends its dusk in traffic; an overnight spends it inside the gates.</p>
 
   <div class="hol-postcard">
-    <div class="hol-postcard__front">
-      <div class="hol-postcard__greeting">Greetings from</div>
+    <div class="hol-postcard__front" style="background-image: linear-gradient(rgba(13,19,48,0.42), rgba(13,19,48,0.82)), url('/assets/cached/c546ee7ff34c.jpg'); background-size:cover; background-position:center;">
+        <div class="hol-postcard__greeting">Greetings from</div>
       <div class="hol-postcard__place">EFTELING</div>
-    </div>
+        <span class="hol-postcard__credit">Photo: meteorry / Flickr</span>
+      </div>
     <div class="hol-postcard__back">
       <p>"As soon as we stepped through the gates we knew we were set to experience a day like no other."</p>
       <p style="text-align:right;">— Claire, The Ladybirds' Adventures</p>
@@ -11981,10 +12000,11 @@ body.is-special[data-special="countdown"] .hol-half--one .hol-pull cite {
   <p>None of this needs a schedule. The point of going back with more time is precisely that there is no rush to make: a second morning to revisit a favourite, a late hour to wander the lit forest, and a fountain show that no longer has to be missed for the drive home.</p>
 
   <div class="hol-postcard hol-postcard--right">
-    <div class="hol-postcard__front">
-      <div class="hol-postcard__greeting">Postmarked</div>
+    <div class="hol-postcard__front" style="background-image: linear-gradient(rgba(13,19,48,0.42), rgba(13,19,48,0.82)), url('/assets/cached/a801aae98a61.jpg'); background-size:cover; background-position:center;">
+        <div class="hol-postcard__greeting">Postmarked</div>
       <div class="hol-postcard__place">DROOMVLUCHT</div>
-    </div>
+        <span class="hol-postcard__credit">Photo: meteorry / Flickr</span>
+      </div>
     <div class="hol-postcard__back">
       <p>"It was a delightful 'flying' dark ride through a fairy world, and we found it to be magical."</p>
       <p style="text-align:right;">— Lydia Storks, Disney Food Blog</p>
@@ -12066,6 +12086,7 @@ body.is-special[data-special="countdown"] .hol-half--one .hol-pull cite {
     </div>
 
     <div class="hol-wonder">
+      <div class="hol-wonder__photo" style="background-image:url('/assets/cached/cb74db5b90c7.jpg');" role="img" aria-label="The Gothic exterior of Danse Macabre, the motion-stage dark ride built on the former Spookslot site."></div>
       <div class="hol-wonder__card">
         <div class="hol-wonder__head">
           <span class="hol-wonder__num">05</span>
@@ -12080,6 +12101,7 @@ body.is-special[data-special="countdown"] .hol-half--one .hol-pull cite {
     </div>
 
     <div class="hol-wonder hol-wonder--reverse">
+      <div class="hol-wonder__photo" style="background-image:url('/assets/cached/3b3b8ec0f67d.jpg');" role="img" aria-label="Efteling's Fata Morgana, the Arabian palace boat dark ride, lit over the water at dusk."></div>
       <div class="hol-wonder__card">
         <div class="hol-wonder__head">
           <span class="hol-wonder__num">06</span>
@@ -12094,6 +12116,7 @@ body.is-special[data-special="countdown"] .hol-half--one .hol-pull cite {
     </div>
 
     <div class="hol-wonder">
+      <div class="hol-wonder__photo" style="background-image:url('/assets/cached/52d07fb4e4c4.jpg');" role="img" aria-label="The fairy-tale castle facade of Droomvlucht, Efteling's suspended dark ride, lit at night."></div>
       <div class="hol-wonder__card">
         <div class="hol-wonder__head">
           <span class="hol-wonder__num">07</span>
@@ -12209,9 +12232,21 @@ body.is-special[data-special="countdown"] .hol-half--one .hol-pull cite {
 
   <p>What keeps it from feeling like a museum is that the world talks back. Holle Bolle Gijs sits where the paths meet — a round, ever-hungry figure who happens to be a working litter bin. Drop a wrapper in and a voice booms up from inside: "Papier hier!" — paper here, more please. Children spend whole afternoons feeding him, and that is the point. The bins are not bins disguised as a character; they are a character who is genuinely glad of your rubbish. The estate is dense with these small living encounters, each one a tiny piece of the same fiction, none of them a queue.</p>
 
+  <figure class="hol-polaroid">
+    <span class="hol-polaroid__tape" aria-hidden="true"></span>
+    <div class="hol-polaroid__photo" style="background-image:url('/assets/cached/4ce934f4d0b2.jpg');" role="img" aria-label="Holle Bolle Gijs, Efteling's round open-mouthed paper-eating character, set in a stone alcove."></div>
+    <figcaption class="hol-polaroid__caption">Holle Bolle Gijs &mdash; &ldquo;Papier hier!&rdquo; The litter-bin that thanks you for your rubbish. <span class="hol-polaroid__credit">Photo: Simon P / Flickr</span></figcaption>
+  </figure>
+
   <div class="hol-fleuron"><span class="hol-fleuron__glyph">&#10086;</span></div>
 
   <p>Threading the whole thing together is Pardoes, the park's wizard-jester, a purple sprite who turns up on signage, in shows and in the lore as a kind of master of ceremonies for the magic. He belongs to Efteling's wider invented mythology, the Fabula universe, in which the rides are not standalone thrills but chapters of one long story — the dreamflight, the flying Dutchman, the dragon-slaying Joris — each set somewhere on the same map. You do not need to know any of it to enjoy a day here. But the longer you stay, and the more of the park you read, the more it resolves into a single coherent place rather than a collection of machines.</p>
+
+  <figure class="hol-polaroid hol-polaroid--right">
+    <span class="hol-polaroid__tape" aria-hidden="true"></span>
+    <div class="hol-polaroid__photo" style="background-image:url('/assets/cached/490ac4d10fb0.jpg');" role="img" aria-label="Pardoes, Efteling's purple wizard-jester mascot, posing with young visitors."></div>
+    <figcaption class="hol-polaroid__caption">Pardoes, the wizard-jester who presides over the park's Fabula mythology. <span class="hol-polaroid__credit">Photo via Flickr</span></figcaption>
+  </figure>
 
   <p>That is the difference a return trip exposes. A single day buys the headline rides. A second day, with the evening still ahead, lets the world settle into focus — the lit cottages, the muttering animatronics, the hungry bin, the sense that you have walked into something that was complete before you got there and will carry on long after you leave.</p>
 
@@ -12234,6 +12269,12 @@ body.is-special[data-special="countdown"] .hol-half--one .hol-pull cite {
   </div>
 
   <p>Each evening the lobby gathers for DroomStoom, a "dream steam" story told under the hotel's central tower as the day winds down. It is the cue that the theming does not stop at the park gates; here it follows you to the pillow. Staying inside the estate means the fairytale is the building, not just the day out.</p>
+
+  <figure class="hol-polaroid hol-polaroid--right">
+    <span class="hol-polaroid__tape" aria-hidden="true"></span>
+    <div class="hol-polaroid__photo" style="background-image:url('/assets/cached/69f5f4c087e9.jpg');" role="img" aria-label="The renovated Wonder Hotel lobby: navy reception desks, wood panelling and a coffered ceiling."></div>
+    <figcaption class="hol-polaroid__caption">The renovated Wonder Hotel lobby, where DroomStoom is told each evening under the central tower. <span class="hol-polaroid__credit">Image: Efteling (press)</span></figcaption>
+  </figure>
 
   <h3>Rooms, and a category kept secret</h3>
 
@@ -12342,8 +12383,9 @@ body.is-special[data-special="countdown"] .hol-half--one .hol-pull cite {
     <p>The park opened on 1 June 1968 as the drive-through Lion Park Beekse Bergen and took its present name in 1974. It is now the largest wildlife park in the Benelux, and the register could not be further from a theme park's. The pace is slower, the horizons longer, the animals close enough to set the clock by. Chloe Gallagher of The Travel Mum put the contrast plainly.</p>
 
     <div class="hol-postcard">
-      <div class="hol-postcard__front">
+      <div class="hol-postcard__front" style="background-image: linear-gradient(rgba(13,19,48,0.42), rgba(13,19,48,0.82)), url('/assets/cached/4368e4885957.jpg'); background-size:cover; background-position:center;">
         <div class="hol-postcard__place">Beekse Bergen · Hilvarenbeek</div>
+        <span class="hol-postcard__credit">Photo: Beekse Bergen</span>
       </div>
       <div class="hol-postcard__back">
         <p class="hol-postcard__greeting">"Unlike busy, overstimulating theme parks, Beekse Bergen feels calm and expansive."</p>
@@ -12354,8 +12396,9 @@ body.is-special[data-special="countdown"] .hol-half--one .hol-pull cite {
     <p>What follows in this half is the whole estate, all of it car-free: the safari walked and sailed, the conservation stories behind the names on the savannah, and the Safari Resort that puts the grass plain outside the window. Sixteen sleeps out, the wild is where this countdown ends.</p>
 
     <div class="hol-postcard">
-      <div class="hol-postcard__front">
+      <div class="hol-postcard__front" style="background-image: linear-gradient(rgba(13,19,48,0.42), rgba(13,19,48,0.82)), url('/assets/cached/8619f4f84325.jpg'); background-size:cover; background-position:center;">
         <div class="hol-postcard__place">Beekse Bergen · The Lodges</div>
+        <span class="hol-postcard__credit">Photo: Safari Resort Beekse Bergen</span>
       </div>
       <div class="hol-postcard__back">
         <p class="hol-postcard__greeting">"A safari view really is the most enchanting thing about the resort."</p>
@@ -12437,9 +12480,10 @@ body.is-special[data-special="countdown"] .hol-half--one .hol-pull cite {
   <p>Start with the safari, because it does not need a car to work. The walking safari runs roughly 3.5 km past lions, elephants, giraffes and pelicans, moats standing in for fences wherever the sightlines allow. The boat safari sails the two ranger-narrated vessels, <em>Livingstone</em> and <em>Stanley</em>, between the restaurants on a thirty-minute loop past the rhino plain. The bus safari adds the guided, hands-on version — furs and horns passed down the aisle. Walked and sailed, the whole park is reachable on foot and on water, no key required.</p>
 
   <div class="hol-postcard">
-    <div class="hol-postcard__front">
-      <div class="hol-postcard__place">Beekse Bergen · The Savannah</div>
-    </div>
+    <div class="hol-postcard__front" style="background-image: linear-gradient(rgba(13,19,48,0.42), rgba(13,19,48,0.82)), url('/assets/cached/ff81002a7ea6.jpg'); background-size:cover; background-position:center;">
+        <div class="hol-postcard__place">Beekse Bergen · The Savannah</div>
+        <span class="hol-postcard__credit">Photo: Beekse Bergen</span>
+      </div>
     <div class="hol-postcard__back">
       <p class="hol-postcard__greeting">"We got so close to the giraffes and zebras it was amazing... it was hard to tear ourselves away."</p>
       <p>&mdash; Jane, on the walking safari</p>
@@ -12447,6 +12491,12 @@ body.is-special[data-special="countdown"] .hol-half--one .hol-pull cite {
   </div>
 
   <p>Then there is the half that has nothing to do with animals at all. Speelland sits across the lake — a family adventure and water-play park aimed at children up to around twelve, all slides, splash decks and climbing. Its newest piece, Speelland Indoor, opened in December 2024: a 2,000 m² tropical indoor play world with room for up to 600, and the wet-weather card the estate never used to hold. A rained-off afternoon now has somewhere warm to go.</p>
+
+  <figure class="hol-polaroid hol-polaroid--right">
+    <span class="hol-polaroid__tape" aria-hidden="true"></span>
+    <div class="hol-polaroid__photo" style="background-image:url('/assets/cached/05bb7439ef5d.jpg');" role="img" aria-label="A render of Speelland Indoor, the tropical indoor play world at Beekse Bergen."></div>
+    <figcaption class="hol-polaroid__caption">Speelland Indoor &mdash; the 2,000&nbsp;m&sup2; tropical play world that opened in December 2024. <span class="hol-polaroid__credit">Render: Safaripark Beekse Bergen</span></figcaption>
+  </figure>
 
   <figure class="hol-polaroid hol-polaroid--right" style="--rot:2.5deg;">
     <div class="hol-polaroid__tape"></div>
@@ -12459,9 +12509,10 @@ body.is-special[data-special="countdown"] .hol-half--one .hol-pull cite {
   <p class="hol-pull hol-pull--big">"Unlike busy, overstimulating theme parks, Beekse Bergen feels calm and expansive." <span class="hol-pull__cite">&mdash; <a href="https://thetravelmum.com/beekse-bergen-an-honest-family-review/">Chloe Gallagher, The Travel Mum</a></span></p>
 
   <div class="hol-postcard">
-    <div class="hol-postcard__front">
-      <div class="hol-postcard__place">Beekse Bergen · The Buses</div>
-    </div>
+    <div class="hol-postcard__front" style="background-image: linear-gradient(rgba(13,19,48,0.42), rgba(13,19,48,0.82)), url('/assets/cached/64d86a4b4eb0.jpg'); background-size:cover; background-position:center;">
+        <div class="hol-postcard__place">Beekse Bergen · The Buses</div>
+        <span class="hol-postcard__credit">Photo: Beekse Bergen</span>
+      </div>
     <div class="hol-postcard__back">
       <p class="hol-postcard__greeting">"The safari buses are an experience in itself. Painted in 'safari' colors only looking at them gives you a sense of adventure."</p>
       <p>&mdash; Lisa, FlipFlop Globetrotters</p>
@@ -12566,6 +12617,7 @@ body.is-special[data-special="countdown"] .hol-half--one .hol-pull cite {
     </div>
 
     <div class="hol-wonder hol-wonder--reverse">
+      <div class="hol-wonder__photo" style="background-image:url('/assets/cached/c07ada0b7059.jpg');" role="img" aria-label="A male lion at close range at Safaripark Beekse Bergen."></div>
       <div class="hol-wonder__card">
         <div class="hol-wonder__head">
           <span class="hol-wonder__num">06</span>
@@ -12581,10 +12633,11 @@ body.is-special[data-special="countdown"] .hol-half--one .hol-pull cite {
   </div>
 
   <aside class="hol-postcard">
-    <div class="hol-postcard__front">
-      <p class="hol-postcard__greeting">&ldquo;The safari buses are an experience in themselves. Painted in safari colours, just looking at them gives you a sense of adventure.&rdquo;</p>
+    <div class="hol-postcard__front" style="background-image: linear-gradient(rgba(13,19,48,0.42), rgba(13,19,48,0.82)), url('/assets/cached/0d3a6715f193.jpg'); background-size:cover; background-position:center;">
+        <p class="hol-postcard__greeting">&ldquo;The safari buses are an experience in themselves. Painted in safari colours, just looking at them gives you a sense of adventure.&rdquo;</p>
       <p class="hol-postcard__place">&mdash; Lisa, FlipFlop Globetrotters</p>
-    </div>
+        <span class="hol-postcard__credit">Photo: Beekse Bergen</span>
+      </div>
   </aside>
 </section>
 
@@ -12619,7 +12672,19 @@ body.is-special[data-special="countdown"] .hol-half--one .hol-pull cite {
 
   <p>The rhino plain tells the same story in a heavier animal. A Southern white rhino calf — a male named Ravy, forty kilos at birth — arrived to a first-time mother, Sofie. White rhinos are not a tidy success anywhere; a calf raised well by an inexperienced mother is its own small triumph, and the park holds the studbook responsibility for the species across European collections. Ravy is the kind of birth that justifies the moats and the patience.</p>
 
+  <figure class="hol-polaroid">
+    <span class="hol-polaroid__tape" aria-hidden="true"></span>
+    <div class="hol-polaroid__photo" style="background-image:url('/assets/cached/2cfd483b001c.jpg');" role="img" aria-label="A Southern white rhinoceros on the savannah at Safaripark Beekse Bergen."></div>
+    <figcaption class="hol-polaroid__caption">A Southern white rhino on the plain &mdash; Beekse Bergen holds the European studbook for the species. <span class="hol-polaroid__credit">Photo: Safaripark Beekse Bergen</span></figcaption>
+  </figure>
+
   <p>The longest thread runs through the African painted dogs — Lycaon pictus, down to a few thousand across the wild. In January 2022 a litter of pups was born to mother Imani and father Julius. Imani was no newcomer to the place: she was herself born here in 2013, in a litter of twelve, to a grandmother named Tuli. Three generations of one of the planet's most endangered carnivores, raised on the same patch of Brabant. Her keeper, Mariska Vermij-Van Dijk, kept the report plain.</p>
+
+  <figure class="hol-polaroid hol-polaroid--right">
+    <span class="hol-polaroid__tape" aria-hidden="true"></span>
+    <div class="hol-polaroid__photo" style="background-image:url('/assets/cached/0770a6ad16e7.jpg');" role="img" aria-label="An African painted dog, Lycaon pictus, with a mottled coat and large rounded ears."></div>
+    <figcaption class="hol-polaroid__caption">An African painted dog &mdash; <i>Lycaon pictus</i>, the species behind Imani's line (illustrative). <span class="hol-polaroid__credit">Photo: Derek Keats / Flickr, CC&nbsp;BY</span></figcaption>
+  </figure>
 
   <blockquote class="hol-pull">
     <p>"Both the puppies and mother Imani are doing well. Imani is an experienced mother and takes very good care of her offspring."</p>
@@ -12627,6 +12692,12 @@ body.is-special[data-special="countdown"] .hol-half--one .hol-pull cite {
   </blockquote>
 
   <p>The giraffes keep the ledger ticking over too — three Nubian calves born in January 2025, a species the wider programme is quietly trying to claw back. None of this is staged for the boat. The cheetahs the rangers point out as you sail past the rhino plain are the same animals the studbooks track by name and number, and the cubs of February 2024 are the reason the pointing still has something to point at.</p>
+
+  <figure class="hol-polaroid">
+    <span class="hol-polaroid__tape" aria-hidden="true"></span>
+    <div class="hol-polaroid__photo" style="background-image:url('/assets/cached/4c88a06e8b34.jpg');" role="img" aria-label="A giraffe at Safaripark Beekse Bergen against a blue sky."></div>
+    <figcaption class="hol-polaroid__caption">A Beekse Bergen giraffe &mdash; the Nubian programme quietly adding calves to the herd. <span class="hol-polaroid__credit">Photo: John Riper / Flickr</span></figcaption>
+  </figure>
 
   <figure class="hol-polaroid hol-polaroid--right">
     <span class="hol-polaroid__tape" aria-hidden="true"></span>
@@ -12663,9 +12734,10 @@ body.is-special[data-special="countdown"] .hol-half--one .hol-pull cite {
     <p>The lodge range runs wider than that. There are safari tents and kid lodges, group lodges for a crowd, two treehouses tucked into the planting, and hotel rooms over in Hogon House for anyone who wants a serviced stay rather than self-catering. But it is the lodges with the plain at the foot of the garden that returning guests remember. Reviewers keep landing on the same point.</p>
 
     <div class="hol-postcard">
-      <div class="hol-postcard__front">
+      <div class="hol-postcard__front" style="background-image: linear-gradient(rgba(13,19,48,0.42), rgba(13,19,48,0.82)), url('/assets/cached/eb5aa3be3530.jpg'); background-size:cover; background-position:center;">
         <span class="hol-postcard__greeting">Greetings from</span>
         <span class="hol-postcard__place">THE SAVANNAH</span>
+        <span class="hol-postcard__credit">Photo: Beekse Bergen</span>
       </div>
       <div class="hol-postcard__back">
         <p>"A safari view really is the most enchanting thing about the resort." — The Bayliss family, Little Clogs Holidays</p>
@@ -12792,10 +12864,12 @@ body.is-special[data-special="countdown"] .hol-half--one .hol-pull cite {
     </div>
 
     <div class="hol-anchor" style="--rot:0.4deg;">
+      <div class="hol-anchor__photo" style="background-image:url('/assets/cached/56f2d27c4034.jpg');" role="img" aria-label="A family on a Safari Resort lodge terrace as giraffes pass on the savannah plain."></div>
       <span class="hol-anchor__badge">05</span>
       <h3 class="hol-anchor__title">Coffee on the terrace as the giraffes pass</h3>
       <p class="hol-anchor__dek">The last moment needs no ride and no photograph &mdash; only a Savanne Lodge and an early start. The whole point of sleeping over the savannah is the view from the terrace before the park has properly woken: the long-necked silhouettes drifting the fence line while the coffee is still hot, animals at calm, close range from your own door.</p>
       <p class="hol-anchor__note">five nights, one of them for the boat at sunset</p>
+      <p class="hol-anchor__meta">Photo: Safari Resort Beekse Bergen — the terrace view, giraffes on the plain.</p>
     </div>
 
     <blockquote class="hol-pull hol-pull--big">&ldquo;Imagine sipping your morning coffee while giraffes stroll by just metres away.&rdquo; <cite>&mdash; Chloe Gallagher, The Travel Mum</cite></blockquote>
@@ -12864,42 +12938,47 @@ body.is-special[data-special="countdown"] .hol-half--one .hol-pull cite {
 
       <div class="hol-postcard-chorus">
         <div class="hol-postcard" data-postcard>
-          <div class="hol-postcard__front">
-            <p class="hol-postcard__greeting">&ldquo;So weird and wonderful, and we had no criticisms whatsoever.&rdquo;</p>
+          <div class="hol-postcard__front" style="background-image: linear-gradient(rgba(13,19,48,0.42), rgba(13,19,48,0.82)), url('/assets/cached/685f559d3b77.jpg'); background-size:cover; background-position:center;">
+        <p class="hol-postcard__greeting">&ldquo;So weird and wonderful, and we had no criticisms whatsoever.&rdquo;</p>
             <p class="hol-postcard__place">Efteling</p>
-          </div>
+        <span class="hol-postcard__credit">Photo: meteorry / Flickr</span>
+      </div>
           <div class="hol-postcard__back">Lydia Storks, Disney Food Blog</div>
         </div>
 
         <div class="hol-postcard" data-postcard>
-          <div class="hol-postcard__front">
-            <p class="hol-postcard__greeting">&ldquo;Pure escapism, which is probably why I loved it.&rdquo;</p>
+          <div class="hol-postcard__front" style="background-image: linear-gradient(rgba(13,19,48,0.42), rgba(13,19,48,0.82)), url('/assets/cached/5bb03bcfee6e.jpg'); background-size:cover; background-position:center;">
+        <p class="hol-postcard__greeting">&ldquo;Pure escapism, which is probably why I loved it.&rdquo;</p>
             <p class="hol-postcard__place">Efteling</p>
-          </div>
+        <span class="hol-postcard__credit">Photo: meteorry / Flickr</span>
+      </div>
           <div class="hol-postcard__back">Jessica Ruth Gibson, The Travelista</div>
         </div>
 
         <div class="hol-postcard" data-postcard>
-          <div class="hol-postcard__front">
-            <p class="hol-postcard__greeting">&ldquo;Sipping your morning coffee while giraffes stroll by just metres away.&rdquo;</p>
+          <div class="hol-postcard__front" style="background-image: linear-gradient(rgba(13,19,48,0.42), rgba(13,19,48,0.82)), url('/assets/cached/5731d0d657db.jpg'); background-size:cover; background-position:center;">
+        <p class="hol-postcard__greeting">&ldquo;Sipping your morning coffee while giraffes stroll by just metres away.&rdquo;</p>
             <p class="hol-postcard__place">Beekse Bergen</p>
-          </div>
+        <span class="hol-postcard__credit">Photo: Beekse Bergen</span>
+      </div>
           <div class="hol-postcard__back">Chloe Gallagher, The Travel Mum</div>
         </div>
 
         <div class="hol-postcard" data-postcard>
-          <div class="hol-postcard__front">
-            <p class="hol-postcard__greeting">&ldquo;A cheetah drinking at the water&rsquo;s edge as we sailed past.&rdquo;</p>
+          <div class="hol-postcard__front" style="background-image: linear-gradient(rgba(13,19,48,0.42), rgba(13,19,48,0.82)), url('/assets/cached/ece106cce244.jpg'); background-size:cover; background-position:center;">
+        <p class="hol-postcard__greeting">&ldquo;A cheetah drinking at the water&rsquo;s edge as we sailed past.&rdquo;</p>
             <p class="hol-postcard__place">Beekse Bergen</p>
-          </div>
+        <span class="hol-postcard__credit">Photo: R. Kroenert / Flickr</span>
+      </div>
           <div class="hol-postcard__back">Natalie Smith, Frugal Mum</div>
         </div>
 
         <div class="hol-postcard" data-postcard>
-          <div class="hol-postcard__front">
-            <p class="hol-postcard__greeting">&ldquo;A safari view really is the most enchanting thing about the resort.&rdquo;</p>
+          <div class="hol-postcard__front" style="background-image: linear-gradient(rgba(13,19,48,0.42), rgba(13,19,48,0.82)), url('/assets/cached/64e79531e2eb.jpg'); background-size:cover; background-position:center;">
+        <p class="hol-postcard__greeting">&ldquo;A safari view really is the most enchanting thing about the resort.&rdquo;</p>
             <p class="hol-postcard__place">Beekse Bergen</p>
-          </div>
+        <span class="hol-postcard__credit">Photo: Safari Resort Beekse Bergen</span>
+      </div>
           <div class="hol-postcard__back">The Bayliss family, Little Clogs Holidays</div>
         </div>
       </div>
