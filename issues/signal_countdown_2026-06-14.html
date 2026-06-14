@@ -11373,6 +11373,101 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
   opacity: 0.7;
 }
 
+/* ============================================================
+   CONTRAST FIXES (v8.33) — components authored for the dark
+   .hol-half--one ground were reused on the cream editorial
+   ground (by-the-numbers, Five Moments / theme-flourish, the
+   subscribe card and the footer), leaving light text on light
+   paper; and two loose elements inside the dark Efteling half
+   kept ink colours, leaving dark text on dark. Recolour each to
+   its actual ground. Scoped + specificity-matched so the dark
+   originals (hero countdown, in-half anchors/pulls) are untouched.
+   ============================================================ */
+
+/* A · Anchors on the cream ground — ink title/dek, deep-rose accents */
+body.is-special[data-special="countdown"] .hol-by-the-numbers .hol-anchor__title,
+body.is-special[data-special="countdown"] .theme-flourish   .hol-anchor__title {
+  color: var(--hol-ink-deep);
+  text-shadow: none;
+}
+body.is-special[data-special="countdown"] .hol-by-the-numbers .hol-anchor__dek,
+body.is-special[data-special="countdown"] .theme-flourish   .hol-anchor__dek {
+  color: var(--hol-ink-deep);
+}
+body.is-special[data-special="countdown"] .hol-by-the-numbers .hol-anchor__meta,
+body.is-special[data-special="countdown"] .theme-flourish   .hol-anchor__meta {
+  color: var(--hol-rose-deep);
+  border-top-color: rgba(13, 19, 48, 0.25);
+}
+body.is-special[data-special="countdown"] .hol-by-the-numbers .hol-anchor__meta b,
+body.is-special[data-special="countdown"] .theme-flourish   .hol-anchor__meta b {
+  color: var(--hol-ink-deep);
+}
+body.is-special[data-special="countdown"] .hol-by-the-numbers .hol-anchor__note,
+body.is-special[data-special="countdown"] .theme-flourish   .hol-anchor__note {
+  color: var(--hol-rose-deep);
+  text-shadow: none;
+}
+
+/* B · "Five Moments" intro on the cream ground */
+body.is-special[data-special="countdown"] .theme-flourish .hol-wonders__intro h2 {
+  color: var(--hol-ink-deep);
+  text-shadow: 4px 4px 0 rgba(184, 137, 58, 0.30);
+}
+body.is-special[data-special="countdown"] .theme-flourish .hol-wonders__intro p {
+  color: var(--hol-rose-deep);
+}
+
+/* C · Closing countdown lives inside the cream subscribe card */
+body.is-special[data-special="countdown"] .hol-subscribe .hol-countdown__num {
+  color: var(--hol-ink-deep);
+}
+body.is-special[data-special="countdown"] .hol-subscribe .hol-countdown__unit,
+body.is-special[data-special="countdown"] .hol-subscribe .hol-countdown__target {
+  color: var(--hol-rose-deep);
+}
+body.is-special[data-special="countdown"] .hol-subscribe .hol-countdown {
+  border-color: var(--hol-brass);
+}
+body.is-special[data-special="countdown"] .hol-subscribe .hol-countdown__cell {
+  border-color: rgba(142, 58, 24, 0.35);
+}
+
+/* D · Footer row sits on the cream page ground */
+body.is-special[data-special="countdown"] .hol-footer-row {
+  border-top-color: rgba(13, 19, 48, 0.18);
+}
+body.is-special[data-special="countdown"] .hol-footer-row__brand {
+  color: var(--hol-ink-deep);
+}
+body.is-special[data-special="countdown"] .hol-footer-row__links {
+  color: rgba(13, 19, 48, 0.6);
+}
+body.is-special[data-special="countdown"] .hol-footer-row__tagline {
+  color: var(--hol-rose-deep);
+}
+body.is-special[data-special="countdown"] .hol-footer-row__brand .stop {
+  color: var(--hol-rose-deep);
+}
+
+/* E · Kicker-strip subtitle + cream-ground fleurons (brass failed on cream) */
+body.is-special[data-special="countdown"] .hol-kicker-strip__sub {
+  color: var(--hol-rose-deep);
+}
+body.is-special[data-special="countdown"] .hol-opening   .hol-fleuron,
+body.is-special[data-special="countdown"] .theme-flourish .hol-fleuron {
+  color: var(--hol-ruby);
+  opacity: 1;
+}
+
+/* F · Pull quotes inside the dark Efteling half were ink-on-ink */
+body.is-special[data-special="countdown"] .hol-half--one .hol-pull p {
+  color: var(--hol-cream);
+}
+body.is-special[data-special="countdown"] .hol-half--one .hol-pull cite {
+  color: color-mix(in srgb, var(--hol-cream) 70%, transparent);
+}
+
 </style>
 <!-- the-signal:pwa -->
 <link rel="manifest" href="/manifest.json">
@@ -11863,7 +11958,7 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
     <div class="hol-anchor__badge">Evening<br>park</div>
     <div class="hol-anchor__note">* stay for the lake *</div>
   </div>
-  <figcaption class="hol-polaroid__caption" style="display:block;margin:.4rem 0 1.6rem;">Danse Macabre key visual — the after-dark register a one-day visit barely reaches. Photo: Efteling press / official site.</figcaption>
+  <figcaption class="hol-polaroid__caption" style="display:block;margin:.4rem 0 1.6rem;color:var(--hol-cream);">Danse Macabre key visual — the after-dark register a one-day visit barely reaches. Photo: Efteling press / official site.</figcaption>
 
   <blockquote class="hol-pull hol-pull--brass">
     <p>The water and occasional blasts of fire set to music was an amazing way to finish our visit.</p>
