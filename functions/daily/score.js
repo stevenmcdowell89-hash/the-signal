@@ -10,6 +10,13 @@ import {
 
 const DISCUSSION = new Set(["hn", "bluesky", "reddit"]);
 
+// Register weights the ranking (A3): a consequential story outranks a take, which
+// outranks colour/gossip — so the enrichment tag the cards already show actually
+// moves the needle instead of being decoration. Un-enriched items (most of the
+// firehose) get a neutral default; only the shortlist carries a register.
+const REGISTER_WEIGHT = { consequential: 1.0, discovery: 0.95, take: 0.8, colour: 0.55 };
+const REGISTER_NEUTRAL = 0.85;
+
 const lc = (s) => (s || "").toLowerCase();
 
 function matchesAny(hay, patterns) {
@@ -32,11 +39,16 @@ export function scoreProfile(item, profile, extraMutes) {
     return { score: 0, entityFloor: false, muted: true, demote: false };
   }
 
-  // Named-entity floor (§4): bypasses ranking, never below the fold.
+  // Named-entity floor (§4): a bounded boost + a guaranteed-but-capped slot
+  // (applied in scoreBatch / render), NOT a ranking bypass. A matched entity also
+  // carries a `domain` that DOMINATES classification below, so a colliding topic
+  // keyword (e.g. "director" in film_tv) can't re-home a core item.
   let entityFloor = false;
+  let floorDomain = null;
   for (const e of profile.named_entity_floor || []) {
     if (matchesAny(title, e.patterns)) {
       entityFloor = true;
+      floorDomain = e.domain || null;
       break;
     }
   }
@@ -74,6 +86,10 @@ export function scoreProfile(item, profile, extraMutes) {
     bestDomain = ownDomain;
     best = ownScore;
   }
+  // A floor-entity match dominates the domain (B2): the entity's declared domain
+  // wins over keyword scoring, so "ex-Sassuolo director hints at Juventus role"
+  // can't land in film_tv on the back of "director".
+  if (floorDomain) bestDomain = floorDomain;
   item.domain = bestDomain;
 
   // Special handling: suppression + demotion (§7.6).
@@ -104,6 +120,7 @@ export async function scoreBatch(db, items, config, now) {
   const undatedPenaltyMs = (rc.undated_penalty_hours || 36) * 3.6e6;
   const floorFreshHours = rc.floor_fresh_hours || 36;
   const velKeep = rc.velocity_fresh_keep ?? 0.25;
+  const floorBoost = rc.floor_boost ?? 0.12; // bounded core lift (not a bypass)
 
   // Baselines only matter for sources whose raw score actually varies
   // (discussion sources: HN/Bluesky/Reddit). RSS has no popularity signal, so it
@@ -170,22 +187,21 @@ export async function scoreBatch(db, items, config, now) {
     if (pr.demote) base *= 0.4;
     const recencyLifted = Math.min(1, recency + 0.6 * velNorm * (1 - recency));
     it.recency_score = recencyLifted;
-    let conf = it.muted ? 0 : base * recencyLifted;
+    const regW = it.register ? (REGISTER_WEIGHT[it.register] ?? REGISTER_NEUTRAL) : REGISTER_NEUTRAL;
+    let conf = it.muted ? 0 : base * recencyLifted * regW;
     it.confidence = Math.max(0, Math.min(1, conf));
 
-    // 5) the fold (§3.7): above-fold = over the threshold (not a fixed count).
-    // The named-entity floor guarantees a core story above the fold — but only
-    // while it's actually fresh (or still moving fast). A stale core item (the
-    // 4-day-old Juventus rumour) no longer pins itself to the top; it competes
-    // on its decayed confidence and sinks like anything else.
+    // 5) the named-entity floor — a BOUNDED BOOST, not a bypass. A fresh (or still
+    //    moving) core item gets a capped lift so it can earn a place, but a strong
+    //    non-core item can still outrank a weak core one, and a stale core item
+    //    (the 4-day-old rumour) sinks. The guaranteed-but-capped core slot itself
+    //    is awarded in render. The fold is then a plain threshold.
     const isFresh = it.age_hours <= floorFreshHours;
     const movingFast = velNorm >= velKeep;
     if (it.entity_floor && !it.muted && (isFresh || movingFast)) {
-      it.above_fold = true;
-      it.confidence = Math.max(it.confidence, fold + 0.02);
-    } else {
-      it.above_fold = !it.muted && it.confidence >= fold;
+      it.confidence = Math.min(1, it.confidence + floorBoost);
     }
+    it.above_fold = !it.muted && it.confidence >= fold;
 
     // Log a story point only for surfaced catches + discussion items (movement
     // evidence for the weekly + future velocity) — not the whole firehose.

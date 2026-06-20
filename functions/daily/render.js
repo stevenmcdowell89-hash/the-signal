@@ -52,17 +52,21 @@ function publicItem(it) {
   };
 }
 
-// Lightweight "Today & Tonight" extraction: dated/imminent fixtures & releases
-// surfaced from the catches (kept simple in Phase 1 — pattern match on dated
-// language). Each links out (§5).
+// "Today & Tonight" — only items with an ACTUAL date/time signal: fixtures with a
+// kickoff/time, airings/releases dated today/tonight. A bare "v"/"vs" or a topic
+// tag is not enough (those swept in a Nike-v-Adidas feature, a season review and
+// a how-to-watch explainer). A feature/explainer is rejected even if it mentions
+// a day, so the strip stays events-only; everything else stays in the brief.
+const TT_DATED = /\b(tonight|today|this (?:evening|afternoon)|kick[- ]?off|\d{1,2}(?::\d{2})?\s?(?:am|pm)\b|\d{1,2}:\d{2}\b|(?:gmt|bst|cet|et|utc)\b|out now|releases? (?:today|tonight)|premier(?:es|ing) (?:today|tonight)|launch(?:es|ing) (?:today|tonight))\b/i;
+const TT_FEATURE = /\b(how to watch|where to watch|review|rank(?:ed|ing)|best |worst |season review|explain(?:ed|er)|preview|predict(?:ion|ed)?|opinion|why |everything you need)\b/i;
 function todayAndTonight(items, now) {
   const out = [];
-  const re = /(tonight|today|kick[- ]?off|vs\.?|v\b|fixtures?|premiere|out now|releases? today|launch(es)? today)/i;
   for (const it of items) {
     if (it.muted) continue;
-    if ((it.domain === "football" || it.domain === "film_tv" || it.domain === "gaming") && re.test(it.title)) {
-      out.push(publicItem(it));
-    }
+    if (!(it.domain === "football" || it.domain === "film_tv" || it.domain === "gaming")) continue;
+    const title = it.title || "";
+    if (!TT_DATED.test(title) || TT_FEATURE.test(title)) continue;
+    out.push(publicItem(it));
     if (out.length >= 6) break;
   }
   return out;
@@ -110,26 +114,68 @@ export function buildState(items, meta, now, config) {
   const aboveFold = live.filter((i) => i.above_fold);
   const belowFold = live.filter((i) => !i.above_fold);
 
-  // Top Catches: 3–5, ranked, cross-domain. Only genuinely fresh items are
-  // eligible (no 4-day-old item can lead). Order blends confidence with recency
-  // so a fresh strong story beats a slightly-stronger-but-older one. Cap at 2
-  // per domain AND dedupe by topic signature so the strip stays varied.
+  // Top Catches: up to 5, ranked, cross-domain — top-N by BLENDED score (the
+  // confidence already folds in relevance × register × recency), NOT a fixed
+  // threshold the floor leaps past. Only genuinely fresh items are eligible (no
+  // 4-day-old item can lead). Diversity caps keep one team/source/topic from
+  // owning the strip; the floor and world-news each get one guaranteed slot.
   const catchScore = (i) => (1 - blend) * (i.confidence || 0) + blend * (i.recency_score ?? 1);
-  const eligible = aboveFold.filter((i) => (i.age_hours == null || i.age_hours <= maxCatchHours));
-  const ranked = eligible.slice().sort((a, b) => catchScore(b) - catchScore(a));
+  const ranked = live
+    .filter((i) => (i.age_hours == null || i.age_hours <= maxCatchHours))
+    .sort((a, b) => catchScore(b) - catchScore(a));
+
+  const TOP_N = 5;
+  const NEWS = new Set(["world", "finance"]);
   const top = [];
-  const perTop = {};
+  const inTop = new Set();
+  const perDomain = {};
+  const perSource = {};
   const topToks = [];
-  for (const it of ranked) {
-    if (top.length >= 5) break;
-    if ((perTop[it.domain] || 0) >= 2) continue;
+  let floorCount = 0;
+  const tryAdd = (it) => {
+    if (top.length >= TOP_N || inTop.has(it.id)) return false;
+    if ((perDomain[it.domain] || 0) >= 2) return false;       // ≤2 per domain
+    if (it.source && (perSource[it.source] || 0) >= 1) return false; // ≤1 per source
+    if (it.entity_floor && floorCount >= 1) return false;     // ≤1 core slot
     const toks = topicTokens(it);
-    // Skip a same-domain headline that substantially overlaps one already in.
-    if (topToks.some((t) => t.domain === it.domain && tokenJaccard(t.set, toks) >= 0.6)) continue;
+    if (topToks.some((t) => t.domain === it.domain && tokenJaccard(t.set, toks) >= 0.6)) return false;
     top.push(it);
-    perTop[it.domain] = (perTop[it.domain] || 0) + 1;
+    inTop.add(it.id);
+    perDomain[it.domain] = (perDomain[it.domain] || 0) + 1;
+    if (it.source) perSource[it.source] = (perSource[it.source] || 0) + 1;
+    if (it.entity_floor) floorCount++;
     topToks.push({ domain: it.domain, set: toks });
-  }
+    return true;
+  };
+  for (const it of ranked) { if (top.length >= TOP_N) break; tryAdd(it); }
+
+  // Swap the weakest evictable slot for a guaranteed pick (used for the one core
+  // slot and the one news slot, so neither the firehose nor a quiet world day
+  // erases them). `evictable` protects the other guarantee from being displaced.
+  const guarantee = (pred, evictable) => {
+    if (top.some(pred)) return;
+    const cand = ranked.find((i) => pred(i) && !inTop.has(i.id));
+    if (!cand) return;
+    let worstIdx = -1, worst = Infinity;
+    for (let k = 0; k < top.length; k++) {
+      if (!evictable(top[k])) continue;
+      const sc = catchScore(top[k]);
+      if (sc < worst) { worst = sc; worstIdx = k; }
+    }
+    if (worstIdx === -1) {
+      if (top.length < TOP_N) { top.push(cand); inTop.add(cand.id); }
+      return;
+    }
+    inTop.delete(top[worstIdx].id);
+    top[worstIdx] = cand;
+    inTop.add(cand.id);
+  };
+  // One guaranteed-but-capped core slot (a fresh floor item, if any).
+  guarantee((i) => i.entity_floor, (s) => !NEWS.has(s.domain) && !s.entity_floor);
+  // One guaranteed top-news slot, independent of the floor (C1).
+  guarantee((i) => NEWS.has(i.domain), (s) => !s.entity_floor && !NEWS.has(s.domain));
+
+  top.sort((a, b) => catchScore(b) - catchScore(a));
   const topIds = new Set(top.map((t) => t.id));
 
   // Domain sections: dynamic — only domains with above-fold catches appear, in
@@ -165,7 +211,7 @@ export function buildState(items, meta, now, config) {
   // 112-item football firehose can't evict World/Money/Books past the global
   // cap — every domain that pulled articles keeps a slice. Section overflow
   // (strong items that didn't fit their capped section) folds in here too.
-  const belowPool = belowFold.concat(overflow);
+  const belowPool = belowFold.concat(overflow).filter((i) => !topIds.has(i.id));
   const grouped = {};
   for (const it of belowPool) (grouped[it.domain] ||= []).push(it);
   let belowKept = [];

@@ -139,9 +139,13 @@ export async function run(env, { trigger } = {}) {
     spent_cents: enr.spentCents,
   }));
 
-  // 6) Render the living surface and write it to KV.
+  // 6) Render the living surface and write it to KV. The footer's "scanned" is
+  //    the brief's WINDOW population (items considered over the score window), not
+  //    this single poll's raw ingest — otherwise "kept" (a windowed count) can
+  //    exceed a one-poll "scanned". kept ≤ scanned now holds. The run log + return
+  //    keep the per-poll `scanned` for operational accounting.
   const meta = {
-    scanned,
+    scanned: items.length,
     sources: live.length,
     enrichment: { on: !enr.degraded, reason: enr.reason },
   };

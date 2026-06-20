@@ -22,20 +22,23 @@
 //  - mutes: global drop patterns (flair/topic/category).
 
 export const PROFILE = {
-  // ---- Named-entity floor (the genuine core; bypasses ranking) ----
-  // Kept tight per §7.5. Obvious anchors (Juventus, Switch 2, Steam Deck, the
-  // reader's current phone = Xiaomi 17 Ultra, his primary book series = the
-  // Cosmere) plus the two most-emphasised franchises in the spec (Star Wars,
-  // Malazan) and the recurring trip anchor (Efteling).
+  // ---- Named-entity floor (the genuine core) ----
+  // A SCARCITY mechanism (§7.5): it guarantees a slot for rare must-not-miss
+  // items and caps their count — it is NOT for high-volume entities. Juventus is
+  // deliberately NOT here: a dedicated daily feed (Football Italia) means Juve is
+  // never scarce, and a high-volume entity in a scarcity floor floods it. Juve
+  // still surfaces heavily via football keywords. "steam machine" is likewise out
+  // of the steam-deck floor — it's a separate, unreleased product (surfaces via
+  // gaming keywords). Each entity carries a `domain` so a floor match DOMINATES
+  // classification (a colliding keyword like "director" can't re-home it).
   named_entity_floor: [
-    { id: "juventus", label: "Juventus", patterns: ["juventus", "juve", "bianconeri"] },
-    { id: "switch2", label: "Nintendo Switch 2", patterns: ["switch 2", "switch2", "nintendo switch 2"] },
-    { id: "steam-deck", label: "Steam Deck", patterns: ["steam deck", "steamdeck", "steam machine"] },
-    { id: "xiaomi-17-ultra", label: "Xiaomi 17 Ultra", patterns: ["xiaomi 17 ultra", "xiaomi 17", "17 ultra"] },
-    { id: "cosmere", label: "Cosmere / Sanderson", patterns: ["cosmere", "brandon sanderson", "stormlight", "mistborn"] },
-    { id: "malazan", label: "Malazan", patterns: ["malazan", "steven erikson", "book of the fallen"] },
-    { id: "star-wars", label: "Star Wars", patterns: ["star wars", "mandalorian", "ahsoka", "andor", "skeleton crew"] },
-    { id: "efteling", label: "Efteling", patterns: ["efteling", "beekse bergen"] },
+    { id: "switch2", label: "Nintendo Switch 2", domain: "gaming", patterns: ["switch 2", "switch2", "nintendo switch 2"] },
+    { id: "steam-deck", label: "Steam Deck", domain: "gaming", patterns: ["steam deck", "steamdeck"] },
+    { id: "xiaomi-17-ultra", label: "Xiaomi 17 Ultra", domain: "tech_devices", patterns: ["xiaomi 17 ultra", "xiaomi 17", "17 ultra"] },
+    { id: "cosmere", label: "Cosmere / Sanderson", domain: "books", patterns: ["cosmere", "brandon sanderson", "stormlight", "mistborn"] },
+    { id: "malazan", label: "Malazan", domain: "books", patterns: ["malazan", "steven erikson", "book of the fallen"] },
+    { id: "star-wars", label: "Star Wars", domain: "film_tv", patterns: ["star wars", "mandalorian", "ahsoka", "andor", "skeleton crew"] },
+    { id: "efteling", label: "Efteling", domain: "travel", patterns: ["efteling", "beekse bergen"] },
   ],
 
   // ---- Topic weights (broad; mechanical scorer matches keywords) ----
@@ -80,9 +83,10 @@ export const PROFILE = {
       weight: 0.4,
       keywords: [
         "war", "ceasefire", "election", "geopolitics", "sanctions", "treaty",
-        "nato", "un ", "summit", "conflict", "diplomacy", "outbreak", "earthquake",
-        "wildfire", "flood", "breakthrough", "iran", "ukraine", "china", "russia",
-        "gaza", "israel", "eu ", "tariff", "trade deal", "protest", "coup",
+        "nato", "united nations", "summit", "conflict", "diplomacy", "outbreak",
+        "earthquake", "wildfire", "flood", "breakthrough", "iran", "ukraine",
+        "china", "russia", "gaza", "israel", "european union", "tariff",
+        "trade deal", "protest", "coup",
       ],
     },
     // SECONDARY domains
@@ -141,9 +145,9 @@ export const PROFILE = {
     film_tv: {
       weight: 0.4,
       keywords: [
-        "netflix", "disney+", "disney plus", "apple tv", "hbo", "max ",
+        "netflix", "disney+", "disney plus", "apple tv", "hbo", "hbo max",
         "prime video", "trailer", "season", "renewed", "cancelled", "premiere",
-        "box office", "marvel", "dc ", "streaming", "series finale", "casting",
+        "box office", "marvel", "dc comics", "streaming", "series finale", "casting",
         "director", "synthwave", "retrowave",
       ],
     },
@@ -160,7 +164,7 @@ export const PROFILE = {
       keywords: [
         "synthwave", "retrowave", "outrun", "darksynth", "newretrowave", "fixt",
         "lakeshore", "soundtrack", "score", "vinyl", "reissue", "album", "single",
-        "ep ", "label", "bandcamp",
+        "label", "bandcamp",
       ],
     },
     history: {
