@@ -40,6 +40,7 @@ function publicItem(it) {
   return {
     id: it.id,
     title: it.title,
+    summary: it.summary || null,
     hook: it.hook || null,
     register: it.register || null,
     domain: it.domain,
