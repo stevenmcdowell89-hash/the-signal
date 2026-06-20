@@ -101,10 +101,13 @@ function atomLink(block) {
   return href;
 }
 
+// Returns the parsed epoch, or null when the feed gives no usable date. NULL is
+// the clean "date unknown" signal — the engine then dates the item by when we
+// first caught it (and penalises its age), instead of pretending it's brand new.
 function parseDate(s) {
-  if (!s) return Date.now();
+  if (!s) return null;
   const t = Date.parse(s);
-  return Number.isNaN(t) ? Date.now() : t;
+  return Number.isNaN(t) ? null : t;
 }
 
 function parseFeed(xml, feed) {

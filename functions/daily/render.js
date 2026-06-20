@@ -68,29 +68,74 @@ function todayAndTonight(items, now) {
   return out;
 }
 
-export function buildState(items, meta, now) {
+// Topic de-dup for Top Catches: collapse near-identical headlines (three
+// Juventus-rumour variants that differ by a word — "swoop" vs "deal") to one
+// strip entry. Token-set overlap is robust to that single-word drift in a way an
+// exact signature is not. This is a safety net on top of ingest clustering.
+const SIG_STOP = new Set([
+  "the", "a", "an", "of", "to", "in", "on", "for", "and", "is", "are", "as",
+  "at", "by", "with", "from", "this", "that", "new", "will", "after", "over",
+  "eye", "eyes", "set", "out", "up", "has", "have", "deal", "move", "bid",
+]);
+function topicTokens(it) {
+  return new Set(
+    (it.title || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, " ")
+      .split(/\s+/)
+      .filter((w) => w.length > 3 && !SIG_STOP.has(w))
+  );
+}
+function tokenJaccard(a, b) {
+  if (!a.size || !b.size) return 0;
+  let inter = 0;
+  for (const t of a) if (b.has(t)) inter++;
+  return inter / (a.size + b.size - inter);
+}
+
+// Fairness caps so no single high-volume domain (football in the transfer
+// window) can crowd the brief or evict low-weight domains (World, Money, Books).
+const SECTION_CAP = 8;       // items shown in a domain's All-view section
+const PER_DOMAIN_BELOW = 30; // below-fold items kept per domain before the global cap
+const BELOW_TOTAL_CAP = 400; // overall below-fold ceiling (keeps the state a brief)
+
+export function buildState(items, meta, now, config) {
+  const rc = (config && config.recency) || {};
+  const maxCatchHours = rc.top_catch_max_hours || 30;
+  const blend = rc.top_catch_recency_blend ?? 0.35;
+
   // Split muted out entirely; everything else is demote-never-drop.
   const live = items.filter((i) => !i.muted);
 
   const aboveFold = live.filter((i) => i.above_fold);
   const belowFold = live.filter((i) => !i.above_fold);
 
-  // Top Catches: 3–5, ranked, cross-domain. Rank alone carries "read first" —
-  // no narrative orientation line (§4.3). Cap at 2 per domain so one busy domain
-  // (e.g. Juventus in the transfer window) can't flood the strip.
-  const ranked = aboveFold.slice().sort((a, b) => b.confidence - a.confidence);
+  // Top Catches: 3–5, ranked, cross-domain. Only genuinely fresh items are
+  // eligible (no 4-day-old item can lead). Order blends confidence with recency
+  // so a fresh strong story beats a slightly-stronger-but-older one. Cap at 2
+  // per domain AND dedupe by topic signature so the strip stays varied.
+  const catchScore = (i) => (1 - blend) * (i.confidence || 0) + blend * (i.recency_score ?? 1);
+  const eligible = aboveFold.filter((i) => (i.age_hours == null || i.age_hours <= maxCatchHours));
+  const ranked = eligible.slice().sort((a, b) => catchScore(b) - catchScore(a));
   const top = [];
-  const perDomain = {};
+  const perTop = {};
+  const topToks = [];
   for (const it of ranked) {
     if (top.length >= 5) break;
-    if ((perDomain[it.domain] || 0) >= 2) continue;
+    if ((perTop[it.domain] || 0) >= 2) continue;
+    const toks = topicTokens(it);
+    // Skip a same-domain headline that substantially overlaps one already in.
+    if (topToks.some((t) => t.domain === it.domain && tokenJaccard(t.set, toks) >= 0.6)) continue;
     top.push(it);
-    perDomain[it.domain] = (perDomain[it.domain] || 0) + 1;
+    perTop[it.domain] = (perTop[it.domain] || 0) + 1;
+    topToks.push({ domain: it.domain, set: toks });
   }
   const topIds = new Set(top.map((t) => t.id));
 
   // Domain sections: dynamic — only domains with above-fold catches appear, in
-  // fixed order. Items already in Top Catches are not repeated.
+  // fixed order. Items already in Top Catches are not repeated. Each section is
+  // capped (SECTION_CAP); the overflow is still reachable below the fold (under
+  // that domain's sub-tab), it just doesn't bury the cross-domain All view.
   const sectionItems = aboveFold.filter((i) => !topIds.has(i.id));
   const byDomain = {};
   for (const it of sectionItems) {
@@ -99,6 +144,7 @@ export function buildState(items, meta, now) {
 
   const sections = [];
   const alsoDomains = [];
+  const overflow = [];
   for (const d of DOMAIN_ORDER) {
     const list = (byDomain[d] || []).sort((a, b) => b.confidence - a.confidence);
     if (!list.length) continue;
@@ -109,10 +155,35 @@ export function buildState(items, meta, now) {
       sections.push({
         domain: d,
         label: DOMAIN_LABELS[d] || d,
-        items: list.map(publicItem),
+        items: list.slice(0, SECTION_CAP).map(publicItem),
       });
+      if (list.length > SECTION_CAP) overflow.push(...list.slice(SECTION_CAP));
     }
   }
+
+  // Below the fold (§4.6): demote, never drop. Per-domain fairness FIRST so a
+  // 112-item football firehose can't evict World/Money/Books past the global
+  // cap — every domain that pulled articles keeps a slice. Section overflow
+  // (strong items that didn't fit their capped section) folds in here too.
+  const belowPool = belowFold.concat(overflow);
+  const grouped = {};
+  for (const it of belowPool) (grouped[it.domain] ||= []).push(it);
+  let belowKept = [];
+  for (const d of Object.keys(grouped)) {
+    belowKept.push(
+      ...grouped[d].sort((a, b) => b.confidence - a.confidence).slice(0, PER_DOMAIN_BELOW)
+    );
+  }
+  belowKept = belowKept.sort((a, b) => b.confidence - a.confidence).slice(0, BELOW_TOTAL_CAP);
+
+  // Edition framing: a dated header + a mechanical "Start here" (the top fresh
+  // catch titles) so the brief reads like a morning edition, not a feed.
+  let dateLabel = "";
+  try {
+    dateLabel = new Date(now).toLocaleDateString("en-GB", {
+      weekday: "long", day: "numeric", month: "long",
+    });
+  } catch (_) {}
 
   return {
     generated_at: now,
@@ -120,18 +191,13 @@ export function buildState(items, meta, now) {
       caught_up: true,
       time: new Date(now).toISOString(),
     },
+    edition: { date_label: dateLabel },
+    start_here: top.slice(0, 3).map((t) => t.title),
     today_tonight: todayAndTonight(live, now),
     top_catches: top.map(publicItem),
     sections,
     also: alsoDomains,
-    // Tappable tail: the retained set below the fold (§4.6). Demote, never drop
-    // — a ranking mistake costs a scroll, not a missed story. Bounded so the
-    // state stays a brief, never an infinite feed; the long tail of stale noise
-    // ages out of the window anyway.
-    below_fold: belowFold
-      .sort((a, b) => b.confidence - a.confidence)
-      .slice(0, 250)
-      .map(publicItem),
+    below_fold: belowKept.map(publicItem),
     footer: {
       kept: live.length,
       scanned: meta.scanned,

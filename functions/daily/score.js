@@ -99,6 +99,11 @@ export async function scoreBatch(db, items, config, now) {
   const extraMutes = config.mutes || [];
   const baselineWindow = now - 1000 * 60 * 60 * 24 * 30;
   const fold = config.fold_threshold;
+  const rc = config.recency || {};
+  const halfLifeMs = (rc.half_life_hours || 20) * 3.6e6;
+  const undatedPenaltyMs = (rc.undated_penalty_hours || 36) * 3.6e6;
+  const floorFreshHours = rc.floor_fresh_hours || 36;
+  const velKeep = rc.velocity_fresh_keep ?? 0.25;
 
   // Baselines only matter for sources whose raw score actually varies
   // (discussion sources: HN/Bluesky/Reddit). RSS has no popularity signal, so it
@@ -114,7 +119,11 @@ export async function scoreBatch(db, items, config, now) {
   const storyRows = [];
 
   for (const it of items) {
-    // 1) per-source baseline normalisation (§3.3).
+    // 1) per-source baseline normalisation (§3.3). Discussion sources carry a
+    //    real popularity signal (points/likes) → normalise it. RSS does not, so
+    //    it gets a flat baseline; recency is applied separately and uniformly
+    //    below (the old RSS age buckets were the only age signal and they were
+    //    far too coarse — a 4-day-old item scored the same as a 25-hour-old one).
     if (DISCUSSION.has(it.source_type)) {
       const cut = cuts.get(it.source);
       it.baseline_score = cut && cut > 0
@@ -122,9 +131,17 @@ export async function scoreBatch(db, items, config, now) {
         : 0.5;
       sampleRows.push({ source: it.source, score: it.rawScore, ts: now });
     } else {
-      const ageH = (now - (it.published || now)) / 3.6e6;
-      it.baseline_score = ageH < 6 ? 0.7 : ageH < 24 ? 0.5 : 0.3;
+      it.baseline_score = 0.5;
     }
+
+    // Recency (the daily is fast-decay). Date the item by its real publish time;
+    // if the feed gave none (published == null) fall back to when we first caught
+    // it AND add an age penalty so undated items can't masquerade as fresh.
+    const dateUnknown = it.published == null;
+    const effTs = it.published ?? it.first_seen ?? now;
+    const ageMs = Math.max(0, now - effTs) + (dateUnknown ? undatedPenaltyMs : 0);
+    it.age_hours = ageMs / 3.6e6;
+    const recency = Math.pow(0.5, ageMs / halfLifeMs); // 1 now → 0.5 at half-life
 
     // 2) velocity (§3.4): Δscore/Δhr vs the cluster's last logged point.
     const prev = lastPoints.get(it.id);
@@ -145,19 +162,25 @@ export async function scoreBatch(db, items, config, now) {
     it.entity_floor = pr.entityFloor;
     it.muted = pr.muted;
 
-    // 4) confidence: blend interest, source-significance and velocity, scaled by
-    // source weight. Demote (UK politics etc.) cuts it hard.
-    let conf = 0.55 * it.profile_score + 0.30 * it.baseline_score + 0.15 * velNorm;
-    conf *= 0.6 + 0.4 * (it.weight || 0.5);
-    if (pr.demote) conf *= 0.4;
-    if (it.muted) conf = 0;
+    // 4) confidence: blend interest + source-significance, scale by source
+    //    weight, then apply recency. A genuinely moving story (high velocity)
+    //    resists decay so breaking news isn't aged out the moment it's caught.
+    let base = 0.65 * it.profile_score + 0.35 * it.baseline_score;
+    base *= 0.6 + 0.4 * (it.weight || 0.5);
+    if (pr.demote) base *= 0.4;
+    const recencyLifted = Math.min(1, recency + 0.6 * velNorm * (1 - recency));
+    it.recency_score = recencyLifted;
+    let conf = it.muted ? 0 : base * recencyLifted;
     it.confidence = Math.max(0, Math.min(1, conf));
 
     // 5) the fold (§3.7): above-fold = over the threshold (not a fixed count).
-    // The named-entity floor *bypasses ranking* — it guarantees above-fold but
-    // does NOT flatten the score, so the most significant core story still leads
-    // and one entity doesn't flood Top Catches.
-    if (it.entity_floor && !it.muted) {
+    // The named-entity floor guarantees a core story above the fold — but only
+    // while it's actually fresh (or still moving fast). A stale core item (the
+    // 4-day-old Juventus rumour) no longer pins itself to the top; it competes
+    // on its decayed confidence and sinks like anything else.
+    const isFresh = it.age_hours <= floorFreshHours;
+    const movingFast = velNorm >= velKeep;
+    if (it.entity_floor && !it.muted && (isFresh || movingFast)) {
       it.above_fold = true;
       it.confidence = Math.max(it.confidence, fold + 0.02);
     } else {

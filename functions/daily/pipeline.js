@@ -17,8 +17,12 @@ import { buildState } from "./render.js";
 
 const STATE_KEY = "state";
 // Items live in D1 for 14 days (dedup memory); the brief itself scores+renders a
-// tighter recent window — the daily is fast-decay ("what happened").
-const SCORE_WINDOW_DAYS = 4;
+// tighter recent window — the daily is fast-decay ("what happened"). The window
+// is config-driven (recency.score_window_days) so it's tunable in-app.
+const DEFAULT_SCORE_WINDOW_DAYS = 2;
+// Health blobs the settings page reads via /api/health.
+export const SOURCE_STATUS_KEY = "source_status";
+export const ENRICH_STATUS_KEY = "enrich_status";
 
 // Map a D1 row to the in-memory item shape the engine expects.
 function rowToItem(row, weightBySource) {
@@ -65,6 +69,20 @@ export async function run(env, { trigger } = {}) {
   const { entries, live, dead } = await ingestAll(config);
   const scanned = entries.length;
 
+  // Record per-source liveness for the feed-health view (§E): which sources
+  // returned items this poll vs errored/empty. Counts come from D1 at read time.
+  const liveSet = new Set(live);
+  const sourceStatus = {};
+  for (const id of [...live, ...dead]) {
+    sourceStatus[id] = { ok: liveSet.has(id), ts: now };
+  }
+  for (const id of live) {
+    sourceStatus[id].count_this_poll = entries.filter((e) => e.sourceId === id).length;
+  }
+  if (env.DAILY_STATE) {
+    await env.DAILY_STATE.put(SOURCE_STATUS_KEY, JSON.stringify({ ts: now, sources: sourceStatus }));
+  }
+
   // 2) Dedup / cluster this poll's entries (retain all links).
   const clustered = await clusterEntries(entries);
 
@@ -97,7 +115,8 @@ export async function run(env, { trigger } = {}) {
   for (const s of config.sources || []) { weightBySource.set(s.id, s.weight); domainBySource.set(s.id, s.domain); }
   for (const b of config.bluesky || []) { weightBySource.set(b.id, b.weight); domainBySource.set(b.id, b.domain); }
 
-  const sinceMs = now - 1000 * 60 * 60 * 24 * SCORE_WINDOW_DAYS;
+  const windowDays = (config.recency && config.recency.score_window_days) || DEFAULT_SCORE_WINDOW_DAYS;
+  const sinceMs = now - 1000 * 60 * 60 * 24 * windowDays;
   const rows = await getWindowItems(db, sinceMs);
   const items = rows.map((r) => {
     const it = rowToItem(r, weightBySource);
@@ -110,13 +129,23 @@ export async function run(env, { trigger } = {}) {
   // 5) Tier-2 enrichment (optional) on the shortlist.
   const enr = await enrichShortlist(env, db, items, config, now);
 
+  // Record enrichment status for the AI-health card (§E).
+  await env.DAILY_STATE.put(ENRICH_STATUS_KEY, JSON.stringify({
+    ts: now,
+    on: !enr.degraded,
+    reason: enr.reason,
+    model: (config.enrichment || {}).model || "claude-haiku-4-5",
+    enriched: enr.enriched,
+    spent_cents: enr.spentCents,
+  }));
+
   // 6) Render the living surface and write it to KV.
   const meta = {
     scanned,
     sources: live.length,
     enrichment: { on: !enr.degraded, reason: enr.reason },
   };
-  const state = buildState(items, meta, now);
+  const state = buildState(items, meta, now, config);
   await env.DAILY_STATE.put(STATE_KEY, JSON.stringify(state));
 
   // 7) Prune the window + log the run.

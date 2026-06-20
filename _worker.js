@@ -20,7 +20,9 @@ import {
   onRequestGet as dailyGet,
   onRequestPost as dailyRun,
 } from "./functions/api/daily.js";
-import { run as runDaily } from "./functions/daily/pipeline.js";
+import { onRequestGet as healthGet } from "./functions/api/health.js";
+import { run as runDaily, getState } from "./functions/daily/pipeline.js";
+import { maybePushSignificant } from "./functions/daily/notify.js";
 
 export default {
   async fetch(request, env, ctx) {
@@ -36,6 +38,7 @@ export default {
     // --- Daily ---
     if (p === "/api/daily" && method === "GET") return dailyGet({ request, env });
     if (p === "/api/daily/run" && method === "POST") return dailyRun({ request, env, ctx });
+    if (p === "/api/health" && method === "GET") return healthGet({ request, env });
 
     // --- Config surface (reads open, writes token-gated) ---
     if (p === "/api/config" && method === "GET") return configGet({ request, env });
@@ -54,6 +57,16 @@ export default {
         try {
           const result = await runDaily(env, { trigger: "cron" });
           console.log("daily run:", JSON.stringify(result));
+          // Significance-gated push: one nudge only if something big just landed.
+          try {
+            const state = await getState(env);
+            if (state) {
+              const pushed = await maybePushSignificant(env, state, Date.now());
+              console.log("significant push:", JSON.stringify(pushed));
+            }
+          } catch (e) {
+            console.error("significant push failed:", (e && e.stack) || e);
+          }
         } catch (e) {
           console.error("daily run failed:", (e && e.stack) || e);
         }

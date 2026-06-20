@@ -95,7 +95,7 @@ export async function clusterEntries(entries) {
   for (const pc of protoClusters) {
     let hit = null;
     for (const m of merged) {
-      if (m.domain === pc.members[0].domain && jaccard(m.tokens, pc.tokens) >= 0.6) {
+      if (m.domain === pc.members[0].domain && jaccard(m.tokens, pc.tokens) >= 0.5) {
         hit = m;
         break;
       }
@@ -112,12 +112,14 @@ export async function clusterEntries(entries) {
     const id = await clusterId(m.canon);
     // Pick the representative member: highest rawScore, then freshest.
     const rep = m.members.slice().sort(
-      (a, b) => b.rawScore - a.rawScore || b.published - a.published
+      (a, b) => b.rawScore - a.rawScore || (b.published || 0) - (a.published || 0)
     )[0];
     let links = [];
     for (const mem of m.members) links = mergeLinks(links, mem.links);
     const rawScore = Math.max(...m.members.map((x) => x.rawScore));
-    const published = Math.min(...m.members.map((x) => x.published));
+    // Earliest real publish date across the cluster; null if none was dated.
+    const pubs = m.members.map((x) => x.published).filter((p) => p != null);
+    const published = pubs.length ? Math.min(...pubs) : null;
     items.push({
       id,
       canonical_url: m.canon,

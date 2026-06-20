@@ -47,7 +47,12 @@ export async function onRequestPost({ request, env }) {
   const current = await loadConfig(env);
   const next = { ...current, ...incoming };
   if (incoming.enrichment) next.enrichment = { ...current.enrichment, ...incoming.enrichment };
-  if (incoming.push) next.push = { ...current.push, ...incoming.push };
+  if (incoming.recency) next.recency = { ...current.recency, ...incoming.recency };
+  if (incoming.push) {
+    next.push = { ...current.push, ...incoming.push };
+    if (incoming.push.significant)
+      next.push.significant = { ...(current.push || {}).significant, ...incoming.push.significant };
+  }
   if (incoming.profile) next.profile = { ...current.profile, ...incoming.profile };
   await saveConfig(env, next);
   return json({ ok: true, saved: true });

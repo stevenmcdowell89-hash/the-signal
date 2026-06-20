@@ -42,6 +42,52 @@
     .msg.ok{ color:#46c46a; } .msg.err{ color:var(--coral); }
     .hint{ font-size:0.74rem; color:var(--ink-dim); margin-top:0.3rem; }
     .addrow{ margin-top:0.6rem; }
+
+    /* Status / health */
+    .ai-status{ font-size:0.86rem; color:var(--ink-2); line-height:1.5; }
+    .ai-status .pill{ display:inline-block; font-size:0.7rem; font-weight:700; padding:0.1rem 0.55rem; border-radius:999px; margin-right:0.4rem; }
+    .ai-status .pill.on{ background:rgba(70,196,106,0.15); color:#46c46a; }
+    .ai-status .pill.off{ background:rgba(233,69,96,0.15); color:var(--coral); }
+    .ai-status .cost{ color:var(--ink); font-weight:600; }
+    .health-list{ display:flex; flex-direction:column; gap:0.15rem; margin-top:0.3rem; }
+    .hrow{ display:flex; align-items:center; gap:0.55rem; font-size:0.8rem; padding:0.28rem 0; border-bottom:1px solid var(--line); }
+    .hrow .dot{ width:9px; height:9px; border-radius:50%; flex:0 0 auto; background:var(--ink-dim); }
+    .hrow .dot.ok{ background:#46c46a; box-shadow:0 0 6px #46c46a88; }
+    .hrow .dot.stale{ background:var(--gold); }
+    .hrow .dot.dead{ background:var(--coral); box-shadow:0 0 6px #e9456088; }
+    .hrow .dot.off{ background:var(--ink-dim); opacity:0.4; }
+    .hrow .hname{ flex:1; min-width:0; color:var(--ink-2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .hrow .hdom{ color:var(--ink-dim); font-size:0.68rem; text-transform:uppercase; letter-spacing:0.08em; flex:0 0 auto; }
+    .hrow .hcount{ font-variant-numeric:tabular-nums; font-weight:700; color:var(--ink); flex:0 0 auto; min-width:2.2rem; text-align:right; }
+    .hrow.is-dead .hname{ color:var(--coral); }
+
+    /* Mobile: stack the squashed tables into cards, one field per line. */
+    @media (max-width:640px){
+      body{ padding:1.1rem 0.85rem 5rem; }
+      .row{ flex-direction:column; align-items:stretch; gap:0.5rem; }
+      .row > *{ width:100%; }
+      input[type=text],input[type=number],input[type=url],select,textarea{ font-size:1rem; padding:0.6rem 0.65rem; }
+      textarea{ min-height:300px; font-size:0.82rem; white-space:pre; overflow-x:auto; }
+      .src-w{ max-width:none; }
+      /* table → stacked cards */
+      #src-table thead, #bsky-table thead{ display:none; }
+      #src-table, #bsky-table, #src-table tbody, #bsky-table tbody{ display:block; width:100%; }
+      #src-table tr, #bsky-table tr{
+        display:block; background:var(--bg-3); border:1px solid var(--line);
+        border-radius:10px; padding:0.5rem 0.6rem; margin-bottom:0.7rem;
+      }
+      #src-table td, #bsky-table td{ display:block; border:0; padding:0.28rem 0; }
+      #src-table td input, #bsky-table td input{ font-size:1rem; padding:0.55rem 0.6rem; min-height:44px; }
+      #src-table td::before, #bsky-table td::before{
+        content:attr(data-label); display:block; font-size:0.62rem; text-transform:uppercase;
+        letter-spacing:0.12em; color:var(--ink-dim); margin-bottom:0.2rem;
+      }
+      #src-table td:last-child, #bsky-table td:last-child{ text-align:right; }
+      #src-table td:last-child::before, #bsky-table td:last-child::before{ content:''; }
+      .btn-sm{ min-height:40px; padding:0.5rem 0.9rem; }
+      .actions{ flex-wrap:wrap; }
+      .actions .btn-primary{ min-height:46px; }
+    }
   </style>
 </head>
 <body>
@@ -49,6 +95,14 @@
     <a class="back" href="/">&larr; The Signal</a>
     <h1>Settings</h1>
     <div class="sub">The Brief — sources, profile &amp; engine. Reads are open; saving needs the held token (entered once per device).</div>
+
+    <div class="card">
+      <h2>Status — is it working?</h2>
+      <div id="ai-status" class="ai-status">Loading…</div>
+      <div class="hint" style="margin:0.6rem 0 0.3rem">Feeds (articles pulled in the last 48h)</div>
+      <div id="health-list" class="health-list">Loading…</div>
+      <div class="hint" id="health-foot"></div>
+    </div>
 
     <div class="card">
       <h2>Engine</h2>
@@ -63,6 +117,21 @@
         </div>
       </div>
       <div class="hint">Lower fold = more above the fold. The actual cron schedule lives in wrangler.jsonc.</div>
+      <div class="row" style="margin-top:0.6rem">
+        <div>
+          <label for="half-life">Recency half-life (hours)</label>
+          <input type="number" id="half-life" min="2" max="96" step="1">
+        </div>
+        <div>
+          <label for="floor-fresh">Core stays on top if fresher than (hours)</label>
+          <input type="number" id="floor-fresh" min="6" max="120" step="1">
+        </div>
+        <div>
+          <label for="catch-max">Top Catches max age (hours)</label>
+          <input type="number" id="catch-max" min="6" max="120" step="1">
+        </div>
+      </div>
+      <div class="hint">Lower half-life = the brief decays faster toward "today". A stale core story (an old transfer rumour) sinks once it's past the freshness window.</div>
     </div>
 
     <div class="card">
@@ -79,6 +148,12 @@
     <div class="card">
       <h2>Push</h2>
       <div class="toggle"><input type="checkbox" id="push-badge"><label for="push-badge">Daily app badge (silent; the weekly keeps the push notification)</label></div>
+      <div class="toggle" style="margin-top:0.6rem"><input type="checkbox" id="push-sig"><label for="push-sig">Push when something big lands (a fresh core story or high-confidence catch — throttled, not a daily alarm)</label></div>
+      <div class="row" style="margin-top:0.6rem">
+        <div><label for="sig-conf">Significance threshold (confidence 0–1)</label><input type="number" id="sig-conf" min="0.5" max="1" step="0.05"></div>
+        <div><label for="sig-interval">Min hours between pushes</label><input type="number" id="sig-interval" min="1" max="48" step="1"></div>
+      </div>
+      <div class="hint">Needs notifications allowed on the device (install the app, accept the prompt). Quiet days stay silent.</div>
     </div>
 
     <div class="card">
@@ -121,7 +196,7 @@
     function getToken(promptIfMissing){
       var t = null; try { t = localStorage.getItem(TOKEN_KEY); } catch(_){}
       if (!t && promptIfMissing){
-        t = window.prompt('Paste the held settings token (stored on this device only):');
+        t = window.prompt('Paste your SETTINGS token — the admin password for this brief (the SETTINGS_TOKEN secret). This is NOT your Claude / Anthropic API key. Stored on this device only.');
         if (t){ try { localStorage.setItem(TOKEN_KEY, t.trim()); } catch(_){} t = t.trim(); }
       }
       return t;
@@ -130,24 +205,24 @@
     function srcRow(s){
       var tr=document.createElement('tr');
       tr.innerHTML =
-        '<td><input type="checkbox" '+(s.enabled===false?'':'checked')+' data-k="enabled"></td>'+
-        '<td><input type="text" value="'+(s.id||'')+'" data-k="id" size="10"></td>'+
-        '<td><input type="text" value="'+(s.domain||'')+'" data-k="domain" size="8"></td>'+
-        '<td><input type="url" value="'+(s.url||'')+'" data-k="url"></td>'+
-        '<td><input class="src-w" type="number" min="0" max="1" step="0.05" value="'+(s.weight!=null?s.weight:0.5)+'" data-k="weight"></td>'+
-        '<td><button class="btn-sm btn-danger" data-del="1">✕</button></td>';
+        '<td data-label="On"><input type="checkbox" '+(s.enabled===false?'':'checked')+' data-k="enabled"></td>'+
+        '<td data-label="ID"><input type="text" value="'+(s.id||'')+'" data-k="id" size="10"></td>'+
+        '<td data-label="Domain"><input type="text" value="'+(s.domain||'')+'" data-k="domain" size="8"></td>'+
+        '<td data-label="URL"><input type="url" value="'+(s.url||'')+'" data-k="url"></td>'+
+        '<td data-label="Weight"><input class="src-w" type="number" min="0" max="1" step="0.05" value="'+(s.weight!=null?s.weight:0.5)+'" data-k="weight"></td>'+
+        '<td><button class="btn-sm btn-danger" data-del="1">✕ Remove</button></td>';
       tr.querySelector('[data-del]').addEventListener('click', function(){ tr.remove(); });
       return tr;
     }
     function bskyRow(s){
       var tr=document.createElement('tr');
       tr.innerHTML =
-        '<td><input type="checkbox" '+(s.enabled===false?'':'checked')+' data-k="enabled"></td>'+
-        '<td><input type="text" value="'+(s.id||'')+'" data-k="id" size="10"></td>'+
-        '<td><input type="text" value="'+(s.domain||'')+'" data-k="domain" size="8"></td>'+
-        '<td><input type="text" value="'+(s.handle||'')+'" data-k="handle"></td>'+
-        '<td><input class="src-w" type="number" min="0" max="1" step="0.05" value="'+(s.weight!=null?s.weight:0.5)+'" data-k="weight"></td>'+
-        '<td><button class="btn-sm btn-danger" data-del="1">✕</button></td>';
+        '<td data-label="On"><input type="checkbox" '+(s.enabled===false?'':'checked')+' data-k="enabled"></td>'+
+        '<td data-label="ID"><input type="text" value="'+(s.id||'')+'" data-k="id" size="10"></td>'+
+        '<td data-label="Domain"><input type="text" value="'+(s.domain||'')+'" data-k="domain" size="8"></td>'+
+        '<td data-label="Handle"><input type="text" value="'+(s.handle||'')+'" data-k="handle"></td>'+
+        '<td data-label="Weight"><input class="src-w" type="number" min="0" max="1" step="0.05" value="'+(s.weight!=null?s.weight:0.5)+'" data-k="weight"></td>'+
+        '<td><button class="btn-sm btn-danger" data-del="1">✕ Remove</button></td>';
       tr.querySelector('[data-del]').addEventListener('click', function(){ tr.remove(); });
       return tr;
     }
@@ -156,12 +231,20 @@
       cfg = c;
       $('fold').value = c.fold_threshold;
       $('cadence').value = c.cadence_hours;
+      var rc = c.recency||{};
+      $('half-life').value = rc.half_life_hours!=null?rc.half_life_hours:20;
+      $('floor-fresh').value = rc.floor_fresh_hours!=null?rc.floor_fresh_hours:36;
+      $('catch-max').value = rc.top_catch_max_hours!=null?rc.top_catch_max_hours:30;
       var e = c.enrichment||{};
       $('enr-on').checked = !!e.enabled;
       $('enr-model').value = e.model||'claude-haiku-4-5';
       $('enr-short').value = e.shortlist_size||36;
       $('enr-cap').value = e.monthly_spend_cap_cents||500;
-      $('push-badge').checked = !!(c.push&&c.push.daily_badge);
+      var pu = c.push||{}; var sig = pu.significant||{};
+      $('push-badge').checked = !!pu.daily_badge;
+      $('push-sig').checked = sig.enabled!==false;
+      $('sig-conf').value = sig.min_confidence!=null?sig.min_confidence:0.85;
+      $('sig-interval').value = sig.min_interval_hours!=null?sig.min_interval_hours:8;
       var st=$('src-table').querySelector('tbody'); st.innerHTML='';
       (c.sources||[]).forEach(function(s){ st.appendChild(srcRow(s)); });
       var bt=$('bsky-table').querySelector('tbody'); bt.innerHTML='';
@@ -196,13 +279,25 @@
       return {
         fold_threshold: parseFloat($('fold').value),
         cadence_hours: parseInt($('cadence').value,10),
+        recency: {
+          half_life_hours: parseFloat($('half-life').value)||20,
+          floor_fresh_hours: parseFloat($('floor-fresh').value)||36,
+          top_catch_max_hours: parseFloat($('catch-max').value)||30
+        },
         enrichment: {
           enabled: $('enr-on').checked,
           model: $('enr-model').value.trim()||'claude-haiku-4-5',
           shortlist_size: parseInt($('enr-short').value,10)||36,
           monthly_spend_cap_cents: parseInt($('enr-cap').value,10)||0
         },
-        push: { daily_badge: $('push-badge').checked },
+        push: {
+          daily_badge: $('push-badge').checked,
+          significant: {
+            enabled: $('push-sig').checked,
+            min_confidence: parseFloat($('sig-conf').value)||0.85,
+            min_interval_hours: parseInt($('sig-interval').value,10)||8
+          }
+        },
         sources: collectRows($('src-table').querySelector('tbody'), false),
         bluesky: collectRows($('bsky-table').querySelector('tbody'), true),
         profile: profile,
@@ -242,6 +337,52 @@
       .then(function(r){ return r.json(); })
       .then(fill)
       .catch(function(){ msg('Could not load config.', 'err'); });
+
+    // Status / health: shows that the AI is running (+ month-to-date cost) and
+    // how many articles each feed pulled in the last 48h.
+    function ago(ts){
+      if(!ts) return 'never';
+      var s=(Date.now()-ts)/1000;
+      if(s<90) return 'just now';
+      var m=Math.round(s/60); if(m<60) return m+'m ago';
+      var h=Math.round(m/60); if(h<48) return h+'h ago';
+      return Math.round(h/24)+'d ago';
+    }
+    function renderHealth(h){
+      var e = h.enrichment||{};
+      var aiOn = e.on;
+      var pill = '<span class="pill '+(aiOn?'on':'off')+'">'+(aiOn?'AI ON':'AI OFF')+'</span>';
+      var cost = '<span class="cost">$'+(e.month_to_date_usd!=null?e.month_to_date_usd.toFixed(2):'0.00')+'</span> of $'+(e.cap_usd!=null?e.cap_usd.toFixed(2):'5.00')+' this month';
+      var detail = aiOn
+        ? ('Enriched '+(e.last_enriched||0)+' items last run ('+ago(e.last_run)+') · '+(e.model||'')+' · '+cost)
+        : ('Reason: '+(e.reason||'off')+(e.has_key?'':' — add the ANTHROPIC_API_KEY secret') + ' · '+cost);
+      $('ai-status').innerHTML = pill + detail;
+
+      var list = $('health-list'); list.innerHTML='';
+      var srcs = (h.sources||[]).slice().sort(function(a,b){
+        var rank={dead:0,stale:1,unknown:2,off:3,ok:4};
+        return (rank[a.state]-rank[b.state]) || (b.count_48h-a.count_48h);
+      });
+      if(!srcs.length){ list.textContent='No source data yet — run the brief once.'; return; }
+      srcs.forEach(function(s){
+        var row=document.createElement('div'); row.className='hrow'+(s.state==='dead'?' is-dead':'');
+        row.innerHTML =
+          '<span class="dot '+s.state+'" title="'+s.state+'"></span>'+
+          '<span class="hname">'+(s.name||s.id)+(s.enabled?'':' (off)')+'</span>'+
+          '<span class="hdom">'+(s.domain||'')+'</span>'+
+          '<span class="hcount">'+(s.count_48h||0)+'</span>';
+        list.appendChild(row);
+      });
+      var dead = srcs.filter(function(s){return s.state==='dead';}).length;
+      var stale = srcs.filter(function(s){return s.state==='stale';}).length;
+      $('health-foot').textContent = 'Last poll '+ago(h.last_poll)+'. '+
+        (dead?dead+' not responding. ':'')+(stale?stale+' quiet (no articles in 48h). ':'')+
+        (!dead&&!stale?'All feeds healthy.':'');
+    }
+    fetch('/api/health', { cache:'no-store' })
+      .then(function(r){ return r.json(); })
+      .then(renderHealth)
+      .catch(function(){ $('ai-status').textContent='Could not load status.'; $('health-list').textContent=''; });
   </script>
 </body>
 </html>

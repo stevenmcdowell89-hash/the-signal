@@ -160,10 +160,27 @@ export async function bulkUpsertItems(db, items) {
     db.prepare(sql).bind(
       it.id, it.canonical_url, it.title, it.summary || "", it.domain, it.source, it.source_type,
       JSON.stringify(it.links || []), it.first_seen, it.last_seen,
-      it.published || it.first_seen, it.raw_score || 0
+      // NULL when the feed gave no date — never fudge it to first_seen. Scoring
+      // dates undated items by first_seen (with an age penalty) instead.
+      it.published ?? null, it.raw_score || 0
     )
   );
   await runChunked(db, stmts);
+}
+
+// Per-source article counts over a recent window (feed-health view §E). Counts
+// items first caught within the window, with the most recent catch per source.
+export async function getSourceCounts(db, sinceMs) {
+  const { results } = await db
+    .prepare(
+      `SELECT source, COUNT(*) AS c, MAX(last_seen) AS last_seen
+         FROM items WHERE first_seen >= ? GROUP BY source`
+    )
+    .bind(sinceMs)
+    .all();
+  const map = new Map();
+  for (const r of results || []) map.set(r.source, { count: r.c, last_seen: r.last_seen });
+  return map;
 }
 
 export async function bulkInsertSamples(db, rows) {

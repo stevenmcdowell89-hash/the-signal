@@ -18,6 +18,18 @@ export function defaultConfig() {
     cadence_hours: 3,
     // The fold (§3.7): above-fold = items over this confidence threshold.
     fold_threshold: 0.6,
+    // Recency (the daily is fast-decay — "what happened today"). One coherent
+    // decay signal drives confidence, the named-entity floor, Top Catches
+    // eligibility, and the below-fold window. All hours.
+    recency: {
+      half_life_hours: 20,        // confidence halves every N hours of age
+      floor_fresh_hours: 36,      // entity-floor items only forced above-fold if this fresh…
+      velocity_fresh_keep: 0.25,  // …or moving at least this fast (normalised 0–1)
+      top_catch_max_hours: 30,    // Top Catches strip only admits items this fresh
+      top_catch_recency_blend: 0.35, // Top Catches order = conf blended with recency
+      undated_penalty_hours: 36,  // feeds with no date are treated as this much older
+      score_window_days: 2,       // the brief scores/renders this recent a window
+    },
     enrichment: {
       enabled: true,
       model: "claude-haiku-4-5",
@@ -28,6 +40,15 @@ export function defaultConfig() {
     push: {
       // Daily = silent precache + app badge (no push). Weekly = the push.
       daily_badge: true,
+      // Significance-gated push: a single nudge only when something genuinely
+      // big lands (a fresh entity-floor catch or a high-confidence top catch),
+      // throttled so quiet days stay silent. Not a fixed daily alarm.
+      significant: {
+        enabled: true,
+        min_confidence: 0.85,   // a top catch this confident counts as "big"…
+        fresh_hours: 12,        // …if first seen within this window
+        min_interval_hours: 8,  // never push more often than this
+      },
     },
     sources: STARTER_FEEDS,
     bluesky: STARTER_BLUESKY,
@@ -69,7 +90,9 @@ export async function saveConfig(env, config) {
 function mergeConfig(def, saved) {
   const out = { ...def, ...saved };
   out.enrichment = { ...def.enrichment, ...(saved.enrichment || {}) };
+  out.recency = { ...def.recency, ...(saved.recency || {}) };
   out.push = { ...def.push, ...(saved.push || {}) };
+  out.push.significant = { ...def.push.significant, ...((saved.push || {}).significant || {}) };
   if (saved.profile) {
     out.profile = {
       named_entity_floor: saved.profile.named_entity_floor || def.profile.named_entity_floor,
