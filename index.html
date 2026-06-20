@@ -398,71 +398,112 @@
 
     /* ---------- The Brief (daily) ---------- */
     .header-links { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
-    .brief { margin-top: 1rem; }
+    .brief { margin-top: 0.25rem; }
     .brief-status {
-      display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;
-      font-size: 0.8rem; color: var(--ink-2);
-      padding: 0.5rem 0; border-bottom: 1px solid var(--line); margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 0.55rem; flex-wrap: wrap;
+      font-size: 0.78rem; color: var(--ink-2);
+      background: var(--bg-2); border: 1px solid var(--line); border-radius: 999px;
+      padding: 0.5rem 0.95rem; margin-bottom: 1.5rem;
     }
-    .brief-dot { width: 8px; height: 8px; border-radius: 50%; background: #46c46a; box-shadow: 0 0 8px #46c46a88; }
+    .brief-dot { width: 8px; height: 8px; border-radius: 50%; background: #46c46a; box-shadow: 0 0 8px #46c46a88; flex: 0 0 auto; }
     .brief-new {
-      font-weight: 600; color: var(--coral);
-      background: rgba(233,69,96,0.12); border: 1px solid rgba(233,69,96,0.3);
-      border-radius: 999px; padding: 0.1rem 0.6rem; font-size: 0.72rem;
+      font-weight: 700; color: #fff; background: linear-gradient(135deg, var(--coral), var(--orange));
+      border-radius: 999px; padding: 0.12rem 0.62rem; font-size: 0.68rem;
     }
     .brief-refresh {
-      margin-left: auto; font: inherit; font-size: 0.72rem; font-weight: 600;
-      color: var(--ink-dim); background: none; border: 1px solid var(--line);
-      border-radius: 999px; padding: 0.25rem 0.7rem; cursor: pointer;
+      margin-left: auto; font: inherit; font-size: 0.68rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--ink-dim); background: none; border: 0; cursor: pointer;
     }
-    .brief-refresh:hover { color: var(--coral); border-color: var(--line-strong); }
-    .brief-group { margin: 1.5rem 0; }
+    .brief-refresh:hover { color: var(--coral); }
+
+    /* group + section headers */
+    .brief-group { margin: 0 0 1.9rem; }
     .brief-h {
-      font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.2em;
-      color: var(--ink-dim); font-weight: 700; margin-bottom: 0.6rem;
-      display: flex; align-items: baseline; gap: 0.5rem;
+      display: flex; align-items: center; gap: 0.6rem;
+      font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.22em;
+      color: var(--ink); font-weight: 700; margin-bottom: 0.9rem;
     }
-    .brief-h .count { color: var(--coral); font-size: 0.68rem; }
+    .brief-h::before {
+      content: ''; width: 18px; height: 2px; border-radius: 2px; flex: 0 0 auto;
+      background: linear-gradient(135deg, var(--coral), var(--orange));
+    }
+    .brief-h .count {
+      color: var(--ink-dim); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.06em;
+      background: var(--bg-3); border-radius: 999px; padding: 0.05rem 0.5rem;
+    }
+
+    /* the catch card */
     .catch {
-      display: block; text-decoration: none; color: var(--ink);
-      padding: 0.7rem 0; border-bottom: 1px solid var(--line);
+      display: block; position: relative; text-decoration: none; color: var(--ink);
+      background: var(--bg-2); border: 1px solid var(--line); border-left: 3px solid var(--line-strong);
+      border-radius: 12px; padding: 0.85rem 1rem; margin-bottom: 0.7rem;
+      transition: transform 0.15s, border-color 0.15s, background 0.15s, box-shadow 0.15s;
     }
-    .catch:last-child { border-bottom: 0; }
+    .catch:last-child { margin-bottom: 0; }
+    .catch:hover {
+      transform: translateY(-2px); background: var(--bg-3);
+      border-color: var(--line-strong); box-shadow: 0 6px 20px rgba(0,0,0,0.28);
+    }
+    .catch.reg-consequential { border-left-color: var(--coral); }
+    .catch.reg-discovery { border-left-color: var(--gold); }
+    .catch.reg-take { border-left-color: var(--terracotta); }
+    .catch.reg-colour { border-left-color: var(--orange); }
+
+    .catch-head { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem; }
+    .catch-rank {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 22px; height: 22px; border-radius: 7px; flex: 0 0 auto;
+      font-size: 0.72rem; font-weight: 800; color: #fff;
+      background: linear-gradient(135deg, var(--coral), var(--orange));
+    }
+    .catch-dom { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.14em; font-weight: 700; color: var(--ink-dim); }
+    .catch-core {
+      font-size: 0.56rem; font-weight: 800; letter-spacing: 0.12em; color: var(--orange);
+      border: 1px solid rgba(255,107,53,0.4); border-radius: 4px; padding: 0.05rem 0.38rem;
+    }
+    .catch-title { font-weight: 600; line-height: 1.32; font-size: 1rem; transition: color 0.15s; }
     .catch:hover .catch-title { color: var(--coral); }
-    .catch-top { display: flex; align-items: baseline; gap: 0.5rem; }
-    .catch-rank { color: var(--coral); font-weight: 800; font-variant-numeric: tabular-nums; font-size: 0.85rem; min-width: 1.1rem; }
-    .catch-title { font-weight: 600; line-height: 1.35; font-size: 0.98rem; transition: color 0.15s; }
-    .catch-hook { color: var(--ink-2); font-size: 0.86rem; line-height: 1.45; margin-top: 0.2rem; }
-    .catch-meta { display: flex; gap: 0.5rem; align-items: center; margin-top: 0.35rem; flex-wrap: wrap; }
+    .catch-hook { color: var(--ink-2); font-size: 0.85rem; line-height: 1.45; margin-top: 0.3rem; }
+    .catch-foot {
+      display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;
+      margin-top: 0.6rem; padding-top: 0.55rem; border-top: 1px solid var(--line);
+    }
     .catch-reg {
-      font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.14em;
-      font-weight: 700; color: var(--ink-dim);
-      border: 1px solid var(--line); border-radius: 4px; padding: 0.05rem 0.4rem;
+      font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.14em; font-weight: 700;
+      color: var(--ink-dim); border: 1px solid var(--line); border-radius: 4px; padding: 0.08rem 0.42rem;
     }
     .catch-reg.consequential { color: var(--coral); border-color: rgba(233,69,96,0.4); }
     .catch-reg.discovery { color: var(--gold); border-color: rgba(201,166,107,0.4); }
-    .catch-floor { font-size: 0.6rem; color: var(--orange); font-weight: 700; letter-spacing: 0.1em; }
-    .catch-links { font-size: 0.72rem; color: var(--ink-dim); }
-    .catch-links a { color: var(--ink-dim); text-decoration: none; border-bottom: 1px dotted var(--line-strong); }
+    .catch-links { font-size: 0.72rem; color: var(--ink-dim); display: flex; gap: 0.55rem; flex-wrap: wrap; margin-left: auto; }
+    .catch-links a { color: var(--ink-dim); text-decoration: none; }
     .catch-links a:hover { color: var(--coral); }
-    .domain-sec { margin: 1.4rem 0; }
-    .also-line { padding: 0.45rem 0; border-bottom: 1px solid var(--line); font-size: 0.88rem; }
+
+    .domain-sec { margin: 0 0 1.9rem; }
+
+    /* Today & Tonight panel */
+    .tt-strip { background: var(--bg-2); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .tt-item { font-size: 0.88rem; color: var(--ink); padding: 0.7rem 1rem; border-bottom: 1px solid var(--line); }
+    .tt-item:last-child { border-bottom: 0; }
+    .tt-item a { color: var(--ink); text-decoration: none; }
+    .tt-item a:hover { color: var(--coral); }
+
+    /* Also: compact carded rows */
+    .also-wrap { background: var(--bg-2); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .also-line { padding: 0.65rem 1rem; border-bottom: 1px solid var(--line); font-size: 0.88rem; display: flex; gap: 0.7rem; align-items: baseline; }
     .also-line:last-child { border-bottom: 0; }
-    .also-dom { color: var(--ink-dim); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.16em; font-weight: 700; margin-right: 0.5rem; }
+    .also-dom { color: var(--coral); font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.14em; font-weight: 700; flex: 0 0 auto; min-width: 88px; }
     .also-line a { color: var(--ink); text-decoration: none; }
     .also-line a:hover { color: var(--coral); }
-    .tt-strip { display: flex; flex-direction: column; gap: 0.35rem; }
-    .tt-item { font-size: 0.86rem; color: var(--ink-2); }
-    .tt-item a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--line); }
-    .tt-item a:hover { color: var(--coral); }
+
     .brief-tail {
-      width: 100%; margin: 1rem 0; font: inherit; font-size: 0.78rem; font-weight: 600;
+      width: 100%; margin: 0.5rem 0 1.5rem; font: inherit; font-size: 0.76rem; font-weight: 700; letter-spacing: 0.04em;
       color: var(--ink-2); background: var(--bg-2); border: 1px solid var(--line);
-      border-radius: 10px; padding: 0.7rem; cursor: pointer; text-align: center;
+      border-radius: 10px; padding: 0.8rem; cursor: pointer; text-align: center;
     }
     .brief-tail:hover { border-color: var(--line-strong); color: var(--ink); }
-    .brief-footer { font-size: 0.74rem; color: var(--ink-dim); text-align: center; padding: 1rem 0; border-top: 1px solid var(--line); margin-top: 0.5rem; }
-    .brief-empty { color: var(--ink-dim); font-size: 0.9rem; padding: 1.5rem 0; text-align: center; }
+    .brief-footer { font-size: 0.74rem; color: var(--ink-dim); text-align: center; padding: 1.1rem 0; border-top: 1px solid var(--line); }
+    .brief-empty { color: var(--ink-dim); font-size: 0.92rem; padding: 2rem 1rem; text-align: center; background: var(--bg-2); border: 1px dashed var(--line-strong); border-radius: 12px; }
 
     /* ---------- Responsive ---------- */
     @media (max-width: 640px) {
@@ -620,7 +661,23 @@
       </div>
     </header>
 
-    <!-- THE BRIEF (daily) — rendered client-side from /api/daily -->
+    <!-- Top-level tabs: the Brief (daily) is the default front door -->
+    <section aria-label="The Signal">
+      <div class="tabs" role="tablist" aria-label="Sections">
+        <button id="tab-brief" class="tab is-active" role="tab" data-tab="brief"
+                aria-controls="panel-brief" aria-selected="true" tabindex="0">Brief</button>
+        <button id="tab-read" class="tab" role="tab" data-tab="read"
+                aria-controls="panel-read" aria-selected="false" tabindex="-1">
+          The&nbsp;Read <span class="tab-count">·&nbsp;12</span>
+        </button>
+        <button id="tab-specials" class="tab" role="tab" data-tab="specials"
+                aria-controls="panel-specials" aria-selected="false" tabindex="-1">
+          Specials <span class="tab-count">·&nbsp;12</span>
+        </button>
+      </div>
+
+      <!-- BRIEF (daily) — rendered client-side from /api/daily -->
+      <div id="panel-brief" class="tab-panel is-active" role="tabpanel" aria-labelledby="tab-brief">
     <section class="brief" id="brief" aria-label="The Brief">
       <div class="brief-status" id="brief-status">
         <span class="brief-dot"></span>
@@ -629,7 +686,10 @@
       </div>
       <div id="brief-root"></div>
     </section>
+      </div><!-- /panel-brief -->
 
+      <!-- THE READ (weekly) — latest issue + the durable archive -->
+      <div id="panel-read" class="tab-panel" role="tabpanel" aria-labelledby="tab-read" hidden>
     <!-- Continue reading (revealed by JS if localStorage has progress) -->
     <section class="continue" id="continue-section" aria-hidden="true">
       <h2 class="section-label">Continue reading</h2>
@@ -658,20 +718,7 @@
       </a>
     </section>
 
-    <!-- ARCHIVE (tabbed) -->
-    <section aria-label="Archive">
-      <div class="tabs" role="tablist" aria-label="Archive sections">
-        <button id="tab-weekly" class="tab is-active" role="tab" data-tab="weekly"
-                aria-controls="panel-weekly" aria-selected="true" tabindex="0">
-          Weekly <span class="tab-count">·&nbsp;12</span>
-        </button>
-        <button id="tab-specials" class="tab" role="tab" data-tab="specials"
-                aria-controls="panel-specials" aria-selected="false" tabindex="-1">
-          Specials <span class="tab-count">·&nbsp;12</span>
-        </button>
-      </div>
-
-      <div id="panel-weekly" class="tab-panel is-active" role="tabpanel" aria-labelledby="tab-weekly">
+      <h2 class="section-label">The archive</h2>
       <ul class="grid">
         <li>
           <a class="card" href="issues/signal_weekly_2026-06-07.html" data-cover-slug="signal_weekly_2026-06-07">
@@ -1041,22 +1088,35 @@
         return it.links[0];
       }
 
-      function catchEl(it, rank){
+      function catchEl(it, opts){
+        opts = opts || {};
         var primary = firstLink(it);
         var a = document.createElement('a');
-        a.className = 'catch';
+        a.className = 'catch' + (it.register ? ' reg-' + esc(it.register) : '');
         a.href = primary ? primary.url : '#';
         a.target = '_blank'; a.rel = 'noopener';
-        var rankHtml = rank ? '<span class="catch-rank">'+rank+'</span>' : '';
-        var reg = it.register ? '<span class="catch-reg '+esc(it.register)+'">'+esc(it.register)+'</span>' : '';
-        var floor = it.entity_floor ? '<span class="catch-floor">CORE</span>' : '';
+
+        // Card head: optional rank badge · domain chip (cross-domain views) · CORE.
+        var head = [];
+        if (opts.rank) head.push('<span class="catch-rank">' + opts.rank + '</span>');
+        if (opts.showDomain) head.push('<span class="catch-dom">' + esc(DOMAIN_LABELS[it.domain] || it.domain) + '</span>');
+        if (it.entity_floor) head.push('<span class="catch-core">CORE</span>');
+        var headHtml = head.length ? '<div class="catch-head">' + head.join('') + '</div>' : '';
+
+        // Footer: register chip + the out-links (source + best discussion).
+        var reg = it.register ? '<span class="catch-reg ' + esc(it.register) + '">' + esc(it.register) + '</span>' : '';
         var linksHtml = (it.links||[]).map(function(l){
-          return '<a href="'+esc(l.url)+'" target="_blank" rel="noopener">'+esc(l.label||l.type)+'</a>';
-        }).join(' · ');
+          return '<a href="' + esc(l.url) + '" target="_blank" rel="noopener">' + esc(l.label || l.type) + '</a>';
+        }).join('');
+        var foot = (reg || linksHtml)
+          ? '<div class="catch-foot">' + reg + '<span class="catch-links">' + linksHtml + '</span></div>'
+          : '';
+
         a.innerHTML =
-          '<div class="catch-top">'+rankHtml+'<span class="catch-title">'+esc(it.title)+'</span></div>'+
-          (it.hook ? '<div class="catch-hook">'+esc(it.hook)+'</div>' : '')+
-          '<div class="catch-meta">'+reg+floor+'<span class="catch-links">'+linksHtml+'</span></div>';
+          headHtml +
+          '<div class="catch-title">' + esc(it.title) + '</div>' +
+          (it.hook ? '<div class="catch-hook">' + esc(it.hook) + '</div>' : '') +
+          foot;
         // Clicking a sub-link shouldn't also follow the card link.
         a.querySelectorAll('.catch-links a').forEach(function(x){ x.addEventListener('click', function(e){ e.stopPropagation(); }); });
         return a;
@@ -1115,7 +1175,7 @@
         // Top Catches — rank carries "read first"; no orientation line.
         if ((state.top_catches||[]).length){
           var g1 = group('Top Catches');
-          state.top_catches.forEach(function(it,i){ g1.appendChild(catchEl(it, i+1)); });
+          state.top_catches.forEach(function(it,i){ g1.appendChild(catchEl(it, { rank: i+1, showDomain: true })); });
           root.appendChild(g1);
         }
 
@@ -1123,21 +1183,22 @@
         (state.sections||[]).forEach(function(s){
           var g = group(s.label || DOMAIN_LABELS[s.domain] || s.domain, s.items.length);
           g.className='brief-group domain-sec';
-          s.items.forEach(function(it){ g.appendChild(catchEl(it)); });
+          s.items.forEach(function(it){ g.appendChild(catchEl(it, {})); });
           root.appendChild(g);
         });
 
         // Also — low-volume domains as bare one-liners.
         if ((state.also||[]).length){
           var g2 = group('Also');
+          var wrap = document.createElement('div'); wrap.className='also-wrap';
           state.also.forEach(function(a){
             var l = firstLink(a.item);
             var d = document.createElement('div'); d.className='also-line';
             d.innerHTML = '<span class="also-dom">'+esc(a.label)+'</span>'+
               (l ? '<a href="'+esc(l.url)+'" target="_blank" rel="noopener">'+esc(a.item.title)+'</a>' : esc(a.item.title));
-            g2.appendChild(d);
+            wrap.appendChild(d);
           });
-          root.appendChild(g2);
+          g2.appendChild(wrap); root.appendChild(g2);
         }
 
         // Tappable tail — the full retained set below the fold.
@@ -1146,7 +1207,7 @@
           var btn = document.createElement('button'); btn.className='brief-tail';
           btn.textContent = 'Show '+bf.length+' more held below the fold';
           var holder = document.createElement('div'); holder.hidden = true;
-          bf.forEach(function(it){ holder.appendChild(catchEl(it)); });
+          bf.forEach(function(it){ holder.appendChild(catchEl(it, { showDomain: true })); });
           btn.addEventListener('click', function(){
             holder.hidden = !holder.hidden;
             btn.textContent = holder.hidden ? 'Show '+bf.length+' more held below the fold' : 'Hide the tail';
@@ -1192,14 +1253,14 @@
 
     // -------- Archive tabs --------
     (function () {
-      var TABS = ['weekly', 'specials'];
+      var TABS = ['brief', 'read', 'specials'];
       var STORAGE_KEY = 'signal-archive-tab';
       var tabs = document.querySelectorAll('.tab');
       var panels = document.querySelectorAll('.tab-panel');
       if (!tabs.length) return;
 
       function activate(name, opts) {
-        if (TABS.indexOf(name) === -1) name = 'weekly';
+        if (TABS.indexOf(name) === -1) name = 'brief';
         tabs.forEach(function (t) {
           var on = t.dataset.tab === name;
           t.classList.toggle('is-active', on);
@@ -1229,7 +1290,7 @@
           if (TABS.indexOf(stored) !== -1) initial = stored;
         } catch (_) {}
       }
-      activate(initial || 'weekly', { silent: true });
+      activate(initial || 'brief', { silent: true });
 
       tabs.forEach(function (t) {
         t.addEventListener('click', function () { activate(t.dataset.tab); });
