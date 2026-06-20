@@ -91,12 +91,17 @@ export async function run(env, { trigger } = {}) {
   //    in memory. The recomputable score fields are NOT written back — every
   //    poll recomputes them; only enrichment (hooks) is persisted, separately.
   const weightBySource = new Map();
-  for (const s of config.sources || []) weightBySource.set(s.id, s.weight);
-  for (const b of config.bluesky || []) weightBySource.set(b.id, b.weight);
+  const domainBySource = new Map();
+  for (const s of config.sources || []) { weightBySource.set(s.id, s.weight); domainBySource.set(s.id, s.domain); }
+  for (const b of config.bluesky || []) { weightBySource.set(b.id, b.weight); domainBySource.set(b.id, b.domain); }
 
   const sinceMs = now - 1000 * 60 * 60 * 24 * SCORE_WINDOW_DAYS;
   const rows = await getWindowItems(db, sinceMs);
-  const items = rows.map((r) => rowToItem(r, weightBySource));
+  const items = rows.map((r) => {
+    const it = rowToItem(r, weightBySource);
+    it.feed_domain = domainBySource.get(r.source) || it.domain; // authoritative
+    return it;
+  });
 
   await scoreBatch(db, items, config, now);
 

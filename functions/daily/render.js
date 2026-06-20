@@ -75,15 +75,16 @@ export function buildState(items, meta, now) {
   const belowFold = live.filter((i) => !i.above_fold);
 
   // Top Catches: 3–5, ranked, cross-domain. Rank alone carries "read first" —
-  // no narrative orientation line (§4.3). Bias toward domain diversity.
+  // no narrative orientation line (§4.3). Cap at 2 per domain so one busy domain
+  // (e.g. Juventus in the transfer window) can't flood the strip.
   const ranked = aboveFold.slice().sort((a, b) => b.confidence - a.confidence);
   const top = [];
-  const topDomains = new Set();
+  const perDomain = {};
   for (const it of ranked) {
     if (top.length >= 5) break;
-    if (top.length >= 3 && topDomains.has(it.domain)) continue;
+    if ((perDomain[it.domain] || 0) >= 2) continue;
     top.push(it);
-    topDomains.add(it.domain);
+    perDomain[it.domain] = (perDomain[it.domain] || 0) + 1;
   }
   const topIds = new Set(top.map((t) => t.id));
 

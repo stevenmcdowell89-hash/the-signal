@@ -38,22 +38,31 @@ export function scoreProfile(item, profile, extraMutes) {
   }
 
   // Topic-weighted keyword match. Score = weighted keyword hits, saturating.
-  let best = 0;
+  // The feed already tags a domain; scan all domains so a genuinely cross-domain
+  // item (e.g. HN tagged ai_engineering but about gaming) re-homes — but PREFER
+  // the feed's own domain unless another beats it by a clear margin, so a thin
+  // football headline doesn't get mis-filed under books on a stray keyword.
   const tw = profile.topic_weights || {};
-  // Prefer the item's own domain weighting, but scan all domains so a
-  // cross-domain item (e.g. HN tagged ai_engineering but about gaming) still
-  // surfaces under the right interest.
-  let bestDomain = item.domain;
+  // The feed's configured domain is authoritative (a persisted row may carry a
+  // stale re-domained value from an earlier poll).
+  const ownDomain = item.feed_domain || item.domain;
+  let best = 0;
+  let bestDomain = ownDomain;
+  let ownScore = 0;
   for (const [domain, spec] of Object.entries(tw)) {
     let hits = 0;
     for (const kw of spec.keywords) if (h.includes(lc(kw))) hits++;
     if (hits === 0) continue;
-    const sat = 1 - Math.pow(0.6, hits); // diminishing returns
-    const s = spec.weight * sat;
+    const s = spec.weight * (1 - Math.pow(0.6, hits)); // diminishing returns
+    if (domain === ownDomain) ownScore = s;
     if (s > best) {
       best = s;
       bestDomain = domain;
     }
+  }
+  if (ownScore > 0 && best <= ownScore * 1.25) {
+    bestDomain = ownDomain;
+    best = ownScore;
   }
   item.domain = bestDomain;
 
