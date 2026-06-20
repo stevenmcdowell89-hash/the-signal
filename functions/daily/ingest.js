@@ -29,16 +29,58 @@ async function fetchJson(url) {
 }
 
 // ---- tiny XML helpers (regex-based; tolerant) ----
+//
+// Robust HTML-entity decoding: numeric (decimal + hex) via code point, a named
+// map for the common ones, run twice to catch double-encoding (&amp;#8217;),
+// with tags stripped. This is what kept curly quotes / em-dashes / accents
+// from showing up as raw "&#8217;" mojibake.
+const NAMED = {
+  nbsp: " ", amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", "#39": "'",
+  ndash: "–", mdash: "—", hellip: "…", lsquo: "‘", rsquo: "’", sbquo: "‚",
+  ldquo: "“", rdquo: "”", bdquo: "„", laquo: "«", raquo: "»", prime: "′", Prime: "″",
+  eacute: "é", egrave: "è", ecirc: "ê", agrave: "à", acirc: "â", aacute: "á",
+  uuml: "ü", ouml: "ö", auml: "ä", iuml: "ï", uacute: "ú", oacute: "ó",
+  iacute: "í", ccedil: "ç", ntilde: "ñ", szlig: "ß", oslash: "ø", aring: "å",
+  Eacute: "É", Agrave: "À", copy: "©", reg: "®", trade: "™", deg: "°",
+  pound: "£", euro: "€", cent: "¢", yen: "¥", middot: "·", bull: "•",
+  times: "×", divide: "÷", frac12: "½", frac14: "¼", frac34: "¾", amp_: "&",
+};
+
+function cp(n) {
+  try {
+    if (!n || (n >= 0xd800 && n <= 0xdfff)) return "";
+    return String.fromCodePoint(n);
+  } catch {
+    return "";
+  }
+}
+
+function decodeOnce(s) {
+  return s
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, h) => cp(parseInt(h, 16)))
+    .replace(/&#(\d+);/g, (_, d) => cp(parseInt(d, 10)))
+    .replace(/&([a-zA-Z][a-zA-Z0-9]*);/g, (m, n) =>
+      NAMED[n] !== undefined ? NAMED[n] : NAMED[n.toLowerCase()] !== undefined ? NAMED[n.toLowerCase()] : m
+    );
+}
+
 function decodeEntities(s) {
   if (!s) return "";
-  return s
-    .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1")
-    .replace(/&lt;/g, "<").replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"').replace(/&#0?39;/g, "'").replace(/&apos;/g, "'")
-    .replace(/&#x27;/g, "'").replace(/&#8217;/g, "’").replace(/&#8211;/g, "–")
-    .replace(/&amp;/g, "&")
-    .replace(/<[^>]+>/g, "") // strip any stray inline tags
-    .trim();
+  s = s.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1"); // unwrap CDATA
+  s = s.replace(/<[^>]+>/g, " "); // strip the original tags
+  s = decodeOnce(s); // decode entities (may reveal tags that were entity-encoded)
+  s = s.replace(/<[^>]+>/g, " "); // strip those revealed tags
+  s = decodeOnce(s); // final pass for any remaining double-encoded entities
+  return s.replace(/\s+/g, " ").trim();
+}
+
+// Clip a summary to ~n chars on a word boundary with an ellipsis.
+function clip(s, n) {
+  s = (s || "").trim();
+  if (s.length <= n) return s;
+  const t = s.slice(0, n);
+  const sp = t.lastIndexOf(" ");
+  return (sp > 60 ? t.slice(0, sp) : t).replace(/[\s.,;:–—-]+$/, "") + "…";
 }
 
 function firstTag(block, tag) {
@@ -74,8 +116,9 @@ function parseFeed(xml, feed) {
       const title = firstTag(block, "title");
       const link = firstTag(block, "link") || (block.match(/<link[^>]*>([^<]+)/i) || [])[1] || "";
       const date = firstTag(block, "pubDate") || firstTag(block, "dc:date");
+      const desc = firstTag(block, "description") || firstTag(block, "content:encoded") || firstTag(block, "summary");
       if (!title || !link) continue;
-      out.push(makeEntry(feed, title, link.trim(), parseDate(date)));
+      out.push(makeEntry(feed, title, link.trim(), parseDate(date), clip(desc, 300)));
     }
     return out;
   }
@@ -85,19 +128,21 @@ function parseFeed(xml, feed) {
     const title = firstTag(block, "title");
     const link = atomLink(block);
     const date = firstTag(block, "updated") || firstTag(block, "published");
+    const desc = firstTag(block, "summary") || firstTag(block, "content");
     if (!title || !link) continue;
-    out.push(makeEntry(feed, title, link.trim(), parseDate(date)));
+    out.push(makeEntry(feed, title, link.trim(), parseDate(date), clip(desc, 300)));
   }
   return out;
 }
 
-function makeEntry(feed, title, url, published) {
+function makeEntry(feed, title, url, published, summary) {
   return {
     sourceId: feed.id,
     sourceType: feed.type,
     domain: feed.domain,
     weight: feed.weight,
     title,
+    summary: summary || "",
     url,
     links: [{ type: "article", url, label: feed.name || feed.id }],
     rawScore: 1, // RSS has no popularity signal; baseline is recency/volume-driven
@@ -126,6 +171,7 @@ async function ingestHn(feed) {
       domain: feed.domain,
       weight: feed.weight,
       title,
+      summary: `${hit.points || 0} points · ${hit.num_comments || 0} comments on Hacker News`,
       url: hit.url || hnUrl,
       links,
       rawScore: (hit.points || 0) + (hit.num_comments || 0) * 0.5,
@@ -154,6 +200,7 @@ async function ingestBluesky(handle) {
       domain: handle.domain,
       weight: handle.weight,
       title: text,
+      summary: "",
       url: webUrl,
       links: [{ type: "post", url: webUrl, label: `@${handle.handle}` }],
       rawScore: (post.likeCount || 0) + (post.repostCount || 0) * 1.5,

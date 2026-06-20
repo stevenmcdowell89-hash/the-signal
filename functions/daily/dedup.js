@@ -122,6 +122,7 @@ export async function clusterEntries(entries) {
       id,
       canonical_url: m.canon,
       title: rep.title,
+      summary: rep.summary || "",
       domain: rep.domain,
       source: rep.sourceId,
       source_type: rep.sourceType,

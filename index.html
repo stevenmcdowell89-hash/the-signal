@@ -417,6 +417,22 @@
     }
     .brief-refresh:hover { color: var(--coral); }
 
+    /* domain sub-tabs (filter chips) */
+    .brief-filters {
+      display: flex; gap: 0.4rem; overflow-x: auto; margin-bottom: 1.5rem;
+      padding-bottom: 0.4rem; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+    }
+    .brief-filters::-webkit-scrollbar { display: none; }
+    .bfilter {
+      flex: 0 0 auto; font: inherit; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.02em;
+      color: var(--ink-2); background: var(--bg-2); border: 1px solid var(--line);
+      border-radius: 999px; padding: 0.35rem 0.8rem; cursor: pointer; white-space: nowrap;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+    }
+    .bfilter:hover { border-color: var(--line-strong); color: var(--ink); }
+    .bfilter.is-active { color: #fff; background: linear-gradient(135deg, var(--coral), var(--orange)); border-color: transparent; }
+    .bfilter .c { opacity: 0.7; font-size: 0.66rem; margin-left: 0.3rem; font-variant-numeric: tabular-nums; }
+
     /* group + section headers */
     .brief-group { margin: 0 0 1.9rem; }
     .brief-h {
@@ -462,9 +478,13 @@
       font-size: 0.56rem; font-weight: 800; letter-spacing: 0.12em; color: var(--orange);
       border: 1px solid rgba(255,107,53,0.4); border-radius: 4px; padding: 0.05rem 0.38rem;
     }
+    .catch-time { margin-left: auto; font-size: 0.66rem; color: var(--ink-dim); font-weight: 600; flex: 0 0 auto; }
     .catch-title { font-weight: 600; line-height: 1.32; font-size: 1rem; transition: color 0.15s; }
     .catch:hover .catch-title { color: var(--coral); }
-    .catch-hook { color: var(--ink-2); font-size: 0.85rem; line-height: 1.45; margin-top: 0.3rem; }
+    .catch-hook { color: var(--ink-2); font-size: 0.85rem; line-height: 1.45; margin-top: 0.35rem; }
+    .catch-summary { color: var(--ink-2); font-size: 0.85rem; line-height: 1.5; margin-top: 0.35rem;
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .catch-hook + .catch-summary { margin-top: 0.25rem; font-size: 0.8rem; color: var(--ink-dim); }
     .catch-foot {
       display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;
       margin-top: 0.6rem; padding-top: 0.55rem; border-top: 1px solid var(--line);
@@ -1088,6 +1108,20 @@
         return it.links[0];
       }
 
+      var DOMAIN_ORDER = ['world','gaming','football','tech_devices','ai_engineering','books','film_tv','music','golf','lego','fitness','finance','travel','history','podcasts','home_selfhosting'];
+
+      function reltime(it){
+        var ts = it.published || it.first_seen || 0;
+        if (!ts) return '';
+        var s = (Date.now() - ts) / 1000; if (s < 0) s = 0;
+        if (s < 90) return 'just now';
+        var m = Math.round(s/60); if (m < 60) return m + 'm ago';
+        var h = Math.round(m/60); if (h < 24) return h + 'h ago';
+        var d = Math.round(h/24); if (d === 1) return 'yesterday';
+        if (d < 7) return d + 'd ago';
+        try { return new Date(ts).toLocaleDateString(undefined, { day:'numeric', month:'short' }); } catch(_){ return ''; }
+      }
+
       function catchEl(it, opts){
         opts = opts || {};
         var primary = firstLink(it);
@@ -1096,12 +1130,18 @@
         a.href = primary ? primary.url : '#';
         a.target = '_blank'; a.rel = 'noopener';
 
-        // Card head: optional rank badge · domain chip (cross-domain views) · CORE.
-        var head = [];
-        if (opts.rank) head.push('<span class="catch-rank">' + opts.rank + '</span>');
-        if (opts.showDomain) head.push('<span class="catch-dom">' + esc(DOMAIN_LABELS[it.domain] || it.domain) + '</span>');
-        if (it.entity_floor) head.push('<span class="catch-core">CORE</span>');
-        var headHtml = head.length ? '<div class="catch-head">' + head.join('') + '</div>' : '';
+        // Card head: optional rank · domain chip · CORE, then the time (right).
+        var left = '';
+        if (opts.rank) left += '<span class="catch-rank">' + opts.rank + '</span>';
+        if (opts.showDomain) left += '<span class="catch-dom">' + esc(DOMAIN_LABELS[it.domain] || it.domain) + '</span>';
+        if (it.entity_floor) left += '<span class="catch-core">CORE</span>';
+        var t = reltime(it);
+        var headHtml = '<div class="catch-head">' + left + (t ? '<span class="catch-time">' + esc(t) + '</span>' : '') + '</div>';
+
+        // Body: the AI hook (when enriched) and/or the story's own summary.
+        var body = '';
+        if (it.hook) body += '<div class="catch-hook">' + esc(it.hook) + '</div>';
+        if (it.summary) body += '<div class="catch-summary">' + esc(it.summary) + '</div>';
 
         // Footer: register chip + the out-links (source + best discussion).
         var reg = it.register ? '<span class="catch-reg ' + esc(it.register) + '">' + esc(it.register) + '</span>' : '';
@@ -1112,12 +1152,7 @@
           ? '<div class="catch-foot">' + reg + '<span class="catch-links">' + linksHtml + '</span></div>'
           : '';
 
-        a.innerHTML =
-          headHtml +
-          '<div class="catch-title">' + esc(it.title) + '</div>' +
-          (it.hook ? '<div class="catch-hook">' + esc(it.hook) + '</div>' : '') +
-          foot;
-        // Clicking a sub-link shouldn't also follow the card link.
+        a.innerHTML = headHtml + '<div class="catch-title">' + esc(it.title) + '</div>' + body + foot;
         a.querySelectorAll('.catch-links a').forEach(function(x){ x.addEventListener('click', function(e){ e.stopPropagation(); }); });
         return a;
       }
@@ -1129,14 +1164,24 @@
         g.appendChild(h); return g;
       }
 
-      function render(state){
-        root.innerHTML='';
-        var look = lastLook();
+      function allLiveItems(state){
+        return [].concat(
+          state.top_catches||[],
+          (state.sections||[]).reduce(function(a,s){ return a.concat(s.items); }, []),
+          (state.also||[]).map(function(x){ return x.item; })
+        );
+      }
 
-        // Status + "new since last look".
-        var allLive = [].concat(state.top_catches||[], (state.sections||[]).reduce(function(a,s){return a.concat(s.items);},[]), (state.also||[]).map(function(x){return x.item;}));
+      var currentState = null, currentFilter = 'all';
+
+      // render() runs once per data load: status, watermark, app badge, then paint.
+      function render(state){
+        currentState = state; currentFilter = 'all';
+        var look = lastLook();
+        var allLive = allLiveItems(state);
         var newCount = look ? allLive.filter(function(i){ return (i.first_seen||0) > look; }).length : 0;
         var when = state.generated_at ? hhmm(state.generated_at) : '';
+        var prev = statusText.parentNode.querySelector('.brief-new'); if (prev) prev.remove();
         statusText.innerHTML = 'Caught up' + (when ? ' &middot; '+when : '');
         if (newCount > 0 && look) {
           var badge = document.createElement('span'); badge.className='brief-new';
@@ -1144,22 +1189,49 @@
           statusText.parentNode.insertBefore(badge, refreshBtn);
         }
         refreshBtn.hidden = false;
-
-        // Ambient app badge (§10): new-since-last-look, no nag. Persists after
-        // the tab closes; clears once you've looked.
         try {
           if ('setAppBadge' in navigator) {
-            if (newCount > 0 && look) navigator.setAppBadge(newCount);
-            else navigator.clearAppBadge();
+            if (newCount > 0 && look) navigator.setAppBadge(newCount); else navigator.clearAppBadge();
           }
         } catch (_) {}
+        paint();
+        setLook(Date.now());
+      }
 
-        if (!allLive.length && !(state.below_fold||[]).length) {
-          root.innerHTML = '<div class="brief-empty">Nothing has cleared the bar yet. The Worker updates through the day.</div>';
-          setLook(Date.now()); return;
+      // Sub-tabs: All + each domain present, with counts. Clicking re-paints.
+      function chipBar(state){
+        var bar = document.createElement('div'); bar.className='brief-filters';
+        var counts = {}; allLiveItems(state).forEach(function(i){ counts[i.domain]=(counts[i.domain]||0)+1; });
+        function chip(key, label, count){
+          var b = document.createElement('button');
+          b.className = 'bfilter' + (currentFilter===key ? ' is-active' : '');
+          b.innerHTML = esc(label) + (count!=null ? ' <span class="c">'+count+'</span>' : '');
+          b.addEventListener('click', function(){ currentFilter = key; paint(); root.scrollIntoView({block:'start',behavior:'smooth'}); });
+          return b;
         }
+        bar.appendChild(chip('all', 'All', allLiveItems(state).length));
+        DOMAIN_ORDER.forEach(function(d){ if (counts[d]) bar.appendChild(chip(d, DOMAIN_LABELS[d]||d, counts[d])); });
+        return bar;
+      }
 
-        // Today & Tonight.
+      function paint(){
+        var state = currentState; if (!state) return;
+        root.innerHTML = '';
+        if (!allLiveItems(state).length && !(state.below_fold||[]).length){
+          root.innerHTML = '<div class="brief-empty">Nothing has cleared the bar yet. The Worker updates through the day.</div>';
+          return;
+        }
+        root.appendChild(chipBar(state));
+        if (currentFilter === 'all') renderAll(state); else renderDomain(state, currentFilter);
+        var f = state.footer||{};
+        var fo = document.createElement('div'); fo.className='brief-footer';
+        fo.textContent = (f.kept||0)+' kept of '+(f.scanned||0)+' scanned · '+(f.sources||0)+' sources'+
+          (f.enrichment && !f.enrichment.on ? ' · headlines only ('+(f.enrichment.reason||'')+')' : '');
+        root.appendChild(fo);
+      }
+
+      // The full running order (filter = All).
+      function renderAll(state){
         if ((state.today_tonight||[]).length){
           var g0 = group('Today & Tonight');
           var strip = document.createElement('div'); strip.className='tt-strip';
@@ -1171,23 +1243,17 @@
           });
           g0.appendChild(strip); root.appendChild(g0);
         }
-
-        // Top Catches — rank carries "read first"; no orientation line.
         if ((state.top_catches||[]).length){
           var g1 = group('Top Catches');
           state.top_catches.forEach(function(it,i){ g1.appendChild(catchEl(it, { rank: i+1, showDomain: true })); });
           root.appendChild(g1);
         }
-
-        // Domain sections — dynamic, fixed order, quiet domains absent.
         (state.sections||[]).forEach(function(s){
           var g = group(s.label || DOMAIN_LABELS[s.domain] || s.domain, s.items.length);
           g.className='brief-group domain-sec';
           s.items.forEach(function(it){ g.appendChild(catchEl(it, {})); });
           root.appendChild(g);
         });
-
-        // Also — low-volume domains as bare one-liners.
         if ((state.also||[]).length){
           var g2 = group('Also');
           var wrap = document.createElement('div'); wrap.className='also-wrap';
@@ -1200,30 +1266,36 @@
           });
           g2.appendChild(wrap); root.appendChild(g2);
         }
+        tail(state.below_fold||[], 'held below the fold');
+      }
 
-        // Tappable tail — the full retained set below the fold.
-        var bf = state.below_fold||[];
-        if (bf.length){
-          var btn = document.createElement('button'); btn.className='brief-tail';
-          btn.textContent = 'Show '+bf.length+' more held below the fold';
-          var holder = document.createElement('div'); holder.hidden = true;
-          bf.forEach(function(it){ holder.appendChild(catchEl(it, { showDomain: true })); });
-          btn.addEventListener('click', function(){
-            holder.hidden = !holder.hidden;
-            btn.textContent = holder.hidden ? 'Show '+bf.length+' more held below the fold' : 'Hide the tail';
-          });
-          root.appendChild(btn); root.appendChild(holder);
-        }
+      // One domain, everything grouped (filter = a domain).
+      function renderDomain(state, dom){
+        var above = allLiveItems(state).filter(function(i){ return i.domain===dom; })
+          .sort(function(a,b){ return (b.confidence||0)-(a.confidence||0); });
+        var g = group(DOMAIN_LABELS[dom]||dom, above.length);
+        g.className = 'brief-group domain-sec';
+        if (!above.length){ var e=document.createElement('div'); e.className='brief-empty'; e.textContent='Nothing above the fold here right now.'; g.appendChild(e); }
+        above.forEach(function(it){ g.appendChild(catchEl(it, {})); });
+        root.appendChild(g);
+        var below = (state.below_fold||[]).filter(function(i){ return i.domain===dom; })
+          .sort(function(a,b){ return (b.confidence||0)-(a.confidence||0); });
+        tail(below, 'more in ' + (DOMAIN_LABELS[dom]||dom) + ' below the fold');
+      }
 
-        // Footer stat.
-        var f = state.footer||{};
-        var fo = document.createElement('div'); fo.className='brief-footer';
-        fo.textContent = (f.kept||0)+' kept of '+(f.scanned||0)+' scanned · '+(f.sources||0)+' sources'+
-          (f.enrichment && !f.enrichment.on ? ' · headlines only ('+esc(f.enrichment.reason||'')+')' : '');
-        root.appendChild(fo);
-
-        // Update the watermark to now — we've "looked".
-        setLook(Date.now());
+      // Shared tappable below-the-fold tail.
+      function tail(items, label){
+        if (!items.length) return;
+        var btn = document.createElement('button'); btn.className='brief-tail';
+        var show = 'Show '+items.length+' '+label;
+        btn.textContent = show;
+        var holder = document.createElement('div'); holder.hidden = true;
+        items.forEach(function(it){ holder.appendChild(catchEl(it, { showDomain: currentFilter==='all' })); });
+        btn.addEventListener('click', function(){
+          holder.hidden = !holder.hidden;
+          btn.textContent = holder.hidden ? show : 'Hide';
+        });
+        root.appendChild(btn); root.appendChild(holder);
       }
 
       function load(){

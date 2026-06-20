@@ -14,6 +14,7 @@ export async function initSchema(db) {
       id TEXT PRIMARY KEY,
       canonical_url TEXT,
       title TEXT,
+      summary TEXT,
       domain TEXT,
       source TEXT,
       source_type TEXT,
@@ -63,6 +64,13 @@ export async function initSchema(db) {
       notes TEXT
     )`),
   ]);
+  // Idempotent migration for databases created before the summary column.
+  // ALTER must run outside the batch (a failed ALTER would roll the batch back).
+  try {
+    await db.prepare(`ALTER TABLE items ADD COLUMN summary TEXT`).run();
+  } catch (_) {
+    /* column already exists */
+  }
 }
 
 // Pull the current in-window item set for scoring/render. Retention ~14 days
@@ -139,17 +147,18 @@ export async function runChunked(db, stmts, size = 50) {
 }
 
 export async function bulkUpsertItems(db, items) {
-  const sql = `INSERT INTO items (id, canonical_url, title, domain, source, source_type, links,
+  const sql = `INSERT INTO items (id, canonical_url, title, summary, domain, source, source_type, links,
          first_seen, last_seen, published, raw_score)
-       VALUES (?,?,?,?,?,?,?,?,?,?,?)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
        ON CONFLICT(id) DO UPDATE SET
          last_seen=excluded.last_seen,
          raw_score=MAX(items.raw_score, excluded.raw_score),
          links=excluded.links,
-         title=excluded.title`;
+         title=excluded.title,
+         summary=COALESCE(NULLIF(excluded.summary, ''), items.summary)`;
   const stmts = items.map((it) =>
     db.prepare(sql).bind(
-      it.id, it.canonical_url, it.title, it.domain, it.source, it.source_type,
+      it.id, it.canonical_url, it.title, it.summary || "", it.domain, it.source, it.source_type,
       JSON.stringify(it.links || []), it.first_seen, it.last_seen,
       it.published || it.first_seen, it.raw_score || 0
     )
