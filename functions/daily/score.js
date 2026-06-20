@@ -22,6 +22,10 @@ function matchesAny(hay, patterns) {
 export function scoreProfile(item, profile, extraMutes) {
   const title = item.title || "";
   const h = lc(title);
+  // Topic-keyword scoring runs over title + summary for a richer signal; the
+  // floor / mutes / special-handling stay title-only to avoid over-matching on
+  // a stray word in a long summary.
+  const ht = lc(title + " " + (item.summary || ""));
 
   // Global mutes (§3.5).
   if (matchesAny(title, profile.mutes) || matchesAny(title, extraMutes)) {
@@ -41,10 +45,10 @@ export function scoreProfile(item, profile, extraMutes) {
   // Matching is WORD-BOUNDARY, not substring: a single-token keyword must appear
   // as a whole word (so "tor" doesn't match "direcTOR", "inter" doesn't match
   // "INTERnet"); multi-word / hyphenated keywords fall back to substring.
-  const words = new Set(h.split(/[^a-z0-9]+/).filter(Boolean));
+  const words = new Set(ht.split(/[^a-z0-9]+/).filter(Boolean));
   const kwHit = (kw) => {
     kw = lc(kw).trim();
-    return /[^a-z0-9]/.test(kw) ? h.includes(kw) : words.has(kw);
+    return /[^a-z0-9]/.test(kw) ? ht.includes(kw) : words.has(kw);
   };
 
   const tw = profile.topic_weights || {};
