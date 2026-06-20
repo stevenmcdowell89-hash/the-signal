@@ -4,27 +4,60 @@
 // is NOT auto-routed. This file is the single Worker script — it dispatches
 // /api/* to the handlers in functions/ and falls through to env.ASSETS.fetch()
 // for everything else (the static site).
+//
+// It also owns the Cron Trigger (`scheduled`) that drives the daily brief:
+// every few hours the Worker polls sources, runs the triage pipeline, and
+// writes the rendered state to KV/D1. See wrangler.jsonc → triggers.crons.
 
 import { onRequestGet as vapidPublicKey } from "./functions/api/vapid-public-key.js";
 import { onRequestPost as subscribe } from "./functions/api/subscribe.js";
 import { onRequestPost as notify } from "./functions/api/notify.js";
+import {
+  onRequestGet as configGet,
+  onRequestPost as configPost,
+} from "./functions/api/config.js";
+import {
+  onRequestGet as dailyGet,
+  onRequestPost as dailyRun,
+} from "./functions/api/daily.js";
+import { run as runDaily } from "./functions/daily/pipeline.js";
 
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const method = request.method;
+    const p = url.pathname;
 
-    if (url.pathname === "/api/vapid-public-key" && method === "GET") {
-      return vapidPublicKey({ request, env });
-    }
-    if (url.pathname === "/api/subscribe" && method === "POST") {
-      return subscribe({ request, env });
-    }
-    if (url.pathname === "/api/notify" && method === "POST") {
-      return notify({ request, env });
-    }
+    // --- Push (existing) ---
+    if (p === "/api/vapid-public-key" && method === "GET") return vapidPublicKey({ request, env });
+    if (p === "/api/subscribe" && method === "POST") return subscribe({ request, env });
+    if (p === "/api/notify" && method === "POST") return notify({ request, env });
+
+    // --- Daily ---
+    if (p === "/api/daily" && method === "GET") return dailyGet({ request, env });
+    if (p === "/api/daily/run" && method === "POST") return dailyRun({ request, env, ctx });
+
+    // --- Config surface (reads open, writes token-gated) ---
+    if (p === "/api/config" && method === "GET") return configGet({ request, env });
+    if (p === "/api/config" && method === "POST") return configPost({ request, env });
 
     // Everything else: static assets (index.html, /issues/*, /assets/*, /sw.js, etc.)
     return env.ASSETS.fetch(request);
+  },
+
+  // Cron Trigger — fires the daily pipeline. ctx.waitUntil keeps the run alive
+  // past the handler return. A failure is logged (observability on) but never
+  // throws the cron into a retry storm.
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(
+      (async () => {
+        try {
+          const result = await runDaily(env, { trigger: "cron" });
+          console.log("daily run:", JSON.stringify(result));
+        } catch (e) {
+          console.error("daily run failed:", (e && e.stack) || e);
+        }
+      })()
+    );
   },
 };

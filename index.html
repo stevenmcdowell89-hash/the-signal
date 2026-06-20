@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>The Signal — Archive</title>
+  <title>The Signal</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Serif+4:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -396,6 +396,74 @@
     }
     .update-banner-dismiss:hover { color: var(--ink); }
 
+    /* ---------- The Brief (daily) ---------- */
+    .header-links { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
+    .brief { margin-top: 1rem; }
+    .brief-status {
+      display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;
+      font-size: 0.8rem; color: var(--ink-2);
+      padding: 0.5rem 0; border-bottom: 1px solid var(--line); margin-bottom: 1rem;
+    }
+    .brief-dot { width: 8px; height: 8px; border-radius: 50%; background: #46c46a; box-shadow: 0 0 8px #46c46a88; }
+    .brief-new {
+      font-weight: 600; color: var(--coral);
+      background: rgba(233,69,96,0.12); border: 1px solid rgba(233,69,96,0.3);
+      border-radius: 999px; padding: 0.1rem 0.6rem; font-size: 0.72rem;
+    }
+    .brief-refresh {
+      margin-left: auto; font: inherit; font-size: 0.72rem; font-weight: 600;
+      color: var(--ink-dim); background: none; border: 1px solid var(--line);
+      border-radius: 999px; padding: 0.25rem 0.7rem; cursor: pointer;
+    }
+    .brief-refresh:hover { color: var(--coral); border-color: var(--line-strong); }
+    .brief-group { margin: 1.5rem 0; }
+    .brief-h {
+      font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.2em;
+      color: var(--ink-dim); font-weight: 700; margin-bottom: 0.6rem;
+      display: flex; align-items: baseline; gap: 0.5rem;
+    }
+    .brief-h .count { color: var(--coral); font-size: 0.68rem; }
+    .catch {
+      display: block; text-decoration: none; color: var(--ink);
+      padding: 0.7rem 0; border-bottom: 1px solid var(--line);
+    }
+    .catch:last-child { border-bottom: 0; }
+    .catch:hover .catch-title { color: var(--coral); }
+    .catch-top { display: flex; align-items: baseline; gap: 0.5rem; }
+    .catch-rank { color: var(--coral); font-weight: 800; font-variant-numeric: tabular-nums; font-size: 0.85rem; min-width: 1.1rem; }
+    .catch-title { font-weight: 600; line-height: 1.35; font-size: 0.98rem; transition: color 0.15s; }
+    .catch-hook { color: var(--ink-2); font-size: 0.86rem; line-height: 1.45; margin-top: 0.2rem; }
+    .catch-meta { display: flex; gap: 0.5rem; align-items: center; margin-top: 0.35rem; flex-wrap: wrap; }
+    .catch-reg {
+      font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.14em;
+      font-weight: 700; color: var(--ink-dim);
+      border: 1px solid var(--line); border-radius: 4px; padding: 0.05rem 0.4rem;
+    }
+    .catch-reg.consequential { color: var(--coral); border-color: rgba(233,69,96,0.4); }
+    .catch-reg.discovery { color: var(--gold); border-color: rgba(201,166,107,0.4); }
+    .catch-floor { font-size: 0.6rem; color: var(--orange); font-weight: 700; letter-spacing: 0.1em; }
+    .catch-links { font-size: 0.72rem; color: var(--ink-dim); }
+    .catch-links a { color: var(--ink-dim); text-decoration: none; border-bottom: 1px dotted var(--line-strong); }
+    .catch-links a:hover { color: var(--coral); }
+    .domain-sec { margin: 1.4rem 0; }
+    .also-line { padding: 0.45rem 0; border-bottom: 1px solid var(--line); font-size: 0.88rem; }
+    .also-line:last-child { border-bottom: 0; }
+    .also-dom { color: var(--ink-dim); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.16em; font-weight: 700; margin-right: 0.5rem; }
+    .also-line a { color: var(--ink); text-decoration: none; }
+    .also-line a:hover { color: var(--coral); }
+    .tt-strip { display: flex; flex-direction: column; gap: 0.35rem; }
+    .tt-item { font-size: 0.86rem; color: var(--ink-2); }
+    .tt-item a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--line); }
+    .tt-item a:hover { color: var(--coral); }
+    .brief-tail {
+      width: 100%; margin: 1rem 0; font: inherit; font-size: 0.78rem; font-weight: 600;
+      color: var(--ink-2); background: var(--bg-2); border: 1px solid var(--line);
+      border-radius: 10px; padding: 0.7rem; cursor: pointer; text-align: center;
+    }
+    .brief-tail:hover { border-color: var(--line-strong); color: var(--ink); }
+    .brief-footer { font-size: 0.74rem; color: var(--ink-dim); text-align: center; padding: 1rem 0; border-top: 1px solid var(--line); margin-top: 0.5rem; }
+    .brief-empty { color: var(--ink-dim); font-size: 0.9rem; padding: 1.5rem 0; text-align: center; }
+
     /* ---------- Responsive ---------- */
     @media (max-width: 640px) {
       body { padding: 1rem 0.85rem 5rem; }
@@ -464,8 +532,19 @@
       // Top up the precache on every index visit. The SW skips anything
       // already cached, so this only fetches new issues / new covers.
       navigator.serviceWorker.ready.then(function (reg) {
-        if (reg && reg.active) reg.active.postMessage({ type: 'PRECACHE_ALL' });
+        if (reg && reg.active) {
+          reg.active.postMessage({ type: 'PRECACHE_ALL' });
+          reg.active.postMessage({ type: 'CACHE_DAILY' });
+        }
         ensurePushSubscription(reg);
+        // Ambient overnight precache of the brief (best-effort; Chromium-only).
+        if (reg.periodicSync && navigator.permissions) {
+          navigator.permissions.query({ name: 'periodic-background-sync' }).then(function (s) {
+            if (s.state === 'granted') {
+              reg.periodicSync.register('signal-daily', { minInterval: 6 * 60 * 60 * 1000 }).catch(function () {});
+            }
+          }).catch(function () {});
+        }
       });
     });
   }
@@ -534,9 +613,22 @@
   <div class="container">
     <header class="page-header">
       <div class="masthead">The Signal</div>
-      <div class="tagline">Weekly Intelligence Brief</div>
-      <a class="quality-link" href="quality.html">Editorial quality &rarr;</a>
+      <div class="tagline">The Brief, daily &middot; The Read, Sundays</div>
+      <div class="header-links">
+        <a class="quality-link" href="settings.html">Settings &rarr;</a>
+        <a class="quality-link" href="quality.html">Editorial quality &rarr;</a>
+      </div>
     </header>
+
+    <!-- THE BRIEF (daily) — rendered client-side from /api/daily -->
+    <section class="brief" id="brief" aria-label="The Brief">
+      <div class="brief-status" id="brief-status">
+        <span class="brief-dot"></span>
+        <span id="brief-status-text">Loading the brief…</span>
+        <button class="brief-refresh" id="brief-refresh" hidden>Refresh</button>
+      </div>
+      <div id="brief-root"></div>
+    </section>
 
     <!-- Continue reading (revealed by JS if localStorage has progress) -->
     <section class="continue" id="continue-section" aria-hidden="true">
@@ -554,7 +646,7 @@
 
     <!-- HERO: latest issue -->
     <section class="hero" aria-label="Latest issue">
-      <h2 class="section-label">This week</h2>
+      <h2 class="section-label">This weekend &middot; The Read</h2>
       <a class="hero-card" href="issues/signal_countdown_2026-06-14.html" data-cover-slug="signal_countdown_2026-06-14">
         <div class="hero-cover"></div>
         <div class="hero-body">
@@ -917,6 +1009,185 @@
         section.classList.add('is-visible');
         section.setAttribute('aria-hidden', 'false');
       } catch (e) { /* localStorage unavailable in some contexts */ }
+    })();
+
+    // -------- The Brief (daily) --------
+    // Renders /api/daily into #brief-root. Always resolves to "caught up" via a
+    // per-device read-watermark in localStorage ("N new since you looked at
+    // HH:MM"). Bounded — never an infinite feed; the tail is opt-in.
+    (function () {
+      var WM_KEY = 'signal-brief-watermark'; // last-look epoch ms (this device)
+      var DOMAIN_LABELS = {
+        world:'World', gaming:'Gaming', football:'Football', tech_devices:'Tech & Devices',
+        ai_engineering:'Tech / AI', golf:'Golf', lego:'LEGO', books:'Books', film_tv:'Film & TV',
+        music:'Music', fitness:'Fitness', finance:'Money', travel:'Travel & Parks',
+        history:'History', podcasts:'Listening', home_selfhosting:'Home / Self-hosting'
+      };
+      var root = document.getElementById('brief-root');
+      var statusText = document.getElementById('brief-status-text');
+      var refreshBtn = document.getElementById('brief-refresh');
+      if (!root) return;
+
+      function esc(s){ var d=document.createElement('div'); d.textContent=s==null?'':String(s); return d.innerHTML; }
+      function hhmm(ts){ var d=new Date(ts); return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2); }
+      function lastLook(){ try { return Number(localStorage.getItem(WM_KEY))||0; } catch(_){ return 0; } }
+      function setLook(ts){ try { localStorage.setItem(WM_KEY, String(ts)); } catch(_){} }
+
+      function firstLink(it){
+        if (!it.links || !it.links.length) return null;
+        // Graceful target order: discussion → article → post → feed (§5).
+        var order = ['discussion','article','post','feed'];
+        for (var i=0;i<order.length;i++){ var l=it.links.find(function(x){return x.type===order[i];}); if(l) return l; }
+        return it.links[0];
+      }
+
+      function catchEl(it, rank){
+        var primary = firstLink(it);
+        var a = document.createElement('a');
+        a.className = 'catch';
+        a.href = primary ? primary.url : '#';
+        a.target = '_blank'; a.rel = 'noopener';
+        var rankHtml = rank ? '<span class="catch-rank">'+rank+'</span>' : '';
+        var reg = it.register ? '<span class="catch-reg '+esc(it.register)+'">'+esc(it.register)+'</span>' : '';
+        var floor = it.entity_floor ? '<span class="catch-floor">CORE</span>' : '';
+        var linksHtml = (it.links||[]).map(function(l){
+          return '<a href="'+esc(l.url)+'" target="_blank" rel="noopener">'+esc(l.label||l.type)+'</a>';
+        }).join(' · ');
+        a.innerHTML =
+          '<div class="catch-top">'+rankHtml+'<span class="catch-title">'+esc(it.title)+'</span></div>'+
+          (it.hook ? '<div class="catch-hook">'+esc(it.hook)+'</div>' : '')+
+          '<div class="catch-meta">'+reg+floor+'<span class="catch-links">'+linksHtml+'</span></div>';
+        // Clicking a sub-link shouldn't also follow the card link.
+        a.querySelectorAll('.catch-links a').forEach(function(x){ x.addEventListener('click', function(e){ e.stopPropagation(); }); });
+        return a;
+      }
+
+      function group(title, count){
+        var g = document.createElement('div'); g.className='brief-group';
+        var h = document.createElement('div'); h.className='brief-h';
+        h.innerHTML = esc(title) + (count!=null ? ' <span class="count">'+count+'</span>' : '');
+        g.appendChild(h); return g;
+      }
+
+      function render(state){
+        root.innerHTML='';
+        var look = lastLook();
+
+        // Status + "new since last look".
+        var allLive = [].concat(state.top_catches||[], (state.sections||[]).reduce(function(a,s){return a.concat(s.items);},[]), (state.also||[]).map(function(x){return x.item;}));
+        var newCount = look ? allLive.filter(function(i){ return (i.first_seen||0) > look; }).length : 0;
+        var when = state.generated_at ? hhmm(state.generated_at) : '';
+        statusText.innerHTML = 'Caught up' + (when ? ' &middot; '+when : '');
+        if (newCount > 0 && look) {
+          var badge = document.createElement('span'); badge.className='brief-new';
+          badge.textContent = newCount + ' new since ' + hhmm(look);
+          statusText.parentNode.insertBefore(badge, refreshBtn);
+        }
+        refreshBtn.hidden = false;
+
+        // Ambient app badge (§10): new-since-last-look, no nag. Persists after
+        // the tab closes; clears once you've looked.
+        try {
+          if ('setAppBadge' in navigator) {
+            if (newCount > 0 && look) navigator.setAppBadge(newCount);
+            else navigator.clearAppBadge();
+          }
+        } catch (_) {}
+
+        if (!allLive.length && !(state.below_fold||[]).length) {
+          root.innerHTML = '<div class="brief-empty">Nothing has cleared the bar yet. The Worker updates through the day.</div>';
+          setLook(Date.now()); return;
+        }
+
+        // Today & Tonight.
+        if ((state.today_tonight||[]).length){
+          var g0 = group('Today & Tonight');
+          var strip = document.createElement('div'); strip.className='tt-strip';
+          state.today_tonight.forEach(function(it){
+            var l = firstLink(it);
+            var d = document.createElement('div'); d.className='tt-item';
+            d.innerHTML = l ? '<a href="'+esc(l.url)+'" target="_blank" rel="noopener">'+esc(it.title)+'</a>' : esc(it.title);
+            strip.appendChild(d);
+          });
+          g0.appendChild(strip); root.appendChild(g0);
+        }
+
+        // Top Catches — rank carries "read first"; no orientation line.
+        if ((state.top_catches||[]).length){
+          var g1 = group('Top Catches');
+          state.top_catches.forEach(function(it,i){ g1.appendChild(catchEl(it, i+1)); });
+          root.appendChild(g1);
+        }
+
+        // Domain sections — dynamic, fixed order, quiet domains absent.
+        (state.sections||[]).forEach(function(s){
+          var g = group(s.label || DOMAIN_LABELS[s.domain] || s.domain, s.items.length);
+          g.className='brief-group domain-sec';
+          s.items.forEach(function(it){ g.appendChild(catchEl(it)); });
+          root.appendChild(g);
+        });
+
+        // Also — low-volume domains as bare one-liners.
+        if ((state.also||[]).length){
+          var g2 = group('Also');
+          state.also.forEach(function(a){
+            var l = firstLink(a.item);
+            var d = document.createElement('div'); d.className='also-line';
+            d.innerHTML = '<span class="also-dom">'+esc(a.label)+'</span>'+
+              (l ? '<a href="'+esc(l.url)+'" target="_blank" rel="noopener">'+esc(a.item.title)+'</a>' : esc(a.item.title));
+            g2.appendChild(d);
+          });
+          root.appendChild(g2);
+        }
+
+        // Tappable tail — the full retained set below the fold.
+        var bf = state.below_fold||[];
+        if (bf.length){
+          var btn = document.createElement('button'); btn.className='brief-tail';
+          btn.textContent = 'Show '+bf.length+' more held below the fold';
+          var holder = document.createElement('div'); holder.hidden = true;
+          bf.forEach(function(it){ holder.appendChild(catchEl(it)); });
+          btn.addEventListener('click', function(){
+            holder.hidden = !holder.hidden;
+            btn.textContent = holder.hidden ? 'Show '+bf.length+' more held below the fold' : 'Hide the tail';
+          });
+          root.appendChild(btn); root.appendChild(holder);
+        }
+
+        // Footer stat.
+        var f = state.footer||{};
+        var fo = document.createElement('div'); fo.className='brief-footer';
+        fo.textContent = (f.kept||0)+' kept of '+(f.scanned||0)+' scanned · '+(f.sources||0)+' sources'+
+          (f.enrichment && !f.enrichment.on ? ' · headlines only ('+esc(f.enrichment.reason||'')+')' : '');
+        root.appendChild(fo);
+
+        // Update the watermark to now — we've "looked".
+        setLook(Date.now());
+      }
+
+      function load(){
+        fetch('/api/daily', { cache: 'no-store' })
+          .then(function(r){ return r.json(); })
+          .then(render)
+          .catch(function(){
+            statusText.textContent = 'The brief is offline.';
+            root.innerHTML = '<div class="brief-empty">Could not reach the brief. It will reappear when you are back online.</div>';
+          });
+      }
+
+      // Manual refresh: token-gated server poll if the device has the settings
+      // token, otherwise just re-fetch the latest rendered state.
+      refreshBtn.addEventListener('click', function(){
+        var tok = null; try { tok = localStorage.getItem('signal-settings-token'); } catch(_){}
+        refreshBtn.textContent = '…';
+        var done = function(){ refreshBtn.textContent = 'Refresh'; load(); };
+        if (tok) {
+          fetch('/api/daily/run', { method:'POST', headers:{ 'X-Signal-Token': tok } })
+            .then(done).catch(done);
+        } else { done(); }
+      });
+
+      load();
     })();
 
     // -------- Archive tabs --------

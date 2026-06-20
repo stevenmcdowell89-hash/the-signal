@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>The Signal — Settings</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{ --bg:#1A1A2E; --bg-2:#16213E; --bg-3:#20253E; --ink:#E8E8E8; --ink-2:#B6BAC6; --ink-dim:#888; --coral:#E94560; --orange:#FF6B35; --gold:#C9A66B; --line:rgba(255,255,255,0.08); --line-strong:rgba(255,255,255,0.16); }
+    *,*::before,*::after{ margin:0; padding:0; box-sizing:border-box; }
+    body{ background:var(--bg); color:var(--ink); font-family:'Source Sans 3',sans-serif; line-height:1.5; padding:1.5rem 1.25rem 5rem; -webkit-font-smoothing:antialiased; }
+    .container{ max-width:760px; margin:0 auto; }
+    h1{ font-family:'Playfair Display',serif; font-weight:900; font-size:2rem; background:linear-gradient(135deg,var(--coral),var(--orange)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+    .sub{ color:var(--ink-dim); font-size:0.8rem; letter-spacing:0.04em; margin-bottom:1.5rem; }
+    a.back{ color:var(--ink-dim); text-decoration:none; font-size:0.8rem; }
+    a.back:hover{ color:var(--coral); }
+    .card{ background:var(--bg-2); border:1px solid var(--line); border-radius:14px; padding:1.1rem 1.2rem; margin:1rem 0; }
+    .card h2{ font-size:0.78rem; text-transform:uppercase; letter-spacing:0.18em; color:var(--ink-dim); font-weight:700; margin-bottom:0.8rem; }
+    label{ display:block; font-size:0.85rem; color:var(--ink-2); margin:0.7rem 0 0.25rem; }
+    input[type=text],input[type=number],input[type=url],select,textarea{
+      width:100%; background:var(--bg-3); border:1px solid var(--line); border-radius:8px;
+      color:var(--ink); font:inherit; font-size:0.9rem; padding:0.5rem 0.6rem;
+    }
+    textarea{ min-height:220px; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:0.78rem; line-height:1.4; }
+    .row{ display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap; }
+    .row > *{ flex:1; min-width:0; }
+    .toggle{ display:flex; align-items:center; gap:0.6rem; }
+    .toggle input{ width:auto; flex:0; }
+    .toggle label{ margin:0; }
+    table{ width:100%; border-collapse:collapse; font-size:0.82rem; margin-top:0.5rem; }
+    th,td{ text-align:left; padding:0.35rem 0.4rem; border-bottom:1px solid var(--line); }
+    th{ color:var(--ink-dim); font-size:0.66rem; text-transform:uppercase; letter-spacing:0.12em; }
+    td input{ font-size:0.8rem; padding:0.3rem 0.4rem; }
+    .src-w{ max-width:64px; }
+    button{ font:inherit; font-weight:600; border:0; border-radius:8px; cursor:pointer; }
+    .btn-primary{ background:linear-gradient(135deg,var(--coral),var(--orange)); color:#fff; padding:0.6rem 1.3rem; font-size:0.92rem; }
+    .btn-sm{ background:var(--bg-3); color:var(--ink-2); border:1px solid var(--line); padding:0.3rem 0.7rem; font-size:0.76rem; }
+    .btn-sm:hover{ color:var(--coral); border-color:var(--line-strong); }
+    .btn-danger{ color:var(--coral); }
+    .actions{ position:sticky; bottom:0; background:linear-gradient(transparent, var(--bg) 40%); padding:1rem 0 0.4rem; display:flex; gap:0.75rem; align-items:center; }
+    .msg{ font-size:0.82rem; color:var(--ink-2); }
+    .msg.ok{ color:#46c46a; } .msg.err{ color:var(--coral); }
+    .hint{ font-size:0.74rem; color:var(--ink-dim); margin-top:0.3rem; }
+    .addrow{ margin-top:0.6rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="/">&larr; The Signal</a>
+    <h1>Settings</h1>
+    <div class="sub">The Brief — sources, profile &amp; engine. Reads are open; saving needs the held token (entered once per device).</div>
+
+    <div class="card">
+      <h2>Engine</h2>
+      <div class="row">
+        <div>
+          <label for="fold">Fold threshold (above-fold confidence)</label>
+          <input type="number" id="fold" min="0" max="1" step="0.05">
+        </div>
+        <div>
+          <label for="cadence">Cadence (hours, advisory)</label>
+          <input type="number" id="cadence" min="1" max="24" step="1">
+        </div>
+      </div>
+      <div class="hint">Lower fold = more above the fold. The actual cron schedule lives in wrangler.jsonc.</div>
+    </div>
+
+    <div class="card">
+      <h2>Enrichment (Tier 2 · Haiku)</h2>
+      <div class="toggle"><input type="checkbox" id="enr-on"><label for="enr-on">Enrichment on (register + hook line + semantic relevance)</label></div>
+      <div class="row" style="margin-top:0.6rem">
+        <div><label for="enr-model">Model</label><input type="text" id="enr-model"></div>
+        <div><label for="enr-short">Shortlist size</label><input type="number" id="enr-short" min="0" max="80"></div>
+        <div><label for="enr-cap">Monthly spend cap (cents)</label><input type="number" id="enr-cap" min="0" step="50"></div>
+      </div>
+      <div class="hint">On cap-hit the daily auto-falls back to Tier 1 (headlines + links, no hooks) and records it.</div>
+    </div>
+
+    <div class="card">
+      <h2>Push</h2>
+      <div class="toggle"><input type="checkbox" id="push-badge"><label for="push-badge">Daily app badge (silent; the weekly keeps the push notification)</label></div>
+    </div>
+
+    <div class="card">
+      <h2>Sources (RSS · HN)</h2>
+      <table id="src-table"><thead><tr><th>On</th><th>ID</th><th>Domain</th><th>URL</th><th>W</th><th></th></tr></thead><tbody></tbody></table>
+      <div class="addrow"><button class="btn-sm" id="add-src">+ Add feed</button></div>
+      <div class="hint">Type is inferred: an HN Algolia URL is type "hn", everything else "rss". Reddit + per-sub ranking land in Phase 2.</div>
+    </div>
+
+    <div class="card">
+      <h2>Bluesky handles</h2>
+      <table id="bsky-table"><thead><tr><th>On</th><th>ID</th><th>Domain</th><th>Handle</th><th>W</th><th></th></tr></thead><tbody></tbody></table>
+      <div class="addrow"><button class="btn-sm" id="add-bsky">+ Add handle</button></div>
+      <div class="hint">e.g. transfer journalists for football. Handle without the @ (foo.bsky.social).</div>
+    </div>
+
+    <div class="card">
+      <h2>Interest profile</h2>
+      <div class="hint" style="margin-bottom:0.4rem">The full §7 profile: named-entity floor, topic weights, special handling, mutes. Err broad — over-inclusion is cheap. Edit as JSON.</div>
+      <textarea id="profile" spellcheck="false"></textarea>
+      <div class="hint" id="profile-err"></div>
+      <label for="extra-mutes" style="margin-top:0.8rem">Extra mutes (comma-separated, layered on the profile's own mutes)</label>
+      <input type="text" id="extra-mutes">
+    </div>
+
+    <div class="actions">
+      <button class="btn-primary" id="save">Save</button>
+      <button class="btn-sm" id="runnow">Run now</button>
+      <button class="btn-sm btn-danger" id="forget">Forget token</button>
+      <span class="msg" id="msg"></span>
+    </div>
+  </div>
+
+  <script>
+    var TOKEN_KEY = 'signal-settings-token';
+    var cfg = null;
+    var $ = function(id){ return document.getElementById(id); };
+    function msg(t, cls){ var m=$('msg'); m.textContent=t; m.className='msg '+(cls||''); }
+
+    function getToken(promptIfMissing){
+      var t = null; try { t = localStorage.getItem(TOKEN_KEY); } catch(_){}
+      if (!t && promptIfMissing){
+        t = window.prompt('Paste the held settings token (stored on this device only):');
+        if (t){ try { localStorage.setItem(TOKEN_KEY, t.trim()); } catch(_){} t = t.trim(); }
+      }
+      return t;
+    }
+
+    function srcRow(s){
+      var tr=document.createElement('tr');
+      tr.innerHTML =
+        '<td><input type="checkbox" '+(s.enabled===false?'':'checked')+' data-k="enabled"></td>'+
+        '<td><input type="text" value="'+(s.id||'')+'" data-k="id" size="10"></td>'+
+        '<td><input type="text" value="'+(s.domain||'')+'" data-k="domain" size="8"></td>'+
+        '<td><input type="url" value="'+(s.url||'')+'" data-k="url"></td>'+
+        '<td><input class="src-w" type="number" min="0" max="1" step="0.05" value="'+(s.weight!=null?s.weight:0.5)+'" data-k="weight"></td>'+
+        '<td><button class="btn-sm btn-danger" data-del="1">✕</button></td>';
+      tr.querySelector('[data-del]').addEventListener('click', function(){ tr.remove(); });
+      return tr;
+    }
+    function bskyRow(s){
+      var tr=document.createElement('tr');
+      tr.innerHTML =
+        '<td><input type="checkbox" '+(s.enabled===false?'':'checked')+' data-k="enabled"></td>'+
+        '<td><input type="text" value="'+(s.id||'')+'" data-k="id" size="10"></td>'+
+        '<td><input type="text" value="'+(s.domain||'')+'" data-k="domain" size="8"></td>'+
+        '<td><input type="text" value="'+(s.handle||'')+'" data-k="handle"></td>'+
+        '<td><input class="src-w" type="number" min="0" max="1" step="0.05" value="'+(s.weight!=null?s.weight:0.5)+'" data-k="weight"></td>'+
+        '<td><button class="btn-sm btn-danger" data-del="1">✕</button></td>';
+      tr.querySelector('[data-del]').addEventListener('click', function(){ tr.remove(); });
+      return tr;
+    }
+
+    function fill(c){
+      cfg = c;
+      $('fold').value = c.fold_threshold;
+      $('cadence').value = c.cadence_hours;
+      var e = c.enrichment||{};
+      $('enr-on').checked = !!e.enabled;
+      $('enr-model').value = e.model||'claude-haiku-4-5';
+      $('enr-short').value = e.shortlist_size||36;
+      $('enr-cap').value = e.monthly_spend_cap_cents||500;
+      $('push-badge').checked = !!(c.push&&c.push.daily_badge);
+      var st=$('src-table').querySelector('tbody'); st.innerHTML='';
+      (c.sources||[]).forEach(function(s){ st.appendChild(srcRow(s)); });
+      var bt=$('bsky-table').querySelector('tbody'); bt.innerHTML='';
+      (c.bluesky||[]).forEach(function(s){ bt.appendChild(bskyRow(s)); });
+      $('profile').value = JSON.stringify(c.profile||{}, null, 2);
+      $('extra-mutes').value = (c.mutes||[]).join(', ');
+    }
+
+    function collectRows(tbody, isBsky){
+      var out=[];
+      tbody.querySelectorAll('tr').forEach(function(tr){
+        var o={};
+        tr.querySelectorAll('[data-k]').forEach(function(inp){
+          var k=inp.dataset.k;
+          if (inp.type==='checkbox') o[k]=inp.checked;
+          else if (k==='weight') o[k]=parseFloat(inp.value)||0;
+          else o[k]=inp.value.trim();
+        });
+        if (isBsky){ o.type='bluesky'; if(!o.handle) return; }
+        else { o.type = /hn\.algolia\.com|algolia\.com\/api/.test(o.url) ? 'hn' : 'rss'; if(!o.url) return; }
+        if(!o.id) return;
+        out.push(o);
+      });
+      return out;
+    }
+
+    function build(){
+      var profile;
+      try { profile = JSON.parse($('profile').value); $('profile-err').textContent=''; }
+      catch(e){ $('profile-err').textContent='Profile JSON invalid: '+e.message; throw e; }
+      var extra = $('extra-mutes').value.split(',').map(function(s){return s.trim();}).filter(Boolean);
+      return {
+        fold_threshold: parseFloat($('fold').value),
+        cadence_hours: parseInt($('cadence').value,10),
+        enrichment: {
+          enabled: $('enr-on').checked,
+          model: $('enr-model').value.trim()||'claude-haiku-4-5',
+          shortlist_size: parseInt($('enr-short').value,10)||36,
+          monthly_spend_cap_cents: parseInt($('enr-cap').value,10)||0
+        },
+        push: { daily_badge: $('push-badge').checked },
+        sources: collectRows($('src-table').querySelector('tbody'), false),
+        bluesky: collectRows($('bsky-table').querySelector('tbody'), true),
+        profile: profile,
+        mutes: extra
+      };
+    }
+
+    function save(){
+      var payload; try { payload = build(); } catch(e){ msg('Fix the profile JSON first.', 'err'); return; }
+      var token = getToken(true);
+      if (!token){ msg('A token is required to save.', 'err'); return; }
+      msg('Saving…');
+      fetch('/api/config', { method:'POST', headers:{ 'content-type':'application/json', 'X-Signal-Token': token }, body: JSON.stringify(payload) })
+        .then(function(r){
+          if (r.status===401){ try{localStorage.removeItem(TOKEN_KEY);}catch(_){} throw new Error('Token rejected — re-enter it.'); }
+          if (!r.ok) throw new Error('HTTP '+r.status);
+          return r.json();
+        })
+        .then(function(){ msg('Saved.', 'ok'); })
+        .catch(function(e){ msg(String(e.message||e), 'err'); });
+    }
+
+    $('add-src').addEventListener('click', function(){ $('src-table').querySelector('tbody').appendChild(srcRow({weight:0.5})); });
+    $('add-bsky').addEventListener('click', function(){ $('bsky-table').querySelector('tbody').appendChild(bskyRow({weight:0.5})); });
+    $('save').addEventListener('click', save);
+    $('forget').addEventListener('click', function(){ try{localStorage.removeItem(TOKEN_KEY);}catch(_){} msg('Token forgotten on this device.', 'ok'); });
+    $('runnow').addEventListener('click', function(){
+      var token=getToken(true); if(!token){ msg('A token is required to run.', 'err'); return; }
+      msg('Running…');
+      fetch('/api/daily/run', { method:'POST', headers:{ 'X-Signal-Token': token } })
+        .then(function(r){ if(r.status===401){ try{localStorage.removeItem(TOKEN_KEY);}catch(_){} throw new Error('Token rejected.'); } return r.json(); })
+        .then(function(d){ msg(d.error ? ('Error: '+d.error) : ('Done — '+d.kept+' kept of '+d.scanned+' scanned, '+d.enriched+' enriched.'), d.error?'err':'ok'); })
+        .catch(function(e){ msg(String(e.message||e), 'err'); });
+    });
+
+    fetch('/api/config', { cache:'no-store' })
+      .then(function(r){ return r.json(); })
+      .then(fill)
+      .catch(function(){ msg('Could not load config.', 'err'); });
+  </script>
+</body>
+</html>

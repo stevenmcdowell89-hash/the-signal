@@ -1,0 +1,182 @@
+// The Signal — daily: D1 data layer.
+//
+// D1 holds the time-series engine data that powers the triage engine and the
+// feeder loop (§1): per-source baselines, the per-story movement log (the
+// weekly's evidence for whether a story has *moved*), the clustered item set,
+// and a per-run log. Live config and the rendered home blob live in KV instead.
+//
+// All access goes through the DAILY_DB binding. `initSchema` is idempotent and
+// is called at the top of every run so a fresh database self-heals.
+
+export async function initSchema(db) {
+  await db.batch([
+    db.prepare(`CREATE TABLE IF NOT EXISTS items (
+      id TEXT PRIMARY KEY,
+      canonical_url TEXT,
+      title TEXT,
+      domain TEXT,
+      source TEXT,
+      source_type TEXT,
+      links TEXT,
+      first_seen INTEGER,
+      last_seen INTEGER,
+      published INTEGER,
+      raw_score REAL DEFAULT 0,
+      baseline_score REAL DEFAULT 0,
+      profile_score REAL DEFAULT 0,
+      velocity REAL DEFAULT 0,
+      confidence REAL DEFAULT 0,
+      above_fold INTEGER DEFAULT 0,
+      entity_floor INTEGER DEFAULT 0,
+      muted INTEGER DEFAULT 0,
+      register TEXT,
+      hook TEXT,
+      enriched INTEGER DEFAULT 0,
+      enrich_hash TEXT
+    )`),
+    db.prepare(`CREATE INDEX IF NOT EXISTS idx_items_last_seen ON items(last_seen)`),
+    db.prepare(`CREATE INDEX IF NOT EXISTS idx_items_conf ON items(confidence)`),
+    db.prepare(`CREATE TABLE IF NOT EXISTS source_samples (
+      source TEXT,
+      score REAL,
+      ts INTEGER
+    )`),
+    db.prepare(`CREATE INDEX IF NOT EXISTS idx_samples_src ON source_samples(source, ts)`),
+    // The per-story movement log — the weekly reads this to tell "moved" from
+    // "still exists" (§9: news re-leads require new development).
+    db.prepare(`CREATE TABLE IF NOT EXISTS story_log (
+      cluster_id TEXT,
+      ts INTEGER,
+      score REAL,
+      headline TEXT,
+      domain TEXT
+    )`),
+    db.prepare(`CREATE INDEX IF NOT EXISTS idx_story_cluster ON story_log(cluster_id, ts)`),
+    db.prepare(`CREATE TABLE IF NOT EXISTS runs (
+      ts INTEGER,
+      scanned INTEGER,
+      kept INTEGER,
+      sources INTEGER,
+      enriched INTEGER,
+      enrich_on INTEGER,
+      spend_cents REAL,
+      notes TEXT
+    )`),
+  ]);
+}
+
+// Pull the current in-window item set for scoring/render. Retention ~14 days
+// for the daily state window (§10).
+export async function getWindowItems(db, sinceMs) {
+  const { results } = await db
+    .prepare(`SELECT * FROM items WHERE last_seen >= ? ORDER BY confidence DESC`)
+    .bind(sinceMs)
+    .all();
+  return results || [];
+}
+
+export async function getItem(db, id) {
+  return db.prepare(`SELECT * FROM items WHERE id = ?`).bind(id).first();
+}
+
+export async function upsertItem(db, it) {
+  await db
+    .prepare(
+      `INSERT INTO items (id, canonical_url, title, domain, source, source_type, links,
+         first_seen, last_seen, published, raw_score)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?)
+       ON CONFLICT(id) DO UPDATE SET
+         last_seen=excluded.last_seen,
+         raw_score=MAX(items.raw_score, excluded.raw_score),
+         links=excluded.links,
+         title=excluded.title`
+    )
+    .bind(
+      it.id, it.canonical_url, it.title, it.domain, it.source, it.source_type,
+      JSON.stringify(it.links || []), it.first_seen, it.last_seen,
+      it.published || it.first_seen, it.raw_score || 0
+    )
+    .run();
+}
+
+export async function updateScores(db, it) {
+  await db
+    .prepare(
+      `UPDATE items SET baseline_score=?, profile_score=?, velocity=?, confidence=?,
+         above_fold=?, entity_floor=?, muted=?, domain=? WHERE id=?`
+    )
+    .bind(
+      it.baseline_score, it.profile_score, it.velocity, it.confidence,
+      it.above_fold ? 1 : 0, it.entity_floor ? 1 : 0, it.muted ? 1 : 0,
+      it.domain, it.id
+    )
+    .run();
+}
+
+export async function saveEnrichment(db, id, e) {
+  await db
+    .prepare(
+      `UPDATE items SET register=?, hook=?, profile_score=?, enriched=1, enrich_hash=? WHERE id=?`
+    )
+    .bind(e.register || null, e.hook || null, e.relevance ?? null, e.enrich_hash || null, id)
+    .run();
+}
+
+export async function addSourceSample(db, source, score, ts) {
+  await db
+    .prepare(`INSERT INTO source_samples (source, score, ts) VALUES (?,?,?)`)
+    .bind(source, score, ts)
+    .run();
+}
+
+// Trailing baseline cut: the score at the ~85th percentile over the window,
+// i.e. "significant for this source" (§3.3, default top ~15% over 14–30 days).
+export async function sourceBaselineCut(db, source, sinceMs) {
+  const { results } = await db
+    .prepare(`SELECT score FROM source_samples WHERE source=? AND ts>=? ORDER BY score ASC`)
+    .bind(source, sinceMs)
+    .all();
+  const scores = (results || []).map((r) => r.score).filter((s) => s > 0);
+  if (scores.length < 8) return null; // not enough history yet
+  const idx = Math.floor(scores.length * 0.85);
+  return scores[Math.min(idx, scores.length - 1)];
+}
+
+export async function logStory(db, clusterId, score, headline, domain, ts) {
+  await db
+    .prepare(`INSERT INTO story_log (cluster_id, ts, score, headline, domain) VALUES (?,?,?,?,?)`)
+    .bind(clusterId, ts, score, headline, domain)
+    .run();
+}
+
+// Previous logged score for a cluster (for velocity = Δscore/Δhr).
+export async function lastStoryPoint(db, clusterId, beforeTs) {
+  return db
+    .prepare(`SELECT ts, score FROM story_log WHERE cluster_id=? AND ts<? ORDER BY ts DESC LIMIT 1`)
+    .bind(clusterId, beforeTs)
+    .first();
+}
+
+export async function logRun(db, r) {
+  await db
+    .prepare(
+      `INSERT INTO runs (ts, scanned, kept, sources, enriched, enrich_on, spend_cents, notes)
+       VALUES (?,?,?,?,?,?,?,?)`
+    )
+    .bind(r.ts, r.scanned, r.kept, r.sources, r.enriched, r.enrich_on ? 1 : 0, r.spend_cents || 0, r.notes || "")
+    .run();
+}
+
+// Retention prune (§10): drop items out of the ~14-day state window; keep the
+// story_log longer (~60d) so the weekly still has movement evidence.
+export async function prune(db, now) {
+  const itemCut = now - 1000 * 60 * 60 * 24 * 14;
+  const sampleCut = now - 1000 * 60 * 60 * 24 * 30;
+  const logCut = now - 1000 * 60 * 60 * 24 * 60;
+  await db.batch([
+    db.prepare(`DELETE FROM items WHERE last_seen < ?`).bind(itemCut),
+    db.prepare(`DELETE FROM source_samples WHERE ts < ?`).bind(sampleCut),
+    db.prepare(`DELETE FROM story_log WHERE ts < ?`).bind(logCut),
+    db.prepare(`DELETE FROM runs WHERE ts < ?`).bind(logCut),
+  ]);
+}

@@ -169,3 +169,94 @@ setup doesn't break publishes.
 - `/api/notify` returns 401 → wrong or unset `NOTIFY_AUTH_TOKEN`.
 - Subscriptions returning 410/404 from the push service are auto-pruned
   on the next `/api/notify` call.
+
+---
+
+## The Brief (the daily) — Worker-native pipeline
+
+The daily is a Cloudflare **Cron Trigger** that fires the Worker every 3h
+(`triggers.crons` in `wrangler.jsonc`). Each run polls the tagged sources, runs
+the triage engine (per-source baselines, velocity, profile ranking, dedup, the
+fold, optional Haiku hook-lines), and writes the rendered state to KV. The home
+(`index.html`) fetches `/api/daily` and renders it; `settings.html` edits the
+live config. There is **no AI dependency at runtime** except the optional Tier-2
+enrichment call. Requires the **Workers Paid plan** (already held).
+
+### One-time provisioning (human; ~5 minutes)
+
+Wrangler must be authed to Cloudflare (`npx wrangler login`). Then:
+
+```sh
+# 1. Two KV namespaces (live config + rendered state / spend ledger)
+npx wrangler kv namespace create DAILY_CONFIG
+npx wrangler kv namespace create DAILY_STATE
+
+# 2. One D1 database (baselines, story-movement log, item set, run log)
+npx wrangler d1 create the-signal-daily
+```
+
+Paste the three returned ids over the `REPLACE_ME_*` placeholders in
+`wrangler.jsonc` (`kv_namespaces[].id` ×2 and `d1_databases[].database_id`).
+The D1 **schema is created automatically** by the Worker on first run — there
+are no migrations to apply.
+
+Then set the two secrets:
+
+```sh
+# Token that gates settings writes (any long random string). Paste this same
+# value once per device on first save in Settings.
+npx wrangler secret put SETTINGS_TOKEN
+
+# Anthropic key for Tier-2 enrichment (likely already set from the weekly;
+# the daily reads the same ANTHROPIC_API_KEY).
+npx wrangler secret put ANTHROPIC_API_KEY
+```
+
+Deploy (`git push` to `main` triggers Workers Builds, or `npx wrangler deploy`).
+On the first cron fire — or a manual **Run now** in Settings — the brief
+populates. To fire it by hand without waiting:
+
+```sh
+curl -X POST https://<host>/api/daily/run -H "X-Signal-Token: <SETTINGS_TOKEN>"
+```
+
+### Tuning (in-app, never a deploy)
+
+Everything tunable lives in KV and is edited at `/settings.html`:
+**sources** (add/remove feeds + per-source weight), **Bluesky handles**,
+**interest profile** (named-entity floor, topic weights, special handling,
+mutes — edit the JSON; err broad), **fold threshold**, **enrichment toggle /
+model / shortlist size / monthly spend cap**, **cadence**, **push badge**.
+The reader is expected to review the generated profile + feed list and prune.
+
+Changing the *cron cadence itself* is the one thing that needs a deploy — edit
+`triggers.crons` in `wrangler.jsonc` (the in-app `cadence_hours` is advisory).
+
+### Cost ceiling
+
+Tier-1 (the mechanical engine) runs free forever — no AI. Tier-2 enrichment
+uses `claude-haiku-4-5` ($1/$5 per M tokens) on only the ~36-item shortlist,
+with the profile prompt-cached. A **monthly spend cap** (config, default $5) is
+enforced: on hit the daily auto-falls back to Tier-1 (headlines + links, no
+hooks) and records it in the footer. The daily can never run an unbounded bill.
+
+### Failure modes
+
+- `/api/daily` returns an empty state → no run has completed yet; hit **Run now**.
+- `/api/daily/run` or saving in Settings returns 401 → wrong/unset
+  `SETTINGS_TOKEN`, or the device's pasted token is stale (use **Forget token**
+  and re-enter).
+- Footer says "headlines only" → enrichment is off, the key is missing, or the
+  spend cap is hit (the reason is shown). Tier-1 still ships.
+- A feed that errors or returns nothing is dropped gracefully for that run and
+  reported in the run log (`runs` table, `notes: dead:N`); prune dead feeds in
+  Settings.
+- Run logs and per-story movement evidence live in D1 (`runs`, `story_log`) —
+  the latter is what the weekly reads to tell "moved" from "still exists".
+
+### Phase 2 — Reddit
+
+Reddit is approval-gated (~2–4 weeks). Draft application + the tagged subreddit
+set: `docs/reddit-data-api-application.md`. It drops in as tagged sources +
+OAuth secret with no engine rework (the baseline/velocity machinery already
+supports it).
