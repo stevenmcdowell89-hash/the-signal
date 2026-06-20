@@ -20,11 +20,40 @@
   },
   // KV bindings: Workers Builds treats this file as the source of truth.
   // Bindings set only via the dashboard get wiped on the next deploy, so
-  // SUBSCRIPTIONS has to live here. The id is the namespace's identifier
-  // (not a secret) — visible in CF dashboard → Workers & Pages → KV.
+  // these have to live here. The id is the namespace's identifier (not a
+  // secret) — visible in CF dashboard → Workers & Pages → KV.
+  //
+  // DAILY_CONFIG  — live, in-app-editable config (sources, profile, mutes,
+  //                 fold threshold, enrichment toggle, spend cap, push).
+  // DAILY_STATE   — the rendered home blob + the monthly spend ledger.
+  //
+  // Provision both before first deploy (see OPERATIONS.md → "The daily"):
+  //   npx wrangler kv namespace create DAILY_CONFIG
+  //   npx wrangler kv namespace create DAILY_STATE
+  // then paste the returned ids over the REPLACE_ME placeholders below.
   "kv_namespaces": [
-    { "binding": "SUBSCRIPTIONS", "id": "f528a67f5a1d4c739273680b9f046534" }
+    { "binding": "SUBSCRIPTIONS", "id": "f528a67f5a1d4c739273680b9f046534" },
+    { "binding": "DAILY_CONFIG", "id": "18caa91c18544fdfbce8bcdeee72582b" },
+    { "binding": "DAILY_STATE", "id": "df2d4983ade441e0894e631cb7f8df84" }
   ],
+  // D1 holds the triage engine's time-series data (per-source baselines, the
+  // per-story movement log the weekly reads, the clustered item set, run log).
+  // Provision once:
+  //   npx wrangler d1 create the-signal-daily
+  // then paste the returned database_id over the placeholder below. The schema
+  // is created idempotently by the Worker on first run (no migrations to apply).
+  "d1_databases": [
+    {
+      "binding": "DAILY_DB",
+      "database_name": "the-signal-daily",
+      "database_id": "ccf3614d-aa32-49b4-8e95-19ffa230b65f"
+    }
+  ],
+  // Cron Trigger — default every 3h (§3, tunable). The in-app cadence_hours is
+  // advisory; this is the actual fire schedule. Edit here to change cadence.
+  "triggers": {
+    "crons": ["0 */3 * * *"]
+  },
   "observability": {
     "enabled": true
   }

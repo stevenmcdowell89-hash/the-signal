@@ -16,11 +16,15 @@
  *                 the phone to verify what's actually cached.
  */
 
-const CACHE_VERSION = "v6";
+const CACHE_VERSION = "v7";
 const SHELL_CACHE = `signal-shell-${CACHE_VERSION}`;
 const ISSUE_CACHE = `signal-issues-${CACHE_VERSION}`;
 const IMAGE_CACHE = `signal-images-${CACHE_VERSION}`;
 const EXTERNAL_CACHE = `signal-external-${CACHE_VERSION}`;
+// The daily brief's rendered state — network-first with a cache fallback so the
+// brief works offline, and silently kept warm overnight via periodic sync (§10).
+const DAILY_CACHE = `signal-daily-${CACHE_VERSION}`;
+const DAILY_URL = "/api/daily";
 
 // Match options: needed for Cloudflare-served content.
 //   ignoreVary  — Cloudflare sets `Vary: Accept-Encoding`, which makes
@@ -86,11 +90,35 @@ self.addEventListener("message", (event) => {
       console.warn("[sw] precache-from-index (top-up) failed:", err);
     }));
   }
+  if (event.data.type === "CACHE_DAILY") {
+    // Page-driven warm of the brief's state into the offline cache.
+    event.waitUntil(warmDaily().catch(() => {}));
+  }
+});
+
+// Refresh the cached daily state from the network. Silent — no badge, no nag;
+// the page owns the ambient app badge from its read-watermark (§10).
+async function warmDaily() {
+  const resp = await fetch(DAILY_URL, { cache: "no-store" });
+  if (resp && resp.ok) {
+    const cache = await caches.open(DAILY_CACHE);
+    await cache.put(DAILY_URL, resp.clone());
+  }
+  return resp;
+}
+
+// Ambient overnight precache: keep the brief warm so it opens instantly offline.
+// Support is patchy (Chromium-only, permission-gated) — registration is
+// best-effort from the page; this just does the work when it does fire.
+self.addEventListener("periodicsync", (event) => {
+  if (event.tag === "signal-daily") {
+    event.waitUntil(warmDaily().catch(() => {}));
+  }
 });
 
 // --- Activate: clean up old caches -----------------------------------------
 self.addEventListener("activate", (event) => {
-  const KEEP = new Set([SHELL_CACHE, ISSUE_CACHE, IMAGE_CACHE, EXTERNAL_CACHE]);
+  const KEEP = new Set([SHELL_CACHE, ISSUE_CACHE, IMAGE_CACHE, EXTERNAL_CACHE, DAILY_CACHE]);
   event.waitUntil((async () => {
     const keys = await caches.keys();
     await Promise.all(keys.map((k) => (KEEP.has(k) ? null : caches.delete(k))));
@@ -340,6 +368,16 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  // API routes: the daily state is network-first with an offline cache
+  // fallback; everything else under /api/ (config reads, token-gated writes,
+  // manual run) must NEVER be cached — let the browser fetch it normally.
+  if (sameOrigin && url.pathname.startsWith("/api/")) {
+    if (url.pathname === DAILY_URL) {
+      event.respondWith(networkFirstDaily(req));
+    }
+    return;
+  }
+
   if (sameOrigin && url.pathname.startsWith("/issues/")) {
     // Stale-while-revalidate, NOT cache-first: serve the cached copy
     // immediately (so offline + fast paint both work) AND fetch in the
@@ -367,6 +405,23 @@ self.addEventListener("fetch", (event) => {
 });
 
 // --- Strategies -------------------------------------------------------------
+
+// Network-first for the daily brief: fresh when online, last-good when offline.
+async function networkFirstDaily(req) {
+  const cache = await caches.open(DAILY_CACHE);
+  try {
+    const resp = await fetch(req, { cache: "no-store" });
+    if (resp && resp.ok) await cache.put(DAILY_URL, resp.clone());
+    return resp;
+  } catch (err) {
+    const cached = await cache.match(DAILY_URL);
+    if (cached) return cached;
+    return new Response(
+      JSON.stringify({ generated_at: 0, status: { caught_up: false }, top_catches: [], sections: [], also: [], below_fold: [], today_tonight: [], footer: { kept: 0, scanned: 0, sources: 0, below_fold_count: 0 } }),
+      { headers: { "content-type": "application/json" } }
+    );
+  }
+}
 
 async function cacheFirst(req, cacheName, opts = {}) {
   const cache = await caches.open(cacheName);
