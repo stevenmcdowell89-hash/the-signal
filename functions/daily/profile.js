@@ -56,11 +56,12 @@ export const PROFILE = {
     football: {
       weight: 0.85,
       keywords: [
-        "serie a", "premier league", "champions league", "europa league",
-        "transfer", "signing", "loan", "fixture", "scudetto", "inter", "milan",
-        "napoli", "roma", "arsenal", "manchester", "liverpool", "chelsea",
-        "world cup", "euros", "qualifier", "goal", "penalty", "var", "manager",
-        "sacked", "lineup", "squad", "injury", "fantasy pl", "fpl",
+        "football", "juventus", "juve", "bianconeri", "serie a", "premier league",
+        "champions league", "europa league", "transfer", "signing", "loan",
+        "fixture", "scudetto", "inter", "milan", "napoli", "roma", "lazio",
+        "atalanta", "fiorentina", "arsenal", "manchester", "liverpool", "chelsea",
+        "tottenham", "world cup", "euros", "qualifier", "penalty", "manager",
+        "sacked", "lineup", "squad", "matchday", "fantasy pl", "fpl",
       ],
     },
     fitness: {

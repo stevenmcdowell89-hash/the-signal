@@ -38,20 +38,26 @@ export function scoreProfile(item, profile, extraMutes) {
   }
 
   // Topic-weighted keyword match. Score = weighted keyword hits, saturating.
-  // The feed already tags a domain; scan all domains so a genuinely cross-domain
-  // item (e.g. HN tagged ai_engineering but about gaming) re-homes — but PREFER
-  // the feed's own domain unless another beats it by a clear margin, so a thin
-  // football headline doesn't get mis-filed under books on a stray keyword.
+  // Matching is WORD-BOUNDARY, not substring: a single-token keyword must appear
+  // as a whole word (so "tor" doesn't match "direcTOR", "inter" doesn't match
+  // "INTERnet"); multi-word / hyphenated keywords fall back to substring.
+  const words = new Set(h.split(/[^a-z0-9]+/).filter(Boolean));
+  const kwHit = (kw) => {
+    kw = lc(kw).trim();
+    return /[^a-z0-9]/.test(kw) ? h.includes(kw) : words.has(kw);
+  };
+
   const tw = profile.topic_weights || {};
-  // The feed's configured domain is authoritative (a persisted row may carry a
-  // stale re-domained value from an earlier poll).
+  // The feed already tags a domain; scan all domains so a genuinely cross-domain
+  // item re-homes — but PREFER the feed's own (authoritative) domain unless
+  // another beats it by a clear margin, so a thin headline isn't mis-filed.
   const ownDomain = item.feed_domain || item.domain;
   let best = 0;
   let bestDomain = ownDomain;
   let ownScore = 0;
   for (const [domain, spec] of Object.entries(tw)) {
     let hits = 0;
-    for (const kw of spec.keywords) if (h.includes(lc(kw))) hits++;
+    for (const kw of spec.keywords) if (kwHit(kw)) hits++;
     if (hits === 0) continue;
     const s = spec.weight * (1 - Math.pow(0.6, hits)); // diminishing returns
     if (domain === ownDomain) ownScore = s;
