@@ -74,11 +74,15 @@ function decodeEntities(s) {
   return s.replace(/\s+/g, " ").trim();
 }
 
-// Clip a summary to ~n chars on a word boundary with an ellipsis.
+// Clip a summary to ~n chars. Prefer a SENTENCE boundary (so it reads as a whole
+// thought, not "…renowned for their"); fall back to a word boundary + ellipsis.
 function clip(s, n) {
   s = (s || "").trim();
   if (s.length <= n) return s;
   const t = s.slice(0, n);
+  // A sentence end (. ! ?) past the halfway mark → cut there, keep it clean.
+  const sent = Math.max(t.lastIndexOf(". "), t.lastIndexOf("! "), t.lastIndexOf("? "));
+  if (sent >= n * 0.5) return t.slice(0, sent + 1).trim();
   const sp = t.lastIndexOf(" ");
   return (sp > 60 ? t.slice(0, sp) : t).replace(/[\s.,;:–—-]+$/, "") + "…";
 }
