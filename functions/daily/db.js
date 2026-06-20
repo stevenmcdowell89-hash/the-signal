@@ -129,6 +129,51 @@ export async function addSourceSample(db, source, score, ts) {
     .run();
 }
 
+// Run an array of prepared statements in chunked batches (one transaction per
+// chunk). Keeps a poll to a handful of round-trips instead of thousands of
+// sequential awaits — the difference between a sub-second run and a timeout.
+export async function runChunked(db, stmts, size = 50) {
+  for (let i = 0; i < stmts.length; i += size) {
+    await db.batch(stmts.slice(i, i + size));
+  }
+}
+
+export async function bulkUpsertItems(db, items) {
+  const sql = `INSERT INTO items (id, canonical_url, title, domain, source, source_type, links,
+         first_seen, last_seen, published, raw_score)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?)
+       ON CONFLICT(id) DO UPDATE SET
+         last_seen=excluded.last_seen,
+         raw_score=MAX(items.raw_score, excluded.raw_score),
+         links=excluded.links,
+         title=excluded.title`;
+  const stmts = items.map((it) =>
+    db.prepare(sql).bind(
+      it.id, it.canonical_url, it.title, it.domain, it.source, it.source_type,
+      JSON.stringify(it.links || []), it.first_seen, it.last_seen,
+      it.published || it.first_seen, it.raw_score || 0
+    )
+  );
+  await runChunked(db, stmts);
+}
+
+export async function bulkInsertSamples(db, rows) {
+  if (!rows.length) return;
+  const stmts = rows.map((r) =>
+    db.prepare(`INSERT INTO source_samples (source, score, ts) VALUES (?,?,?)`).bind(r.source, r.score, r.ts)
+  );
+  await runChunked(db, stmts);
+}
+
+export async function bulkLogStories(db, rows) {
+  if (!rows.length) return;
+  const stmts = rows.map((r) =>
+    db.prepare(`INSERT INTO story_log (cluster_id, ts, score, headline, domain) VALUES (?,?,?,?,?)`)
+      .bind(r.cluster_id, r.ts, r.score, r.headline, r.domain)
+  );
+  await runChunked(db, stmts);
+}
+
 // Trailing baseline cut: the score at the ~85th percentile over the window,
 // i.e. "significant for this source" (§3.3, default top ~15% over 14–30 days).
 export async function sourceBaselineCut(db, source, sinceMs) {
@@ -155,6 +200,23 @@ export async function lastStoryPoint(db, clusterId, beforeTs) {
     .prepare(`SELECT ts, score FROM story_log WHERE cluster_id=? AND ts<? ORDER BY ts DESC LIMIT 1`)
     .bind(clusterId, beforeTs)
     .first();
+}
+
+// The most recent story point per cluster, in ONE query → Map(cluster_id ->
+// {ts, score}). Replaces 1-query-per-item velocity lookups.
+export async function getLastStoryPoints(db, beforeTs) {
+  const { results } = await db
+    .prepare(
+      `SELECT s.cluster_id AS cluster_id, s.ts AS ts, s.score AS score
+         FROM story_log s
+         JOIN (SELECT cluster_id, MAX(ts) AS mt FROM story_log WHERE ts < ? GROUP BY cluster_id) m
+           ON s.cluster_id = m.cluster_id AND s.ts = m.mt`
+    )
+    .bind(beforeTs)
+    .all();
+  const map = new Map();
+  for (const r of results || []) map.set(r.cluster_id, { ts: r.ts, score: r.score });
+  return map;
 }
 
 export async function logRun(db, r) {

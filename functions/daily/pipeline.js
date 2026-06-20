@@ -7,7 +7,7 @@
 
 import { loadConfig } from "./config.js";
 import {
-  initSchema, upsertItem, getWindowItems, updateScores, logRun, prune,
+  initSchema, bulkUpsertItems, getWindowItems, logRun, prune,
 } from "./db.js";
 import { ingestAll } from "./ingest.js";
 import { clusterEntries } from "./dedup.js";
@@ -16,7 +16,9 @@ import { enrichShortlist } from "./enrich.js";
 import { buildState } from "./render.js";
 
 const STATE_KEY = "state";
-const WINDOW_DAYS = 14;
+// Items live in D1 for 14 days (dedup memory); the brief itself scores+renders a
+// tighter recent window — the daily is fast-decay ("what happened").
+const SCORE_WINDOW_DAYS = 4;
 
 // Map a D1 row to the in-memory item shape the engine expects.
 function rowToItem(row, weightBySource) {
@@ -65,12 +67,12 @@ export async function run(env, { trigger } = {}) {
   // 2) Dedup / cluster this poll's entries (retain all links).
   const clustered = await clusterEntries(entries);
 
-  // 3) Persist — union across polls. New clusters insert; repeats refresh
-  //    last_seen and keep the max raw_score so an early spike survives.
-  for (const it of clustered) {
-    it.first_seen = it.first_seen || now;
-    it.last_seen = now;
-    await upsertItem(db, {
+  // 3) Persist — union across polls (one batched upsert, not N awaits). New
+  //    clusters insert; repeats refresh last_seen and keep the max raw_score so
+  //    an early spike survives a later lull.
+  await bulkUpsertItems(
+    db,
+    clustered.map((it) => ({
       id: it.id,
       canonical_url: it.canonical_url,
       title: it.title,
@@ -82,20 +84,21 @@ export async function run(env, { trigger } = {}) {
       last_seen: now,
       published: it.published,
       raw_score: it.rawScore,
-    });
-  }
+    }))
+  );
 
-  // 4) Load the whole in-window set (persisted + just-upserted) and score it.
+  // 4) Load the recent in-window set (persisted + just-upserted) and score it
+  //    in memory. The recomputable score fields are NOT written back — every
+  //    poll recomputes them; only enrichment (hooks) is persisted, separately.
   const weightBySource = new Map();
   for (const s of config.sources || []) weightBySource.set(s.id, s.weight);
   for (const b of config.bluesky || []) weightBySource.set(b.id, b.weight);
 
-  const sinceMs = now - 1000 * 60 * 60 * 24 * WINDOW_DAYS;
+  const sinceMs = now - 1000 * 60 * 60 * 24 * SCORE_WINDOW_DAYS;
   const rows = await getWindowItems(db, sinceMs);
   const items = rows.map((r) => rowToItem(r, weightBySource));
 
   await scoreBatch(db, items, config, now);
-  for (const it of items) await updateScores(db, it);
 
   // 5) Tier-2 enrichment (optional) on the shortlist.
   const enr = await enrichShortlist(env, db, items, config, now);

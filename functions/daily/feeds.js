@@ -50,11 +50,16 @@ export const STARTER_FEEDS = [
   { id: "brothers-brick", type: "rss", domain: "lego", weight: 0.45, url: "https://www.brothers-brick.com/feed/", name: "Brothers Brick" },
 
   // ---- Books / Fantasy (0.5, NO SPOILERS) ----
-  { id: "brandon-sanderson", type: "rss", domain: "books", weight: 0.5, url: "https://www.brandonsanderson.com/feed/", name: "Brandon Sanderson" },
+  // brandonsanderson.com no longer exposes a public RSS feed (404 on first
+  // ingest) — disabled so it isn't reported dead every run. Reactor + the
+  // Cosmere/Sanderson named-entity floor surface his news from other feeds.
+  { id: "brandon-sanderson", type: "rss", domain: "books", weight: 0.5, url: "https://www.brandonsanderson.com/feed/", name: "Brandon Sanderson", enabled: false },
   { id: "reactor", type: "rss", domain: "books", weight: 0.5, url: "https://reactormag.com/feed/", name: "Reactor" },
 
   // ---- Film / TV (0.4) ----
-  { id: "starwars", type: "rss", domain: "film_tv", weight: 0.4, url: "https://www.starwars.com/news/feed", name: "StarWars.com" },
+  // starwars.com/news/feed was retired (404); Star Wars News Net is the
+  // working community-news replacement.
+  { id: "starwars", type: "rss", domain: "film_tv", weight: 0.4, url: "https://www.starwarsnewsnet.com/feed", name: "Star Wars News Net" },
   { id: "whats-on-netflix", type: "rss", domain: "film_tv", weight: 0.4, url: "https://www.whats-on-netflix.com/feed/", name: "What's on Netflix" },
 
   // ---- Music / synthwave (0.3) ----
@@ -64,7 +69,9 @@ export const STARTER_FEEDS = [
   { id: "runners-world", type: "rss", domain: "fitness", weight: 0.4, url: "https://www.runnersworld.com/rss/all.xml/", name: "Runner's World" },
 
   // ---- UK Finance / Fintech (0.5) ----
-  { id: "monzo", type: "rss", domain: "finance", weight: 0.5, url: "https://monzo.com/blog/feed", name: "Monzo Blog" },
+  // Monzo's blog RSS was retired (404); Monevator is the standard UK
+  // personal-finance feed and a better default anchor for the domain.
+  { id: "monevator", type: "rss", domain: "finance", weight: 0.5, url: "https://monevator.com/feed/", name: "Monevator" },
 
   // ---- Travel / Theme Parks (0.4) ----
   // §8 says "validate a theme-park news feed". Blooloop is the conventional

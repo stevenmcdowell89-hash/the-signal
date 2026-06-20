@@ -33,8 +33,8 @@
   // then paste the returned ids over the REPLACE_ME placeholders below.
   "kv_namespaces": [
     { "binding": "SUBSCRIPTIONS", "id": "f528a67f5a1d4c739273680b9f046534" },
-    { "binding": "DAILY_CONFIG", "id": "REPLACE_ME_DAILY_CONFIG_KV_ID" },
-    { "binding": "DAILY_STATE", "id": "REPLACE_ME_DAILY_STATE_KV_ID" }
+    { "binding": "DAILY_CONFIG", "id": "18caa91c18544fdfbce8bcdeee72582b" },
+    { "binding": "DAILY_STATE", "id": "df2d4983ade441e0894e631cb7f8df84" }
   ],
   // D1 holds the triage engine's time-series data (per-source baselines, the
   // per-story movement log the weekly reads, the clustered item set, run log).
@@ -46,7 +46,7 @@
     {
       "binding": "DAILY_DB",
       "database_name": "the-signal-daily",
-      "database_id": "REPLACE_ME_DAILY_D1_DATABASE_ID"
+      "database_id": "ccf3614d-aa32-49b4-8e95-19ffa230b65f"
     }
   ],
   // Cron Trigger — default every 3h (§3, tunable). The in-app cadence_hours is

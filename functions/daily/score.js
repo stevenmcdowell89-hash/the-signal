@@ -5,8 +5,10 @@
 // named-entity floor, mutes/special-handling, and the fold.
 
 import {
-  addSourceSample, sourceBaselineCut, lastStoryPoint, logStory,
+  sourceBaselineCut, getLastStoryPoints, bulkInsertSamples, bulkLogStories,
 } from "./db.js";
+
+const DISCUSSION = new Set(["hn", "bluesky", "reddit"]);
 
 const lc = (s) => (s || "").toLowerCase();
 
@@ -69,36 +71,44 @@ export function scoreProfile(item, profile, extraMutes) {
 }
 
 // Score the whole batch: baselines, velocity, profile, confidence, fold.
-// `items` are clustered items (from dedup). Mutates them with score fields.
+// `items` are the in-window items. Mutates them with score fields in memory and
+// writes only a handful of batched rows (samples for discussion sources, story
+// points for the surfaced catches) — no per-item awaits. The recomputable score
+// fields are NOT persisted: every poll recomputes them from raw_score + config.
 export async function scoreBatch(db, items, config, now) {
   const profile = config.profile;
   const extraMutes = config.mutes || [];
   const baselineWindow = now - 1000 * 60 * 60 * 24 * 30;
+  const fold = config.fold_threshold;
 
-  // 1) record source samples + compute each source's baseline cut once.
+  // Baselines only matter for sources whose raw score actually varies
+  // (discussion sources: HN/Bluesky/Reddit). RSS has no popularity signal, so it
+  // uses the recency fallback. Compute each such source's trailing cut once.
   const cuts = new Map();
-  for (const it of items) {
-    await addSourceSample(db, it.source, it.rawScore, now);
-  }
-  const sources = [...new Set(items.map((i) => i.source))];
-  for (const s of sources) {
-    cuts.set(s, await sourceBaselineCut(db, s, baselineWindow));
-  }
+  const discSources = [...new Set(items.filter((i) => DISCUSSION.has(i.source_type)).map((i) => i.source))];
+  for (const s of discSources) cuts.set(s, await sourceBaselineCut(db, s, baselineWindow));
+
+  // One query for every cluster's previous story point (velocity).
+  const lastPoints = await getLastStoryPoints(db, now);
+
+  const sampleRows = [];
+  const storyRows = [];
 
   for (const it of items) {
-    // 2) per-source baseline normalisation (§3.3): how significant for THIS
-    //    source vs its trailing top-15% cut.
-    const cut = cuts.get(it.source);
-    if (cut && cut > 0) {
-      it.baseline_score = Math.max(0, Math.min(1, it.rawScore / (cut * 1.5)));
+    // 1) per-source baseline normalisation (§3.3).
+    if (DISCUSSION.has(it.source_type)) {
+      const cut = cuts.get(it.source);
+      it.baseline_score = cut && cut > 0
+        ? Math.max(0, Math.min(1, it.rawScore / (cut * 1.5)))
+        : 0.5;
+      sampleRows.push({ source: it.source, score: it.rawScore, ts: now });
     } else {
-      // No history yet (RSS or new source): lean on recency.
       const ageH = (now - (it.published || now)) / 3.6e6;
       it.baseline_score = ageH < 6 ? 0.7 : ageH < 24 ? 0.5 : 0.3;
     }
 
-    // 3) velocity (§3.4): Δscore/Δhr vs the last logged point for this cluster.
-    const prev = await lastStoryPoint(db, it.id, now);
+    // 2) velocity (§3.4): Δscore/Δhr vs the cluster's last logged point.
+    const prev = lastPoints.get(it.id);
     if (prev && prev.ts) {
       const dh = Math.max(0.25, (now - prev.ts) / 3.6e6);
       it.velocity = Math.max(0, (it.rawScore - prev.score) / dh);
@@ -107,38 +117,42 @@ export async function scoreBatch(db, items, config, now) {
     }
     const velNorm = Math.min(1, it.velocity / 20);
 
-    // 4) profile-weighted ranking (§3.6) + entity floor + mutes.
-    // For an already-enriched item the saved profile_score carries Tier-2's
-    // semantic relevance (judged once); keep it if it beats the mechanical
-    // pass so a good hook doesn't drop below the fold on the next poll.
+    // 3) profile-weighted ranking (§3.6) + entity floor + mutes. For an
+    // already-enriched item the saved profile_score carries Tier-2's semantic
+    // relevance (judged once); keep it if it beats the mechanical pass.
     const loadedProfile = it.profile_score || 0;
     const pr = scoreProfile(it, profile, extraMutes);
     it.profile_score = it.enriched ? Math.max(pr.score, loadedProfile) : pr.score;
     it.entity_floor = pr.entityFloor;
     it.muted = pr.muted;
 
-    // 5) confidence: blend interest, source-significance and velocity, scaled by
-    //    the source weight. Demote (UK politics etc.) halves it.
-    let conf =
-      0.55 * it.profile_score +
-      0.30 * it.baseline_score +
-      0.15 * velNorm;
+    // 4) confidence: blend interest, source-significance and velocity, scaled by
+    // source weight. Demote (UK politics etc.) cuts it hard.
+    let conf = 0.55 * it.profile_score + 0.30 * it.baseline_score + 0.15 * velNorm;
     conf *= 0.6 + 0.4 * (it.weight || 0.5);
     if (pr.demote) conf *= 0.4;
     if (it.muted) conf = 0;
-    // Named-entity floor bypasses ranking — pinned above the fold (§4).
-    if (it.entity_floor && !it.muted) conf = Math.max(conf, 0.95);
     it.confidence = Math.max(0, Math.min(1, conf));
 
-    // 6) the fold (§3.7): above-fold = over the confidence threshold (not a
-    //    fixed count). Entity-floor items are always above.
-    it.above_fold = !it.muted && (it.entity_floor || it.confidence >= config.fold_threshold);
+    // 5) the fold (§3.7): above-fold = over the threshold (not a fixed count).
+    // The named-entity floor *bypasses ranking* — it guarantees above-fold but
+    // does NOT flatten the score, so the most significant core story still leads
+    // and one entity doesn't flood Top Catches.
+    if (it.entity_floor && !it.muted) {
+      it.above_fold = true;
+      it.confidence = Math.max(it.confidence, fold + 0.02);
+    } else {
+      it.above_fold = !it.muted && it.confidence >= fold;
+    }
 
-    // Log the story point for the weekly's movement evidence + future velocity.
-    if (!it.muted) {
-      await logStory(db, it.id, it.rawScore, it.title, it.domain, now);
+    // Log a story point only for surfaced catches + discussion items (movement
+    // evidence for the weekly + future velocity) — not the whole firehose.
+    if (!it.muted && (it.above_fold || DISCUSSION.has(it.source_type))) {
+      storyRows.push({ cluster_id: it.id, ts: now, score: it.rawScore, headline: it.title, domain: it.domain });
     }
   }
 
+  await bulkInsertSamples(db, sampleRows);
+  await bulkLogStories(db, storyRows);
   return items;
 }

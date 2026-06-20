@@ -122,10 +122,13 @@ export function buildState(items, meta, now) {
     top_catches: top.map(publicItem),
     sections,
     also: alsoDomains,
-    // Tappable tail: the full retained set below the fold (§4.6). Demote, never
-    // drop — a ranking mistake costs a scroll, not a missed story.
+    // Tappable tail: the retained set below the fold (§4.6). Demote, never drop
+    // — a ranking mistake costs a scroll, not a missed story. Bounded so the
+    // state stays a brief, never an infinite feed; the long tail of stale noise
+    // ages out of the window anyway.
     below_fold: belowFold
       .sort((a, b) => b.confidence - a.confidence)
+      .slice(0, 250)
       .map(publicItem),
     footer: {
       kept: live.length,
