@@ -16,7 +16,7 @@
  *                 the phone to verify what's actually cached.
  */
 
-const CACHE_VERSION = "v14";
+const CACHE_VERSION = "v15";
 const SHELL_CACHE = `signal-shell-${CACHE_VERSION}`;
 const ISSUE_CACHE = `signal-issues-${CACHE_VERSION}`;
 const IMAGE_CACHE = `signal-images-${CACHE_VERSION}`;

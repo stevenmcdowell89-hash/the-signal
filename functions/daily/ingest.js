@@ -251,7 +251,8 @@ async function redditAppToken(env) {
 }
 
 function subFromFeed(feed) {
-  const m = /reddit\.com\/r\/([A-Za-z0-9_]+)/i.exec(feed.url || "");
+  // Captures a single sub OR a multireddit ("a+b+c"); `+` is part of the path.
+  const m = /reddit\.com\/r\/([A-Za-z0-9_+]+)/i.exec(feed.url || "");
   return (m && m[1]) || feed.subreddit || null;
 }
 
@@ -320,15 +321,17 @@ export async function ingestAll(config, env) {
   const dead = [];
   const jobs = [];
 
+  // Reddit gets fetched sequentially with a stagger (below), not concurrently —
+  // hammering Reddit with every feed at once trips its per-IP rate limit and most
+  // come back empty. Everything else runs concurrently.
+  const redditFeeds = [];
   for (const feed of config.sources || []) {
     if (feed.enabled === false) continue;
+    if (feed.type === "reddit") { redditFeeds.push(feed); continue; }
     jobs.push(
       (async () => {
         try {
-          const got =
-            feed.type === "hn" ? await ingestHn(feed)
-            : feed.type === "reddit" ? await ingestReddit(feed, env)
-            : await ingestRss(feed);
+          const got = feed.type === "hn" ? await ingestHn(feed) : await ingestRss(feed);
           if (got.length) {
             entries.push(...got);
             live.push(feed.id);
@@ -359,5 +362,20 @@ export async function ingestAll(config, env) {
   }
 
   await Promise.allSettled(jobs);
+
+  // Reddit: one feed at a time with a short gap, so we stay under the rate limit.
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  for (let i = 0; i < redditFeeds.length; i++) {
+    const feed = redditFeeds[i];
+    try {
+      const got = await ingestReddit(feed, env);
+      if (got.length) { entries.push(...got); live.push(feed.id); }
+      else dead.push(feed.id);
+    } catch {
+      dead.push(feed.id);
+    }
+    if (i < redditFeeds.length - 1) await sleep(600);
+  }
+
   return { entries, live, dead };
 }
