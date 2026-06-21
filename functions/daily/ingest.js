@@ -261,16 +261,18 @@ async function ingestReddit(feed, env) {
   if (!sub) return [];
   const token = await redditAppToken(env);
 
-  // No OAuth → public per-subreddit `.rss` (Atom). This is NOT the JSON Data API,
-  // so it isn't approval-gated; it works today through the generic feed parser.
-  // The link is the comments permalink (a discussion thread); comment counts
-  // aren't in the RSS, so they arrive later once OAuth is configured.
+  // No OAuth → public `.rss` (Atom) of the HOT listing. Hot is Reddit's own
+  // upvote+velocity ranking — the right cut for a daily cadence. RSS doesn't carry
+  // the upvote NUMBER, but the feed ARRIVES in hot order, so the position IS the
+  // signal: rank 0 is the hottest, rank ~24 is marginal. We map position → rawScore
+  // so Reddit's curation drives our ranking (a position-20 self-post sinks; the
+  // top of hot surfaces). OAuth later swaps the proxy for the real score.
   if (!token) {
     const xml = await fetchText(
       `https://www.reddit.com/r/${sub}/.rss?limit=25`,
       "application/atom+xml, application/rss+xml, application/xml, text/xml"
     );
-    return parseFeed(xml, feed).map((e) => {
+    return parseFeed(xml, feed).map((e, idx) => {
       // The entry link is the comments permalink; pull the SPECIFIC subreddit out
       // of it for a clean "r/Juve" label (the feed itself is a multireddit).
       const sm = /reddit\.com\/r\/([A-Za-z0-9_]+)\//i.exec(e.url || "");
@@ -279,14 +281,15 @@ async function ingestReddit(feed, env) {
         ...e,
         sourceType: "reddit",
         summary: "",
+        rawScore: Math.max(1, 25 - idx), // hot position as the popularity proxy
         links: [{ type: "discussion", url: e.url, label }],
         commentsUrl: e.url,
       };
     });
   }
 
-  // OAuth Data API → top/day with scores + comment counts.
-  const resp = await fetch(`https://oauth.reddit.com/r/${sub}/top?t=day&limit=25`, {
+  // OAuth Data API → the hot listing with real upvote + comment counts.
+  const resp = await fetch(`https://oauth.reddit.com/r/${sub}/hot?limit=25`, {
     headers: { "User-Agent": UA, Accept: "application/json", Authorization: `Bearer ${token}` },
   });
   if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
