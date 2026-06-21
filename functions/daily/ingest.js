@@ -22,12 +22,14 @@ async function fetchText(url, accept) {
   return resp.text();
 }
 
-// Like fetchText, but retries ONCE on a transient throttle (429/503). Reddit's
-// unauthenticated .rss is rate-limited per-IP, and Cloudflare Workers share egress
-// IPs across many tenants — so a 429 is usually a brief shared-IP throttle that
-// clears in a few seconds, not a hard block. We honour Retry-After (capped at 8s,
-// default 3s) and try again before giving up, recovering a meaningful share of them.
-async function fetchTextRetry(url, accept, tries = 2) {
+// Like fetchText, but retries a few times on a transient throttle (429/503).
+// Reddit's unauthenticated .rss is rate-limited per-IP, and Cloudflare Workers share
+// egress IPs across many tenants — so a 429 is usually a brief shared-IP throttle
+// that clears in a few seconds, not a hard block. We honour Retry-After when given,
+// else back off ~1.5s/3s/4.5s, plus random JITTER so a batch's subs don't retry in
+// lockstep against the same shared IP. (The pipeline also re-attempts whole-batch
+// failures across ~10-min cron ticks; this is the fast in-tick recovery.)
+async function fetchTextRetry(url, accept, tries = 3) {
   let lastErr;
   for (let i = 0; i < tries; i++) {
     const resp = await fetch(url, {
@@ -38,8 +40,8 @@ async function fetchTextRetry(url, accept, tries = 2) {
     lastErr = new Error(`HTTP ${resp.status}`);
     if ((resp.status === 429 || resp.status === 503) && i < tries - 1) {
       const ra = parseInt(resp.headers.get("retry-after") || "", 10);
-      const waitMs = Math.min(8000, (Number.isFinite(ra) && ra > 0 ? ra : 3) * 1000);
-      await new Promise((r) => setTimeout(r, waitMs));
+      const baseMs = Number.isFinite(ra) && ra > 0 ? ra * 1000 : 1500 * (i + 1);
+      await new Promise((r) => setTimeout(r, Math.min(8000, baseMs) + Math.random() * 1200));
       continue;
     }
     throw lastErr;
