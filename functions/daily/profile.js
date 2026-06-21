@@ -32,7 +32,8 @@ export const PROFILE = {
   // Bump when the floor/topic DEFAULTS below should override an older saved
   // profile in KV (e.g. removing Juventus from the floor, adding `domain`).
   // v3: added the `local` (NI) topic + de-noised history/podcasts/music keywords.
-  profile_version: 3,
+  // v4: tightened ai_engineering to consumer-AI (dropped infra tokens).
+  profile_version: 4,
 
   // ---- Named-entity floor (the genuine core) ----
   // A SCARCITY mechanism (§7.5): it guarantees a slot for rare must-not-miss
@@ -124,12 +125,14 @@ export const PROFILE = {
     },
     ai_engineering: {
       weight: 0.7,
+      // Consumer AI tools/news, NOT dev/infra. Infra tokens (cloudflare, workers,
+      // edge, open source, api, self-host, automation) were removed — they were
+      // pulling in off-interest HN firehose ("Google hits 50% IPv6").
       keywords: [
         "ai ", "artificial intelligence", "llm", "chatgpt", "openai", "claude",
-        "anthropic", "gemini", "perplexity", "copilot", "on-device", "model",
-        "agent", "assistant", "image generation", "cloudflare", "workers", "edge",
-        "open source", "self-host", "api", "productivity app", "todoist", "notion",
-        "obsidian", "automation",
+        "anthropic", "gemini", "perplexity", "copilot", "on-device ai",
+        "image generation", "ai assistant", "ai agent", "productivity app",
+        "todoist", "notion", "obsidian",
       ],
     },
     finance: {

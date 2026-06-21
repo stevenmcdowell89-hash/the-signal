@@ -59,7 +59,9 @@ function publicItem(it) {
     domain: it.domain,
     links: links || [],
     entity_floor: !!it.entity_floor,
+    entity_id: it.entity_id || null,
     source_type: it.source_type || null,
+    source_count: it.source_count || 1,
     status: it.developing ? "developing" : null,
     days_active: it.developing ? (it.days_active || null) : null,
     discussion: discussionFromLinks(links),
@@ -78,9 +80,15 @@ const TT_DATED = /\b(tonight|today|this (?:evening|afternoon)|kick[- ]?off|\d{1,
 const TT_FEATURE = /\b(how to watch|where to watch|review|rank(?:ed|ing)|best |worst |season review|explain(?:ed|er)|preview|predict(?:ion|ed)?|opinion|why |everything you need)\b/i;
 function todayAndTonight(items, now) {
   const out = [];
+  // "Today" in a title only means today if the item is ACTUALLY from today — a
+  // 2-day-old post saying "releases today" is stale. Gate on the item's real date
+  // (publish time, or first-seen if undated) being within the last ~18h.
+  const freshCut = now - 18 * 3.6e6;
   for (const it of items) {
     if (it.muted) continue;
     if (!(it.domain === "football" || it.domain === "film_tv" || it.domain === "gaming")) continue;
+    const when = it.published ?? it.first_seen ?? 0;
+    if (when < freshCut) continue;
     const title = it.title || "";
     if (!TT_DATED.test(title) || TT_FEATURE.test(title)) continue;
     out.push(publicItem(it));
@@ -298,6 +306,30 @@ export function buildState(items, meta, now, config) {
     .slice(0, 80)
     .map(publicItem);
 
+  // Headlines: the genuinely BIG stories — ranked by BIGNESS (breadth × confidence),
+  // not raw interest score. A story carried by ≥2 of the reader's feeds, OR a strong
+  // News/Sport item, qualifies; a single-source niche-interest item does NOT (it
+  // lives in its own tab). Cross-domain, capped ≤2/domain, deduped. This is what
+  // makes "Headlines" actual headlines instead of "top scores across everything".
+  const NEWS_SPORT = new Set(["world", "local", "finance", "football", "golf"]);
+  const bigness = (i) => (i.confidence || 0) * (1 + 0.25 * Math.min(3, (i.source_count || 1) - 1));
+  const hRanked = aboveFold
+    .filter((i) => (i.age_hours == null || i.age_hours <= maxCatchHours) &&
+                   ((i.source_count || 1) >= 2 || NEWS_SPORT.has(i.domain)))
+    .sort((a, b) => bigness(b) - bigness(a));
+  const headlines = [];
+  const hToks = [];
+  const hDomain = {};
+  for (const it of hRanked) {
+    if (headlines.length >= 5) break;
+    if ((hDomain[it.domain] || 0) >= 2) continue;
+    const toks = topicTokens(it);
+    if (hToks.some((t) => tokenJaccard(t, toks) >= 0.5)) continue;
+    headlines.push(it);
+    hDomain[it.domain] = (hDomain[it.domain] || 0) + 1;
+    hToks.push(toks);
+  }
+
   return {
     generated_at: now,
     status: {
@@ -307,6 +339,7 @@ export function buildState(items, meta, now, config) {
     edition: { date_label: dateLabel },
     start_here: top.slice(0, 3).map((t) => t.title),
     today_tonight: todayAndTonight(live, now),
+    headlines: headlines.map(publicItem),
     top_catches: top.map(publicItem),
     sections,
     also: alsoDomains,

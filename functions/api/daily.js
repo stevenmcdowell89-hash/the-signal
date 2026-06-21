@@ -2,7 +2,7 @@
 // POST /api/daily/run  — token-gated manual poll (the Cron Trigger calls
 //                        run() directly; this lets a device force a refresh).
 
-import { run, getState } from "../daily/pipeline.js";
+import { run, getState, RUN_PROGRESS_KEY } from "../daily/pipeline.js";
 import { tokenOk } from "./config.js";
 
 function json(obj, status = 200) {
@@ -28,4 +28,12 @@ export async function onRequestPost({ request, env, ctx }) {
   } catch (e) {
     return json({ error: String((e && e.message) || e) }, 500);
   }
+}
+
+// GET /api/daily/run-status — live run progress for the Settings "Run now"
+// indicator. Open read (no token); just a small progress blob.
+export async function onRequestRunStatus({ env }) {
+  if (!env.DAILY_STATE) return json({ phase: null });
+  const raw = await env.DAILY_STATE.get(RUN_PROGRESS_KEY);
+  return json(raw ? JSON.parse(raw) : { phase: null });
 }

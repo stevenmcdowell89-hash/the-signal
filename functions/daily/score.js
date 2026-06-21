@@ -45,10 +45,12 @@ export function scoreProfile(item, profile, extraMutes) {
   // keyword (e.g. "director" in film_tv) can't re-home a core item.
   let entityFloor = false;
   let floorDomain = null;
+  let entityId = null;
   for (const e of profile.named_entity_floor || []) {
     if (matchesAny(title, e.patterns)) {
       entityFloor = true;
       floorDomain = e.domain || null;
+      entityId = e.id || null;
       break;
     }
   }
@@ -104,7 +106,7 @@ export function scoreProfile(item, profile, extraMutes) {
     if (matchesAny(title, sh.demote_patterns)) demote = true;
   }
 
-  return { score: best, entityFloor, muted: false, demote };
+  return { score: best, entityFloor, entityId, muted: false, demote };
 }
 
 // Score the whole batch: baselines, velocity, profile, confidence, fold.
@@ -179,12 +181,19 @@ export async function scoreBatch(db, items, config, now) {
     const pr = scoreProfile(it, profile, extraMutes);
     it.profile_score = it.enriched ? Math.max(pr.score, loadedProfile) : pr.score;
     it.entity_floor = pr.entityFloor;
+    it.entity_id = pr.entityId || null;
     it.muted = pr.muted;
 
     // 4) confidence: blend interest + source-significance, scale by source
     //    weight, then apply recency. A genuinely moving story (high velocity)
     //    resists decay so breaking news isn't aged out the moment it's caught.
-    let base = 0.65 * it.profile_score + 0.35 * it.baseline_score;
+    // Relevance gate: HN is a broad firehose (its whole front page), so an HN
+    // item with NO interest-keyword match must not ride HN-popularity into the
+    // brief ("Google hits 50% IPv6"). Damp its baseline hard. Reddit/Bluesky are
+    // user-curated (the sub/handle choice IS the relevance), so they're exempt.
+    let effBaseline = it.baseline_score;
+    if (it.source_type === "hn" && it.profile_score < 0.05) effBaseline *= 0.2;
+    let base = 0.65 * it.profile_score + 0.35 * effBaseline;
     base *= 0.6 + 0.4 * (it.weight || 0.5);
     if (pr.demote) base *= 0.4;
     const recencyLifted = Math.min(1, recency + 0.6 * velNorm * (1 - recency));
