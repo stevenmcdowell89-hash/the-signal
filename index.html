@@ -1423,7 +1423,27 @@
           e.textContent='Nothing here right now.';
           root.appendChild(e);
         }
-        tail(below, 'held below the fold');
+        rollupTail(below);
+      }
+
+      // Below-fold tail grouped into one expandable "+N more in {topic}" line per
+      // domain — so a transfer-rumour firehose reads as "+12 more Football" instead
+      // of 12 separate cards, while staying one tap from the full list.
+      function rollupTail(items){
+        if (!items.length) return;
+        var byDom={}, order=[];
+        items.forEach(function(it){ var d=it.domain||'?'; if(!byDom[d]){ byDom[d]=[]; order.push(d); } byDom[d].push(it); });
+        order.sort(function(a,b){ return byDom[b].length-byDom[a].length; });
+        order.forEach(function(d){
+          var arr=byDom[d]; var label=arr[0].domain_label||DOMAIN_LABELS[d]||d;
+          var btn=document.createElement('button'); btn.className='brief-tail';
+          var show='+ '+arr.length+' more in '+label;
+          btn.textContent=show;
+          var holder=document.createElement('div'); holder.hidden=true;
+          arr.forEach(function(it){ holder.appendChild(catchEl(it, {})); });
+          btn.addEventListener('click', function(){ holder.hidden=!holder.hidden; btn.textContent=holder.hidden?show:('Hide '+label); });
+          root.appendChild(btn); root.appendChild(holder);
+        });
       }
 
       // Communities: catch up on Reddit / HN / Bluesky in one place.

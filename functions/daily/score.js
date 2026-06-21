@@ -267,6 +267,32 @@ export async function scoreBatch(db, items, config, now) {
     }
   }
 
+  // Per-(source, domain) firehose cap: within ONE feed's items in ONE domain, the
+  // lower-ranked tail gets a graded confidence penalty — so a single high-volume
+  // feed (Football Italia in the transfer window) can't flood a section OR push its
+  // 4th/5th item into Headlines / Top 20. Penalty, not removal (demote-never-drop):
+  // capped items still surface below the fold. Runs BEFORE the fold is finalised.
+  const capN = (config.scoring && config.scoring.source_cap) ?? 3;
+  const capPenalty = (config.scoring && config.scoring.source_cap_penalty) ?? 0.6;
+  const groups = new Map();
+  for (const it of items) {
+    if (it.muted) continue;
+    const k = (it.source || "?") + "|" + it.domain;
+    let arr = groups.get(k);
+    if (!arr) { arr = []; groups.set(k, arr); }
+    arr.push(it);
+  }
+  for (const arr of groups.values()) {
+    if (arr.length <= capN) continue;
+    arr.sort((a, b) => b.confidence - a.confidence);
+    for (let r = capN; r < arr.length; r++) {
+      arr[r].confidence = Math.max(0, arr[r].confidence * Math.pow(capPenalty, r - capN + 1));
+      arr[r].source_capped = true;
+    }
+  }
+  // Re-finalise the fold after the cap so capped firehose items drop below it.
+  for (const it of items) it.above_fold = !it.muted && it.confidence >= fold;
+
   await bulkInsertSamples(db, sampleRows);
   await bulkLogStories(db, storyRows);
   return items;

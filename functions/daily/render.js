@@ -120,7 +120,7 @@ function tokenJaccard(a, b) {
 
 // Fairness caps so no single high-volume domain (football in the transfer
 // window) can crowd the brief or evict low-weight domains (World, Money, Books).
-const SECTION_CAP = 8;       // items shown in a domain's All-view section
+const SECTION_CAP = 5;       // "the few things to know" per topic (the rest roll up below)
 const PER_SOURCE_SECTION = 3; // ≤N items from one source in a section (anti-firehose)
 const PER_DOMAIN_BELOW = 30; // below-fold items kept per domain before the global cap
 const BELOW_TOTAL_CAP = 400; // overall below-fold ceiling (keeps the state a brief)
