@@ -1175,7 +1175,7 @@
         // Card head: optional rank · domain chip · CORE, then the time (right).
         var left = '';
         if (opts.rank) left += '<span class="catch-rank">' + opts.rank + '</span>';
-        if (opts.showDomain) left += '<span class="catch-dom">' + esc(DOMAIN_LABELS[it.domain] || it.domain) + '</span>';
+        if (opts.showDomain) left += '<span class="catch-dom">' + esc(it.domain_label || DOMAIN_LABELS[it.domain] || it.domain) + '</span>';
         if (it.entity_floor) left += '<span class="catch-core">CORE</span>';
         if (it.status === 'developing') left += '<span class="catch-dev">DEVELOPING' + (it.days_active ? ' · ' + it.days_active + 'd' : '') + '</span>';
         var t = reltime(it);
@@ -1254,13 +1254,20 @@
       }
 
       // ---- Five navigable sections: Headlines · News · Sport · Interests · Communities ----
-      var NEWS_DOMAINS = ['world','local','finance'];
-      var SPORT_DOMAINS = ['football','golf'];
-      function groupOf(d){ return NEWS_DOMAINS.indexOf(d)>=0 ? 'news' : (SPORT_DOMAINS.indexOf(d)>=0 ? 'sport' : 'interests'); }
-      var VIEW_TABS = [['headlines','Headlines'],['news','News'],['sport','Sport'],['interests','Interests'],['communities','Communities']];
+      // Editions are config-driven and come baked into the state: each item carries
+      // an `edition` id, and state.editions is the ordered tab list. No hardcoded
+      // domain→tab map here, so a domain added in Settings just appears.
       var currentSub = null; // second-level filter: {kind:'domain'|'entity'|'source', val}
       function entityLabel(id){ return (id||'').split('-').map(function(w){ return w.charAt(0).toUpperCase()+w.slice(1); }).join(' '); }
-      function viewItems(state, view){ return allLiveItems(state).filter(function(i){ return groupOf(i.domain)===view; }); }
+      function editionOf(i){ return i.edition || 'more'; }
+      function viewItems(state, view){ return allLiveItems(state).filter(function(i){ return editionOf(i)===view; }); }
+      // Tabs: Headlines (fixed) · each non-empty edition (config order) · Communities (fixed).
+      function viewTabs(state){
+        var tabs = [['headlines','Headlines']];
+        (state.editions||[]).forEach(function(e){ if (viewItems(state, e.id).length) tabs.push([e.id, e.label]); });
+        tabs.push(['communities','Communities']);
+        return tabs;
+      }
       function subMatch(it){
         if(!currentSub) return true;
         if(currentSub.kind==='domain') return it.domain===currentSub.val;
@@ -1271,17 +1278,16 @@
 
       function superNav(state){
         var bar = document.createElement('div'); bar.className='brief-filters';
-        var counts = {
-          headlines: (state.headlines||[]).length,
-          news: viewItems(state,'news').length,
-          sport: viewItems(state,'sport').length,
-          interests: viewItems(state,'interests').length,
-          communities: (state.communities||[]).length
-        };
-        VIEW_TABS.forEach(function(s){
+        var tabs = viewTabs(state);
+        // If the saved view no longer exists (an edition was renamed/emptied), fall back.
+        if (!tabs.some(function(t){ return t[0]===currentView; })) currentView = 'headlines';
+        tabs.forEach(function(s){
+          var count = s[0]==='headlines' ? (state.headlines||[]).length
+                    : s[0]==='communities' ? (state.communities||[]).length
+                    : viewItems(state, s[0]).length;
           var b = document.createElement('button');
           b.className = 'bfilter' + (currentView===s[0] ? ' is-active' : '');
-          b.innerHTML = esc(s[1]) + ' <span class="c">'+(counts[s[0]]||0)+'</span>';
+          b.innerHTML = esc(s[1]) + ' <span class="c">'+(count||0)+'</span>';
           b.addEventListener('click', function(){
             currentView = s[0]; currentSub = null;
             try{ localStorage.setItem('signal-brief-view', s[0]); }catch(_){}
@@ -1302,9 +1308,14 @@
           ['reddit','hn','bluesky'].forEach(function(k){ if(bySrc[k]) chips.push({kind:'source',val:k,label:COMMUNITY_LABEL[k]||k,count:bySrc[k]}); });
         } else if (currentView!=='headlines'){
           var items = viewItems(state,currentView);
-          var byDom = {}, entCount = {};
-          items.forEach(function(i){ byDom[i.domain]=(byDom[i.domain]||0)+1; if(i.entity_id) entCount[i.entity_id]=(entCount[i.entity_id]||0)+1; });
-          DOMAIN_ORDER.forEach(function(d){ if(byDom[d]&&groupOf(d)===currentView) chips.push({kind:'domain',val:d,label:DOMAIN_LABELS[d]||d,count:byDom[d]}); });
+          var byDom = {}, domLabel = {}, entCount = {};
+          items.forEach(function(i){
+            byDom[i.domain]=(byDom[i.domain]||0)+1;
+            domLabel[i.domain]=i.domain_label||DOMAIN_LABELS[i.domain]||i.domain;
+            if(i.entity_id) entCount[i.entity_id]=(entCount[i.entity_id]||0)+1;
+          });
+          Object.keys(byDom).sort(function(a,b){ return byDom[b]-byDom[a]; })
+            .forEach(function(d){ chips.push({kind:'domain',val:d,label:domLabel[d],count:byDom[d]}); });
           Object.keys(entCount).forEach(function(e){ chips.push({kind:'entity',val:e,label:entityLabel(e),count:entCount[e]}); });
         }
         if (!chips.length) return null;
@@ -1383,7 +1394,7 @@
       function renderGroup(state, view){
         var any = false;
         (state.sections||[]).forEach(function(s){
-          if (groupOf(s.domain)!==view) return;
+          if ((s.edition||'more')!==view) return;
           var items = s.items.filter(subMatch);
           if (!items.length) return;
           any = true;
@@ -1392,7 +1403,7 @@
           items.forEach(function(it){ g.appendChild(catchEl(it, {})); });
           root.appendChild(g);
         });
-        var also = (state.also||[]).filter(function(a){ return groupOf(a.domain)===view && subMatch(a.item); });
+        var also = (state.also||[]).filter(function(a){ return (a.edition||'more')===view && subMatch(a.item); });
         if (also.length){
           any = true;
           var g2 = group('Across your interests');
@@ -1406,7 +1417,7 @@
           });
           g2.appendChild(wrap); root.appendChild(g2);
         }
-        var below = (state.below_fold||[]).filter(function(i){ return groupOf(i.domain)===view && subMatch(i); });
+        var below = (state.below_fold||[]).filter(function(i){ return editionOf(i)===view && subMatch(i); });
         if (!any && !below.length){
           var e=document.createElement('div'); e.className='brief-empty';
           e.textContent='Nothing here right now.';

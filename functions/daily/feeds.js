@@ -125,8 +125,7 @@ export const STARTER_REDDIT = [
   RS("synthwave", "music", 0.3, "small"), RS("AdvancedRunning", "fitness", 0.45, "small"),
   RS("weightroom", "fitness", 0.45, "small"), RS("Monzo", "finance", 0.5, "small"),
   RS("fintech", "finance", 0.45, "small"), RS("themeparks", "travel", 0.45, "small"),
-  RS("wdw", "travel", 0.4, "small"), RS("selfhosted", "home_selfhosting", 0.4, "small"),
-  RS("homeassistant", "home_selfhosting", 0.4, "small"), RS("history", "history", 0.4, "small"),
+  RS("wdw", "travel", 0.4, "small"), RS("history", "history", 0.4, "small"),
   RS("AskHistorians", "history", 0.4, "small"), RS("podcasts", "podcasts", 0.35, "small"),
   RS("northernireland", "local", 0.5, "small"),
 ];

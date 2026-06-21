@@ -22,16 +22,10 @@ const DOMAIN_LABELS = {
   travel: "Travel & Parks",
   history: "History",
   podcasts: "Listening",
-  home_selfhosting: "Home / Self-hosting",
 };
-
-// Fixed domain order so sections are stable issue-to-issue (a quiet domain is
-// simply absent — no padding, §4.4).
-const DOMAIN_ORDER = [
-  "world", "local", "gaming", "football", "tech_devices", "ai_engineering", "books",
-  "film_tv", "music", "golf", "lego", "fitness", "finance", "travel",
-  "history", "podcasts", "home_selfhosting",
-];
+// DOMAIN_LABELS is now only a FALLBACK — labels/editions/order are config-driven
+// (config.profile.topic_weights[d].label/.edition + config.editions), resolved in
+// buildState so a domain added in Settings flows through with no code change.
 
 // Discussion context for an item, derived from its links (which persist as JSON,
 // so no schema change): the liveliest discussion/post thread + its comment count.
@@ -57,6 +51,8 @@ function publicItem(it) {
     hook: it.hook || null,
     register: it.register || null,
     domain: it.domain,
+    domain_label: it.domain_label || null,
+    edition: it.edition || null,
     links: links || [],
     entity_floor: !!it.entity_floor,
     entity_id: it.entity_id || null,
@@ -134,8 +130,34 @@ export function buildState(items, meta, now, config) {
   const maxCatchHours = rc.top_catch_max_hours || 30;
   const blend = rc.top_catch_recency_blend ?? 0.35;
 
+  // Config-driven domain → label / edition / order. A topic carries its own
+  // `label` + `edition` (config.profile.topic_weights[d]); editions are an ordered
+  // config list. Unknown/unset → "more" catch-all + title-cased key. So a domain
+  // added in Settings appears in its chosen edition with no code change.
+  const tw = ((config && config.profile) || {}).topic_weights || {};
+  const editionsList = (config && config.editions) || [{ id: "more", label: "More" }];
+  const editionIds = new Set(editionsList.map((e) => e.id));
+  const editionRank = {};
+  editionsList.forEach((e, i) => { editionRank[e.id] = i; });
+  const titleCase = (d) => String(d || "").replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  const labelFor = (d) => (tw[d] && tw[d].label) || DOMAIN_LABELS[d] || titleCase(d);
+  const editionFor = (d) => {
+    const e = tw[d] && tw[d].edition;
+    return e && editionIds.has(e) ? e : "more";
+  };
+  const domainSort = (a, b) => {
+    const ea = editionRank[editionFor(a)] ?? 99, eb = editionRank[editionFor(b)] ?? 99;
+    if (ea !== eb) return ea - eb;
+    const wa = (tw[a] && tw[a].weight) || 0, wb = (tw[b] && tw[b].weight) || 0;
+    if (wb !== wa) return wb - wa;
+    return a < b ? -1 : 1;
+  };
+
   // Split muted out entirely; everything else is demote-never-drop.
   const live = items.filter((i) => !i.muted);
+  // Bake edition + display label onto every item so the front-end groups by a
+  // value it's handed (no hardcoded domain lists there either). publicItem reads these.
+  for (const it of live) { it.edition = editionFor(it.domain); it.domain_label = labelFor(it.domain); }
 
   const aboveFold = live.filter((i) => i.above_fold);
   const belowFold = live.filter((i) => !i.above_fold);
@@ -219,12 +241,26 @@ export function buildState(items, meta, now, config) {
   const sections = [];
   const alsoDomains = [];
   const overflow = [];
-  for (const d of DOMAIN_ORDER) {
-    const list = (byDomain[d] || []).sort((a, b) => b.confidence - a.confidence);
+  for (const d of Object.keys(byDomain).sort(domainSort)) {
+    const edition = editionFor(d);
+    // News & Money is "what's the news TODAY" — gate to fresh and order by date
+    // (a half-step looser than Headlines). Stale above-fold news drops below the
+    // fold via overflow. Other editions stay confidence-ordered (browsing).
+    let list;
+    if (edition === "news_money") {
+      const fresh = [], stale = [];
+      for (const it of (byDomain[d] || [])) {
+        ((it.age_hours == null || it.age_hours <= maxCatchHours) ? fresh : stale).push(it);
+      }
+      overflow.push(...stale);
+      list = fresh.sort((a, b) => (b.published || b.first_seen || 0) - (a.published || a.first_seen || 0));
+    } else {
+      list = (byDomain[d] || []).sort((a, b) => b.confidence - a.confidence);
+    }
     if (!list.length) continue;
     if (list.length <= 1) {
       // Low-volume domain → "Also" one-liner (§4.5).
-      alsoDomains.push({ domain: d, label: DOMAIN_LABELS[d] || d, item: publicItem(list[0]) });
+      alsoDomains.push({ domain: d, edition, label: labelFor(d), item: publicItem(list[0]) });
     } else {
       // Per-source cap so one high-volume feed (e.g. Football Italia) can't own a
       // section: keep ≤PER_SOURCE_SECTION from any single source; everything that
@@ -243,7 +279,8 @@ export function buildState(items, meta, now, config) {
       }
       sections.push({
         domain: d,
-        label: DOMAIN_LABELS[d] || d,
+        edition,
+        label: labelFor(d),
         items: picked.map(publicItem),
       });
     }
@@ -265,9 +302,9 @@ export function buildState(items, meta, now, config) {
     const d = it.domain;
     if (!bestByDomain[d] || catchScore(it) > catchScore(bestByDomain[d])) bestByDomain[d] = it;
   }
-  for (const d of DOMAIN_ORDER) {
+  for (const d of Object.keys(bestByDomain).sort(domainSort)) {
     if (represented.has(d) || !bestByDomain[d]) continue;
-    alsoDomains.push({ domain: d, label: DOMAIN_LABELS[d] || d, item: publicItem(bestByDomain[d]), quiet: true });
+    alsoDomains.push({ domain: d, edition: editionFor(d), label: labelFor(d), item: publicItem(bestByDomain[d]), quiet: true });
   }
 
   // Below the fold (§4.6): demote, never drop. Per-domain fairness FIRST so a
@@ -337,6 +374,7 @@ export function buildState(items, meta, now, config) {
       time: new Date(now).toISOString(),
     },
     edition: { date_label: dateLabel },
+    editions: editionsList,
     start_here: top.slice(0, 3).map((t) => t.title),
     today_tonight: todayAndTonight(live, now),
     headlines: headlines.map(publicItem),

@@ -33,7 +33,9 @@ export const PROFILE = {
   // profile in KV (e.g. removing Juventus from the floor, adding `domain`).
   // v3: added the `local` (NI) topic + de-noised history/podcasts/music keywords.
   // v4: tightened ai_engineering to consumer-AI (dropped infra tokens).
-  profile_version: 4,
+  // v5: per-topic `label` + `edition` (see DOMAIN_META below); dropped
+  //     home_selfhosting (not an interest).
+  profile_version: 5,
 
   // ---- Named-entity floor (the genuine core) ----
   // A SCARCITY mechanism (§7.5): it guarantees a slot for rare must-not-miss
@@ -209,13 +211,6 @@ export const PROFILE = {
         "pocket casts", "new episode of",
       ],
     },
-    home_selfhosting: {
-      weight: 0.35,
-      keywords: [
-        "self-host", "selfhosted", "home assistant", "homelab", "raspberry pi",
-        "nas", "docker", "home automation", "smart home",
-      ],
-    },
   },
 
   // ---- Special handling (§7.6) ----
@@ -268,3 +263,32 @@ export const PROFILE = {
     "tiktok trend", "gone viral", "you won't believe", "win a ",
   ],
 };
+
+// ---- Per-topic display metadata (label + edition) ----
+// A topic's `label` (how it reads in the brief) and `edition` (which of the few
+// big reading areas it sits in) are config — so a domain added in Settings just
+// needs these set, with no code change. Seeded here for the built-in topics;
+// injected onto topic_weights so the literal above stays terse. A topic with no
+// `edition` falls into the "more" catch-all at render time; no `label` → the key
+// title-cased. Editions themselves are defined in config.js (defaultConfig).
+const DOMAIN_META = {
+  world: { label: "World", edition: "news_money" },
+  local: { label: "Local (NI)", edition: "news_money" },
+  finance: { label: "Money", edition: "news_money" },
+  football: { label: "Football", edition: "sport" },
+  golf: { label: "Golf", edition: "sport" },
+  gaming: { label: "Gaming", edition: "gaming_tech" },
+  tech_devices: { label: "Tech & Devices", edition: "gaming_tech" },
+  ai_engineering: { label: "Tech / AI", edition: "gaming_tech" },
+  books: { label: "Books", edition: "culture" },
+  film_tv: { label: "Film & TV", edition: "culture" },
+  music: { label: "Music", edition: "culture" },
+  history: { label: "History", edition: "culture" },
+  podcasts: { label: "Listening", edition: "culture" },
+  lego: { label: "LEGO", edition: "culture" },
+  travel: { label: "Travel & Parks", edition: "culture" },
+  fitness: { label: "Fitness", edition: "culture" },
+};
+for (const [d, meta] of Object.entries(DOMAIN_META)) {
+  if (PROFILE.topic_weights[d]) Object.assign(PROFILE.topic_weights[d], meta);
+}
