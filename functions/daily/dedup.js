@@ -46,6 +46,30 @@ function jaccard(a, b) {
   return inter / (a.size + b.size - inter);
 }
 
+// High-churn domains where the strict same-title rule misses obvious variants of
+// the SAME story ("Juventus complete X" vs "Juve sign X"). For these we also merge
+// on a SHARED proper-noun entity at a lower title threshold — but still require
+// real title overlap, so two DIFFERENT Juventus stories (different player) stay
+// separate. (Distinct rumours are thinned later by keyword demotion + roll-ups.)
+const RELAXED_DOMAINS = new Set(["football"]);
+const ENTITY_JACCARD = 0.35;
+
+// Prominent proper nouns in a title (capitalised tokens in the ORIGINAL casing,
+// minus stopwords) — the story's subject(s), used to gate the relaxed merge.
+function dominantEntities(title) {
+  const out = new Set();
+  for (const m of String(title || "").matchAll(/\b([A-Z][A-Za-z]{2,})\b/g)) {
+    const w = m[1].toLowerCase();
+    if (!STOP.has(w)) out.add(w);
+  }
+  return out;
+}
+function sharesEntity(a, b) {
+  if (!a || !b) return false;
+  for (const x of a) if (b.has(x)) return true;
+  return false;
+}
+
 // Stable cluster id (hash of the canonical url; falls back to title tokens).
 export async function clusterId(canon) {
   const data = new TextEncoder().encode(canon);
@@ -91,23 +115,30 @@ export async function clusterEntries(entries) {
   // First pass: collapse exact canonical-URL matches.
   const protoClusters = [];
   for (const [canon, group] of byCanon) {
-    protoClusters.push({ canon, tokens: group[0]._tokens, members: group });
+    protoClusters.push({ canon, tokens: group[0]._tokens, entities: dominantEntities(group[0].title), members: group });
   }
 
-  // Second pass: merge title-similar proto-clusters (greedy, threshold 0.6).
+  // Second pass: merge title-similar proto-clusters (greedy). Same domain + title
+  // Jaccard ≥0.5 as before; for high-churn domains, also merge a same-story variant
+  // that shares a proper-noun entity at the lower ENTITY_JACCARD threshold.
   const merged = [];
   for (const pc of protoClusters) {
+    const dom = pc.members[0].domain;
+    const relaxed = RELAXED_DOMAINS.has(dom);
     let hit = null;
     for (const m of merged) {
-      if (m.domain === pc.members[0].domain && jaccard(m.tokens, pc.tokens) >= 0.5) {
+      if (m.domain !== dom) continue;
+      const j = jaccard(m.tokens, pc.tokens);
+      if (j >= 0.5 || (relaxed && j >= ENTITY_JACCARD && sharesEntity(m.entities, pc.entities))) {
         hit = m;
         break;
       }
     }
     if (hit) {
       hit.members.push(...pc.members);
+      for (const x of pc.entities) hit.entities.add(x);
     } else {
-      merged.push({ canon: pc.canon, tokens: pc.tokens, domain: pc.members[0].domain, members: [...pc.members] });
+      merged.push({ canon: pc.canon, tokens: pc.tokens, entities: new Set(pc.entities), domain: dom, members: [...pc.members] });
     }
   }
 
