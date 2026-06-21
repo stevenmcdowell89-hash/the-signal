@@ -271,6 +271,16 @@
     </div>
 
     <div class="card">
+      <h2>Prioritise &amp; bury</h2>
+      <label for="signal-high">Lift items whose headline contains (comma-separated)</label>
+      <input type="text" id="signal-high">
+      <div class="hint">High-signal words — "confirmed", "official", "launches", "signs". A story with one of these is pushed up. Applies across every topic.</div>
+      <label for="signal-low" style="margin-top:0.7rem">Bury items whose headline contains (comma-separated)</label>
+      <input type="text" id="signal-low">
+      <div class="hint">Low-signal words — "rumour", "linked", "could", "reportedly". A story with one of these sinks (this is what thins the transfer-rumour firehose). A topic can add its own in the raw profile.</div>
+    </div>
+
+    <div class="card">
       <h2>Never show</h2>
       <label for="extra-mutes">Mute these words or phrases (comma-separated)</label>
       <input type="text" id="extra-mutes">
@@ -480,7 +490,9 @@
         sh[domain][key]=(sh[domain][key]||[]).concat(words);
       });
       var mutes=$('extra-mutes').value.split(',').map(function(s){return s.trim();}).filter(Boolean);
-      var p={ named_entity_floor:floor, topic_weights:tw, special_handling:sh, mutes:mutes };
+      var csv=function(id){ return $(id).value.split(',').map(function(s){return s.trim();}).filter(Boolean); };
+      var p={ named_entity_floor:floor, topic_weights:tw, special_handling:sh,
+              signal_tiers:{ high:csv('signal-high'), low:csv('signal-low') }, mutes:mutes };
       if (cfg && cfg.profile && cfg.profile.profile_version!=null) p.profile_version=cfg.profile.profile_version;
       return p;
     }
@@ -536,6 +548,9 @@
       var allMutes=(prof.mutes||[]).slice();
       (c.mutes||[]).forEach(function(m){ if(allMutes.indexOf(m)<0) allMutes.push(m); });
       $('extra-mutes').value = allMutes.join(', ');
+      var stier = prof.signal_tiers||{};
+      $('signal-high').value = (stier.high||[]).join(', ');
+      $('signal-low').value = (stier.low||[]).join(', ');
       refreshTopicIds();
       updatePreview();
     }
@@ -631,6 +646,8 @@
     $('rules-table').addEventListener('input', updatePreview);
     $('rules-table').addEventListener('change', updatePreview);
     $('extra-mutes').addEventListener('input', updatePreview);
+    $('signal-high').addEventListener('input', updatePreview);
+    $('signal-low').addEventListener('input', updatePreview);
     $('save').addEventListener('click', save);
 
     // Sub-tabs: show one panel at a time, remember the last one. Hidden panels

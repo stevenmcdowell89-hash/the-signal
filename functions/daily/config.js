@@ -18,6 +18,19 @@ export function defaultConfig() {
     cadence_hours: 3,
     // The fold (§3.7): above-fold = items over this confidence threshold.
     fold_threshold: 0.6,
+    headline_max: 8, // Headlines shows up to this many "most important right now"
+    // Content-led ranking knobs (§3.6). Interest relevance leads; source weight is
+    // a light tiebreaker (was a dominant ±40% multiplier). Keyword signal tiers
+    // (profile.signal_tiers) multiply the interest score. All in-app editable.
+    scoring: {
+      profile_weight: 0.70,   // interest relevance share of base (was 0.65)
+      baseline_weight: 0.30,  // source-significance share of base (was 0.35)
+      weight_floor: 0.85,     // source-weight multiplier base…
+      weight_span: 0.15,      // …+ this × weight (so weight is ±7.5%, not ±40%)
+      signal_high: 1.6,       // title carries a high-signal word → ×this
+      signal_low: 0.5,        // title carries a low-signal word → ×this
+      headline_signal_bonus: 0.15, // additive Headlines bump for high-signal items
+    },
     // Recency (the daily is fast-decay — "what happened today"). One coherent
     // decay signal drives confidence, the named-entity floor, Top Catches
     // eligibility, and the below-fold window. All hours.
@@ -170,6 +183,7 @@ function mergeConfig(def, saved) {
   out.sources = unionById(saved.sources || def.sources, def.sources);
   out.enrichment = { ...def.enrichment, ...(saved.enrichment || {}) };
   out.recency = { ...def.recency, ...(saved.recency || {}) };
+  out.scoring = { ...def.scoring, ...(saved.scoring || {}) };
   out.push = { ...def.push, ...(saved.push || {}) };
   out.push.significant = { ...def.push.significant, ...((saved.push || {}).significant || {}) };
   const sp = saved.profile;
@@ -180,6 +194,7 @@ function mergeConfig(def, saved) {
     named_entity_floor: pick("named_entity_floor"),
     topic_weights: pick("topic_weights"),
     special_handling: pick("special_handling"),
+    signal_tiers: pick("signal_tiers"),
     mutes: pick("mutes"),
   };
   return out;

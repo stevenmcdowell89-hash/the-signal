@@ -35,7 +35,27 @@ export const PROFILE = {
   // v4: tightened ai_engineering to consumer-AI (dropped infra tokens).
   // v5: per-topic `label` + `edition` (see DOMAIN_META below); dropped
   //     home_selfhosting (not an interest).
-  profile_version: 5,
+  // v6: content-led ranking — global `signal_tiers` (+ per-topic signal_high/low)
+  //     so "confirmed/official" leads and "rumour/linked" sinks.
+  profile_version: 6,
+
+  // ---- Signal tiers (content-led ranking) ----
+  // Title words that mark an item as high- or low-signal, regardless of source.
+  // High lifts the interest score, low buries it — so a CONFIRMED story from a
+  // small feed outranks a RUMOUR from a firehose. Global defaults below apply to
+  // every domain (incl. user-added ones); a topic may add its own via
+  // topic_weights[d].signal_high/.signal_low (merged on top). User-editable.
+  signal_tiers: {
+    high: [
+      "confirmed", "official", "officially", "announced", "announces", "announce",
+      "unveiled", "revealed", "reveals", "launch", "launches", "launched",
+      "released", "release date", "out now", "available now",
+    ],
+    low: [
+      "rumour", "rumor", "rumours", "reportedly", "could", "might", "may",
+      "linked", "linked with", "leak", "leaked", "speculation", "reported",
+    ],
+  },
 
   // ---- Named-entity floor (the genuine core) ----
   // A SCARCITY mechanism (§7.5): it guarantees a slot for rare must-not-miss
@@ -275,7 +295,12 @@ const DOMAIN_META = {
   world: { label: "World", edition: "news_money" },
   local: { label: "Local (NI)", edition: "news_money" },
   finance: { label: "Money", edition: "news_money" },
-  football: { label: "Football", edition: "sport" },
+  football: {
+    label: "Football", edition: "sport",
+    // The transfer-window firehose: lift done deals, bury the endless chatter.
+    signal_high: ["signs", "signed", "signing", "completes", "complete signing", "here we go", "deal done", "done deal", "medical"],
+    signal_low: ["eyeing", "eye", "considering", "consider", "monitoring", "target", "interested", "interest", "talks", "weighing", "tracking", "keen", "race for", "battle for", "swoop", "move for"],
+  },
   golf: { label: "Golf", edition: "sport" },
   gaming: { label: "Gaming", edition: "gaming_tech" },
   tech_devices: { label: "Tech & Devices", edition: "gaming_tech" },
