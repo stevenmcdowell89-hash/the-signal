@@ -25,6 +25,27 @@ function setProgress(env, phase, done, total) {
     env.DAILY_STATE.put(RUN_PROGRESS_KEY, JSON.stringify({ phase, done, total, ts: Date.now() })).catch(() => {});
   } catch (_) {}
 }
+
+const REDDIT_CURSOR_KEY = "reddit_cursor";
+const REDDIT_SLICE = 6; // subreddits fetched per tick (≈ full cycle over ~3h)
+
+// The next rotating slice of enabled reddit subs (a Set of source ids). Advances
+// and persists a cursor so successive ticks cover them all — a rolling refresh
+// that never bursts Reddit's rate limit.
+async function nextRedditSlice(env, config) {
+  const subs = (config.sources || [])
+    .filter((s) => s.type === "reddit" && s.enabled !== false)
+    .map((s) => s.id)
+    .sort();
+  if (!subs.length) return new Set();
+  let cursor = 0;
+  try { cursor = parseInt((await env.DAILY_STATE.get(REDDIT_CURSOR_KEY)) || "0", 10) || 0; } catch (_) {}
+  cursor = ((cursor % subs.length) + subs.length) % subs.length;
+  const slice = [];
+  for (let i = 0; i < Math.min(REDDIT_SLICE, subs.length); i++) slice.push(subs[(cursor + i) % subs.length]);
+  try { await env.DAILY_STATE.put(REDDIT_CURSOR_KEY, String((cursor + REDDIT_SLICE) % subs.length)); } catch (_) {}
+  return new Set(slice);
+}
 // Items live in D1 for 14 days (dedup memory); the brief itself scores+renders a
 // tighter recent window — the daily is fast-decay ("what happened"). The window
 // is config-driven (recency.score_window_days) so it's tunable in-app.
@@ -75,15 +96,25 @@ export async function run(env, { trigger } = {}) {
   const db = env.DAILY_DB;
   await initSchema(db);
 
-  // 1) Ingest every tagged source. `env` carries optional Reddit OAuth secrets.
+  // 1) Ingest every fast source (RSS/HN) + a ROTATING slice of Reddit subs. The
+  //    cron fires every 30 min and each tick fetches the next ~6 subreddits, so
+  //    Reddit is a rolling update that never bursts its rate limit (a full cycle
+  //    is ~3h). `env` carries optional Reddit OAuth secrets.
+  const redditSlice = await nextRedditSlice(env, config, now);
   setProgress(env, "polling sources", 0, 1);
-  const { entries, live, dead } = await ingestAll(config, env, (d, t) => setProgress(env, "polling sources", d, t));
+  const { entries, live, dead } = await ingestAll(config, env, (d, t) => setProgress(env, "polling sources", d, t), redditSlice);
   const scanned = entries.length;
 
   // Record per-source liveness for the feed-health view (§E): which sources
-  // returned items this poll vs errored/empty. Counts come from D1 at read time.
+  // returned items this poll vs errored/empty. MERGE over the previous blob — a
+  // Reddit sub not in this tick's rotation keeps its last-known state instead of
+  // vanishing (which would churn the health view as the rotation moves).
   const liveSet = new Set(live);
-  const sourceStatus = {};
+  let sourceStatus = {};
+  try {
+    const prev = JSON.parse((await env.DAILY_STATE.get(SOURCE_STATUS_KEY)) || "null");
+    if (prev && prev.sources) sourceStatus = prev.sources;
+  } catch (_) {}
   for (const id of [...live, ...dead]) {
     sourceStatus[id] = { ok: liveSet.has(id), ts: now };
   }

@@ -332,7 +332,7 @@ async function ingestRedditFeed(subsStr, env, opts) {
 // Ingest every enabled source. Returns { entries[], live[], dead[] } where
 // `dead` is the ids of sources that errored or returned nothing (the caller can
 // surface these in-app for pruning; we drop them gracefully this run).
-export async function ingestAll(config, env, onProgress) {
+export async function ingestAll(config, env, onProgress, redditSlice) {
   const entries = [];
   const live = [];
   const dead = [];
@@ -378,15 +378,13 @@ export async function ingestAll(config, env, onProgress) {
     );
   }
 
-  // Reddit, tiered: big subs poll individually (kept deep); medium and small subs
-  // each compete in ONE combined hot pool, so a small sub only earns a slot when
-  // it beats other SMALL subs (size-proportional, no firehose). Pooled items are
-  // routed to their own sub's domain.
-  const big = redditFeeds.filter((f) => f.tier === "big");
-  const med = redditFeeds.filter((f) => f.tier === "medium");
-  const small = redditFeeds.filter((f) => (f.tier || "small") === "small");
-  const steps = big.length + (med.length ? 1 : 0) + (small.length ? 1 : 0);
-  const total = steps + 1; // +1 for the concurrent (RSS/HN/Bluesky) batch
+  // Reddit: fetch only this tick's ROTATING SLICE (the cron spreads subs across
+  // ticks so we never burst the rate limit — see pipeline.js). Each sub is fetched
+  // individually with a keep-depth set by its size TIER (big deep, small shallow)
+  // for size-proportional slots. A null slice = fetch all (first run / fallback).
+  const KEEP = { big: 10, medium: 5, small: 3 };
+  const slice = redditFeeds.filter((f) => !redditSlice || redditSlice.has(f.id));
+  const total = slice.length + 1; // +1 for the concurrent (RSS/HN/Bluesky) batch
   let done = 0;
   const tick = () => { if (onProgress) try { onProgress(Math.min(done, total), total); } catch (_) {} };
 
@@ -394,35 +392,18 @@ export async function ingestAll(config, env, onProgress) {
   done = 1; tick();
 
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-  const poolMaps = (subs) => {
-    const domainBySub = {}, weightBySub = {};
-    for (const s of subs) { const n = subFromFeed(s); if (n) { domainBySub[n.toLowerCase()] = s.domain; weightBySub[n.toLowerCase()] = s.weight; } }
-    return { subsStr: subs.map(subFromFeed).filter(Boolean).join("+"), domainBySub, weightBySub };
-  };
-  const runBig = async (feed) => {
+  let firstReddit = true;
+  for (const feed of slice) {
+    if (!firstReddit) await sleep(1000);
+    firstReddit = false;
     try {
       const got = await ingestRedditFeed(subFromFeed(feed), env, {
-        keep: 10, sourceId: feed.id, weight: feed.weight, defaultDomain: feed.domain,
+        keep: KEEP[feed.tier] || KEEP.small, sourceId: feed.id, weight: feed.weight, defaultDomain: feed.domain,
       });
       if (got.length) { entries.push(...got); live.push(feed.id); } else dead.push(feed.id);
     } catch { dead.push(feed.id); }
     done++; tick();
-  };
-  const runPool = async (subs, keep, poolId) => {
-    if (!subs.length) return;
-    const { subsStr, domainBySub, weightBySub } = poolMaps(subs);
-    try {
-      const got = await ingestRedditFeed(subsStr, env, { keep, sourceId: poolId, domainBySub, weightBySub });
-      if (got.length) { entries.push(...got); for (const s of subs) live.push(s.id); }
-      else for (const s of subs) dead.push(s.id);
-    } catch { for (const s of subs) dead.push(s.id); }
-    done++; tick();
-  };
-
-  let firstReddit = true;
-  for (const feed of big) { if (!firstReddit) await sleep(600); firstReddit = false; await runBig(feed); }
-  if (med.length) { if (!firstReddit) await sleep(600); firstReddit = false; await runPool(med, 15, "r-pool-medium"); }
-  if (small.length) { if (!firstReddit) await sleep(600); firstReddit = false; await runPool(small, 10, "r-pool-small"); }
+  }
 
   return { entries, live, dead };
 }

@@ -32,6 +32,10 @@
     th{ color:var(--ink-dim); font-size:0.66rem; text-transform:uppercase; letter-spacing:0.12em; }
     td input{ font-size:0.8rem; padding:0.3rem 0.4rem; }
     .src-w{ max-width:64px; }
+    /* Collapsible source groups */
+    tr.src-group td{ cursor:pointer; font-weight:700; color:var(--ink); padding:0.55rem 0.4rem; background:var(--bg-3); border-bottom:1px solid var(--line-strong); user-select:none; }
+    tr.src-group .caret{ color:var(--coral); display:inline-block; width:1em; }
+    tr.src-group .gcount{ color:var(--ink-dim); font-weight:400; font-size:0.78rem; }
     button{ font:inherit; font-weight:600; border:0; border-radius:8px; cursor:pointer; }
     .btn-primary{ background:linear-gradient(135deg,var(--coral),var(--orange)); color:#fff; padding:0.6rem 1.3rem; font-size:0.92rem; }
     .btn-sm{ background:var(--bg-3); color:var(--ink-2); border:1px solid var(--line); padding:0.3rem 0.7rem; font-size:0.76rem; }
@@ -106,6 +110,10 @@
       #topic-table td:last-child, #floor-table td:last-child, #rules-table td:last-child{ text-align:right; }
       #src-table td:last-child::before, #bsky-table td:last-child::before,
       #topic-table td:last-child::before, #floor-table td:last-child::before, #rules-table td:last-child::before{ content:''; }
+      /* group headers stay as full-width header bars, not stacked cards */
+      #src-table tr.src-group{ background:var(--bg-3); border:1px solid var(--line-strong); padding:0.55rem 0.7rem; margin:0.5rem 0 0.3rem; }
+      #src-table tr.src-group td{ padding:0; }
+      #src-table tr.src-group td::before{ content:''; display:none; }
       .btn-sm{ min-height:40px; padding:0.5rem 0.9rem; }
       .actions{ flex-wrap:wrap; }
       .actions .btn-primary{ min-height:46px; }
@@ -310,6 +318,39 @@
         ['big','medium','small'].map(function(t){ return '<option value="'+t+'"'+((s.tier||'small')===t?' selected':'')+'>'+t+'</option>'; }).join('')+
         '</select></td>';
     }
+    function isRedditSrc(s){ return (s.type==='reddit') || /reddit\.com\/r\//i.test(s.url||''); }
+    // Collapsible group header row (a plain <tr> with no data-k inputs, so
+    // collectRows skips it). Clicking toggles its group's data rows.
+    function groupHeadRow(tbody, key, label, count, collapsed){
+      var tr=document.createElement('tr'); tr.className='src-group'+(collapsed?' is-collapsed':'');
+      tr.innerHTML='<td colspan="7"><span class="caret">'+(collapsed?'▸':'▾')+'</span> '+label+' <span class="gcount">('+count+')</span></td>';
+      tr.addEventListener('click', function(){
+        var coll = tr.classList.toggle('is-collapsed');
+        tr.querySelector('.caret').textContent = coll?'▸':'▾';
+        tbody.querySelectorAll('tr.src-row[data-group="'+key+'"]').forEach(function(r){ r.style.display = coll?'none':''; });
+      });
+      return tr;
+    }
+    // Build the sources table grouped: Feeds (RSS·HN) + Reddit by tier, each
+    // collapsible. Reddit groups start collapsed so the table is short.
+    function buildSourceGroups(tbody, sources){
+      var groups = [
+        { key:'feeds', label:'Feeds (RSS · HN)', collapsed:false, match:function(s){ return !isRedditSrc(s); } },
+        { key:'rbig',  label:'Reddit · Big',     collapsed:true,  match:function(s){ return isRedditSrc(s) && s.tier==='big'; } },
+        { key:'rmed',  label:'Reddit · Medium',  collapsed:true,  match:function(s){ return isRedditSrc(s) && s.tier==='medium'; } },
+        { key:'rsm',   label:'Reddit · Small',   collapsed:true,  match:function(s){ return isRedditSrc(s) && (s.tier||'small')==='small'; } },
+      ];
+      groups.forEach(function(g){
+        var inG = sources.filter(g.match);
+        if (!inG.length && g.key!=='feeds') return;
+        tbody.appendChild(groupHeadRow(tbody, g.key, g.label, inG.length, g.collapsed));
+        inG.forEach(function(s){
+          var r = srcRow(s); r.classList.add('src-row'); r.dataset.group = g.key;
+          if (g.collapsed) r.style.display='none';
+          tbody.appendChild(r);
+        });
+      });
+    }
     function bskyRow(s){
       var tr=document.createElement('tr');
       tr.innerHTML =
@@ -448,7 +489,7 @@
       $('sig-fresh').value = sig.fresh_hours!=null?sig.fresh_hours:12;
       $('sig-interval').value = sig.min_interval_hours!=null?sig.min_interval_hours:8;
       var st=$('src-table').querySelector('tbody'); st.innerHTML='';
-      (c.sources||[]).forEach(function(s){ st.appendChild(srcRow(s)); });
+      buildSourceGroups(st, c.sources||[]);
       var bt=$('bsky-table').querySelector('tbody'); bt.innerHTML='';
       (c.bluesky||[]).forEach(function(s){ bt.appendChild(bskyRow(s)); });
       var prof = c.profile||{};

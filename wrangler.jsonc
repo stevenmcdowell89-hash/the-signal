@@ -49,10 +49,12 @@
       "database_id": "ccf3614d-aa32-49b4-8e95-19ffa230b65f"
     }
   ],
-  // Cron Trigger — default every 3h (§3, tunable). The in-app cadence_hours is
-  // advisory; this is the actual fire schedule. Edit here to change cadence.
+  // Cron Trigger — every 30 min. Each tick refreshes RSS/HN and a ROTATING slice
+  // of subreddits (≈6), so Reddit is fetched as a rolling update that never bursts
+  // its rate limit; a full subreddit cycle takes ~3h. See pipeline.js (reddit
+  // rotation cursor). The in-app cadence_hours is advisory.
   "triggers": {
-    "crons": ["0 */3 * * *"]
+    "crons": ["*/30 * * * *"]
   },
   "observability": {
     "enabled": true
