@@ -27,7 +27,9 @@ function setProgress(env, phase, done, total) {
 }
 
 const REDDIT_CURSOR_KEY = "reddit_cursor";
+const REDDIT_FETCH_TS_KEY = "reddit_fetch_ts"; // last time we rolled the reddit rotation
 const REDDIT_SLICE = 6; // subreddits fetched per tick (≈ full cycle over ~3h)
+const REDDIT_DEBOUNCE_MS = 5 * 60 * 1000; // manual "Run now" won't re-roll reddit inside this window
 
 // The next rotating slice of enabled reddit subs (a Set of source ids). Advances
 // and persists a cursor so successive ticks cover them all — a rolling refresh
@@ -100,9 +102,18 @@ export async function run(env, { trigger } = {}) {
   //    cron fires every 30 min and each tick fetches the next ~6 subreddits, so
   //    Reddit is a rolling update that never bursts its rate limit (a full cycle
   //    is ~3h). `env` carries optional Reddit OAuth secrets.
-  const redditSlice = await nextRedditSlice(env, config, now);
-  setProgress(env, "polling sources", 0, 1);
-  const { entries, live, dead } = await ingestAll(config, env, (d, t) => setProgress(env, "polling sources", d, t), redditSlice);
+  //    The cron always rolls Reddit; a MANUAL "Run now" debounces it (skips Reddit
+  //    if we rolled within the last few minutes) so repeated presses can't re-burst
+  //    Reddit's shared-IP rate limit — RSS/HN still refresh and the brief re-renders.
+  const isCron = trigger === "cron";
+  let lastRedditTs = 0;
+  try { lastRedditTs = parseInt((await env.DAILY_STATE.get(REDDIT_FETCH_TS_KEY)) || "0", 10) || 0; } catch (_) {}
+  const rollReddit = isCron || (now - lastRedditTs) >= REDDIT_DEBOUNCE_MS;
+  const redditSlice = rollReddit ? await nextRedditSlice(env, config) : new Set(); // empty Set = fetch no reddit this run
+  if (rollReddit) { try { await env.DAILY_STATE.put(REDDIT_FETCH_TS_KEY, String(now)); } catch (_) {} }
+
+  setProgress(env, rollReddit ? "polling sources" : "polling sources (reddit rolled recently — skipping)", 0, 1);
+  const { entries, live, dead, reasons } = await ingestAll(config, env, (d, t) => setProgress(env, "polling sources", d, t), redditSlice);
   const scanned = entries.length;
 
   // Record per-source liveness for the feed-health view (§E): which sources
@@ -116,7 +127,7 @@ export async function run(env, { trigger } = {}) {
     if (prev && prev.sources) sourceStatus = prev.sources;
   } catch (_) {}
   for (const id of [...live, ...dead]) {
-    sourceStatus[id] = { ok: liveSet.has(id), ts: now };
+    sourceStatus[id] = { ok: liveSet.has(id), ts: now, reason: (reasons && reasons[id]) || (liveSet.has(id) ? "ok" : "empty") };
   }
   for (const id of live) {
     sourceStatus[id].count_this_poll = entries.filter((e) => e.sourceId === id).length;
