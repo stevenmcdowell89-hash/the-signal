@@ -308,8 +308,15 @@ export async function resetState(env) {
   if (!env.DAILY_STATE) return [];
   const keys = [
     STATE_KEY, SOURCE_STATUS_KEY, ENRICH_STATUS_KEY, RUN_PROGRESS_KEY,
-    REDDIT_CURSOR_KEY, REDDIT_BATCH_KEY, REDDIT_FETCH_TS_KEY,
+    REDDIT_CURSOR_KEY, REDDIT_BATCH_KEY,
   ];
   await Promise.all(keys.map((k) => env.DAILY_STATE.delete(k)));
-  return keys;
+  // Mark Reddit as "just rolled" rather than clearing the stamp: this debounces a
+  // MANUAL "Run now" fired right after a clear, so it can't roll Reddit at the same
+  // time as the next cron tick. That simultaneous double-fetch of the first batch is
+  // what produced the confusing "red + has items" (one copy landed items, the other
+  // got 429'd, and the two runs raced on the shared status record). The cron — which
+  // ignores the debounce — does the first clean single Reddit pull within ~10 min.
+  await env.DAILY_STATE.put(REDDIT_FETCH_TS_KEY, String(Date.now()));
+  return [...keys, REDDIT_FETCH_TS_KEY];
 }
