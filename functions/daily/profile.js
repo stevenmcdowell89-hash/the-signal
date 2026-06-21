@@ -18,11 +18,11 @@
 //    not a ranking bypass. User-editable in-app.
 //  - topic_weights: broad. domain -> { weight, keywords[] }. The mechanical
 //    scorer (Tier 1) matches item titles against keywords, weighted. User-editable.
-//  - special_handling: per-domain suppression (books/film spoilers, fitness
-//    diet-targeting, finance speculation, UK-politics-out-by-default). Engine
-//    internal — owned by code, not surfaced in the in-app editor.
-//  - mutes: curated global drop patterns. Engine internal — code-owned. The
-//    reader's own extra mutes live in the top-level config.mutes ("Never show").
+//  - special_handling: per-domain rules (books/film spoilers, fitness
+//    diet-targeting, finance speculation, UK-politics-out-by-default). Surfaced
+//    in-app as "Topic rules" (suppress = drop, demote = downrank). User-editable.
+//  - mutes: curated global drop patterns, surfaced in-app as "Never show".
+//    User-editable; these defaults are the starting point, not a locked list.
 //
 // `profile_version` gates re-seeding: bump it whenever the floor/topics defaults
 // change in a way that should reach an existing saved config (mergeConfig will
