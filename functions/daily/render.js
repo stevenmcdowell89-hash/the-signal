@@ -349,19 +349,27 @@ export function buildState(items, meta, now, config) {
   // lives in its own tab). Cross-domain, capped ≤2/domain, deduped. This is what
   // makes "Headlines" actual headlines instead of "top scores across everything".
   const NEWS_SPORT = new Set(["world", "local", "finance", "football", "golf"]);
-  const bigness = (i) => (i.confidence || 0) * (1 + 0.25 * Math.min(3, (i.source_count || 1) - 1));
+  // Importance = breadth-lifted confidence + a bonus for a high-signal (confirmed/
+  // official) story, so a genuinely consequential item leads — not whatever the
+  // firehose pushed up. confidence already folds in the content-led signal tiers.
+  const sc = (config && config.scoring) || {};
+  const signalBonus = sc.headline_signal_bonus ?? 0.15;
+  const importance = (i) =>
+    (i.confidence || 0) * (1 + 0.25 * Math.min(3, (i.source_count || 1) - 1)) +
+    (i.signal_high ? signalBonus : 0);
+  const headlineMax = (config && config.headline_max) || 8;
   const hRanked = aboveFold
     .filter((i) => (i.age_hours == null || i.age_hours <= maxCatchHours) &&
                    ((i.source_count || 1) >= 2 || NEWS_SPORT.has(i.domain)))
-    .sort((a, b) => bigness(b) - bigness(a));
+    .sort((a, b) => importance(b) - importance(a));
   const headlines = [];
   const hToks = [];
   const hDomain = {};
   for (const it of hRanked) {
-    if (headlines.length >= 5) break;
+    if (headlines.length >= headlineMax) break;
     if ((hDomain[it.domain] || 0) >= 2) continue;
     const toks = topicTokens(it);
-    if (hToks.some((t) => tokenJaccard(t, toks) >= 0.5)) continue;
+    if (hToks.some((t) => tokenJaccard(t, toks) >= 0.45)) continue;
     headlines.push(it);
     hDomain[it.domain] = (hDomain[it.domain] || 0) + 1;
     hToks.push(toks);

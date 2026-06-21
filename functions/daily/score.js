@@ -24,9 +24,20 @@ function matchesAny(hay, patterns) {
   return (patterns || []).some((p) => h.includes(lc(p)));
 }
 
+// Effective high/low signal word lists for a domain: the global signal_tiers plus
+// any per-topic overrides (topic_weights[d].signal_high/.signal_low), merged.
+function signalTiersFor(profile, domain) {
+  const g = profile.signal_tiers || {};
+  const t = (profile.topic_weights || {})[domain] || {};
+  return {
+    high: (t.signal_high || []).concat(g.high || []),
+    low: (t.signal_low || []).concat(g.low || []),
+  };
+}
+
 // Profile-weighted relevance for one item, purely mechanical (Tier 1).
-// Returns { score 0..1, entityFloor, muted, demote }.
-export function scoreProfile(item, profile, extraMutes) {
+// Returns { score 0..1, entityFloor, entityId, muted, demote, signalHigh }.
+export function scoreProfile(item, profile, extraMutes, scoring) {
   const title = item.title || "";
   const h = lc(title);
   // Topic-keyword scoring runs over title + summary for a richer signal; the
@@ -96,6 +107,24 @@ export function scoreProfile(item, profile, extraMutes) {
   if (floorDomain) bestDomain = floorDomain;
   item.domain = bestDomain;
 
+  // Content-led signal tiers (§3.6): a CONFIRMED/OFFICIAL title is lifted, a
+  // RUMOUR/LINKED title is buried — title-only (whole-word for single tokens, so
+  // "may" the month/name doesn't fire on substrings). This rides the interest
+  // score (the dominant term), so a confirmed story from a small feed beats a
+  // rumour from a firehose. Clamped so stacked low-signal words can't zero it.
+  const titleWords = new Set(h.split(/[^a-z0-9]+/).filter(Boolean));
+  const titleHit = (kw) => {
+    kw = lc(kw).trim();
+    return /[^a-z0-9]/.test(kw) ? h.includes(kw) : titleWords.has(kw);
+  };
+  const tiers = signalTiersFor(profile, bestDomain);
+  const sc = scoring || {};
+  const hiHit = tiers.high.some(titleHit);
+  let signal = 1;
+  if (hiHit) signal *= (sc.signal_high ?? 1.6);
+  if (tiers.low.some(titleHit)) signal *= (sc.signal_low ?? 0.5);
+  best = Math.max(0, best) * Math.max(0.3, Math.min(2, signal));
+
   // Special handling: suppression + demotion (§7.6).
   let demote = false;
   const sh = (profile.special_handling || {})[bestDomain];
@@ -106,7 +135,7 @@ export function scoreProfile(item, profile, extraMutes) {
     if (matchesAny(title, sh.demote_patterns)) demote = true;
   }
 
-  return { score: best, entityFloor, entityId, muted: false, demote };
+  return { score: best, entityFloor, entityId, muted: false, demote, signalHigh: hiHit };
 }
 
 // Score the whole batch: baselines, velocity, profile, confidence, fold.
@@ -178,10 +207,11 @@ export async function scoreBatch(db, items, config, now) {
     // already-enriched item the saved profile_score carries Tier-2's semantic
     // relevance (judged once); keep it if it beats the mechanical pass.
     const loadedProfile = it.profile_score || 0;
-    const pr = scoreProfile(it, profile, extraMutes);
+    const pr = scoreProfile(it, profile, extraMutes, config.scoring);
     it.profile_score = it.enriched ? Math.max(pr.score, loadedProfile) : pr.score;
     it.entity_floor = pr.entityFloor;
     it.entity_id = pr.entityId || null;
+    it.signal_high = !!pr.signalHigh;
     it.muted = pr.muted;
 
     // 4) confidence: blend interest + source-significance, scale by source
@@ -193,8 +223,11 @@ export async function scoreBatch(db, items, config, now) {
     // user-curated (the sub/handle choice IS the relevance), so they're exempt.
     let effBaseline = it.baseline_score;
     if (it.source_type === "hn" && it.profile_score < 0.05) effBaseline *= 0.2;
-    let base = 0.65 * it.profile_score + 0.35 * effBaseline;
-    base *= 0.6 + 0.4 * (it.weight || 0.5);
+    // Content-led: interest relevance leads; source weight is a light tiebreaker
+    // (±7.5%, was ±40%) so a feed's volume can't muscle low-relevance items up.
+    const sc = config.scoring || {};
+    let base = (sc.profile_weight ?? 0.70) * it.profile_score + (sc.baseline_weight ?? 0.30) * effBaseline;
+    base *= (sc.weight_floor ?? 0.85) + (sc.weight_span ?? 0.15) * (it.weight || 0.5);
     if (pr.demote) base *= 0.4;
     const recencyLifted = Math.min(1, recency + 0.6 * velNorm * (1 - recency));
     it.recency_score = recencyLifted;
