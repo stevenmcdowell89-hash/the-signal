@@ -59,6 +59,7 @@ function publicItem(it) {
     domain: it.domain,
     links: links || [],
     entity_floor: !!it.entity_floor,
+    source_type: it.source_type || null,
     status: it.developing ? "developing" : null,
     days_active: it.developing ? (it.days_active || null) : null,
     discussion: discussionFromLinks(links),
@@ -283,6 +284,16 @@ export function buildState(items, meta, now, config) {
     });
   } catch (_) {}
 
+  // Communities (§ Reddit/HN/Bluesky): every community-sourced live item, ranked,
+  // so "catch up on everything from Reddit/HN in one place" misses nothing — not
+  // fold-limited. Grouped by source on the home.
+  const COMMUNITY_SRC = new Set(["reddit", "hn", "bluesky"]);
+  const communities = live
+    .filter((i) => COMMUNITY_SRC.has(i.source_type))
+    .sort((a, b) => catchScore(b) - catchScore(a))
+    .slice(0, 80)
+    .map(publicItem);
+
   return {
     generated_at: now,
     status: {
@@ -295,6 +306,7 @@ export function buildState(items, meta, now, config) {
     top_catches: top.map(publicItem),
     sections,
     also: alsoDomains,
+    communities,
     below_fold: belowKept.map(publicItem),
     footer: {
       kept: live.length,
