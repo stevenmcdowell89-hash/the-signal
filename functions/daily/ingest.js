@@ -270,13 +270,19 @@ async function ingestReddit(feed, env) {
       `https://www.reddit.com/r/${sub}/.rss?limit=25`,
       "application/atom+xml, application/rss+xml, application/xml, text/xml"
     );
-    return parseFeed(xml, feed).map((e) => ({
-      ...e,
-      sourceType: "reddit",
-      summary: `r/${sub}`,
-      links: [{ type: "discussion", url: e.url, label: `r/${sub}` }],
-      commentsUrl: e.url,
-    }));
+    return parseFeed(xml, feed).map((e) => {
+      // The entry link is the comments permalink; pull the SPECIFIC subreddit out
+      // of it for a clean "r/Juve" label (the feed itself is a multireddit).
+      const sm = /reddit\.com\/r\/([A-Za-z0-9_]+)\//i.exec(e.url || "");
+      const label = sm ? `r/${sm[1]}` : `r/${(sub || "").split("+")[0]}`;
+      return {
+        ...e,
+        sourceType: "reddit",
+        summary: "",
+        links: [{ type: "discussion", url: e.url, label }],
+        commentsUrl: e.url,
+      };
+    });
   }
 
   // OAuth Data API → top/day with scores + comment counts.

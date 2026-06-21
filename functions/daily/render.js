@@ -132,13 +132,15 @@ export function buildState(items, meta, now, config) {
   const aboveFold = live.filter((i) => i.above_fold);
   const belowFold = live.filter((i) => !i.above_fold);
 
-  // Top Catches: up to 5, ranked, cross-domain — top-N by BLENDED score (the
-  // confidence already folds in relevance × register × recency), NOT a fixed
-  // threshold the floor leaps past. Only genuinely fresh items are eligible (no
-  // 4-day-old item can lead). Diversity caps keep one team/source/topic from
-  // owning the strip; the floor and world-news each get one guaranteed slot.
+  // Top Catches: up to 5, ranked, cross-domain. Eligibility is ABOVE THE FOLD —
+  // the fold (confidence ≥ threshold, folding in relevance × register × recency)
+  // is the quality bar. Among those, order by a recency-blended score so a fresh
+  // strong item can lead a stale strong one. This is what keeps a fresh-but-empty
+  // community post (a Reddit self-post with no upvotes/relevance, well below the
+  // fold) out of the lead — only on-topic/popular items clear the fold. Diversity
+  // caps keep one team/source/topic from owning the strip.
   const catchScore = (i) => (1 - blend) * (i.confidence || 0) + blend * (i.recency_score ?? 1);
-  const ranked = live
+  const ranked = aboveFold
     .filter((i) => (i.age_hours == null || i.age_hours <= maxCatchHours))
     .sort((a, b) => catchScore(b) - catchScore(a));
 
@@ -287,10 +289,12 @@ export function buildState(items, meta, now, config) {
   // Communities (§ Reddit/HN/Bluesky): every community-sourced live item, ranked,
   // so "catch up on everything from Reddit/HN in one place" misses nothing — not
   // fold-limited. Grouped by source on the home.
+  // Ordered by confidence (relevance + popularity), NOT recency — so an on-topic
+  // or upvoted thread ranks above a fresh-but-empty self-post.
   const COMMUNITY_SRC = new Set(["reddit", "hn", "bluesky"]);
   const communities = live
     .filter((i) => COMMUNITY_SRC.has(i.source_type))
-    .sort((a, b) => catchScore(b) - catchScore(a))
+    .sort((a, b) => (b.confidence || 0) - (a.confidence || 0))
     .slice(0, 80)
     .map(publicItem);
 
