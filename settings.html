@@ -42,6 +42,17 @@
     .msg.ok{ color:#46c46a; } .msg.err{ color:var(--coral); }
     .hint{ font-size:0.74rem; color:var(--ink-dim); margin-top:0.3rem; }
     .addrow{ margin-top:0.6rem; }
+    /* Sub-tabs */
+    .tabs{ position:sticky; top:0; z-index:5; display:flex; gap:0.4rem; overflow-x:auto;
+      background:var(--bg); padding:0.55rem 0 0.7rem; margin-bottom:0.2rem; -webkit-overflow-scrolling:touch; }
+    .tabs::-webkit-scrollbar{ display:none; }
+    .tab{ background:var(--bg-3); color:var(--ink-2); border:1px solid var(--line); border-radius:999px;
+      padding:0.45rem 1.05rem; font-size:0.82rem; white-space:nowrap; flex:0 0 auto; }
+    .tab:hover{ color:var(--ink); border-color:var(--line-strong); }
+    .tab.active{ background:linear-gradient(135deg,var(--coral),var(--orange)); color:#fff; border-color:transparent; }
+    .panel[hidden]{ display:none; }
+    .panel{ animation:fade 0.15s ease; }
+    @keyframes fade{ from{ opacity:0; transform:translateY(2px); } to{ opacity:1; transform:none; } }
     /* Importance slider (Topics) */
     .imp{ display:flex; align-items:center; gap:0.5rem; }
     .imp input[type=range]{ flex:1; min-width:80px; width:auto; padding:0; accent-color:var(--coral); }
@@ -107,6 +118,14 @@
     <h1>Settings</h1>
     <div class="sub">The Brief — sources, profile &amp; engine. Reads are open; saving needs the held token (entered once per device).</div>
 
+    <nav class="tabs" id="tabs">
+      <button class="tab" data-tab="status">Status</button>
+      <button class="tab" data-tab="engine">Engine</button>
+      <button class="tab" data-tab="sources">Sources</button>
+      <button class="tab" data-tab="interests">Interests</button>
+    </nav>
+
+    <div class="panel" data-panel="status">
     <div class="card">
       <h2>Status — is it working?</h2>
       <div id="ai-status" class="ai-status">Loading…</div>
@@ -114,7 +133,9 @@
       <div id="health-list" class="health-list">Loading…</div>
       <div class="hint" id="health-foot"></div>
     </div>
+    </div><!-- /panel:status -->
 
+    <div class="panel" data-panel="engine">
     <div class="card">
       <h2>Engine</h2>
       <div class="row">
@@ -180,7 +201,9 @@
       </div>
       <div class="hint">Needs notifications allowed on the device (install the app, accept the prompt). Quiet days stay silent.</div>
     </div>
+    </div><!-- /panel:engine -->
 
+    <div class="panel" data-panel="sources">
     <div class="card">
       <h2>Sources (RSS · HN)</h2>
       <table id="src-table"><thead><tr><th>On</th><th>ID</th><th>Domain</th><th>URL</th><th>W</th><th></th></tr></thead><tbody></tbody></table>
@@ -194,7 +217,9 @@
       <div class="addrow"><button class="btn-sm" id="add-bsky">+ Add handle</button></div>
       <div class="hint">e.g. transfer journalists for football. Handle without the @ (foo.bsky.social).</div>
     </div>
+    </div><!-- /panel:sources -->
 
+    <div class="panel" data-panel="interests">
     <div class="card">
       <h2>Topics — what the brief watches</h2>
       <div class="hint" style="margin-bottom:0.4rem">Each topic has an importance and the words that identify it. Importance sets how high a topic can climb; keywords are comma-separated. Err broad — over-inclusion is cheap.</div>
@@ -228,6 +253,7 @@
         <div class="hint">Reflects exactly what Save will send to the engine.</div>
       </details>
     </div>
+    </div><!-- /panel:interests -->
 
     <div class="actions">
       <button class="btn-primary" id="save">Save</button>
@@ -514,6 +540,23 @@
     $('rules-table').addEventListener('change', updatePreview);
     $('extra-mutes').addEventListener('input', updatePreview);
     $('save').addEventListener('click', save);
+
+    // Sub-tabs: show one panel at a time, remember the last one. Hidden panels
+    // keep their inputs in the DOM, so Save still persists every tab.
+    (function initTabs(){
+      var TAB_KEY='signal-settings-tab';
+      var tabs=[].slice.call(document.querySelectorAll('.tab'));
+      var panels=[].slice.call(document.querySelectorAll('.panel'));
+      function activate(name){
+        if(!tabs.some(function(t){return t.dataset.tab===name;})) name='status';
+        panels.forEach(function(p){ p.hidden = p.dataset.panel!==name; });
+        tabs.forEach(function(t){ t.classList.toggle('active', t.dataset.tab===name); });
+        try{ localStorage.setItem(TAB_KEY, name); }catch(_){}
+      }
+      tabs.forEach(function(t){ t.addEventListener('click', function(){ activate(t.dataset.tab); window.scrollTo(0,0); }); });
+      var saved; try{ saved=localStorage.getItem(TAB_KEY); }catch(_){}
+      activate(saved||'status');
+    })();
     $('forget').addEventListener('click', function(){ try{localStorage.removeItem(TOKEN_KEY);}catch(_){} msg('Token forgotten on this device.', 'ok'); });
     $('runnow').addEventListener('click', function(){
       var token=getToken(true); if(!token){ msg('A token is required to run.', 'err'); return; }
