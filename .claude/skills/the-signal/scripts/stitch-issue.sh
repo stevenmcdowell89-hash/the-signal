@@ -386,10 +386,15 @@ for part_name in scaffold_parts:
         print(f"WARNING: Scaffold part '{part_name}' not found — skipping")
 
 # ── Assemble chapter bodies ──
+# v8.27 reality: cover/navigator/foreword/colophon/footer are full writer-agent
+# chapters (not scaffold parts), and writers leave the [N]/[DATE RANGE]/[Date]/
+# [YEAR] placeholders intact for the stitcher to own. So the same substitution
+# applied to scaffold parts must run on chapter bodies too — otherwise the cover
+# and footer ship the literal placeholders (caught by validate-issue.py).
 chapter_bodies = []
 for ch_id in chapter_ids:
     ch_file = chapters_dir / f"{ch_id}.html"
-    chapter_bodies.append(ch_file.read_text(encoding="utf-8"))
+    chapter_bodies.append(_substitute_footer_placeholders(ch_file.read_text(encoding="utf-8")))
 
 # ── Holiday half-wrap reorganisation (v8.13.5) ──
 # On holiday + multi_venue issues, the .hol-half--N wrapper must contain
@@ -684,7 +689,12 @@ else:
 # This step runs every stitch and is idempotent — if a scaffold ever starts
 # including the block natively, the marker check below skips re-injection.
 if '<!-- the-signal:back -->' not in html:
-    back_link_path = Path(__file__).resolve().parent.parent / "assets" / "template-parts" / "back-link.html"
+    # template_dir (argv[3]) is the bash-resolved assets/template-parts path;
+    # do NOT recompute from __file__ — this block runs via `python3 - <<PY`
+    # (stdin), so __file__ is "<stdin>" and resolve() makes it cwd-relative,
+    # producing the wrong path (.claude/skills/assets instead of
+    # .claude/skills/the-signal/assets). Use the already-correct template_dir.
+    back_link_path = template_dir / "back-link.html"
     if back_link_path.exists():
         back_link_block = back_link_path.read_text(encoding="utf-8").rstrip() + "\n"
         # Reuse the </head>-anchored body finder from the activation rewrite —
