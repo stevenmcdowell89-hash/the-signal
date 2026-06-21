@@ -31,7 +31,8 @@
 export const PROFILE = {
   // Bump when the floor/topic DEFAULTS below should override an older saved
   // profile in KV (e.g. removing Juventus from the floor, adding `domain`).
-  profile_version: 2,
+  // v3: added the `local` (NI) topic + de-noised history/podcasts/music keywords.
+  profile_version: 3,
 
   // ---- Named-entity floor (the genuine core) ----
   // A SCARCITY mechanism (§7.5): it guarantees a slot for rare must-not-miss
