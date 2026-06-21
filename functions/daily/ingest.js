@@ -170,7 +170,7 @@ async function ingestHn(feed) {
     const title = hit.title || hit.story_title;
     if (!title) continue;
     const hnUrl = `https://news.ycombinator.com/item?id=${hit.objectID}`;
-    const links = [{ type: "discussion", url: hnUrl, label: "HN thread" }];
+    const links = [{ type: "discussion", url: hnUrl, label: "HN", count: hit.num_comments || 0 }];
     if (hit.url) links.unshift({ type: "article", url: hit.url, label: "Article" });
     out.push({
       sourceId: feed.id,
@@ -217,10 +217,86 @@ async function ingestBluesky(handle) {
   return out;
 }
 
+// ---- Reddit (public JSON now; OAuth Data API when secrets are set) ----
+// Read-only top/day per subreddit. Works immediately via www.reddit.com/.json;
+// if REDDIT_CLIENT_ID/SECRET are present it uses an app-only token against
+// oauth.reddit.com (the approved Data API path) — same response shape. Links
+// target the comments permalink (§5); the comment count rides on the discussion
+// link so it survives clustering + persistence with no schema change.
+let _redditToken = null; // { token, exp } — cached across the run
+
+async function redditAppToken(env) {
+  const id = env && env.REDDIT_CLIENT_ID;
+  const secret = env && env.REDDIT_CLIENT_SECRET;
+  if (!id || !secret) return null;
+  if (_redditToken && _redditToken.exp > Date.now() + 60000) return _redditToken.token;
+  try {
+    const resp = await fetch("https://www.reddit.com/api/v1/access_token", {
+      method: "POST",
+      headers: {
+        "User-Agent": UA,
+        Authorization: "Basic " + btoa(`${id}:${secret}`),
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: "grant_type=client_credentials",
+    });
+    if (!resp.ok) return null;
+    const data = await resp.json();
+    if (!data.access_token) return null;
+    _redditToken = { token: data.access_token, exp: Date.now() + (data.expires_in || 3600) * 1000 };
+    return _redditToken.token;
+  } catch {
+    return null;
+  }
+}
+
+function subFromFeed(feed) {
+  const m = /reddit\.com\/r\/([A-Za-z0-9_]+)/i.exec(feed.url || "");
+  return (m && m[1]) || feed.subreddit || null;
+}
+
+async function ingestReddit(feed, env) {
+  const sub = subFromFeed(feed);
+  if (!sub) return [];
+  const token = await redditAppToken(env);
+  const base = token ? "https://oauth.reddit.com" : "https://www.reddit.com";
+  const url = `${base}/r/${sub}/top${token ? "" : ".json"}?t=day&limit=25`;
+  const headers = { "User-Agent": UA, Accept: "application/json" };
+  if (token) headers.Authorization = `Bearer ${token}`;
+  const resp = await fetch(url, { headers });
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+  const data = await resp.json();
+  const out = [];
+  for (const child of (data.data && data.data.children) || []) {
+    const p = child && child.data;
+    if (!p || !p.title || p.stickied) continue;
+    const permalink = `https://www.reddit.com${p.permalink}`;
+    const comments = p.num_comments || 0;
+    const isSelf = p.is_self || !p.url || /(^|\/\/)([a-z]+\.)?reddit\.com/i.test(p.url);
+    const links = [];
+    if (!isSelf && p.url) links.push({ type: "article", url: p.url, label: `r/${sub}` });
+    links.push({ type: "discussion", url: permalink, label: `r/${sub}`, count: comments });
+    out.push({
+      sourceId: feed.id,
+      sourceType: "reddit",
+      domain: feed.domain,
+      weight: feed.weight,
+      title: decodeEntities(p.title),
+      summary: `${p.score || 0} upvotes · ${comments} comments · r/${sub}`,
+      url: isSelf ? permalink : p.url,
+      links,
+      rawScore: (p.score || 0) + comments * 0.5,
+      published: (p.created_utc || Math.floor(Date.now() / 1000)) * 1000,
+      commentsUrl: permalink,
+    });
+  }
+  return out;
+}
+
 // Ingest every enabled source. Returns { entries[], live[], dead[] } where
 // `dead` is the ids of sources that errored or returned nothing (the caller can
 // surface these in-app for pruning; we drop them gracefully this run).
-export async function ingestAll(config) {
+export async function ingestAll(config, env) {
   const entries = [];
   const live = [];
   const dead = [];
@@ -231,7 +307,10 @@ export async function ingestAll(config) {
     jobs.push(
       (async () => {
         try {
-          const got = feed.type === "hn" ? await ingestHn(feed) : await ingestRss(feed);
+          const got =
+            feed.type === "hn" ? await ingestHn(feed)
+            : feed.type === "reddit" ? await ingestReddit(feed, env)
+            : await ingestRss(feed);
           if (got.length) {
             entries.push(...got);
             live.push(feed.id);

@@ -5,7 +5,7 @@
 // default config and the load/save helpers. On first read the defaults are
 // seeded into KV so the in-app editor has something concrete to tune.
 
-import { STARTER_FEEDS, STARTER_BLUESKY } from "./feeds.js";
+import { STARTER_FEEDS, STARTER_BLUESKY, STARTER_REDDIT } from "./feeds.js";
 import { PROFILE } from "./profile.js";
 
 export const CONFIG_KEY = "config";
@@ -50,7 +50,7 @@ export function defaultConfig() {
         min_interval_hours: 8,  // never push more often than this
       },
     },
-    sources: STARTER_FEEDS,
+    sources: [...STARTER_FEEDS, ...STARTER_REDDIT],
     bluesky: STARTER_BLUESKY,
     profile: PROFILE,
     // Extra mutes layered on top of profile.mutes, editable separately in-app.
@@ -102,8 +102,18 @@ export async function saveConfig(env, config) {
 // improvements reach an existing config without a manual re-edit). Bump
 // PROFILE.profile_version in code whenever a default change must override a
 // saved profile.
+function unionById(saved, def) {
+  // Keep the saved entries (user edits win) and append any default entry whose id
+  // isn't present — so a deploy that adds sources (e.g. the Reddit set) reaches an
+  // existing saved config without clobbering the reader's own list.
+  const byId = new Map((saved || []).map((s) => [s.id, s]));
+  for (const d of def || []) if (!byId.has(d.id)) byId.set(d.id, d);
+  return [...byId.values()];
+}
+
 function mergeConfig(def, saved) {
   const out = { ...def, ...saved };
+  out.sources = unionById(saved.sources || def.sources, def.sources);
   out.enrichment = { ...def.enrichment, ...(saved.enrichment || {}) };
   out.recency = { ...def.recency, ...(saved.recency || {}) };
   out.push = { ...def.push, ...(saved.push || {}) };

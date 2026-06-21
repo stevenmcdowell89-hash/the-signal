@@ -62,8 +62,12 @@ function mergeLinks(into, from) {
     }
   }
   // Cap clutter (§5): keep at most source(article) + best discussion + post.
+  // The "best" discussion/post is the one with the most comments (richest thread)
+  // so a clustered story shows its liveliest discussion.
   const byType = { article: [], discussion: [], post: [], feed: [] };
   for (const l of into) (byType[l.type] || byType.feed).push(l);
+  byType.discussion.sort((a, b) => (b.count || 0) - (a.count || 0));
+  byType.post.sort((a, b) => (b.count || 0) - (a.count || 0));
   const capped = [
     ...byType.article.slice(0, 1),
     ...byType.discussion.slice(0, 1),
