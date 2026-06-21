@@ -96,12 +96,12 @@ export async function saveConfig(env, config) {
 }
 
 // Shallow-merge top-level keys; saved values win, missing nested keys fall back
-// to defaults. The profile splits user-editable from engine-internal:
-//  - floor + topic_weights: the user's preferences (edited in-app) win — UNLESS
-//    the saved profile predates the current profile_version, in which case the
-//    code defaults re-seed (so engine improvements reach an existing config
-//    without a manual re-edit).
-//  - special_handling + curated global mutes: ALWAYS owned by code.
+// to defaults. The whole profile (floor, topics, rules, mutes) is user-editable
+// in-app and the saved values win — UNLESS the saved profile predates the
+// current profile_version, in which case the code defaults re-seed (so engine
+// improvements reach an existing config without a manual re-edit). Bump
+// PROFILE.profile_version in code whenever a default change must override a
+// saved profile.
 function mergeConfig(def, saved) {
   const out = { ...def, ...saved };
   out.enrichment = { ...def.enrichment, ...(saved.enrichment || {}) };
@@ -110,12 +110,13 @@ function mergeConfig(def, saved) {
   out.push.significant = { ...def.push.significant, ...((saved.push || {}).significant || {}) };
   const sp = saved.profile;
   const fresh = sp && (sp.profile_version || 0) >= (def.profile.profile_version || 0);
+  const pick = (key) => (fresh && sp[key] != null ? sp[key] : def.profile[key]);
   out.profile = {
     profile_version: def.profile.profile_version,
-    named_entity_floor: fresh ? (sp.named_entity_floor || def.profile.named_entity_floor) : def.profile.named_entity_floor,
-    topic_weights: fresh ? (sp.topic_weights || def.profile.topic_weights) : def.profile.topic_weights,
-    special_handling: def.profile.special_handling,
-    mutes: def.profile.mutes,
+    named_entity_floor: pick("named_entity_floor"),
+    topic_weights: pick("topic_weights"),
+    special_handling: pick("special_handling"),
+    mutes: pick("mutes"),
   };
   return out;
 }

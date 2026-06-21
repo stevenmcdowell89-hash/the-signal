@@ -76,24 +76,25 @@
       textarea{ min-height:300px; font-size:0.82rem; white-space:pre; overflow-x:auto; }
       .src-w{ max-width:none; }
       /* table → stacked cards */
-      #src-table thead, #bsky-table thead, #topic-table thead, #floor-table thead{ display:none; }
-      #src-table, #bsky-table, #topic-table, #floor-table,
-      #src-table tbody, #bsky-table tbody, #topic-table tbody, #floor-table tbody{ display:block; width:100%; }
-      #src-table tr, #bsky-table tr, #topic-table tr, #floor-table tr{
+      #src-table thead, #bsky-table thead, #topic-table thead, #floor-table thead, #rules-table thead{ display:none; }
+      #src-table, #bsky-table, #topic-table, #floor-table, #rules-table,
+      #src-table tbody, #bsky-table tbody, #topic-table tbody, #floor-table tbody, #rules-table tbody{ display:block; width:100%; }
+      #src-table tr, #bsky-table tr, #topic-table tr, #floor-table tr, #rules-table tr{
         display:block; background:var(--bg-3); border:1px solid var(--line);
         border-radius:10px; padding:0.5rem 0.6rem; margin-bottom:0.7rem;
       }
-      #src-table td, #bsky-table td, #topic-table td, #floor-table td{ display:block; border:0; padding:0.28rem 0; }
+      #src-table td, #bsky-table td, #topic-table td, #floor-table td, #rules-table td{ display:block; border:0; padding:0.28rem 0; }
       #src-table td input, #bsky-table td input,
-      #topic-table td input[type=text], #floor-table td input{ font-size:1rem; padding:0.55rem 0.6rem; min-height:44px; }
-      #src-table td::before, #bsky-table td::before, #topic-table td::before, #floor-table td::before{
+      #topic-table td input[type=text], #floor-table td input,
+      #rules-table td input, #rules-table td select{ font-size:1rem; padding:0.55rem 0.6rem; min-height:44px; }
+      #src-table td::before, #bsky-table td::before, #topic-table td::before, #floor-table td::before, #rules-table td::before{
         content:attr(data-label); display:block; font-size:0.62rem; text-transform:uppercase;
         letter-spacing:0.12em; color:var(--ink-dim); margin-bottom:0.2rem;
       }
       #src-table td:last-child, #bsky-table td:last-child,
-      #topic-table td:last-child, #floor-table td:last-child{ text-align:right; }
+      #topic-table td:last-child, #floor-table td:last-child, #rules-table td:last-child{ text-align:right; }
       #src-table td:last-child::before, #bsky-table td:last-child::before,
-      #topic-table td:last-child::before, #floor-table td:last-child::before{ content:''; }
+      #topic-table td:last-child::before, #floor-table td:last-child::before, #rules-table td:last-child::before{ content:''; }
       .btn-sm{ min-height:40px; padding:0.5rem 0.9rem; }
       .actions{ flex-wrap:wrap; }
       .actions .btn-primary{ min-height:46px; }
@@ -142,6 +143,18 @@
         </div>
       </div>
       <div class="hint">Lower half-life = the brief decays faster toward "today". A stale core story (an old transfer rumour) sinks once it's past the freshness window.</div>
+      <details style="margin-top:0.7rem">
+        <summary class="hint" style="cursor:pointer">▸ Advanced timing</summary>
+        <div class="row" style="margin-top:0.5rem">
+          <div><label for="vel-keep">Breaking-news keep (velocity 0–1)</label><input type="number" id="vel-keep" min="0" max="1" step="0.05"></div>
+          <div><label for="catch-blend">Top Catches recency blend (0–1)</label><input type="number" id="catch-blend" min="0" max="1" step="0.05"></div>
+        </div>
+        <div class="row" style="margin-top:0.5rem">
+          <div><label for="undated">Undated penalty (hours)</label><input type="number" id="undated" min="0" max="96" step="1"></div>
+          <div><label for="window-days">Score window (days)</label><input type="number" id="window-days" min="1" max="7" step="1"></div>
+        </div>
+        <div class="hint">Velocity keep: how fast a story must move to resist decay. Blend: how much Top Catches ordering weights freshness vs confidence. Undated penalty: how much older a date-less item is treated as. Score window: how many days of items the brief considers.</div>
+      </details>
     </div>
 
     <div class="card">
@@ -152,6 +165,7 @@
         <div><label for="enr-short">Shortlist size</label><input type="number" id="enr-short" min="0" max="80"></div>
         <div><label for="enr-cap">Monthly spend cap (cents)</label><input type="number" id="enr-cap" min="0" step="50"></div>
       </div>
+      <div class="toggle" style="margin-top:0.6rem"><input type="checkbox" id="enr-batch"><label for="enr-batch">Use the Batch API (cheaper, slower — enriches on a later run, not this one)</label></div>
       <div class="hint">On cap-hit the daily auto-falls back to Tier 1 (headlines + links, no hooks) and records it.</div>
     </div>
 
@@ -161,6 +175,7 @@
       <div class="toggle" style="margin-top:0.6rem"><input type="checkbox" id="push-sig"><label for="push-sig">Push when something big lands (a fresh core story or high-confidence catch — throttled, not a daily alarm)</label></div>
       <div class="row" style="margin-top:0.6rem">
         <div><label for="sig-conf">Significance threshold (confidence 0–1)</label><input type="number" id="sig-conf" min="0.5" max="1" step="0.05"></div>
+        <div><label for="sig-fresh">Counts as "big" only if seen within (hours)</label><input type="number" id="sig-fresh" min="1" max="72" step="1"></div>
         <div><label for="sig-interval">Min hours between pushes</label><input type="number" id="sig-interval" min="1" max="48" step="1"></div>
       </div>
       <div class="hint">Needs notifications allowed on the device (install the app, accept the prompt). Quiet days stay silent.</div>
@@ -196,14 +211,21 @@
     </div>
 
     <div class="card">
+      <h2>Topic rules — suppress &amp; downrank</h2>
+      <div class="hint" style="margin-bottom:0.4rem">Per-topic filters. <b>Suppress</b> drops a matching item (book/film spoilers, fitness diet talk, finance hype); <b>Downrank</b> keeps it but pushes it down (e.g. UK process-politics in World). Words are comma-separated, matched in the headline.</div>
+      <table id="rules-table"><thead><tr><th>Topic</th><th>Action</th><th>Words</th><th></th></tr></thead><tbody></tbody></table>
+      <div class="addrow"><button class="btn-sm" id="add-rule">+ Add rule</button></div>
+    </div>
+
+    <div class="card">
       <h2>Never show</h2>
       <label for="extra-mutes">Mute these words or phrases (comma-separated)</label>
       <input type="text" id="extra-mutes">
-      <div class="hint">Any headline containing one of these is dropped. Layered on the brief's built-in mutes (sponsored, gossip, clickbait …).</div>
+      <div class="hint">Any headline containing one of these is dropped everywhere. Pre-filled with the brief's built-in mutes (sponsored, gossip, clickbait …) — edit or remove any you don't want.</div>
       <details style="margin-top:0.9rem">
         <summary class="hint" style="cursor:pointer">▸ Advanced — raw profile (read-only preview)</summary>
         <textarea id="profile-preview" readonly spellcheck="false" style="margin-top:0.5rem"></textarea>
-        <div class="hint">Reflects what Save will send. Special handling (spoiler/diet/politics rules) and built-in mutes are managed in code.</div>
+        <div class="hint">Reflects exactly what Save will send to the engine.</div>
       </details>
     </div>
 
@@ -289,6 +311,19 @@
       return tr;
     }
 
+    function rulesRow(domain, action, words){
+      var tr=document.createElement('tr');
+      tr.innerHTML =
+        '<td data-label="Topic"><input type="text" value="'+escA(domain||'')+'" data-k="domain" list="topic-ids" placeholder="topic"></td>'+
+        '<td data-label="Action"><select data-k="action">'+
+          '<option value="suppress"'+(action==='downrank'?'':' selected')+'>Suppress (drop)</option>'+
+          '<option value="downrank"'+(action==='downrank'?' selected':'')+'>Downrank</option></select></td>'+
+        '<td data-label="Words"><input type="text" value="'+escA((words||[]).join(', '))+'" data-k="words" placeholder="comma-separated"></td>'+
+        '<td><button class="btn-sm btn-danger" data-del="1">✕</button></td>';
+      tr.querySelector('[data-del]').addEventListener('click', function(){ tr.remove(); updatePreview(); });
+      return tr;
+    }
+
     // Keep the floor's topic autocomplete in sync with the Topics table.
     function refreshTopicIds(){
       var dl=$('topic-ids'); if(!dl) return;
@@ -320,7 +355,19 @@
         if(domain) o.domain=domain;
         floor.push(o);
       });
-      var p={ named_entity_floor:floor, topic_weights:tw };
+      // Topic rules → special_handling { domain: { suppress_patterns?, demote_patterns? } }
+      var sh={};
+      $('rules-table').querySelectorAll('tbody tr').forEach(function(tr){
+        var domain=tr.querySelector('[data-k=domain]').value.trim();
+        var action=tr.querySelector('[data-k=action]').value;
+        var words=tr.querySelector('[data-k=words]').value.split(',').map(function(s){return s.trim();}).filter(Boolean);
+        if(!domain || !words.length) return;
+        var key = action==='downrank' ? 'demote_patterns' : 'suppress_patterns';
+        sh[domain]=sh[domain]||{};
+        sh[domain][key]=(sh[domain][key]||[]).concat(words);
+      });
+      var mutes=$('extra-mutes').value.split(',').map(function(s){return s.trim();}).filter(Boolean);
+      var p={ named_entity_floor:floor, topic_weights:tw, special_handling:sh, mutes:mutes };
       if (cfg && cfg.profile && cfg.profile.profile_version!=null) p.profile_version=cfg.profile.profile_version;
       return p;
     }
@@ -338,15 +385,21 @@
       $('half-life').value = rc.half_life_hours!=null?rc.half_life_hours:20;
       $('floor-fresh').value = rc.floor_fresh_hours!=null?rc.floor_fresh_hours:36;
       $('catch-max').value = rc.top_catch_max_hours!=null?rc.top_catch_max_hours:30;
+      $('vel-keep').value = rc.velocity_fresh_keep!=null?rc.velocity_fresh_keep:0.25;
+      $('catch-blend').value = rc.top_catch_recency_blend!=null?rc.top_catch_recency_blend:0.35;
+      $('undated').value = rc.undated_penalty_hours!=null?rc.undated_penalty_hours:36;
+      $('window-days').value = rc.score_window_days!=null?rc.score_window_days:2;
       var e = c.enrichment||{};
       $('enr-on').checked = !!e.enabled;
       $('enr-model').value = e.model||'claude-haiku-4-5';
       $('enr-short').value = e.shortlist_size||36;
       $('enr-cap').value = e.monthly_spend_cap_cents||500;
+      $('enr-batch').checked = !!e.batch;
       var pu = c.push||{}; var sig = pu.significant||{};
       $('push-badge').checked = !!pu.daily_badge;
       $('push-sig').checked = sig.enabled!==false;
       $('sig-conf').value = sig.min_confidence!=null?sig.min_confidence:0.85;
+      $('sig-fresh').value = sig.fresh_hours!=null?sig.fresh_hours:12;
       $('sig-interval').value = sig.min_interval_hours!=null?sig.min_interval_hours:8;
       var st=$('src-table').querySelector('tbody'); st.innerHTML='';
       (c.sources||[]).forEach(function(s){ st.appendChild(srcRow(s)); });
@@ -358,7 +411,18 @@
       Object.keys(tw).forEach(function(id){ tt.appendChild(topicRow(id, tw[id])); });
       var ft=$('floor-table').querySelector('tbody'); ft.innerHTML='';
       (prof.named_entity_floor||[]).forEach(function(e){ ft.appendChild(floorRow(e)); });
-      $('extra-mutes').value = (c.mutes||[]).join(', ');
+      var sh = prof.special_handling||{};
+      var rt=$('rules-table').querySelector('tbody'); rt.innerHTML='';
+      Object.keys(sh).forEach(function(domain){
+        var d=sh[domain]||{};
+        if(d.suppress_patterns && d.suppress_patterns.length) rt.appendChild(rulesRow(domain,'suppress',d.suppress_patterns));
+        if(d.demote_patterns && d.demote_patterns.length) rt.appendChild(rulesRow(domain,'downrank',d.demote_patterns));
+      });
+      // "Never show" unifies the profile's curated mutes with any legacy
+      // top-level extra mutes, so the migration to one list loses nothing.
+      var allMutes=(prof.mutes||[]).slice();
+      (c.mutes||[]).forEach(function(m){ if(allMutes.indexOf(m)<0) allMutes.push(m); });
+      $('extra-mutes').value = allMutes.join(', ');
       refreshTopicIds();
       updatePreview();
     }
@@ -381,35 +445,45 @@
       return out;
     }
 
+    function numOr(id, dflt){ var v=parseFloat($(id).value); return isNaN(v)?dflt:v; }
+    function intOr(id, dflt){ var v=parseInt($(id).value,10); return isNaN(v)?dflt:v; }
+
     function build(){
       var profile = collectProfile();
-      var extra = $('extra-mutes').value.split(',').map(function(s){return s.trim();}).filter(Boolean);
       return {
-        fold_threshold: parseFloat($('fold').value),
-        cadence_hours: parseInt($('cadence').value,10),
+        fold_threshold: numOr('fold',0.6),
+        cadence_hours: intOr('cadence',3),
         recency: {
-          half_life_hours: parseFloat($('half-life').value)||20,
-          floor_fresh_hours: parseFloat($('floor-fresh').value)||36,
-          top_catch_max_hours: parseFloat($('catch-max').value)||30
+          half_life_hours: numOr('half-life',20),
+          floor_fresh_hours: numOr('floor-fresh',36),
+          top_catch_max_hours: numOr('catch-max',30),
+          velocity_fresh_keep: numOr('vel-keep',0.25),
+          top_catch_recency_blend: numOr('catch-blend',0.35),
+          undated_penalty_hours: numOr('undated',36),
+          score_window_days: intOr('window-days',2)
         },
         enrichment: {
           enabled: $('enr-on').checked,
           model: $('enr-model').value.trim()||'claude-haiku-4-5',
-          shortlist_size: parseInt($('enr-short').value,10)||36,
-          monthly_spend_cap_cents: parseInt($('enr-cap').value,10)||0
+          shortlist_size: intOr('enr-short',36),
+          monthly_spend_cap_cents: intOr('enr-cap',0),
+          batch: $('enr-batch').checked
         },
         push: {
           daily_badge: $('push-badge').checked,
           significant: {
             enabled: $('push-sig').checked,
-            min_confidence: parseFloat($('sig-conf').value)||0.85,
-            min_interval_hours: parseInt($('sig-interval').value,10)||8
+            min_confidence: numOr('sig-conf',0.85),
+            fresh_hours: intOr('sig-fresh',12),
+            min_interval_hours: intOr('sig-interval',8)
           }
         },
         sources: collectRows($('src-table').querySelector('tbody'), false),
         bluesky: collectRows($('bsky-table').querySelector('tbody'), true),
         profile: profile,
-        mutes: extra
+        // The reader's mutes now live in profile.mutes (the "Never show" list);
+        // the legacy top-level list is retired to avoid two sources of truth.
+        mutes: []
       };
     }
 
@@ -432,9 +506,13 @@
     $('add-bsky').addEventListener('click', function(){ $('bsky-table').querySelector('tbody').appendChild(bskyRow({weight:0.5})); });
     $('add-topic').addEventListener('click', function(){ $('topic-table').querySelector('tbody').appendChild(topicRow('', {weight:0.5})); refreshTopicIds(); updatePreview(); });
     $('add-floor').addEventListener('click', function(){ $('floor-table').querySelector('tbody').appendChild(floorRow({})); updatePreview(); });
+    $('add-rule').addEventListener('click', function(){ $('rules-table').querySelector('tbody').appendChild(rulesRow('','suppress',[])); updatePreview(); });
     // Live-refresh the Advanced preview as the profile fields change.
     $('topic-table').addEventListener('input', updatePreview);
     $('floor-table').addEventListener('input', updatePreview);
+    $('rules-table').addEventListener('input', updatePreview);
+    $('rules-table').addEventListener('change', updatePreview);
+    $('extra-mutes').addEventListener('input', updatePreview);
     $('save').addEventListener('click', save);
     $('forget').addEventListener('click', function(){ try{localStorage.removeItem(TOKEN_KEY);}catch(_){} msg('Token forgotten on this device.', 'ok'); });
     $('runnow').addEventListener('click', function(){
