@@ -19,6 +19,7 @@ import {
 import {
   onRequestGet as dailyGet,
   onRequestPost as dailyRun,
+  onRequestReset as dailyReset,
   onRequestRunStatus as dailyRunStatus,
 } from "./functions/api/daily.js";
 import { onRequestGet as healthGet } from "./functions/api/health.js";
@@ -39,6 +40,7 @@ export default {
     // --- Daily ---
     if (p === "/api/daily" && method === "GET") return dailyGet({ request, env });
     if (p === "/api/daily/run" && method === "POST") return dailyRun({ request, env, ctx });
+    if (p === "/api/daily/reset" && method === "POST") return dailyReset({ request, env });
     if (p === "/api/daily/run-status" && method === "GET") return dailyRunStatus({ request, env });
     if (p === "/api/health" && method === "GET") return healthGet({ request, env });
 

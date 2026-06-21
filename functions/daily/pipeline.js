@@ -254,3 +254,18 @@ export async function getState(env) {
   const raw = await env.DAILY_STATE.get(STATE_KEY);
   return raw ? JSON.parse(raw) : null;
 }
+
+// Clear every KV blob the pipeline owns so health/rotation/state start fresh:
+// the rendered brief, per-source health (last_ok/fail_since), enrichment status,
+// run progress, and the reddit rotation cursor + debounce stamp. Deliberately
+// enumerated (not a prefix wipe) so the user's config and the monthly spend
+// ledger are left untouched.
+export async function resetState(env) {
+  if (!env.DAILY_STATE) return [];
+  const keys = [
+    STATE_KEY, SOURCE_STATUS_KEY, ENRICH_STATUS_KEY, RUN_PROGRESS_KEY,
+    REDDIT_CURSOR_KEY, REDDIT_FETCH_TS_KEY,
+  ];
+  await Promise.all(keys.map((k) => env.DAILY_STATE.delete(k)));
+  return keys;
+}

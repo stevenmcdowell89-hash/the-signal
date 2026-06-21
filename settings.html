@@ -280,6 +280,7 @@
     <div class="actions">
       <button class="btn-primary" id="save">Save</button>
       <button class="btn-sm" id="runnow">Run now</button>
+      <button class="btn-sm btn-danger" id="reset">Clear history</button>
       <button class="btn-sm btn-danger" id="forget">Forget token</button>
       <span class="msg" id="msg"></span>
     </div>
@@ -648,6 +649,20 @@
           if(!d.error) loadHealth(); // refresh the dashboard on completion
         })
         .catch(function(e){ stop(); msg(String(e.message||e), 'err'); });
+    });
+
+    $('reset').addEventListener('click', function(){
+      var token=getToken(true); if(!token){ msg('A token is required to clear.', 'err'); return; }
+      if(!confirm('Clear all pulled items and feed health, and start a fresh history?\n\nYour sources and settings are kept. The rolling rotation refills over ~3h (or hit Run now).')) return;
+      msg('Clearing…'); $('reset').disabled = true;
+      fetch('/api/daily/reset', { method:'POST', headers:{ 'X-Signal-Token': token } })
+        .then(function(r){ if(r.status===401){ try{localStorage.removeItem(TOKEN_KEY);}catch(_){} throw new Error('Token rejected.'); } return r.json(); })
+        .then(function(d){
+          $('reset').disabled = false;
+          msg(d.error ? ('Error: '+d.error) : 'Cleared — fresh history will build over the next ~3h (or hit Run now).', d.error?'err':'ok');
+          if(!d.error) loadHealth();
+        })
+        .catch(function(e){ $('reset').disabled = false; msg(String(e.message||e), 'err'); });
     });
 
     fetch('/api/config', { cache:'no-store' })

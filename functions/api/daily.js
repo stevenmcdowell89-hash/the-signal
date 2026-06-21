@@ -2,7 +2,8 @@
 // POST /api/daily/run  — token-gated manual poll (the Cron Trigger calls
 //                        run() directly; this lets a device force a refresh).
 
-import { run, getState, RUN_PROGRESS_KEY } from "../daily/pipeline.js";
+import { run, getState, resetState, RUN_PROGRESS_KEY } from "../daily/pipeline.js";
+import { initSchema, resetEngine } from "../daily/db.js";
 import { tokenOk } from "./config.js";
 
 function json(obj, status = 200) {
@@ -25,6 +26,22 @@ export async function onRequestPost({ request, env, ctx }) {
   try {
     const result = await run(env, { trigger: "manual" });
     return json(result);
+  } catch (e) {
+    return json({ error: String((e && e.message) || e) }, 500);
+  }
+}
+
+// POST /api/daily/reset — token-gated clean slate. Wipes all pulled items +
+// derived engine data (D1) and the pipeline's KV blobs (rendered brief, source
+// health, rotation cursor) so a fresh history rebuilds from the next polls.
+// Leaves config and the monthly spend ledger intact. Does NOT auto-run — the
+// 30-min cron repopulates it (a full reddit cycle is ~3h).
+export async function onRequestReset({ request, env }) {
+  if (!tokenOk(request, env)) return json({ error: "unauthorized" }, 401);
+  try {
+    if (env.DAILY_DB) { await initSchema(env.DAILY_DB); await resetEngine(env.DAILY_DB); }
+    const cleared = await resetState(env);
+    return json({ ok: true, db_cleared: !!env.DAILY_DB, kv_cleared: cleared });
   } catch (e) {
     return json({ error: String((e && e.message) || e) }, 500);
   }
