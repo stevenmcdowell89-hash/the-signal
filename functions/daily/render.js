@@ -32,6 +32,18 @@ const DOMAIN_ORDER = [
   "history", "podcasts", "home_selfhosting",
 ];
 
+// Discussion context for an item, derived from its links (which persist as JSON,
+// so no schema change): the liveliest discussion/post thread + its comment count.
+function discussionFromLinks(links) {
+  let best = null;
+  for (const l of links || []) {
+    if (l.type !== "discussion" && l.type !== "post") continue;
+    if (!best || (l.count || 0) > (best.count || 0)) best = l;
+  }
+  if (!best) return null;
+  return { url: best.url, label: best.label || null, comments: best.count ?? null };
+}
+
 function publicItem(it) {
   let links = it.links;
   if (typeof links === "string") {
@@ -46,6 +58,9 @@ function publicItem(it) {
     domain: it.domain,
     links: links || [],
     entity_floor: !!it.entity_floor,
+    status: it.developing ? "developing" : null,
+    days_active: it.developing ? (it.days_active || null) : null,
+    discussion: discussionFromLinks(links),
     confidence: Math.round((it.confidence || 0) * 100) / 100,
     first_seen: it.first_seen,
     published: it.published,
@@ -205,6 +220,27 @@ export function buildState(items, meta, now, config) {
       });
       if (list.length > SECTION_CAP) overflow.push(...list.slice(SECTION_CAP));
     }
+  }
+
+  // Per-interest completeness: every interest with content surfaces at least one
+  // line — even on a quiet day when its best item is below the fold — so the brief
+  // feels complete per-interest (the "I've seen everything in my niche today" job)
+  // instead of silently dropping a whole domain. The loud days are unchanged; this
+  // only adds the quiet domains that the fold would otherwise erase.
+  const represented = new Set([
+    ...sections.map((s) => s.domain),
+    ...alsoDomains.map((a) => a.domain),
+    ...top.map((t) => t.domain),
+  ]);
+  const bestByDomain = {};
+  for (const it of live) {
+    if (topIds.has(it.id)) continue;
+    const d = it.domain;
+    if (!bestByDomain[d] || catchScore(it) > catchScore(bestByDomain[d])) bestByDomain[d] = it;
+  }
+  for (const d of DOMAIN_ORDER) {
+    if (represented.has(d) || !bestByDomain[d]) continue;
+    alsoDomains.push({ domain: d, label: DOMAIN_LABELS[d] || d, item: publicItem(bestByDomain[d]), quiet: true });
   }
 
   // Below the fold (§4.6): demote, never drop. Per-domain fairness FIRST so a

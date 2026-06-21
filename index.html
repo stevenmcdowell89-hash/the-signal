@@ -496,6 +496,10 @@
       font-size: 0.56rem; font-weight: 800; letter-spacing: 0.12em; color: var(--orange);
       border: 1px solid rgba(255,107,53,0.4); border-radius: 4px; padding: 0.05rem 0.38rem;
     }
+    .catch-dev {
+      font-size: 0.56rem; font-weight: 800; letter-spacing: 0.1em; color: var(--gold);
+      border: 1px solid rgba(201,166,107,0.4); border-radius: 4px; padding: 0.05rem 0.38rem;
+    }
     .catch-time { margin-left: auto; font-size: 0.66rem; color: var(--ink-dim); font-weight: 600; flex: 0 0 auto; }
     .catch-title { font-weight: 600; line-height: 1.32; font-size: 1rem; transition: color 0.15s; }
     .catch:hover .catch-title { color: var(--coral); }
@@ -516,6 +520,8 @@
     .catch-links { font-size: 0.72rem; color: var(--ink-dim); display: flex; gap: 0.55rem; flex-wrap: wrap; margin-left: auto; }
     .catch-links a { color: var(--ink-dim); text-decoration: none; }
     .catch-links a:hover { color: var(--coral); }
+    .catch-disc { font-weight: 600; color: var(--ink-2); }
+    .catch-disc:hover { color: var(--coral); }
 
     .domain-sec { margin: 0 0 1.9rem; }
 
@@ -1164,6 +1170,7 @@
         if (opts.rank) left += '<span class="catch-rank">' + opts.rank + '</span>';
         if (opts.showDomain) left += '<span class="catch-dom">' + esc(DOMAIN_LABELS[it.domain] || it.domain) + '</span>';
         if (it.entity_floor) left += '<span class="catch-core">CORE</span>';
+        if (it.status === 'developing') left += '<span class="catch-dev">DEVELOPING' + (it.days_active ? ' · ' + it.days_active + 'd' : '') + '</span>';
         var t = reltime(it);
         var headHtml = '<div class="catch-head">' + left + (t ? '<span class="catch-time">' + esc(t) + '</span>' : '') + '</div>';
 
@@ -1174,13 +1181,23 @@
         if (it.hook) body += '<div class="catch-hook">' + esc(it.hook) + '</div>';
         else if (it.summary) body += '<div class="catch-summary">' + esc(it.summary) + '</div>';
 
-        // Footer: register chip + the out-links (source + best discussion).
+        // Footer: register chip + a discussion chip (💬 count) + the out-links.
+        // The discussion/post link is rendered as the chip, so it's filtered out
+        // of the plain links to avoid showing the thread twice.
         var reg = it.register ? '<span class="catch-reg ' + esc(it.register) + '">' + esc(it.register) + '</span>' : '';
-        var linksHtml = (it.links||[]).map(function(l){
+        var disc = '';
+        if (it.discussion && it.discussion.url){
+          var dc = it.discussion;
+          var dtxt = '💬 ' + (dc.comments != null ? dc.comments : '') + (dc.label ? ' · ' + dc.label : '');
+          disc = '<a class="catch-disc" href="' + esc(dc.url) + '" target="_blank" rel="noopener">' + esc(dtxt) + '</a>';
+        }
+        var linksHtml = (it.links||[]).filter(function(l){
+          return l.type !== 'discussion' && l.type !== 'post';
+        }).map(function(l){
           return '<a href="' + esc(l.url) + '" target="_blank" rel="noopener">' + esc(l.label || l.type) + '</a>';
         }).join('');
-        var foot = (reg || linksHtml)
-          ? '<div class="catch-foot">' + reg + '<span class="catch-links">' + linksHtml + '</span></div>'
+        var foot = (reg || disc || linksHtml)
+          ? '<div class="catch-foot">' + reg + '<span class="catch-links">' + disc + linksHtml + '</span></div>'
           : '';
 
         a.innerHTML = headHtml + '<div class="catch-title">' + esc(it.title) + '</div>' + body + foot;
@@ -1302,7 +1319,7 @@
           root.appendChild(g);
         });
         if ((state.also||[]).length){
-          var g2 = group('Also');
+          var g2 = group('Across your interests');
           var wrap = document.createElement('div'); wrap.className='also-wrap';
           state.also.forEach(function(a){
             var l = firstLink(a.item);

@@ -86,3 +86,46 @@ export const STARTER_FEEDS = [
 // shape the config expects; ingest skips the type cleanly when the list is empty.
 // { id, type: "bluesky", domain, weight, handle: "transferjourno.bsky.social", name }
 export const STARTER_BLUESKY = [];
+
+// Reddit subreddits (§8 P2). The community layer — where transfer rumours, game
+// announcements, training texture and match quirks live before they reach a
+// headline. Ingested read-only (top/day). Works now via public JSON; uses the
+// OAuth Data API automatically when REDDIT_CLIENT_ID/SECRET are set as Worker
+// secrets. `url` carries the subreddit so it's editable in Settings like any
+// source. The drafted set from docs/reddit-data-api-application.md.
+// Seeded DISABLED: the structure ships ready (and editable in Settings) but stays
+// off until the reader turns it on. Enabling works immediately via public JSON
+// (the "way around" the API lead time); when REDDIT_CLIENT_ID/SECRET are set it
+// uses the approved OAuth Data API automatically. Off by default keeps the brief's
+// independent value clean if Reddit rate-limits the Worker's egress IPs.
+const RS = (sub, domain, weight) => ({
+  id: `r-${sub.toLowerCase()}`, type: "reddit", domain, weight, enabled: false,
+  url: `https://www.reddit.com/r/${sub}`, name: `r/${sub}`,
+});
+export const STARTER_REDDIT = [
+  // Gaming
+  RS("NintendoSwitch", "gaming", 0.85), RS("Games", "gaming", 0.85),
+  RS("SteamDeck", "gaming", 0.85), RS("MonsterHunter", "gaming", 0.8),
+  RS("paradoxplaza", "gaming", 0.8), RS("BaldursGate3", "gaming", 0.8),
+  // Football
+  RS("Juve", "football", 0.85), RS("seriea", "football", 0.8),
+  RS("soccer", "football", 0.8), RS("FantasyPL", "football", 0.75),
+  // Tech & devices
+  RS("Android", "tech_devices", 0.72), RS("Xiaomi", "tech_devices", 0.72),
+  RS("eink", "tech_devices", 0.7),
+  // Books
+  RS("Cosmere", "books", 0.55), RS("Fantasy", "books", 0.5), RS("Malazan", "books", 0.55),
+  // Film / TV
+  RS("StarWars", "film_tv", 0.45), RS("television", "film_tv", 0.4),
+  // Music
+  RS("outrun", "music", 0.35), RS("synthwave", "music", 0.3),
+  // Fitness
+  RS("running", "fitness", 0.45), RS("AdvancedRunning", "fitness", 0.45),
+  RS("weightroom", "fitness", 0.45),
+  // Finance
+  RS("UKPersonalFinance", "finance", 0.55), RS("Monzo", "finance", 0.5), RS("fintech", "finance", 0.45),
+  // Golf · LEGO · Travel · Home/Self-hosting
+  RS("golf", "golf", 0.45), RS("lego", "lego", 0.5),
+  RS("themeparks", "travel", 0.45), RS("wdw", "travel", 0.4),
+  RS("selfhosted", "home_selfhosting", 0.4), RS("homeassistant", "home_selfhosting", 0.4),
+];

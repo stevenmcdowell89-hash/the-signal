@@ -65,8 +65,8 @@ export async function run(env, { trigger } = {}) {
   const db = env.DAILY_DB;
   await initSchema(db);
 
-  // 1) Ingest every tagged source.
-  const { entries, live, dead } = await ingestAll(config);
+  // 1) Ingest every tagged source. `env` carries optional Reddit OAuth secrets.
+  const { entries, live, dead } = await ingestAll(config, env);
   const scanned = entries.length;
 
   // Record per-source liveness for the feed-health view (§E): which sources

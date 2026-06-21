@@ -464,7 +464,12 @@
           else o[k]=inp.value.trim();
         });
         if (isBsky){ o.type='bluesky'; if(!o.handle) return; }
-        else { o.type = /hn\.algolia\.com|algolia\.com\/api/.test(o.url) ? 'hn' : 'rss'; if(!o.url) return; }
+        else {
+          o.type = /hn\.algolia\.com|algolia\.com\/api/.test(o.url) ? 'hn'
+                 : /reddit\.com\/r\//i.test(o.url) ? 'reddit'
+                 : 'rss';
+          if(!o.url) return;
+        }
         if(!o.id) return;
         out.push(o);
       });

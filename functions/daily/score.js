@@ -201,6 +201,19 @@ export async function scoreBatch(db, items, config, now) {
     if (it.entity_floor && !it.muted && (isFresh || movingFast)) {
       it.confidence = Math.min(1, it.confidence + floorBoost);
     }
+
+    // 5b) Developing: an evolving story (a transfer saga, a rumour that keeps
+    //     moving) — a cluster that has persisted across polls (it was surfaced
+    //     before, so `prev` exists) and has spanned more than ~a day. Flag it for
+    //     the "Developing" badge, and when it's still active give it a small
+    //     bounded lift so a live saga isn't aged out on a day with no new article.
+    const ageDays = it.first_seen ? (now - it.first_seen) / 8.64e7 : 0;
+    it.days_active = Math.max(1, Math.round(ageDays));
+    it.developing = !it.muted && !!prev && ageDays >= 1;
+    if (it.developing && (isFresh || movingFast)) {
+      it.confidence = Math.min(1, it.confidence + (rc.developing_boost ?? 0.05));
+    }
+
     it.above_fold = !it.muted && it.confidence >= fold;
 
     // Log a story point only for surfaced catches + discussion items (movement
