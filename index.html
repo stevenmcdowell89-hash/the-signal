@@ -1264,6 +1264,7 @@
       // Tabs: Headlines (fixed) · each non-empty edition (config order) · Communities (fixed).
       function viewTabs(state){
         var tabs = [['headlines','Headlines']];
+        if ((state.top20||[]).length) tabs.push(['top','Top 20']);
         (state.editions||[]).forEach(function(e){ if (viewItems(state, e.id).length) tabs.push([e.id, e.label]); });
         tabs.push(['communities','Communities']);
         return tabs;
@@ -1283,6 +1284,7 @@
         if (!tabs.some(function(t){ return t[0]===currentView; })) currentView = 'headlines';
         tabs.forEach(function(s){
           var count = s[0]==='headlines' ? (state.headlines||[]).length
+                    : s[0]==='top' ? (state.top20||[]).length
                     : s[0]==='communities' ? (state.communities||[]).length
                     : viewItems(state, s[0]).length;
           var b = document.createElement('button');
@@ -1306,7 +1308,7 @@
         if (currentView==='communities'){
           var bySrc = {}; (state.communities||[]).forEach(function(i){ var k=i.source_type||'other'; bySrc[k]=(bySrc[k]||0)+1; });
           ['reddit','hn','bluesky'].forEach(function(k){ if(bySrc[k]) chips.push({kind:'source',val:k,label:COMMUNITY_LABEL[k]||k,count:bySrc[k]}); });
-        } else if (currentView!=='headlines'){
+        } else if (currentView!=='headlines' && currentView!=='top'){
           var items = viewItems(state,currentView);
           var byDom = {}, domLabel = {}, entCount = {};
           items.forEach(function(i){
@@ -1351,6 +1353,7 @@
         var sn = subNav(state); if (sn) root.appendChild(sn);
         if (currentView === 'communities') renderCommunities(state);
         else if (currentView === 'headlines') renderHeadlines(state);
+        else if (currentView === 'top') renderTop20(state);
         else renderGroup(state, currentView);
         var f = state.footer||{};
         var fo = document.createElement('div'); fo.className='brief-footer';
@@ -1388,6 +1391,20 @@
           e.textContent='No big headlines right now — check News, Sport or your Interests.';
           root.appendChild(e);
         }
+      }
+
+      // Top 20: the single ranked cross-everything feed.
+      function renderTop20(state){
+        var items = (state.top20||[]);
+        if (!items.length){
+          var e=document.createElement('div'); e.className='brief-empty';
+          e.textContent='Nothing has cleared the bar yet.';
+          root.appendChild(e); return;
+        }
+        var g = group('Top 20 across everything', items.length);
+        g.className='brief-group domain-sec';
+        items.forEach(function(it,i){ g.appendChild(catchEl(it, { rank: i+1, showDomain: true })); });
+        root.appendChild(g);
       }
 
       // News / Sport / Interests: the domain sections in that group, sub-filterable.

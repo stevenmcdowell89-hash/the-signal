@@ -375,6 +375,28 @@ export function buildState(items, meta, now, config) {
     hToks.push(toks);
   }
 
+  // Top 20 across everything — one trustworthy ranked feed (the content-led
+  // ranking + firehose cap make this meaningful). Cross-domain, importance-ranked,
+  // diversity-capped (≤3/domain, ≤2/source) and deduped so no single team/feed owns it.
+  const t20Ranked = live
+    .filter((i) => (i.confidence || 0) > 0)
+    .sort((a, b) => importance(b) - importance(a));
+  const top20 = [];
+  const t20Toks = [];
+  const t20Dom = {};
+  const t20Src = {};
+  for (const it of t20Ranked) {
+    if (top20.length >= 20) break;
+    if ((t20Dom[it.domain] || 0) >= 3) continue;
+    if (it.source && (t20Src[it.source] || 0) >= 2) continue;
+    const toks = topicTokens(it);
+    if (t20Toks.some((t) => tokenJaccard(t, toks) >= 0.45)) continue;
+    top20.push(it);
+    t20Dom[it.domain] = (t20Dom[it.domain] || 0) + 1;
+    if (it.source) t20Src[it.source] = (t20Src[it.source] || 0) + 1;
+    t20Toks.push(toks);
+  }
+
   return {
     generated_at: now,
     status: {
@@ -383,6 +405,7 @@ export function buildState(items, meta, now, config) {
     },
     edition: { date_label: dateLabel },
     editions: editionsList,
+    top20: top20.map(publicItem),
     start_here: top.slice(0, 3).map((t) => t.title),
     today_tonight: todayAndTonight(live, now),
     headlines: headlines.map(publicItem),
