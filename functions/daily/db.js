@@ -264,6 +264,20 @@ export async function logRun(db, r) {
     .run();
 }
 
+// Wipe all pulled + derived engine data for a clean-slate rebuild (keeps the
+// schema). Used by the token-gated /api/daily/reset so the reader can start a
+// fresh history and watch the rolling rotation fill it in. Does NOT touch KV
+// (config, the rendered state, source health, the spend ledger) — that's the
+// caller's job via resetState().
+export async function resetEngine(db) {
+  await db.batch([
+    db.prepare(`DELETE FROM items`),
+    db.prepare(`DELETE FROM source_samples`),
+    db.prepare(`DELETE FROM story_log`),
+    db.prepare(`DELETE FROM runs`),
+  ]);
+}
+
 // Retention prune (§10): drop items out of the ~14-day state window; keep the
 // story_log longer (~60d) so the weekly still has movement evidence.
 export async function prune(db, now) {

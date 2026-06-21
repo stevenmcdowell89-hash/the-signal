@@ -76,11 +76,15 @@
     .hrow .dot.ok{ background:#46c46a; box-shadow:0 0 6px #46c46a88; }
     .hrow .dot.stale{ background:var(--gold); }
     .hrow .dot.dead{ background:var(--coral); box-shadow:0 0 6px #e9456088; }
+    .hrow .dot.waiting{ background:#5b8fb0; box-shadow:0 0 6px #5b8fb066; }
     .hrow .dot.off{ background:var(--ink-dim); opacity:0.4; }
     .hrow .hname{ flex:1; min-width:0; color:var(--ink-2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .hrow .hwhen{ color:var(--ink-dim); font-size:0.66rem; flex:0 0 auto; white-space:nowrap; }
+    .hrow.is-waiting .hwhen{ color:#5b8fb0; }
     .hrow .hdom{ color:var(--ink-dim); font-size:0.68rem; text-transform:uppercase; letter-spacing:0.08em; flex:0 0 auto; }
     .hrow .hcount{ font-variant-numeric:tabular-nums; font-weight:700; color:var(--ink); flex:0 0 auto; min-width:2.2rem; text-align:right; }
     .hrow.is-dead .hname{ color:var(--coral); }
+    .hrow.is-dead .hwhen{ color:var(--coral); }
 
     /* Mobile: stack the squashed tables into cards, one field per line. */
     @media (max-width:640px){
@@ -276,6 +280,7 @@
     <div class="actions">
       <button class="btn-primary" id="save">Save</button>
       <button class="btn-sm" id="runnow">Run now</button>
+      <button class="btn-sm btn-danger" id="reset">Clear history</button>
       <button class="btn-sm btn-danger" id="forget">Forget token</button>
       <span class="msg" id="msg"></span>
     </div>
@@ -646,6 +651,20 @@
         .catch(function(e){ stop(); msg(String(e.message||e), 'err'); });
     });
 
+    $('reset').addEventListener('click', function(){
+      var token=getToken(true); if(!token){ msg('A token is required to clear.', 'err'); return; }
+      if(!confirm('Clear all pulled items and feed health, and start a fresh history?\n\nYour sources and settings are kept. The rolling rotation refills over ~3h (or hit Run now).')) return;
+      msg('Clearing…'); $('reset').disabled = true;
+      fetch('/api/daily/reset', { method:'POST', headers:{ 'X-Signal-Token': token } })
+        .then(function(r){ if(r.status===401){ try{localStorage.removeItem(TOKEN_KEY);}catch(_){} throw new Error('Token rejected.'); } return r.json(); })
+        .then(function(d){
+          $('reset').disabled = false;
+          msg(d.error ? ('Error: '+d.error) : 'Cleared — fresh history will build over the next ~3h (or hit Run now).', d.error?'err':'ok');
+          if(!d.error) loadHealth();
+        })
+        .catch(function(e){ $('reset').disabled = false; msg(String(e.message||e), 'err'); });
+    });
+
     fetch('/api/config', { cache:'no-store' })
       .then(function(r){ return r.json(); })
       .then(fill)
@@ -673,24 +692,57 @@
 
       var list = $('health-list'); list.innerHTML='';
       var srcs = (h.sources||[]).slice().sort(function(a,b){
-        var rank={dead:0,stale:1,unknown:2,off:3,ok:4};
+        var rank={dead:0,stale:1,waiting:2,unknown:3,off:4,ok:5};
         return (rank[a.state]-rank[b.state]) || (b.count_48h-a.count_48h);
       });
       if(!srcs.length){ list.textContent='No source data yet — run the brief once.'; return; }
+      // A duration ("4h", "2d") rather than "... ago" — for "how long has it been failing".
+      function dur(ts){
+        if(!ts) return '';
+        var s=(Date.now()-ts)/1000;
+        if(s<90) return '<1m';
+        var m=Math.round(s/60); if(m<60) return m+'m';
+        var h=Math.round(m/60); if(h<48) return h+'h';
+        return Math.round(h/24)+'d';
+      }
+      // When did this sub last actually return items? Prefer the recorded last-success
+      // ts; fall back to D1's last_seen (so it's right even before the new field fills in).
+      function lastWork(s){ var t=s.last_ok||s.last_seen; return t ? 'last worked '+ago(t) : 'no success yet'; }
+      // A "when / why" label that makes a red sub legible OVER TIME: not just "tried Nm
+      // ago" (a failed re-attempt resets that), but how long it's been failing, why, and
+      // when it last worked — so you can tell 4h-down from 4d-down from never-worked, and
+      // see it's still being retried each rotation.
+      function whenLabel(s){
+        if(s.state==='off') return '';
+        if(s.state==='dead'){
+          var why = s.reason ? ' · '+String(s.reason).replace(/^HTTP\s*/,'') : '';
+          return 'failing '+dur(s.fail_since)+why+' · '+lastWork(s);
+        }
+        if(s.state==='waiting') return 'not tried yet'+(s.last_seen?' · '+lastWork(s):'');
+        if(!s.last_checked) return 'not tried yet';
+        return 'tried '+ago(s.last_checked);
+      }
       srcs.forEach(function(s){
-        var row=document.createElement('div'); row.className='hrow'+(s.state==='dead'?' is-dead':'');
+        var cls='hrow'+(s.state==='dead'?' is-dead':'')+(s.state==='waiting'?' is-waiting':'');
+        var row=document.createElement('div'); row.className=cls;
+        var title=s.state+(s.reason?' ('+s.reason+')':'');
         row.innerHTML =
-          '<span class="dot '+s.state+'" title="'+s.state+'"></span>'+
+          '<span class="dot '+s.state+'" title="'+title+'"></span>'+
           '<span class="hname">'+(s.name||s.id)+(s.enabled?'':' (off)')+'</span>'+
+          '<span class="hwhen">'+whenLabel(s)+'</span>'+
           '<span class="hdom">'+(s.domain||'')+'</span>'+
           '<span class="hcount">'+(s.count_48h||0)+'</span>';
         list.appendChild(row);
       });
       var dead = srcs.filter(function(s){return s.state==='dead';}).length;
       var stale = srcs.filter(function(s){return s.state==='stale';}).length;
+      var waiting = srcs.filter(function(s){return s.state==='waiting';}).length;
+      var deadNever = srcs.filter(function(s){return s.state==='dead' && !s.last_ok && !s.last_seen;}).length;
       $('health-foot').textContent = 'Last poll '+ago(h.last_poll)+'. '+
-        (dead?dead+' not responding. ':'')+(stale?stale+' quiet (no articles in 48h). ':'')+
-        (!dead&&!stale?'All feeds healthy.':'');
+        (dead?dead+' failing'+(deadNever?' ('+deadNever+' never worked)':'')+' — Reddit subs are still re-attempted every rotation (~6 every 30 min). ':'')+
+        (stale?stale+' quiet (no articles in 48h). ':'')+
+        (waiting?waiting+' Reddit subs never tried yet (new or just-added — picked up within ~3h, then they stay green/red). ':'')+
+        (!dead&&!stale&&!waiting?'All feeds healthy.':'');
     }
     function loadHealth(){
       return fetch('/api/health', { cache:'no-store' })

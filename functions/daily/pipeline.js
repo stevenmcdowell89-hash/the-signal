@@ -27,7 +27,9 @@ function setProgress(env, phase, done, total) {
 }
 
 const REDDIT_CURSOR_KEY = "reddit_cursor";
+const REDDIT_FETCH_TS_KEY = "reddit_fetch_ts"; // last time we rolled the reddit rotation
 const REDDIT_SLICE = 6; // subreddits fetched per tick (≈ full cycle over ~3h)
+const REDDIT_DEBOUNCE_MS = 5 * 60 * 1000; // manual "Run now" won't re-roll reddit inside this window
 
 // The next rotating slice of enabled reddit subs (a Set of source ids). Advances
 // and persists a cursor so successive ticks cover them all — a rolling refresh
@@ -100,9 +102,18 @@ export async function run(env, { trigger } = {}) {
   //    cron fires every 30 min and each tick fetches the next ~6 subreddits, so
   //    Reddit is a rolling update that never bursts its rate limit (a full cycle
   //    is ~3h). `env` carries optional Reddit OAuth secrets.
-  const redditSlice = await nextRedditSlice(env, config, now);
-  setProgress(env, "polling sources", 0, 1);
-  const { entries, live, dead } = await ingestAll(config, env, (d, t) => setProgress(env, "polling sources", d, t), redditSlice);
+  //    The cron always rolls Reddit; a MANUAL "Run now" debounces it (skips Reddit
+  //    if we rolled within the last few minutes) so repeated presses can't re-burst
+  //    Reddit's shared-IP rate limit — RSS/HN still refresh and the brief re-renders.
+  const isCron = trigger === "cron";
+  let lastRedditTs = 0;
+  try { lastRedditTs = parseInt((await env.DAILY_STATE.get(REDDIT_FETCH_TS_KEY)) || "0", 10) || 0; } catch (_) {}
+  const rollReddit = isCron || (now - lastRedditTs) >= REDDIT_DEBOUNCE_MS;
+  const redditSlice = rollReddit ? await nextRedditSlice(env, config) : new Set(); // empty Set = fetch no reddit this run
+  if (rollReddit) { try { await env.DAILY_STATE.put(REDDIT_FETCH_TS_KEY, String(now)); } catch (_) {} }
+
+  setProgress(env, rollReddit ? "polling sources" : "polling sources (reddit rolled recently — skipping)", 0, 1);
+  const { entries, live, dead, reasons } = await ingestAll(config, env, (d, t) => setProgress(env, "polling sources", d, t), redditSlice);
   const scanned = entries.length;
 
   // Record per-source liveness for the feed-health view (§E): which sources
@@ -115,8 +126,22 @@ export async function run(env, { trigger } = {}) {
     const prev = JSON.parse((await env.DAILY_STATE.get(SOURCE_STATUS_KEY)) || "null");
     if (prev && prev.sources) sourceStatus = prev.sources;
   } catch (_) {}
+  // Per sub we keep a small HISTORY so a red sub is legible over time, not just
+  // "tried Nm ago" (which a failed re-attempt resets): `last_ok` = last time it
+  // actually returned items, `fail_since` = start of the current failing streak
+  // (cleared on any success), `fails` = consecutive failures. This is what answers
+  // "has it ever worked / is it being retried / has it been down 4h or 4d?".
   for (const id of [...live, ...dead]) {
-    sourceStatus[id] = { ok: liveSet.has(id), ts: now };
+    const ok = liveSet.has(id);
+    const prevEntry = sourceStatus[id] || {};
+    sourceStatus[id] = {
+      ok,
+      ts: now,
+      reason: (reasons && reasons[id]) || (ok ? "ok" : "empty"),
+      last_ok: ok ? now : (prevEntry.last_ok || null),
+      fail_since: ok ? null : (prevEntry.fail_since || now),
+      fails: ok ? 0 : ((prevEntry.fails || 0) + 1),
+    };
   }
   for (const id of live) {
     sourceStatus[id].count_this_poll = entries.filter((e) => e.sourceId === id).length;
@@ -228,4 +253,19 @@ export async function getState(env) {
   if (!env.DAILY_STATE) return null;
   const raw = await env.DAILY_STATE.get(STATE_KEY);
   return raw ? JSON.parse(raw) : null;
+}
+
+// Clear every KV blob the pipeline owns so health/rotation/state start fresh:
+// the rendered brief, per-source health (last_ok/fail_since), enrichment status,
+// run progress, and the reddit rotation cursor + debounce stamp. Deliberately
+// enumerated (not a prefix wipe) so the user's config and the monthly spend
+// ledger are left untouched.
+export async function resetState(env) {
+  if (!env.DAILY_STATE) return [];
+  const keys = [
+    STATE_KEY, SOURCE_STATUS_KEY, ENRICH_STATUS_KEY, RUN_PROGRESS_KEY,
+    REDDIT_CURSOR_KEY, REDDIT_FETCH_TS_KEY,
+  ];
+  await Promise.all(keys.map((k) => env.DAILY_STATE.delete(k)));
+  return keys;
 }

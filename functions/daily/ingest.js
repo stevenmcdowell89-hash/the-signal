@@ -22,6 +22,31 @@ async function fetchText(url, accept) {
   return resp.text();
 }
 
+// Like fetchText, but retries ONCE on a transient throttle (429/503). Reddit's
+// unauthenticated .rss is rate-limited per-IP, and Cloudflare Workers share egress
+// IPs across many tenants — so a 429 is usually a brief shared-IP throttle that
+// clears in a few seconds, not a hard block. We honour Retry-After (capped at 8s,
+// default 3s) and try again before giving up, recovering a meaningful share of them.
+async function fetchTextRetry(url, accept, tries = 2) {
+  let lastErr;
+  for (let i = 0; i < tries; i++) {
+    const resp = await fetch(url, {
+      headers: { "User-Agent": UA, Accept: accept || "*/*" },
+      cf: { cacheTtl: 60, cacheEverything: false },
+    });
+    if (resp.ok) return resp.text();
+    lastErr = new Error(`HTTP ${resp.status}`);
+    if ((resp.status === 429 || resp.status === 503) && i < tries - 1) {
+      const ra = parseInt(resp.headers.get("retry-after") || "", 10);
+      const waitMs = Math.min(8000, (Number.isFinite(ra) && ra > 0 ? ra : 3) * 1000);
+      await new Promise((r) => setTimeout(r, waitMs));
+      continue;
+    }
+    throw lastErr;
+  }
+  throw lastErr;
+}
+
 async function fetchJson(url) {
   const resp = await fetch(url, { headers: { "User-Agent": UA, Accept: "application/json" } });
   if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
@@ -273,7 +298,7 @@ async function ingestRedditFeed(subsStr, env, opts) {
   const out = [];
 
   if (!token) {
-    const xml = await fetchText(
+    const xml = await fetchTextRetry(
       `https://www.reddit.com/r/${subsStr}/.rss?limit=${Math.max(25, keep * 2)}`,
       "application/atom+xml, application/rss+xml, application/xml, text/xml"
     );
@@ -336,6 +361,7 @@ export async function ingestAll(config, env, onProgress, redditSlice) {
   const entries = [];
   const live = [];
   const dead = [];
+  const reasons = {}; // id -> "ok" | "empty" | "HTTP 429" | "<error>" (for the health view)
   const jobs = [];
 
   // Reddit is fetched tiered + sequentially with a stagger (below), not
@@ -352,11 +378,14 @@ export async function ingestAll(config, env, onProgress, redditSlice) {
           if (got.length) {
             entries.push(...got);
             live.push(feed.id);
+            reasons[feed.id] = "ok";
           } else {
             dead.push(feed.id);
+            reasons[feed.id] = "empty";
           }
         } catch (e) {
           dead.push(feed.id);
+          reasons[feed.id] = String((e && e.message) || "error");
         }
       })()
     );
@@ -370,9 +399,11 @@ export async function ingestAll(config, env, onProgress, redditSlice) {
           if (got.length) {
             entries.push(...got);
             live.push(h.id);
-          } else dead.push(h.id);
-        } catch {
+            reasons[h.id] = "ok";
+          } else { dead.push(h.id); reasons[h.id] = "empty"; }
+        } catch (e) {
           dead.push(h.id);
+          reasons[h.id] = String((e && e.message) || "error");
         }
       })()
     );
@@ -394,16 +425,17 @@ export async function ingestAll(config, env, onProgress, redditSlice) {
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   let firstReddit = true;
   for (const feed of slice) {
-    if (!firstReddit) await sleep(1000);
+    if (!firstReddit) await sleep(1500);
     firstReddit = false;
     try {
       const got = await ingestRedditFeed(subFromFeed(feed), env, {
         keep: KEEP[feed.tier] || KEEP.small, sourceId: feed.id, weight: feed.weight, defaultDomain: feed.domain,
       });
-      if (got.length) { entries.push(...got); live.push(feed.id); } else dead.push(feed.id);
-    } catch { dead.push(feed.id); }
+      if (got.length) { entries.push(...got); live.push(feed.id); reasons[feed.id] = "ok"; }
+      else { dead.push(feed.id); reasons[feed.id] = "empty"; }
+    } catch (e) { dead.push(feed.id); reasons[feed.id] = String((e && e.message) || "error"); }
     done++; tick();
   }
 
-  return { entries, live, dead };
+  return { entries, live, dead, reasons };
 }

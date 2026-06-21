@@ -42,16 +42,31 @@ export async function onRequestGet({ env }) {
     const c = counts.get(d.id);
     const s = st[d.id];
     const count_48h = c ? c.count : 0;
-    // ok = pulled this poll; stale = ok but nothing in 48h; dead = errored/empty.
+    // The dot shows the LAST KNOWN outcome and persists across Reddit's rolling
+    // rotation — a throttled sub stays `dead` (red) until it actually succeeds, so a
+    // chronic 429 isn't hidden between its turns. The per-row "tried Nm ago" label
+    // (last_checked) is what proves it WAS attempted and when. `waiting` fires ONLY
+    // when there's no status blob at all — the rotation has never attempted this sub
+    // yet. In practice that's just cold start (fresh deploy/KV reset) or a newly-added
+    // sub, until its first turn (≤ ~3h); after that it's permanently ok/stale/dead by
+    // last outcome and never `waiting` again. The "between turns" position lives in the
+    // per-row timestamp, not a fourth state.
+    // `tried_this_poll` lets the UI flag a failure that's happening right now.
+    const tried_this_poll = !!(s && status.ts && s.ts >= status.ts);
     let state;
     if (!d.enabled) state = "off";
     else if (s && s.ok) state = count_48h > 0 ? "ok" : "stale";
     else if (s && !s.ok) state = "dead";
+    else if (d.kind === "reddit") state = "waiting"; // never reached by the rotation yet
     else state = count_48h > 0 ? "ok" : "unknown";
     return {
       id: d.id, name: d.name, domain: d.domain, weight: d.weight, enabled: d.enabled, kind: d.kind,
       count_48h, last_seen: c ? c.last_seen : null, state,
       last_checked: s ? s.ts : (status.ts || null),
+      tried_this_poll, reason: s ? (s.reason || null) : null,
+      last_ok: s ? (s.last_ok || null) : null,
+      fail_since: s ? (s.fail_since || null) : null,
+      fails: s ? (s.fails || 0) : 0,
     };
   });
 
