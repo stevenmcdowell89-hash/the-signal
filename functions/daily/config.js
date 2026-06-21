@@ -30,6 +30,8 @@ export function defaultConfig() {
       signal_high: 1.6,       // title carries a high-signal word → ×this
       signal_low: 0.5,        // title carries a low-signal word → ×this
       headline_signal_bonus: 0.15, // additive Headlines bump for high-signal items
+      source_cap: 3,          // keep this many from one feed per topic at full strength…
+      source_cap_penalty: 0.6, // …then ×this^rank on the tail (anti-firehose, in scoring)
     },
     // Recency (the daily is fast-decay — "what happened today"). One coherent
     // decay signal drives confidence, the named-entity floor, Top Catches
