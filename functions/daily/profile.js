@@ -13,15 +13,26 @@
 //
 // Shape: { named_entity_floor[], topic_weights{}, special_handling{}, mutes[] }
 //
-//  - named_entity_floor: tight (~6–10), the genuine emphasised core. Items
-//    touching these bypass ranking and never sit below the fold (§4).
+//  - named_entity_floor: tight (~6–10), the genuine emphasised core. A match
+//    earns a bounded boost + one guaranteed-but-capped slot near the top (§4) —
+//    not a ranking bypass. User-editable in-app.
 //  - topic_weights: broad. domain -> { weight, keywords[] }. The mechanical
-//    scorer (Tier 1) matches item titles against keywords, weighted.
+//    scorer (Tier 1) matches item titles against keywords, weighted. User-editable.
 //  - special_handling: per-domain suppression (books/film spoilers, fitness
-//    diet-targeting, finance speculation, UK-politics-out-by-default).
-//  - mutes: global drop patterns (flair/topic/category).
+//    diet-targeting, finance speculation, UK-politics-out-by-default). Engine
+//    internal — owned by code, not surfaced in the in-app editor.
+//  - mutes: curated global drop patterns. Engine internal — code-owned. The
+//    reader's own extra mutes live in the top-level config.mutes ("Never show").
+//
+// `profile_version` gates re-seeding: bump it whenever the floor/topics defaults
+// change in a way that should reach an existing saved config (mergeConfig will
+// then overwrite the stale saved profile with these defaults — see config.js).
 
 export const PROFILE = {
+  // Bump when the floor/topic DEFAULTS below should override an older saved
+  // profile in KV (e.g. removing Juventus from the floor, adding `domain`).
+  profile_version: 2,
+
   // ---- Named-entity floor (the genuine core) ----
   // A SCARCITY mechanism (§7.5): it guarantees a slot for rare must-not-miss
   // items and caps their count — it is NOT for high-volume entities. Juventus is

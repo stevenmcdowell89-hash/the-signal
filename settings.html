@@ -42,6 +42,12 @@
     .msg.ok{ color:#46c46a; } .msg.err{ color:var(--coral); }
     .hint{ font-size:0.74rem; color:var(--ink-dim); margin-top:0.3rem; }
     .addrow{ margin-top:0.6rem; }
+    /* Importance slider (Topics) */
+    .imp{ display:flex; align-items:center; gap:0.5rem; }
+    .imp input[type=range]{ flex:1; min-width:80px; width:auto; padding:0; accent-color:var(--coral); }
+    .imp-val{ flex:0 0 auto; font-size:0.72rem; color:var(--ink-dim); font-variant-numeric:tabular-nums; white-space:nowrap; }
+    #profile-preview{ min-height:150px; opacity:0.85; }
+    details > summary{ list-style:none; } details > summary::-webkit-details-marker{ display:none; }
 
     /* Status / health */
     .ai-status{ font-size:0.86rem; color:var(--ink-2); line-height:1.5; }
@@ -70,20 +76,24 @@
       textarea{ min-height:300px; font-size:0.82rem; white-space:pre; overflow-x:auto; }
       .src-w{ max-width:none; }
       /* table → stacked cards */
-      #src-table thead, #bsky-table thead{ display:none; }
-      #src-table, #bsky-table, #src-table tbody, #bsky-table tbody{ display:block; width:100%; }
-      #src-table tr, #bsky-table tr{
+      #src-table thead, #bsky-table thead, #topic-table thead, #floor-table thead{ display:none; }
+      #src-table, #bsky-table, #topic-table, #floor-table,
+      #src-table tbody, #bsky-table tbody, #topic-table tbody, #floor-table tbody{ display:block; width:100%; }
+      #src-table tr, #bsky-table tr, #topic-table tr, #floor-table tr{
         display:block; background:var(--bg-3); border:1px solid var(--line);
         border-radius:10px; padding:0.5rem 0.6rem; margin-bottom:0.7rem;
       }
-      #src-table td, #bsky-table td{ display:block; border:0; padding:0.28rem 0; }
-      #src-table td input, #bsky-table td input{ font-size:1rem; padding:0.55rem 0.6rem; min-height:44px; }
-      #src-table td::before, #bsky-table td::before{
+      #src-table td, #bsky-table td, #topic-table td, #floor-table td{ display:block; border:0; padding:0.28rem 0; }
+      #src-table td input, #bsky-table td input,
+      #topic-table td input[type=text], #floor-table td input{ font-size:1rem; padding:0.55rem 0.6rem; min-height:44px; }
+      #src-table td::before, #bsky-table td::before, #topic-table td::before, #floor-table td::before{
         content:attr(data-label); display:block; font-size:0.62rem; text-transform:uppercase;
         letter-spacing:0.12em; color:var(--ink-dim); margin-bottom:0.2rem;
       }
-      #src-table td:last-child, #bsky-table td:last-child{ text-align:right; }
-      #src-table td:last-child::before, #bsky-table td:last-child::before{ content:''; }
+      #src-table td:last-child, #bsky-table td:last-child,
+      #topic-table td:last-child, #floor-table td:last-child{ text-align:right; }
+      #src-table td:last-child::before, #bsky-table td:last-child::before,
+      #topic-table td:last-child::before, #floor-table td:last-child::before{ content:''; }
       .btn-sm{ min-height:40px; padding:0.5rem 0.9rem; }
       .actions{ flex-wrap:wrap; }
       .actions .btn-primary{ min-height:46px; }
@@ -171,12 +181,30 @@
     </div>
 
     <div class="card">
-      <h2>Interest profile</h2>
-      <div class="hint" style="margin-bottom:0.4rem">The full §7 profile: named-entity floor, topic weights, special handling, mutes. Err broad — over-inclusion is cheap. Edit as JSON.</div>
-      <textarea id="profile" spellcheck="false"></textarea>
-      <div class="hint" id="profile-err"></div>
-      <label for="extra-mutes" style="margin-top:0.8rem">Extra mutes (comma-separated, layered on the profile's own mutes)</label>
+      <h2>Topics — what the brief watches</h2>
+      <div class="hint" style="margin-bottom:0.4rem">Each topic has an importance and the words that identify it. Importance sets how high a topic can climb; keywords are comma-separated. Err broad — over-inclusion is cheap.</div>
+      <table id="topic-table"><thead><tr><th>Topic</th><th>Importance</th><th>Keywords</th><th></th></tr></thead><tbody></tbody></table>
+      <div class="addrow"><button class="btn-sm" id="add-topic">+ Add topic</button></div>
+    </div>
+
+    <div class="card">
+      <h2>Never miss — your core</h2>
+      <div class="hint" style="margin-bottom:0.4rem">Rare must-not-miss things. A match gets a guaranteed (capped) place near the top and is filed under its topic. Keep this short — it's for scarce anchors (a book series, a specific device), not high-volume subjects.</div>
+      <table id="floor-table"><thead><tr><th>Name</th><th>Topic</th><th>Matching words</th><th></th></tr></thead><tbody></tbody></table>
+      <datalist id="topic-ids"></datalist>
+      <div class="addrow"><button class="btn-sm" id="add-floor">+ Add</button></div>
+    </div>
+
+    <div class="card">
+      <h2>Never show</h2>
+      <label for="extra-mutes">Mute these words or phrases (comma-separated)</label>
       <input type="text" id="extra-mutes">
+      <div class="hint">Any headline containing one of these is dropped. Layered on the brief's built-in mutes (sponsored, gossip, clickbait …).</div>
+      <details style="margin-top:0.9rem">
+        <summary class="hint" style="cursor:pointer">▸ Advanced — raw profile (read-only preview)</summary>
+        <textarea id="profile-preview" readonly spellcheck="false" style="margin-top:0.5rem"></textarea>
+        <div class="hint">Reflects what Save will send. Special handling (spoiler/diet/politics rules) and built-in mutes are managed in code.</div>
+      </details>
     </div>
 
     <div class="actions">
@@ -227,6 +255,81 @@
       return tr;
     }
 
+    function escA(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+    function impWord(w){ w=parseFloat(w)||0; return w>=0.8?'Core':(w>=0.6?'High':(w>=0.45?'Medium':'Low')); }
+    function impTag(w){ return parseFloat(w).toFixed(2)+' · '+impWord(w); }
+
+    function topicRow(id, spec){
+      spec = spec||{};
+      var w = spec.weight!=null?spec.weight:0.5;
+      var kw = (spec.keywords||[]).join(', ');
+      var tr=document.createElement('tr');
+      tr.innerHTML =
+        '<td data-label="Topic"><input type="text" value="'+escA(id||'')+'" data-k="id" placeholder="e.g. gaming"></td>'+
+        '<td data-label="Importance"><div class="imp"><input type="range" min="0.2" max="1" step="0.05" value="'+w+'" data-k="weight"><span class="imp-val">'+impTag(w)+'</span></div></td>'+
+        '<td data-label="Keywords"><input type="text" value="'+escA(kw)+'" data-k="keywords" placeholder="comma-separated"></td>'+
+        '<td><button class="btn-sm btn-danger" data-del="1">✕</button></td>';
+      var rng=tr.querySelector('[data-k=weight]'), lab=tr.querySelector('.imp-val');
+      rng.addEventListener('input', function(){ lab.textContent=impTag(rng.value); });
+      tr.querySelector('[data-del]').addEventListener('click', function(){ tr.remove(); refreshTopicIds(); updatePreview(); });
+      tr.querySelector('[data-k=id]').addEventListener('input', refreshTopicIds);
+      return tr;
+    }
+
+    function floorRow(e){
+      e = e||{};
+      var pat=(e.patterns||[]).join(', ');
+      var tr=document.createElement('tr');
+      tr.innerHTML =
+        '<td data-label="Name"><input type="text" value="'+escA(e.label||'')+'" data-k="label" placeholder="e.g. Cosmere"></td>'+
+        '<td data-label="Topic"><input type="text" value="'+escA(e.domain||'')+'" data-k="domain" list="topic-ids" placeholder="topic"></td>'+
+        '<td data-label="Matching words"><input type="text" value="'+escA(pat)+'" data-k="patterns" placeholder="comma-separated"></td>'+
+        '<td><button class="btn-sm btn-danger" data-del="1">✕</button></td>';
+      tr.querySelector('[data-del]').addEventListener('click', function(){ tr.remove(); updatePreview(); });
+      return tr;
+    }
+
+    // Keep the floor's topic autocomplete in sync with the Topics table.
+    function refreshTopicIds(){
+      var dl=$('topic-ids'); if(!dl) return;
+      var seen={}, html='';
+      $('topic-table').querySelectorAll('tbody [data-k=id]').forEach(function(inp){
+        var v=inp.value.trim(); if(v && !seen[v]){ seen[v]=1; html+='<option value="'+escA(v)+'">'; }
+      });
+      dl.innerHTML=html;
+    }
+
+    // Build the profile object from the form — the single source of truth shared
+    // by Save and the read-only Advanced preview.
+    function collectProfile(){
+      var tw={};
+      $('topic-table').querySelectorAll('tbody tr').forEach(function(tr){
+        var id=tr.querySelector('[data-k=id]').value.trim(); if(!id) return;
+        var weight=parseFloat(tr.querySelector('[data-k=weight]').value); if(isNaN(weight)) weight=0.5;
+        var keywords=tr.querySelector('[data-k=keywords]').value.split(',').map(function(s){return s.trim();}).filter(Boolean);
+        tw[id]={ weight:weight, keywords:keywords };
+      });
+      var floor=[];
+      $('floor-table').querySelectorAll('tbody tr').forEach(function(tr){
+        var label=tr.querySelector('[data-k=label]').value.trim();
+        var domain=tr.querySelector('[data-k=domain]').value.trim();
+        var patterns=tr.querySelector('[data-k=patterns]').value.split(',').map(function(s){return s.trim();}).filter(Boolean);
+        if(!label || !patterns.length) return;
+        var id=label.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'') || ('entity-'+floor.length);
+        var o={ id:id, label:label, patterns:patterns };
+        if(domain) o.domain=domain;
+        floor.push(o);
+      });
+      var p={ named_entity_floor:floor, topic_weights:tw };
+      if (cfg && cfg.profile && cfg.profile.profile_version!=null) p.profile_version=cfg.profile.profile_version;
+      return p;
+    }
+
+    function updatePreview(){
+      var pv=$('profile-preview'); if(!pv) return;
+      try { pv.value=JSON.stringify(collectProfile(), null, 2); } catch(_){}
+    }
+
     function fill(c){
       cfg = c;
       $('fold').value = c.fold_threshold;
@@ -249,8 +352,15 @@
       (c.sources||[]).forEach(function(s){ st.appendChild(srcRow(s)); });
       var bt=$('bsky-table').querySelector('tbody'); bt.innerHTML='';
       (c.bluesky||[]).forEach(function(s){ bt.appendChild(bskyRow(s)); });
-      $('profile').value = JSON.stringify(c.profile||{}, null, 2);
+      var prof = c.profile||{};
+      var tw = prof.topic_weights||{};
+      var tt=$('topic-table').querySelector('tbody'); tt.innerHTML='';
+      Object.keys(tw).forEach(function(id){ tt.appendChild(topicRow(id, tw[id])); });
+      var ft=$('floor-table').querySelector('tbody'); ft.innerHTML='';
+      (prof.named_entity_floor||[]).forEach(function(e){ ft.appendChild(floorRow(e)); });
       $('extra-mutes').value = (c.mutes||[]).join(', ');
+      refreshTopicIds();
+      updatePreview();
     }
 
     function collectRows(tbody, isBsky){
@@ -272,9 +382,7 @@
     }
 
     function build(){
-      var profile;
-      try { profile = JSON.parse($('profile').value); $('profile-err').textContent=''; }
-      catch(e){ $('profile-err').textContent='Profile JSON invalid: '+e.message; throw e; }
+      var profile = collectProfile();
       var extra = $('extra-mutes').value.split(',').map(function(s){return s.trim();}).filter(Boolean);
       return {
         fold_threshold: parseFloat($('fold').value),
@@ -306,7 +414,7 @@
     }
 
     function save(){
-      var payload; try { payload = build(); } catch(e){ msg('Fix the profile JSON first.', 'err'); return; }
+      var payload; try { payload = build(); } catch(e){ msg(String(e.message||e), 'err'); return; }
       var token = getToken(true);
       if (!token){ msg('A token is required to save.', 'err'); return; }
       msg('Saving…');
@@ -322,6 +430,11 @@
 
     $('add-src').addEventListener('click', function(){ $('src-table').querySelector('tbody').appendChild(srcRow({weight:0.5})); });
     $('add-bsky').addEventListener('click', function(){ $('bsky-table').querySelector('tbody').appendChild(bskyRow({weight:0.5})); });
+    $('add-topic').addEventListener('click', function(){ $('topic-table').querySelector('tbody').appendChild(topicRow('', {weight:0.5})); refreshTopicIds(); updatePreview(); });
+    $('add-floor').addEventListener('click', function(){ $('floor-table').querySelector('tbody').appendChild(floorRow({})); updatePreview(); });
+    // Live-refresh the Advanced preview as the profile fields change.
+    $('topic-table').addEventListener('input', updatePreview);
+    $('floor-table').addEventListener('input', updatePreview);
     $('save').addEventListener('click', save);
     $('forget').addEventListener('click', function(){ try{localStorage.removeItem(TOKEN_KEY);}catch(_){} msg('Token forgotten on this device.', 'ok'); });
     $('runnow').addEventListener('click', function(){
