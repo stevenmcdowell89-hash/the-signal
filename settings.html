@@ -578,7 +578,10 @@
       msg('Running…');
       fetch('/api/daily/run', { method:'POST', headers:{ 'X-Signal-Token': token } })
         .then(function(r){ if(r.status===401){ try{localStorage.removeItem(TOKEN_KEY);}catch(_){} throw new Error('Token rejected.'); } return r.json(); })
-        .then(function(d){ msg(d.error ? ('Error: '+d.error) : ('Done — '+d.kept+' kept of '+d.scanned+' scanned, '+d.enriched+' enriched.'), d.error?'err':'ok'); })
+        .then(function(d){
+          msg(d.error ? ('Error: '+d.error) : ('Done — '+d.kept+' kept of '+d.scanned+' scanned, '+d.enriched+' enriched.'), d.error?'err':'ok');
+          if(!d.error) loadHealth(); // refresh the dashboard on completion
+        })
         .catch(function(e){ msg(String(e.message||e), 'err'); });
     });
 
@@ -628,10 +631,13 @@
         (dead?dead+' not responding. ':'')+(stale?stale+' quiet (no articles in 48h). ':'')+
         (!dead&&!stale?'All feeds healthy.':'');
     }
-    fetch('/api/health', { cache:'no-store' })
-      .then(function(r){ return r.json(); })
-      .then(renderHealth)
-      .catch(function(){ $('ai-status').textContent='Could not load status.'; $('health-list').textContent=''; });
+    function loadHealth(){
+      return fetch('/api/health', { cache:'no-store' })
+        .then(function(r){ return r.json(); })
+        .then(renderHealth)
+        .catch(function(){ $('ai-status').textContent='Could not load status.'; $('health-list').textContent=''; });
+    }
+    loadHealth();
   </script>
 </body>
 </html>

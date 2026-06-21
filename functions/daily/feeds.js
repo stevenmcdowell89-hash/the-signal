@@ -93,50 +93,33 @@ export const STARTER_FEEDS = [
 // { id, type: "bluesky", domain, weight, handle: "transferjourno.bsky.social", name }
 export const STARTER_BLUESKY = [];
 
-// Reddit subreddits (§8 P2). The community layer — where transfer rumours, game
-// announcements, training texture and match quirks live before they reach a
-// headline. Ingested read-only (top/day). Works now via public JSON; uses the
-// OAuth Data API automatically when REDDIT_CLIENT_ID/SECRET are set as Worker
-// secrets. `url` carries the subreddit so it's editable in Settings like any
-// source. The drafted set from docs/reddit-data-api-application.md.
-// Enabled: ingested via Reddit's public per-subreddit `.rss` (Atom) feed, which
-// needs no OAuth/approval. When REDDIT_CLIENT_ID/SECRET are set the ingester
-// switches to the OAuth Data API automatically (top/day + comment counts). A
-// dead/blocked feed is dropped gracefully, so the brief is unaffected either way.
-const RS = (sub, domain, weight) => ({
-  id: `r-${sub.toLowerCase()}`, type: "reddit", domain, weight,
-  url: `https://www.reddit.com/r/${sub}`, name: `r/${sub}`,
+// Reddit — the community layer (transfer rumours, announcements, training
+// texture, match quirks). Ingested read-only via Reddit's public **multireddit**
+// `.rss` (Atom) feed: ONE combined feed per domain (`/r/a+b+c/.rss`) instead of a
+// request per subreddit, so we make ~15 requests not ~36 and don't trip Reddit's
+// per-IP rate limit. Ingest also staggers these (see ingest.js). No OAuth needed;
+// when REDDIT_CLIENT_ID/SECRET are set the ingester switches to the OAuth Data
+// API automatically (top/day + comment counts). Each item still links to its own
+// thread; edit the subreddit list per domain in Settings.
+const RM = (subs, domain, weight) => ({
+  id: `r-${domain}`, type: "reddit", domain, weight,
+  url: `https://www.reddit.com/r/${subs.join("+")}`,
+  name: subs.length > 1 ? `r/${subs[0]} +${subs.length - 1}` : `r/${subs[0]}`,
 });
 export const STARTER_REDDIT = [
-  // Gaming
-  RS("NintendoSwitch", "gaming", 0.85), RS("Games", "gaming", 0.85),
-  RS("SteamDeck", "gaming", 0.85), RS("MonsterHunter", "gaming", 0.8),
-  RS("paradoxplaza", "gaming", 0.8), RS("BaldursGate3", "gaming", 0.8),
-  // Football
-  RS("Juve", "football", 0.85), RS("seriea", "football", 0.8),
-  RS("soccer", "football", 0.8), RS("FantasyPL", "football", 0.75),
-  // Tech & devices
-  RS("Android", "tech_devices", 0.72), RS("Xiaomi", "tech_devices", 0.72),
-  RS("eink", "tech_devices", 0.7),
-  // Books
-  RS("Cosmere", "books", 0.55), RS("Fantasy", "books", 0.5), RS("Malazan", "books", 0.55),
-  // Film / TV
-  RS("StarWars", "film_tv", 0.45), RS("television", "film_tv", 0.4),
-  // Music
-  RS("outrun", "music", 0.35), RS("synthwave", "music", 0.3),
-  // Fitness
-  RS("running", "fitness", 0.45), RS("AdvancedRunning", "fitness", 0.45),
-  RS("weightroom", "fitness", 0.45),
-  // Finance
-  RS("UKPersonalFinance", "finance", 0.55), RS("Monzo", "finance", 0.5), RS("fintech", "finance", 0.45),
-  // Golf · LEGO · Travel · Home/Self-hosting
-  RS("golf", "golf", 0.45), RS("lego", "lego", 0.5),
-  RS("themeparks", "travel", 0.45), RS("wdw", "travel", 0.4),
-  RS("selfhosted", "home_selfhosting", 0.4), RS("homeassistant", "home_selfhosting", 0.4),
-  // History · Listening — community feeds so these domains carry real content
-  // instead of being filled by stray keyword re-homing.
-  RS("history", "history", 0.4), RS("AskHistorians", "history", 0.4),
-  RS("podcasts", "podcasts", 0.35),
-  // Local — Northern Ireland community.
-  RS("northernireland", "local", 0.5),
+  RM(["NintendoSwitch", "Games", "SteamDeck", "MonsterHunter", "paradoxplaza", "BaldursGate3"], "gaming", 0.85),
+  RM(["Juve", "seriea", "soccer", "FantasyPL"], "football", 0.85),
+  RM(["Android", "Xiaomi", "eink"], "tech_devices", 0.72),
+  RM(["Cosmere", "Fantasy", "Malazan"], "books", 0.55),
+  RM(["StarWars", "television"], "film_tv", 0.45),
+  RM(["outrun", "synthwave"], "music", 0.35),
+  RM(["running", "AdvancedRunning", "weightroom"], "fitness", 0.45),
+  RM(["UKPersonalFinance", "Monzo", "fintech"], "finance", 0.55),
+  RM(["golf"], "golf", 0.45),
+  RM(["lego"], "lego", 0.5),
+  RM(["themeparks", "wdw"], "travel", 0.45),
+  RM(["selfhosted", "homeassistant"], "home_selfhosting", 0.4),
+  RM(["history", "AskHistorians"], "history", 0.4),
+  RM(["podcasts"], "podcasts", 0.35),
+  RM(["northernireland"], "local", 0.5),
 ];

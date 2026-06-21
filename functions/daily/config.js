@@ -90,6 +90,17 @@ export async function loadConfig(env) {
     merged.migrations.reddit_rss_v1 = true;
     dirty = true;
   }
+  // v2: the per-subreddit Reddit sources tripped Reddit's rate limit (36 requests
+  // a poll). Replace them with the per-domain multireddit defaults: drop any
+  // reddit source not in the current default set (the union already added the new
+  // ones), and make sure the survivors are enabled.
+  if (!merged.migrations.reddit_multi_v2) {
+    const defRedditIds = new Set((def.sources || []).filter((s) => s.type === "reddit").map((s) => s.id));
+    merged.sources = (merged.sources || []).filter((s) => s.type !== "reddit" || defRedditIds.has(s.id));
+    for (const s of merged.sources) if (s.type === "reddit") s.enabled = true;
+    merged.migrations.reddit_multi_v2 = true;
+    dirty = true;
+  }
   if (dirty) {
     try { await env.DAILY_CONFIG.put(CONFIG_KEY, JSON.stringify(merged)); } catch { /* best-effort */ }
   }
