@@ -100,6 +100,17 @@ export const PROFILE = {
         "trade deal", "protest", "coup",
       ],
     },
+    // Local — Northern Ireland (back in the DAILY; the weekly only carried it in
+    // a rotating section). Everyday NI life/culture/events, not Westminster.
+    local: {
+      weight: 0.5,
+      keywords: [
+        "belfast", "northern ireland", "ulster", "derry", "londonderry",
+        "county antrim", "county down", "county armagh", "county tyrone",
+        "county fermanagh", "lisburn", "bangor", "newry", "ballymena",
+        "causeway coast", "giant's causeway", "translink",
+      ],
+    },
     // SECONDARY domains
     tech_devices: {
       weight: 0.75,
@@ -174,23 +185,24 @@ export const PROFILE = {
       weight: 0.3,
       keywords: [
         "synthwave", "retrowave", "outrun", "darksynth", "newretrowave", "fixt",
-        "lakeshore", "soundtrack", "score", "vinyl", "reissue", "album", "single",
-        "label", "bandcamp",
+        "lakeshore records", "vinyl", "reissue", "new album", "bandcamp",
+        "soundtrack release",
       ],
     },
     history: {
       weight: 0.35,
       keywords: [
-        "ancient", "roman", "medieval", "archaeology", "excavation", "artefact",
-        "empire", "dynasty", "manuscript", "anniversary", "historian",
-        "pre-history", "classical", "byzantine", "renaissance",
+        "ancient rome", "roman empire", "medieval", "archaeology", "excavation",
+        "artefact", "dynasty", "manuscript", "historian", "pre-history",
+        "byzantine", "renaissance", "antiquity", "hieroglyph", "neolithic",
       ],
     },
     podcasts: {
       weight: 0.3,
       keywords: [
-        "podcast", "audio drama", "episode", "football weekly", "the bunker",
-        "history of rome", "revolutions", "audible", "bbc sounds", "pocket casts",
+        "podcast", "audio drama", "football weekly", "the bunker",
+        "history of rome", "the rest is history", "audible", "bbc sounds",
+        "pocket casts", "new episode of",
       ],
     },
     home_selfhosting: {

@@ -65,8 +65,10 @@ export function scoreProfile(item, profile, extraMutes) {
 
   const tw = profile.topic_weights || {};
   // The feed already tags a domain; scan all domains so a genuinely cross-domain
-  // item re-homes — but PREFER the feed's own (authoritative) domain unless
-  // another beats it by a clear margin, so a thin headline isn't mis-filed.
+  // item re-homes — but PREFER the feed's own (authoritative) domain, and only let
+  // a FOREIGN domain claim the item on a real signal (≥2 keyword hits). A single
+  // stray token ("anniversary", "episode", "score") must NOT re-home a story into
+  // a feedless niche (History/Listening) when its own feed-domain didn't match.
   const ownDomain = item.feed_domain || item.domain;
   let best = 0;
   let bestDomain = ownDomain;
@@ -76,13 +78,13 @@ export function scoreProfile(item, profile, extraMutes) {
     for (const kw of spec.keywords) if (kwHit(kw)) hits++;
     if (hits === 0) continue;
     const s = spec.weight * (1 - Math.pow(0.6, hits)); // diminishing returns
-    if (domain === ownDomain) ownScore = s;
-    if (s > best) {
-      best = s;
-      bestDomain = domain;
-    }
+    if (domain === ownDomain) { ownScore = s; continue; } // own handled below
+    if (hits >= 2 && s > best) { best = s; bestDomain = domain; } // foreign needs ≥2
   }
-  if (ownScore > 0 && best <= ownScore * 1.25) {
+  // Keep the feed's own domain unless a qualifying foreign domain beat it by a
+  // clear margin. If nothing qualified (best 0), this keeps ownDomain — so an item
+  // whose feed-domain scored 0 stays put rather than being dumped into a niche.
+  if (ownScore >= best || best <= ownScore * 1.25) {
     bestDomain = ownDomain;
     best = ownScore;
   }
