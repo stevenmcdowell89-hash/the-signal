@@ -703,7 +703,7 @@
           var why = s.reason ? ' · '+String(s.reason).replace(/^HTTP\s*/,'') : '';
           return 'failing '+dur(s.fail_since)+why+' · '+lastWork(s);
         }
-        if(s.state==='waiting') return 'awaiting turn · '+lastWork(s);
+        if(s.state==='waiting') return 'not tried yet'+(s.last_seen?' · '+lastWork(s):'');
         if(!s.last_checked) return 'not tried yet';
         return 'tried '+ago(s.last_checked);
       }
@@ -726,7 +726,7 @@
       $('health-foot').textContent = 'Last poll '+ago(h.last_poll)+'. '+
         (dead?dead+' failing'+(deadNever?' ('+deadNever+' never worked)':'')+' — Reddit subs are still re-attempted every rotation (~6 every 30 min). ':'')+
         (stale?stale+' quiet (no articles in 48h). ':'')+
-        (waiting?waiting+' Reddit subs not reached yet this cycle. ':'')+
+        (waiting?waiting+' Reddit subs never tried yet (new or just-added — picked up within ~3h, then they stay green/red). ':'')+
         (!dead&&!stale&&!waiting?'All feeds healthy.':'');
     }
     function loadHealth(){
