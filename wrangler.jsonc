@@ -49,12 +49,13 @@
       "database_id": "ccf3614d-aa32-49b4-8e95-19ffa230b65f"
     }
   ],
-  // Cron Trigger — every 30 min. Each tick refreshes RSS/HN and a ROTATING slice
-  // of subreddits (≈6), so Reddit is fetched as a rolling update that never bursts
-  // its rate limit; a full subreddit cycle takes ~3h. See pipeline.js (reddit
-  // rotation cursor). The in-app cadence_hours is advisory.
+  // Cron Trigger — every 10 min. Each tick refreshes all RSS/HN and re-attempts the
+  // current Reddit batch's still-failing subs (≤6); a batch gets ~3 attempts over
+  // ~30 min, then the cursor advances to the next ~6 — so a throttled sub gets a few
+  // fresh shots at Reddit's shared-IP limit before we move on, and a full rotation is
+  // still ~3h. See pipeline.js (redditBatch). The in-app cadence_hours is advisory.
   "triggers": {
-    "crons": ["*/30 * * * *"]
+    "crons": ["*/10 * * * *"]
   },
   "observability": {
     "enabled": true
