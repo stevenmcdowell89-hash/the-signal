@@ -441,6 +441,9 @@
       padding-bottom: 0.4rem; -webkit-overflow-scrolling: touch; scrollbar-width: none;
     }
     .brief-filters::-webkit-scrollbar { display: none; }
+    /* second-level sub-filters (domain / entity / source) under the active tab */
+    .brief-subfilters { margin-top: -1rem; margin-bottom: 1.3rem; }
+    .bfilter.sub { font-size: 0.66rem; padding: 0.28rem 0.65rem; background: transparent; }
     .bfilter {
       flex: 0 0 auto; font: inherit; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.02em;
       color: var(--ink-2); background: var(--bg-2); border: 1px solid var(--line);
@@ -1218,7 +1221,6 @@
 
       function allLiveItems(state){
         return [].concat(
-          state.top_catches||[],
           (state.sections||[]).reduce(function(a,s){ return a.concat(s.items); }, []),
           (state.also||[]).map(function(x){ return x.item; })
         );
@@ -1251,25 +1253,74 @@
         setLook(Date.now());
       }
 
-      // Navigable super-sections (replaces the old domain chip-filters).
+      // ---- Five navigable sections: Headlines · News · Sport · Interests · Communities ----
+      var NEWS_DOMAINS = ['world','local','finance'];
+      var SPORT_DOMAINS = ['football','golf'];
+      function groupOf(d){ return NEWS_DOMAINS.indexOf(d)>=0 ? 'news' : (SPORT_DOMAINS.indexOf(d)>=0 ? 'sport' : 'interests'); }
+      var VIEW_TABS = [['headlines','Headlines'],['news','News'],['sport','Sport'],['interests','Interests'],['communities','Communities']];
+      var currentSub = null; // second-level filter: {kind:'domain'|'entity'|'source', val}
+      function entityLabel(id){ return (id||'').split('-').map(function(w){ return w.charAt(0).toUpperCase()+w.slice(1); }).join(' '); }
+      function viewItems(state, view){ return allLiveItems(state).filter(function(i){ return groupOf(i.domain)===view; }); }
+      function subMatch(it){
+        if(!currentSub) return true;
+        if(currentSub.kind==='domain') return it.domain===currentSub.val;
+        if(currentSub.kind==='entity') return it.entity_id===currentSub.val;
+        if(currentSub.kind==='source') return it.source_type===currentSub.val;
+        return true;
+      }
+
       function superNav(state){
         var bar = document.createElement('div'); bar.className='brief-filters';
-        var live = allLiveItems(state);
         var counts = {
-          headlines: live.filter(function(i){ return isHeadline(i.domain); }).length,
-          interests: live.filter(function(i){ return !isHeadline(i.domain); }).length,
+          headlines: (state.headlines||[]).length,
+          news: viewItems(state,'news').length,
+          sport: viewItems(state,'sport').length,
+          interests: viewItems(state,'interests').length,
           communities: (state.communities||[]).length
         };
-        [['headlines','Headlines'],['interests','Interests'],['communities','Communities']].forEach(function(s){
+        VIEW_TABS.forEach(function(s){
           var b = document.createElement('button');
           b.className = 'bfilter' + (currentView===s[0] ? ' is-active' : '');
           b.innerHTML = esc(s[1]) + ' <span class="c">'+(counts[s[0]]||0)+'</span>';
           b.addEventListener('click', function(){
-            currentView = s[0]; try{ localStorage.setItem('signal-brief-view', s[0]); }catch(_){}
+            currentView = s[0]; currentSub = null;
+            try{ localStorage.setItem('signal-brief-view', s[0]); }catch(_){}
             paint(); root.scrollIntoView({block:'start',behavior:'smooth'});
           });
           bar.appendChild(b);
         });
+        return bar;
+      }
+
+      // Second-level sub-filters under the active tab: domain + named-entity chips
+      // for News/Sport/Interests; source chips for Communities. So "just football"
+      // or "just Star Wars" is one tap.
+      function subNav(state){
+        var chips = [];
+        if (currentView==='communities'){
+          var bySrc = {}; (state.communities||[]).forEach(function(i){ var k=i.source_type||'other'; bySrc[k]=(bySrc[k]||0)+1; });
+          ['reddit','hn','bluesky'].forEach(function(k){ if(bySrc[k]) chips.push({kind:'source',val:k,label:COMMUNITY_LABEL[k]||k,count:bySrc[k]}); });
+        } else if (currentView!=='headlines'){
+          var items = viewItems(state,currentView);
+          var byDom = {}, entCount = {};
+          items.forEach(function(i){ byDom[i.domain]=(byDom[i.domain]||0)+1; if(i.entity_id) entCount[i.entity_id]=(entCount[i.entity_id]||0)+1; });
+          DOMAIN_ORDER.forEach(function(d){ if(byDom[d]&&groupOf(d)===currentView) chips.push({kind:'domain',val:d,label:DOMAIN_LABELS[d]||d,count:byDom[d]}); });
+          Object.keys(entCount).forEach(function(e){ chips.push({kind:'entity',val:e,label:entityLabel(e),count:entCount[e]}); });
+        }
+        if (!chips.length) return null;
+        var bar = document.createElement('div'); bar.className='brief-filters brief-subfilters';
+        function addChip(kind,val,label,count,active){
+          var b=document.createElement('button');
+          b.className='bfilter sub'+(active?' is-active':'');
+          b.innerHTML=esc(label)+(count!=null?' <span class="c">'+count+'</span>':'');
+          b.addEventListener('click', function(){
+            currentSub = active ? null : {kind:kind,val:val};
+            paint(); root.scrollIntoView({block:'start',behavior:'smooth'});
+          });
+          bar.appendChild(b);
+        }
+        addChip('all',null,'All',null,!currentSub);
+        chips.forEach(function(c){ addChip(c.kind,c.val,c.label,c.count, !!currentSub && currentSub.kind===c.kind && currentSub.val===c.val); });
         return bar;
       }
 
@@ -1286,9 +1337,10 @@
           root.appendChild(ed);
         }
         root.appendChild(superNav(state));
+        var sn = subNav(state); if (sn) root.appendChild(sn);
         if (currentView === 'communities') renderCommunities(state);
-        else if (currentView === 'interests') renderInterests(state);
-        else renderHeadlines(state);
+        else if (currentView === 'headlines') renderHeadlines(state);
+        else renderGroup(state, currentView);
         var f = state.footer||{};
         var fo = document.createElement('div'); fo.className='brief-footer';
         fo.textContent = (f.kept||0)+' kept of '+(f.scanned||0)+' scanned · '+(f.sources||0)+' sources'+
@@ -1296,35 +1348,7 @@
         root.appendChild(fo);
       }
 
-      // Shared: render the domain sections + "Across your interests" + below-fold
-      // for one half of the split (headline domains vs the rest).
-      function renderDomainGroup(state, wantHeadline){
-        (state.sections||[]).forEach(function(s){
-          if (isHeadline(s.domain) !== wantHeadline) return;
-          var g = group(s.label || DOMAIN_LABELS[s.domain] || s.domain, s.items.length);
-          g.className='brief-group domain-sec';
-          s.items.forEach(function(it){ g.appendChild(catchEl(it, {})); });
-          root.appendChild(g);
-        });
-        var also = (state.also||[]).filter(function(a){ return isHeadline(a.domain) === wantHeadline; });
-        if (also.length){
-          var g2 = group('Across your interests');
-          var wrap = document.createElement('div'); wrap.className='also-wrap';
-          also.forEach(function(a){
-            var l = firstLink(a.item);
-            var d = document.createElement('div'); d.className='also-line';
-            d.innerHTML = '<span class="also-dom">'+esc(a.label)+'</span>'+
-              (l ? '<a href="'+esc(l.url)+'" target="_blank" rel="noopener">'+esc(a.item.title)+'</a>' : esc(a.item.title));
-            wrap.appendChild(d);
-          });
-          g2.appendChild(wrap); root.appendChild(g2);
-        }
-        var below = (state.below_fold||[]).filter(function(i){ return isHeadline(i.domain) === wantHeadline; });
-        tail(below, 'held below the fold');
-      }
-
-      // Headlines: the main-news landing — start-here, Today & Tonight, the
-      // cross-domain Top Catches, then the headline domains.
+      // Headlines: the genuinely big stories + Start here + Today & Tonight.
       function renderHeadlines(state){
         if ((state.start_here||[]).length){
           var sh = document.createElement('div'); sh.className='start-here';
@@ -1343,32 +1367,60 @@
           });
           g0.appendChild(strip); root.appendChild(g0);
         }
-        if ((state.top_catches||[]).length){
-          var g1 = group('Top Catches');
-          state.top_catches.forEach(function(it,i){ g1.appendChild(catchEl(it, { rank: i+1, showDomain: true })); });
+        var hl = state.headlines||[];
+        if (hl.length){
+          var g1 = group('Headlines');
+          hl.forEach(function(it,i){ g1.appendChild(catchEl(it, { rank: i+1, showDomain: true })); });
           root.appendChild(g1);
-        }
-        renderDomainGroup(state, true);
-      }
-
-      // Interests: the deeper per-topic stuff.
-      function renderInterests(state){
-        var has = (state.sections||[]).some(function(s){ return !isHeadline(s.domain); }) ||
-                  (state.also||[]).some(function(a){ return !isHeadline(a.domain); });
-        if (!has){
+        } else if (!(state.today_tonight||[]).length){
           var e=document.createElement('div'); e.className='brief-empty';
-          e.textContent='Quiet across your interests right now — try Headlines or Communities.';
+          e.textContent='No big headlines right now — check News, Sport or your Interests.';
           root.appendChild(e);
         }
-        renderDomainGroup(state, false);
       }
 
-      // Communities: catch up on everything from Reddit / HN / Bluesky in one place.
+      // News / Sport / Interests: the domain sections in that group, sub-filterable.
+      function renderGroup(state, view){
+        var any = false;
+        (state.sections||[]).forEach(function(s){
+          if (groupOf(s.domain)!==view) return;
+          var items = s.items.filter(subMatch);
+          if (!items.length) return;
+          any = true;
+          var g = group(s.label || DOMAIN_LABELS[s.domain] || s.domain, items.length);
+          g.className='brief-group domain-sec';
+          items.forEach(function(it){ g.appendChild(catchEl(it, {})); });
+          root.appendChild(g);
+        });
+        var also = (state.also||[]).filter(function(a){ return groupOf(a.domain)===view && subMatch(a.item); });
+        if (also.length){
+          any = true;
+          var g2 = group('Across your interests');
+          var wrap = document.createElement('div'); wrap.className='also-wrap';
+          also.forEach(function(a){
+            var l = firstLink(a.item);
+            var d = document.createElement('div'); d.className='also-line';
+            d.innerHTML = '<span class="also-dom">'+esc(a.label)+'</span>'+
+              (l ? '<a href="'+esc(l.url)+'" target="_blank" rel="noopener">'+esc(a.item.title)+'</a>' : esc(a.item.title));
+            wrap.appendChild(d);
+          });
+          g2.appendChild(wrap); root.appendChild(g2);
+        }
+        var below = (state.below_fold||[]).filter(function(i){ return groupOf(i.domain)===view && subMatch(i); });
+        if (!any && !below.length){
+          var e=document.createElement('div'); e.className='brief-empty';
+          e.textContent='Nothing here right now.';
+          root.appendChild(e);
+        }
+        tail(below, 'held below the fold');
+      }
+
+      // Communities: catch up on Reddit / HN / Bluesky in one place.
       function renderCommunities(state){
-        var items = state.communities||[];
+        var items = (state.communities||[]).filter(subMatch);
         if (!items.length){
           var e=document.createElement('div'); e.className='brief-empty';
-          e.textContent='No community items yet. Subreddits are enabled via RSS in Settings → Sources; Hacker News is on by default.';
+          e.textContent='No community items yet. Subreddits live in Settings → Sources (set each Big/Medium/Small); Hacker News is on by default.';
           root.appendChild(e);
           return;
         }

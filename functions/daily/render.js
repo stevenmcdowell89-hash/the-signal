@@ -207,10 +207,10 @@ export function buildState(items, meta, now, config) {
   const topIds = new Set(top.map((t) => t.id));
 
   // Domain sections: dynamic — only domains with above-fold catches appear, in
-  // fixed order. Items already in Top Catches are not repeated. Each section is
-  // capped (SECTION_CAP); the overflow is still reachable below the fold (under
-  // that domain's sub-tab), it just doesn't bury the cross-domain All view.
-  const sectionItems = aboveFold.filter((i) => !topIds.has(i.id));
+  // fixed order. ALL above-fold items appear in their domain section (the
+  // Headlines lead is a separate breadth array, so nothing is hidden behind it).
+  // Each section is capped (SECTION_CAP); the overflow is reachable below the fold.
+  const sectionItems = aboveFold;
   const byDomain = {};
   for (const it of sectionItems) {
     (byDomain[it.domain] ||= []).push(it);
@@ -340,7 +340,6 @@ export function buildState(items, meta, now, config) {
     start_here: top.slice(0, 3).map((t) => t.title),
     today_tonight: todayAndTonight(live, now),
     headlines: headlines.map(publicItem),
-    top_catches: top.map(publicItem),
     sections,
     also: alsoDomains,
     communities,

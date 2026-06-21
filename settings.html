@@ -206,7 +206,7 @@
     <div class="panel" data-panel="sources">
     <div class="card">
       <h2>Sources (RSS · HN · Reddit)</h2>
-      <table id="src-table"><thead><tr><th>On</th><th>ID</th><th>Domain</th><th>URL</th><th>W</th><th></th></tr></thead><tbody></tbody></table>
+      <table id="src-table"><thead><tr><th>On</th><th>ID</th><th>Domain</th><th>URL</th><th>W</th><th>Tier</th><th></th></tr></thead><tbody></tbody></table>
       <div class="addrow"><button class="btn-sm" id="add-src">+ Add feed</button></div>
       <div class="hint">Type is inferred from the URL: an HN Algolia URL → "hn", a <code>reddit.com/r/…</code> URL → "reddit", everything else → "rss". <b>Almost anything with a feed works as a source</b> — a YouTube channel (<code>youtube.com/feeds/videos.xml?channel_id=…</code>), a Google&nbsp;News RSS, a Mastodon <code>.rss</code>, a podcast feed, or a subreddit. Paste the URL, set its domain + weight.</div>
       <details style="margin-top:0.7rem">
@@ -296,9 +296,19 @@
         '<td data-label="Domain"><input type="text" value="'+(s.domain||'')+'" data-k="domain" size="8"></td>'+
         '<td data-label="URL"><input type="url" value="'+(s.url||'')+'" data-k="url"></td>'+
         '<td data-label="Weight"><input class="src-w" type="number" min="0" max="1" step="0.05" value="'+(s.weight!=null?s.weight:0.5)+'" data-k="weight"></td>'+
+        tierCell(s)+
         '<td><button class="btn-sm btn-danger" data-del="1">✕ Remove</button></td>';
       tr.querySelector('[data-del]').addEventListener('click', function(){ tr.remove(); });
       return tr;
+    }
+    // Reddit subreddits carry a SIZE tier (big = own poll/kept deep; medium/small
+    // compete in their own pools) — only meaningful for reddit rows.
+    function tierCell(s){
+      var isReddit = (s.type==='reddit') || /reddit\.com\/r\//i.test(s.url||'');
+      if (!isReddit) return '<td data-label="Tier" class="src-tier"></td>';
+      return '<td data-label="Tier" class="src-tier"><select data-k="tier">'+
+        ['big','medium','small'].map(function(t){ return '<option value="'+t+'"'+((s.tier||'small')===t?' selected':'')+'>'+t+'</option>'; }).join('')+
+        '</select></td>';
     }
     function bskyRow(s){
       var tr=document.createElement('tr');
@@ -575,14 +585,24 @@
     $('forget').addEventListener('click', function(){ try{localStorage.removeItem(TOKEN_KEY);}catch(_){} msg('Token forgotten on this device.', 'ok'); });
     $('runnow').addEventListener('click', function(){
       var token=getToken(true); if(!token){ msg('A token is required to run.', 'err'); return; }
-      msg('Running…');
+      msg('Running…'); $('runnow').disabled = true;
+      // Poll run progress while the run is in flight (the staggered Reddit fetch
+      // makes it take ~20–40s) so it's clearly working, not hung.
+      var poll = setInterval(function(){
+        fetch('/api/daily/run-status', { cache:'no-store' })
+          .then(function(r){ return r.json(); })
+          .then(function(p){ if(p && p.phase && p.phase!=='done'){ var t=(p.total>1)?(' '+p.done+'/'+p.total):''; msg('Running… '+p.phase+t); } })
+          .catch(function(){});
+      }, 1500);
+      function stop(){ clearInterval(poll); $('runnow').disabled = false; }
       fetch('/api/daily/run', { method:'POST', headers:{ 'X-Signal-Token': token } })
         .then(function(r){ if(r.status===401){ try{localStorage.removeItem(TOKEN_KEY);}catch(_){} throw new Error('Token rejected.'); } return r.json(); })
         .then(function(d){
+          stop();
           msg(d.error ? ('Error: '+d.error) : ('Done — '+d.kept+' kept of '+d.scanned+' scanned, '+d.enriched+' enriched.'), d.error?'err':'ok');
           if(!d.error) loadHealth(); // refresh the dashboard on completion
         })
-        .catch(function(e){ msg(String(e.message||e), 'err'); });
+        .catch(function(e){ stop(); msg(String(e.message||e), 'err'); });
     });
 
     fetch('/api/config', { cache:'no-store' })
