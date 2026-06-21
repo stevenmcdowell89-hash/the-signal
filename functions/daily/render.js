@@ -7,6 +7,7 @@
 
 const DOMAIN_LABELS = {
   world: "World",
+  local: "Local (NI)",
   gaming: "Gaming",
   football: "Football",
   tech_devices: "Tech & Devices",
@@ -27,7 +28,7 @@ const DOMAIN_LABELS = {
 // Fixed domain order so sections are stable issue-to-issue (a quiet domain is
 // simply absent — no padding, §4.4).
 const DOMAIN_ORDER = [
-  "world", "gaming", "football", "tech_devices", "ai_engineering", "books",
+  "world", "local", "gaming", "football", "tech_devices", "ai_engineering", "books",
   "film_tv", "music", "golf", "lego", "fitness", "finance", "travel",
   "history", "podcasts", "home_selfhosting",
 ];
@@ -58,6 +59,7 @@ function publicItem(it) {
     domain: it.domain,
     links: links || [],
     entity_floor: !!it.entity_floor,
+    source_type: it.source_type || null,
     status: it.developing ? "developing" : null,
     days_active: it.developing ? (it.days_active || null) : null,
     discussion: discussionFromLinks(links),
@@ -115,6 +117,7 @@ function tokenJaccard(a, b) {
 // Fairness caps so no single high-volume domain (football in the transfer
 // window) can crowd the brief or evict low-weight domains (World, Money, Books).
 const SECTION_CAP = 8;       // items shown in a domain's All-view section
+const PER_SOURCE_SECTION = 3; // ≤N items from one source in a section (anti-firehose)
 const PER_DOMAIN_BELOW = 30; // below-fold items kept per domain before the global cap
 const BELOW_TOTAL_CAP = 400; // overall below-fold ceiling (keeps the state a brief)
 
@@ -213,12 +216,26 @@ export function buildState(items, meta, now, config) {
       // Low-volume domain → "Also" one-liner (§4.5).
       alsoDomains.push({ domain: d, label: DOMAIN_LABELS[d] || d, item: publicItem(list[0]) });
     } else {
+      // Per-source cap so one high-volume feed (e.g. Football Italia) can't own a
+      // section: keep ≤PER_SOURCE_SECTION from any single source; everything that
+      // doesn't fit (section cap or source cap) drops below the fold. `list` is
+      // already sorted by confidence, so the kept items are the strongest.
+      const picked = [];
+      const perSrc = {};
+      for (const it of list) {
+        const src = it.source || "?";
+        if (picked.length < SECTION_CAP && (perSrc[src] || 0) < PER_SOURCE_SECTION) {
+          perSrc[src] = (perSrc[src] || 0) + 1;
+          picked.push(it);
+        } else {
+          overflow.push(it);
+        }
+      }
       sections.push({
         domain: d,
         label: DOMAIN_LABELS[d] || d,
-        items: list.slice(0, SECTION_CAP).map(publicItem),
+        items: picked.map(publicItem),
       });
-      if (list.length > SECTION_CAP) overflow.push(...list.slice(SECTION_CAP));
     }
   }
 
@@ -267,6 +284,16 @@ export function buildState(items, meta, now, config) {
     });
   } catch (_) {}
 
+  // Communities (§ Reddit/HN/Bluesky): every community-sourced live item, ranked,
+  // so "catch up on everything from Reddit/HN in one place" misses nothing — not
+  // fold-limited. Grouped by source on the home.
+  const COMMUNITY_SRC = new Set(["reddit", "hn", "bluesky"]);
+  const communities = live
+    .filter((i) => COMMUNITY_SRC.has(i.source_type))
+    .sort((a, b) => catchScore(b) - catchScore(a))
+    .slice(0, 80)
+    .map(publicItem);
+
   return {
     generated_at: now,
     status: {
@@ -279,6 +306,7 @@ export function buildState(items, meta, now, config) {
     top_catches: top.map(publicItem),
     sections,
     also: alsoDomains,
+    communities,
     below_fold: belowKept.map(publicItem),
     footer: {
       kept: live.length,

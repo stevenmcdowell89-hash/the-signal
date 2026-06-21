@@ -75,11 +75,22 @@ export async function loadConfig(env) {
     return def;
   }
   const merged = mergeConfig(def, saved);
+  let dirty = false;
   // If the saved profile predated the current profile_version we just re-seeded
-  // it from code (above). Persist that so the editor + next run read the fresh
-  // profile and we don't re-seed on every request.
+  // it from code (in mergeConfig). Persist that so the editor + next run read the
+  // fresh profile and we don't re-seed on every request.
   const savedVer = (saved.profile && saved.profile.profile_version) || 0;
-  if (savedVer < (def.profile.profile_version || 0)) {
+  if (savedVer < (def.profile.profile_version || 0)) dirty = true;
+  // One-time: the Reddit set was unioned in DISABLED. The `.rss` path needs no
+  // approval and the reader asked for it on, so enable the reddit sources once.
+  // A marker stops it re-running, so a later manual disable in Settings sticks.
+  merged.migrations = merged.migrations || {};
+  if (!merged.migrations.reddit_rss_v1) {
+    for (const s of merged.sources || []) if (s.type === "reddit") s.enabled = true;
+    merged.migrations.reddit_rss_v1 = true;
+    dirty = true;
+  }
+  if (dirty) {
     try { await env.DAILY_CONFIG.put(CONFIG_KEY, JSON.stringify(merged)); } catch { /* best-effort */ }
   }
   return merged;

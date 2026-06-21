@@ -1120,7 +1120,7 @@
     (function () {
       var WM_KEY = 'signal-brief-watermark'; // last-look epoch ms (this device)
       var DOMAIN_LABELS = {
-        world:'World', gaming:'Gaming', football:'Football', tech_devices:'Tech & Devices',
+        world:'World', local:'Local (NI)', gaming:'Gaming', football:'Football', tech_devices:'Tech & Devices',
         ai_engineering:'Tech / AI', golf:'Golf', lego:'LEGO', books:'Books', film_tv:'Film & TV',
         music:'Music', fitness:'Fitness', finance:'Money', travel:'Travel & Parks',
         history:'History', podcasts:'Listening', home_selfhosting:'Home / Self-hosting'
@@ -1143,7 +1143,11 @@
         return it.links[0];
       }
 
-      var DOMAIN_ORDER = ['world','gaming','football','tech_devices','ai_engineering','books','film_tv','music','golf','lego','fitness','finance','travel','history','podcasts','home_selfhosting'];
+      var DOMAIN_ORDER = ['world','local','gaming','football','tech_devices','ai_engineering','books','film_tv','music','golf','lego','fitness','finance','travel','history','podcasts','home_selfhosting'];
+      // Super-sections: Headlines (main news) · Interests (deeper) · Communities.
+      var HEADLINE_DOMAINS = ['world','local','football','finance'];
+      function isHeadline(d){ return HEADLINE_DOMAINS.indexOf(d) >= 0; }
+      var COMMUNITY_LABEL = { reddit:'Reddit', hn:'Hacker News', bluesky:'Bluesky' };
 
       function reltime(it){
         var ts = it.published || it.first_seen || 0;
@@ -1220,11 +1224,12 @@
         );
       }
 
-      var currentState = null, currentFilter = 'all';
+      var currentState = null, currentView = 'headlines';
+      try { currentView = localStorage.getItem('signal-brief-view') || 'headlines'; } catch(_){}
 
       // render() runs once per data load: status, watermark, app badge, then paint.
       function render(state){
-        currentState = state; currentFilter = 'all';
+        currentState = state;
         var look = lastLook();
         var allLive = allLiveItems(state);
         var newCount = look ? allLive.filter(function(i){ return (i.first_seen||0) > look; }).length : 0;
@@ -1246,31 +1251,32 @@
         setLook(Date.now());
       }
 
-      // Sub-tabs: All + each domain present, with counts. Clicking re-paints.
-      function chipBar(state){
+      // Navigable super-sections (replaces the old domain chip-filters).
+      function superNav(state){
         var bar = document.createElement('div'); bar.className='brief-filters';
-        // Count every domain present — above the fold AND below — so a low-weight
-        // domain (World, Money) that only has below-fold items still gets a chip
-        // you can tab to. (Otherwise BBC/World would have no tab at all.)
-        var counts = {};
-        allLiveItems(state).forEach(function(i){ counts[i.domain]=(counts[i.domain]||0)+1; });
-        (state.below_fold||[]).forEach(function(i){ counts[i.domain]=(counts[i.domain]||0)+1; });
-        function chip(key, label, count){
+        var live = allLiveItems(state);
+        var counts = {
+          headlines: live.filter(function(i){ return isHeadline(i.domain); }).length,
+          interests: live.filter(function(i){ return !isHeadline(i.domain); }).length,
+          communities: (state.communities||[]).length
+        };
+        [['headlines','Headlines'],['interests','Interests'],['communities','Communities']].forEach(function(s){
           var b = document.createElement('button');
-          b.className = 'bfilter' + (currentFilter===key ? ' is-active' : '');
-          b.innerHTML = esc(label) + (count!=null ? ' <span class="c">'+count+'</span>' : '');
-          b.addEventListener('click', function(){ currentFilter = key; paint(); root.scrollIntoView({block:'start',behavior:'smooth'}); });
-          return b;
-        }
-        bar.appendChild(chip('all', 'All', allLiveItems(state).length));
-        DOMAIN_ORDER.forEach(function(d){ if (counts[d]) bar.appendChild(chip(d, DOMAIN_LABELS[d]||d, counts[d])); });
+          b.className = 'bfilter' + (currentView===s[0] ? ' is-active' : '');
+          b.innerHTML = esc(s[1]) + ' <span class="c">'+(counts[s[0]]||0)+'</span>';
+          b.addEventListener('click', function(){
+            currentView = s[0]; try{ localStorage.setItem('signal-brief-view', s[0]); }catch(_){}
+            paint(); root.scrollIntoView({block:'start',behavior:'smooth'});
+          });
+          bar.appendChild(b);
+        });
         return bar;
       }
 
       function paint(){
         var state = currentState; if (!state) return;
         root.innerHTML = '';
-        if (!allLiveItems(state).length && !(state.below_fold||[]).length){
+        if (!allLiveItems(state).length && !(state.below_fold||[]).length && !(state.communities||[]).length){
           root.innerHTML = '<div class="brief-empty">Nothing has cleared the bar yet. The Worker updates through the day.</div>';
           return;
         }
@@ -1279,8 +1285,10 @@
           ed.textContent = state.edition.date_label;
           root.appendChild(ed);
         }
-        root.appendChild(chipBar(state));
-        if (currentFilter === 'all') renderAll(state); else renderDomain(state, currentFilter);
+        root.appendChild(superNav(state));
+        if (currentView === 'communities') renderCommunities(state);
+        else if (currentView === 'interests') renderInterests(state);
+        else renderHeadlines(state);
         var f = state.footer||{};
         var fo = document.createElement('div'); fo.className='brief-footer';
         fo.textContent = (f.kept||0)+' kept of '+(f.scanned||0)+' scanned · '+(f.sources||0)+' sources'+
@@ -1288,8 +1296,36 @@
         root.appendChild(fo);
       }
 
-      // The full running order (filter = All).
-      function renderAll(state){
+      // Shared: render the domain sections + "Across your interests" + below-fold
+      // for one half of the split (headline domains vs the rest).
+      function renderDomainGroup(state, wantHeadline){
+        (state.sections||[]).forEach(function(s){
+          if (isHeadline(s.domain) !== wantHeadline) return;
+          var g = group(s.label || DOMAIN_LABELS[s.domain] || s.domain, s.items.length);
+          g.className='brief-group domain-sec';
+          s.items.forEach(function(it){ g.appendChild(catchEl(it, {})); });
+          root.appendChild(g);
+        });
+        var also = (state.also||[]).filter(function(a){ return isHeadline(a.domain) === wantHeadline; });
+        if (also.length){
+          var g2 = group('Across your interests');
+          var wrap = document.createElement('div'); wrap.className='also-wrap';
+          also.forEach(function(a){
+            var l = firstLink(a.item);
+            var d = document.createElement('div'); d.className='also-line';
+            d.innerHTML = '<span class="also-dom">'+esc(a.label)+'</span>'+
+              (l ? '<a href="'+esc(l.url)+'" target="_blank" rel="noopener">'+esc(a.item.title)+'</a>' : esc(a.item.title));
+            wrap.appendChild(d);
+          });
+          g2.appendChild(wrap); root.appendChild(g2);
+        }
+        var below = (state.below_fold||[]).filter(function(i){ return isHeadline(i.domain) === wantHeadline; });
+        tail(below, 'held below the fold');
+      }
+
+      // Headlines: the main-news landing — start-here, Today & Tonight, the
+      // cross-domain Top Catches, then the headline domains.
+      function renderHeadlines(state){
         if ((state.start_here||[]).length){
           var sh = document.createElement('div'); sh.className='start-here';
           sh.innerHTML = '<span class="sh-label">Start here</span>' +
@@ -1312,39 +1348,39 @@
           state.top_catches.forEach(function(it,i){ g1.appendChild(catchEl(it, { rank: i+1, showDomain: true })); });
           root.appendChild(g1);
         }
-        (state.sections||[]).forEach(function(s){
-          var g = group(s.label || DOMAIN_LABELS[s.domain] || s.domain, s.items.length);
-          g.className='brief-group domain-sec';
-          s.items.forEach(function(it){ g.appendChild(catchEl(it, {})); });
-          root.appendChild(g);
-        });
-        if ((state.also||[]).length){
-          var g2 = group('Across your interests');
-          var wrap = document.createElement('div'); wrap.className='also-wrap';
-          state.also.forEach(function(a){
-            var l = firstLink(a.item);
-            var d = document.createElement('div'); d.className='also-line';
-            d.innerHTML = '<span class="also-dom">'+esc(a.label)+'</span>'+
-              (l ? '<a href="'+esc(l.url)+'" target="_blank" rel="noopener">'+esc(a.item.title)+'</a>' : esc(a.item.title));
-            wrap.appendChild(d);
-          });
-          g2.appendChild(wrap); root.appendChild(g2);
-        }
-        tail(state.below_fold||[], 'held below the fold');
+        renderDomainGroup(state, true);
       }
 
-      // One domain, everything grouped (filter = a domain).
-      function renderDomain(state, dom){
-        var above = allLiveItems(state).filter(function(i){ return i.domain===dom; })
-          .sort(function(a,b){ return (b.confidence||0)-(a.confidence||0); });
-        var g = group(DOMAIN_LABELS[dom]||dom, above.length);
-        g.className = 'brief-group domain-sec';
-        if (!above.length){ var e=document.createElement('div'); e.className='brief-empty'; e.textContent='Nothing above the fold here right now.'; g.appendChild(e); }
-        above.forEach(function(it){ g.appendChild(catchEl(it, {})); });
-        root.appendChild(g);
-        var below = (state.below_fold||[]).filter(function(i){ return i.domain===dom; })
-          .sort(function(a,b){ return (b.confidence||0)-(a.confidence||0); });
-        tail(below, 'more in ' + (DOMAIN_LABELS[dom]||dom) + ' below the fold');
+      // Interests: the deeper per-topic stuff.
+      function renderInterests(state){
+        var has = (state.sections||[]).some(function(s){ return !isHeadline(s.domain); }) ||
+                  (state.also||[]).some(function(a){ return !isHeadline(a.domain); });
+        if (!has){
+          var e=document.createElement('div'); e.className='brief-empty';
+          e.textContent='Quiet across your interests right now — try Headlines or Communities.';
+          root.appendChild(e);
+        }
+        renderDomainGroup(state, false);
+      }
+
+      // Communities: catch up on everything from Reddit / HN / Bluesky in one place.
+      function renderCommunities(state){
+        var items = state.communities||[];
+        if (!items.length){
+          var e=document.createElement('div'); e.className='brief-empty';
+          e.textContent='No community items yet. Subreddits are enabled via RSS in Settings → Sources; Hacker News is on by default.';
+          root.appendChild(e);
+          return;
+        }
+        var bySrc = {};
+        items.forEach(function(it){ var k=it.source_type||'other'; (bySrc[k]=bySrc[k]||[]).push(it); });
+        ['reddit','hn','bluesky','other'].forEach(function(k){
+          var arr = bySrc[k]; if (!arr || !arr.length) return;
+          var g = group(COMMUNITY_LABEL[k] || 'Community', arr.length);
+          g.className='brief-group domain-sec';
+          arr.forEach(function(it){ g.appendChild(catchEl(it, { showDomain: true })); });
+          root.appendChild(g);
+        });
       }
 
       // Shared tappable below-the-fold tail.
@@ -1354,7 +1390,7 @@
         var show = 'Show '+items.length+' '+label;
         btn.textContent = show;
         var holder = document.createElement('div'); holder.hidden = true;
-        items.forEach(function(it){ holder.appendChild(catchEl(it, { showDomain: currentFilter==='all' })); });
+        items.forEach(function(it){ holder.appendChild(catchEl(it, { showDomain: true })); });
         btn.addEventListener('click', function(){
           holder.hidden = !holder.hidden;
           btn.textContent = holder.hidden ? show : 'Hide';

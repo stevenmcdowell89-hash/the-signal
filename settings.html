@@ -205,10 +205,20 @@
 
     <div class="panel" data-panel="sources">
     <div class="card">
-      <h2>Sources (RSS · HN)</h2>
+      <h2>Sources (RSS · HN · Reddit)</h2>
       <table id="src-table"><thead><tr><th>On</th><th>ID</th><th>Domain</th><th>URL</th><th>W</th><th></th></tr></thead><tbody></tbody></table>
       <div class="addrow"><button class="btn-sm" id="add-src">+ Add feed</button></div>
-      <div class="hint">Type is inferred: an HN Algolia URL is type "hn", everything else "rss". Reddit + per-sub ranking land in Phase 2.</div>
+      <div class="hint">Type is inferred from the URL: an HN Algolia URL → "hn", a <code>reddit.com/r/…</code> URL → "reddit", everything else → "rss". <b>Almost anything with a feed works as a source</b> — a YouTube channel (<code>youtube.com/feeds/videos.xml?channel_id=…</code>), a Google&nbsp;News RSS, a Mastodon <code>.rss</code>, a podcast feed, or a subreddit. Paste the URL, set its domain + weight.</div>
+      <details style="margin-top:0.7rem">
+        <summary class="hint" style="cursor:pointer">▸ How ranking works — source weight vs interest rating</summary>
+        <div class="hint" style="line-height:1.6">
+          Two dials decide how high an item sits, and they <b>multiply</b>:<br><br>
+          <b>· Interest rating</b> (a topic's <i>Importance</i>, in the Interests tab) — how much a <i>whole subject</i> matters to you. Raising it lifts <i>every</i> item in that subject.<br>
+          <b>· Source weight</b> (the <b>W</b> column above) — how much you trust <i>one feed</i>. It's a multiplier on only that feed's items.<br><br>
+          Roughly: <code>score ≈ (topic relevance + source popularity) × source weight × freshness × register</code>.<br><br>
+          So if one feed floods the brief (e.g. a high-volume source like Football Italia keeps filling the top), <b>lower its W</b> — that dampens just that feed, not the whole sport. To lift or sink a whole subject, change its Importance instead. (A single source also can't fill more than a few slots in any one section.)
+        </div>
+      </details>
     </div>
 
     <div class="card">

@@ -259,11 +259,29 @@ async function ingestReddit(feed, env) {
   const sub = subFromFeed(feed);
   if (!sub) return [];
   const token = await redditAppToken(env);
-  const base = token ? "https://oauth.reddit.com" : "https://www.reddit.com";
-  const url = `${base}/r/${sub}/top${token ? "" : ".json"}?t=day&limit=25`;
-  const headers = { "User-Agent": UA, Accept: "application/json" };
-  if (token) headers.Authorization = `Bearer ${token}`;
-  const resp = await fetch(url, { headers });
+
+  // No OAuth → public per-subreddit `.rss` (Atom). This is NOT the JSON Data API,
+  // so it isn't approval-gated; it works today through the generic feed parser.
+  // The link is the comments permalink (a discussion thread); comment counts
+  // aren't in the RSS, so they arrive later once OAuth is configured.
+  if (!token) {
+    const xml = await fetchText(
+      `https://www.reddit.com/r/${sub}/.rss?limit=25`,
+      "application/atom+xml, application/rss+xml, application/xml, text/xml"
+    );
+    return parseFeed(xml, feed).map((e) => ({
+      ...e,
+      sourceType: "reddit",
+      summary: `r/${sub}`,
+      links: [{ type: "discussion", url: e.url, label: `r/${sub}` }],
+      commentsUrl: e.url,
+    }));
+  }
+
+  // OAuth Data API → top/day with scores + comment counts.
+  const resp = await fetch(`https://oauth.reddit.com/r/${sub}/top?t=day&limit=25`, {
+    headers: { "User-Agent": UA, Accept: "application/json", Authorization: `Bearer ${token}` },
+  });
   if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
   const data = await resp.json();
   const out = [];

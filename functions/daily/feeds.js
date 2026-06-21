@@ -17,6 +17,9 @@ export const STARTER_FEEDS = [
   { id: "bbc-world", type: "rss", domain: "world", weight: 0.4, url: "https://feeds.bbci.co.uk/news/world/rss.xml", stable: true, name: "BBC World" },
   { id: "guardian-world", type: "rss", domain: "world", weight: 0.4, url: "https://www.theguardian.com/world/rss", name: "Guardian World" },
 
+  // ---- Local — Northern Ireland (0.5) ----
+  { id: "bbc-ni", type: "rss", domain: "local", weight: 0.5, url: "https://feeds.bbci.co.uk/news/northern_ireland/rss.xml", stable: true, name: "BBC News NI" },
+
   // ---- Gaming (0.9) ----
   { id: "eurogamer", type: "rss", domain: "gaming", weight: 0.9, url: "https://www.eurogamer.net/feed", name: "Eurogamer" },
   { id: "nintendo-life", type: "rss", domain: "gaming", weight: 0.9, url: "https://www.nintendolife.com/feeds/latest", name: "Nintendo Life" },
@@ -62,6 +65,9 @@ export const STARTER_FEEDS = [
   { id: "starwars", type: "rss", domain: "film_tv", weight: 0.4, url: "https://www.starwarsnewsnet.com/feed", name: "Star Wars News Net" },
   { id: "whats-on-netflix", type: "rss", domain: "film_tv", weight: 0.4, url: "https://www.whats-on-netflix.com/feed/", name: "What's on Netflix" },
 
+  // ---- History (0.35) ----
+  { id: "historyextra", type: "rss", domain: "history", weight: 0.35, url: "https://www.historyextra.com/feed/", name: "HistoryExtra" },
+
   // ---- Music / synthwave (0.3) ----
   { id: "newretrowave", type: "rss", domain: "music", weight: 0.3, url: "https://newretrowave.com/feed/", name: "NewRetroWave" },
 
@@ -93,13 +99,12 @@ export const STARTER_BLUESKY = [];
 // OAuth Data API automatically when REDDIT_CLIENT_ID/SECRET are set as Worker
 // secrets. `url` carries the subreddit so it's editable in Settings like any
 // source. The drafted set from docs/reddit-data-api-application.md.
-// Seeded DISABLED: the structure ships ready (and editable in Settings) but stays
-// off until the reader turns it on. Enabling works immediately via public JSON
-// (the "way around" the API lead time); when REDDIT_CLIENT_ID/SECRET are set it
-// uses the approved OAuth Data API automatically. Off by default keeps the brief's
-// independent value clean if Reddit rate-limits the Worker's egress IPs.
+// Enabled: ingested via Reddit's public per-subreddit `.rss` (Atom) feed, which
+// needs no OAuth/approval. When REDDIT_CLIENT_ID/SECRET are set the ingester
+// switches to the OAuth Data API automatically (top/day + comment counts). A
+// dead/blocked feed is dropped gracefully, so the brief is unaffected either way.
 const RS = (sub, domain, weight) => ({
-  id: `r-${sub.toLowerCase()}`, type: "reddit", domain, weight, enabled: false,
+  id: `r-${sub.toLowerCase()}`, type: "reddit", domain, weight,
   url: `https://www.reddit.com/r/${sub}`, name: `r/${sub}`,
 });
 export const STARTER_REDDIT = [
@@ -128,4 +133,10 @@ export const STARTER_REDDIT = [
   RS("golf", "golf", 0.45), RS("lego", "lego", 0.5),
   RS("themeparks", "travel", 0.45), RS("wdw", "travel", 0.4),
   RS("selfhosted", "home_selfhosting", 0.4), RS("homeassistant", "home_selfhosting", 0.4),
+  // History · Listening — community feeds so these domains carry real content
+  // instead of being filled by stray keyword re-homing.
+  RS("history", "history", 0.4), RS("AskHistorians", "history", 0.4),
+  RS("podcasts", "podcasts", 0.35),
+  // Local — Northern Ireland community.
+  RS("northernireland", "local", 0.5),
 ];
