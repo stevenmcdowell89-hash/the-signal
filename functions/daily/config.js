@@ -74,33 +74,49 @@ export async function loadConfig(env) {
   } catch {
     return def;
   }
-  return mergeConfig(def, saved);
+  const merged = mergeConfig(def, saved);
+  // If the saved profile predated the current profile_version we just re-seeded
+  // it from code (above). Persist that so the editor + next run read the fresh
+  // profile and we don't re-seed on every request.
+  const savedVer = (saved.profile && saved.profile.profile_version) || 0;
+  if (savedVer < (def.profile.profile_version || 0)) {
+    try { await env.DAILY_CONFIG.put(CONFIG_KEY, JSON.stringify(merged)); } catch { /* best-effort */ }
+  }
+  return merged;
 }
 
 export async function saveConfig(env, config) {
   if (!env.DAILY_CONFIG) throw new Error("DAILY_CONFIG KV binding missing");
   config.version = 2;
+  // Stamp the saved profile as current so an in-app edit isn't treated as stale
+  // and re-seeded away on the next load.
+  if (config.profile) config.profile.profile_version = defaultConfig().profile.profile_version;
   await env.DAILY_CONFIG.put(CONFIG_KEY, JSON.stringify(config));
   return config;
 }
 
-// Shallow-merge top-level keys; saved values win. Nested objects (enrichment,
-// push, profile) are taken wholesale from saved when present so in-app edits are
-// authoritative, but missing nested keys fall back to defaults.
+// Shallow-merge top-level keys; saved values win, missing nested keys fall back
+// to defaults. The profile splits user-editable from engine-internal:
+//  - floor + topic_weights: the user's preferences (edited in-app) win — UNLESS
+//    the saved profile predates the current profile_version, in which case the
+//    code defaults re-seed (so engine improvements reach an existing config
+//    without a manual re-edit).
+//  - special_handling + curated global mutes: ALWAYS owned by code.
 function mergeConfig(def, saved) {
   const out = { ...def, ...saved };
   out.enrichment = { ...def.enrichment, ...(saved.enrichment || {}) };
   out.recency = { ...def.recency, ...(saved.recency || {}) };
   out.push = { ...def.push, ...(saved.push || {}) };
   out.push.significant = { ...def.push.significant, ...((saved.push || {}).significant || {}) };
-  if (saved.profile) {
-    out.profile = {
-      named_entity_floor: saved.profile.named_entity_floor || def.profile.named_entity_floor,
-      topic_weights: saved.profile.topic_weights || def.profile.topic_weights,
-      special_handling: saved.profile.special_handling || def.profile.special_handling,
-      mutes: saved.profile.mutes || def.profile.mutes,
-    };
-  }
+  const sp = saved.profile;
+  const fresh = sp && (sp.profile_version || 0) >= (def.profile.profile_version || 0);
+  out.profile = {
+    profile_version: def.profile.profile_version,
+    named_entity_floor: fresh ? (sp.named_entity_floor || def.profile.named_entity_floor) : def.profile.named_entity_floor,
+    topic_weights: fresh ? (sp.topic_weights || def.profile.topic_weights) : def.profile.topic_weights,
+    special_handling: def.profile.special_handling,
+    mutes: def.profile.mutes,
+  };
   return out;
 }
 
