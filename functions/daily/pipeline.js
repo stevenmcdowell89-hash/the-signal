@@ -126,8 +126,22 @@ export async function run(env, { trigger } = {}) {
     const prev = JSON.parse((await env.DAILY_STATE.get(SOURCE_STATUS_KEY)) || "null");
     if (prev && prev.sources) sourceStatus = prev.sources;
   } catch (_) {}
+  // Per sub we keep a small HISTORY so a red sub is legible over time, not just
+  // "tried Nm ago" (which a failed re-attempt resets): `last_ok` = last time it
+  // actually returned items, `fail_since` = start of the current failing streak
+  // (cleared on any success), `fails` = consecutive failures. This is what answers
+  // "has it ever worked / is it being retried / has it been down 4h or 4d?".
   for (const id of [...live, ...dead]) {
-    sourceStatus[id] = { ok: liveSet.has(id), ts: now, reason: (reasons && reasons[id]) || (liveSet.has(id) ? "ok" : "empty") };
+    const ok = liveSet.has(id);
+    const prevEntry = sourceStatus[id] || {};
+    sourceStatus[id] = {
+      ok,
+      ts: now,
+      reason: (reasons && reasons[id]) || (ok ? "ok" : "empty"),
+      last_ok: ok ? now : (prevEntry.last_ok || null),
+      fail_since: ok ? null : (prevEntry.fail_since || now),
+      fails: ok ? 0 : ((prevEntry.fails || 0) + 1),
+    };
   }
   for (const id of live) {
     sourceStatus[id].count_this_poll = entries.filter((e) => e.sourceId === id).length;

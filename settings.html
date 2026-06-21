@@ -681,14 +681,31 @@
         return (rank[a.state]-rank[b.state]) || (b.count_48h-a.count_48h);
       });
       if(!srcs.length){ list.textContent='No source data yet — run the brief once.'; return; }
-      // A short "when / why" label so a red sub is legible: did it FAIL (and why) or is
-      // it just awaiting its turn in Reddit's rolling rotation?
+      // A duration ("4h", "2d") rather than "... ago" — for "how long has it been failing".
+      function dur(ts){
+        if(!ts) return '';
+        var s=(Date.now()-ts)/1000;
+        if(s<90) return '<1m';
+        var m=Math.round(s/60); if(m<60) return m+'m';
+        var h=Math.round(m/60); if(h<48) return h+'h';
+        return Math.round(h/24)+'d';
+      }
+      // When did this sub last actually return items? Prefer the recorded last-success
+      // ts; fall back to D1's last_seen (so it's right even before the new field fills in).
+      function lastWork(s){ var t=s.last_ok||s.last_seen; return t ? 'last worked '+ago(t) : 'no success yet'; }
+      // A "when / why" label that makes a red sub legible OVER TIME: not just "tried Nm
+      // ago" (a failed re-attempt resets that), but how long it's been failing, why, and
+      // when it last worked — so you can tell 4h-down from 4d-down from never-worked, and
+      // see it's still being retried each rotation.
       function whenLabel(s){
         if(s.state==='off') return '';
-        if(s.state==='waiting') return 'awaiting turn';
+        if(s.state==='dead'){
+          var why = s.reason ? ' · '+String(s.reason).replace(/^HTTP\s*/,'') : '';
+          return 'failing '+dur(s.fail_since)+why+' · '+lastWork(s);
+        }
+        if(s.state==='waiting') return 'awaiting turn · '+lastWork(s);
         if(!s.last_checked) return 'not tried yet';
-        var why = (s.state==='dead' && s.reason) ? ' · '+String(s.reason).replace(/^HTTP\s*/,'') : '';
-        return 'tried '+ago(s.last_checked)+why;
+        return 'tried '+ago(s.last_checked);
       }
       srcs.forEach(function(s){
         var cls='hrow'+(s.state==='dead'?' is-dead':'')+(s.state==='waiting'?' is-waiting':'');
@@ -705,9 +722,11 @@
       var dead = srcs.filter(function(s){return s.state==='dead';}).length;
       var stale = srcs.filter(function(s){return s.state==='stale';}).length;
       var waiting = srcs.filter(function(s){return s.state==='waiting';}).length;
+      var deadNever = srcs.filter(function(s){return s.state==='dead' && !s.last_ok && !s.last_seen;}).length;
       $('health-foot').textContent = 'Last poll '+ago(h.last_poll)+'. '+
-        (dead?dead+' failed last attempt. ':'')+(stale?stale+' quiet (no articles in 48h). ':'')+
-        (waiting?waiting+' Reddit subs not reached yet (they roll ~6 every 30 min). ':'')+
+        (dead?dead+' failing'+(deadNever?' ('+deadNever+' never worked)':'')+' — Reddit subs are still re-attempted every rotation (~6 every 30 min). ':'')+
+        (stale?stale+' quiet (no articles in 48h). ':'')+
+        (waiting?waiting+' Reddit subs not reached yet this cycle. ':'')+
         (!dead&&!stale&&!waiting?'All feeds healthy.':'');
     }
     function loadHealth(){

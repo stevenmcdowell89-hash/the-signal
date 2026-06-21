@@ -60,6 +60,9 @@ export async function onRequestGet({ env }) {
       count_48h, last_seen: c ? c.last_seen : null, state,
       last_checked: s ? s.ts : (status.ts || null),
       tried_this_poll, reason: s ? (s.reason || null) : null,
+      last_ok: s ? (s.last_ok || null) : null,
+      fail_since: s ? (s.fail_since || null) : null,
+      fails: s ? (s.fails || 0) : 0,
     };
   });
 
