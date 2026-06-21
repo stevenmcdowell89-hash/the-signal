@@ -71,6 +71,7 @@
     .ai-status .pill.off{ background:rgba(233,69,96,0.15); color:var(--coral); }
     .ai-status .cost{ color:var(--ink); font-weight:600; }
     .health-list{ display:flex; flex-direction:column; gap:0.15rem; margin-top:0.3rem; }
+    .hlegend{ font-size:0.66rem; color:var(--ink-dim); padding:0 0 0.4rem; line-height:1.35; }
     .hrow{ display:flex; align-items:flex-start; gap:0.55rem; font-size:0.8rem; padding:0.36rem 0; border-bottom:1px solid var(--line); }
     .hrow .dot{ width:9px; height:9px; border-radius:50%; flex:0 0 auto; margin-top:0.32rem; background:var(--ink-dim); }
     .hrow .dot.ok{ background:#46c46a; box-shadow:0 0 6px #46c46a88; }
@@ -701,6 +702,12 @@
         return (rank[a.state]-rank[b.state]) || (b.count_48h-a.count_48h);
       });
       if(!srcs.length){ list.textContent='No source data yet — run the brief once.'; return; }
+      // Legend: the dot is the LAST refresh outcome; the number is articles kept over
+      // 48h. They're independent — a red feed can still show a count from an earlier
+      // pull, which is why "red but returned 3" is expected, not a contradiction.
+      var legend=document.createElement('div'); legend.className='hlegend';
+      legend.textContent='● = last refresh · number = articles kept (48h). A red feed can still have articles from an earlier pull.';
+      list.appendChild(legend);
       // A duration ("4h", "2d") rather than "... ago" — for "how long has it been failing".
       function dur(ts){
         if(!ts) return '';
@@ -751,9 +758,9 @@
       var waiting = srcs.filter(function(s){return s.state==='waiting';}).length;
       var deadNever = srcs.filter(function(s){return s.state==='dead' && !s.last_ok && !s.last_seen;}).length;
       $('health-foot').textContent = 'Last poll '+ago(h.last_poll)+'. '+
-        (dead?dead+' failing'+(deadNever?' ('+deadNever+' never worked)':'')+' — Reddit subs are still re-attempted every rotation (~6 every 30 min). ':'')+
+        (dead?dead+' failing'+(deadNever?' ('+deadNever+' never worked)':'')+' — Reddit subs get ~3 retries over ~30 min, then again next rotation (~3h); articles already pulled stay in the brief meanwhile. ':'')+
         (stale?stale+' quiet (no articles in 48h). ':'')+
-        (waiting?waiting+' Reddit subs never tried yet (new or just-added — picked up within ~3h, then they stay green/red). ':'')+
+        (waiting?waiting+' Reddit subs never tried yet (new or just-added — picked up within ~3h). ':'')+
         (!dead&&!stale&&!waiting?'All feeds healthy.':'');
     }
     function loadHealth(){
