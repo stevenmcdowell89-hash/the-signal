@@ -52,6 +52,18 @@ export function defaultConfig() {
     },
     sources: [...STARTER_FEEDS, ...STARTER_REDDIT],
     bluesky: STARTER_BLUESKY,
+    // Editions — the few big reading areas the brief groups into. Ordered; each
+    // topic carries an `edition` id (profile.topic_weights[d].edition) pointing
+    // here. Any domain with no/unknown edition falls into the `more` catch-all.
+    // In-app editable; Headlines, Top 20 and Communities are fixed views, not
+    // listed here.
+    editions: [
+      { id: "news_money", label: "News & Money" },
+      { id: "sport", label: "Sport" },
+      { id: "gaming_tech", label: "Gaming & Tech" },
+      { id: "culture", label: "Culture & Books" },
+      { id: "more", label: "More" },
+    ],
     profile: PROFILE,
     // Extra mutes layered on top of profile.mutes, editable separately in-app.
     mutes: [],
@@ -111,6 +123,14 @@ export async function loadConfig(env) {
       if (s.type === "reddit") { s.enabled = true; if (!s.tier) s.tier = (defReddit.get(s.id) || {}).tier || "small"; }
     }
     merged.migrations.reddit_tier_v3 = true;
+    dirty = true;
+  }
+  // Drop the home_selfhosting domain (no longer an interest): the topic itself
+  // leaves via the profile_version re-seed, but its two seed feeds were unioned
+  // into saved configs, so remove any source tagged to that domain here.
+  if (!merged.migrations.drop_selfhosting_v1) {
+    merged.sources = (merged.sources || []).filter((s) => s.domain !== "home_selfhosting");
+    merged.migrations.drop_selfhosting_v1 = true;
     dirty = true;
   }
   if (dirty) {

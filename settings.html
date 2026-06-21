@@ -251,7 +251,7 @@
     <div class="card">
       <h2>Topics — what the brief watches</h2>
       <div class="hint" style="margin-bottom:0.4rem">Each topic has an importance and the words that identify it. Importance sets how high a topic can climb; keywords are comma-separated. Err broad — over-inclusion is cheap.</div>
-      <table id="topic-table"><thead><tr><th>Topic</th><th>Importance</th><th>Keywords</th><th></th></tr></thead><tbody></tbody></table>
+      <table id="topic-table"><thead><tr><th>Topic</th><th>Label</th><th>Edition</th><th>Importance</th><th>Keywords</th><th></th></tr></thead><tbody></tbody></table>
       <div class="addrow"><button class="btn-sm" id="add-topic">+ Add topic</button></div>
     </div>
 
@@ -379,6 +379,15 @@
     function impWord(w){ w=parseFloat(w)||0; return w>=0.8?'Core':(w>=0.6?'High':(w>=0.45?'Medium':'Low')); }
     function impTag(w){ return parseFloat(w).toFixed(2)+' · '+impWord(w); }
 
+    // Edition <option>s from the live config (catch-all "more" always present), so
+    // a new topic can be filed into one of the brief's reading areas.
+    function editionOptions(selected){
+      var eds = (cfg && cfg.editions) || [];
+      var ids = {}, html = '';
+      eds.forEach(function(e){ ids[e.id]=1; html += '<option value="'+escA(e.id)+'"'+(e.id===selected?' selected':'')+'>'+escA(e.label||e.id)+'</option>'; });
+      if(!ids.more) html += '<option value="more"'+('more'===selected?' selected':'')+'>More</option>';
+      return html;
+    }
     function topicRow(id, spec){
       spec = spec||{};
       var w = spec.weight!=null?spec.weight:0.5;
@@ -386,6 +395,8 @@
       var tr=document.createElement('tr');
       tr.innerHTML =
         '<td data-label="Topic"><input type="text" value="'+escA(id||'')+'" data-k="id" placeholder="e.g. gaming"></td>'+
+        '<td data-label="Label"><input type="text" value="'+escA(spec.label||'')+'" data-k="label" placeholder="e.g. Gaming"></td>'+
+        '<td data-label="Edition"><select data-k="edition">'+editionOptions(spec.edition||'more')+'</select></td>'+
         '<td data-label="Importance"><div class="imp"><input type="range" min="0.2" max="1" step="0.05" value="'+w+'" data-k="weight"><span class="imp-val">'+impTag(w)+'</span></div></td>'+
         '<td data-label="Keywords"><input type="text" value="'+escA(kw)+'" data-k="keywords" placeholder="comma-separated"></td>'+
         '<td><button class="btn-sm btn-danger" data-del="1">✕</button></td>';
@@ -440,7 +451,11 @@
         var id=tr.querySelector('[data-k=id]').value.trim(); if(!id) return;
         var weight=parseFloat(tr.querySelector('[data-k=weight]').value); if(isNaN(weight)) weight=0.5;
         var keywords=tr.querySelector('[data-k=keywords]').value.split(',').map(function(s){return s.trim();}).filter(Boolean);
+        var label=(tr.querySelector('[data-k=label]')||{}).value; label=label?label.trim():'';
+        var editionSel=tr.querySelector('[data-k=edition]'); var edition=editionSel?editionSel.value:'';
         tw[id]={ weight:weight, keywords:keywords };
+        if(label) tw[id].label=label;
+        if(edition) tw[id].edition=edition;
       });
       var floor=[];
       $('floor-table').querySelectorAll('tbody tr').forEach(function(tr){
