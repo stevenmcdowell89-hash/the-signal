@@ -19,6 +19,7 @@ import {
 import {
   onRequestGet as dailyGet,
   onRequestPost as dailyRun,
+  onRequestRunStatus as dailyRunStatus,
 } from "./functions/api/daily.js";
 import { onRequestGet as healthGet } from "./functions/api/health.js";
 import { run as runDaily, getState } from "./functions/daily/pipeline.js";
@@ -38,6 +39,7 @@ export default {
     // --- Daily ---
     if (p === "/api/daily" && method === "GET") return dailyGet({ request, env });
     if (p === "/api/daily/run" && method === "POST") return dailyRun({ request, env, ctx });
+    if (p === "/api/daily/run-status" && method === "GET") return dailyRunStatus({ request, env });
     if (p === "/api/health" && method === "GET") return healthGet({ request, env });
 
     // --- Config surface (reads open, writes token-gated) ---

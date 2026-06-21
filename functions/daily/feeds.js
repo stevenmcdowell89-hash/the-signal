@@ -94,32 +94,39 @@ export const STARTER_FEEDS = [
 export const STARTER_BLUESKY = [];
 
 // Reddit — the community layer (transfer rumours, announcements, training
-// texture, match quirks). Ingested read-only via Reddit's public **multireddit**
-// `.rss` (Atom) feed: ONE combined feed per domain (`/r/a+b+c/.rss`) instead of a
-// request per subreddit, so we make ~15 requests not ~36 and don't trip Reddit's
-// per-IP rate limit. Ingest also staggers these (see ingest.js). No OAuth needed;
-// when REDDIT_CLIENT_ID/SECRET are set the ingester switches to the OAuth Data
-// API automatically (top/day + comment counts). Each item still links to its own
-// thread; edit the subreddit list per domain in Settings.
-const RM = (subs, domain, weight) => ({
-  id: `r-${domain}`, type: "reddit", domain, weight,
-  url: `https://www.reddit.com/r/${subs.join("+")}`,
-  name: subs.length > 1 ? `r/${subs[0]} +${subs.length - 1}` : `r/${subs[0]}`,
+// texture, match quirks). Each subreddit is its own source with a SIZE `tier`
+// (big | medium | small), set per-row in Settings. Slots scale with size: big
+// subs are polled individually and kept deep; medium and small subs compete in
+// their own peer POOLS (one combined `.rss` each) so a small sub only earns a slot
+// when it beats other small subs (see ingest.js). No OAuth needed (public hot
+// `.rss`); when REDDIT_CLIENT_ID/SECRET are set the ingester uses the OAuth Data
+// API (real upvote/comment counts). Defaults below are a starting point — re-tier
+// any sub in Settings.
+const RS = (sub, domain, weight, tier) => ({
+  id: `r-${sub.toLowerCase()}`, type: "reddit", domain, weight, tier,
+  url: `https://www.reddit.com/r/${sub}`, name: `r/${sub}`,
 });
 export const STARTER_REDDIT = [
-  RM(["NintendoSwitch", "Games", "SteamDeck", "MonsterHunter", "paradoxplaza", "BaldursGate3"], "gaming", 0.85),
-  RM(["Juve", "seriea", "soccer", "FantasyPL"], "football", 0.85),
-  RM(["Android", "Xiaomi", "eink"], "tech_devices", 0.72),
-  RM(["Cosmere", "Fantasy", "Malazan"], "books", 0.55),
-  RM(["StarWars", "television"], "film_tv", 0.45),
-  RM(["outrun", "synthwave"], "music", 0.35),
-  RM(["running", "AdvancedRunning", "weightroom"], "fitness", 0.45),
-  RM(["UKPersonalFinance", "Monzo", "fintech"], "finance", 0.55),
-  RM(["golf"], "golf", 0.45),
-  RM(["lego"], "lego", 0.5),
-  RM(["themeparks", "wdw"], "travel", 0.45),
-  RM(["selfhosted", "homeassistant"], "home_selfhosting", 0.4),
-  RM(["history", "AskHistorians"], "history", 0.4),
-  RM(["podcasts"], "podcasts", 0.35),
-  RM(["northernireland"], "local", 0.5),
+  // BIG — own poll, kept deep
+  RS("soccer", "football", 0.85, "big"), RS("Games", "gaming", 0.85, "big"),
+  RS("NintendoSwitch", "gaming", 0.85, "big"), RS("Android", "tech_devices", 0.72, "big"),
+  RS("StarWars", "film_tv", 0.45, "big"),
+  // MEDIUM — medium pool
+  RS("seriea", "football", 0.85, "medium"), RS("SteamDeck", "gaming", 0.85, "medium"),
+  RS("Fantasy", "books", 0.55, "medium"), RS("television", "film_tv", 0.45, "medium"),
+  RS("running", "fitness", 0.45, "medium"), RS("UKPersonalFinance", "finance", 0.55, "medium"),
+  RS("Xiaomi", "tech_devices", 0.72, "medium"), RS("golf", "golf", 0.45, "medium"),
+  RS("lego", "lego", 0.5, "medium"), RS("Cosmere", "books", 0.55, "medium"),
+  // SMALL — small pool
+  RS("Juve", "football", 0.85, "small"), RS("FantasyPL", "football", 0.75, "small"),
+  RS("MonsterHunter", "gaming", 0.8, "small"), RS("paradoxplaza", "gaming", 0.8, "small"),
+  RS("BaldursGate3", "gaming", 0.8, "small"), RS("eink", "tech_devices", 0.7, "small"),
+  RS("Malazan", "books", 0.55, "small"), RS("outrun", "music", 0.35, "small"),
+  RS("synthwave", "music", 0.3, "small"), RS("AdvancedRunning", "fitness", 0.45, "small"),
+  RS("weightroom", "fitness", 0.45, "small"), RS("Monzo", "finance", 0.5, "small"),
+  RS("fintech", "finance", 0.45, "small"), RS("themeparks", "travel", 0.45, "small"),
+  RS("wdw", "travel", 0.4, "small"), RS("selfhosted", "home_selfhosting", 0.4, "small"),
+  RS("homeassistant", "home_selfhosting", 0.4, "small"), RS("history", "history", 0.4, "small"),
+  RS("AskHistorians", "history", 0.4, "small"), RS("podcasts", "podcasts", 0.35, "small"),
+  RS("northernireland", "local", 0.5, "small"),
 ];

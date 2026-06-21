@@ -256,61 +256,69 @@ function subFromFeed(feed) {
   return (m && m[1]) || feed.subreddit || null;
 }
 
-async function ingestReddit(feed, env) {
-  const sub = subFromFeed(feed);
-  if (!sub) return [];
+// Fetch a reddit HOT feed — a single sub OR a "+"-joined multireddit pool — and
+// return up to `keep` entries. Hot is Reddit's own upvote+velocity ranking (the
+// right cut for a daily cadence). Each item is routed to ITS OWN subreddit's
+// domain via `domainBySub` (so a pooled small Books sub lands in Books), with
+// `defaultDomain` as fallback. RSS scores by hot position (RSS carries no count);
+// OAuth uses the real upvote+comment counts. `keep` trims the tail.
+async function ingestRedditFeed(subsStr, env, opts) {
+  const {
+    keep = 25, sourceId, weight = 0.5,
+    domainBySub = {}, weightBySub = {}, defaultDomain = null,
+  } = opts || {};
+  const domainFor = (s) => domainBySub[(s || "").toLowerCase()] || defaultDomain;
+  const weightFor = (s) => weightBySub[(s || "").toLowerCase()] ?? weight;
   const token = await redditAppToken(env);
+  const out = [];
 
-  // No OAuth → public `.rss` (Atom) of the HOT listing. Hot is Reddit's own
-  // upvote+velocity ranking — the right cut for a daily cadence. RSS doesn't carry
-  // the upvote NUMBER, but the feed ARRIVES in hot order, so the position IS the
-  // signal: rank 0 is the hottest, rank ~24 is marginal. We map position → rawScore
-  // so Reddit's curation drives our ranking (a position-20 self-post sinks; the
-  // top of hot surfaces). OAuth later swaps the proxy for the real score.
   if (!token) {
     const xml = await fetchText(
-      `https://www.reddit.com/r/${sub}/.rss?limit=25`,
+      `https://www.reddit.com/r/${subsStr}/.rss?limit=${Math.max(25, keep * 2)}`,
       "application/atom+xml, application/rss+xml, application/xml, text/xml"
     );
-    return parseFeed(xml, feed).map((e, idx) => {
-      // The entry link is the comments permalink; pull the SPECIFIC subreddit out
-      // of it for a clean "r/Juve" label (the feed itself is a multireddit).
+    const parsed = parseFeed(xml, { id: sourceId, type: "reddit", domain: defaultDomain, weight, name: sourceId });
+    for (const e of parsed) {
+      if (out.length >= keep) break;
       const sm = /reddit\.com\/r\/([A-Za-z0-9_]+)\//i.exec(e.url || "");
-      const label = sm ? `r/${sm[1]}` : `r/${(sub || "").split("+")[0]}`;
-      return {
+      const subName = sm ? sm[1] : (subsStr.split("+")[0]);
+      const domain = domainFor(subName);
+      if (!domain) continue;
+      out.push({
         ...e,
-        sourceType: "reddit",
+        sourceId, sourceType: "reddit", domain, weight: weightFor(subName),
         summary: "",
-        rawScore: Math.max(1, 25 - idx), // hot position as the popularity proxy
-        links: [{ type: "discussion", url: e.url, label }],
+        rawScore: Math.max(1, keep - out.length), // hot position within this feed
+        links: [{ type: "discussion", url: e.url, label: `r/${subName}` }],
         commentsUrl: e.url,
-      };
-    });
+      });
+    }
+    return out;
   }
 
-  // OAuth Data API → the hot listing with real upvote + comment counts.
-  const resp = await fetch(`https://oauth.reddit.com/r/${sub}/hot?limit=25`, {
+  // OAuth Data API → hot with real upvote + comment counts.
+  const resp = await fetch(`https://oauth.reddit.com/r/${subsStr}/hot?limit=${Math.max(25, keep * 2)}`, {
     headers: { "User-Agent": UA, Accept: "application/json", Authorization: `Bearer ${token}` },
   });
   if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
   const data = await resp.json();
-  const out = [];
   for (const child of (data.data && data.data.children) || []) {
+    if (out.length >= keep) break;
     const p = child && child.data;
     if (!p || !p.title || p.stickied) continue;
+    const subName = p.subreddit || subsStr.split("+")[0];
+    const domain = domainFor(subName);
+    if (!domain) continue;
     const permalink = `https://www.reddit.com${p.permalink}`;
     const comments = p.num_comments || 0;
     const isSelf = p.is_self || !p.url || /(^|\/\/)([a-z]+\.)?reddit\.com/i.test(p.url);
     const links = [];
-    if (!isSelf && p.url) links.push({ type: "article", url: p.url, label: `r/${sub}` });
-    links.push({ type: "discussion", url: permalink, label: `r/${sub}`, count: comments });
+    if (!isSelf && p.url) links.push({ type: "article", url: p.url, label: `r/${subName}` });
+    links.push({ type: "discussion", url: permalink, label: `r/${subName}`, count: comments });
     out.push({
-      sourceId: feed.id,
-      sourceType: "reddit",
-      domain: feed.domain,
-      weight: feed.weight,
+      sourceId, sourceType: "reddit", domain, weight: weightFor(subName),
       title: decodeEntities(p.title),
-      summary: `${p.score || 0} upvotes · ${comments} comments · r/${sub}`,
+      summary: `${p.score || 0} upvotes · ${comments} comments · r/${subName}`,
       url: isSelf ? permalink : p.url,
       links,
       rawScore: (p.score || 0) + comments * 0.5,
@@ -324,15 +332,15 @@ async function ingestReddit(feed, env) {
 // Ingest every enabled source. Returns { entries[], live[], dead[] } where
 // `dead` is the ids of sources that errored or returned nothing (the caller can
 // surface these in-app for pruning; we drop them gracefully this run).
-export async function ingestAll(config, env) {
+export async function ingestAll(config, env, onProgress) {
   const entries = [];
   const live = [];
   const dead = [];
   const jobs = [];
 
-  // Reddit gets fetched sequentially with a stagger (below), not concurrently —
-  // hammering Reddit with every feed at once trips its per-IP rate limit and most
-  // come back empty. Everything else runs concurrently.
+  // Reddit is fetched tiered + sequentially with a stagger (below), not
+  // concurrently — hammering Reddit with every feed at once trips its per-IP rate
+  // limit and most come back empty. Everything else runs concurrently.
   const redditFeeds = [];
   for (const feed of config.sources || []) {
     if (feed.enabled === false) continue;
@@ -370,21 +378,51 @@ export async function ingestAll(config, env) {
     );
   }
 
-  await Promise.allSettled(jobs);
+  // Reddit, tiered: big subs poll individually (kept deep); medium and small subs
+  // each compete in ONE combined hot pool, so a small sub only earns a slot when
+  // it beats other SMALL subs (size-proportional, no firehose). Pooled items are
+  // routed to their own sub's domain.
+  const big = redditFeeds.filter((f) => f.tier === "big");
+  const med = redditFeeds.filter((f) => f.tier === "medium");
+  const small = redditFeeds.filter((f) => (f.tier || "small") === "small");
+  const steps = big.length + (med.length ? 1 : 0) + (small.length ? 1 : 0);
+  const total = steps + 1; // +1 for the concurrent (RSS/HN/Bluesky) batch
+  let done = 0;
+  const tick = () => { if (onProgress) try { onProgress(Math.min(done, total), total); } catch (_) {} };
 
-  // Reddit: one feed at a time with a short gap, so we stay under the rate limit.
+  await Promise.allSettled(jobs);
+  done = 1; tick();
+
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-  for (let i = 0; i < redditFeeds.length; i++) {
-    const feed = redditFeeds[i];
+  const poolMaps = (subs) => {
+    const domainBySub = {}, weightBySub = {};
+    for (const s of subs) { const n = subFromFeed(s); if (n) { domainBySub[n.toLowerCase()] = s.domain; weightBySub[n.toLowerCase()] = s.weight; } }
+    return { subsStr: subs.map(subFromFeed).filter(Boolean).join("+"), domainBySub, weightBySub };
+  };
+  const runBig = async (feed) => {
     try {
-      const got = await ingestReddit(feed, env);
-      if (got.length) { entries.push(...got); live.push(feed.id); }
-      else dead.push(feed.id);
-    } catch {
-      dead.push(feed.id);
-    }
-    if (i < redditFeeds.length - 1) await sleep(600);
-  }
+      const got = await ingestRedditFeed(subFromFeed(feed), env, {
+        keep: 10, sourceId: feed.id, weight: feed.weight, defaultDomain: feed.domain,
+      });
+      if (got.length) { entries.push(...got); live.push(feed.id); } else dead.push(feed.id);
+    } catch { dead.push(feed.id); }
+    done++; tick();
+  };
+  const runPool = async (subs, keep, poolId) => {
+    if (!subs.length) return;
+    const { subsStr, domainBySub, weightBySub } = poolMaps(subs);
+    try {
+      const got = await ingestRedditFeed(subsStr, env, { keep, sourceId: poolId, domainBySub, weightBySub });
+      if (got.length) { entries.push(...got); for (const s of subs) live.push(s.id); }
+      else for (const s of subs) dead.push(s.id);
+    } catch { for (const s of subs) dead.push(s.id); }
+    done++; tick();
+  };
+
+  let firstReddit = true;
+  for (const feed of big) { if (!firstReddit) await sleep(600); firstReddit = false; await runBig(feed); }
+  if (med.length) { if (!firstReddit) await sleep(600); firstReddit = false; await runPool(med, 15, "r-pool-medium"); }
+  if (small.length) { if (!firstReddit) await sleep(600); firstReddit = false; await runPool(small, 10, "r-pool-small"); }
 
   return { entries, live, dead };
 }

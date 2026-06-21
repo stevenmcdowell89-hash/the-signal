@@ -16,6 +16,15 @@ import { enrichShortlist } from "./enrich.js";
 import { buildState } from "./render.js";
 
 const STATE_KEY = "state";
+export const RUN_PROGRESS_KEY = "run_progress";
+
+// Best-effort run progress for the Settings "Run now" indicator (read via
+// /api/daily/run-status). Never blocks or throws the run.
+function setProgress(env, phase, done, total) {
+  try {
+    env.DAILY_STATE.put(RUN_PROGRESS_KEY, JSON.stringify({ phase, done, total, ts: Date.now() })).catch(() => {});
+  } catch (_) {}
+}
 // Items live in D1 for 14 days (dedup memory); the brief itself scores+renders a
 // tighter recent window — the daily is fast-decay ("what happened"). The window
 // is config-driven (recency.score_window_days) so it's tunable in-app.
@@ -41,6 +50,7 @@ function rowToItem(row, weightBySource) {
     last_seen: row.last_seen,
     published: row.published,
     rawScore: row.raw_score || 0,
+    source_count: row.source_count || 1,
     weight: weightBySource.get(row.source) ?? 0.5,
     baseline_score: row.baseline_score || 0,
     profile_score: row.profile_score || 0,
@@ -66,7 +76,8 @@ export async function run(env, { trigger } = {}) {
   await initSchema(db);
 
   // 1) Ingest every tagged source. `env` carries optional Reddit OAuth secrets.
-  const { entries, live, dead } = await ingestAll(config, env);
+  setProgress(env, "polling sources", 0, 1);
+  const { entries, live, dead } = await ingestAll(config, env, (d, t) => setProgress(env, "polling sources", d, t));
   const scanned = entries.length;
 
   // Record per-source liveness for the feed-health view (§E): which sources
@@ -104,6 +115,7 @@ export async function run(env, { trigger } = {}) {
       last_seen: now,
       published: it.published,
       raw_score: it.rawScore,
+      source_count: it.memberSources ? it.memberSources.length : 1,
     }))
   );
 
@@ -124,9 +136,11 @@ export async function run(env, { trigger } = {}) {
     return it;
   });
 
+  setProgress(env, "scoring", 1, 1);
   await scoreBatch(db, items, config, now);
 
   // 5) Tier-2 enrichment (optional) on the shortlist.
+  setProgress(env, "enriching", 1, 1);
   const enr = await enrichShortlist(env, db, items, config, now);
 
   // Record enrichment status for the AI-health card (§E).
@@ -149,8 +163,10 @@ export async function run(env, { trigger } = {}) {
     sources: live.length,
     enrichment: { on: !enr.degraded, reason: enr.reason },
   };
+  setProgress(env, "rendering", 1, 1);
   const state = buildState(items, meta, now, config);
   await env.DAILY_STATE.put(STATE_KEY, JSON.stringify(state));
+  setProgress(env, "done", 1, 1);
 
   // 7) Prune the window + log the run.
   await prune(db, now);

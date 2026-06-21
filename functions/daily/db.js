@@ -23,6 +23,7 @@ export async function initSchema(db) {
       last_seen INTEGER,
       published INTEGER,
       raw_score REAL DEFAULT 0,
+      source_count INTEGER DEFAULT 1,
       baseline_score REAL DEFAULT 0,
       profile_score REAL DEFAULT 0,
       velocity REAL DEFAULT 0,
@@ -68,6 +69,13 @@ export async function initSchema(db) {
   // ALTER must run outside the batch (a failed ALTER would roll the batch back).
   try {
     await db.prepare(`ALTER TABLE items ADD COLUMN summary TEXT`).run();
+  } catch (_) {
+    /* column already exists */
+  }
+  // Breadth signal: how many distinct feeds carried this story (a "bigness" cue
+  // for Headlines). Idempotent migration for databases created before the column.
+  try {
+    await db.prepare(`ALTER TABLE items ADD COLUMN source_count INTEGER DEFAULT 1`).run();
   } catch (_) {
     /* column already exists */
   }
@@ -148,11 +156,12 @@ export async function runChunked(db, stmts, size = 50) {
 
 export async function bulkUpsertItems(db, items) {
   const sql = `INSERT INTO items (id, canonical_url, title, summary, domain, source, source_type, links,
-         first_seen, last_seen, published, raw_score)
-       VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+         first_seen, last_seen, published, raw_score, source_count)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
        ON CONFLICT(id) DO UPDATE SET
          last_seen=excluded.last_seen,
          raw_score=MAX(items.raw_score, excluded.raw_score),
+         source_count=MAX(items.source_count, excluded.source_count),
          links=excluded.links,
          title=excluded.title,
          summary=COALESCE(NULLIF(excluded.summary, ''), items.summary)`;
@@ -162,7 +171,7 @@ export async function bulkUpsertItems(db, items) {
       JSON.stringify(it.links || []), it.first_seen, it.last_seen,
       // NULL when the feed gave no date — never fudge it to first_seen. Scoring
       // dates undated items by first_seen (with an age penalty) instead.
-      it.published ?? null, it.raw_score || 0
+      it.published ?? null, it.raw_score || 0, it.source_count || 1
     )
   );
   await runChunked(db, stmts);

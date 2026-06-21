@@ -101,6 +101,18 @@ export async function loadConfig(env) {
     merged.migrations.reddit_multi_v2 = true;
     dirty = true;
   }
+  // v3: replace the per-domain multireddits with per-subreddit sources that carry
+  // a size `tier`. Drop reddit sources not in the new default set (the union added
+  // the new per-sub ones); default any missing tier to "small".
+  if (!merged.migrations.reddit_tier_v3) {
+    const defReddit = new Map((def.sources || []).filter((s) => s.type === "reddit").map((s) => [s.id, s]));
+    merged.sources = (merged.sources || []).filter((s) => s.type !== "reddit" || defReddit.has(s.id));
+    for (const s of merged.sources) {
+      if (s.type === "reddit") { s.enabled = true; if (!s.tier) s.tier = (defReddit.get(s.id) || {}).tier || "small"; }
+    }
+    merged.migrations.reddit_tier_v3 = true;
+    dirty = true;
+  }
   if (dirty) {
     try { await env.DAILY_CONFIG.put(CONFIG_KEY, JSON.stringify(merged)); } catch { /* best-effort */ }
   }
