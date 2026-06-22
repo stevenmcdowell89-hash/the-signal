@@ -409,6 +409,9 @@ export function buildState(items, meta, now, config) {
     start_here: top.slice(0, 3).map((t) => t.title),
     today_tonight: todayAndTonight(live, now),
     headlines: headlines.map(publicItem),
+    // Wider breadth-eligible pool the AI Editor's Picks pass curates from (when on);
+    // ignored by the front-end. Already importance-sorted (hRanked).
+    headline_candidates: hRanked.slice(0, 16).map(publicItem),
     sections,
     also: alsoDomains,
     communities,

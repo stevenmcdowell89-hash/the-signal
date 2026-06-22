@@ -14,6 +14,7 @@ import { addSpendCents, getMonthlySpendCents } from "./config.js";
 import { callModel } from "./llm.js";
 
 const BRIEFS_KEY = "editorial:briefs";
+const PICKS_KEY = "editorial:picks";
 
 // Shared gate: master switch + per-feature toggle + API key + shared cap.
 async function gate(env, ai, feat) {
@@ -99,6 +100,75 @@ export async function editionBriefs(env, state, items, config, now) {
   return { degraded: false, reason: calls ? "ok" : "cached", spentCents, calls };
 }
 
+// ---- Editor's Picks ------------------------------------------------------------
+const PICKS_SCHEMA = {
+  type: "object",
+  properties: {
+    picks: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: { id: { type: "string" }, why: { type: "string" } },
+        required: ["id", "why"],
+        additionalProperties: false,
+      },
+    },
+  },
+  required: ["picks"],
+  additionalProperties: false,
+};
+
+function picksSystem(count, guidance) {
+  const steer = (guidance || "").trim();
+  return `You are the front-page editor of one reader's personal daily brief. From the candidate stories below (each with an id), choose the ones that genuinely belong on the front page and order them by importance to THIS reader — most important first, at most ${count || 8}. For each chosen story write a ONE-line "why it matters": max ~18 words, specific (name the actual stake/number/consequence), no hype, no spoilers. Drop anything that isn't real front-page material rather than padding to the limit. Return only the chosen stories, by their given id, in your chosen order.${steer ? `\n\nReader's guidance: ${steer}` : ""}`;
+}
+
+// Reorders state.headlines within the mechanical candidate set and attaches a `why`
+// to each — never promotes an item the mechanical bar rejected. Cached by the sorted
+// candidate ids. On any failure the mechanical headlines stand unchanged.
+export async function editPicks(env, state, items, config, now) {
+  const ai = config.ai || {};
+  const feat = ai.picks || {};
+  const g = await gate(env, ai, feat);
+  if (!g.ok) return { degraded: true, reason: g.reason };
+
+  const cands = (state.headline_candidates && state.headline_candidates.length)
+    ? state.headline_candidates : (state.headlines || []);
+  if (!cands.length) return { degraded: false, reason: "no candidates" };
+  const byId = new Map(cands.map((c) => [c.id, c]));
+
+  const hash = await sha1(cands.map((c) => c.id).sort().join(","));
+  const cache = (await loadCache(env, PICKS_KEY)) || { ts: 0, hash: "", order: [] };
+  const apply = (order) => {
+    const picked = order.map((p) => { const it = byId.get(p.id); return it ? { ...it, why: p.why } : null; })
+      .filter(Boolean).slice(0, feat.count || 8);
+    if (picked.length) state.headlines = picked;
+  };
+  if (cache.hash === hash && cache.order.length) { apply(cache.order); return { degraded: false, reason: "cached" }; }
+  if (now - (cache.ts || 0) < (feat.min_interval_min ?? 30) * 60000 && cache.order.length) {
+    apply(cache.order); return { degraded: false, reason: "throttled" };
+  }
+
+  const lines = cands.map((c) => `${c.id} | (${c.domain_label || c.domain}) ${c.title}${c.hook ? " — " + c.hook : ""}`).join("\n");
+  try {
+    const { parsed, cents } = await callModel(env, {
+      system: picksSystem(feat.count, feat.guidance),
+      user: `Candidate stories:\n${lines}`,
+      schema: PICKS_SCHEMA, model: feat.model, max_tokens: 700,
+    });
+    if (cents) await addSpendCents(env, cents);
+    const order = (parsed && Array.isArray(parsed.picks)) ? parsed.picks.filter((p) => p && byId.has(p.id)) : [];
+    if (order.length) {
+      apply(order);
+      await saveCache(env, PICKS_KEY, { ts: now, hash, order });
+      return { degraded: false, reason: "ok", spentCents: cents };
+    }
+    return { degraded: false, reason: "no usable picks", spentCents: cents };
+  } catch (e) {
+    return { degraded: false, reason: "error: " + String(e.message || e).slice(0, 60) };
+  }
+}
+
 // ---- Orchestrator --------------------------------------------------------------
 // Runs the enabled editorial passes, mutating `state` in place, and returns a
 // per-feature status blob for AI_STATUS_KEY / the health card. Near-instant no-op
@@ -106,8 +176,12 @@ export async function editionBriefs(env, state, items, config, now) {
 export async function augmentEditorial(env, state, items, config, now) {
   const ai = config.ai || {};
   const status = { ts: now };
-  if (!ai.enabled) return status;
+  if (!ai.enabled) { delete state.headline_candidates; return status; }
+  const p = await editPicks(env, state, items, config, now);
+  status.picks = { on: !p.degraded, reason: p.reason, model: (ai.picks || {}).model };
   const b = await editionBriefs(env, state, items, config, now);
   status.briefs = { on: !b.degraded, reason: b.reason, model: (ai.briefs || {}).model };
+  // headline_candidates was only needed by editPicks — drop it from the shipped state.
+  delete state.headline_candidates;
   return status;
 }
