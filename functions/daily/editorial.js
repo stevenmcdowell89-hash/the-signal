@@ -18,6 +18,7 @@ const BRIEFS_KEY = "editorial:briefs";
 const PICKS_KEY = "editorial:picks";
 const DIGESTS_KEY = "editorial:digests";
 const MERGE_KEY = "editorial:merge";
+const EDITIONS_KEY = "editorial:editions";
 
 // Shared gate: master switch + per-feature toggle + API key + shared cap.
 async function gate(env, ai, feat) {
@@ -423,6 +424,83 @@ export async function smartMerge(env, items, config, now) {
   return { degraded: false, reason: dropIds.size ? "merged " + dropIds.size : "nothing to merge", dropped: dropIds.size };
 }
 
+// ---- Order every edition -------------------------------------------------------
+// Reorders the items WITHIN each domain section by AI importance (option a — keeps
+// the section structure, labels and fairness caps exactly as buildState made them).
+// One call per edition; skips News & Money (its date order is intentional). Off by
+// default. On any failure / omitted ids, items keep their mechanical confidence order.
+const ORDER_SCHEMA = {
+  type: "object",
+  properties: { order: { type: "array", items: { type: "string" } } },
+  required: ["order"],
+  additionalProperties: false,
+};
+
+function orderEditionsSystem(label, guidance, ctx) {
+  const steer = (guidance || "").trim();
+  return `You order the items in the "${label}" area of one reader's daily brief by importance to THIS reader.
+
+The reader's configured priorities — honour these FIRST:
+${ctx}
+
+Below are the items, each with an id. Return EVERY given id exactly once, ordered most-important-first per those priorities. Return only ids, no commentary.${steer ? `\n\nAdditional reader guidance: ${steer}` : ""}`;
+}
+
+const ORDER_SKIP = new Set(["news_money"]); // date-ordered by contract
+
+export async function orderEditions(env, state, items, config, now) {
+  const ai = config.ai || {};
+  const feat = ai.editions || {};
+  const g = await gate(env, ai, feat);
+  if (!g.ok) return { degraded: true, reason: g.reason };
+
+  const byEd = {};
+  for (const s of state.sections || []) {
+    if (ORDER_SKIP.has(s.edition)) continue;
+    (byEd[s.edition] ||= []).push(s);
+  }
+  const editions = (state.editions || []).filter((e) => !ORDER_SKIP.has(e.id) && (byEd[e.id] || []).length);
+  if (!editions.length) return { degraded: false, reason: "nothing to order" };
+
+  const cache = (await loadCache(env, EDITIONS_KEY)) || { ts: 0, ed: {} };
+  const throttled = now - (cache.ts || 0) < (feat.min_interval_min ?? 30) * 60000;
+  let spentCents = 0, calls = 0;
+
+  for (const e of editions) {
+    const secs = byEd[e.id];
+    const all = [];
+    for (const s of secs) for (const it of s.items) all.push(it);
+    if (all.length < 2) continue;
+    const hash = await sha1(all.map((i) => i.id).sort().join(","));
+    const prev = cache.ed[e.id];
+    let order = null;
+    if (prev && prev.hash === hash) order = prev.order;
+    else if ((throttled || g.spent + spentCents >= g.cap) && prev) order = prev.order;
+    else if (throttled || g.spent + spentCents >= g.cap) continue;
+    else {
+      const lines = all.map((i) => `${i.id} | (${i.domain_label || i.domain}) ${i.title}`).join("\n");
+      try {
+        const { parsed, cents } = await callModel(env, {
+          system: orderEditionsSystem(e.label, feat.guidance, profileContext(config)),
+          user: `Items in ${e.label}:\n${lines}`,
+          schema: ORDER_SCHEMA, model: feat.model, max_tokens: Math.min(1500, 200 + all.length * 8),
+        });
+        spentCents += cents; calls++;
+        order = (parsed && Array.isArray(parsed.order)) ? parsed.order : null;
+        if (order) cache.ed[e.id] = { hash, order };
+      } catch (_) { order = prev ? prev.order : null; }
+    }
+    if (order && order.length) {
+      const rank = new Map(order.map((id, i) => [id, i]));
+      for (const s of secs) s.items.sort((a, b) => (rank.get(a.id) ?? 1e9) - (rank.get(b.id) ?? 1e9));
+    }
+  }
+
+  if (calls > 0) { cache.ts = now; await saveCache(env, EDITIONS_KEY, cache); }
+  if (spentCents > 0) await addSpendCents(env, spentCents);
+  return { degraded: false, reason: calls ? "ok" : "cached", spentCents, calls };
+}
+
 // ---- Orchestrator --------------------------------------------------------------
 // Runs the enabled editorial passes, mutating `state` in place, and returns a
 // per-feature status blob for AI_STATUS_KEY / the health card. Near-instant no-op
@@ -439,6 +517,8 @@ export async function augmentEditorial(env, state, items, config, now) {
   status.briefs = { on: !b.degraded, reason: b.reason, model: (ai.briefs || {}).model };
   const d = await digestRollups(env, state, items, config, now);
   status.digests = { on: !d.degraded, reason: d.reason, model: (ai.digests || {}).model };
+  const o = await orderEditions(env, state, items, config, now);
+  status.editions = { on: !o.degraded, reason: o.reason, model: (ai.editions || {}).model };
   // Candidate pools were only needed by the curation passes — drop from shipped state.
   delete state.headline_candidates;
   delete state.top20_candidates;

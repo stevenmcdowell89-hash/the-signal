@@ -95,6 +95,14 @@ export function defaultConfig() {
         min_interval_min: 30,
         guidance: "Open with the single most important thing in this area today, then one or two others worth knowing. Plain, calm, specific.",
       },
+      // Order every edition — reorder items within each section by AI importance.
+      // Off by default (structurally sensitive; News & Money stays date-ordered).
+      editions: {
+        enabled: false,
+        model: "claude-haiku-4-5",
+        min_interval_min: 30,
+        guidance: "Within each area, lead with what genuinely matters most to this reader today — confirmed and consequential over routine.",
+      },
       // Smart merge — collapse same-story dupes the mechanical dedup missed. RISKIEST
       // (removes content) → off by default.
       merge: {
@@ -240,7 +248,7 @@ function mergeConfig(def, saved) {
   out.recency = { ...def.recency, ...(saved.recency || {}) };
   out.scoring = { ...def.scoring, ...(saved.scoring || {}) };
   out.ai = { ...def.ai, ...(saved.ai || {}) };
-  for (const k of ["picks", "top20", "digests", "briefs", "merge"]) {
+  for (const k of ["picks", "top20", "digests", "briefs", "editions", "merge"]) {
     out.ai[k] = { ...def.ai[k], ...((saved.ai || {})[k] || {}) };
   }
   out.push = { ...def.push, ...(saved.push || {}) };

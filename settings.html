@@ -295,6 +295,17 @@
       <label for="ai-merge-guidance" style="margin-top:0.6rem">Guidance — when two items are the same story</label>
       <textarea id="ai-merge-guidance" rows="3"></textarea>
     </div>
+
+    <div class="card">
+      <h2>Order every edition</h2>
+      <div class="toggle"><input type="checkbox" id="ai-editions-on"><label for="ai-editions-on">Order items within each edition by AI judgement (off by default — News &amp; Money stays date-ordered)</label></div>
+      <div class="row" style="margin-top:0.6rem">
+        <div><label for="ai-editions-model">Model</label><input type="text" id="ai-editions-model"></div>
+        <div><label for="ai-editions-interval">Min minutes between runs</label><input type="number" id="ai-editions-interval" min="0" max="240"></div>
+      </div>
+      <label for="ai-editions-guidance" style="margin-top:0.6rem">Guidance — how to order within an area</label>
+      <textarea id="ai-editions-guidance" rows="3"></textarea>
+    </div>
     </div><!-- /panel:ai -->
 
     <div class="panel" data-panel="sources">
@@ -602,7 +613,7 @@
       $('ai-cap').value = ai.monthly_cap_cents!=null?ai.monthly_cap_cents:800;
       var aiNum = { picks:'count', top20:'count', digests:'max_rollups', briefs:'max_sentences', merge:'max_candidates' };
       var aiNumId = { picks:'count', top20:'count', digests:'max', briefs:'max', merge:'max' };
-      ['picks','top20','digests','briefs','merge'].forEach(function(k){
+      ['picks','top20','digests','briefs','editions','merge'].forEach(function(k){
         var f = ai[k]||{};
         $('ai-'+k+'-on').checked = !!f.enabled;
         $('ai-'+k+'-model').value = f.model||'claude-haiku-4-5';
@@ -687,6 +698,7 @@
         top20: feat('top20','count','count'),
         digests: feat('digests','max_rollups','max'),
         briefs: feat('briefs','max_sentences','max'),
+        editions: feat('editions', null, null),
         merge: feat('merge','max_candidates','max')
       };
     }
@@ -843,7 +855,7 @@
       var editorial = '';
       if (ai){
         editorial = '<div style="margin-top:0.5rem">';
-        [['picks','Picks'],['top20','Top 20'],['digests','Digests'],['briefs','Briefs'],['merge','Merge']].forEach(function(p){
+        [['picks','Picks'],['top20','Top 20'],['digests','Digests'],['briefs','Briefs'],['editions','Editions'],['merge','Merge']].forEach(function(p){
           var f = ai[p[0]]||{};
           editorial += '<span class="pill '+(f.on?'on':'off')+'" title="'+escA(f.reason||'')+'">'+escA(p[1])+(f.on?'':' off')+'</span>';
         });
