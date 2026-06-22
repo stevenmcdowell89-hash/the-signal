@@ -77,7 +77,7 @@ export async function clusterId(canon) {
   return [...new Uint8Array(buf)].slice(0, 8).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-function mergeLinks(into, from) {
+export function mergeLinks(into, from) {
   const seen = new Set(into.map((l) => l.url));
   for (const l of from) {
     if (!seen.has(l.url)) {
