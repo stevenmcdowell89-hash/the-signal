@@ -50,7 +50,7 @@ export async function onRequestPost({ request, env }) {
   if (incoming.recency) next.recency = { ...current.recency, ...incoming.recency };
   if (incoming.ai) {
     next.ai = { ...current.ai, ...incoming.ai };
-    for (const k of ["picks", "top20", "digests", "briefs", "merge"])
+    for (const k of ["picks", "top20", "digests", "briefs", "editions", "merge"])
       if (incoming.ai[k]) next.ai[k] = { ...((current.ai || {})[k] || {}), ...incoming.ai[k] };
   }
   if (incoming.push) {
