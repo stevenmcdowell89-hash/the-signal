@@ -89,6 +89,9 @@ const DEFAULT_SCORE_WINDOW_DAYS = 2;
 // Health blobs the settings page reads via /api/health.
 export const SOURCE_STATUS_KEY = "source_status";
 export const ENRICH_STATUS_KEY = "enrich_status";
+// AI editorial layer per-feature status (written by the editorial passes; read by
+// /api/health). Absent until the passes land — health falls back to config state.
+export const AI_STATUS_KEY = "ai_status";
 
 // Map a D1 row to the in-memory item shape the engine expects.
 function rowToItem(row, weightBySource) {

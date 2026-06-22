@@ -5,7 +5,7 @@
 // counts come from D1; last-poll liveness + enrichment status from KV.
 
 import { loadConfig, getMonthlySpendCents } from "../daily/config.js";
-import { SOURCE_STATUS_KEY, ENRICH_STATUS_KEY } from "../daily/pipeline.js";
+import { SOURCE_STATUS_KEY, ENRICH_STATUS_KEY, AI_STATUS_KEY } from "../daily/pipeline.js";
 import { getSourceCounts } from "../daily/db.js";
 
 function json(obj, status = 200) {
@@ -89,5 +89,33 @@ export async function onRequestGet({ env }) {
     cap_usd: Math.round(ec.monthly_spend_cap_cents || 500) / 100,
   };
 
-  return json({ generated_at: now, last_poll: status.ts || null, sources, enrichment });
+  // AI editorial layer — per-feature configured/runtime state + the shared budget.
+  let aiStatus = null;
+  if (env.DAILY_STATE) {
+    try { aiStatus = JSON.parse((await env.DAILY_STATE.get(AI_STATUS_KEY)) || "null"); } catch (_) {}
+  }
+  const aiCfg = config.ai || {};
+  const featState = (k) => {
+    const f = aiCfg[k] || {};
+    const s = aiStatus && aiStatus[k];
+    return {
+      configured_on: !!(aiCfg.enabled && f.enabled),
+      on: s ? !!s.on : false,
+      reason: s ? s.reason : (!aiCfg.enabled ? "ai off" : (f.enabled ? (env.ANTHROPIC_API_KEY ? "no run yet" : "no ANTHROPIC_API_KEY") : "feature off")),
+      model: (s && s.model) || f.model || "claude-haiku-4-5",
+    };
+  };
+  const ai = {
+    configured_on: !!aiCfg.enabled,
+    has_key: !!env.ANTHROPIC_API_KEY,
+    month_to_date_usd: Math.round(spentCents) / 100,
+    cap_usd: Math.round(aiCfg.monthly_cap_cents || 800) / 100,
+    last_run: aiStatus ? aiStatus.ts : null,
+    picks: featState("picks"),
+    digests: featState("digests"),
+    briefs: featState("briefs"),
+    merge: featState("merge"),
+  };
+
+  return json({ generated_at: now, last_poll: status.ts || null, sources, enrichment, ai });
 }

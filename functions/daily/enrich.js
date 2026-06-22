@@ -12,17 +12,9 @@
 
 import { saveEnrichment } from "./db.js";
 import { addSpendCents, getMonthlySpendCents } from "./config.js";
+import { callModel } from "./llm.js";
 
-const ENDPOINT = "https://api.anthropic.com/v1/messages";
-const ANTHROPIC_VERSION = "2023-06-01";
-
-// $1 / $5 per M tokens for claude-haiku-4-5.
-const IN_PER_TOK = 1.0 / 1e6;
-const OUT_PER_TOK = 5.0 / 1e6;
-const CACHE_READ_PER_TOK = 0.1 / 1e6;
-const CACHE_WRITE_PER_TOK = 1.25 / 1e6;
-
-function systemPrompt(profile) {
+function systemPrompt(profile, guidance) {
   const floor = (profile.named_entity_floor || []).map((e) => e.label).join(", ");
   const topics = Object.entries(profile.topic_weights || {})
     .map(([d, s]) => `${d} (${s.weight})`)
@@ -30,6 +22,9 @@ function systemPrompt(profile) {
   const handling = Object.entries(profile.special_handling || {})
     .map(([d, s]) => `${d}: ${s.note}`)
     .join("; ");
+  // Optional reader-authored steer (editable in Settings → AI Editorial). Appended
+  // so it overrides/extends the built-in instruction without replacing it.
+  const steer = (guidance || "").trim();
   return `You are the triage engine for "The Signal" daily brief — a dense, scannable, link-out digest for one reader. You classify and write one hook line per news item.
 
 The reader's core entities (always relevant): ${floor}.
@@ -41,7 +36,7 @@ For each item return:
 - hook: ONE line, register-matched. SPECIFICITY IS THE BAR — name the actual argument, number, or quirk. "Interesting discussion about X" is a failed line. Personal second-person voice is allowed ("your device", "your Sunday"). Max ~22 words. No clickbait, no spoilers (books/film), no diet/calorie framing (fitness).
 - relevance: 0.0–1.0, how relevant to THIS reader's profile (not general importance). A precise reason to care is the gate; if there is no specific reason this reader should care, score low.
 
-Be terse. Do not editorialise beyond the hook.`;
+Be terse. Do not editorialise beyond the hook.${steer ? `\n\nReader's editorial guidance: ${steer}` : ""}`;
 }
 
 const OUTPUT_SCHEMA = {
@@ -55,52 +50,20 @@ const OUTPUT_SCHEMA = {
   additionalProperties: false,
 };
 
-async function callHaiku(env, system, item, model) {
-  const body = {
-    model: model || "claude-haiku-4-5",
-    max_tokens: 200,
-    system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],
-    output_config: { format: { type: "json_schema", schema: OUTPUT_SCHEMA } },
-    messages: [
-      {
-        role: "user",
-        content: `Item (${item.domain}): "${item.title}"\nSource type: ${item.source_type}. Links: ${
-          (item.links || []).map((l) => l.type).join(", ")
-        }.`,
-      },
-    ],
-  };
-  const resp = await fetch(ENDPOINT, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      "x-api-key": env.ANTHROPIC_API_KEY,
-      "anthropic-version": ANTHROPIC_VERSION,
-    },
-    body: JSON.stringify(body),
-  });
-  if (!resp.ok) {
-    const t = await resp.text();
-    throw new Error(`anthropic ${resp.status}: ${t.slice(0, 200)}`);
-  }
-  const data = await resp.json();
-  const usage = data.usage || {};
-  const cents =
-    100 *
-    ((usage.input_tokens || 0) * IN_PER_TOK +
-      (usage.output_tokens || 0) * OUT_PER_TOK +
-      (usage.cache_read_input_tokens || 0) * CACHE_READ_PER_TOK +
-      (usage.cache_creation_input_tokens || 0) * CACHE_WRITE_PER_TOK);
-  let parsed = null;
-  const block = (data.content || []).find((b) => b.type === "text");
-  if (block) {
-    try {
-      parsed = JSON.parse(block.text);
-    } catch {
-      parsed = null;
-    }
-  }
-  return { parsed, cents };
+function callHaiku(env, system, item, model) {
+  const user = `Item (${item.domain}): "${item.title}"\nSource type: ${item.source_type}. Links: ${
+    (item.links || []).map((l) => l.type).join(", ")
+  }.`;
+  return callModel(env, { system, user, schema: OUTPUT_SCHEMA, model, max_tokens: 200 });
+}
+
+// Effective spend ceiling: when the AI layer is on, the shared cap governs all
+// passes (enrichment + editorial); otherwise enrichment's own legacy cap applies.
+function effectiveCap(config) {
+  const ec = config.enrichment || {};
+  const ai = config.ai || {};
+  const legacy = ec.monthly_spend_cap_cents || 500;
+  return ai.enabled ? Math.min(legacy, ai.monthly_cap_cents || legacy) : legacy;
 }
 
 // Enrich the shortlist. Returns { enriched, spentCents, degraded, reason }.
@@ -110,8 +73,9 @@ export async function enrichShortlist(env, db, items, config, now) {
   if (!env.ANTHROPIC_API_KEY)
     return { enriched: 0, spentCents: 0, degraded: true, reason: "no ANTHROPIC_API_KEY" };
 
+  const cap = effectiveCap(config);
   const spent = await getMonthlySpendCents(env);
-  if (spent >= (ec.monthly_spend_cap_cents || 500))
+  if (spent >= cap)
     return { enriched: 0, spentCents: 0, degraded: true, reason: "monthly spend cap hit" };
 
   // Shortlist: top-N by confidence that need enriching (not already judged).
@@ -123,7 +87,7 @@ export async function enrichShortlist(env, db, items, config, now) {
 
   if (!shortlist.length) return { enriched: 0, spentCents: 0, degraded: false, reason: "nothing new" };
 
-  const system = systemPrompt(config.profile);
+  const system = systemPrompt(config.profile, ec.guidance);
   let enriched = 0;
   let spentCents = 0;
   let capHit = false;
@@ -131,7 +95,7 @@ export async function enrichShortlist(env, db, items, config, now) {
   // Sequential with a per-loop cap check so we never blow the budget. (Awaiting
   // fetch costs wall time, not CPU; ~36 items is well within a cron run.)
   for (const it of shortlist) {
-    if (spent + spentCents >= (ec.monthly_spend_cap_cents || 500)) {
+    if (spent + spentCents >= cap) {
       capHit = true;
       break;
     }

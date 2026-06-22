@@ -51,6 +51,50 @@ export function defaultConfig() {
       shortlist_size: 36, // ~top 30–40
       monthly_spend_cap_cents: 500, // $5/mo; on hit, auto-fall back to Tier 1
       batch: false, // synchronous per-run; flip on to use the Batch API
+      guidance: "", // reader-authored steer appended to the hook prompt (Settings)
+    },
+    // ---- AI editorial layer (§ AI) ----
+    // A quality layer ON TOP of the mechanical brief — never a dependency. With
+    // `enabled:false` (or no API key, or the shared cap hit) the brief is exactly
+    // the mechanical one. Each pass is independently toggleable and fully
+    // configurable in-app, including a plain-English `guidance` steer for HOW it
+    // prioritises / groups / summarises. All passes draw on ONE shared monthly cap.
+    ai: {
+      enabled: true,
+      monthly_cap_cents: 800, // shared across enrichment + all editorial passes
+      // Editor's Picks — curate + order the front-page Headlines, write "why it matters".
+      picks: {
+        enabled: true,
+        model: "claude-haiku-4-5",
+        count: 8,
+        min_interval_min: 30,
+        guidance: "Lead with what genuinely changes the reader's day or world — confirmed, consequential developments over speculation. Order by importance to this reader; a precise reason to care is the bar.",
+      },
+      // Firehose digests — synthesise each "+N more in {topic}" tail.
+      digests: {
+        enabled: true,
+        model: "claude-haiku-4-5",
+        max_rollups: 12,
+        min_interval_min: 30,
+        guidance: "Synthesise the related posts factually in 1–2 sentences: lead with anything confirmed, then the gist of the rest. No hype, no clickbait.",
+      },
+      // Edition briefs — a short "what you need to know" intro per edition.
+      briefs: {
+        enabled: true,
+        model: "claude-haiku-4-5",
+        max_sentences: 3,
+        min_interval_min: 30,
+        guidance: "Open with the single most important thing in this area today, then one or two others worth knowing. Plain, calm, specific.",
+      },
+      // Smart merge — collapse same-story dupes the mechanical dedup missed. RISKIEST
+      // (removes content) → off by default.
+      merge: {
+        enabled: false,
+        model: "claude-haiku-4-5",
+        max_candidates: 40,
+        min_interval_min: 60,
+        guidance: "Treat two items as the same story only when they report the same concrete event (same signing, same announcement, same release). Different people or events are different stories.",
+      },
     },
     push: {
       // Daily = silent precache + app badge (no push). Weekly = the push.
@@ -186,6 +230,10 @@ function mergeConfig(def, saved) {
   out.enrichment = { ...def.enrichment, ...(saved.enrichment || {}) };
   out.recency = { ...def.recency, ...(saved.recency || {}) };
   out.scoring = { ...def.scoring, ...(saved.scoring || {}) };
+  out.ai = { ...def.ai, ...(saved.ai || {}) };
+  for (const k of ["picks", "digests", "briefs", "merge"]) {
+    out.ai[k] = { ...def.ai[k], ...((saved.ai || {})[k] || {}) };
+  }
   out.push = { ...def.push, ...(saved.push || {}) };
   out.push.significant = { ...def.push.significant, ...((saved.push || {}).significant || {}) };
   const sp = saved.profile;
