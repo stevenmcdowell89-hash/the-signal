@@ -15,6 +15,7 @@ import { callModel } from "./llm.js";
 
 const BRIEFS_KEY = "editorial:briefs";
 const PICKS_KEY = "editorial:picks";
+const DIGESTS_KEY = "editorial:digests";
 
 // Shared gate: master switch + per-feature toggle + API key + shared cap.
 async function gate(env, ai, feat) {
@@ -169,6 +170,67 @@ export async function editPicks(env, state, items, config, now) {
   }
 }
 
+// ---- Firehose digests ----------------------------------------------------------
+const DIGEST_SCHEMA = {
+  type: "object",
+  properties: { digest: { type: "string" } },
+  required: ["digest"],
+  additionalProperties: false,
+};
+
+function digestsSystem(label, guidance) {
+  const steer = (guidance || "").trim();
+  return `You summarise the pile of lower-ranked "${label}" posts in one reader's daily brief into 1–2 sentences — the gist, so they can skip the pile or dive in. Lead with anything confirmed or genuinely major, then the themes / who-and-what. Specific and factual; no hype, no clickbait, no "various stories about". If the pile is trivial, say so briefly.${steer ? `\n\nReader's guidance: ${steer}` : ""}`;
+}
+
+// Writes state.rollup_digests = { [domain]: "1–2 sentence synthesis" } for the
+// below-fold "+N more in {topic}" tails. Per-domain cache keyed by the tail's ids.
+export async function digestRollups(env, state, items, config, now) {
+  const ai = config.ai || {};
+  const feat = ai.digests || {};
+  const g = await gate(env, ai, feat);
+  if (!g.ok) return { degraded: true, reason: g.reason };
+
+  const byDom = {};
+  for (const it of state.below_fold || []) (byDom[it.domain] ||= []).push(it);
+  const domains = Object.keys(byDom)
+    .filter((d) => byDom[d].length >= 3) // only a real pile is worth a digest
+    .sort((a, b) => byDom[b].length - byDom[a].length)
+    .slice(0, feat.max_rollups || 12);
+  if (!domains.length) return { degraded: false, reason: "nothing to digest" };
+
+  const cache = (await loadCache(env, DIGESTS_KEY)) || { ts: 0, dom: {} };
+  const throttled = now - (cache.ts || 0) < (feat.min_interval_min ?? 30) * 60000;
+  const out = {};
+  let spentCents = 0, calls = 0;
+
+  for (const d of domains) {
+    const list = byDom[d];
+    const hash = await sha1(list.map((i) => i.id).sort().join(","));
+    const prev = cache.dom[d];
+    if (prev && prev.hash === hash) { out[d] = prev.text; continue; }
+    if ((throttled || g.spent + spentCents >= g.cap) && prev) { out[d] = prev.text; continue; }
+    if (throttled || g.spent + spentCents >= g.cap) continue;
+    const label = list[0].domain_label || d;
+    const titles = list.slice(0, 20).map((i, n) => `${n + 1}. ${i.title}`).join("\n");
+    try {
+      const { parsed, cents } = await callModel(env, {
+        system: digestsSystem(label, feat.guidance),
+        user: `Topic: ${label}\nThe ${list.length} lower-ranked posts:\n${titles}`,
+        schema: DIGEST_SCHEMA, model: feat.model, max_tokens: 180,
+      });
+      spentCents += cents; calls++;
+      if (parsed && parsed.digest) { out[d] = parsed.digest.trim(); cache.dom[d] = { hash, text: out[d] }; }
+      else if (prev) out[d] = prev.text;
+    } catch (_) { if (prev) out[d] = prev.text; }
+  }
+
+  if (calls > 0) { cache.ts = now; await saveCache(env, DIGESTS_KEY, cache); }
+  if (spentCents > 0) await addSpendCents(env, spentCents);
+  state.rollup_digests = out;
+  return { degraded: false, reason: calls ? "ok" : "cached", spentCents, calls };
+}
+
 // ---- Orchestrator --------------------------------------------------------------
 // Runs the enabled editorial passes, mutating `state` in place, and returns a
 // per-feature status blob for AI_STATUS_KEY / the health card. Near-instant no-op
@@ -181,6 +243,8 @@ export async function augmentEditorial(env, state, items, config, now) {
   status.picks = { on: !p.degraded, reason: p.reason, model: (ai.picks || {}).model };
   const b = await editionBriefs(env, state, items, config, now);
   status.briefs = { on: !b.degraded, reason: b.reason, model: (ai.briefs || {}).model };
+  const d = await digestRollups(env, state, items, config, now);
+  status.digests = { on: !d.degraded, reason: d.reason, model: (ai.digests || {}).model };
   // headline_candidates was only needed by editPicks — drop it from the shipped state.
   delete state.headline_candidates;
   return status;
