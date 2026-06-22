@@ -202,10 +202,11 @@
       <div class="toggle"><input type="checkbox" id="enr-on"><label for="enr-on">Enrichment on (register + hook line + semantic relevance)</label></div>
       <div class="row" style="margin-top:0.6rem">
         <div><label for="enr-model">Model</label><input type="text" id="enr-model"></div>
-        <div><label for="enr-short">Shortlist size</label><input type="number" id="enr-short" min="0" max="80"></div>
+        <div><label for="enr-short">Shortlist size (items judged/run)</label><input type="number" id="enr-short" min="0" max="200"></div>
+        <div><label for="enr-batch-size">Items per call (batch)</label><input type="number" id="enr-batch-size" min="1" max="25"></div>
         <div><label for="enr-cap">Monthly spend cap (cents)</label><input type="number" id="enr-cap" min="0" step="50"></div>
       </div>
-      <div class="toggle" style="margin-top:0.6rem"><input type="checkbox" id="enr-batch"><label for="enr-batch">Use the Batch API (cheaper, slower — enriches on a later run, not this one)</label></div>
+      <div class="hint" style="margin-top:0.4rem">Items are mini-batched into one call each, so a larger shortlist costs far less than one call per item. The shared AI cap still applies.</div>
       <label for="enr-guidance" style="margin-top:0.6rem">Hook guidance (optional — how to write the hook line)</label>
       <textarea id="enr-guidance" rows="2" placeholder="e.g. Lead with the concrete fact. Sceptical of hype."></textarea>
       <div class="hint">On cap-hit the daily auto-falls back to Tier 1 (headlines + links, no hooks) and records it. The shared AI cap (AI tab) supersedes this cap when the AI layer is on.</div>
@@ -580,9 +581,9 @@
       var e = c.enrichment||{};
       $('enr-on').checked = !!e.enabled;
       $('enr-model').value = e.model||'claude-haiku-4-5';
-      $('enr-short').value = e.shortlist_size||36;
+      $('enr-short').value = e.shortlist_size||100;
+      $('enr-batch-size').value = e.batch_size||10;
       $('enr-cap').value = e.monthly_spend_cap_cents||500;
-      $('enr-batch').checked = !!e.batch;
       $('enr-guidance').value = e.guidance||'';
       var ai = c.ai||{};
       $('ai-on').checked = !!ai.enabled;
@@ -694,9 +695,9 @@
         enrichment: {
           enabled: $('enr-on').checked,
           model: $('enr-model').value.trim()||'claude-haiku-4-5',
-          shortlist_size: intOr('enr-short',36),
+          shortlist_size: intOr('enr-short',100),
+          batch_size: intOr('enr-batch-size',10),
           monthly_spend_cap_cents: intOr('enr-cap',0),
-          batch: $('enr-batch').checked,
           guidance: $('enr-guidance').value.trim()
         },
         ai: aiBlock(),

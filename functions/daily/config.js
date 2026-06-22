@@ -48,9 +48,10 @@ export function defaultConfig() {
     enrichment: {
       enabled: true,
       model: "claude-haiku-4-5",
-      shortlist_size: 36, // ~top 30–40
+      shortlist_size: 100, // top-N items judged per run (mini-batched, so far cheaper than 1/call)
+      batch_size: 10, // items per Anthropic call (one cached system block amortised across the batch)
       monthly_spend_cap_cents: 500, // $5/mo; on hit, auto-fall back to Tier 1
-      batch: false, // synchronous per-run; flip on to use the Batch API
+      batch: false, // (reserved) async Batch API — orthogonal to the synchronous mini-batch above
       guidance: "", // reader-authored steer appended to the hook prompt (Settings)
     },
     // ---- AI editorial layer (§ AI) ----
