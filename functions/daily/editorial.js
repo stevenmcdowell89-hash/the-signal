@@ -43,6 +43,32 @@ async function saveCache(env, key, obj) {
   try { await env.DAILY_STATE.put(key, JSON.stringify(obj)); } catch { /* best-effort */ }
 }
 
+// Shared "what the reader has configured" context, so every editorial pass anchors
+// its judgement to the SAME weightings as the mechanical engine — the core entities,
+// topic weights, signal tiers and rules — instead of competing with them. The
+// per-pass `guidance` then layers on TOP as an additional steer, not a rival signal.
+function profileContext(config) {
+  const p = (config && config.profile) || {};
+  const floor = (p.named_entity_floor || []).map((e) => e.label).join(", ");
+  const topics = Object.entries(p.topic_weights || {})
+    .sort((a, b) => (b[1].weight || 0) - (a[1].weight || 0))
+    .map(([d, s]) => `${s.label || d} (${s.weight})`)
+    .join(", ");
+  const tiers = p.signal_tiers || {};
+  const hi = (tiers.high || []).slice(0, 14).join(", ");
+  const lo = (tiers.low || []).slice(0, 14).join(", ");
+  const handling = Object.entries(p.special_handling || {})
+    .map(([d, s]) => (s && s.note ? `${d}: ${s.note}` : null))
+    .filter(Boolean).join("; ");
+  return [
+    floor && `Always-relevant core entities: ${floor}.`,
+    topics && `Topic priorities, higher number = more important: ${topics}.`,
+    hi && `High-signal words to favour: ${hi}.`,
+    lo && `Low-signal words to discount: ${lo}.`,
+    handling && `Editorial rules — ${handling}.`,
+  ].filter(Boolean).join("\n") || "(no explicit priorities configured)";
+}
+
 // ---- Edition briefs ------------------------------------------------------------
 const BRIEF_SCHEMA = {
   type: "object",
@@ -51,9 +77,14 @@ const BRIEF_SCHEMA = {
   additionalProperties: false,
 };
 
-function briefsSystem(label, guidance, maxSentences) {
+function briefsSystem(label, guidance, maxSentences, ctx) {
   const steer = (guidance || "").trim();
-  return `You write the short "what you need to know" intro for the "${label}" section of one reader's personal daily brief. Given today's item titles in that section, write at most ${maxSentences || 3} sentences capturing what matters most in this area today. Name the actual things — specific, plain, calm. No preamble ("here's what's happening"), no clickbait, no spoilers. If nothing is genuinely notable, a single low-key sentence is fine.${steer ? `\n\nReader's guidance: ${steer}` : ""}`;
+  return `You write the short "what you need to know" intro for the "${label}" section of one reader's personal daily brief.
+
+The reader's configured priorities (use these to decide what matters most — they come from the reader's own settings):
+${ctx}
+
+Given today's item titles in that section, write at most ${maxSentences || 3} sentences capturing what matters most in this area today, consistent with those priorities. Name the actual things — specific, plain, calm. No preamble ("here's what's happening"), no clickbait, no spoilers. If nothing is genuinely notable, a single low-key sentence is fine.${steer ? `\n\nAdditional reader guidance (layer on top of the priorities above, do not override them): ${steer}` : ""}`;
 }
 
 // Writes state.edition_briefs = { [editionId]: "2–3 sentence intro" }. Per-edition
@@ -87,7 +118,7 @@ export async function editionBriefs(env, state, items, config, now) {
     const titles = list.slice(0, 12).map((i, n) => `${n + 1}. ${i.title}`).join("\n");
     try {
       const { parsed, cents } = await callModel(env, {
-        system: briefsSystem(e.label, feat.guidance, feat.max_sentences),
+        system: briefsSystem(e.label, feat.guidance, feat.max_sentences, profileContext(config)),
         user: `Edition: ${e.label}\nToday's items:\n${titles}`,
         schema: BRIEF_SCHEMA, model: feat.model, max_tokens: 220,
       });
@@ -121,9 +152,14 @@ const PICKS_SCHEMA = {
   additionalProperties: false,
 };
 
-function picksSystem(count, guidance) {
+function picksSystem(count, guidance, ctx) {
   const steer = (guidance || "").trim();
-  return `You are the front-page editor of one reader's personal daily brief. From the candidate stories below (each with an id), choose the ones that genuinely belong on the front page and order them by importance to THIS reader — most important first, at most ${count || 8}. For each chosen story write a ONE-line "why it matters": max ~18 words, specific (name the actual stake/number/consequence), no hype, no spoilers. Drop anything that isn't real front-page material rather than padding to the limit. Return only the chosen stories, by their given id, in your chosen order.${steer ? `\n\nReader's guidance: ${steer}` : ""}`;
+  return `You are the front-page editor of one reader's personal daily brief.
+
+The reader's configured priorities — honour these FIRST (they come from the reader's own settings, and define what "important" means for this reader):
+${ctx}
+
+From the candidate stories below (each with an id), choose the ones that genuinely belong on the front page and order them by importance to THIS reader, consistent with the priorities above — most important first, at most ${count || 8}. For each chosen story write a ONE-line "why it matters": max ~18 words, specific (name the actual stake/number/consequence), no hype, no spoilers. Drop anything that isn't real front-page material rather than padding to the limit. Return only the chosen stories, by their given id, in your chosen order.${steer ? `\n\nAdditional reader guidance (layer on top of the priorities above, do not override them): ${steer}` : ""}`;
 }
 
 // Reorders state.headlines within the mechanical candidate set and attaches a `why`
@@ -155,7 +191,7 @@ export async function editPicks(env, state, items, config, now) {
   const lines = cands.map((c) => `${c.id} | (${c.domain_label || c.domain}) ${c.title}${c.hook ? " — " + c.hook : ""}`).join("\n");
   try {
     const { parsed, cents } = await callModel(env, {
-      system: picksSystem(feat.count, feat.guidance),
+      system: picksSystem(feat.count, feat.guidance, profileContext(config)),
       user: `Candidate stories:\n${lines}`,
       schema: PICKS_SCHEMA, model: feat.model, max_tokens: 700,
     });
@@ -180,9 +216,14 @@ const DIGEST_SCHEMA = {
   additionalProperties: false,
 };
 
-function digestsSystem(label, guidance) {
+function digestsSystem(label, guidance, ctx) {
   const steer = (guidance || "").trim();
-  return `You summarise the pile of lower-ranked "${label}" posts in one reader's daily brief into 1–2 sentences — the gist, so they can skip the pile or dive in. Lead with anything confirmed or genuinely major, then the themes / who-and-what. Specific and factual; no hype, no clickbait, no "various stories about". If the pile is trivial, say so briefly.${steer ? `\n\nReader's guidance: ${steer}` : ""}`;
+  return `You summarise the pile of lower-ranked "${label}" posts in one reader's daily brief into 1–2 sentences — the gist, so they can skip the pile or dive in.
+
+The reader's configured priorities (use them to judge what in the pile is worth surfacing):
+${ctx}
+
+Lead with anything confirmed or genuinely major (per those priorities), then the themes / who-and-what. Specific and factual; no hype, no clickbait, no "various stories about". If the pile is trivial, say so briefly.${steer ? `\n\nAdditional reader guidance: ${steer}` : ""}`;
 }
 
 // Writes state.rollup_digests = { [domain]: "1–2 sentence synthesis" } for the
@@ -217,7 +258,7 @@ export async function digestRollups(env, state, items, config, now) {
     const titles = list.slice(0, 20).map((i, n) => `${n + 1}. ${i.title}`).join("\n");
     try {
       const { parsed, cents } = await callModel(env, {
-        system: digestsSystem(label, feat.guidance),
+        system: digestsSystem(label, feat.guidance, profileContext(config)),
         user: `Topic: ${label}\nThe ${list.length} lower-ranked posts:\n${titles}`,
         schema: DIGEST_SCHEMA, model: feat.model, max_tokens: 180,
       });
