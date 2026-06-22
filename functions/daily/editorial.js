@@ -12,10 +12,12 @@
 
 import { addSpendCents, getMonthlySpendCents } from "./config.js";
 import { callModel } from "./llm.js";
+import { mergeLinks } from "./dedup.js";
 
 const BRIEFS_KEY = "editorial:briefs";
 const PICKS_KEY = "editorial:picks";
 const DIGESTS_KEY = "editorial:digests";
+const MERGE_KEY = "editorial:merge";
 
 // Shared gate: master switch + per-feature toggle + API key + shared cap.
 async function gate(env, ai, feat) {
@@ -229,6 +231,95 @@ export async function digestRollups(env, state, items, config, now) {
   if (spentCents > 0) await addSpendCents(env, spentCents);
   state.rollup_digests = out;
   return { degraded: false, reason: calls ? "ok" : "cached", spentCents, calls };
+}
+
+// ---- Smart merge ---------------------------------------------------------------
+// The ONLY pass that removes content → off by default, and conservative: same-domain
+// groups only, candidate-capped, no-op on any failure. Runs BEFORE enrich/buildState
+// and MUTATES `items` in place (collapses each same-story group into its highest-
+// confidence member, folding in source_count + links; drops the rest).
+const MERGE_SCHEMA = {
+  type: "object",
+  properties: {
+    groups: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: { ids: { type: "array", items: { type: "string" } } },
+        required: ["ids"],
+        additionalProperties: false,
+      },
+    },
+  },
+  required: ["groups"],
+  additionalProperties: false,
+};
+
+function mergeSystem(guidance) {
+  const steer = (guidance || "").trim();
+  return `You are de-duplicating a news brief. Below are stories, each with an id. Group together ONLY stories that report the SAME concrete event — the same signing, the same announcement, the same release, the same incident. Different events, different people, or merely the same topic are NOT the same story. Most stories are unique; return only genuine duplicate groups of 2+ ids. When in any doubt, do NOT group. Return groups as lists of ids.${steer ? `\n\nReader's guidance: ${steer}` : ""}`;
+}
+
+export async function smartMerge(env, items, config, now) {
+  const ai = config.ai || {};
+  const feat = ai.merge || {};
+  const g = await gate(env, ai, feat);
+  if (!g.ok) return { degraded: true, reason: g.reason };
+
+  const cands = items
+    .filter((i) => !i.muted && i.above_fold)
+    .sort((a, b) => b.confidence - a.confidence)
+    .slice(0, feat.max_candidates || 40);
+  if (cands.length < 2) return { degraded: false, reason: "too few candidates" };
+
+  const cache = (await loadCache(env, MERGE_KEY)) || { ts: 0, hash: "", groups: [] };
+  const hash = await sha1(cands.map((c) => c.id).sort().join(","));
+  const throttled = now - (cache.ts || 0) < (feat.min_interval_min ?? 60) * 60000;
+
+  let groups;
+  if (cache.hash === hash) groups = cache.groups || [];
+  else if (throttled) groups = cache.groups || [];
+  else {
+    const lines = cands.map((c) => `${c.id} | (${c.domain}) ${c.title}`).join("\n");
+    try {
+      const { parsed, cents } = await callModel(env, {
+        system: mergeSystem(feat.guidance),
+        user: `Stories (id | (domain) title):\n${lines}`,
+        schema: MERGE_SCHEMA, model: feat.model, max_tokens: 500,
+      });
+      if (cents) await addSpendCents(env, cents);
+      groups = (parsed && Array.isArray(parsed.groups)) ? parsed.groups : [];
+      await saveCache(env, MERGE_KEY, { ts: now, hash, groups });
+    } catch (e) {
+      return { degraded: false, reason: "error: " + String(e.message || e).slice(0, 50) };
+    }
+  }
+
+  // Apply only to the candidate set (never touch an id outside it).
+  const candIds = new Set(cands.map((c) => c.id));
+  const byId = new Map(items.map((i) => [i.id, i]));
+  const dropIds = new Set();
+  for (const grp of groups) {
+    const members = (grp.ids || [])
+      .filter((id) => candIds.has(id))
+      .map((id) => byId.get(id))
+      .filter((m) => m && !dropIds.has(m.id));
+    if (members.length < 2) continue;
+    const dom = members[0].domain;
+    if (members.some((m) => m.domain !== dom)) continue; // same-domain only
+    members.sort((a, b) => b.confidence - a.confidence);
+    const keep = members[0];
+    for (let k = 1; k < members.length; k++) {
+      const m = members[k];
+      keep.source_count = (keep.source_count || 1) + (m.source_count || 1);
+      keep.links = mergeLinks([...(keep.links || [])], m.links || []);
+      dropIds.add(m.id);
+    }
+  }
+  if (dropIds.size) {
+    for (let i = items.length - 1; i >= 0; i--) if (dropIds.has(items[i].id)) items.splice(i, 1);
+  }
+  return { degraded: false, reason: dropIds.size ? "merged " + dropIds.size : "nothing to merge", dropped: dropIds.size };
 }
 
 // ---- Orchestrator --------------------------------------------------------------

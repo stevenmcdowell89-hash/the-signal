@@ -13,7 +13,7 @@ import { ingestAll } from "./ingest.js";
 import { clusterEntries } from "./dedup.js";
 import { scoreBatch } from "./score.js";
 import { enrichShortlist } from "./enrich.js";
-import { augmentEditorial } from "./editorial.js";
+import { augmentEditorial, smartMerge } from "./editorial.js";
 import { buildState } from "./render.js";
 
 const STATE_KEY = "state";
@@ -243,6 +243,10 @@ export async function run(env, { trigger } = {}) {
   setProgress(env, "scoring", 1, 1);
   await scoreBatch(db, items, config, now);
 
+  // 4b) Smart merge (optional, off by default) — collapse same-story dupes the
+  //     mechanical dedup missed, BEFORE enrich/render see the items. No-op when off.
+  const mrg = await smartMerge(env, items, config, now);
+
   // 5) Tier-2 enrichment (optional) on the shortlist.
   setProgress(env, "enriching", 1, 1);
   const enr = await enrichShortlist(env, db, items, config, now);
@@ -272,6 +276,7 @@ export async function run(env, { trigger } = {}) {
   // AI editorial layer (optional) — augments the mechanical state in place. No-op
   // when off / no key / cap hit, so `state` is unchanged in those cases.
   const aiStatus = await augmentEditorial(env, state, items, config, now);
+  aiStatus.merge = { on: !mrg.degraded, reason: mrg.reason, model: ((config.ai || {}).merge || {}).model };
   await env.DAILY_STATE.put(AI_STATUS_KEY, JSON.stringify(aiStatus));
   await env.DAILY_STATE.put(STATE_KEY, JSON.stringify(state));
   setProgress(env, "done", 1, 1);
