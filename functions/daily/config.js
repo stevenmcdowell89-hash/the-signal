@@ -62,6 +62,7 @@ export function defaultConfig() {
     // prioritises / groups / summarises. All passes draw on ONE shared monthly cap.
     ai: {
       enabled: true,
+      model: "claude-haiku-4-5", // default model for every pass (per-pass `model` overrides)
       monthly_cap_cents: 800, // shared across enrichment + all editorial passes
       // Editor's Picks — curate + order the front-page Headlines, write "why it matters".
       picks: {
