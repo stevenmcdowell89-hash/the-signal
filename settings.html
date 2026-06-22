@@ -139,6 +139,7 @@
     <nav class="tabs" id="tabs">
       <button class="tab" data-tab="status">Status</button>
       <button class="tab" data-tab="engine">Engine</button>
+      <button class="tab" data-tab="ai">AI</button>
       <button class="tab" data-tab="sources">Sources</button>
       <button class="tab" data-tab="interests">Interests</button>
     </nav>
@@ -205,7 +206,9 @@
         <div><label for="enr-cap">Monthly spend cap (cents)</label><input type="number" id="enr-cap" min="0" step="50"></div>
       </div>
       <div class="toggle" style="margin-top:0.6rem"><input type="checkbox" id="enr-batch"><label for="enr-batch">Use the Batch API (cheaper, slower — enriches on a later run, not this one)</label></div>
-      <div class="hint">On cap-hit the daily auto-falls back to Tier 1 (headlines + links, no hooks) and records it.</div>
+      <label for="enr-guidance" style="margin-top:0.6rem">Hook guidance (optional — how to write the hook line)</label>
+      <textarea id="enr-guidance" rows="2" placeholder="e.g. Lead with the concrete fact. Sceptical of hype."></textarea>
+      <div class="hint">On cap-hit the daily auto-falls back to Tier 1 (headlines + links, no hooks) and records it. The shared AI cap (AI tab) supersedes this cap when the AI layer is on.</div>
     </div>
 
     <div class="card">
@@ -220,6 +223,66 @@
       <div class="hint">Needs notifications allowed on the device (install the app, accept the prompt). Quiet days stay silent.</div>
     </div>
     </div><!-- /panel:engine -->
+
+    <div class="panel" data-panel="ai">
+    <div class="card">
+      <h2>AI Editorial — global</h2>
+      <div class="toggle"><input type="checkbox" id="ai-on"><label for="ai-on">AI editorial layer on (master switch — off = the mechanical brief, unchanged)</label></div>
+      <div class="row" style="margin-top:0.6rem">
+        <div><label for="ai-cap">Shared monthly cap (cents)</label><input type="number" id="ai-cap" min="0" step="50"></div>
+      </div>
+      <div class="hint">One budget across enrichment + every editorial pass below. On cap-hit (or with no API key) the brief falls back to the mechanical version. Each pass is independently toggleable; its <b>guidance</b> steers how it prioritises, groups or summarises — edit it in plain English.</div>
+    </div>
+
+    <div class="card">
+      <h2>Editor's Picks</h2>
+      <div class="toggle"><input type="checkbox" id="ai-picks-on"><label for="ai-picks-on">Curate &amp; order the front-page Headlines, with a "why it matters" line</label></div>
+      <div class="row" style="margin-top:0.6rem">
+        <div><label for="ai-picks-model">Model</label><input type="text" id="ai-picks-model"></div>
+        <div><label for="ai-picks-count">How many picks</label><input type="number" id="ai-picks-count" min="1" max="20"></div>
+        <div><label for="ai-picks-interval">Min minutes between runs</label><input type="number" id="ai-picks-interval" min="0" max="240"></div>
+      </div>
+      <label for="ai-picks-guidance" style="margin-top:0.6rem">Guidance — how to pick &amp; order</label>
+      <textarea id="ai-picks-guidance" rows="3"></textarea>
+    </div>
+
+    <div class="card">
+      <h2>Firehose digests</h2>
+      <div class="toggle"><input type="checkbox" id="ai-digests-on"><label for="ai-digests-on">Summarise each "+N more in {topic}" tail into a sentence or two</label></div>
+      <div class="row" style="margin-top:0.6rem">
+        <div><label for="ai-digests-model">Model</label><input type="text" id="ai-digests-model"></div>
+        <div><label for="ai-digests-max">Max digests / run</label><input type="number" id="ai-digests-max" min="1" max="40"></div>
+        <div><label for="ai-digests-interval">Min minutes between runs</label><input type="number" id="ai-digests-interval" min="0" max="240"></div>
+      </div>
+      <label for="ai-digests-guidance" style="margin-top:0.6rem">Guidance — how to synthesise</label>
+      <textarea id="ai-digests-guidance" rows="3"></textarea>
+    </div>
+
+    <div class="card">
+      <h2>Edition briefs</h2>
+      <div class="toggle"><input type="checkbox" id="ai-briefs-on"><label for="ai-briefs-on">A short "what you need to know" intro per edition</label></div>
+      <div class="row" style="margin-top:0.6rem">
+        <div><label for="ai-briefs-model">Model</label><input type="text" id="ai-briefs-model"></div>
+        <div><label for="ai-briefs-max">Max sentences</label><input type="number" id="ai-briefs-max" min="1" max="6"></div>
+        <div><label for="ai-briefs-interval">Min minutes between runs</label><input type="number" id="ai-briefs-interval" min="0" max="240"></div>
+      </div>
+      <label for="ai-briefs-guidance" style="margin-top:0.6rem">Guidance — what to emphasise</label>
+      <textarea id="ai-briefs-guidance" rows="3"></textarea>
+    </div>
+
+    <div class="card">
+      <h2>Smart merge</h2>
+      <div class="toggle"><input type="checkbox" id="ai-merge-on"><label for="ai-merge-on">Collapse same-story duplicates the mechanical dedup missed</label></div>
+      <div class="hint" style="margin-top:0.4rem">The only pass that removes content — off by default. Domain-bounded and capped; on any failure it no-ops to the mechanical dedup.</div>
+      <div class="row" style="margin-top:0.6rem">
+        <div><label for="ai-merge-model">Model</label><input type="text" id="ai-merge-model"></div>
+        <div><label for="ai-merge-max">Max candidates considered</label><input type="number" id="ai-merge-max" min="0" max="120"></div>
+        <div><label for="ai-merge-interval">Min minutes between runs</label><input type="number" id="ai-merge-interval" min="0" max="240"></div>
+      </div>
+      <label for="ai-merge-guidance" style="margin-top:0.6rem">Guidance — when two items are the same story</label>
+      <textarea id="ai-merge-guidance" rows="3"></textarea>
+    </div>
+    </div><!-- /panel:ai -->
 
     <div class="panel" data-panel="sources">
     <div class="card">
@@ -520,6 +583,20 @@
       $('enr-short').value = e.shortlist_size||36;
       $('enr-cap').value = e.monthly_spend_cap_cents||500;
       $('enr-batch').checked = !!e.batch;
+      $('enr-guidance').value = e.guidance||'';
+      var ai = c.ai||{};
+      $('ai-on').checked = !!ai.enabled;
+      $('ai-cap').value = ai.monthly_cap_cents!=null?ai.monthly_cap_cents:800;
+      var aiNum = { picks:'count', digests:'max_rollups', briefs:'max_sentences', merge:'max_candidates' };
+      var aiNumId = { picks:'count', digests:'max', briefs:'max', merge:'max' };
+      ['picks','digests','briefs','merge'].forEach(function(k){
+        var f = ai[k]||{};
+        $('ai-'+k+'-on').checked = !!f.enabled;
+        $('ai-'+k+'-model').value = f.model||'claude-haiku-4-5';
+        $('ai-'+k+'-'+aiNumId[k]).value = f[aiNum[k]]!=null?f[aiNum[k]]:'';
+        $('ai-'+k+'-interval').value = f.min_interval_min!=null?f.min_interval_min:30;
+        $('ai-'+k+'-guidance').value = f.guidance||'';
+      });
       var pu = c.push||{}; var sig = pu.significant||{};
       $('push-badge').checked = !!pu.daily_badge;
       $('push-sig').checked = sig.enabled!==false;
@@ -581,6 +658,25 @@
     function numOr(id, dflt){ var v=parseFloat($(id).value); return isNaN(v)?dflt:v; }
     function intOr(id, dflt){ var v=parseInt($(id).value,10); return isNaN(v)?dflt:v; }
 
+    function aiBlock(){
+      function feat(k, numKey, numId){
+        var o = { enabled: $('ai-'+k+'-on').checked,
+                  model: $('ai-'+k+'-model').value.trim()||'claude-haiku-4-5',
+                  min_interval_min: intOr('ai-'+k+'-interval',30),
+                  guidance: $('ai-'+k+'-guidance').value.trim() };
+        o[numKey] = intOr('ai-'+k+'-'+numId, 0);
+        return o;
+      }
+      return {
+        enabled: $('ai-on').checked,
+        monthly_cap_cents: intOr('ai-cap',800),
+        picks: feat('picks','count','count'),
+        digests: feat('digests','max_rollups','max'),
+        briefs: feat('briefs','max_sentences','max'),
+        merge: feat('merge','max_candidates','max')
+      };
+    }
+
     function build(){
       var profile = collectProfile();
       return {
@@ -600,8 +696,10 @@
           model: $('enr-model').value.trim()||'claude-haiku-4-5',
           shortlist_size: intOr('enr-short',36),
           monthly_spend_cap_cents: intOr('enr-cap',0),
-          batch: $('enr-batch').checked
+          batch: $('enr-batch').checked,
+          guidance: $('enr-guidance').value.trim()
         },
+        ai: aiBlock(),
         push: {
           daily_badge: $('push-badge').checked,
           significant: {
@@ -726,7 +824,18 @@
       var detail = aiOn
         ? ('Enriched '+(e.last_enriched||0)+' items last run ('+ago(e.last_run)+') · '+(e.model||'')+' · '+cost)
         : ('Reason: '+(e.reason||'off')+(e.has_key?'':' — add the ANTHROPIC_API_KEY secret') + ' · '+cost);
-      $('ai-status').innerHTML = pill + detail;
+      // Editorial layer: one pill per pass (on/off + reason on hover).
+      var ai = h.ai;
+      var editorial = '';
+      if (ai){
+        editorial = '<div style="margin-top:0.5rem">';
+        [['picks','Picks'],['digests','Digests'],['briefs','Briefs'],['merge','Merge']].forEach(function(p){
+          var f = ai[p[0]]||{};
+          editorial += '<span class="pill '+(f.on?'on':'off')+'" title="'+escA(f.reason||'')+'">'+escA(p[1])+(f.on?'':' off')+'</span>';
+        });
+        editorial += '<span class="cost" style="margin-left:0.2rem">$'+((ai.month_to_date_usd||0).toFixed(2))+'</span> of $'+((ai.cap_usd||8).toFixed(2))+' shared</div>';
+      }
+      $('ai-status').innerHTML = pill + detail + editorial;
 
       var list = $('health-list'); list.innerHTML='';
       var srcs = (h.sources||[]).slice().sort(function(a,b){

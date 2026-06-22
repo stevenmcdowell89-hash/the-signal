@@ -48,6 +48,11 @@ export async function onRequestPost({ request, env }) {
   const next = { ...current, ...incoming };
   if (incoming.enrichment) next.enrichment = { ...current.enrichment, ...incoming.enrichment };
   if (incoming.recency) next.recency = { ...current.recency, ...incoming.recency };
+  if (incoming.ai) {
+    next.ai = { ...current.ai, ...incoming.ai };
+    for (const k of ["picks", "digests", "briefs", "merge"])
+      if (incoming.ai[k]) next.ai[k] = { ...((current.ai || {})[k] || {}), ...incoming.ai[k] };
+  }
   if (incoming.push) {
     next.push = { ...current.push, ...incoming.push };
     if (incoming.push.significant)
