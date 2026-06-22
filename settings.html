@@ -184,7 +184,7 @@
       </div>
       <div class="hint">Lower half-life = the brief decays faster toward "today". A stale core story (an old transfer rumour) sinks once it's past the freshness window.</div>
       <details style="margin-top:0.7rem">
-        <summary class="hint" style="cursor:pointer">▸ Advanced timing</summary>
+        <summary class="hint" style="cursor:pointer">▸ Advanced — timing &amp; scoring weights</summary>
         <div class="row" style="margin-top:0.5rem">
           <div><label for="vel-keep">Breaking-news keep (velocity 0–1)</label><input type="number" id="vel-keep" min="0" max="1" step="0.05"></div>
           <div><label for="catch-blend">Top Catches recency blend (0–1)</label><input type="number" id="catch-blend" min="0" max="1" step="0.05"></div>
@@ -194,6 +194,28 @@
           <div><label for="window-days">Score window (days)</label><input type="number" id="window-days" min="1" max="7" step="1"></div>
         </div>
         <div class="hint">Velocity keep: how fast a story must move to resist decay. Blend: how much Top Catches ordering weights freshness vs confidence. Undated penalty: how much older a date-less item is treated as. Score window: how many days of items the brief considers.</div>
+        <div class="hint" style="margin-top:0.9rem;font-weight:600;color:var(--ink)">Scoring weights — how the final rank is built</div>
+        <div class="row" style="margin-top:0.4rem">
+          <div><label for="sc-profile">Interest relevance share (0–1)</label><input type="number" id="sc-profile" min="0" max="1" step="0.05"></div>
+          <div><label for="sc-baseline">Source significance share (0–1)</label><input type="number" id="sc-baseline" min="0" max="1" step="0.05"></div>
+        </div>
+        <div class="row" style="margin-top:0.4rem">
+          <div><label for="sc-wfloor">Source-weight floor</label><input type="number" id="sc-wfloor" min="0" max="1" step="0.05"></div>
+          <div><label for="sc-wspan">Source-weight span (± effect)</label><input type="number" id="sc-wspan" min="0" max="1" step="0.05"></div>
+        </div>
+        <div class="row" style="margin-top:0.4rem">
+          <div><label for="sc-sighigh">High-signal multiplier (×)</label><input type="number" id="sc-sighigh" min="1" max="3" step="0.1"></div>
+          <div><label for="sc-siglow">Low-signal multiplier (×)</label><input type="number" id="sc-siglow" min="0" max="1" step="0.05"></div>
+        </div>
+        <div class="row" style="margin-top:0.4rem">
+          <div><label for="sc-cap">Per-feed cap (items/topic)</label><input type="number" id="sc-cap" min="1" max="20" step="1"></div>
+          <div><label for="sc-cappen">Beyond-cap penalty (×^rank)</label><input type="number" id="sc-cappen" min="0" max="1" step="0.05"></div>
+        </div>
+        <div class="row" style="margin-top:0.4rem">
+          <div><label for="sc-hbonus">Headline high-signal bonus</label><input type="number" id="sc-hbonus" min="0" max="1" step="0.05"></div>
+          <div><label for="headline-max">Headlines max count</label><input type="number" id="headline-max" min="1" max="20" step="1"></div>
+        </div>
+        <div class="hint">Interest relevance vs source significance split the base score (they sum to ~1) — relevance leads. Source-weight floor + span set how much a feed's <b>Trust</b> nudges it (default 0.85 + 0.15 = only ±7.5%). High/low-signal multipliers are how hard "confirmed"/"rumour" words push an item up or down. Per-feed cap thins a firehose: only this many items from one feed per topic rank at full strength, then the penalty applies.</div>
       </details>
     </div>
 
@@ -201,15 +223,14 @@
       <h2>Enrichment (Tier 2 · Haiku)</h2>
       <div class="toggle"><input type="checkbox" id="enr-on"><label for="enr-on">Enrichment on (register + hook line + semantic relevance)</label></div>
       <div class="row" style="margin-top:0.6rem">
-        <div><label for="enr-model">Model</label><input type="text" id="enr-model"></div>
+        <div><label for="enr-model">Model (blank = shared)</label><input type="text" id="enr-model" placeholder="claude-haiku-4-5"></div>
         <div><label for="enr-short">Shortlist size (items judged/run)</label><input type="number" id="enr-short" min="0" max="200"></div>
         <div><label for="enr-batch-size">Items per call (batch)</label><input type="number" id="enr-batch-size" min="1" max="25"></div>
-        <div><label for="enr-cap">Monthly spend cap (cents)</label><input type="number" id="enr-cap" min="0" step="50"></div>
       </div>
-      <div class="hint" style="margin-top:0.4rem">Items are mini-batched into one call each, so a larger shortlist costs far less than one call per item. The shared AI cap still applies.</div>
+      <div class="hint" style="margin-top:0.4rem">Items are mini-batched into one call each, so a larger shortlist costs far less than one call per item. Spend is governed by the single <b>Monthly AI budget</b> on the AI tab.</div>
       <label for="enr-guidance" style="margin-top:0.6rem">Hook guidance (optional — how to write the hook line)</label>
       <textarea id="enr-guidance" rows="2" placeholder="e.g. Lead with the concrete fact. Sceptical of hype."></textarea>
-      <div class="hint">On cap-hit the daily auto-falls back to Tier 1 (headlines + links, no hooks) and records it. The shared AI cap (AI tab) supersedes this cap when the AI layer is on.</div>
+      <div class="hint">On budget-hit the daily auto-falls back to Tier 1 (headlines + links, no hooks) and records it.</div>
     </div>
 
     <div class="card">
@@ -230,105 +251,120 @@
       <h2>AI Editorial — global</h2>
       <div class="toggle"><input type="checkbox" id="ai-on"><label for="ai-on">AI editorial layer on (master switch — off = the mechanical brief, unchanged)</label></div>
       <div class="row" style="margin-top:0.6rem">
-        <div><label for="ai-cap">Shared monthly cap (cents)</label><input type="number" id="ai-cap" min="0" step="50"></div>
+        <div><label for="ai-model">AI model (used by every pass + enrichment)</label><input type="text" id="ai-model" placeholder="claude-haiku-4-5"></div>
+        <div><label for="ai-cap">Monthly AI budget (cents)</label><input type="number" id="ai-cap" min="0" step="50"></div>
       </div>
-      <div class="hint">One budget across enrichment + every editorial pass below. On cap-hit (or with no API key) the brief falls back to the mechanical version. Each pass is independently toggleable; its <b>guidance</b> steers how it prioritises, groups or summarises — edit it in plain English.</div>
+      <div class="hint">One model and one budget across enrichment + every editorial pass below. Changing the model here sets it everywhere; a single pass can still override it under its own ▸ Advanced. On budget-hit (or with no API key) the brief falls back to the mechanical version. Each pass is independently toggleable; its <b>guidance</b> steers how it prioritises, groups or summarises — edit it in plain English.</div>
     </div>
 
     <div class="card">
       <h2>Editor's Picks</h2>
-      <div class="toggle"><input type="checkbox" id="ai-picks-on"><label for="ai-picks-on">Curate &amp; order the front-page Headlines, with a "why it matters" line</label></div>
-      <div class="row" style="margin-top:0.6rem">
-        <div><label for="ai-picks-model">Model</label><input type="text" id="ai-picks-model"></div>
+      <div class="toggle"><input type="checkbox" id="ai-picks-on"><label for="ai-picks-on">Curate &amp; order the front-page Headlines, each rewritten as a single AI headline line (what happened + why it matters in one line)</label></div>
+      <label for="ai-picks-guidance" style="margin-top:0.6rem">Guidance — how to pick &amp; order</label>
+      <textarea id="ai-picks-guidance" rows="3"></textarea>
+      <details class="adv" style="margin-top:0.5rem"><summary class="hint" style="cursor:pointer">▸ Advanced (model · count · interval)</summary>
+      <div class="row" style="margin-top:0.5rem">
+        <div><label for="ai-picks-model">Model (blank = shared)</label><input type="text" id="ai-picks-model"></div>
         <div><label for="ai-picks-count">How many picks</label><input type="number" id="ai-picks-count" min="1" max="20"></div>
         <div><label for="ai-picks-interval">Min minutes between runs</label><input type="number" id="ai-picks-interval" min="0" max="240"></div>
       </div>
-      <label for="ai-picks-guidance" style="margin-top:0.6rem">Guidance — how to pick &amp; order</label>
-      <textarea id="ai-picks-guidance" rows="3"></textarea>
+      </details>
     </div>
 
     <div class="card">
       <h2>Curate Top 20</h2>
       <div class="toggle"><input type="checkbox" id="ai-top20-on"><label for="ai-top20-on">Order the whole-brief "Top 20 across everything" feed, with a "why it matters" line</label></div>
-      <div class="row" style="margin-top:0.6rem">
-        <div><label for="ai-top20-model">Model</label><input type="text" id="ai-top20-model"></div>
+      <label for="ai-top20-guidance" style="margin-top:0.6rem">Guidance — how to order across everything</label>
+      <textarea id="ai-top20-guidance" rows="3"></textarea>
+      <details class="adv" style="margin-top:0.5rem"><summary class="hint" style="cursor:pointer">▸ Advanced (model · count · interval)</summary>
+      <div class="row" style="margin-top:0.5rem">
+        <div><label for="ai-top20-model">Model (blank = shared)</label><input type="text" id="ai-top20-model"></div>
         <div><label for="ai-top20-count">How many</label><input type="number" id="ai-top20-count" min="1" max="30"></div>
         <div><label for="ai-top20-interval">Min minutes between runs</label><input type="number" id="ai-top20-interval" min="0" max="240"></div>
       </div>
-      <label for="ai-top20-guidance" style="margin-top:0.6rem">Guidance — how to order across everything</label>
-      <textarea id="ai-top20-guidance" rows="3"></textarea>
+      </details>
     </div>
 
     <div class="card">
       <h2>Firehose digests</h2>
       <div class="toggle"><input type="checkbox" id="ai-digests-on"><label for="ai-digests-on">Summarise each "+N more in {topic}" tail into a sentence or two</label></div>
-      <div class="row" style="margin-top:0.6rem">
-        <div><label for="ai-digests-model">Model</label><input type="text" id="ai-digests-model"></div>
+      <label for="ai-digests-guidance" style="margin-top:0.6rem">Guidance — how to synthesise</label>
+      <textarea id="ai-digests-guidance" rows="3"></textarea>
+      <details class="adv" style="margin-top:0.5rem"><summary class="hint" style="cursor:pointer">▸ Advanced (model · limit · interval)</summary>
+      <div class="row" style="margin-top:0.5rem">
+        <div><label for="ai-digests-model">Model (blank = shared)</label><input type="text" id="ai-digests-model"></div>
         <div><label for="ai-digests-max">Max digests / run</label><input type="number" id="ai-digests-max" min="1" max="40"></div>
         <div><label for="ai-digests-interval">Min minutes between runs</label><input type="number" id="ai-digests-interval" min="0" max="240"></div>
       </div>
-      <label for="ai-digests-guidance" style="margin-top:0.6rem">Guidance — how to synthesise</label>
-      <textarea id="ai-digests-guidance" rows="3"></textarea>
+      </details>
     </div>
 
     <div class="card">
       <h2>Edition briefs</h2>
       <div class="toggle"><input type="checkbox" id="ai-briefs-on"><label for="ai-briefs-on">A short "what you need to know" intro per edition</label></div>
-      <div class="row" style="margin-top:0.6rem">
-        <div><label for="ai-briefs-model">Model</label><input type="text" id="ai-briefs-model"></div>
+      <label for="ai-briefs-guidance" style="margin-top:0.6rem">Guidance — what to emphasise</label>
+      <textarea id="ai-briefs-guidance" rows="3"></textarea>
+      <details class="adv" style="margin-top:0.5rem"><summary class="hint" style="cursor:pointer">▸ Advanced (model · limit · interval)</summary>
+      <div class="row" style="margin-top:0.5rem">
+        <div><label for="ai-briefs-model">Model (blank = shared)</label><input type="text" id="ai-briefs-model"></div>
         <div><label for="ai-briefs-max">Max sentences</label><input type="number" id="ai-briefs-max" min="1" max="6"></div>
         <div><label for="ai-briefs-interval">Min minutes between runs</label><input type="number" id="ai-briefs-interval" min="0" max="240"></div>
       </div>
-      <label for="ai-briefs-guidance" style="margin-top:0.6rem">Guidance — what to emphasise</label>
-      <textarea id="ai-briefs-guidance" rows="3"></textarea>
+      </details>
     </div>
 
     <div class="card">
       <h2>Smart merge</h2>
       <div class="toggle"><input type="checkbox" id="ai-merge-on"><label for="ai-merge-on">Collapse same-story duplicates the mechanical dedup missed</label></div>
       <div class="hint" style="margin-top:0.4rem">The only pass that removes content — off by default. Domain-bounded and capped; on any failure it no-ops to the mechanical dedup.</div>
-      <div class="row" style="margin-top:0.6rem">
-        <div><label for="ai-merge-model">Model</label><input type="text" id="ai-merge-model"></div>
+      <label for="ai-merge-guidance" style="margin-top:0.6rem">Guidance — when two items are the same story</label>
+      <textarea id="ai-merge-guidance" rows="3"></textarea>
+      <details class="adv" style="margin-top:0.5rem"><summary class="hint" style="cursor:pointer">▸ Advanced (model · limit · interval)</summary>
+      <div class="row" style="margin-top:0.5rem">
+        <div><label for="ai-merge-model">Model (blank = shared)</label><input type="text" id="ai-merge-model"></div>
         <div><label for="ai-merge-max">Max candidates considered</label><input type="number" id="ai-merge-max" min="0" max="120"></div>
         <div><label for="ai-merge-interval">Min minutes between runs</label><input type="number" id="ai-merge-interval" min="0" max="240"></div>
       </div>
-      <label for="ai-merge-guidance" style="margin-top:0.6rem">Guidance — when two items are the same story</label>
-      <textarea id="ai-merge-guidance" rows="3"></textarea>
+      </details>
     </div>
 
     <div class="card">
       <h2>Order every edition</h2>
       <div class="toggle"><input type="checkbox" id="ai-editions-on"><label for="ai-editions-on">Order items within each edition by AI judgement (off by default — News &amp; Money stays date-ordered)</label></div>
-      <div class="row" style="margin-top:0.6rem">
-        <div><label for="ai-editions-model">Model</label><input type="text" id="ai-editions-model"></div>
-        <div><label for="ai-editions-interval">Min minutes between runs</label><input type="number" id="ai-editions-interval" min="0" max="240"></div>
-      </div>
       <label for="ai-editions-guidance" style="margin-top:0.6rem">Guidance — how to order within an area</label>
       <textarea id="ai-editions-guidance" rows="3"></textarea>
+      <details class="adv" style="margin-top:0.5rem"><summary class="hint" style="cursor:pointer">▸ Advanced (model · interval)</summary>
+      <div class="row" style="margin-top:0.5rem">
+        <div><label for="ai-editions-model">Model (blank = shared)</label><input type="text" id="ai-editions-model"></div>
+        <div><label for="ai-editions-interval">Min minutes between runs</label><input type="number" id="ai-editions-interval" min="0" max="240"></div>
+      </div>
+      </details>
     </div>
     </div><!-- /panel:ai -->
 
     <div class="panel" data-panel="sources">
     <div class="card">
       <h2>Sources (RSS · HN · Reddit)</h2>
-      <table id="src-table"><thead><tr><th>On</th><th>ID</th><th>Domain</th><th>URL</th><th>W</th><th>Tier</th><th></th></tr></thead><tbody></tbody></table>
+      <table id="src-table"><thead><tr><th>On</th><th>ID</th><th>Domain</th><th>URL</th><th>Trust</th><th>Tier</th><th></th></tr></thead><tbody></tbody></table>
       <div class="addrow"><button class="btn-sm" id="add-src">+ Add feed</button></div>
       <div class="hint">Type is inferred from the URL: an HN Algolia URL → "hn", a <code>reddit.com/r/…</code> URL → "reddit", everything else → "rss". <b>Almost anything with a feed works as a source</b> — a YouTube channel (<code>youtube.com/feeds/videos.xml?channel_id=…</code>), a Google&nbsp;News RSS, a Mastodon <code>.rss</code>, a podcast feed, or a subreddit. Paste the URL, set its domain + weight.</div>
       <details style="margin-top:0.7rem">
-        <summary class="hint" style="cursor:pointer">▸ How ranking works — source weight vs interest rating</summary>
+        <summary class="hint" style="cursor:pointer">▸ How ranking actually works (does BBC = 0.9 stamp 0.9 on everything? No)</summary>
         <div class="hint" style="line-height:1.6">
-          Two dials decide how high an item sits, and they <b>multiply</b>:<br><br>
-          <b>· Interest rating</b> (a topic's <i>Importance</i>, in the Interests tab) — how much a <i>whole subject</i> matters to you. Raising it lifts <i>every</i> item in that subject.<br>
-          <b>· Source weight</b> (the <b>W</b> column above) — how much you trust <i>one feed</i>. It's a multiplier on only that feed's items.<br><br>
-          Roughly: <code>score ≈ (topic relevance + source popularity) × source weight × freshness × register</code>.<br><br>
-          So if one feed floods the brief (e.g. a high-volume source like Football Italia keeps filling the top), <b>lower its W</b> — that dampens just that feed, not the whole sport. To lift or sink a whole subject, change its Importance instead. (A single source also can't fill more than a few slots in any one section.)
+          A common confusion: a source's <b>Trust</b> does <i>not</i> set the score of its items. Each item is scored from <i>itself</i>, then nudged slightly by where it came from:<br><br>
+          <b>1. Topic importance</b> (a topic's <i>Importance</i>, Interests tab) is the main dial — it scales how much an item's <i>own headline keywords</i> count. It is <b>per-item</b>: a headline matching lots of strong keywords scores high; a fluff piece in the same topic scores low. So <i>no</i> — a feed's number is never stamped on every item.<br>
+          <b>2. Signal words</b> ("confirmed", "official" lift; "rumour", "linked" bury) are the big-vs-fluff dial within a topic — set globally (Interests → Lift &amp; bury) or per-topic (the Lift/Bury columns in Topics).<br>
+          <b>3. Freshness</b> and the AI's relevance read finish the per-item picture.<br>
+          <b>4. Source Trust</b> (the column above) is only a <i>light tiebreaker</i> now — about ±7.5%, not a blanket score. Trusted nudges up, Background nudges down.<br><br>
+          Roughly: <code>score ≈ (keyword relevance + source significance) × signal-words × freshness × register</code>, then a per-feed cap.<br><br>
+          If one feed <b>floods</b> the brief (e.g. Football Italia keeps filling the top), that's the <b>per-feed cap</b> (Engine → Advanced), not Trust — only a few items from one feed rank at full strength per topic. To lift or sink a whole <i>subject</i>, change its Importance; to lift or sink a <i>kind of story</i>, use signal words.
         </div>
       </details>
     </div>
 
     <div class="card">
       <h2>Bluesky handles</h2>
-      <table id="bsky-table"><thead><tr><th>On</th><th>ID</th><th>Domain</th><th>Handle</th><th>W</th><th></th></tr></thead><tbody></tbody></table>
+      <table id="bsky-table"><thead><tr><th>On</th><th>ID</th><th>Domain</th><th>Handle</th><th>Trust</th><th></th></tr></thead><tbody></tbody></table>
       <div class="addrow"><button class="btn-sm" id="add-bsky">+ Add handle</button></div>
       <div class="hint">e.g. transfer journalists for football. Handle without the @ (foo.bsky.social).</div>
     </div>
@@ -337,8 +373,14 @@
     <div class="panel" data-panel="interests">
     <div class="card">
       <h2>Topics — what the brief watches</h2>
-      <div class="hint" style="margin-bottom:0.4rem">Each topic has an importance and the words that identify it. Importance sets how high a topic can climb; keywords are comma-separated. Err broad — over-inclusion is cheap.</div>
-      <table id="topic-table"><thead><tr><th>Topic</th><th>Label</th><th>Edition</th><th>Importance</th><th>Keywords</th><th></th></tr></thead><tbody></tbody></table>
+      <div class="hint" style="margin-bottom:0.4rem">Each topic has an <b>Importance</b> (how high the subject can climb) and the <b>Keywords</b> that identify it. <b>Lift</b> / <b>Bury</b> are words that push a story up or down <i>within this topic only</i> — e.g. in Football, lift <code>juventus, signs, confirmed, here we go</code> and bury <code>rumour, linked, eyeing, talks</code> so done deals lead and the transfer-chatter firehose sinks. All comma-separated. Err broad on keywords — over-inclusion is cheap.</div>
+      <details style="margin-bottom:0.5rem">
+        <summary class="hint" style="cursor:pointer">▸ How importance &amp; scoring works</summary>
+        <div class="hint" style="line-height:1.6">
+          Importance scales how much an item's <i>own headline keywords</i> count — it's <b>per-item</b>, not a flat score on the whole topic. A confirmed, on-target story scores high; a fluff piece in the same topic scores low. <b>Lift/Bury</b> words (here, per-topic) and the global <b>Lift &amp; bury</b> list multiply that — "confirmed" ×up, "rumour" ×down. Freshness and the AI's read finish it. A <i>source's</i> Trust is only a light ±7.5% nudge on top.
+        </div>
+      </details>
+      <table id="topic-table"><thead><tr><th>Topic</th><th>Label</th><th>Edition</th><th>Importance</th><th>Keywords</th><th>Lift</th><th>Bury</th><th></th></tr></thead><tbody></tbody></table>
       <div class="addrow"><button class="btn-sm" id="add-topic">+ Add topic</button></div>
     </div>
 
@@ -358,13 +400,14 @@
     </div>
 
     <div class="card">
-      <h2>Prioritise &amp; bury</h2>
+      <h2>Lift &amp; bury — everywhere (all topics)</h2>
+      <div class="hint" style="margin-bottom:0.5rem">These apply across <b>every</b> topic. For words that should only count in one subject (e.g. "signs" in Football), use that topic's <b>Lift</b>/<b>Bury</b> columns instead.</div>
       <label for="signal-high">Lift items whose headline contains (comma-separated)</label>
       <input type="text" id="signal-high">
-      <div class="hint">High-signal words — "confirmed", "official", "launches", "signs". A story with one of these is pushed up. Applies across every topic.</div>
+      <div class="hint">High-signal words — "confirmed", "official", "launches", "signs". A story with one of these is pushed up.</div>
       <label for="signal-low" style="margin-top:0.7rem">Bury items whose headline contains (comma-separated)</label>
       <input type="text" id="signal-low">
-      <div class="hint">Low-signal words — "rumour", "linked", "could", "reportedly". A story with one of these sinks (this is what thins the transfer-rumour firehose). A topic can add its own in the raw profile.</div>
+      <div class="hint">Low-signal words — "rumour", "linked", "could", "reportedly". A story with one of these sinks.</div>
     </div>
 
     <div class="card">
@@ -404,6 +447,17 @@
       return t;
     }
 
+    // Source Trust is a light ±7.5% tiebreaker — exposed as three labels rather than a
+    // raw number (which read as "0.9 = everything 0.9"). Maps to/from the same `weight`
+    // field, so old numeric configs load and the engine is untouched.
+    function trustVal(w){ w=parseFloat(w); if(isNaN(w)) w=0.5; return w>=0.65?0.8:(w>=0.4?0.5:0.3); }
+    function trustCell(s){
+      var v=trustVal(s.weight);
+      var opts=[[0.8,'Trusted'],[0.5,'Normal'],[0.3,'Background']];
+      return '<td data-label="Trust"><select data-k="weight">'+
+        opts.map(function(o){ return '<option value="'+o[0]+'"'+(o[0]===v?' selected':'')+'>'+o[1]+'</option>'; }).join('')+
+        '</select></td>';
+    }
     function srcRow(s){
       var tr=document.createElement('tr');
       tr.innerHTML =
@@ -411,7 +465,7 @@
         '<td data-label="ID"><input type="text" value="'+(s.id||'')+'" data-k="id" size="10"></td>'+
         '<td data-label="Domain"><input type="text" value="'+(s.domain||'')+'" data-k="domain" size="8"></td>'+
         '<td data-label="URL"><input type="url" value="'+(s.url||'')+'" data-k="url"></td>'+
-        '<td data-label="Weight"><input class="src-w" type="number" min="0" max="1" step="0.05" value="'+(s.weight!=null?s.weight:0.5)+'" data-k="weight"></td>'+
+        trustCell(s)+
         tierCell(s)+
         '<td><button class="btn-sm btn-danger" data-del="1">✕ Remove</button></td>';
       tr.querySelector('[data-del]').addEventListener('click', function(){ tr.remove(); });
@@ -466,7 +520,7 @@
         '<td data-label="ID"><input type="text" value="'+(s.id||'')+'" data-k="id" size="10"></td>'+
         '<td data-label="Domain"><input type="text" value="'+(s.domain||'')+'" data-k="domain" size="8"></td>'+
         '<td data-label="Handle"><input type="text" value="'+(s.handle||'')+'" data-k="handle"></td>'+
-        '<td data-label="Weight"><input class="src-w" type="number" min="0" max="1" step="0.05" value="'+(s.weight!=null?s.weight:0.5)+'" data-k="weight"></td>'+
+        trustCell(s)+
         '<td><button class="btn-sm btn-danger" data-del="1">✕ Remove</button></td>';
       tr.querySelector('[data-del]').addEventListener('click', function(){ tr.remove(); });
       return tr;
@@ -496,6 +550,8 @@
         '<td data-label="Edition"><select data-k="edition">'+editionOptions(spec.edition||'more')+'</select></td>'+
         '<td data-label="Importance"><div class="imp"><input type="range" min="0.2" max="1" step="0.05" value="'+w+'" data-k="weight"><span class="imp-val">'+impTag(w)+'</span></div></td>'+
         '<td data-label="Keywords"><input type="text" value="'+escA(kw)+'" data-k="keywords" placeholder="comma-separated"></td>'+
+        '<td data-label="Lift"><input type="text" value="'+escA((spec.signal_high||[]).join(', '))+'" data-k="signal_high" placeholder="e.g. confirmed, signs"></td>'+
+        '<td data-label="Bury"><input type="text" value="'+escA((spec.signal_low||[]).join(', '))+'" data-k="signal_low" placeholder="e.g. rumour, linked"></td>'+
         '<td><button class="btn-sm btn-danger" data-del="1">✕</button></td>';
       var rng=tr.querySelector('[data-k=weight]'), lab=tr.querySelector('.imp-val');
       rng.addEventListener('input', function(){ lab.textContent=impTag(rng.value); });
@@ -523,7 +579,7 @@
         '<td data-label="Topic"><input type="text" value="'+escA(domain||'')+'" data-k="domain" list="topic-ids" placeholder="topic"></td>'+
         '<td data-label="Action"><select data-k="action">'+
           '<option value="suppress"'+(action==='downrank'?'':' selected')+'>Suppress (drop)</option>'+
-          '<option value="downrank"'+(action==='downrank'?' selected':'')+'>Downrank</option></select></td>'+
+          '<option value="downrank"'+(action==='downrank'?' selected':'')+'>Downrank (bury in this topic)</option></select></td>'+
         '<td data-label="Words"><input type="text" value="'+escA((words||[]).join(', '))+'" data-k="words" placeholder="comma-separated"></td>'+
         '<td><button class="btn-sm btn-danger" data-del="1">✕</button></td>';
       tr.querySelector('[data-del]').addEventListener('click', function(){ tr.remove(); updatePreview(); });
@@ -553,6 +609,10 @@
         tw[id]={ weight:weight, keywords:keywords };
         if(label) tw[id].label=label;
         if(edition) tw[id].edition=edition;
+        var csvCell=function(k){ var el=tr.querySelector('[data-k='+k+']'); return el?el.value.split(',').map(function(s){return s.trim();}).filter(Boolean):[]; };
+        var hi=csvCell('signal_high'), lo=csvCell('signal_low');
+        if(hi.length) tw[id].signal_high=hi;
+        if(lo.length) tw[id].signal_low=lo;
       });
       var floor=[];
       $('floor-table').querySelectorAll('tbody tr').forEach(function(tr){
@@ -601,22 +661,32 @@
       $('catch-blend').value = rc.top_catch_recency_blend!=null?rc.top_catch_recency_blend:0.35;
       $('undated').value = rc.undated_penalty_hours!=null?rc.undated_penalty_hours:36;
       $('window-days').value = rc.score_window_days!=null?rc.score_window_days:2;
+      var sc = c.scoring||{};
+      var scv = function(id,k,d){ $(id).value = sc[k]!=null?sc[k]:d; };
+      scv('sc-profile','profile_weight',0.70); scv('sc-baseline','baseline_weight',0.30);
+      scv('sc-wfloor','weight_floor',0.85); scv('sc-wspan','weight_span',0.15);
+      scv('sc-sighigh','signal_high',1.6); scv('sc-siglow','signal_low',0.5);
+      scv('sc-cap','source_cap',3); scv('sc-cappen','source_cap_penalty',0.6);
+      scv('sc-hbonus','headline_signal_bonus',0.15);
+      $('headline-max').value = c.headline_max!=null?c.headline_max:8;
+      var ai = c.ai||{};
+      var sharedModel = ai.model || 'claude-haiku-4-5';
       var e = c.enrichment||{};
       $('enr-on').checked = !!e.enabled;
-      $('enr-model').value = e.model||'claude-haiku-4-5';
+      $('enr-model').value = (e.model && e.model!==sharedModel) ? e.model : '';
       $('enr-short').value = e.shortlist_size||100;
       $('enr-batch-size').value = e.batch_size||10;
-      $('enr-cap').value = e.monthly_spend_cap_cents||500;
       $('enr-guidance').value = e.guidance||'';
-      var ai = c.ai||{};
       $('ai-on').checked = !!ai.enabled;
+      $('ai-model').value = sharedModel;
       $('ai-cap').value = ai.monthly_cap_cents!=null?ai.monthly_cap_cents:800;
       var aiNum = { picks:'count', top20:'count', digests:'max_rollups', briefs:'max_sentences', merge:'max_candidates' };
       var aiNumId = { picks:'count', top20:'count', digests:'max', briefs:'max', merge:'max' };
       ['picks','top20','digests','briefs','editions','merge'].forEach(function(k){
         var f = ai[k]||{};
         $('ai-'+k+'-on').checked = !!f.enabled;
-        $('ai-'+k+'-model').value = f.model||'claude-haiku-4-5';
+        // Per-pass model shown blank when it matches the shared model (blank = shared).
+        $('ai-'+k+'-model').value = (f.model && f.model!==sharedModel) ? f.model : '';
         if (aiNumId[k]) $('ai-'+k+'-'+aiNumId[k]).value = f[aiNum[k]]!=null?f[aiNum[k]]:'';
         $('ai-'+k+'-interval').value = f.min_interval_min!=null?f.min_interval_min:30;
         $('ai-'+k+'-guidance').value = f.guidance||'';
@@ -683,9 +753,10 @@
     function intOr(id, dflt){ var v=parseInt($(id).value,10); return isNaN(v)?dflt:v; }
 
     function aiBlock(){
+      var sharedModel = $('ai-model').value.trim()||'claude-haiku-4-5';
       function feat(k, numKey, numId){
         var o = { enabled: $('ai-'+k+'-on').checked,
-                  model: $('ai-'+k+'-model').value.trim()||'claude-haiku-4-5',
+                  model: $('ai-'+k+'-model').value.trim()||sharedModel, // blank = the shared model
                   min_interval_min: intOr('ai-'+k+'-interval',30),
                   guidance: $('ai-'+k+'-guidance').value.trim() };
         if (numKey) o[numKey] = intOr('ai-'+k+'-'+numId, 0); // some passes have no numeric knob
@@ -693,6 +764,7 @@
       }
       return {
         enabled: $('ai-on').checked,
+        model: sharedModel,
         monthly_cap_cents: intOr('ai-cap',800),
         picks: feat('picks','count','count'),
         top20: feat('top20','count','count'),
@@ -705,9 +777,26 @@
 
     function build(){
       var profile = collectProfile();
+      var sharedModel = $('ai-model').value.trim()||'claude-haiku-4-5';
+      // Preserve the saved enrichment cap (its input was retired — spend is governed by
+      // the single shared AI budget; the field stays in config for the AI-off path).
+      var enrCap = (cfg && cfg.enrichment && cfg.enrichment.monthly_spend_cap_cents!=null)
+        ? cfg.enrichment.monthly_spend_cap_cents : 500;
       return {
         fold_threshold: numOr('fold',0.6),
         cadence_hours: intOr('cadence',3),
+        headline_max: intOr('headline-max',8),
+        scoring: {
+          profile_weight: numOr('sc-profile',0.70),
+          baseline_weight: numOr('sc-baseline',0.30),
+          weight_floor: numOr('sc-wfloor',0.85),
+          weight_span: numOr('sc-wspan',0.15),
+          signal_high: numOr('sc-sighigh',1.6),
+          signal_low: numOr('sc-siglow',0.5),
+          source_cap: intOr('sc-cap',3),
+          source_cap_penalty: numOr('sc-cappen',0.6),
+          headline_signal_bonus: numOr('sc-hbonus',0.15)
+        },
         recency: {
           half_life_hours: numOr('half-life',20),
           floor_fresh_hours: numOr('floor-fresh',36),
@@ -719,10 +808,10 @@
         },
         enrichment: {
           enabled: $('enr-on').checked,
-          model: $('enr-model').value.trim()||'claude-haiku-4-5',
+          model: $('enr-model').value.trim()||sharedModel,
           shortlist_size: intOr('enr-short',100),
           batch_size: intOr('enr-batch-size',10),
-          monthly_spend_cap_cents: intOr('enr-cap',0),
+          monthly_spend_cap_cents: enrCap,
           guidance: $('enr-guidance').value.trim()
         },
         ai: aiBlock(),
