@@ -209,6 +209,65 @@ export async function editPicks(env, state, items, config, now) {
   }
 }
 
+// ---- Curate Top 20 -------------------------------------------------------------
+const TOP20_KEY = "editorial:top20";
+
+function top20System(count, guidance, ctx) {
+  const steer = (guidance || "").trim();
+  return `You are the editor of one reader's "Top ${count || 20} across everything" — the single trustworthy cross-domain feed spanning News, Sport, Gaming, Tech, Culture and every other area of the brief.
+
+The reader's configured priorities — honour these FIRST (they define what "important" means for this reader):
+${ctx}
+
+From the candidate stories below (each with an id, across all areas), choose the ones that genuinely matter most to THIS reader and order them by importance — most important first, at most ${count || 20}, spanning areas (don't let one topic dominate). For each chosen story write a ONE-line "why it matters": max ~18 words, specific, no hype, no spoilers. Drop weak entries rather than padding to the limit. Return only the chosen stories, by their given id, in your chosen order.${steer ? `\n\nAdditional reader guidance (layer on top of the priorities above, do not override them): ${steer}` : ""}`;
+}
+
+// Curates state.top20 (orders + attaches `why`) from the wider top20_candidates pool,
+// across the WHOLE brief — never promotes outside the candidate set. Same template as
+// editPicks; cached by candidate ids. On any failure the mechanical Top 20 stands.
+export async function curateTop20(env, state, items, config, now) {
+  const ai = config.ai || {};
+  const feat = ai.top20 || {};
+  const g = await gate(env, ai, feat);
+  if (!g.ok) return { degraded: true, reason: g.reason };
+
+  const cands = (state.top20_candidates && state.top20_candidates.length)
+    ? state.top20_candidates : (state.top20 || []);
+  if (!cands.length) return { degraded: false, reason: "no candidates" };
+  const byId = new Map(cands.map((c) => [c.id, c]));
+
+  const hash = await sha1(cands.map((c) => c.id).sort().join(","));
+  const cache = (await loadCache(env, TOP20_KEY)) || { ts: 0, hash: "", order: [] };
+  const apply = (order) => {
+    const picked = order.map((p) => { const it = byId.get(p.id); return it ? { ...it, why: p.why } : null; })
+      .filter(Boolean).slice(0, feat.count || 20);
+    if (picked.length) state.top20 = picked;
+  };
+  if (cache.hash === hash && cache.order.length) { apply(cache.order); return { degraded: false, reason: "cached" }; }
+  if (now - (cache.ts || 0) < (feat.min_interval_min ?? 30) * 60000 && cache.order.length) {
+    apply(cache.order); return { degraded: false, reason: "throttled" };
+  }
+
+  const lines = cands.map((c) => `${c.id} | (${c.domain_label || c.domain}) ${c.title}${c.hook ? " — " + c.hook : ""}`).join("\n");
+  try {
+    const { parsed, cents } = await callModel(env, {
+      system: top20System(feat.count, feat.guidance, profileContext(config)),
+      user: `Candidate stories (across all areas):\n${lines}`,
+      schema: PICKS_SCHEMA, model: feat.model, max_tokens: 1200,
+    });
+    if (cents) await addSpendCents(env, cents);
+    const order = (parsed && Array.isArray(parsed.picks)) ? parsed.picks.filter((p) => p && byId.has(p.id)) : [];
+    if (order.length) {
+      apply(order);
+      await saveCache(env, TOP20_KEY, { ts: now, hash, order });
+      return { degraded: false, reason: "ok", spentCents: cents };
+    }
+    return { degraded: false, reason: "no usable picks", spentCents: cents };
+  } catch (e) {
+    return { degraded: false, reason: "error: " + String(e.message || e).slice(0, 60) };
+  }
+}
+
 // ---- Firehose digests ----------------------------------------------------------
 const DIGEST_SCHEMA = {
   type: "object",
@@ -371,14 +430,17 @@ export async function smartMerge(env, items, config, now) {
 export async function augmentEditorial(env, state, items, config, now) {
   const ai = config.ai || {};
   const status = { ts: now };
-  if (!ai.enabled) { delete state.headline_candidates; return status; }
+  if (!ai.enabled) { delete state.headline_candidates; delete state.top20_candidates; return status; }
   const p = await editPicks(env, state, items, config, now);
   status.picks = { on: !p.degraded, reason: p.reason, model: (ai.picks || {}).model };
+  const t = await curateTop20(env, state, items, config, now);
+  status.top20 = { on: !t.degraded, reason: t.reason, model: (ai.top20 || {}).model };
   const b = await editionBriefs(env, state, items, config, now);
   status.briefs = { on: !b.degraded, reason: b.reason, model: (ai.briefs || {}).model };
   const d = await digestRollups(env, state, items, config, now);
   status.digests = { on: !d.degraded, reason: d.reason, model: (ai.digests || {}).model };
-  // headline_candidates was only needed by editPicks — drop it from the shipped state.
+  // Candidate pools were only needed by the curation passes — drop from shipped state.
   delete state.headline_candidates;
+  delete state.top20_candidates;
   return status;
 }

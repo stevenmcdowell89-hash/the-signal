@@ -248,6 +248,18 @@
     </div>
 
     <div class="card">
+      <h2>Curate Top 20</h2>
+      <div class="toggle"><input type="checkbox" id="ai-top20-on"><label for="ai-top20-on">Order the whole-brief "Top 20 across everything" feed, with a "why it matters" line</label></div>
+      <div class="row" style="margin-top:0.6rem">
+        <div><label for="ai-top20-model">Model</label><input type="text" id="ai-top20-model"></div>
+        <div><label for="ai-top20-count">How many</label><input type="number" id="ai-top20-count" min="1" max="30"></div>
+        <div><label for="ai-top20-interval">Min minutes between runs</label><input type="number" id="ai-top20-interval" min="0" max="240"></div>
+      </div>
+      <label for="ai-top20-guidance" style="margin-top:0.6rem">Guidance — how to order across everything</label>
+      <textarea id="ai-top20-guidance" rows="3"></textarea>
+    </div>
+
+    <div class="card">
       <h2>Firehose digests</h2>
       <div class="toggle"><input type="checkbox" id="ai-digests-on"><label for="ai-digests-on">Summarise each "+N more in {topic}" tail into a sentence or two</label></div>
       <div class="row" style="margin-top:0.6rem">
@@ -588,13 +600,13 @@
       var ai = c.ai||{};
       $('ai-on').checked = !!ai.enabled;
       $('ai-cap').value = ai.monthly_cap_cents!=null?ai.monthly_cap_cents:800;
-      var aiNum = { picks:'count', digests:'max_rollups', briefs:'max_sentences', merge:'max_candidates' };
-      var aiNumId = { picks:'count', digests:'max', briefs:'max', merge:'max' };
-      ['picks','digests','briefs','merge'].forEach(function(k){
+      var aiNum = { picks:'count', top20:'count', digests:'max_rollups', briefs:'max_sentences', merge:'max_candidates' };
+      var aiNumId = { picks:'count', top20:'count', digests:'max', briefs:'max', merge:'max' };
+      ['picks','top20','digests','briefs','merge'].forEach(function(k){
         var f = ai[k]||{};
         $('ai-'+k+'-on').checked = !!f.enabled;
         $('ai-'+k+'-model').value = f.model||'claude-haiku-4-5';
-        $('ai-'+k+'-'+aiNumId[k]).value = f[aiNum[k]]!=null?f[aiNum[k]]:'';
+        if (aiNumId[k]) $('ai-'+k+'-'+aiNumId[k]).value = f[aiNum[k]]!=null?f[aiNum[k]]:'';
         $('ai-'+k+'-interval').value = f.min_interval_min!=null?f.min_interval_min:30;
         $('ai-'+k+'-guidance').value = f.guidance||'';
       });
@@ -665,13 +677,14 @@
                   model: $('ai-'+k+'-model').value.trim()||'claude-haiku-4-5',
                   min_interval_min: intOr('ai-'+k+'-interval',30),
                   guidance: $('ai-'+k+'-guidance').value.trim() };
-        o[numKey] = intOr('ai-'+k+'-'+numId, 0);
+        if (numKey) o[numKey] = intOr('ai-'+k+'-'+numId, 0); // some passes have no numeric knob
         return o;
       }
       return {
         enabled: $('ai-on').checked,
         monthly_cap_cents: intOr('ai-cap',800),
         picks: feat('picks','count','count'),
+        top20: feat('top20','count','count'),
         digests: feat('digests','max_rollups','max'),
         briefs: feat('briefs','max_sentences','max'),
         merge: feat('merge','max_candidates','max')
@@ -830,7 +843,7 @@
       var editorial = '';
       if (ai){
         editorial = '<div style="margin-top:0.5rem">';
-        [['picks','Picks'],['digests','Digests'],['briefs','Briefs'],['merge','Merge']].forEach(function(p){
+        [['picks','Picks'],['top20','Top 20'],['digests','Digests'],['briefs','Briefs'],['merge','Merge']].forEach(function(p){
           var f = ai[p[0]]||{};
           editorial += '<span class="pill '+(f.on?'on':'off')+'" title="'+escA(f.reason||'')+'">'+escA(p[1])+(f.on?'':' off')+'</span>';
         });

@@ -381,21 +381,24 @@ export function buildState(items, meta, now, config) {
   const t20Ranked = live
     .filter((i) => (i.confidence || 0) > 0)
     .sort((a, b) => importance(b) - importance(a));
-  const top20 = [];
+  // Build a wider pool (≤30): the first 20 are the mechanical Top 20 (the degrade
+  // target); the full pool is the candidate set the AI-curate pass orders from.
+  const top20wide = [];
   const t20Toks = [];
   const t20Dom = {};
   const t20Src = {};
   for (const it of t20Ranked) {
-    if (top20.length >= 20) break;
+    if (top20wide.length >= 30) break;
     if ((t20Dom[it.domain] || 0) >= 3) continue;
     if (it.source && (t20Src[it.source] || 0) >= 2) continue;
     const toks = topicTokens(it);
     if (t20Toks.some((t) => tokenJaccard(t, toks) >= 0.45)) continue;
-    top20.push(it);
+    top20wide.push(it);
     t20Dom[it.domain] = (t20Dom[it.domain] || 0) + 1;
     if (it.source) t20Src[it.source] = (t20Src[it.source] || 0) + 1;
     t20Toks.push(toks);
   }
+  const top20 = top20wide.slice(0, 20);
 
   return {
     generated_at: now,
@@ -412,6 +415,8 @@ export function buildState(items, meta, now, config) {
     // Wider breadth-eligible pool the AI Editor's Picks pass curates from (when on);
     // ignored by the front-end. Already importance-sorted (hRanked).
     headline_candidates: hRanked.slice(0, 16).map(publicItem),
+    // Wider Top-20 pool the AI-curate pass orders from (when on); stripped after, ignored by the front-end.
+    top20_candidates: top20wide.map(publicItem),
     sections,
     also: alsoDomains,
     communities,

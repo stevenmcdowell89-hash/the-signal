@@ -71,6 +71,14 @@ export function defaultConfig() {
         min_interval_min: 30,
         guidance: "Lead with what genuinely changes the reader's day or world — confirmed, consequential developments over speculation. Order by importance to this reader; a precise reason to care is the bar.",
       },
+      // Curate Top 20 — order the whole-brief feed + write "why it matters".
+      top20: {
+        enabled: true,
+        model: "claude-haiku-4-5",
+        count: 20,
+        min_interval_min: 30,
+        guidance: "Order the whole brief by what matters most to this reader across every area — not just the front page. Lead with the genuinely consequential; span areas rather than letting one topic dominate.",
+      },
       // Firehose digests — synthesise each "+N more in {topic}" tail.
       digests: {
         enabled: true,
@@ -232,7 +240,7 @@ function mergeConfig(def, saved) {
   out.recency = { ...def.recency, ...(saved.recency || {}) };
   out.scoring = { ...def.scoring, ...(saved.scoring || {}) };
   out.ai = { ...def.ai, ...(saved.ai || {}) };
-  for (const k of ["picks", "digests", "briefs", "merge"]) {
+  for (const k of ["picks", "top20", "digests", "briefs", "merge"]) {
     out.ai[k] = { ...def.ai[k], ...((saved.ai || {})[k] || {}) };
   }
   out.push = { ...def.push, ...(saved.push || {}) };
