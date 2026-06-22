@@ -1184,16 +1184,14 @@
         var t = reltime(it);
         var headHtml = '<div class="catch-head">' + left + (t ? '<span class="catch-time">' + esc(t) + '</span>' : '') + '</div>';
 
-        // Body: the AI hook when enriched, otherwise the story's own summary. Once
-        // a hook is present the greyed source lede is redundant clutter, so show
-        // the summary only when there's no hook. A picked headline (headline_line)
-        // is a single AI-written line that REPLACES the title — no second line.
+        // Body: exactly ONE AI line per card. The curated "why it matters" wins when
+        // present (Headlines/Top 20), else the enrichment hook, else the story's own
+        // summary. An item can carry both a `why` and a `hook`; show only the `why` so
+        // every card across every section reads as title + one line.
         var body = '';
-        if (!it.headline_line) {
-          if (it.why) body += '<div class="catch-why">' + esc(it.why) + '</div>';
-          if (it.hook) body += '<div class="catch-hook">' + esc(it.hook) + '</div>';
-          else if (it.summary) body += '<div class="catch-summary">' + esc(it.summary) + '</div>';
-        }
+        if (it.why) body += '<div class="catch-why">' + esc(it.why) + '</div>';
+        else if (it.hook) body += '<div class="catch-hook">' + esc(it.hook) + '</div>';
+        else if (it.summary) body += '<div class="catch-summary">' + esc(it.summary) + '</div>';
 
         // Footer: register chip + a discussion chip (💬 count) + the out-links.
         // The discussion/post link is rendered as the chip, so it's filtered out
@@ -1214,8 +1212,7 @@
           ? '<div class="catch-foot">' + reg + '<span class="catch-links">' + disc + linksHtml + '</span></div>'
           : '';
 
-        if (it.headline_line) a.title = it.title || '';
-        a.innerHTML = headHtml + '<div class="catch-title">' + esc(it.headline_line || it.title) + '</div>' + body + foot;
+        a.innerHTML = headHtml + '<div class="catch-title">' + esc(it.title) + '</div>' + body + foot;
         a.querySelectorAll('.catch-links a').forEach(function(x){ x.addEventListener('click', function(e){ e.stopPropagation(); }); });
         return a;
       }

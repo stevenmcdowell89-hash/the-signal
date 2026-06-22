@@ -154,25 +154,6 @@ const PICKS_SCHEMA = {
   additionalProperties: false,
 };
 
-// Editor's Picks emits ONE combined headline line per pick (it replaces the raw
-// title + separate "why it matters" — the reader wanted a single AI-written line).
-const PICKS_LINE_SCHEMA = {
-  type: "object",
-  properties: {
-    picks: {
-      type: "array",
-      items: {
-        type: "object",
-        properties: { id: { type: "string" }, line: { type: "string" } },
-        required: ["id", "line"],
-        additionalProperties: false,
-      },
-    },
-  },
-  required: ["picks"],
-  additionalProperties: false,
-};
-
 function picksSystem(count, guidance, ctx) {
   const steer = (guidance || "").trim();
   return `You are the front-page editor of one reader's personal daily brief.
@@ -180,13 +161,12 @@ function picksSystem(count, guidance, ctx) {
 The reader's configured priorities — honour these FIRST (they come from the reader's own settings, and define what "important" means for this reader):
 ${ctx}
 
-From the candidate stories below (each with an id), choose the ones that genuinely belong on the front page and order them by importance to THIS reader, consistent with the priorities above — most important first, at most ${count || 8}. For each chosen story write ONE punchy front-page line (max ~20 words) that states what happened AND why it matters to this reader in a single sentence — specific (name the actual stake/number/consequence), no hype, no spoilers, no separate label or prefix. This single line REPLACES the raw headline, so it must read as a complete headline on its own. Drop anything that isn't real front-page material rather than padding to the limit. Return only the chosen stories, by their given id, in your chosen order.${steer ? `\n\nAdditional reader guidance (layer on top of the priorities above, do not override them): ${steer}` : ""}`;
+From the candidate stories below (each with an id), choose the ones that genuinely belong on the front page and order them by importance to THIS reader, consistent with the priorities above — most important first, at most ${count || 8}. For each chosen story write a ONE-line "why it matters": max ~18 words, specific (name the actual stake/number/consequence), no hype, no spoilers. Drop anything that isn't real front-page material rather than padding to the limit. Return only the chosen stories, by their given id, in your chosen order.${steer ? `\n\nAdditional reader guidance (layer on top of the priorities above, do not override them): ${steer}` : ""}`;
 }
 
-// Reorders state.headlines within the mechanical candidate set and attaches a single
-// combined `headline_line` to each (it replaces the title at render) — never promotes
-// an item the mechanical bar rejected. Cached by the sorted candidate ids. On any
-// failure the mechanical headlines stand unchanged.
+// Reorders state.headlines within the mechanical candidate set and attaches a `why`
+// to each — never promotes an item the mechanical bar rejected. Cached by the sorted
+// candidate ids. On any failure the mechanical headlines stand unchanged.
 export async function editPicks(env, state, items, config, now) {
   const ai = config.ai || {};
   const feat = ai.picks || {};
@@ -201,7 +181,7 @@ export async function editPicks(env, state, items, config, now) {
   const hash = await sha1(cands.map((c) => c.id).sort().join(","));
   const cache = (await loadCache(env, PICKS_KEY)) || { ts: 0, hash: "", order: [] };
   const apply = (order) => {
-    const picked = order.map((p) => { const it = byId.get(p.id); return it ? { ...it, headline_line: p.line } : null; })
+    const picked = order.map((p) => { const it = byId.get(p.id); return it ? { ...it, why: p.why } : null; })
       .filter(Boolean).slice(0, feat.count || 8);
     if (picked.length) state.headlines = picked;
   };
@@ -215,10 +195,10 @@ export async function editPicks(env, state, items, config, now) {
     const { parsed, cents } = await callModel(env, {
       system: picksSystem(feat.count, feat.guidance, profileContext(config)),
       user: `Candidate stories:\n${lines}`,
-      schema: PICKS_LINE_SCHEMA, model: feat.model, max_tokens: 700,
+      schema: PICKS_SCHEMA, model: feat.model, max_tokens: 700,
     });
     if (cents) await addSpendCents(env, cents);
-    const order = (parsed && Array.isArray(parsed.picks)) ? parsed.picks.filter((p) => p && p.line && byId.has(p.id)) : [];
+    const order = (parsed && Array.isArray(parsed.picks)) ? parsed.picks.filter((p) => p && byId.has(p.id)) : [];
     if (order.length) {
       apply(order);
       await saveCache(env, PICKS_KEY, { ts: now, hash, order });
