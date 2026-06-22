@@ -13,6 +13,7 @@ import { ingestAll } from "./ingest.js";
 import { clusterEntries } from "./dedup.js";
 import { scoreBatch } from "./score.js";
 import { enrichShortlist } from "./enrich.js";
+import { augmentEditorial } from "./editorial.js";
 import { buildState } from "./render.js";
 
 const STATE_KEY = "state";
@@ -268,6 +269,10 @@ export async function run(env, { trigger } = {}) {
   };
   setProgress(env, "rendering", 1, 1);
   const state = buildState(items, meta, now, config);
+  // AI editorial layer (optional) — augments the mechanical state in place. No-op
+  // when off / no key / cap hit, so `state` is unchanged in those cases.
+  const aiStatus = await augmentEditorial(env, state, items, config, now);
+  await env.DAILY_STATE.put(AI_STATUS_KEY, JSON.stringify(aiStatus));
   await env.DAILY_STATE.put(STATE_KEY, JSON.stringify(state));
   setProgress(env, "done", 1, 1);
 
@@ -310,8 +315,9 @@ export async function getState(env) {
 export async function resetState(env) {
   if (!env.DAILY_STATE) return [];
   const keys = [
-    STATE_KEY, SOURCE_STATUS_KEY, ENRICH_STATUS_KEY, RUN_PROGRESS_KEY,
+    STATE_KEY, SOURCE_STATUS_KEY, ENRICH_STATUS_KEY, AI_STATUS_KEY, RUN_PROGRESS_KEY,
     REDDIT_CURSOR_KEY, REDDIT_BATCH_KEY,
+    "editorial:briefs", "editorial:picks", "editorial:digests", "editorial:merge",
   ];
   await Promise.all(keys.map((k) => env.DAILY_STATE.delete(k)));
   // Mark Reddit as "just rolled" rather than clearing the stamp: this debounces a
