@@ -13,48 +13,54 @@
 import { saveEnrichment } from "./db.js";
 import { addSpendCents, getMonthlySpendCents } from "./config.js";
 import { callModel } from "./llm.js";
+import { profileContext } from "./editorial.js";
 
-function systemPrompt(profile, guidance) {
-  const floor = (profile.named_entity_floor || []).map((e) => e.label).join(", ");
-  const topics = Object.entries(profile.topic_weights || {})
-    .map(([d, s]) => `${d} (${s.weight})`)
-    .join(", ");
-  const handling = Object.entries(profile.special_handling || {})
-    .map(([d, s]) => `${d}: ${s.note}`)
-    .join("; ");
-  // Optional reader-authored steer (editable in Settings → AI Editorial). Appended
-  // so it overrides/extends the built-in instruction without replacing it.
+function systemPrompt(ctx, guidance) {
+  // Optional reader-authored steer (editable in Settings → Enrichment). Appended
+  // so it extends the built-in instruction without replacing it.
   const steer = (guidance || "").trim();
   return `You are the triage engine for "The Signal" daily brief — a dense, scannable, link-out digest for one reader. You classify and write one hook line per news item.
 
-The reader's core entities (always relevant): ${floor}.
-Weighted interest topics: ${topics}.
-Special handling — ${handling}.
+The reader's configured priorities (honour these — they come from the reader's own settings):
+${ctx}
 
-For each item return:
+You will be given a numbered list of items, each with an id. Return one object per item, keyed by its given id. Judge each item independently on its own merits — NOT relative to the others in the batch. For each item return:
 - register: one of "consequential" (it matters / something happened), "take" (an argument or opinion worth hearing), "colour" (a quirk / curiosity), "discovery" (something to find / try).
 - hook: ONE line, register-matched. SPECIFICITY IS THE BAR — name the actual argument, number, or quirk. "Interesting discussion about X" is a failed line. Personal second-person voice is allowed ("your device", "your Sunday"). Max ~22 words. No clickbait, no spoilers (books/film), no diet/calorie framing (fitness).
-- relevance: 0.0–1.0, how relevant to THIS reader's profile (not general importance). A precise reason to care is the gate; if there is no specific reason this reader should care, score low.
+- relevance: 0.0–1.0, how relevant to THIS reader's profile (not general importance), consistent with the priorities above. A precise reason to care is the gate; if there is no specific reason this reader should care, score low.
 
 Be terse. Do not editorialise beyond the hook.${steer ? `\n\nReader's editorial guidance: ${steer}` : ""}`;
 }
 
-const OUTPUT_SCHEMA = {
+// Array output: one judged object per item, keyed back to the item by id.
+const BATCH_SCHEMA = {
   type: "object",
   properties: {
-    register: { type: "string", enum: ["consequential", "take", "colour", "discovery"] },
-    hook: { type: "string" },
-    relevance: { type: "number" },
+    items: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          register: { type: "string", enum: ["consequential", "take", "colour", "discovery"] },
+          hook: { type: "string" },
+          relevance: { type: "number" },
+        },
+        required: ["id", "register", "hook", "relevance"],
+        additionalProperties: false,
+      },
+    },
   },
-  required: ["register", "hook", "relevance"],
+  required: ["items"],
   additionalProperties: false,
 };
 
-function callHaiku(env, system, item, model) {
-  const user = `Item (${item.domain}): "${item.title}"\nSource type: ${item.source_type}. Links: ${
-    (item.links || []).map((l) => l.type).join(", ")
-  }.`;
-  return callModel(env, { system, user, schema: OUTPUT_SCHEMA, model, max_tokens: 200 });
+function callBatch(env, system, chunk, model) {
+  const user = chunk
+    .map((it) => `${it.id} | (${it.domain}) "${it.title}" [${it.source_type || "?"}]`)
+    .join("\n");
+  // ~item-count scales output; give headroom of ~60 tokens/item.
+  return callModel(env, { system, user, schema: BATCH_SCHEMA, model, max_tokens: Math.min(2000, 120 + chunk.length * 70) });
 }
 
 // Effective spend ceiling: when the AI layer is on, the shared cap governs all
@@ -82,50 +88,52 @@ export async function enrichShortlist(env, db, items, config, now) {
   const shortlist = items
     .filter((i) => !i.muted)
     .sort((a, b) => b.confidence - a.confidence)
-    .slice(0, ec.shortlist_size || 36)
+    .slice(0, ec.shortlist_size || 100)
     .filter((i) => !i.enriched);
 
   if (!shortlist.length) return { enriched: 0, spentCents: 0, degraded: false, reason: "nothing new" };
 
-  const system = systemPrompt(config.profile, ec.guidance);
+  const system = systemPrompt(profileContext(config), ec.guidance);
   let enriched = 0;
   let spentCents = 0;
   let capHit = false;
 
-  // Sequential with a per-loop cap check so we never blow the budget. (Awaiting
-  // fetch costs wall time, not CPU; ~36 items is well within a cron run.)
-  for (const it of shortlist) {
-    if (spent + spentCents >= cap) {
-      capHit = true;
-      break;
+  // Apply one judged result to its item (identical mutations to the per-item path
+  // before; only the source is now a batch element).
+  const applyOne = async (it, parsed) => {
+    const rel = Math.max(0, Math.min(1, parsed.relevance));
+    it.register = parsed.register;
+    it.hook = parsed.hook;
+    it.profile_score = Math.max(it.profile_score, rel);
+    if (!it.entity_floor) {
+      it.confidence = Math.max(it.confidence, 0.5 * rel + 0.5 * it.confidence);
+      it.above_fold = it.confidence >= config.fold_threshold;
     }
+    it.enriched = true;
+    it.enrich_hash = it.canonical_url;
+    await saveEnrichment(db, it.id, {
+      register: it.register, hook: it.hook, relevance: it.profile_score, enrich_hash: it.enrich_hash,
+    });
+    enriched++;
+  };
+
+  // Mini-batch: chunk the shortlist into one call per `batch_size` items. The
+  // cached system block means chunks 2..N pay almost nothing for the instructions,
+  // so coverage can be far wider than the old one-call-per-item path at fewer calls.
+  const batchSize = Math.max(1, ec.batch_size || 10);
+  for (let off = 0; off < shortlist.length; off += batchSize) {
+    if (spent + spentCents >= cap) { capHit = true; break; }
+    const chunk = shortlist.slice(off, off + batchSize);
     try {
-      const { parsed, cents } = await callHaiku(env, system, it, ec.model);
+      const { parsed, cents } = await callBatch(env, system, chunk, ec.model);
       spentCents += cents;
-      if (parsed) {
-        // Semantic relevance feeds above-fold (§3 Tier 2). Blend with Tier-1.
-        const rel = Math.max(0, Math.min(1, parsed.relevance));
-        it.register = parsed.register;
-        it.hook = parsed.hook;
-        it.profile_score = Math.max(it.profile_score, rel);
-        // Re-derive confidence influence from the AI relevance, keeping the
-        // entity-floor pin.
-        if (!it.entity_floor) {
-          it.confidence = Math.max(it.confidence, 0.5 * rel + 0.5 * it.confidence);
-          it.above_fold = it.confidence >= config.fold_threshold;
-        }
-        it.enriched = true;
-        it.enrich_hash = it.canonical_url;
-        await saveEnrichment(db, it.id, {
-          register: it.register,
-          hook: it.hook,
-          relevance: it.profile_score,
-          enrich_hash: it.enrich_hash,
-        });
-        enriched++;
+      const byId = new Map(chunk.map((it) => [it.id, it]));
+      for (const r of (parsed && Array.isArray(parsed.items) ? parsed.items : [])) {
+        const it = byId.get(r.id);
+        if (it && !it.enriched) await applyOne(it, r);
       }
     } catch (e) {
-      // Single-item failure: skip; Tier-1 line still ships for it.
+      // Whole-chunk failure: those items ship Tier-1 (same as a per-item failure before).
     }
   }
 

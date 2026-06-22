@@ -47,7 +47,8 @@ async function saveCache(env, key, obj) {
 // its judgement to the SAME weightings as the mechanical engine — the core entities,
 // topic weights, signal tiers and rules — instead of competing with them. The
 // per-pass `guidance` then layers on TOP as an additional steer, not a rival signal.
-function profileContext(config) {
+// Exported so enrichment anchors to the same weightings too.
+export function profileContext(config) {
   const p = (config && config.profile) || {};
   const floor = (p.named_entity_floor || []).map((e) => e.label).join(", ");
   const topics = Object.entries(p.topic_weights || {})
