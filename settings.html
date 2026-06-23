@@ -138,10 +138,10 @@
 
     <nav class="tabs" id="tabs">
       <button class="tab" data-tab="status">Status</button>
-      <button class="tab" data-tab="engine">Engine</button>
-      <button class="tab" data-tab="ai">AI</button>
-      <button class="tab" data-tab="sources">Sources</button>
       <button class="tab" data-tab="interests">Interests</button>
+      <button class="tab" data-tab="sources">Sources</button>
+      <button class="tab" data-tab="ai">AI</button>
+      <button class="tab" data-tab="engine">Engine</button>
     </nav>
 
     <div class="panel" data-panel="status">
@@ -156,23 +156,19 @@
 
     <div class="panel" data-panel="engine">
     <div class="card">
-      <h2>Engine</h2>
+      <h2>Engine — timing &amp; ranking</h2>
       <div class="row">
         <div>
           <label for="fold">Fold threshold (above-fold confidence)</label>
           <input type="number" id="fold" min="0" max="1" step="0.05">
         </div>
         <div>
-          <label for="cadence">Cadence (hours, advisory)</label>
-          <input type="number" id="cadence" min="1" max="24" step="1">
-        </div>
-      </div>
-      <div class="hint">Lower fold = more above the fold. The actual cron schedule lives in wrangler.jsonc.</div>
-      <div class="row" style="margin-top:0.6rem">
-        <div>
           <label for="half-life">Recency half-life (hours)</label>
           <input type="number" id="half-life" min="2" max="96" step="1">
         </div>
+      </div>
+      <div class="hint">Lower fold = more above the fold. Lower half-life = the brief decays faster toward "today".</div>
+      <div class="row" style="margin-top:0.6rem">
         <div>
           <label for="floor-fresh">Core stays on top if fresher than (hours)</label>
           <input type="number" id="floor-fresh" min="6" max="120" step="1">
@@ -182,7 +178,7 @@
           <input type="number" id="catch-max" min="6" max="120" step="1">
         </div>
       </div>
-      <div class="hint">Lower half-life = the brief decays faster toward "today". A stale core story (an old transfer rumour) sinks once it's past the freshness window.</div>
+      <div class="hint">A stale core story (an old transfer rumour) sinks once it's past the freshness window.</div>
       <details style="margin-top:0.7rem">
         <summary class="hint" style="cursor:pointer">▸ Advanced — timing &amp; scoring weights</summary>
         <div class="row" style="margin-top:0.5rem">
@@ -192,8 +188,9 @@
         <div class="row" style="margin-top:0.5rem">
           <div><label for="undated">Undated penalty (hours)</label><input type="number" id="undated" min="0" max="96" step="1"></div>
           <div><label for="window-days">Score window (days)</label><input type="number" id="window-days" min="1" max="7" step="1"></div>
+          <div><label for="cadence">Cadence (hours, advisory)</label><input type="number" id="cadence" min="1" max="24" step="1"></div>
         </div>
-        <div class="hint">Velocity keep: how fast a story must move to resist decay. Blend: how much Top Catches ordering weights freshness vs confidence. Undated penalty: how much older a date-less item is treated as. Score window: how many days of items the brief considers.</div>
+        <div class="hint">Velocity keep: how fast a story must move to resist decay. Blend: how much Top Catches ordering weights freshness vs confidence. Undated penalty: how much older a date-less item is treated as. Score window: how many days of items the brief considers. Cadence is advisory — the real cron schedule lives in wrangler.jsonc.</div>
         <div class="hint" style="margin-top:0.9rem;font-weight:600;color:var(--ink)">Scoring weights — how the final rank is built</div>
         <div class="row" style="margin-top:0.4rem">
           <div><label for="sc-profile">Interest relevance share (0–1)</label><input type="number" id="sc-profile" min="0" max="1" step="0.05"></div>
@@ -220,20 +217,6 @@
     </div>
 
     <div class="card">
-      <h2>Enrichment (Tier 2 · Haiku)</h2>
-      <div class="toggle"><input type="checkbox" id="enr-on"><label for="enr-on">Enrichment on (register + hook line + semantic relevance)</label></div>
-      <div class="row" style="margin-top:0.6rem">
-        <div><label for="enr-model">Model (blank = shared)</label><input type="text" id="enr-model" placeholder="claude-haiku-4-5"></div>
-        <div><label for="enr-short">Shortlist size (items judged/run)</label><input type="number" id="enr-short" min="0" max="200"></div>
-        <div><label for="enr-batch-size">Items per call (batch)</label><input type="number" id="enr-batch-size" min="1" max="25"></div>
-      </div>
-      <div class="hint" style="margin-top:0.4rem">Items are mini-batched into one call each, so a larger shortlist costs far less than one call per item. Spend is governed by the single <b>Monthly AI budget</b> on the AI tab.</div>
-      <label for="enr-guidance" style="margin-top:0.6rem">Hook guidance (optional — how to write the hook line)</label>
-      <textarea id="enr-guidance" rows="2" placeholder="e.g. Lead with the concrete fact. Sceptical of hype."></textarea>
-      <div class="hint">On budget-hit the daily auto-falls back to Tier 1 (headlines + links, no hooks) and records it.</div>
-    </div>
-
-    <div class="card">
       <h2>Push</h2>
       <div class="toggle"><input type="checkbox" id="push-badge"><label for="push-badge">Daily app badge (silent; the weekly keeps the push notification)</label></div>
       <div class="toggle" style="margin-top:0.6rem"><input type="checkbox" id="push-sig"><label for="push-sig">Push when something big lands (a fresh core story or high-confidence catch — throttled, not a daily alarm)</label></div>
@@ -255,6 +238,22 @@
         <div><label for="ai-cap">Monthly AI budget (cents)</label><input type="number" id="ai-cap" min="0" step="50"></div>
       </div>
       <div class="hint">One model and one budget across enrichment + every editorial pass below. Changing the model here sets it everywhere; a single pass can still override it under its own ▸ Advanced. On budget-hit (or with no API key) the brief falls back to the mechanical version. Each pass is independently toggleable; its <b>guidance</b> steers how it prioritises, groups or summarises — edit it in plain English.</div>
+    </div>
+
+    <div class="card">
+      <h2>Enrichment (Tier 2 — the base AI layer)</h2>
+      <div class="toggle"><input type="checkbox" id="enr-on"><label for="enr-on">Enrichment on (register + hook line + semantic relevance — the per-item read every list draws on)</label></div>
+      <label for="enr-guidance" style="margin-top:0.6rem">Hook guidance (optional — how to write the hook line)</label>
+      <textarea id="enr-guidance" rows="2" placeholder="e.g. Lead with the concrete fact. Sceptical of hype."></textarea>
+      <div class="hint">On budget-hit the daily auto-falls back to Tier 1 (headlines + links, no hooks) and records it. Spend is governed by the single <b>Monthly AI budget</b> above.</div>
+      <details class="adv" style="margin-top:0.5rem"><summary class="hint" style="cursor:pointer">▸ Advanced (model · shortlist · batch)</summary>
+      <div class="row" style="margin-top:0.5rem">
+        <div><label for="enr-model">Model (blank = shared)</label><input type="text" id="enr-model" placeholder="claude-haiku-4-5"></div>
+        <div><label for="enr-short">Shortlist size (items judged/run)</label><input type="number" id="enr-short" min="0" max="200"></div>
+        <div><label for="enr-batch-size">Items per call (batch)</label><input type="number" id="enr-batch-size" min="1" max="25"></div>
+      </div>
+      <div class="hint">Items are mini-batched into one call each, so a larger shortlist costs far less than one call per item.</div>
+      </details>
     </div>
 
     <div class="card">
@@ -393,21 +392,21 @@
     </div>
 
     <div class="card">
-      <h2>Topic rules — suppress &amp; downrank</h2>
-      <div class="hint" style="margin-bottom:0.4rem">Per-topic filters. <b>Suppress</b> drops a matching item (book/film spoilers, fitness diet talk, finance hype); <b>Downrank</b> keeps it but pushes it down (e.g. UK process-politics in World). Words are comma-separated, matched in the headline.</div>
-      <table id="rules-table"><thead><tr><th>Topic</th><th>Action</th><th>Words</th><th></th></tr></thead><tbody></tbody></table>
-      <div class="addrow"><button class="btn-sm" id="add-rule">+ Add rule</button></div>
-    </div>
-
-    <div class="card">
       <h2>Lift &amp; bury — everywhere (all topics)</h2>
-      <div class="hint" style="margin-bottom:0.5rem">These apply across <b>every</b> topic. For words that should only count in one subject (e.g. "signs" in Football), use that topic's <b>Lift</b>/<b>Bury</b> columns instead.</div>
+      <div class="hint" style="margin-bottom:0.5rem">Words that push a story up or down across <b>every</b> topic. For words that should only count in one subject (e.g. "signs" in Football), use that topic's <b>Lift</b>/<b>Bury</b> columns in Topics instead.</div>
       <label for="signal-high">Lift items whose headline contains (comma-separated)</label>
       <input type="text" id="signal-high">
       <div class="hint">High-signal words — "confirmed", "official", "launches", "signs". A story with one of these is pushed up.</div>
       <label for="signal-low" style="margin-top:0.7rem">Bury items whose headline contains (comma-separated)</label>
       <input type="text" id="signal-low">
       <div class="hint">Low-signal words — "rumour", "linked", "could", "reportedly". A story with one of these sinks.</div>
+    </div>
+
+    <div class="card">
+      <h2>Hide in a topic</h2>
+      <div class="hint" style="margin-bottom:0.4rem">A per-topic drop list — like <b>Never show</b> below, but scoped to one topic: a matching headline in that topic is dropped entirely (book/film spoilers, fitness diet talk, finance hype). Words are comma-separated, matched in the headline. <i>To merely push a kind of story down rather than drop it, use that topic's <b>Bury</b> column in Topics.</i></div>
+      <table id="rules-table"><thead><tr><th>Topic</th><th>Words to hide</th><th></th></tr></thead><tbody></tbody></table>
+      <div class="addrow"><button class="btn-sm" id="add-rule">+ Add</button></div>
     </div>
 
     <div class="card">
@@ -573,14 +572,13 @@
       return tr;
     }
 
-    function rulesRow(domain, action, words){
+    // "Hide in a topic" = per-topic suppress (drop). Downrank was retired into the
+    // topic's Bury column, so a rule row is now just topic + words.
+    function rulesRow(domain, words){
       var tr=document.createElement('tr');
       tr.innerHTML =
         '<td data-label="Topic"><input type="text" value="'+escA(domain||'')+'" data-k="domain" list="topic-ids" placeholder="topic"></td>'+
-        '<td data-label="Action"><select data-k="action">'+
-          '<option value="suppress"'+(action==='downrank'?'':' selected')+'>Suppress (drop)</option>'+
-          '<option value="downrank"'+(action==='downrank'?' selected':'')+'>Downrank (bury in this topic)</option></select></td>'+
-        '<td data-label="Words"><input type="text" value="'+escA((words||[]).join(', '))+'" data-k="words" placeholder="comma-separated"></td>'+
+        '<td data-label="Words to hide"><input type="text" value="'+escA((words||[]).join(', '))+'" data-k="words" placeholder="comma-separated"></td>'+
         '<td><button class="btn-sm btn-danger" data-del="1">✕</button></td>';
       tr.querySelector('[data-del]').addEventListener('click', function(){ tr.remove(); updatePreview(); });
       return tr;
@@ -625,16 +623,15 @@
         if(domain) o.domain=domain;
         floor.push(o);
       });
-      // Topic rules → special_handling { domain: { suppress_patterns?, demote_patterns? } }
+      // "Hide in a topic" → special_handling { domain: { suppress_patterns } }. Downrank
+      // is gone — it lives in each topic's Bury column (signal_low) now.
       var sh={};
       $('rules-table').querySelectorAll('tbody tr').forEach(function(tr){
         var domain=tr.querySelector('[data-k=domain]').value.trim();
-        var action=tr.querySelector('[data-k=action]').value;
         var words=tr.querySelector('[data-k=words]').value.split(',').map(function(s){return s.trim();}).filter(Boolean);
         if(!domain || !words.length) return;
-        var key = action==='downrank' ? 'demote_patterns' : 'suppress_patterns';
         sh[domain]=sh[domain]||{};
-        sh[domain][key]=(sh[domain][key]||[]).concat(words);
+        sh[domain].suppress_patterns=(sh[domain].suppress_patterns||[]).concat(words);
       });
       var mutes=$('extra-mutes').value.split(',').map(function(s){return s.trim();}).filter(Boolean);
       var csv=function(id){ return $(id).value.split(',').map(function(s){return s.trim();}).filter(Boolean); };
@@ -703,16 +700,26 @@
       (c.bluesky||[]).forEach(function(s){ bt.appendChild(bskyRow(s)); });
       var prof = c.profile||{};
       var tw = prof.topic_weights||{};
+      var sh = prof.special_handling||{};
+      // Migrate legacy per-topic Downrank (special_handling.demote_patterns) into the
+      // topic's Bury column (topic_weights[d].signal_low) — they do the same job, so
+      // Downrank is retired into Bury. A Save then persists this (demote drops out).
+      Object.keys(sh).forEach(function(domain){
+        var dem=(sh[domain]||{}).demote_patterns;
+        if(dem && dem.length && tw[domain]){
+          var lo=(tw[domain].signal_low||[]).slice();
+          dem.forEach(function(w){ if(lo.indexOf(w)<0) lo.push(w); });
+          tw[domain].signal_low=lo;
+        }
+      });
       var tt=$('topic-table').querySelector('tbody'); tt.innerHTML='';
       Object.keys(tw).forEach(function(id){ tt.appendChild(topicRow(id, tw[id])); });
       var ft=$('floor-table').querySelector('tbody'); ft.innerHTML='';
       (prof.named_entity_floor||[]).forEach(function(e){ ft.appendChild(floorRow(e)); });
-      var sh = prof.special_handling||{};
       var rt=$('rules-table').querySelector('tbody'); rt.innerHTML='';
       Object.keys(sh).forEach(function(domain){
         var d=sh[domain]||{};
-        if(d.suppress_patterns && d.suppress_patterns.length) rt.appendChild(rulesRow(domain,'suppress',d.suppress_patterns));
-        if(d.demote_patterns && d.demote_patterns.length) rt.appendChild(rulesRow(domain,'downrank',d.demote_patterns));
+        if(d.suppress_patterns && d.suppress_patterns.length) rt.appendChild(rulesRow(domain, d.suppress_patterns));
       });
       // "Never show" unifies the profile's curated mutes with any legacy
       // top-level extra mutes, so the migration to one list loses nothing.
@@ -852,7 +859,7 @@
     $('add-bsky').addEventListener('click', function(){ $('bsky-table').querySelector('tbody').appendChild(bskyRow({weight:0.5})); });
     $('add-topic').addEventListener('click', function(){ $('topic-table').querySelector('tbody').appendChild(topicRow('', {weight:0.5})); refreshTopicIds(); updatePreview(); });
     $('add-floor').addEventListener('click', function(){ $('floor-table').querySelector('tbody').appendChild(floorRow({})); updatePreview(); });
-    $('add-rule').addEventListener('click', function(){ $('rules-table').querySelector('tbody').appendChild(rulesRow('','suppress',[])); updatePreview(); });
+    $('add-rule').addEventListener('click', function(){ $('rules-table').querySelector('tbody').appendChild(rulesRow('',[])); updatePreview(); });
     // Live-refresh the Advanced preview as the profile fields change.
     $('topic-table').addEventListener('input', updatePreview);
     $('floor-table').addEventListener('input', updatePreview);
