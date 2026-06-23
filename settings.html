@@ -63,6 +63,18 @@
     .imp-val{ flex:0 0 auto; font-size:0.72rem; color:var(--ink-dim); font-variant-numeric:tabular-nums; white-space:nowrap; }
     #profile-preview{ min-height:150px; opacity:0.85; }
     details > summary{ list-style:none; } details > summary::-webkit-details-marker{ display:none; }
+    /* Collapsible topic cards (Interests · collapsed by default) */
+    .topic-list{ margin-top:0.5rem; }
+    details.topic{ background:var(--bg-3); border:1px solid var(--line); border-radius:10px; margin-bottom:0.5rem; }
+    details.topic[open]{ border-color:var(--line-strong); }
+    details.topic > summary{ display:flex; align-items:center; gap:0.55rem; cursor:pointer; padding:0.55rem 0.7rem; user-select:none; }
+    details.topic > summary::before{ content:'▸'; color:var(--coral); flex:0 0 auto; font-size:0.8rem; }
+    details.topic[open] > summary::before{ content:'▾'; }
+    details.topic .t-name{ flex:1; min-width:0; font-weight:700; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    details.topic .t-ed{ flex:0 0 auto; font-size:0.7rem; color:var(--ink-dim); text-transform:uppercase; letter-spacing:0.08em; }
+    details.topic .t-score{ flex:0 0 auto; font-size:0.72rem; color:var(--ink-dim); font-variant-numeric:tabular-nums; white-space:nowrap; }
+    details.topic .topic-body{ padding:0.1rem 0.7rem 0.7rem; border-top:1px solid var(--line); }
+    details.topic .topic-body label{ margin-top:0.55rem; }
 
     /* Status / health */
     .ai-status{ font-size:0.86rem; color:var(--ink-2); line-height:1.5; }
@@ -372,14 +384,14 @@
     <div class="panel" data-panel="interests">
     <div class="card">
       <h2>Topics — what the brief watches</h2>
-      <div class="hint" style="margin-bottom:0.4rem">Each topic has an <b>Importance</b> (how high the subject can climb) and the <b>Keywords</b> that identify it. <b>Lift</b> / <b>Bury</b> are words that push a story up or down <i>within this topic only</i> — e.g. in Football, lift <code>juventus, signs, confirmed, here we go</code> and bury <code>rumour, linked, eyeing, talks</code> so done deals lead and the transfer-chatter firehose sinks. All comma-separated. Err broad on keywords — over-inclusion is cheap.</div>
+      <div class="hint" style="margin-bottom:0.4rem">Tap a topic to expand and edit it. Each has an <b>Importance</b> (how high the subject can climb) and the <b>Keywords</b> that identify it. <b>Lift</b> / <b>Bury</b> are words that push a story up or down <i>within this topic only</i> — e.g. in Football, lift <code>juventus, signs, confirmed, here we go</code> and bury <code>rumour, linked, eyeing, talks</code> so done deals lead and the transfer-chatter firehose sinks. All comma-separated. Err broad on keywords — over-inclusion is cheap.</div>
       <details style="margin-bottom:0.5rem">
         <summary class="hint" style="cursor:pointer">▸ How importance &amp; scoring works</summary>
         <div class="hint" style="line-height:1.6">
           Importance scales how much an item's <i>own headline keywords</i> count — it's <b>per-item</b>, not a flat score on the whole topic. A confirmed, on-target story scores high; a fluff piece in the same topic scores low. <b>Lift/Bury</b> words (here, per-topic) and the global <b>Lift &amp; bury</b> list multiply that — "confirmed" ×up, "rumour" ×down. Freshness and the AI's read finish it. A <i>source's</i> Trust is only a light ±7.5% nudge on top.
         </div>
       </details>
-      <table id="topic-table"><thead><tr><th>Topic</th><th>Label</th><th>Edition</th><th>Importance</th><th>Keywords</th><th>Lift</th><th>Bury</th><th></th></tr></thead><tbody></tbody></table>
+      <div id="topic-table" class="topic-list"></div>
       <div class="addrow"><button class="btn-sm" id="add-topic">+ Add topic</button></div>
     </div>
 
@@ -538,25 +550,43 @@
       if(!ids.more) html += '<option value="more"'+('more'===selected?' selected':'')+'>More</option>';
       return html;
     }
-    function topicRow(id, spec){
+    // A topic is a collapsible card: collapsed shows name · edition · score (read-only);
+    // expand to edit. The summary spans stay in sync as the fields below change.
+    function topicCard(id, spec){
       spec = spec||{};
       var w = spec.weight!=null?spec.weight:0.5;
       var kw = (spec.keywords||[]).join(', ');
-      var tr=document.createElement('tr');
-      tr.innerHTML =
-        '<td data-label="Topic"><input type="text" value="'+escA(id||'')+'" data-k="id" placeholder="e.g. gaming"></td>'+
-        '<td data-label="Label"><input type="text" value="'+escA(spec.label||'')+'" data-k="label" placeholder="e.g. Gaming"></td>'+
-        '<td data-label="Edition"><select data-k="edition">'+editionOptions(spec.edition||'more')+'</select></td>'+
-        '<td data-label="Importance"><div class="imp"><input type="range" min="0.2" max="1" step="0.05" value="'+w+'" data-k="weight"><span class="imp-val">'+impTag(w)+'</span></div></td>'+
-        '<td data-label="Keywords"><input type="text" value="'+escA(kw)+'" data-k="keywords" placeholder="comma-separated"></td>'+
-        '<td data-label="Lift"><input type="text" value="'+escA((spec.signal_high||[]).join(', '))+'" data-k="signal_high" placeholder="e.g. confirmed, signs"></td>'+
-        '<td data-label="Bury"><input type="text" value="'+escA((spec.signal_low||[]).join(', '))+'" data-k="signal_low" placeholder="e.g. rumour, linked"></td>'+
-        '<td><button class="btn-sm btn-danger" data-del="1">✕</button></td>';
-      var rng=tr.querySelector('[data-k=weight]'), lab=tr.querySelector('.imp-val');
-      rng.addEventListener('input', function(){ lab.textContent=impTag(rng.value); });
-      tr.querySelector('[data-del]').addEventListener('click', function(){ tr.remove(); refreshTopicIds(); updatePreview(); });
-      tr.querySelector('[data-k=id]').addEventListener('input', refreshTopicIds);
-      return tr;
+      var d=document.createElement('details');
+      d.className='topic';
+      d.innerHTML =
+        '<summary><span class="t-name"></span><span class="t-ed"></span><span class="t-score">'+impTag(w)+'</span></summary>'+
+        '<div class="topic-body">'+
+          '<div class="row">'+
+            '<div><label>ID</label><input type="text" value="'+escA(id||'')+'" data-k="id" placeholder="e.g. gaming"></div>'+
+            '<div><label>Label</label><input type="text" value="'+escA(spec.label||'')+'" data-k="label" placeholder="e.g. Gaming"></div>'+
+            '<div><label>Edition</label><select data-k="edition">'+editionOptions(spec.edition||'more')+'</select></div>'+
+          '</div>'+
+          '<label>Importance</label><div class="imp"><input type="range" min="0.2" max="1" step="0.05" value="'+w+'" data-k="weight"><span class="imp-val">'+impTag(w)+'</span></div>'+
+          '<label>Keywords</label><input type="text" value="'+escA(kw)+'" data-k="keywords" placeholder="comma-separated">'+
+          '<div class="row" style="margin-top:0.3rem">'+
+            '<div><label>Lift (words that push up, in this topic)</label><input type="text" value="'+escA((spec.signal_high||[]).join(', '))+'" data-k="signal_high" placeholder="e.g. confirmed, signs"></div>'+
+            '<div><label>Bury (words that push down, in this topic)</label><input type="text" value="'+escA((spec.signal_low||[]).join(', '))+'" data-k="signal_low" placeholder="e.g. rumour, linked"></div>'+
+          '</div>'+
+          '<div style="margin-top:0.6rem;text-align:right"><button class="btn-sm btn-danger" data-del="1">✕ Remove topic</button></div>'+
+        '</div>';
+      var nameEl=d.querySelector('.t-name'), edEl=d.querySelector('.t-ed'), scoreEl=d.querySelector('.t-score');
+      var idIn=d.querySelector('[data-k=id]'), labIn=d.querySelector('[data-k=label]'), edIn=d.querySelector('[data-k=edition]');
+      var rng=d.querySelector('[data-k=weight]'), impLab=d.querySelector('.imp-val');
+      function syncName(){ nameEl.textContent = labIn.value.trim() || idIn.value.trim() || '(unnamed)'; }
+      function syncEd(){ var o=edIn.options[edIn.selectedIndex]; edEl.textContent = o?o.textContent:''; }
+      function syncScore(){ var t=impTag(rng.value); scoreEl.textContent=t; impLab.textContent=t; }
+      syncName(); syncEd(); syncScore();
+      idIn.addEventListener('input', function(){ syncName(); refreshTopicIds(); });
+      labIn.addEventListener('input', syncName);
+      edIn.addEventListener('change', syncEd);
+      rng.addEventListener('input', syncScore);
+      d.querySelector('[data-del]').addEventListener('click', function(ev){ ev.preventDefault(); d.remove(); refreshTopicIds(); updatePreview(); });
+      return d;
     }
 
     function floorRow(e){
@@ -588,7 +618,7 @@
     function refreshTopicIds(){
       var dl=$('topic-ids'); if(!dl) return;
       var seen={}, html='';
-      $('topic-table').querySelectorAll('tbody [data-k=id]').forEach(function(inp){
+      $('topic-table').querySelectorAll('[data-k=id]').forEach(function(inp){
         var v=inp.value.trim(); if(v && !seen[v]){ seen[v]=1; html+='<option value="'+escA(v)+'">'; }
       });
       dl.innerHTML=html;
@@ -598,7 +628,7 @@
     // by Save and the read-only Advanced preview.
     function collectProfile(){
       var tw={};
-      $('topic-table').querySelectorAll('tbody tr').forEach(function(tr){
+      $('topic-table').querySelectorAll('details.topic').forEach(function(tr){
         var id=tr.querySelector('[data-k=id]').value.trim(); if(!id) return;
         var weight=parseFloat(tr.querySelector('[data-k=weight]').value); if(isNaN(weight)) weight=0.5;
         var keywords=tr.querySelector('[data-k=keywords]').value.split(',').map(function(s){return s.trim();}).filter(Boolean);
@@ -712,8 +742,8 @@
           tw[domain].signal_low=lo;
         }
       });
-      var tt=$('topic-table').querySelector('tbody'); tt.innerHTML='';
-      Object.keys(tw).forEach(function(id){ tt.appendChild(topicRow(id, tw[id])); });
+      var tt=$('topic-table'); tt.innerHTML='';
+      Object.keys(tw).forEach(function(id){ tt.appendChild(topicCard(id, tw[id])); });
       var ft=$('floor-table').querySelector('tbody'); ft.innerHTML='';
       (prof.named_entity_floor||[]).forEach(function(e){ ft.appendChild(floorRow(e)); });
       var rt=$('rules-table').querySelector('tbody'); rt.innerHTML='';
@@ -857,7 +887,7 @@
 
     $('add-src').addEventListener('click', function(){ $('src-table').querySelector('tbody').appendChild(srcRow({weight:0.5})); });
     $('add-bsky').addEventListener('click', function(){ $('bsky-table').querySelector('tbody').appendChild(bskyRow({weight:0.5})); });
-    $('add-topic').addEventListener('click', function(){ $('topic-table').querySelector('tbody').appendChild(topicRow('', {weight:0.5})); refreshTopicIds(); updatePreview(); });
+    $('add-topic').addEventListener('click', function(){ var c=topicCard('', {weight:0.5}); c.open=true; $('topic-table').appendChild(c); var idf=c.querySelector('[data-k=id]'); if(idf) idf.focus(); refreshTopicIds(); updatePreview(); });
     $('add-floor').addEventListener('click', function(){ $('floor-table').querySelector('tbody').appendChild(floorRow({})); updatePreview(); });
     $('add-rule').addEventListener('click', function(){ $('rules-table').querySelector('tbody').appendChild(rulesRow('',[])); updatePreview(); });
     // Live-refresh the Advanced preview as the profile fields change.

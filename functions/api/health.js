@@ -112,8 +112,10 @@ export async function onRequestGet({ env }) {
     cap_usd: Math.round(aiCfg.monthly_cap_cents || 800) / 100,
     last_run: aiStatus ? aiStatus.ts : null,
     picks: featState("picks"),
+    top20: featState("top20"),
     digests: featState("digests"),
     briefs: featState("briefs"),
+    editions: featState("editions"),
     merge: featState("merge"),
   };
 
