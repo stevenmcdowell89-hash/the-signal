@@ -228,8 +228,9 @@ export async function run(env, { trigger } = {}) {
   //    poll recomputes them; only enrichment (hooks) is persisted, separately.
   const weightBySource = new Map();
   const domainBySource = new Map();
-  for (const s of config.sources || []) { weightBySource.set(s.id, s.weight); domainBySource.set(s.id, s.domain); }
-  for (const b of config.bluesky || []) { weightBySource.set(b.id, b.weight); domainBySource.set(b.id, b.domain); }
+  const capBySource = new Map(); // per-feed firehose-cap overrides (blank source.cap → global)
+  for (const s of config.sources || []) { weightBySource.set(s.id, s.weight); domainBySource.set(s.id, s.domain); if (Number.isFinite(s.cap)) capBySource.set(s.id, s.cap); }
+  for (const b of config.bluesky || []) { weightBySource.set(b.id, b.weight); domainBySource.set(b.id, b.domain); if (Number.isFinite(b.cap)) capBySource.set(b.id, b.cap); }
 
   const windowDays = (config.recency && config.recency.score_window_days) || DEFAULT_SCORE_WINDOW_DAYS;
   const sinceMs = now - 1000 * 60 * 60 * 24 * windowDays;
@@ -241,7 +242,7 @@ export async function run(env, { trigger } = {}) {
   });
 
   setProgress(env, "scoring", 1, 1);
-  await scoreBatch(db, items, config, now);
+  await scoreBatch(db, items, config, now, capBySource);
 
   // 4b) Smart merge (optional, off by default) — collapse same-story dupes the
   //     mechanical dedup missed, BEFORE enrich/render see the items. No-op when off.
