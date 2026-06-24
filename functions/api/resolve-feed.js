@@ -53,6 +53,12 @@ function feedTitle(xml) {
 const googleNews = (host) =>
   `https://news.google.com/rss/search?q=site:${encodeURIComponent(host)}%20when:7d`;
 
+// Cap the bytes we ever run regex over. Real feeds are well under this; a page
+// that's actually a multi-MB HTML document would otherwise risk blowing the
+// Worker's CPU budget on the parse passes (which would kill the request and
+// return an empty body to the client).
+const MAX_DOC = 2_000_000;
+
 async function fetchWithTimeout(url, accept, ms = 10000) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), ms);
@@ -64,7 +70,8 @@ async function fetchWithTimeout(url, accept, ms = 10000) {
       cf: { cacheTtl: 60, cacheEverything: false },
     });
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    return await resp.text();
+    const text = await resp.text();
+    return text.length > MAX_DOC ? text.slice(0, MAX_DOC) : text;
   } finally {
     clearTimeout(timer);
   }
@@ -74,37 +81,45 @@ const HTML_ACCEPT = "text/html,application/xhtml+xml,application/rss+xml;q=0.9,*
 const FEED_ACCEPT = "application/rss+xml, application/atom+xml, application/xml, text/xml";
 
 export async function onRequestGet({ request, env }) {
-  if (!tokenOk(request, env)) return json({ ok: false, error: "unauthorized" }, 401);
+  // Last-resort guard: this handler fetches arbitrary URLs and runs regex over
+  // their (untrusted, possibly malformed) content. Any unexpected throw here
+  // would otherwise surface to the browser as an empty 500 body, which the
+  // client can only report as "Unexpected end of JSON input". Always answer JSON.
+  try {
+    if (!tokenOk(request, env)) return json({ ok: false, error: "unauthorized" }, 401);
 
-  const raw = (new URL(request.url).searchParams.get("url") || "").trim();
-  let target;
-  try { target = new URL(raw); } catch { return json({ ok: false, reason: "Enter a valid URL." }); }
-  if (target.protocol !== "http:" && target.protocol !== "https:")
-    return json({ ok: false, reason: "Only http(s) URLs are supported." });
-  if (isInternalHost(target.hostname))
-    return json({ ok: false, reason: "That host isn't allowed." });
+    const raw = (new URL(request.url).searchParams.get("url") || "").trim();
+    let target;
+    try { target = new URL(raw); } catch { return json({ ok: false, reason: "Enter a valid URL." }); }
+    if (target.protocol !== "http:" && target.protocol !== "https:")
+      return json({ ok: false, reason: "Only http(s) URLs are supported." });
+    if (isInternalHost(target.hostname))
+      return json({ ok: false, reason: "That host isn't allowed." });
 
-  let body;
-  try { body = await fetchWithTimeout(target.href, HTML_ACCEPT); }
-  catch (e) { return json({ ok: false, reason: `Couldn't fetch that page (${msg(e)}).` }); }
+    let body;
+    try { body = await fetchWithTimeout(target.href, HTML_ACCEPT); }
+    catch (e) { return json({ ok: false, reason: `Couldn't fetch that page (${msg(e)}).` }); }
 
-  // 1. The pasted URL is already a feed.
-  const direct = parseFeed(body, { id: "probe", type: "rss" });
-  if (direct.length)
-    return json({ ok: true, feed_url: target.href, title: feedTitle(body) || target.hostname, items: direct.length, already_feed: true });
+    // 1. The pasted URL is already a feed.
+    const direct = parseFeed(body, { id: "probe", type: "rss" });
+    if (direct.length)
+      return json({ ok: true, feed_url: target.href, title: feedTitle(body) || target.hostname, items: direct.length, already_feed: true });
 
-  // 2. Follow an advertised feed link.
-  const feedUrl = discoverFeedUrl(body, target.href);
-  if (!feedUrl)
-    return json({ ok: false, reason: "No feed advertised on this page.", suggest: googleNews(target.hostname) });
+    // 2. Follow an advertised feed link.
+    const feedUrl = discoverFeedUrl(body, target.href);
+    if (!feedUrl)
+      return json({ ok: false, reason: "No feed advertised on this page.", suggest: googleNews(target.hostname) });
 
-  // 3. Validate the discovered feed actually parses.
-  let feedBody;
-  try { feedBody = await fetchWithTimeout(feedUrl, FEED_ACCEPT); }
-  catch (e) { return json({ ok: false, reason: `Found a feed link but couldn't fetch it (${msg(e)}).`, feed_url: feedUrl }); }
-  const items = parseFeed(feedBody, { id: "probe", type: "rss" });
-  if (!items.length)
-    return json({ ok: false, reason: "The advertised link wasn't a readable feed.", feed_url: feedUrl, suggest: googleNews(target.hostname) });
+    // 3. Validate the discovered feed actually parses.
+    let feedBody;
+    try { feedBody = await fetchWithTimeout(feedUrl, FEED_ACCEPT); }
+    catch (e) { return json({ ok: false, reason: `Found a feed link but couldn't fetch it (${msg(e)}).`, feed_url: feedUrl }); }
+    const items = parseFeed(feedBody, { id: "probe", type: "rss" });
+    if (!items.length)
+      return json({ ok: false, reason: "The advertised link wasn't a readable feed.", feed_url: feedUrl, suggest: googleNews(target.hostname) });
 
-  return json({ ok: true, feed_url: feedUrl, title: feedTitle(feedBody) || target.hostname, items: items.length });
+    return json({ ok: true, feed_url: feedUrl, title: feedTitle(feedBody) || target.hostname, items: items.length });
+  } catch (e) {
+    return json({ ok: false, reason: `Feed lookup failed (${msg(e)}).` }, 500);
+  }
 }
