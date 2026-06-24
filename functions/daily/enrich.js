@@ -137,7 +137,7 @@ export async function enrichShortlist(env, db, items, config, now) {
     }
   }
 
-  if (spentCents > 0) await addSpendCents(env, spentCents);
+  if (spentCents > 0) await addSpendCents(env, spentCents, "enrichment");
   return {
     enriched,
     spentCents,

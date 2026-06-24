@@ -273,17 +273,40 @@ function spendKey(d = new Date()) {
   return `spend:${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
 }
 
+// Per-function breakdown of the same month's spend, stored as one JSON blob so the
+// status dashboard can show what each AI pass (enrichment, picks, top20, …) costs.
+// The total ledger above stays the source of truth for the cap; this is for insight.
+function spendFnKey(d = new Date()) {
+  return `spendfn:${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
+}
+
 export async function getMonthlySpendCents(env) {
   if (!env.DAILY_STATE) return 0;
   const raw = await env.DAILY_STATE.get(spendKey());
   return raw ? Number(raw) || 0 : 0;
 }
 
-export async function addSpendCents(env, cents) {
+// { enrichment, picks, top20, digests, briefs, editions, merge } → cents (this month).
+export async function getMonthlySpendByFunction(env) {
+  if (!env.DAILY_STATE) return {};
+  const raw = await env.DAILY_STATE.get(spendFnKey());
+  if (!raw) return {};
+  try { return JSON.parse(raw) || {}; } catch { return {}; }
+}
+
+// Add spend to the running monthly total and (when `fn` is given) to the per-function
+// breakdown. Spend writes are sequential within a single cron run (passes await one
+// another), so the read-modify-write on the breakdown blob is race-free in practice.
+export async function addSpendCents(env, cents, fn) {
   if (!env.DAILY_STATE) return;
+  const ttl = 60 * 60 * 24 * 70; // keep two months so a month rollover never reads stale
   const cur = await getMonthlySpendCents(env);
-  await env.DAILY_STATE.put(spendKey(), String(cur + cents), {
-    // Keep two months so month rollover never reads stale; expire after ~70d.
-    expirationTtl: 60 * 60 * 24 * 70,
-  });
+  // Keep two months so month rollover never reads stale; expire after ~70d.
+  await env.DAILY_STATE.put(spendKey(), String(cur + cents), { expirationTtl: ttl });
+  if (fn) {
+    const by = await getMonthlySpendByFunction(env);
+    by[fn] = (by[fn] || 0) + cents;
+    try { await env.DAILY_STATE.put(spendFnKey(), JSON.stringify(by), { expirationTtl: ttl }); }
+    catch { /* best-effort — the breakdown is insight, not the cap */ }
+  }
 }
