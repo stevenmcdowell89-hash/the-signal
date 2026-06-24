@@ -1232,7 +1232,7 @@
       }
 
       var currentState = null, currentView = 'headlines';
-      try { currentView = localStorage.getItem('signal-brief-view') || 'headlines'; } catch(_){}
+      // Always open on Headlines for a fresh load; tab choice is per-session only.
 
       // render() runs once per data load: status, watermark, app badge, then paint.
       function render(state){
@@ -1297,7 +1297,6 @@
           b.innerHTML = esc(s[1]) + ' <span class="c">'+(count||0)+'</span>';
           b.addEventListener('click', function(){
             currentView = s[0]; currentSub = null;
-            try{ localStorage.setItem('signal-brief-view', s[0]); }catch(_){}
             paint(); root.scrollIntoView({block:'start',behavior:'smooth'});
           });
           bar.appendChild(b);
