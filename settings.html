@@ -46,6 +46,12 @@
     .msg.ok{ color:#46c46a; } .msg.err{ color:var(--coral); }
     .hint{ font-size:0.74rem; color:var(--ink-dim); margin-top:0.3rem; }
     .addrow{ margin-top:0.6rem; }
+    /* "Find a feed" box (Sources) */
+    .find-feed{ display:flex; gap:0.5rem; align-items:center; margin-bottom:0.5rem; }
+    .find-feed input{ flex:1; min-width:0; }
+    .find-feed button{ flex:0 0 auto; white-space:nowrap; }
+    #find-feed-msg.ok{ color:#46c46a; } #find-feed-msg.err{ color:var(--coral); }
+    #find-feed-msg a{ color:inherit; }
     /* Sub-tabs */
     .tabs{ position:sticky; top:0; z-index:5; display:flex; gap:0.4rem; overflow-x:auto;
       background:var(--bg); padding:0.55rem 0 0.7rem; margin-bottom:0.2rem; -webkit-overflow-scrolling:touch; }
@@ -356,9 +362,14 @@
     <div class="panel" data-panel="sources">
     <div class="card">
       <h2>Sources (RSS · HN · Reddit)</h2>
+      <div class="find-feed">
+        <input type="url" id="find-feed-url" placeholder="Paste a site URL to find its feed — e.g. https://example.com">
+        <button class="btn-sm" id="find-feed-btn">Find a feed</button>
+      </div>
+      <div class="hint" id="find-feed-msg" style="display:none"></div>
       <table id="src-table"><thead><tr><th>On</th><th>ID</th><th>Domain</th><th>URL</th><th>Trust</th><th>Tier</th><th></th></tr></thead><tbody></tbody></table>
       <div class="addrow"><button class="btn-sm" id="add-src">+ Add feed</button></div>
-      <div class="hint">Type is inferred from the URL: an HN Algolia URL → "hn", a <code>reddit.com/r/…</code> URL → "reddit", everything else → "rss". <b>Almost anything with a feed works as a source</b> — a YouTube channel (<code>youtube.com/feeds/videos.xml?channel_id=…</code>), a Google&nbsp;News RSS, a Mastodon <code>.rss</code>, a podcast feed, or a subreddit. Paste the URL, set its domain + weight.</div>
+      <div class="hint">Type is inferred from the URL: an HN Algolia URL → "hn", a <code>reddit.com/r/…</code> URL → "reddit", everything else → "rss". <b>Almost anything with a feed works as a source</b> — a YouTube channel (<code>youtube.com/feeds/videos.xml?channel_id=…</code>), a Google&nbsp;News RSS, a Mastodon <code>.rss</code>, a podcast feed, or a subreddit. Paste the URL, set its domain + weight. <b>Not sure of the feed URL?</b> Use <b>Find a feed</b> above — paste the site's normal address and it'll discover the feed for you.</div>
       <details style="margin-top:0.7rem">
         <summary class="hint" style="cursor:pointer">▸ How ranking actually works (does BBC = 0.9 stamp 0.9 on everything? No)</summary>
         <div class="hint" style="line-height:1.6">
@@ -886,6 +897,38 @@
     }
 
     $('add-src').addEventListener('click', function(){ $('src-table').querySelector('tbody').appendChild(srcRow({weight:0.5})); });
+
+    // "Find a feed": resolve a pasted site URL to a real feed (server-side auto-
+    // discovery), then drop a ready rss row in for the user to assign a topic to.
+    function slugify(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40); }
+    function hostSlug(u){ try { return slugify(new URL(u).hostname.replace(/^www\./,'')); } catch(_){ return ''; } }
+    function findFeed(){
+      var url=$('find-feed-url').value.trim(), box=$('find-feed-msg'), btn=$('find-feed-btn');
+      if(!url){ return; }
+      var token=getToken(true); if(!token){ return; }
+      box.style.display=''; box.className='hint'; box.textContent='Looking for a feed…'; btn.disabled=true;
+      fetch('/api/resolve-feed?url='+encodeURIComponent(url), { headers:{ 'X-Signal-Token': token } })
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          btn.disabled=false;
+          if(d && d.ok){
+            var id=slugify(d.title) || hostSlug(d.feed_url) || 'feed';
+            var row=srcRow({ enabled:true, url:d.feed_url, id:id, weight:0.5 });
+            $('src-table').querySelector('tbody').appendChild(row);
+            var dom=row.querySelector('[data-k=domain]'); if(dom) dom.focus();
+            $('find-feed-url').value='';
+            box.className='hint ok';
+            box.innerHTML='✓ Found “'+escA(d.title||d.feed_url)+'” ('+(d.items||0)+' items). Set a <b>Domain</b> (topic) + Trust on the new row below, then Save.';
+          } else {
+            box.className='hint err';
+            var sug = d && d.suggest ? ' Or make one with a <a href="'+escA(d.suggest)+'" target="_blank" rel="noopener">Google News feed</a>.' : '';
+            box.innerHTML=escA((d && d.reason) || 'Could not resolve a feed.')+sug;
+          }
+        })
+        .catch(function(e){ btn.disabled=false; box.className='hint err'; box.textContent='Request failed: '+e; });
+    }
+    $('find-feed-btn').addEventListener('click', findFeed);
+    $('find-feed-url').addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); findFeed(); } });
     $('add-bsky').addEventListener('click', function(){ $('bsky-table').querySelector('tbody').appendChild(bskyRow({weight:0.5})); });
     $('add-topic').addEventListener('click', function(){ var c=topicCard('', {weight:0.5}); c.open=true; $('topic-table').appendChild(c); var idf=c.querySelector('[data-k=id]'); if(idf) idf.focus(); refreshTopicIds(); updatePreview(); });
     $('add-floor').addEventListener('click', function(){ $('floor-table').querySelector('tbody').appendChild(floorRow({})); updatePreview(); });

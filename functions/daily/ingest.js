@@ -11,7 +11,7 @@
 //     published, commentsUrl? }
 // where links[] is { type: "article"|"discussion"|"post"|"feed", url, label }.
 
-const UA = "TheSignalDaily/1.0 (+https://the-signal; personal reading aggregator)";
+export const UA = "TheSignalDaily/1.0 (+https://the-signal; personal reading aggregator)";
 
 async function fetchText(url, accept) {
   const resp = await fetch(url, {
@@ -141,7 +141,7 @@ function parseDate(s) {
   return Number.isNaN(t) ? null : t;
 }
 
-function parseFeed(xml, feed) {
+export function parseFeed(xml, feed) {
   const out = [];
   // RSS <item> ... </item>
   const items = [...xml.matchAll(/<item\b[\s\S]*?<\/item>/gi)].map((m) => m[0]);
@@ -167,6 +167,24 @@ function parseFeed(xml, feed) {
     out.push(makeEntry(feed, title, link.trim(), parseDate(date), clip(desc, 300)));
   }
   return out;
+}
+
+// Feed auto-discovery: scan an HTML page's <head> for an advertised feed
+// (<link rel="alternate" type="application/rss+xml|atom+xml" href="…">) and
+// return its absolute URL, or null. Most CMSes emit this even when there is no
+// visible "RSS" button. We skip comment feeds and resolve relative hrefs.
+export function discoverFeedUrl(html, baseUrl) {
+  if (!html) return null;
+  const head = html.slice(0, 200000); // the <link>s live in <head>; cap the scan
+  const links = [...head.matchAll(/<link\b[^>]*>/gi)].map((m) => m[0]);
+  for (const l of links) {
+    if (!/\brel=["']?[^"'>]*\balternate\b/i.test(l)) continue;
+    if (!/\btype=["']application\/(?:rss|atom)\+xml/i.test(l)) continue;
+    const href = (l.match(/\bhref=["']([^"']+)["']/i) || [])[1];
+    if (!href || /comments/i.test(href)) continue;
+    try { return new URL(href, baseUrl).href; } catch { continue; }
+  }
+  return null;
 }
 
 function makeEntry(feed, title, url, published, summary) {
