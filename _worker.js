@@ -23,6 +23,7 @@ import {
   onRequestRunStatus as dailyRunStatus,
 } from "./functions/api/daily.js";
 import { onRequestGet as healthGet } from "./functions/api/health.js";
+import { onRequestGet as resolveFeed } from "./functions/api/resolve-feed.js";
 import { run as runDaily, getState } from "./functions/daily/pipeline.js";
 import { maybePushSignificant } from "./functions/daily/notify.js";
 
@@ -47,6 +48,9 @@ export default {
     // --- Config surface (reads open, writes token-gated) ---
     if (p === "/api/config" && method === "GET") return configGet({ request, env });
     if (p === "/api/config" && method === "POST") return configPost({ request, env });
+
+    // --- Feed auto-discovery for the settings "Find a feed" box (token-gated) ---
+    if (p === "/api/resolve-feed" && method === "GET") return resolveFeed({ request, env });
 
     // Everything else: static assets (index.html, /issues/*, /assets/*, /sw.js, etc.)
     return env.ASSETS.fetch(request);
