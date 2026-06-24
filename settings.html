@@ -910,7 +910,15 @@
       var token=getToken(true); if(!token){ return; }
       box.style.display=''; box.className='hint'; box.textContent='Looking for a feed…'; btn.disabled=true;
       fetch('/api/resolve-feed?url='+encodeURIComponent(url), { headers:{ 'X-Signal-Token': token } })
-        .then(function(r){ return r.json(); })
+        .then(function(r){
+          // Read as text first so an empty/non-JSON body (e.g. a gateway error)
+          // becomes a clear message instead of "Unexpected end of JSON input".
+          return r.text().then(function(t){
+            if(!t) throw new Error('empty response (HTTP '+r.status+')');
+            try { return JSON.parse(t); }
+            catch(_){ throw new Error('unexpected response (HTTP '+r.status+')'); }
+          });
+        })
         .then(function(d){
           btn.disabled=false;
           if(d && d.ok){
