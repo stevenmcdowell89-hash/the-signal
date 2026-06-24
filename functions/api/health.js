@@ -4,7 +4,7 @@
 // enrichment is running and what it's costing this month. Per-source 48h article
 // counts come from D1; last-poll liveness + enrichment status from KV.
 
-import { loadConfig, getMonthlySpendCents } from "../daily/config.js";
+import { loadConfig, getMonthlySpendCents, getMonthlySpendByFunction } from "../daily/config.js";
 import { SOURCE_STATUS_KEY, ENRICH_STATUS_KEY, AI_STATUS_KEY } from "../daily/pipeline.js";
 import { getSourceCounts } from "../daily/db.js";
 
@@ -77,14 +77,18 @@ export async function onRequestGet({ env }) {
   }
   const ec = config.enrichment || {};
   const spentCents = await getMonthlySpendCents(env);
+  const byFn = await getMonthlySpendByFunction(env);
+  const fnUsd = (k) => Math.round(byFn[k] || 0) / 100; // per-function month-to-date $
   const enrichment = {
     configured_on: !!ec.enabled,
+    feature_on: !!ec.enabled,
     has_key: !!env.ANTHROPIC_API_KEY,
     on: enr ? !!enr.on : false,
     reason: enr ? enr.reason : (ec.enabled ? (env.ANTHROPIC_API_KEY ? "no run yet" : "no ANTHROPIC_API_KEY") : "enrichment off"),
     model: (enr && enr.model) || ec.model || "claude-haiku-4-5",
     last_enriched: enr ? enr.enriched : 0,
     last_run: enr ? enr.ts : null,
+    fn_usd: fnUsd("enrichment"),
     month_to_date_usd: Math.round(spentCents) / 100,
     cap_usd: Math.round(ec.monthly_spend_cap_cents || 500) / 100,
   };
@@ -99,10 +103,12 @@ export async function onRequestGet({ env }) {
     const f = aiCfg[k] || {};
     const s = aiStatus && aiStatus[k];
     return {
-      configured_on: !!(aiCfg.enabled && f.enabled),
-      on: s ? !!s.on : false,
+      configured_on: !!(aiCfg.enabled && f.enabled), // master AND this pass
+      feature_on: !!f.enabled,                        // this pass's own switch alone
+      on: s ? !!s.on : false,                         // actually ran last time
       reason: s ? s.reason : (!aiCfg.enabled ? "ai off" : (f.enabled ? (env.ANTHROPIC_API_KEY ? "no run yet" : "no ANTHROPIC_API_KEY") : "feature off")),
       model: (s && s.model) || f.model || "claude-haiku-4-5",
+      fn_usd: fnUsd(k),
     };
   };
   const ai = {
@@ -119,5 +125,32 @@ export async function onRequestGet({ env }) {
     merge: featState("merge"),
   };
 
-  return json({ generated_at: now, last_poll: status.ts || null, sources, enrichment, ai });
+  // Settings-at-a-glance: the key knobs + source mix, so the dashboard can show
+  // what the brief is currently configured to do without digging through tabs.
+  const enabledDefs = defs.filter((d) => d.enabled);
+  const byKind = (kind) => ({
+    on: enabledDefs.filter((d) => d.kind === kind).length,
+    total: defs.filter((d) => d.kind === kind).length,
+  });
+  const rec = config.recency || {};
+  const sc = config.scoring || {};
+  const overview = {
+    ai_layer_on: !!aiCfg.enabled,
+    enrichment_on: !!ec.enabled,
+    has_key: !!env.ANTHROPIC_API_KEY,
+    fold_threshold: config.fold_threshold,
+    headline_max: config.headline_max,
+    half_life_hours: rec.half_life_hours,
+    score_window_days: rec.score_window_days,
+    top_catch_max_hours: rec.top_catch_max_hours,
+    source_cap: sc.source_cap,
+    cadence_hours: config.cadence_hours,
+    topics: Object.keys((config.profile || {}).topic_weights || {}).length,
+    floor_entities: ((config.profile || {}).named_entity_floor || []).length,
+    sources_on: enabledDefs.length,
+    sources_total: defs.length,
+    by_kind: { rss: byKind("rss"), hn: byKind("hn"), reddit: byKind("reddit"), bluesky: byKind("bluesky") },
+  };
+
+  return json({ generated_at: now, last_poll: status.ts || null, sources, enrichment, ai, overview });
 }

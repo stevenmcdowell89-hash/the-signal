@@ -109,6 +109,22 @@
     .hrow .hdom{ color:var(--ink-dim); font-size:0.62rem; text-transform:uppercase; letter-spacing:0.08em; flex:0 0 auto; }
     .hrow.is-dead .hname{ color:var(--coral); }
     .hrow.is-dead .hwhen{ color:var(--coral); }
+    /* AI cost + control panel: per-function spend, each row a live on/off switch. */
+    .ai-head{ margin-bottom:0.2rem; }
+    .cost-table{ width:100%; border-collapse:collapse; margin-top:0.5rem; }
+    .cost-table th{ text-align:left; color:var(--ink-dim); font-size:0.64rem; text-transform:uppercase; letter-spacing:0.1em; font-weight:700; padding:0.15rem 0.4rem; border-bottom:none; }
+    .cost-table td{ padding:0.28rem 0.4rem; border-bottom:1px solid var(--line); vertical-align:middle; font-size:0.84rem; }
+    .cost-table tr.is-off td{ opacity:0.5; }
+    .cost-table .cost-tog{ width:1.6rem; }
+    .cost-table .cost-tog input{ width:auto; margin:0; accent-color:#46c46a; }
+    .cost-name{ color:var(--ink-2); font-weight:600; }
+    .cost-amt{ font-variant-numeric:tabular-nums; font-weight:700; color:var(--ink); white-space:nowrap; text-align:right; }
+    .cost-note{ color:var(--ink-dim); font-size:0.72rem; }
+    .cost-foot{ margin-top:0.4rem; }
+    .ov-grid{ display:flex; flex-wrap:wrap; gap:0.3rem 0.9rem; margin-top:0.5rem; }
+    .ov{ font-size:0.78rem; white-space:nowrap; }
+    .ov .ovk{ color:var(--ink-dim); }
+    .ov .ovv{ font-weight:700; color:var(--ink); font-variant-numeric:tabular-nums; }
 
     /* Mobile: stack the squashed tables into cards, one field per line. */
     @media (max-width:640px){
@@ -1021,38 +1037,110 @@
       var h=Math.round(m/60); if(h<48) return h+'h ago';
       return Math.round(h/24)+'d ago';
     }
+    // Map a function key → the config checkbox on the AI tab, so a dashboard toggle
+    // keeps the AI-tab form in sync (otherwise a later Save would revert it).
+    var AI_TAB_TOGGLE = {
+      'enrichment':'enr-on', 'ai.picks':'ai-picks-on', 'ai.top20':'ai-top20-on',
+      'ai.digests':'ai-digests-on', 'ai.briefs':'ai-briefs-on',
+      'ai.editions':'ai-editions-on', 'ai.merge':'ai-merge-on',
+    };
+    // Toggle one AI function on/off straight from the dashboard. Sends a minimal
+    // nested patch (e.g. {ai:{picks:{enabled:false}}}) the config POST merges over live.
+    function saveAiToggle(path, on, cb){
+      var token=getToken(true);
+      if(!token){ if(cb) cb.checked=!on; msg('A token is required to change AI settings.','err'); return; }
+      var parts=path.split('.'), patch={}, node=patch;
+      for(var i=0;i<parts.length;i++){ node[parts[i]] = (i===parts.length-1)?{enabled:on}:{}; node=node[parts[i]]; }
+      if(cb) cb.disabled=true;
+      fetch('/api/config', { method:'POST', headers:{ 'content-type':'application/json', 'X-Signal-Token':token }, body:JSON.stringify(patch) })
+        .then(function(r){ if(r.status===401){ try{localStorage.removeItem(TOKEN_KEY);}catch(_){} throw new Error('Token rejected.'); } return r.json(); })
+        .then(function(d){
+          if(cb) cb.disabled=false;
+          if(d && d.error){ if(cb) cb.checked=!on; msg('Error: '+d.error,'err'); return; }
+          var id=AI_TAB_TOGGLE[path]; if(id && $(id)) $(id).checked=on; // keep the form honest
+          msg((on?'Enabled ':'Disabled ')+parts[parts.length-1]+'.','ok');
+          loadHealth();
+        })
+        .catch(function(err){ if(cb){ cb.disabled=false; cb.checked=!on; } msg(String(err.message||err),'err'); });
+    }
+    // "Settings at a glance": the key knobs + source mix, read-only, collapsible.
+    function overviewHtml(o){
+      if(!o) return '';
+      function b(label,val){ return '<span class="ov"><span class="ovk">'+label+':</span> <span class="ovv">'+escA(String(val))+'</span></span>'; }
+      var k=o.by_kind||{}, mix=[];
+      if(k.rss&&k.rss.total) mix.push(k.rss.on+'/'+k.rss.total+' RSS');
+      if(k.hn&&k.hn.total) mix.push(k.hn.on+'/'+k.hn.total+' HN');
+      if(k.reddit&&k.reddit.total) mix.push(k.reddit.on+'/'+k.reddit.total+' Reddit');
+      if(k.bluesky&&k.bluesky.total) mix.push(k.bluesky.on+'/'+k.bluesky.total+' Bluesky');
+      return '<details style="margin-top:0.7rem"><summary class="hint" style="cursor:pointer">▸ Settings at a glance</summary><div class="ov-grid">'+
+        b('AI layer', o.ai_layer_on?'on':'off')+ b('Enrichment', o.enrichment_on?'on':'off')+
+        (o.has_key?'':b('API key','missing'))+
+        b('Sources on', o.sources_on+'/'+o.sources_total)+ (mix.length?b('Mix', mix.join(' · ')):'')+
+        b('Topics', o.topics)+ b('Core entities', o.floor_entities)+
+        b('Fold', o.fold_threshold)+ b('Headlines max', o.headline_max)+
+        b('Half-life', o.half_life_hours+'h')+ b('Score window', o.score_window_days+'d')+
+        b('Top Catches max', o.top_catch_max_hours+'h')+ b('Per-feed cap', o.source_cap)+
+        b('Cadence', o.cadence_hours+'h (advisory)')+
+      '</div></details>';
+    }
     function renderHealth(h){
-      var e = h.enrichment||{};
-      var aiOn = e.on;
-      var pill = '<span class="pill '+(aiOn?'on':'off')+'">'+(aiOn?'AI ON':'AI OFF')+'</span>';
-      var cost = '<span class="cost">$'+(e.month_to_date_usd!=null?e.month_to_date_usd.toFixed(2):'0.00')+'</span> of $'+(e.cap_usd!=null?e.cap_usd.toFixed(2):'5.00')+' this month';
-      var detail = aiOn
-        ? ('Enriched '+(e.last_enriched||0)+' items last run ('+ago(e.last_run)+') · '+(e.model||'')+' · '+cost)
-        : ('Reason: '+(e.reason||'off')+(e.has_key?'':' — add the ANTHROPIC_API_KEY secret') + ' · '+cost);
-      // Editorial layer: one pill per pass (on/off + reason on hover).
-      var ai = h.ai;
-      var editorial = '';
-      if (ai){
-        editorial = '<div style="margin-top:0.5rem">';
-        [['picks','Picks'],['top20','Top 20'],['digests','Digests'],['briefs','Briefs'],['editions','Editions'],['merge','Merge']].forEach(function(p){
-          var f = ai[p[0]]||{};
-          editorial += '<span class="pill '+(f.on?'on':'off')+'" title="'+escA(f.reason||'')+'">'+escA(p[1])+(f.on?'':' off')+'</span>';
-        });
-        editorial += '<span class="cost" style="margin-left:0.2rem">$'+((ai.month_to_date_usd||0).toFixed(2))+'</span> of $'+((ai.cap_usd||8).toFixed(2))+' shared</div>';
-      }
-      $('ai-status').innerHTML = pill + detail + editorial;
+      var e = h.enrichment||{}, ai = h.ai||{};
+      var masterOn = !!ai.configured_on;
+      // Per-function spend table, sorted by what costs most. Each row is a live switch.
+      // Enrichment is the base per-item read; the rest are editorial passes on top.
+      var FN = [
+        { key:'enrichment', label:'Enrichment',      src:e,             path:'enrichment' },
+        { key:'picks',      label:"Editor's Picks",  src:ai.picks||{},  path:'ai.picks' },
+        { key:'top20',      label:'Top 20',          src:ai.top20||{},  path:'ai.top20' },
+        { key:'digests',    label:'Firehose digests',src:ai.digests||{},path:'ai.digests' },
+        { key:'briefs',     label:'Edition briefs',  src:ai.briefs||{}, path:'ai.briefs' },
+        { key:'editions',   label:'Order editions',  src:ai.editions||{},path:'ai.editions' },
+        { key:'merge',      label:'Smart merge',     src:ai.merge||{},  path:'ai.merge' },
+      ];
+      FN.forEach(function(f){ f.cost = f.src.fn_usd||0; });
+      FN.sort(function(a,b){ return (b.cost-a.cost) || a.label.localeCompare(b.label); });
+
+      var spent = (ai.month_to_date_usd!=null?ai.month_to_date_usd:(e.month_to_date_usd||0));
+      var cap = (ai.cap_usd!=null?ai.cap_usd:8);
+      var head = '<span class="pill '+(masterOn?'on':'off')+'">'+(masterOn?'AI ON':'AI OFF')+'</span>'+
+        '<span class="cost">$'+spent.toFixed(2)+'</span> of $'+cap.toFixed(2)+' this month'+
+        (e.has_key?'':' · <b>no API key</b>')+' · last run '+ago(ai.last_run||e.last_run);
+
+      var rows = FN.map(function(f){
+        var on = !!f.src.feature_on;
+        var effective = on && (f.key==='enrichment' || masterOn); // editorial needs master on
+        var note = f.src.reason ? escA(f.src.reason) : '';
+        var label = effective ? 'running' : (on ? 'on*' : 'off');
+        return '<tr class="cost-row'+(effective?'':' is-off')+'">'+
+          '<td class="cost-tog"><input type="checkbox" data-path="'+f.path+'"'+(on?' checked':'')+'></td>'+
+          '<td class="cost-name">'+escA(f.label)+'</td>'+
+          '<td class="cost-amt">'+(f.cost>0?'$'+f.cost.toFixed(2):'—')+'</td>'+
+          '<td class="cost-note" title="'+note+'">'+label+(note?' · '+note:'')+'</td>'+
+        '</tr>';
+      }).join('');
+      var masterNote = masterOn ? '' : '<div class="hint" style="margin-top:0.3rem">* Editorial passes also need the <b>AI editorial layer</b> master switch on (AI tab) to run.</div>';
+
+      $('ai-status').innerHTML =
+        '<div class="ai-head">'+head+'</div>'+
+        '<table class="cost-table"><thead><tr><th></th><th>Function</th><th>Cost (mo)</th><th>State</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+        '<div class="cost-foot hint">Sorted by spend. A switch turns a function on/off immediately. Cost is this month’s share of the shared budget.</div>'+
+        masterNote + overviewHtml(h.overview);
+      [].slice.call($('ai-status').querySelectorAll('input[data-path]')).forEach(function(cb){
+        cb.addEventListener('change', function(){ saveAiToggle(cb.getAttribute('data-path'), cb.checked, cb); });
+      });
 
       var list = $('health-list'); list.innerHTML='';
+      // Alphabetical by name so a specific source is easy to find. The coloured dot
+      // still flags state at a glance; the summary line below tallies any problems.
       var srcs = (h.sources||[]).slice().sort(function(a,b){
-        var rank={dead:0,stale:1,waiting:2,unknown:3,off:4,ok:5};
-        return (rank[a.state]-rank[b.state]) || (b.count_48h-a.count_48h);
+        return String(a.name||a.id).toLowerCase().localeCompare(String(b.name||b.id).toLowerCase());
       });
       if(!srcs.length){ list.textContent='No source data yet — run the brief once.'; return; }
       // Legend: the dot is the LAST refresh outcome; the number is articles kept over
       // 48h. They're independent — a red feed can still show a count from an earlier
       // pull, which is why "red but returned 3" is expected, not a contradiction.
       var legend=document.createElement('div'); legend.className='hlegend';
-      legend.textContent='● = last refresh · number = articles kept (48h). A red feed can still have articles from an earlier pull.';
+      legend.innerHTML='<b>green</b> working · <b style="color:var(--gold)">yellow</b> reachable but nothing kept in 48h (low-volume feed, or its items were all filtered out) · <b style="color:var(--coral)">red</b> last refresh failed · <b style="color:#5b8fb0">blue</b> not tried yet. Number = articles kept (48h); a red feed can still show a count from an earlier pull.';
       list.appendChild(legend);
       // A duration ("4h", "2d") rather than "... ago" — for "how long has it been failing".
       function dur(ts){

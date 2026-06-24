@@ -131,7 +131,7 @@ export async function editionBriefs(env, state, items, config, now) {
   }
 
   if (calls > 0) { cache.ts = now; await saveCache(env, BRIEFS_KEY, cache); }
-  if (spentCents > 0) await addSpendCents(env, spentCents);
+  if (spentCents > 0) await addSpendCents(env, spentCents, "briefs");
   state.edition_briefs = out;
   return { degraded: false, reason: calls ? "ok" : "cached", spentCents, calls };
 }
@@ -197,7 +197,7 @@ export async function editPicks(env, state, items, config, now) {
       user: `Candidate stories:\n${lines}`,
       schema: PICKS_SCHEMA, model: feat.model, max_tokens: 700,
     });
-    if (cents) await addSpendCents(env, cents);
+    if (cents) await addSpendCents(env, cents, "picks");
     const order = (parsed && Array.isArray(parsed.picks)) ? parsed.picks.filter((p) => p && byId.has(p.id)) : [];
     if (order.length) {
       apply(order);
@@ -256,7 +256,7 @@ export async function curateTop20(env, state, items, config, now) {
       user: `Candidate stories (across all areas):\n${lines}`,
       schema: PICKS_SCHEMA, model: feat.model, max_tokens: 1200,
     });
-    if (cents) await addSpendCents(env, cents);
+    if (cents) await addSpendCents(env, cents, "top20");
     const order = (parsed && Array.isArray(parsed.picks)) ? parsed.picks.filter((p) => p && byId.has(p.id)) : [];
     if (order.length) {
       apply(order);
@@ -330,7 +330,7 @@ export async function digestRollups(env, state, items, config, now) {
   }
 
   if (calls > 0) { cache.ts = now; await saveCache(env, DIGESTS_KEY, cache); }
-  if (spentCents > 0) await addSpendCents(env, spentCents);
+  if (spentCents > 0) await addSpendCents(env, spentCents, "digests");
   state.rollup_digests = out;
   return { degraded: false, reason: calls ? "ok" : "cached", spentCents, calls };
 }
@@ -389,7 +389,7 @@ export async function smartMerge(env, items, config, now) {
         user: `Stories (id | (domain) title):\n${lines}`,
         schema: MERGE_SCHEMA, model: feat.model, max_tokens: 500,
       });
-      if (cents) await addSpendCents(env, cents);
+      if (cents) await addSpendCents(env, cents, "merge");
       groups = (parsed && Array.isArray(parsed.groups)) ? parsed.groups : [];
       await saveCache(env, MERGE_KEY, { ts: now, hash, groups });
     } catch (e) {
@@ -497,7 +497,7 @@ export async function orderEditions(env, state, items, config, now) {
   }
 
   if (calls > 0) { cache.ts = now; await saveCache(env, EDITIONS_KEY, cache); }
-  if (spentCents > 0) await addSpendCents(env, spentCents);
+  if (spentCents > 0) await addSpendCents(env, spentCents, "editions");
   return { degraded: false, reason: calls ? "ok" : "cached", spentCents, calls };
 }
 
