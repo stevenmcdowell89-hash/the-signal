@@ -143,7 +143,34 @@ export function scoreProfile(item, profile, extraMutes, scoring) {
 // writes only a handful of batched rows (samples for discussion sources, story
 // points for the surfaced catches) — no per-item awaits. The recomputable score
 // fields are NOT persisted: every poll recomputes them from raw_score + config.
-export async function scoreBatch(db, items, config, now) {
+// Per-(source, domain) firehose cap: within ONE feed's items in ONE domain, the
+// lower-ranked tail gets a graded confidence penalty — so a single high-volume
+// feed (Football Italia in the transfer window) can't flood a section OR push its
+// 4th/5th item into Headlines / Top 20. Penalty, not removal (demote-never-drop):
+// capped items still surface below the fold. `capBySource` lets one feed override
+// the global cap (deepen a sub you want, e.g. r/soccer → 10) without loosening the
+// rest. Pure + exported so it can be unit-tested.
+export function applySourceCap(items, globalCap, penalty, capBySource = new Map()) {
+  const groups = new Map();
+  for (const it of items) {
+    if (it.muted) continue;
+    const k = (it.source || "?") + "|" + it.domain;
+    let g = groups.get(k);
+    if (!g) { g = { src: it.source || "?", arr: [] }; groups.set(k, g); }
+    g.arr.push(it);
+  }
+  for (const { src, arr } of groups.values()) {
+    const capN = capBySource.get(src) ?? globalCap;
+    if (arr.length <= capN) continue;
+    arr.sort((a, b) => b.confidence - a.confidence);
+    for (let r = capN; r < arr.length; r++) {
+      arr[r].confidence = Math.max(0, arr[r].confidence * Math.pow(penalty, r - capN + 1));
+      arr[r].source_capped = true;
+    }
+  }
+}
+
+export async function scoreBatch(db, items, config, now, capBySource = new Map()) {
   const profile = config.profile;
   const extraMutes = config.mutes || [];
   const baselineWindow = now - 1000 * 60 * 60 * 24 * 30;
@@ -267,29 +294,11 @@ export async function scoreBatch(db, items, config, now) {
     }
   }
 
-  // Per-(source, domain) firehose cap: within ONE feed's items in ONE domain, the
-  // lower-ranked tail gets a graded confidence penalty — so a single high-volume
-  // feed (Football Italia in the transfer window) can't flood a section OR push its
-  // 4th/5th item into Headlines / Top 20. Penalty, not removal (demote-never-drop):
-  // capped items still surface below the fold. Runs BEFORE the fold is finalised.
+  // Firehose cap (per source+domain), with optional per-feed overrides. Runs BEFORE
+  // the fold is finalised so capped items can drop below it.
   const capN = (config.scoring && config.scoring.source_cap) ?? 3;
   const capPenalty = (config.scoring && config.scoring.source_cap_penalty) ?? 0.6;
-  const groups = new Map();
-  for (const it of items) {
-    if (it.muted) continue;
-    const k = (it.source || "?") + "|" + it.domain;
-    let arr = groups.get(k);
-    if (!arr) { arr = []; groups.set(k, arr); }
-    arr.push(it);
-  }
-  for (const arr of groups.values()) {
-    if (arr.length <= capN) continue;
-    arr.sort((a, b) => b.confidence - a.confidence);
-    for (let r = capN; r < arr.length; r++) {
-      arr[r].confidence = Math.max(0, arr[r].confidence * Math.pow(capPenalty, r - capN + 1));
-      arr[r].source_capped = true;
-    }
-  }
+  applySourceCap(items, capN, capPenalty, capBySource);
   // Re-finalise the fold after the cap so capped firehose items drop below it.
   for (const it of items) it.above_fold = !it.muted && it.confidence >= fold;
 

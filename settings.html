@@ -367,9 +367,9 @@
         <button class="btn-sm" id="find-feed-btn">Find a feed</button>
       </div>
       <div class="hint" id="find-feed-msg" style="display:none"></div>
-      <table id="src-table"><thead><tr><th>On</th><th>ID</th><th>Domain</th><th>URL</th><th>Trust</th><th>Tier</th><th></th></tr></thead><tbody></tbody></table>
+      <table id="src-table"><thead><tr><th>On</th><th>ID</th><th>Domain</th><th>URL</th><th>Trust</th><th>Tier</th><th>Cap</th><th></th></tr></thead><tbody></tbody></table>
       <div class="addrow"><button class="btn-sm" id="add-src">+ Add feed</button></div>
-      <div class="hint">Type is inferred from the URL: an HN Algolia URL → "hn", a <code>reddit.com/r/…</code> URL → "reddit", everything else → "rss". <b>Almost anything with a feed works as a source</b> — a YouTube channel (<code>youtube.com/feeds/videos.xml?channel_id=…</code>), a Google&nbsp;News RSS, a Mastodon <code>.rss</code>, a podcast feed, or a subreddit. Paste the URL, set its domain + weight. <b>Not sure of the feed URL?</b> Use <b>Find a feed</b> above — paste the site's normal address and it'll discover the feed for you.</div>
+      <div class="hint">Type is inferred from the URL: an HN Algolia URL → "hn", a <code>reddit.com/r/…</code> URL → "reddit", everything else → "rss". <b>Almost anything with a feed works as a source</b> — a YouTube channel (<code>youtube.com/feeds/videos.xml?channel_id=…</code>), a Google&nbsp;News RSS, a Mastodon <code>.rss</code>, a podcast feed, or a subreddit. Paste the URL, set its domain + weight. <b>Not sure of the feed URL?</b> Use <b>Find a feed</b> above — paste the site's normal address and it'll discover the feed for you.<br><b>Cap</b> = how many items from this feed keep full strength in its topic (blank = the global <i>Per-feed cap</i> in Engine → Advanced). Raise it for a firehose you want deep — e.g. r/soccer → 10.</div>
       <details style="margin-top:0.7rem">
         <summary class="hint" style="cursor:pointer">▸ How ranking actually works (does BBC = 0.9 stamp 0.9 on everything? No)</summary>
         <div class="hint" style="line-height:1.6">
@@ -489,6 +489,7 @@
         '<td data-label="URL"><input type="url" value="'+(s.url||'')+'" data-k="url"></td>'+
         trustCell(s)+
         tierCell(s)+
+        '<td data-label="Cap"><input type="number" min="1" max="30" class="src-w" value="'+(s.cap!=null?s.cap:'')+'" data-k="cap" placeholder="def"></td>'+
         '<td><button class="btn-sm btn-danger" data-del="1">✕ Remove</button></td>';
       tr.querySelector('[data-del]').addEventListener('click', function(){ tr.remove(); });
       return tr;
@@ -507,7 +508,7 @@
     // collectRows skips it). Clicking toggles its group's data rows.
     function groupHeadRow(tbody, key, label, count, collapsed){
       var tr=document.createElement('tr'); tr.className='src-group'+(collapsed?' is-collapsed':'');
-      tr.innerHTML='<td colspan="7"><span class="caret">'+(collapsed?'▸':'▾')+'</span> '+label+' <span class="gcount">('+count+')</span></td>';
+      tr.innerHTML='<td colspan="8"><span class="caret">'+(collapsed?'▸':'▾')+'</span> '+label+' <span class="gcount">('+count+')</span></td>';
       tr.addEventListener('click', function(){
         var coll = tr.classList.toggle('is-collapsed');
         tr.querySelector('.caret').textContent = coll?'▸':'▾';
@@ -782,6 +783,7 @@
           var k=inp.dataset.k;
           if (inp.type==='checkbox') o[k]=inp.checked;
           else if (k==='weight') o[k]=parseFloat(inp.value)||0;
+          else if (k==='cap'){ var c=parseInt(inp.value,10); if(Number.isFinite(c)&&c>0) o[k]=c; }
           else o[k]=inp.value.trim();
         });
         if (isBsky){ o.type='bluesky'; if(!o.handle) return; }
