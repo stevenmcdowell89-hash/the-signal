@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "_doc": "Lookup table mapping image-source domain → source type, per the 5-type taxonomy in references/spec/global.md image-integrity. Maintained alongside the editorial spec. Add a one-line mapping when a new source appears in research. The validate-research-bundle.py and check-image-diversity.sh scripts both read this file.",
+  "_doc": "Lookup table mapping image-source domain \u2192 source type, per the 5-type taxonomy in references/spec/global.md image-integrity. Maintained alongside the editorial spec. Add a one-line mapping when a new source appears in research. The validate-research-bundle.py and check-image-diversity.sh scripts both read this file.",
   "types": {
     "press_kit": "Official press kits and brand CDNs",
     "government": "Government / public-sector Flickr + media libraries",
@@ -143,11 +143,10 @@
     "icdn.juvefc.com": "news_cdn",
     "platform.blackwhitereadallover.com": "news_cdn",
     "media.springernature.com": "news_cdn",
-    "d3i6fh83elv35t.cloudfront.net": "news_cdn",
-    "assets.nintendo.com": "press_kit"
+    "d3i6fh83elv35t.cloudfront.net": "news_cdn"
   },
   "ambiguous_domains": {
-    "live.staticflickr.com": "Direct Flickr image host serves any user. Classify per the Flickr user (whitehouse, number10gov, ukparliament → government). When a researcher cites a live.staticflickr.com URL, the image_candidate entry MUST include an explicit source_type field — the validator cannot infer it from the URL."
+    "live.staticflickr.com": "Direct Flickr image host serves any user. Classify per the Flickr user (whitehouse, number10gov, ukparliament \u2192 government). When a researcher cites a live.staticflickr.com URL, the image_candidate entry MUST include an explicit source_type field \u2014 the validator cannot infer it from the URL."
   },
   "thresholds": {
     "single_domain_max_pct": 50,
