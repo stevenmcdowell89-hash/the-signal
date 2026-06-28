@@ -493,6 +493,6 @@ When the Versus is comparing two holidays — two parks, two resorts, two cities
 ## weekly
 
 ### Standard Weekly (default)
-The full Sunday edition. **No hard word target — a healthy Sunday read sized to the week's news, typically ~20-30 pages.** Held by per-section shape (Lead + Catch-Up), not a word quota; flex to the news and yield thin sections rather than padding to a number (v8.27). Section order as listed above.
+The full Sunday edition. **No hard word target — a healthy Sunday read sized to the week's news, typically ~20-30 pages.** Held by per-section shape (a considered piece per section; Catch-Up optional), not a word quota; flex to the news and yield thin sections rather than padding to a number (v8.27). Section order as listed above.
 
 

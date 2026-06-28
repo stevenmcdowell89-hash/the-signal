@@ -1,5 +1,48 @@
 # The Signal — Changelog
 
+8.34.0 — Weekly refocus (a scope/spine change, not a feature). The daily brief now
+  reliably owns week-in-the-loop catch-up, so the weekly is reframed to add the layer
+  time gives — synthesis across the week, and roundups that combine items that arrived
+  piecemeal — for a reader who arrives already informed. Three edits, all by adjusting
+  existing principles and one existing gate (no new rule, no new script — per the
+  anti-accretion meta-rule):
+
+  - **Identity** (`editorial-spec.md` § Identity) names the division: the daily owns the
+    week's catch-up; the weekly's news job is no longer to report what happened but to add
+    synthesis and combined-picture roundups, alongside the evergreen / recommendations /
+    discovery it already does.
+  - **Section spine inverted** (§ Article Structure + § Fixed vs Rotating + § Key Rules →
+    Section Rules). The mandatory element of a fixed section is now the **considered piece**
+    (synthesis, a roundup with a *named* layer, an angle, or a feature); the Catch-Up drops
+    to **optional grounding context**, never exhaustive coverage. A fixed section with only
+    catch-up to offer **yields** that week (it's the daily's job) rather than running a
+    roundup to fill the slot — the Toolkit's existing yield principle generalised to every
+    fixed section.
+  - **Two-factor Lead test reference point moved** (§ Article Structure). Factor 1 (did it
+    move this week) is unchanged. Factor 2 now asks whether the piece adds the layer the
+    daily couldn't — the week's arc tied together, or the combined picture across separate
+    items — instead of "beat the BBC headline." Kept profile-invisible per the Cardinal
+    Rule; "inventing an angle to fill the slot is never the answer" and "padding a thin
+    topic is banned" preserved verbatim.
+
+  - `scripts/validate-chapter-plan.py` — `check_section_shape` adjusted (no new script): it
+    now requires a considered piece (a `lead`) OR a `yield_reason`, and **hard-fails a
+    section that offers only a Catch-Up roundup** (it must yield). A bare considered piece
+    with no Catch-Up now passes. Docstring, header comment, and inline tests updated; the
+    two inverted cases flipped and a catch-up-with-yield_reason case added (60/60 pass).
+  - Propagated into the sliced views (`references/spec/global.md`, `weekly.md`, and the
+    weekly-overview line in `formats.md`) by hand rather than re-running `slice-spec.sh`,
+    because `specials.md`/`formats.md` carry v8.31 content not present in `editorial-spec.md`
+    that a full re-slice would clobber (pre-existing drift, flagged for separate repair).
+  - Aligned the coupled rule-statements that the gate enforces so they don't contradict it:
+    `references/chapter-plan-schema.md`, `references/pre-flight.md` (RT-18), and
+    `references/compliance-checklist.md` (1G). Per-section structure lines in
+    `references/sections.md` reframed to the considered-piece backbone.
+  - Untouched: all voice/craft (Cardinal Rule, Lens-not-Filter, Borrowed-angles, plain-
+    English gate + trope lists), research machinery, the quality rubric/scorer, all
+    compliance gates/scripts and the Step-Zero model gate, Release Radar, all specials,
+    the reader profile, taste rules, and the visual/imagery/markup contracts.
+
 8.33.0 — Enforced the "Return to The Signal" back-link button. The fixed top-left
   pill that returns the reader to the archive index was added to the stitch pipeline
   in v8.22.15 (injected after `<body>`), but its presence was never *verified* — not

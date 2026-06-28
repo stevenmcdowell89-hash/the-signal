@@ -193,9 +193,9 @@ awk '/<figcaption/,/<\/figcaption>/' FILE | grep -v -E 'Photo:|Still:|Credit:|Im
 
 **Why this is Gate 1, not Gate 2:** image-caption mismatch is fabrication of visual claims, parallel to fabrication of factual claims (1B). One v8.10.x issue had the same YouTube thumbnail captioned as two different venues in two different chapters — a confident lie the reader would only notice on close inspection. Mechanical detection prevents the class entirely.
 
-### 1G. Lead + Catch-Up structural compliance (v8.27 — replaces the v8.15 two-anchor rule)
+### 1G. Considered-piece backbone structural compliance (v8.27, inverted v8.34 — replaces the v8.15 two-anchor rule)
 
-For every fixed section in the stitched HTML, confirm the **Lead + Catch-Up** shape: one angled Lead, plus a substantive Catch-Up roundup (or an optional Companion, or — for a section running short, especially The Toolkit — a visible yield). The old rule hard-failed any section without *two deep anchors*; that mandate is retired. The new failure modes are: (a) a bare Lead with no Catch-Up roundup and no companion; (b) a Catch-Up that is bare namedrops (items naming a thing with no "why it matters" and no link). The chapter-plan validator (`check_section_shape`) catches both at Phase 4; this is the stitched-HTML reading pass.
+For every fixed section in the stitched HTML, confirm the **considered-piece backbone** shape (v8.34): one considered piece (a Lead — synthesis, a roundup with a named layer, an angle, or a feature) that passes the two-factor test, with an **optional** Catch-Up roundup grounding it (or an optional Companion, or — for a section running short, especially The Toolkit — a visible yield). The v8.15 two-deep-anchor mandate is retired, and the v8.27-v8.28 catch-up spine is inverted: the Catch-Up is no longer the mandatory element. The failure modes are: (a) a section running only a Catch-Up roundup with no considered piece and no visible yield (recap is the daily's job — it must yield); (b) a Catch-Up that is bare namedrops (items naming a thing with no "why it matters" and no link). A bare considered piece with no Catch-Up is fine. The chapter-plan validator (`check_section_shape`) catches these at Phase 4; this is the stitched-HTML reading pass.
 
 ```bash
 # Sketch:

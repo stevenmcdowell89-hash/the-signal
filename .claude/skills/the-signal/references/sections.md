@@ -45,7 +45,7 @@ Hero image. White background, rose accent.
 - The Angle box only for genuinely significant stories
 - **Also This Week: 4-6 items, not throwaway one-liners.** Each Also item gets 2-3 sentences minimum: what happened, why it matters, and a link. A one-liner that nobody remembers five minutes later isn't worth including. Cut the count and increase the quality.
 
-**Lead + Catch-Up structure (v8.27):** World This Week runs one angled Lead (400–700 words) that passes the two-factor test (did it move this week + can we add something) plus a substantive Catch-Up roundup — the *other* interesting world news the reader missed (every item what/why/link), with one-line safety-net headlines for the week's majors so nothing big is dropped. An optional Companion (250–450 words, distinct topic family — if the Lead is Iran, the Companion can't be Iran) only when there's a genuine second deep story. Ongoing-story tracker boxes are *in addition*. The Starmer ×3 failure was the Lead crowding out the Catch-Up — don't repeat it.
+**Considered-piece backbone (v8.27, inverted v8.34):** World This Week runs one considered piece (400–700 words) that passes the two-factor test (did it move this week + does it add the layer the daily couldn't — the week's arc tied together, or the combined picture across piecemeal items) — synthesis, a roundup with a named layer, an angle, or a feature. The Catch-Up roundup is **optional grounding**, not exhaustive coverage — the *other* interesting world news worth a line (every item what/why/link), with one-line safety-net headlines for the week's majors so nothing big is dropped. An optional Companion (250–450 words, distinct topic family — if the Lead is Iran, the Companion can't be Iran) only when there's a genuine second deep story. Ongoing-story tracker boxes are *in addition*. The Starmer ×3 failure was a holding-pattern story leading on recap — don't repeat it.
 
 **Ongoing Story Tracker**
 When a single topic has led The World This Week for 2 consecutive weeks, it graduates from headline coverage to a dedicated **"Ongoing"** subsection within World This Week. Rules:
@@ -70,7 +70,7 @@ Gaming + LEGO. Warm background, ember accent. **Consumer tech / AI / apps moved 
 - **LEGO folds in here** as an occasional "play"-cluster beat (new set announcements, build reviews, retiring sets). Use "Family Picks" sidebars — don't sprinkle "your son will love" through prose.
 - **Catch-Up roundup:** 4+ gaming items, each with what/why/link.
 
-**Lead + Catch-Up structure:** one angled gaming Lead (300–500 words) + the Catch-Up roundup (releases-this-week + next-month + new rumours). A Companion is optional — only if a second distinct gaming topic genuinely earns a full piece.
+**Considered-piece backbone (inverted v8.34):** the considered piece is either an angled gaming Lead (300–500 words) **or** the curated releases-this-week-plus-next-month roundup written with real explainers — a roundup with a named layer (the gaming floor above), authored *as the Lead*, not as bare catch-up. The Catch-Up roundup (new rumours, smaller items) is optional grounding on top. A Companion is optional — only if a second distinct gaming topic genuinely earns a full piece.
 
 ### The Toolkit *(fixed slot — but yields strictly, v8.27)*
 Tech & tools: consumer tech, consumer AI, apps, tablet productivity, digital workflows. Light blue-grey background, cyan accent. **Absorbs the consumer-tech + AI that used to live in Pixel & Byte, alongside its existing apps/productivity beat.**
@@ -85,7 +85,7 @@ Tech & tools: consumer tech, consumer AI, apps, tablet productivity, digital wor
 - **Anti-repetition:** same app/tool cannot anchor two consecutive Toolkit appearances. Track `last_toolkit_app` in state.
 - Good sources: r/Android, r/Todoist, Product Hunt, 9to5Google, The Verge, XDA, DC Rainmaker (wearables).
 
-**Lead + Catch-Up structure:** discovery Lead (300–500 words) + Catch-Up roundup of the period's consumer-tech/AI news. Companion optional.
+**Considered-piece backbone (inverted v8.34):** the discovery Lead (300–500 words) is the considered piece, with the period's consumer-tech/AI news as optional Catch-Up grounding. Companion optional. If a return week has only undifferentiated catch-up and no real discovery to make, the section **yields** (its strict-yield rule already expects this) rather than running a roundup to fill the slot.
 
 ### The Touchline
 **Data first, then narrative.** Dark background, green accents.
@@ -118,7 +118,7 @@ Tech & tools: consumer tech, consumer AI, apps, tablet productivity, digital wor
 - Football reads like editorial, not match reports — the reader already knows the scores
 - Image montage for match photos
 
-**Lead + Catch-Up structure (v8.27):** one angled Lead (the most compelling sport story that passes the two-factor test — lead with the angle, never a play-by-play recap of a match the reader watched) + a substantive Catch-Up roundup. **The Catch-Up must carry the football the reader actually wants** — transfer rumours and confirmations, squad/World-Cup announcements, what's coming up — plus one-line safety-net results for the week's majors. The old failure was spending the whole section on "Arsenal won" and dropping the transfer catch-up entirely. An optional Companion: when the Lead is football, a Companion must be a non-football sport (golf, F1, rugby, tennis, snooker, governance/structural); when the Lead is a Priority-2/3 non-football story, a Companion may be football.
+**Considered-piece backbone (v8.27, inverted v8.34):** one considered piece (the most compelling sport story that passes the two-factor test — lead with the angle, never a play-by-play recap of a match the reader watched). The Catch-Up roundup is optional grounding, but **when it runs it must carry the football the reader actually wants** — transfer rumours and confirmations, squad/World-Cup announcements, what's coming up — plus one-line safety-net results for the week's majors. The old failure was spending the whole section on "Arsenal won" and dropping the transfer catch-up entirely. An optional Companion: when the Lead is football, a Companion must be a non-football sport (golf, F1, rugby, tennis, snooker, governance/structural); when the Lead is a Priority-2/3 non-football story, a Companion may be football.
 
 ### Screen & Sound
 Film, TV, streaming, Star Wars (always search). Dark purple background, neon accent.
@@ -131,7 +131,7 @@ Film, TV, streaming, Star Wars (always search). Dark purple background, neon acc
 - "For the Kids" sidebar when relevant
 - **No overlap with On the Radar** — Release Radar covers product/media releases only
 
-**Lead + Catch-Up structure (v8.27):** one angled Lead (a review or culture-critic take that passes the two-factor test) + a Catch-Up roundup of the week's releases/news (what/why/link). The Release Radar is in addition. An optional Companion is forbidden from sharing the Lead's franchise.
+**Considered-piece backbone (v8.27, inverted v8.34):** one considered piece (a review or culture-critic take that passes the two-factor test) with an **optional** Catch-Up roundup of the week's releases/news (what/why/link) grounding it. The Release Radar is in addition. An optional Companion is forbidden from sharing the Lead's franchise.
 
 **Sub-format: Director's Cut (monthly).** Every 4th standard weekly, the Screen & Sound Lead runs in Director's Cut mode — a 550-750 word essay on a show, film, director, or arc rather than the week's news beat. Voice: culture critic, not news reviewer. Examples: "What Andor Season 2 understood that the prequels didn't" / "Why Severance's pacing is the show's secret weapon" / "The Coen Brothers' grammar of disappointment". Companion remains standard (250-450 words, distinct topic family, may carry the week's main beat the Director's Cut displaced). State file tracks `last_directors_cut_date`; planner-side hard rule `weeks_since_last_directors_cut >= 4`. Tagged in chapter plan as `sub_format: "directors_cut"`. Optionally marked in the rendered section header with `<span class="sub-format-tag">Director's Cut</span>` inside `.section-label`.
 
@@ -176,7 +176,7 @@ Sourced fitness feature. Light green background, orange accent. **Absorbs the ol
 - No generic advice ("stay hydrated", "warm up properly").
 - **Good Session topics:** concurrent training (lifting + running without interference), rate of loss and muscle retention during a cut, how to interpret Garmin training readiness and HRV trends, mobility routines for runners, protein timing and distribution, the science of deload weeks, progressive overload with kettlebells at home, running economy and zone 2 benefits, managing fatigue across multiple training modalities, fitness gear and tech (running shoes, kettlebells, home gym equipment, wearables, recovery tools — only stuff relevant to the reader's actual training), home gym setup and equipment reviews (reader is building out a home gym — currently has competition KBs, dip bars, slant board, resistance band; interested in expanding).
 
-**Lead + Catch-Up / deep note (v8.27):** Lead (400–500 words) + a Companion "Also worth reading" deep note (200–250 words) on a different training-topic cluster (Session is the one section where a Companion is still strongly encouraged, since it now carries the absorbed Workshop gear angle and Lab science angle). A light Catch-Up of fitness-gear/wearable-data notes can stand in for the deep note on a thin week. **Same cluster cannot anchor two consecutive Session Leads** — track in state-file `last_session_topic`.
+**Considered-piece backbone / deep note (v8.27, inverted v8.34):** the considered piece is the Session Lead (400–500 words) + a Companion "Also worth reading" deep note (200–250 words) on a different training-topic cluster (Session is the one section where a Companion is still strongly encouraged, since it now carries the absorbed Workshop gear angle and Lab science angle). A light Catch-Up of fitness-gear/wearable-data notes is optional grounding and can stand in for the deep note on a thin week. **Same cluster cannot anchor two consecutive Session Leads** — track in state-file `last_session_topic`.
 
 ### This Week in History *(rotating — every 2-3 weeks)*
 Warm parchment background, gold accent.

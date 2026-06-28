@@ -75,10 +75,12 @@ VALID_CHAPTER_TYPES = {
     "closer",
 }
 
-# v8.15 / v8.27 — fixed-section chapter IDs that run the Lead + Catch-Up shape.
-# v8.27: the mandatory two-anchor Lead + Companion is retired — these chapters now
-# require a Lead plus a second substantive element (a Catch-Up roundup OR an optional
-# Companion OR an explicit yield_reason). See check_section_shape().
+# v8.15 / v8.27 / v8.34 — fixed-section chapter IDs that run the considered-piece backbone shape.
+# v8.27 retired the mandatory two-anchor Lead + Companion. v8.34 INVERTS the v8.27-v8.28 spine:
+# the considered piece (a Lead — synthesis / a named-layer roundup / an angle / a feature) is now
+# the mandatory backbone and the Catch-Up is OPTIONAL grounding. A fixed section runs a considered
+# piece OR yields (yield_reason); a section with only a Catch-Up roundup FAILS (recap is the daily's
+# job). See check_section_shape().
 # Accept both the underscored convention (spec) and existing single-word / kebab variants
 # observed in real issue markup (id="world", id="tech", id="football", id="screen").
 # v8.27 adds The Toolkit (now a fixed-but-yields section, was rotating).
@@ -250,10 +252,13 @@ def check_issue_meta(meta):
 
 
 def check_section_shape(ch, cpath):
-    """v8.27: fixed-section chapters run the Lead + Catch-Up shape.
+    """v8.34: fixed-section chapters run the considered-piece backbone shape.
 
-    Replaces the v8.15 mandatory two-anchor Lead + Companion. v8.28: the LEAD is now optional
-    too — a section may be pure Catch-Up (facts) with no pieces at all.
+    Replaces the v8.15 mandatory two-anchor Lead + Companion (v8.27) and INVERTS the v8.27-v8.28
+    spine: the considered piece (a Lead — synthesis / a named-layer roundup / an angle / a feature)
+    is now the mandatory backbone, and the Catch-Up is OPTIONAL grounding context. A fixed section
+    runs a considered piece OR yields — it does NOT run a bare Catch-Up roundup to fill the slot
+    (exhaustive recap is the daily brief's job, not the weekly's).
 
     Rules:
       - `pieces` array: 0-2 entries. 0 or 1 role='lead'; at most one role='companion'; a
@@ -261,9 +266,9 @@ def check_section_shape(ch, cpath):
       - Sanity word floors only (lead 150, companion 120) — length follows material, no padding.
       - Each piece: topic_family in enum, valid word_count_target, headline_hint, link_targets.
       - If a Companion is present, Lead.topic_family != Companion.topic_family.
-      - The section must contain something substantive: a non-empty `catch_up`, a Lead, or a
-        `yield_reason`. A bare Lead with no second element is a hard fail; a pure Catch-Up
-        (no Lead) is fine.
+      - The section must contain a considered piece (a Lead) OR a `yield_reason`. A bare Lead with
+        no Catch-Up is fine (the considered piece stands alone); a section with ONLY a Catch-Up
+        roundup (no Lead, no yield_reason) is a hard fail — it must yield instead.
       - Catch-Up "no bare namedrops" rule: every `catch_up` item must carry a headline_hint,
         a why_it_matters, and a non-empty link_targets.
     """
@@ -330,30 +335,35 @@ def check_section_shape(ch, cpath):
     if companion_count > 1:
         err(f"[PIECES] {cpath}.pieces may contain at most one 'companion'. Found roles: {roles_seen}.")
     if companion_count >= 1 and lead_count == 0:
-        err(f"[PIECES] {cpath}: a Companion requires a Lead. A section with no Lead is pure Catch-Up/facts — drop the companion or add a lead.")
+        err(f"[PIECES] {cpath}: a Companion requires a Lead. A fixed section needs a considered piece (a Lead) or a yield_reason — drop the companion, add a lead, or yield.")
 
     # Distinct topic families when a companion is present.
     if "lead" in tf_by_role and "companion" in tf_by_role and tf_by_role["lead"] == tf_by_role["companion"]:
         err(f"[PIECES] {cpath}: Lead.topic_family and Companion.topic_family are both '{tf_by_role['lead']}'. When a Companion runs it MUST be on a different topic family (topic-family discipline).")
 
-    # v8.28 — the section must contain SOMETHING substantive, and a Lead is never alone:
-    #   valid: a non-empty catch_up (pure facts, no lead) | a Lead + (catch_up|companion|yield_reason) | yield_reason.
-    #   invalid: nothing at all, or a bare Lead with no second element.
+    # v8.34 — INVERTED spine: the considered piece (a Lead — synthesis / a roundup with a named
+    # layer / an angle / a feature) is the mandatory backbone; the Catch-Up is OPTIONAL grounding.
+    # A fixed section runs a considered piece OR yields — it does NOT run a bare Catch-Up roundup
+    # to fill the slot (exhaustive recap is the daily brief's job, not the weekly's).
+    #   valid:   a Lead (with or without catch_up/companion) | a yield_reason.
+    #   invalid: nothing at all | only a Catch-Up roundup (no Lead, no yield_reason).
     catch_up = ch.get("catch_up")
     has_lead = lead_count >= 1
     has_companion = companion_count >= 1
     has_catchup = isinstance(catch_up, list) and len(catch_up) >= 1
     yield_reason = ch.get("yield_reason")
-    if not (has_lead or has_catchup or yield_reason):
-        err(
-            f"[SHAPE] {cpath}: section is empty — it needs at least one of: a Catch-Up roundup, a Lead, "
-            f"or a `yield_reason` (v8.28)."
-        )
-    elif has_lead and not (has_companion or has_catchup or yield_reason):
-        err(
-            f"[SHAPE] {cpath}: a Lead alone is a fail — add a substantive `catch_up` roundup, an optional "
-            f"`companion`, or a `yield_reason` when the section genuinely runs short (v8.28 Lead + Catch-Up)."
-        )
+    if not (has_lead or yield_reason):
+        if has_catchup:
+            err(
+                f"[SHAPE] {cpath}: section offers only a Catch-Up roundup — that is the daily's job. "
+                f"Run a considered piece (synthesis, a roundup with a named layer, an angle, or a feature) "
+                f"as the Lead, or yield via `yield_reason` (v8.34 considered-piece backbone)."
+            )
+        else:
+            err(
+                f"[SHAPE] {cpath}: section is empty — it needs a considered piece (a Lead) or a "
+                f"`yield_reason` (v8.34)."
+            )
 
     # v8.27 — Catch-Up "no bare namedrops": every roundup item carries what + why + link.
     if catch_up is not None:
@@ -1322,7 +1332,7 @@ def run_inline_tests():
     run_test("countdown chapter without pieces (not bound by Lead+Companion)",
              make_plan(), expect_pass=True)
 
-    # ── v8.27 Lead + Catch-Up shape cases ──
+    # ── v8.27 / v8.34 considered-piece backbone shape cases ──
 
     lead_only = [
         {"role": "lead", "topic_family": "us_politics", "word_count_target": {"min": 400, "max": 700}, "headline_hint": "x", "link_targets": ["https://example.com"]}
@@ -1332,11 +1342,11 @@ def run_inline_tests():
         {"headline_hint": "Squad announced", "why_it_matters": "First call-up for X", "link_targets": ["https://example.com"]}
     ]
 
-    # FAIL: bare Lead with no Catch-Up, no Companion, no yield_reason
-    run_test("bare lead with no second element fails", make_plan(
+    # PASS (v8.34): a bare considered piece (Lead) is the backbone — Catch-Up is optional
+    run_test("bare lead (considered piece) passes (v8.34)", make_plan(
         issue_meta=weekly_meta,
         chapters=[weekly_fixed_chapter("world", pieces=lead_only)]
-    ), expect_pass=False)
+    ), expect_pass=True)
 
     # PASS: Lead + non-namedrop Catch-Up (companion optional, omitted)
     run_test("lead + substantive catch_up passes (no companion)", make_plan(
@@ -1374,12 +1384,20 @@ def run_inline_tests():
         chapters=[weekly_fixed_chapter("toolkit", pieces=lead_only, extra={"catch_up": good_catch_up})]
     ), expect_pass=True)
 
-    # v8.28: a PURE Catch-Up section (no Lead at all) passes
+    # v8.34: a section with ONLY Catch-Up (no Lead, no yield) FAILS — it must yield (daily's job)
     pure_catchup_ch = weekly_fixed_chapter("pixel_byte", extra={"catch_up": good_catch_up})
     pure_catchup_ch.pop("pieces", None)
-    run_test("pure catch_up section with no lead passes (v8.28)", make_plan(
+    run_test("pure catch_up section with no lead fails (v8.34 — must yield)", make_plan(
         issue_meta=weekly_meta,
         chapters=[pure_catchup_ch]
+    ), expect_pass=False)
+
+    # v8.34: a section with only Catch-Up but an explicit yield_reason passes (it is yielding)
+    yielded_catchup_ch = weekly_fixed_chapter("pixel_byte", extra={"catch_up": good_catch_up, "yield_reason": "thin gaming week"})
+    yielded_catchup_ch.pop("pieces", None)
+    run_test("catch_up-only section with yield_reason passes (v8.34)", make_plan(
+        issue_meta=weekly_meta,
+        chapters=[yielded_catchup_ch]
     ), expect_pass=True)
 
     # v8.28: a Companion with no Lead fails

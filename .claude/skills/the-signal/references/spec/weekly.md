@@ -8,7 +8,7 @@ _This file consolidates the weekly/ subdir into one file. Each former file becom
 ## overview
 
 ### Standard Weekly (default)
-The full Sunday edition. **No hard word target — a healthy Sunday read sized to the week's news, typically ~20-30 pages.** Held by per-section shape (Lead + Catch-Up), not a word quota; flex to the news and yield thin sections rather than padding to a number (v8.27). Section order as listed above.
+The full Sunday edition. **No hard word target — a healthy Sunday read sized to the week's news, typically ~20-30 pages.** Held by per-section shape (a considered piece per section; Catch-Up optional), not a word quota; flex to the news and yield thin sections rather than padding to a number (v8.27). Section order as listed above.
 
 
 
@@ -25,6 +25,8 @@ Sections are divided into **fixed** (appear every issue, except where noted) and
 ### Fixed vs Rotating
 
 **Fixed (every issue):** Cover, Navigator, Foreword, The Long Shelf, The World This Week, Pixel & Byte (gaming + LEGO), The Toolkit (tech & tools — *fixed slot but routinely yields*; see its brief), The Touchline, Screen & Sound (with Release Radar), The Session (omit if nothing found), On the Radar, Footer.
+
+> **Yield rather than fill (v8.34).** The Toolkit's "yield when the week is thin, don't pad it to appear" principle now applies to **every** fixed section: a fixed section whose week offers only catch-up — the recap the daily already delivered — **yields** that week rather than running a roundup to fill the slot. The mandatory element is the considered piece (§ Article Structure), not the section's mere presence.
 
 > **The Toolkit is a fixed slot that is expected to disappear regularly.** It is "fixed" only in the sense that it is always *considered* every week — but it carries consumer-tech / AI / apps news, which is not weekly. When the week is thin it **yields entirely** (don't pad it to appear). When it returns it must cover the **entire gap since its last appearance** (the catch-up rule, as The Shelf has), so yielding never drops a fortnight of tech news — it batches it into one good roundup. In practice it appears roughly every other week.
 
@@ -66,7 +68,7 @@ Each issue includes the **fixed sections** plus **2-3 rotating sections** select
 
 1. **Check the state file** (`signal-state.json`) for `rotating_sections` — each entry has `last_appeared` date.
 2. **Pick the most overdue sections first.** If The Shelf last appeared 3 weeks ago and Money 2 weeks ago, The Shelf has priority.
-3. **Cap at 2-3 rotating sections per issue** to maintain pacing. Rotating sections should be substantive (300-600 words each, except The Shelf which can be longer). The issue's bulk comes from the fixed sections' Lead + Catch-Up; rotating sections add variety on top, not bulk. Fewer slots is deliberate (v8.27) — it keeps the issue from padding.
+3. **Cap at 2-3 rotating sections per issue** to maintain pacing. Rotating sections should be substantive (300-600 words each, except The Shelf which can be longer). The issue's bulk comes from the fixed sections' considered pieces; rotating sections add variety on top, not bulk. Fewer slots is deliberate (v8.27) — it keeps the issue from padding.
 4. **Places overrides normal cadence** when a trip is approaching — it appears every issue or every other issue in the lead-up. Check state file for `upcoming_trips`.
 5. **Don't force it.** If research for a rotating section turns up nothing worthwhile, skip it even if it's overdue. The cadence is a guide, not a mandate.
 6. **Ensure variety across a month.** Over any 4-issue stretch, aim for each of the 5 rotating sections (The Shelf, This Week in History, Listening, Money, Places) to appear at least once. The Saga is excluded — it is trigger-driven, not on a cadence (see Cadence Table).
@@ -133,7 +135,7 @@ Run the **core groups** every issue. Run **rotating groups** only when that sect
 
 ### Core Groups (every issue)
 
-**Group 1 — News & Geopolitics:** dominant running story, world news. **UK / national politics is out by default** (see the UK / national politics rule in § Key Rules) — scan for it only to catch the rare genuine landscape shift (an election *result* that changes the picture, a government actually falling) and to surface a one-line safety-net mention of any big Westminster story in the Catch-Up roundup. **No story is auto-promoted to the Lead.** A UK-politics development — even a leadership challenge or a cabinet resignation — is *not* automatically a Lead-1 candidate (the v8.x auto-promote mandate was the direct engine of the Starmer ×3 run). It is covered like anything else, and it leads only if it passes the two-factor Lead test (§ Article Structure: did it move this week AND can we add something beyond the headline). The news-breadth floor (Lens-not-Filter) still holds: a genuinely big world story always gets *covered*, in the Lead if it clears the test, otherwise as a Catch-Up line.
+**Group 1 — News & Geopolitics:** dominant running story, world news. **UK / national politics is out by default** (see the UK / national politics rule in § Key Rules) — scan for it only to catch the rare genuine landscape shift (an election *result* that changes the picture, a government actually falling) and to surface a one-line safety-net mention of any big Westminster story in the Catch-Up roundup. **No story is auto-promoted to the Lead.** A UK-politics development — even a leadership challenge or a cabinet resignation — is *not* automatically a Lead-1 candidate (the v8.x auto-promote mandate was the direct engine of the Starmer ×3 run). It is covered like anything else, and it leads only if it passes the two-factor Lead test (§ Article Structure: did it move this week AND can we add the layer the daily couldn't). The news-breadth floor (Lens-not-Filter) still holds: a genuinely big world story always gets *covered*, in the Lead if it clears the test, otherwise as a Catch-Up line.
 
 **Group 2a — Gaming (for Pixel & Byte, every issue):** Nintendo Switch 2, Steam Deck / Steam Machine, GeForce Now, high-quality tablet games, plus generalist gaming (the biggest game of the year gets covered even if it's not on Switch) — what came out this week + highlights of the next month + *new* rumours-with-analysis. LEGO news and releases (LEGO now lives in Pixel & Byte as an occasional "play" beat).
 
