@@ -31,8 +31,8 @@ Masthead, date, issue number, editorial hook headline, 6-10 topic tags. Ambient 
 ### Navigator
 Visual card grid linking to each section. Top 1-2 cards use `.nav-card.lead` (two-column span with thumbnail). Section icons on each card. 8-14 cards total.
 
-### Foreword
-50-80 words. One thread, one hook. No "meanwhile" or "elsewhere". Drop-cap renders automatically.
+### The Letter (replaces the author-less Foreword, v8.35)
+The signed editor's letter that opens the issue. A **named Editor speaking in the first person** ("I") states **the week's thesis** and **connects the dots across domains** — what the week added up to, the threads that rhyme. ~120–200 words, signed "— The Editor". First-person Editor voice is explicitly allowed (the reader stays invisible — never "you"/"your son"/profile callbacks; see Gate 1A's split). It is the opening *movement*, not an essay: say the thesis, draw two or three threads together, hand off to the issue. Keep the `.foreword` markup and its automatic drop-cap; the navigator card reads "The Letter". No "meanwhile" / "elsewhere" filler.
 
 ### The Long Shelf — Worth Your Time
 6-8 recommended reads/listens/watches with linked titles, source, and one-sentence hook. Two-column grid. 2 of 8 items should be genuine wildcards outside the magazine's usual coverage areas. Each item's one-sentence hook should sell the content on its own merit — not explain why it was selected for this reader.

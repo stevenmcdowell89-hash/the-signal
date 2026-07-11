@@ -1,5 +1,37 @@
 # The Signal — Changelog
 
+8.35.0 — Voice & the person (weekly W-1, from `docs/signal-final-recommendations-2026-07.md`
+  § STREAM 1 Phase W-1). Puts a person in the personal magazine and kills the recurring
+  voice-tic at the source. No new gate or validator — this phase RETIRES checks (per the
+  §5 gate-ledger direction). All changes are spec + compliance-checklist + the weekly
+  foreword template; the three surviving script gates are untouched.
+
+  - **The Letter replaces the author-less Foreword** (`editorial-spec.md` § The Letter,
+    `spec/weekly.md`, `sections.md`, `assets/template-parts/05-foreword.html`). The weekly
+    opens on a signed editor's letter: a named **Editor** in the first person ("I") states
+    the week's thesis and connects the dots across domains (~120–200 words, "— The Editor").
+    Same `foreword` chapter_id and `.foreword` markup/drop-cap, renamed and re-voiced; the
+    navigator card reads "The Letter". Added `.foreword .letter-signoff` CSS (a `<div>`, so it
+    escapes the per-paragraph drop-cap). Specials keep their own Foreword — weekly-only change.
+  - **Gate 1A split** (`compliance-checklist.md` § 1A; Cardinal Rule in `editorial-spec.md`
+    + `spec/global.md`). 1A(i) keeps the *reader* invisible (no "you"/"your son"/profile
+    callbacks); 1A(ii) explicitly PERMITS the Editor's first-person voice. The rule is now
+    "no second-person reader address", never "no first person". No script enforces 1A (it is
+    a manual reading pass), so the split is spec-only.
+  - **Per-section aphorism/closer tic killed structurally** (§ Editorial Voice in both
+    `editorial-spec.md` and `spec/global.md`; component palette in `editorial-spec.md` +
+    `spec/weekly.md`). Sections need not "land on a line"; at most ONE genuine aphorism per
+    issue. The Angle box may never be reprinted as a pull-quote. No gate added — the tic is
+    removed by removing the requirement, per List 1 W3's "method dropped, goal kept".
+  - **Two checklist checks retired:** the per-section closer/aphorism expectation and the
+    **entry-pattern-rotation** rule. Entry patterns (`.entry-stat`/`.entry-quote`/`.entry-bullets`/
+    `.entry-question`/prose) are now a palette to reach for when the material fits, not a forced
+    rota. Removed the Gate 2 "Entry pattern rotation" checklist item and the mandate from
+    `editorial-spec.md` + `spec/weekly.md`.
+  - **"Daily carried the facts, here's the layer"** documented as the STANDARD opener for any
+    live-news section (§ Article Structure in `editorial-spec.md` + `spec/global.md`), with the
+    machinery kept invisible in prose (never narrate "the daily carried X" / "you already know").
+
 8.34.0 — Weekly refocus (a scope/spine change, not a feature). The daily brief now
   reliably owns week-in-the-loop catch-up, so the weekly is reframed to add the layer
   time gives — synthesis across the week, and roundups that combine items that arrived

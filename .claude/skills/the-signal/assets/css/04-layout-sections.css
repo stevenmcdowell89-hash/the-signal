@@ -5,6 +5,13 @@
   font-size: 64px; font-weight: 700; float: left;
   line-height: .78; margin: 8px 12px 0 0; color: var(--rose);
 }
+/* The Letter sign-off (v8.35). A <div>, not a <p>, so it escapes the
+   per-paragraph drop-cap above. Quiet editor byline under the letter. */
+.foreword .letter-signoff {
+  clear: both; margin-top: 18px; max-width: 680px;
+  font-family: "DM Sans", system-ui, sans-serif;
+  font-size: 15px; letter-spacing: .04em; color: var(--slate);
+}
 
 /* ═══════════ SECTION DIVIDERS ═══════════ */
 .divider { height: 8px; border: none; margin: 0; }

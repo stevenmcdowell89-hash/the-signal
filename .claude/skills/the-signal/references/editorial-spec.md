@@ -36,7 +36,7 @@ Sections are divided into **fixed** (appear every issue, except where noted) and
 
 ### Fixed vs Rotating
 
-**Fixed (every issue):** Cover, Navigator, Foreword, The Long Shelf, The World This Week, Pixel & Byte (gaming + LEGO), The Toolkit (tech & tools — *fixed slot but routinely yields*; see its brief), The Touchline, Screen & Sound (with Release Radar), The Session (omit if nothing found), On the Radar, Footer.
+**Fixed (every issue):** Cover, Navigator, **The Letter** (the signed editor's letter — replaces the author-less Foreword, v8.35), The Long Shelf, The World This Week, Pixel & Byte (gaming + LEGO), The Toolkit (tech & tools — *fixed slot but routinely yields*; see its brief), The Touchline, Screen & Sound (with Release Radar), The Session (omit if nothing found), On the Radar, Footer.
 
 > **Yield rather than fill (v8.34).** The Toolkit's "yield when the week is thin, don't pad it to appear" principle now applies to **every** fixed section: a fixed section whose week offers only catch-up — the recap the daily already delivered — **yields** that week rather than running a roundup to fill the slot. The mandatory element is the considered piece (§ Article Structure), not the section's mere presence.
 
@@ -51,6 +51,14 @@ See **Rotation Mechanics** below for scheduling rules.
 
 For individual section content rules, voice notes, and research guidance, see `references/sections.md`. Only read sections appearing in this issue.
 
+### The Letter — the opening movement (v8.35, replaces the author-less Foreword)
+
+The weekly opens on **The Letter**: a signed editor's letter in place of the old author-less Foreword. A **named Editor speaking in the first person** ("I") sets out **the week's thesis** — what the week added up to — and **connects the dots across domains** (the world story that rhymes with a gaming shift, the training idea that lands the same week as a football result). It is the one place the magazine has a visible human behind it; the branded feel is kept, not softened.
+
+- **Length:** ~120–200 words. It is an *opening movement*, not a full essay — say the thesis, draw two or three threads together, and hand off to the issue.
+- **Voice:** first-person **Editor** voice is explicitly permitted here (see § Key Rules → The Cardinal Rule and Gate 1A: the Editor is visible; the *reader* stays invisible). Sign it off "— The Editor". Never address or describe the reader ("you", "your son", "as a Juventus fan") — that is still a Gate 1A leak.
+- **Markup:** keep the existing `.foreword` block and its drop-cap (the CSS and the navigator anchor are unchanged); The Letter is the same slot, renamed and re-voiced. The navigator card reads "The Letter".
+- One genuine aphorism is allowed across the whole issue (see § Editorial Voice); if you spend it, spend it here or in the Long Read — not as a per-section habit.
 
 ## Anchor-Piece Rotation (deprecated v8.15)
 
@@ -117,9 +125,15 @@ The Catch-Up is **optional (v8.34)**: when it runs, it is the handful of lines t
 
 When a section runs a Companion, the Lead and Companion MUST be on different `topic_family` values (closed enumeration in `references/chapter-plan-schema.md`; the planner-side validator enforces it whenever a companion is present). Per-section companion rules (non-football for Touchline, different-franchise for Screen & Sound, the encouraged training-cluster "deep note" for Session) live in § Section Rules.
 
+### Standard section opener — "the daily carried the facts, here's the layer" (v8.35)
+
+For **any section touching live news** (World, Touchline, Pixel & Byte, Toolkit, Screen & Sound and the like), the standard opening move is to **add the layer, not re-report the facts**: open on the synthesis, the arc tied together, or the named layer across piecemeal items — the thing the day-by-day daily brief couldn't give. This is the *default* section opener, not an occasional flourish.
+
+**The machinery stays invisible.** Never narrate the move in prose — no "the daily carried X", no "you already know the result", no "as the brief noted", no telling the reader he is "already informed". The reader must feel the added layer, never the editorial reasoning that produced it. (This is the Cardinal-Rule note from factor 2 above, promoted to a standing opener rule.)
+
 ### Sections exempted from the Lead + Catch-Up shape
 
-- **Cover, Navigator, Foreword, Footer, Colophon** — chrome / framing, single-piece by design.
+- **Cover, Navigator, The Letter, Footer, Colophon** — chrome / framing, single-piece by design. (The Letter is the opening movement; see § The Letter above.)
 - **The Long Shelf** — already structurally varied (6–8 items with 2 wildcards). Keep its existing shape.
 - **On the Radar** — compact date-grid format. Keep its existing shape (but see § On the Radar update below for the "why it matters" half-line addition).
 
@@ -279,8 +293,8 @@ Use 10-14 different types per standard issue. No two consecutive sections should
 
 | Component | Class(es) | When to use |
 |---|---|---|
-| The Angle box | `.angle` | Significant stories only — geopolitics, major tech shifts |
-| Pull quote | `.pull-quote` (+`.centered`, +`.wide`) | 3-4 per issue to break prose. Rotate variants. |
+| The Angle box | `.angle` | Significant stories only — geopolitics, major tech shifts. **Never reprint the Angle box's text as a pull-quote (v8.35)** — the box already carries the line; echoing it as a `.pull-quote` is the banned voice-tic. |
+| Pull quote | `.pull-quote` (+`.centered`, +`.wide`) | 3-4 per issue to break prose. Must be a real quote or a genuinely resonant line from the prose — **never the Angle box reprinted verbatim (v8.35)**, and not a manufactured aphorism (see § Editorial Voice: one genuine aphorism per issue). |
 | Stats row | `.stat-bar` > `.stat` > `.stat-num.count-up` | Key numbers for a story |
 | Did You Know | `.dyk` | 3-5 scattered, section-aware colours |
 | Sidebar | `.sidebar` | Curated lists: "Family Picks", context boxes |
@@ -328,11 +342,11 @@ Use 10-14 different types per standard issue. No two consecutive sections should
 | Marginalia | `.marginalia` > `.quote`/`.attrib`/`.datum`/`ul` | Floated sidebar card with italic quote, datum blocks, list. Auto-inherits section accent; auto-inverts to paper-on-dark on dark sections. (Enhancement 22E) |
 | Ember period | `.mast-period` / `.brand-period` | Ember-coloured period on "The Signal." wordmark in masthead and cover. (Enhancement 22G) |
 
-**Entry pattern rotation rule:** no two adjacent articles should open the same way. Rotate between `.entry-stat`, `.entry-quote`, `.entry-bullets`, `.entry-question`, and plain prose openings. This applies across articles within a section and across section leads.
+**Entry patterns are a palette, not a rota (v8.35 — rotation enforcement retired).** The `.entry-stat`, `.entry-quote`, `.entry-bullets`, `.entry-question` and plain-prose openings are available whenever one genuinely fits the material — reach for the one the piece earns, never to satisfy a rotation. The old "no two adjacent articles may open the same way" mandate is **retired**: forcing a different opener each time was a source of the mechanical voice-tic W-1 kills at the source. Plain prose is a first-class opening; use a stat/quote/bullet/question opener only when the content actually leads with a number, a real quote, three facts, or a live question.
 
 **Breather band usage:** place 1-2 breather bands per issue between particularly dense sections. Use light variant between light/warm backgrounds, dark variant between dark backgrounds (Touchline, Screen & Sound, Shelf). Don't overuse — they're breathing room, not filler.
 
-**Rotation rule:** no 3+ screen-heights of unbroken prose anywhere. Vary which sections use split layouts, where pull quotes appear, whether history uses timeline or bullets, which also-lists use card variant. Use entry patterns to vary article openings. Use sidebar-float as an alternative to split layouts. Use compare panels where a natural comparison exists.
+**Rotation rule:** no 3+ screen-heights of unbroken prose anywhere. Vary which sections use split layouts, where pull quotes appear, whether history uses timeline or bullets, which also-lists use card variant. Use sidebar-float as an alternative to split layouts. Use compare panels where a natural comparison exists. (Visual variety across the issue is still the goal; article *openings* are no longer on a forced rota — see the entry-pattern note above.)
 
 ---
 
@@ -880,6 +894,8 @@ These are editorial principles. The compliance checklist (Gate 1 + Gate 2) handl
 ### The Cardinal Rule
 **The reader profile drives selection, not prose.** The profile tells you what to research, what to cover, and what to prioritise. It must be completely invisible in the writing. Write every section as if the magazine has 100,000 readers. See Gate 1A in the compliance checklist for specific banned patterns — this is the most common failure.
 
+**The Editor is visible; the reader is invisible (v8.35 — Gate 1A split).** "Invisible profile" means the *reader* is never on the page — no "you", no "your son", no "as a Juventus fan", no selection justifications. It does **not** ban the magazine's own first-person voice. A named **Editor** may speak in the first person ("I"), most of all in **The Letter**, and lightly as an editorial signature elsewhere — that is a magazine with a person behind it, which reads fine to 100,000 readers. The test still holds: *first-person Editor* ("I keep coming back to…") is allowed; *second-person reader address* ("you'll have noticed…", "your trip") is a leak. Gate 1A now enforces exactly that split.
+
 ### The Lens, Not the Filter (v8.19 — sits alongside the Cardinal Rule)
 
 **The reader profile is a lens, not a filter.** It shapes *how* a topic gets framed; it never decides *whether* a topic gets covered. Two failure modes the lens-not-filter principle exists to prevent:
@@ -913,6 +929,8 @@ Reinforcement still dominates the magazine because that's what makes it feel cur
 
 ### Editorial Voice
 - **Confident and opinionated, but the opinion is borrowed, not invented** (see "Borrowed angles, our voice" above) — voice real takes as our own; never neutral, never a take you made up.
+- **The Editor may speak in the first person (v8.35).** A named Editor voice ("I") is welcome — it's what makes this a personal magazine with someone behind it. It lives mainly in **The Letter**; used sparingly, a first-person editorial aside is fine elsewhere. The only hard line is the reader: never *you*/*your* (Gate 1A). Confident first-person ≠ reader address.
+- **One genuine aphorism per issue — no per-section closers (v8.35).** The magazine used to end every section on a manufactured epigram; that tic is retired **structurally**, not gated. A section does **not** have to "land on a line" — most should simply end when the substance ends. At most **one** genuine, earned aphorism is allowed across the *entire* issue (spend it in The Letter or the strongest piece, or not at all). A pull-quote must be a real quote or a truly resonant line — **never the Angle box reprinted as a pull-quote**, and never an aphorism minted to fill the slot.
 - **No bubble.** A critical claim ("the show declined") rests on what external coverage says, not the reader's view — the reader's preferences are context, not conclusions.
 - **No spoilers.** Never, ever, for any book or show. Absolute but invisible — never announce compliance.
 - **No defensive crutches.** No "it's not X, it's Y"; no justifying why content was selected. Present it well and let it stand.

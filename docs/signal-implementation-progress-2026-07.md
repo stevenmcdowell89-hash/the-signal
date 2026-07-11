@@ -34,11 +34,29 @@ reading `top20` and ignoring the retired field).
 
 ---
 
-## Batch 2 — Weekly W-1 (voice & the person) ⬜
-The Letter (named Editor, first-person); split Gate 1A (reader invisible, Editor
-visible); kill the mandatory per-section aphorism + forbid Angle-as-pull-quote;
-"daily carried the facts, here's the layer" as a standard section opener. Retire
-the per-section closer/aphorism check + entry-pattern-rotation enforcement.
+## Batch 2 — Weekly W-1 (voice & the person) ✅
+
+Commit: _Weekly W-1: The Letter, Gate 1A split, kill the aphorism tic, retire entry-pattern rotation_
+
+Spec-only phase (no code pipeline change) — all edits land in the `the-signal`
+skill's editorial spec, its sliced views, the compliance checklist, and the weekly
+foreword template. **No script gate added or removed** — this phase RETIRES checks,
+per §5 of the recommendations. Bumped skill to **v8.35.0**.
+
+| Item | What changed | Decision |
+|---|---|---|
+| The Letter replaces the Foreword | Weekly opening movement is now **The Letter** — a named Editor in first-person ("I") stating the week's thesis and connecting dots across domains (~120–200 words, "— The Editor"). Updated `editorial-spec.md` (new § The Letter + Fixed list + exempted-sections list), `spec/weekly.md`, `spec/global.md`, `sections.md`, `compliance-checklist.md`, and rewrote `assets/template-parts/05-foreword.html`. | Kept the **same `foreword` chapter_id + `.foreword` markup/drop-cap** (renamed + re-voiced, not re-plumbed) so the navigator anchor, stitcher, and `validate-issue.py` are unaffected. Added a small `.foreword .letter-signoff` CSS rule (a `<div>`, not a `<p>`, to escape the per-paragraph drop-cap). **Specials keep their own Foreword** — W-1 is weekly-only. |
+| Split Gate 1A | 1A now has two halves: **1A(i)** reader stays invisible (no "you"/"your son"/profile callbacks); **1A(ii)** the Editor's first-person voice is explicitly PERMITTED. Updated `compliance-checklist.md` § 1A + the Cardinal Rule in `editorial-spec.md` and `spec/global.md`. | **No script enforces 1A** (it's a manual reading pass — confirmed by grep of `scripts/`), so the split is spec/checklist-only. Reframed the rule as "no *second-person* reader address", not "no first person". |
+| Kill the per-section aphorism structurally | § Editorial Voice (both `editorial-spec.md` + `spec/global.md`) now caps genuine aphorisms at **one per issue**, drops any "every section ends on a line" expectation, and forbids reprinting the **Angle box as a pull-quote** (noted on the Angle/Pull-quote rows of the component palette in both files). | Method = remove the requirement, not add a gate (List 1 W3 "method dropped, goal kept"). |
+| Retire entry-pattern-rotation enforcement | Removed the "no two adjacent articles open the same way" mandate from `editorial-spec.md` + `spec/weekly.md` and the Gate 2 "Entry pattern rotation" checklist item. Entry patterns are now a **palette**, not a rota; plain prose is a first-class opener. | The rotation rule was a source of the mechanical tic; no script enforced it, so retirement is spec + checklist only. |
+| "Daily carried the facts, here's the layer" opener | Documented as the **standard opener** for any live-news section (§ Article Structure in `editorial-spec.md` + `spec/global.md`), with an explicit rule that the machinery stays invisible in prose (never narrate "the daily carried X" / "you already know"). | Promoted factor-2's existing Cardinal-Rule note into a standing, named opener rule. |
+
+**Validation:** all 9 skill Python scripts `ast.parse` clean; `validate-issue.py
+--format weekly --skip-image-urls` on `issues/signal_weekly_2026-07-05.html` →
+PASS (exit 0), confirming the template/CSS rename didn't break structural/anchor
+checks. Grep-swept the spec + checklist: no dangling "Entry pattern rotation"
+mandate or weekly "Foreword" reference remains (remaining `Foreword` hits are all
+special-edition formats, which are out of scope for W-1).
 
 ## Batch 3 — Daily D-2 (daily-ness structural moves) ⬜
 Per-item read state; "what changed since yesterday" developing-delta (extend

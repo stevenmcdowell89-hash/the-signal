@@ -28,9 +28,13 @@ Gate 1 has six sections: 1A reader-profile leaks, 1B fabrication, 1C staleness, 
 
 These are the most common and most damaging errors. Each one requires a literal scan of the generated HTML text. Do not skip this gate. Do not skim it. Run each check deliberately.
 
-### 1A. Reader-Profile Leaks
+### 1A. Reader-Profile Leaks — reader invisible, Editor visible (v8.35 split)
 
-Search the full text for ANY phrase that reveals the magazine knows who the reader is. The reader profile exists to guide research and selection — it must be invisible in the prose.
+Gate 1A splits into two halves. **1A(i)** keeps the *reader* invisible. **1A(ii)** explicitly *permits* the Editor's first-person voice — so the split is not "no first person", it is "no **second**-person reader address".
+
+**1A(ii) — the Editor's first-person voice is ALLOWED (v8.35).** A named **Editor** may speak in the first person — "I", "I keep coming back to…", "what struck me this week" — most of all in **The Letter** (the opening movement), and lightly as an editorial signature elsewhere. This is a magazine with a person behind it; it reads fine to 100,000 readers and is NOT a leak. Do **not** flag first-person Editor voice. The line is the *reader*, never the *writer*: `I`/`we`/`the Editor` = fine; `you`/`your` aimed at the reader = leak (1A(i)).
+
+**1A(i) — the reader stays invisible.** Search the full text for ANY phrase that reveals the magazine knows who the *reader* is (second-person address, profile callbacks, selection justifications). The reader profile guides research and selection — it must be invisible in the prose.
 
 **Search for these patterns and remove/rewrite every match:**
 - The reader's specific devices by name: "Xiaomi", "Garmin", "Todoist" (unless in a general product review context where any magazine would name them)
@@ -41,7 +45,7 @@ Search the full text for ANY phrase that reveals the magazine knows who the read
 - Invisible-rule announcements: "no spoilers in sight", "spoiler-free" (the no-spoilers rule is absolute but never mentioned)
 - "It's not X, it's Y" defensive pattern: "It's not bland meal prep food", "This isn't just another listicle"
 
-**The test:** would this sentence make sense in a magazine with 100,000 readers? If it would only make sense written for one person, rewrite it.
+**The test:** would this sentence make sense in a magazine with 100,000 readers? If it would only make sense written for one person, rewrite it. (First-person *Editor* voice — "I", "we" — passes this test: an editor's letter reads fine to 100,000 readers. Only *second-person reader address* fails it.)
 
 **Good examples to aim for:** "If you find high fantasy world-building exhausting and want something with tighter scope" / "For anyone watching the Serie A title race" / "If you're gaming via cloud streaming on a tablet"
 
@@ -307,7 +311,7 @@ Only proceed here after Gate 1 passes clean.
 
 ### Structure
 - [ ] Touchline leads with data (tables, scores) before narrative
-- [ ] Foreword: 50-80 words, one thread
+- [ ] **The Letter (opening movement, replaces the Foreword):** a signed, first-person **Editor** letter (~120–200 words) that states the week's thesis and connects threads across domains. First-person Editor voice is correct here; no second-person reader address (Gate 1A). Signed "— The Editor". Keeps `.foreword` markup + drop-cap.
 - [ ] LEGO in Pixel & Byte, not Screen & Sound
 - [ ] History prefers pre-WW2; images match the historical event (no reusing images from other sections)
 - [ ] Music lives in Listening when it runs; light-touch in The Shelf otherwise; music releases still in Release Radar when neither present
@@ -319,6 +323,9 @@ Only proceed here after Gate 1 passes clean.
 - [ ] **Borrowed angles, our voice — no invented opinion (v8.28).** Every angle / opinion / conclusion / counterargument traces to a real commentator's view found in research, voiced confidently as ours (no quoting/attribution duty). A take the writer made up is a fail — the Star Wars "nothing" essay is the anchor. **Not every piece needs an angle:** facts-only is fine and often better (gaming releases, results roundups, the cut-piece "state the studies" form). A posed question is answered from the sources, never left hanging.
 - [ ] **No invented analysis beyond the sources; no stated result that hasn't happened** (the Monaco "Norris on pole" failure). Facts trace to the research bundle (RT-22).
 - [ ] **Length follows the material — no padding (v8.28).** A 30-second idea is not 600 words. This subsumes the old filler-phrase lists — they were all symptoms of frame-over-fact. Scan for and cut: "if you've been on the fence…" / "now's the time to…" openers; "it's worth noting / what's striking is" throat-clearing; "is suddenly very real / has arrived" closers; rule-of-three padding where the middle item just rephrases the first. **The general rule: a paragraph that's a fact wrapped in frame gets cut to the fact.**
+- [ ] **First-person Editor voice is welcome; second-person reader address is not (v8.35).** "I"/"we"/the Editor speaking = fine (and expected in The Letter). "you"/"your"/profile callbacks = Gate 1A leak. Don't flag the former; do fix the latter.
+- [ ] **One genuine aphorism per issue — no per-section closers (v8.35, structural retirement).** Sections do NOT have to "land on a line"; most should end when the substance ends. At most ONE earned aphorism across the whole issue. Scan for manufactured epigram-closers ending section after section — that recurring tic is a fail. **The Angle box must never be reprinted as a pull-quote**, and no pull-quote may be an aphorism minted to fill the slot.
+- [ ] **The "add the layer" move stays invisible (v8.35).** Live-news sections open on the synthesis/named layer, but the prose never narrates the machinery — no "the daily carried X", "you already know", "as the brief noted", or telling the reader he's "already informed".
 - [ ] No spoilers — ever
 - [ ] Football reads as editorial, not match reports; writes like a magazine journalist, not a personal assistant
 
@@ -327,7 +334,6 @@ Only proceed here after Gate 1 passes clean.
 - [ ] No two consecutive sections use the same layout pattern
 - [ ] No 3+ screen-heights of unbroken prose
 - [ ] At least 3 pull quotes, 2 big-number callouts, 3-5 DYK boxes
-- [ ] Entry pattern rotation (`.entry-stat`, `.entry-quote`, `.entry-bullets`, `.entry-question`, prose)
 - [ ] 1-2 breather bands between dense sections
 - [ ] At least 1 compare panel or sidebar-float
 - [ ] Read-next connectors between at least 3 major sections

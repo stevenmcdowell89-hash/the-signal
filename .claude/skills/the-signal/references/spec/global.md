@@ -42,6 +42,8 @@ These are editorial principles. The compliance checklist (Gate 1 + Gate 2) handl
 ### The Cardinal Rule
 **The reader profile drives selection, not prose.** The profile tells you what to research, what to cover, and what to prioritise. It must be completely invisible in the writing. Write every section as if the magazine has 100,000 readers. See Gate 1A in the compliance checklist for specific banned patterns — this is the most common failure.
 
+**The Editor is visible; the reader is invisible (v8.35 — Gate 1A split).** "Invisible profile" means the *reader* is never on the page — no "you", no "your son", no "as a Juventus fan", no selection justifications. It does **not** ban the magazine's own first-person voice. A named **Editor** may speak in the first person ("I"), most of all in **The Letter** (the opening movement, § weekly), and lightly as an editorial signature elsewhere. The test: *first-person Editor* ("I keep coming back to…") is allowed; *second-person reader address* ("you'll have noticed…", "your trip") is a leak. Gate 1A now enforces exactly that split.
+
 ### The Lens, Not the Filter (v8.19 — sits alongside the Cardinal Rule)
 
 **The reader profile is a lens, not a filter.** It shapes *how* a topic gets framed; it never decides *whether* a topic gets covered. Two failure modes the lens-not-filter principle exists to prevent:
@@ -75,6 +77,8 @@ Reinforcement still dominates the magazine because that's what makes it feel cur
 
 ### Editorial Voice
 - **Confident and opinionated, but the opinion is borrowed, not invented** (see "Borrowed angles, our voice" above) — voice real takes as our own; never neutral, never a take you made up.
+- **The Editor may speak in the first person (v8.35).** A named Editor voice ("I") is welcome — it's what makes this a personal magazine with someone behind it. It lives mainly in **The Letter**; used sparingly, a first-person editorial aside is fine elsewhere. The only hard line is the reader: never *you*/*your* (Gate 1A). Confident first-person ≠ reader address.
+- **One genuine aphorism per issue — no per-section closers (v8.35).** The magazine used to end every section on a manufactured epigram; that tic is retired **structurally**, not gated. A section does **not** have to "land on a line" — most should simply end when the substance ends. At most **one** genuine, earned aphorism is allowed across the *entire* issue (spend it in The Letter or the strongest piece, or not at all). A pull-quote must be a real quote or a truly resonant line — **never the Angle box reprinted as a pull-quote**, and never an aphorism minted to fill the slot.
 - **No bubble.** A critical claim ("the show declined") rests on what external coverage says, not the reader's view — the reader's preferences are context, not conclusions.
 - **No spoilers.** Never, ever, for any book or show. Absolute but invisible — never announce compliance.
 - **No defensive crutches.** No "it's not X, it's Y"; no justifying why content was selected. Present it well and let it stand.
@@ -168,9 +172,15 @@ The Catch-Up is **optional (v8.34)**: when it runs, it is the handful of lines t
 
 When a section runs a Companion, the Lead and Companion MUST be on different `topic_family` values (closed enumeration in `references/chapter-plan-schema.md`; the planner-side validator enforces it whenever a companion is present). Per-section companion rules (non-football for Touchline, different-franchise for Screen & Sound, the encouraged training-cluster "deep note" for Session) live in § Section Rules.
 
+### Standard section opener — "the daily carried the facts, here's the layer" (v8.35)
+
+For **any section touching live news** (World, Touchline, Pixel & Byte, Toolkit, Screen & Sound and the like), the standard opening move is to **add the layer, not re-report the facts**: open on the synthesis, the arc tied together, or the named layer across piecemeal items — the thing the day-by-day daily brief couldn't give. This is the *default* section opener, not an occasional flourish.
+
+**The machinery stays invisible.** Never narrate the move in prose — no "the daily carried X", no "you already know the result", no "as the brief noted", no telling the reader he is "already informed". The reader feels the added layer, never the reasoning that produced it. (This promotes factor 2's Cardinal-Rule note to a standing opener rule.)
+
 ### Sections exempted from the Lead + Catch-Up shape
 
-- **Cover, Navigator, Foreword, Footer, Colophon** — chrome / framing, single-piece by design.
+- **Cover, Navigator, The Letter, Footer, Colophon** — chrome / framing, single-piece by design. (The Letter is the opening movement; see `references/spec/weekly.md`.)
 - **The Long Shelf** — already structurally varied (6–8 items with 2 wildcards). Keep its existing shape.
 - **On the Radar** — compact date-grid format. Keep its existing shape (but see § On the Radar update below for the "why it matters" half-line addition).
 

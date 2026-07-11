@@ -24,7 +24,9 @@ Sections are divided into **fixed** (appear every issue, except where noted) and
 
 ### Fixed vs Rotating
 
-**Fixed (every issue):** Cover, Navigator, Foreword, The Long Shelf, The World This Week, Pixel & Byte (gaming + LEGO), The Toolkit (tech & tools — *fixed slot but routinely yields*; see its brief), The Touchline, Screen & Sound (with Release Radar), The Session (omit if nothing found), On the Radar, Footer.
+**Fixed (every issue):** Cover, Navigator, **The Letter** (the signed editor's letter — replaces the author-less Foreword, v8.35; see § The Letter below), The Long Shelf, The World This Week, Pixel & Byte (gaming + LEGO), The Toolkit (tech & tools — *fixed slot but routinely yields*; see its brief), The Touchline, Screen & Sound (with Release Radar), The Session (omit if nothing found), On the Radar, Footer.
+
+> **The Letter — the opening movement (v8.35).** The weekly opens on **The Letter**, replacing the author-less Foreword: a **named Editor speaking in the first person** ("I") who states **the week's thesis** and **connects the dots across domains** (what the week added up to). ~120–200 words, signed "— The Editor"; it is an opening movement, not an essay. First-person Editor voice is explicitly permitted here (Gate 1A split: the Editor is visible, the *reader* stays invisible — never "you"/"your son"/profile callbacks). Keep the existing `.foreword` markup + drop-cap and the navigator anchor; only the label ("The Letter"), the voice (first-person Editor) and the length change. If the issue spends its one allowed aphorism (§ Component Quick Reference / Editorial Voice), The Letter is a good place for it.
 
 > **Yield rather than fill (v8.34).** The Toolkit's "yield when the week is thin, don't pad it to appear" principle now applies to **every** fixed section: a fixed section whose week offers only catch-up — the recap the daily already delivered — **yields** that week rather than running a roundup to fill the slot. The mandatory element is the considered piece (§ Article Structure), not the section's mere presence.
 
@@ -169,8 +171,8 @@ Use 10-14 different types per standard issue. No two consecutive sections should
 
 | Component | Class(es) | When to use |
 |---|---|---|
-| The Angle box | `.angle` | Significant stories only — geopolitics, major tech shifts |
-| Pull quote | `.pull-quote` (+`.centered`, +`.wide`) | 3-4 per issue to break prose. Rotate variants. |
+| The Angle box | `.angle` | Significant stories only — geopolitics, major tech shifts. **Never reprint the Angle box's text as a pull-quote (v8.35)** — echoing the box as a `.pull-quote` is the banned voice-tic. |
+| Pull quote | `.pull-quote` (+`.centered`, +`.wide`) | 3-4 per issue to break prose. A real quote or a genuinely resonant line — **never the Angle box reprinted verbatim (v8.35)**, never a manufactured aphorism (§ Editorial Voice: one genuine aphorism per issue). |
 | Stats row | `.stat-bar` > `.stat` > `.stat-num.count-up` | Key numbers for a story |
 | Did You Know | `.dyk` | 3-5 scattered, section-aware colours |
 | Sidebar | `.sidebar` | Curated lists: "Family Picks", context boxes |
@@ -218,11 +220,11 @@ Use 10-14 different types per standard issue. No two consecutive sections should
 | Marginalia | `.marginalia` > `.quote`/`.attrib`/`.datum`/`ul` | Floated sidebar card with italic quote, datum blocks, list. Auto-inherits section accent; auto-inverts to paper-on-dark on dark sections. (Enhancement 22E) |
 | Ember period | `.mast-period` / `.brand-period` | Ember-coloured period on "The Signal." wordmark in masthead and cover. (Enhancement 22G) |
 
-**Entry pattern rotation rule:** no two adjacent articles should open the same way. Rotate between `.entry-stat`, `.entry-quote`, `.entry-bullets`, `.entry-question`, and plain prose openings. This applies across articles within a section and across section leads.
+**Entry patterns are a palette, not a rota (v8.35 — rotation enforcement retired).** The `.entry-stat`, `.entry-quote`, `.entry-bullets`, `.entry-question` and plain-prose openings are available whenever one genuinely fits the material — reach for the one the piece earns, never to satisfy a rotation. The old "no two adjacent articles may open the same way" mandate is **retired**: forcing a different opener each time was a source of the mechanical voice-tic W-1 kills at the source. Plain prose is a first-class opening; use a stat/quote/bullet/question opener only when the content actually leads with a number, a real quote, three facts, or a live question.
 
 **Breather band usage:** place 1-2 breather bands per issue between particularly dense sections. Use light variant between light/warm backgrounds, dark variant between dark backgrounds (Touchline, Screen & Sound, Shelf). Don't overuse — they're breathing room, not filler.
 
-**Rotation rule:** no 3+ screen-heights of unbroken prose anywhere. Vary which sections use split layouts, where pull quotes appear, whether history uses timeline or bullets, which also-lists use card variant. Use entry patterns to vary article openings. Use sidebar-float as an alternative to split layouts. Use compare panels where a natural comparison exists.
+**Rotation rule:** no 3+ screen-heights of unbroken prose anywhere. Vary which sections use split layouts, where pull quotes appear, whether history uses timeline or bullets, which also-lists use card variant. Use sidebar-float as an alternative to split layouts. Use compare panels where a natural comparison exists. (Visual variety across the issue is still the goal; article *openings* are no longer on a forced rota — see the entry-pattern note above.)
 
 ---
 
