@@ -376,23 +376,32 @@ export function buildState(items, meta, now, config) {
     .map(publicItem);
 
   // Headlines: the genuinely BIG stories — ranked by BIGNESS (breadth × confidence),
-  // not raw interest score. A story carried by ≥2 of the reader's feeds, OR a strong
-  // News/Sport item, qualifies; a single-source niche-interest item does NOT (it
-  // lives in its own tab). Cross-domain, capped ≤2/domain, deduped. This is what
-  // makes "Headlines" actual headlines instead of "top scores across everything".
+  // not raw interest score. Cross-domain, capped ≤2/domain, deduped. Eligibility is
+  // broadened beyond News/Sport (which, on a football/gaming-heavy day, collapsed
+  // Headlines to ~2): a story qualifies if it's corroborated (≥2 feeds), a News/Sport
+  // item, a core-entity catch, a confirmed/official item, OR genuinely strong in ANY
+  // domain (confidence ≥ headline_strong_conf). The ≤2/domain cap + dedup keep it a
+  // real headline set — a spread of the day's biggest things — not "top scores
+  // across everything", while still letting a strong Gaming/Books/Tech story lead.
   const NEWS_SPORT = new Set(["world", "local", "finance", "football", "golf"]);
   // Importance = breadth-lifted confidence + a bonus for a high-signal (confirmed/
   // official) story, so a genuinely consequential item leads — not whatever the
   // firehose pushed up. confidence already folds in the content-led signal tiers.
   const sc = (config && config.scoring) || {};
   const signalBonus = sc.headline_signal_bonus ?? 0.15;
+  const strongConf = sc.headline_strong_conf ?? 0.75; // bar for a non-News/Sport story to lead
   const importance = (i) =>
     (i.confidence || 0) * (1 + 0.25 * Math.min(3, (i.source_count || 1) - 1)) +
     (i.signal_high ? signalBonus : 0);
   const headlineMax = (config && config.headline_max) || 8;
+  const headlineEligible = (i) =>
+    (i.source_count || 1) >= 2 ||        // corroborated across ≥2 of the reader's feeds
+    NEWS_SPORT.has(i.domain) ||          // a genuinely big News/Sport story
+    i.entity_floor ||                    // a core must-not-miss entity
+    i.signal_high ||                     // confirmed/official/announced
+    (i.confidence || 0) >= strongConf;   // genuinely strong in any domain (gaming, books, tech…)
   const hRanked = aboveFold
-    .filter((i) => (i.age_hours == null || i.age_hours <= maxCatchHours) &&
-                   ((i.source_count || 1) >= 2 || NEWS_SPORT.has(i.domain)))
+    .filter((i) => (i.age_hours == null || i.age_hours <= maxCatchHours) && headlineEligible(i))
     .sort((a, b) => importance(b) - importance(a));
   const headlines = [];
   const hToks = [];

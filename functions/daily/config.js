@@ -97,7 +97,11 @@ export function defaultConfig() {
       // Community digest (D-3) — one cached pass over the Reddit/HN/Bluesky feed:
       // "what the communities are arguing about today". Own toggle, shared cap.
       community: {
-        enabled: true,
+        // Off by default: it's an extra AI pass drawing on the SHARED cap, and with
+        // the tight $5 enrichment sub-cap it can starve the per-card hook lines
+        // (enrichment turns off once TOTAL shared spend passes $5). Opt in from
+        // Settings → Engine if you want it and accept the extra monthly spend.
+        enabled: false,
         model: "claude-haiku-4-5",
         max_items: 30,
         min_interval_min: 45,
@@ -133,9 +137,12 @@ export function defaultConfig() {
       // members' source_count + links into the survivor (so the story isn't lost,
       // just de-duplicated). D-3 decision: enable by default for stronger default
       // cross-source dedup — the guards above make it safe, and it degrades to a
-      // no-op when the model is off / capped / unsure.
+      // no-op when the model is off / capped / unsure. Off by default again: it's
+      // the only content-removing pass AND another draw on the shared cap; the
+      // mechanical dedup (dedup.js) already collapses most same-story dupes. Opt in
+      // from Settings → Engine if you want the extra AI merge and accept the spend.
       merge: {
-        enabled: true,
+        enabled: false,
         model: "claude-haiku-4-5",
         max_candidates: 40,
         min_interval_min: 60,
@@ -236,6 +243,18 @@ export async function loadConfig(env) {
   if (!merged.migrations.drop_selfhosting_v1) {
     merged.sources = (merged.sources || []).filter((s) => s.domain !== "home_selfhosting");
     merged.migrations.drop_selfhosting_v1 = true;
+    dirty = true;
+  }
+  // One-time: the community-digest + smart-merge AI passes were seeded ON, which
+  // (on top of picks/top20/briefs) pushed total shared spend past the $5 enrichment
+  // sub-cap and switched the per-card hook lines off mid-month. Turn both back off
+  // once so the hooks survive within the existing caps. A marker stops it
+  // re-running, so a later manual re-enable in Settings → Engine sticks.
+  if (!merged.migrations.ai_spend_trim_v1) {
+    merged.ai = merged.ai || {};
+    if (merged.ai.community) merged.ai.community.enabled = false;
+    if (merged.ai.merge) merged.ai.merge.enabled = false;
+    merged.migrations.ai_spend_trim_v1 = true;
     dirty = true;
   }
   if (dirty) {
