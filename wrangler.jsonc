@@ -53,7 +53,8 @@
   // current Reddit batch's still-failing subs (≤6); a batch gets ~3 attempts over
   // ~30 min, then the cursor advances to the next ~6 — so a throttled sub gets a few
   // fresh shots at Reddit's shared-IP limit before we move on, and a full rotation is
-  // still ~3h. See pipeline.js (redditBatch). The in-app cadence_hours is advisory.
+  // still ~3h. See pipeline.js (redditBatch). This 10-min tick is the ONLY cadence
+  // control — there is no in-app cadence knob (the Reddit rotation depends on it).
   "triggers": {
     "crons": ["*/10 * * * *"]
   },

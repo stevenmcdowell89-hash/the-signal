@@ -432,7 +432,12 @@
       font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.16em;
       font-weight: 800; color: var(--orange); flex: 0 0 auto;
     }
-    .start-here .sh-item { font-size: 0.84rem; color: var(--ink-2); line-height: 1.35; }
+    .start-here .sh-item { font-size: 0.84rem; color: var(--ink-2); line-height: 1.35; text-decoration: none; }
+    a.start-here .sh-item, .start-here a.sh-item { display: inline; }
+    .start-here a.sh-item:hover .sh-t { color: var(--coral); }
+    .start-here .sh-t { color: var(--ink); font-weight: 600; transition: color 0.15s; }
+    .start-here .sh-why { color: var(--ink-dim); }
+    .start-here .sh-why::before { content: ' — '; color: var(--ink-dim); }
     .start-here .sh-item:not(:last-child)::after { content: '·'; color: var(--ink-dim); margin-left: 0.5rem; }
 
     /* domain sub-tabs (filter chips) */
@@ -503,6 +508,7 @@
       font-size: 0.56rem; font-weight: 800; letter-spacing: 0.1em; color: var(--gold);
       border: 1px solid rgba(201,166,107,0.4); border-radius: 4px; padding: 0.05rem 0.38rem;
     }
+    .catch-src { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.06em; color: var(--ink-dim); white-space: nowrap; }
     .catch-time { margin-left: auto; font-size: 0.66rem; color: var(--ink-dim); font-weight: 600; flex: 0 0 auto; }
     .catch-title { font-weight: 600; line-height: 1.32; font-size: 1rem; transition: color 0.15s; }
     .catch:hover .catch-title { color: var(--coral); }
@@ -1215,6 +1221,8 @@
         if (opts.showDomain) left += '<span class="catch-dom">' + esc(it.domain_label || DOMAIN_LABELS[it.domain] || it.domain) + '</span>';
         if (it.entity_floor) left += '<span class="catch-core">CORE</span>';
         if (it.status === 'developing') left += '<span class="catch-dev">DEVELOPING' + (it.days_active ? ' · ' + it.days_active + 'd' : '') + '</span>';
+        // Trust + importance cue: N feeds carried this story (only worth showing at ≥2).
+        if ((it.source_count||1) >= 2) left += '<span class="catch-src" title="Carried by '+it.source_count+' of your sources">◆ ' + it.source_count + ' sources</span>';
         var t = reltime(it);
         var headHtml = '<div class="catch-head">' + left + (t ? '<span class="catch-time">' + esc(t) + '</span>' : '') + '</div>';
 
@@ -1405,7 +1413,15 @@
         if ((state.start_here||[]).length){
           var sh = document.createElement('div'); sh.className='start-here';
           sh.innerHTML = '<span class="sh-label">Start here</span>' +
-            state.start_here.map(function(t){ return '<span class="sh-item">'+esc(t)+'</span>'; }).join('');
+            state.start_here.map(function(t){
+              // Back-compat: an old cached state may still carry bare title strings.
+              if (typeof t === 'string') return '<span class="sh-item">'+esc(t)+'</span>';
+              var inner = '<span class="sh-t">'+esc(t.title)+'</span>' +
+                (t.why ? '<span class="sh-why">'+esc(t.why)+'</span>' : '');
+              return t.link
+                ? '<a class="sh-item" href="'+esc(t.link)+'" target="_blank" rel="noopener">'+inner+'</a>'
+                : '<span class="sh-item">'+inner+'</span>';
+            }).join('');
           root.appendChild(sh);
         }
         if ((state.today_tonight||[]).length){

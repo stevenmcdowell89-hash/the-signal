@@ -67,6 +67,18 @@ function publicItem(it) {
   };
 }
 
+// Pick the best out-link URL for an item, mirroring the front-end's firstLink
+// preference order (discussion → article → post → feed). Used so Start-here lines
+// are tappable straight to the story.
+function primaryLinkUrl(it) {
+  let links = it.links;
+  if (typeof links === "string") { try { links = JSON.parse(links); } catch { links = []; } }
+  links = Array.isArray(links) ? links : [];
+  const order = ["discussion", "article", "post", "feed"];
+  for (const type of order) { const l = links.find((x) => x.type === type); if (l && l.url) return l.url; }
+  return (links[0] && links[0].url) || it.canonical_url || null;
+}
+
 // "Today & Tonight" — only items with an ACTUAL date/time signal: fixtures with a
 // kickoff/time, airings/releases dated today/tonight. A bare "v"/"vs" or a topic
 // tag is not enough (those swept in a Nike-v-Adidas feature, a season review and
@@ -74,15 +86,23 @@ function publicItem(it) {
 // a day, so the strip stays events-only; everything else stays in the brief.
 const TT_DATED = /\b(tonight|today|this (?:evening|afternoon)|kick[- ]?off|\d{1,2}(?::\d{2})?\s?(?:am|pm)\b|\d{1,2}:\d{2}\b|(?:gmt|bst|cet|et|utc)\b|out now|releases? (?:today|tonight)|premier(?:es|ing) (?:today|tonight)|launch(?:es|ing) (?:today|tonight))\b/i;
 const TT_FEATURE = /\b(how to watch|where to watch|review|rank(?:ed|ing)|best |worst |season review|explain(?:ed|er)|preview|predict(?:ion|ed)?|opinion|why |everything you need)\b/i;
-function todayAndTonight(items, now) {
+// Which domains carry dated events belongs in config, not code: a topic opts in
+// with `topic_weights[d].today_tonight: true`. Falls back to the original
+// football/film/gaming set when no topic has flagged in (so an un-migrated config
+// behaves exactly as before).
+function todayAndTonight(items, now, tw) {
   const out = [];
+  const flagged = new Set(Object.keys(tw || {}).filter((d) => tw[d] && tw[d].today_tonight));
+  const eligible = flagged.size
+    ? (d) => flagged.has(d)
+    : (d) => d === "football" || d === "film_tv" || d === "gaming";
   // "Today" in a title only means today if the item is ACTUALLY from today — a
   // 2-day-old post saying "releases today" is stale. Gate on the item's real date
   // (publish time, or first-seen if undated) being within the last ~18h.
   const freshCut = now - 18 * 3.6e6;
   for (const it of items) {
     if (it.muted) continue;
-    if (!(it.domain === "football" || it.domain === "film_tv" || it.domain === "gaming")) continue;
+    if (!eligible(it.domain)) continue;
     const when = it.published ?? it.first_seen ?? 0;
     if (when < freshCut) continue;
     const title = it.title || "";
@@ -409,8 +429,16 @@ export function buildState(items, meta, now, config) {
     edition: { date_label: dateLabel },
     editions: editionsList,
     top20: top20.map(publicItem),
-    start_here: top.slice(0, 3).map((t) => t.title),
-    today_tonight: todayAndTonight(live, now),
+    // Start here — tappable, voiced, linked (not bare titles). `why` seeds from the
+    // mechanical hook here; augmentEditorial backfills the curated "why it matters"
+    // for any of these that also land in Picks/Top 20, so it reuses the lead's reason.
+    start_here: top.slice(0, 3).map((t) => ({
+      id: t.id,
+      title: t.title,
+      why: t.hook || null,
+      link: primaryLinkUrl(t),
+    })),
+    today_tonight: todayAndTonight(live, now, tw),
     headlines: headlines.map(publicItem),
     // Wider breadth-eligible pool the AI Editor's Picks pass curates from (when on);
     // ignored by the front-end. Already importance-sorted (hRanked).

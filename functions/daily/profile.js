@@ -37,7 +37,9 @@ export const PROFILE = {
   //     home_selfhosting (not an interest).
   // v6: content-led ranking — global `signal_tiers` (+ per-topic signal_high/low)
   //     so "confirmed/official" leads and "rumour/linked" sinks.
-  profile_version: 6,
+  // v7: per-topic `today_tonight` flag (which domains feed the dated-events strip)
+  //     — replaces the hardcoded football/film/gaming gate in render.js.
+  profile_version: 7,
 
   // ---- Signal tiers (content-led ranking) ----
   // Title words that mark an item as high- or low-signal, regardless of source.
@@ -296,17 +298,17 @@ const DOMAIN_META = {
   local: { label: "Local (NI)", edition: "news_money" },
   finance: { label: "Money", edition: "news_money" },
   football: {
-    label: "Football", edition: "sport",
+    label: "Football", edition: "sport", today_tonight: true,
     // The transfer-window firehose: lift done deals, bury the endless chatter.
     signal_high: ["signs", "signed", "signing", "completes", "complete signing", "here we go", "deal done", "done deal", "medical"],
     signal_low: ["eyeing", "eye", "considering", "consider", "monitoring", "target", "interested", "interest", "talks", "weighing", "tracking", "keen", "race for", "battle for", "swoop", "move for"],
   },
   golf: { label: "Golf", edition: "sport" },
-  gaming: { label: "Gaming", edition: "gaming_tech" },
+  gaming: { label: "Gaming", edition: "gaming_tech", today_tonight: true },
   tech_devices: { label: "Tech & Devices", edition: "gaming_tech" },
   ai_engineering: { label: "Tech / AI", edition: "gaming_tech" },
   books: { label: "Books", edition: "culture" },
-  film_tv: { label: "Film & TV", edition: "culture" },
+  film_tv: { label: "Film & TV", edition: "culture", today_tonight: true },
   music: { label: "Music", edition: "culture" },
   history: { label: "History", edition: "culture" },
   podcasts: { label: "Listening", edition: "culture" },

@@ -174,8 +174,11 @@ setup doesn't break publishes.
 
 ## The Brief (the daily) — Worker-native pipeline
 
-The daily is a Cloudflare **Cron Trigger** that fires the Worker every 3h
-(`triggers.crons` in `wrangler.jsonc`). Each run polls the tagged sources, runs
+The daily is a Cloudflare **Cron Trigger** that fires the Worker every 10 minutes
+(`triggers.crons` in `wrangler.jsonc`). The 10-minute tick is load-bearing: each
+tick re-attempts the current Reddit batch's still-failing subs so a throttled sub
+gets several fresh shots at the shared-IP limit within ~30 min (see
+`pipeline.js → redditBatch`). Each run polls the tagged sources, runs
 the triage engine (per-source baselines, velocity, profile ranking, dedup, the
 fold, optional Haiku hook-lines), and writes the rendered state to KV. The home
 (`index.html`) fetches `/api/daily` and renders it; `settings.html` edits the
@@ -226,11 +229,12 @@ Everything tunable lives in KV and is edited at `/settings.html`:
 **sources** (add/remove feeds + per-source weight), **Bluesky handles**,
 **interest profile** (named-entity floor, topic weights, special handling,
 mutes — edit the JSON; err broad), **fold threshold**, **enrichment toggle /
-model / shortlist size / monthly spend cap**, **cadence**, **push badge**.
+model / shortlist size / monthly spend cap**, **push badge**.
 The reader is expected to review the generated profile + feed list and prune.
 
-Changing the *cron cadence itself* is the one thing that needs a deploy — edit
-`triggers.crons` in `wrangler.jsonc` (the in-app `cadence_hours` is advisory).
+Changing the poll cadence needs a deploy — edit `triggers.crons` in
+`wrangler.jsonc`. There is deliberately no in-app cadence control: the 10-minute
+tick drives the Reddit rotation, so it isn't a reader-facing knob.
 
 ### Cost ceiling
 

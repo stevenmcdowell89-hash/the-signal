@@ -13,9 +13,10 @@ export const CONFIG_KEY = "config";
 export function defaultConfig() {
   return {
     version: 2,
-    // Cron cadence is also declared in wrangler.jsonc (the trigger), but the
-    // run reads this to decide whether to skip (e.g. if turned down in-app).
-    cadence_hours: 3,
+    // NOTE: there is no in-app cadence control. The real cadence is the Cron
+    // Trigger in wrangler.jsonc (every 10 min) and it is load-bearing — the Reddit
+    // per-IP rotation depends on the 10-min tick, so a slower skip-gate would break
+    // it. The old advisory `cadence_hours` field did nothing and was removed.
     // The fold (§3.7): above-fold = items over this confidence threshold.
     fold_threshold: 0.6,
     headline_max: 8, // Headlines shows up to this many "most important right now"

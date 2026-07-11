@@ -144,7 +144,6 @@ export async function onRequestGet({ env }) {
     score_window_days: rec.score_window_days,
     top_catch_max_hours: rec.top_catch_max_hours,
     source_cap: sc.source_cap,
-    cadence_hours: config.cadence_hours,
     topics: Object.keys((config.profile || {}).topic_weights || {}).length,
     floor_entities: ((config.profile || {}).named_entity_floor || []).length,
     sources_on: enabledDefs.length,

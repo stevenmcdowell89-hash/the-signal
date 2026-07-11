@@ -519,6 +519,19 @@ export async function augmentEditorial(env, state, items, config, now) {
   status.digests = { on: !d.degraded, reason: d.reason, model: (ai.digests || {}).model };
   const o = await orderEditions(env, state, items, config, now);
   status.editions = { on: !o.degraded, reason: o.reason, model: (ai.editions || {}).model };
+  // Backfill the voiced Start-here reason from the curated "why it matters" (Picks /
+  // Top 20) when one of the Start-here items also cleared those passes — so the
+  // Start-here line reuses the lead's editorial reason instead of the raw hook. The
+  // mechanical hook set in buildState stands when no curated why exists.
+  if (Array.isArray(state.start_here)) {
+    const whyById = new Map();
+    for (const it of [...(state.headlines || []), ...(state.top20 || [])]) {
+      if (it && it.id && it.why && !whyById.has(it.id)) whyById.set(it.id, it.why);
+    }
+    for (const sh of state.start_here) {
+      if (sh && sh.id && whyById.has(sh.id)) sh.why = whyById.get(sh.id);
+    }
+  }
   // Candidate pools were only needed by the curation passes — drop from shipped state.
   delete state.headline_candidates;
   delete state.top20_candidates;

@@ -222,7 +222,6 @@
         <div class="row" style="margin-top:0.5rem">
           <div><label for="undated">Undated penalty (hours)</label><input type="number" id="undated" min="0" max="96" step="1"></div>
           <div><label for="window-days">Score window (days)</label><input type="number" id="window-days" min="1" max="7" step="1"></div>
-          <div><label for="cadence">Cadence (hours, advisory)</label><input type="number" id="cadence" min="1" max="24" step="1"></div>
         </div>
         <div class="hint">Velocity keep: how fast a story must move to resist decay. Blend: how much Top Catches ordering weights freshness vs confidence. Undated penalty: how much older a date-less item is treated as. Score window: how many days of items the brief considers. Cadence is advisory — the real cron schedule lives in wrangler.jsonc.</div>
         <div class="hint" style="margin-top:0.9rem;font-weight:600;color:var(--ink)">Scoring weights — how the final rank is built</div>
@@ -707,7 +706,6 @@
     function fill(c){
       cfg = c;
       $('fold').value = c.fold_threshold;
-      $('cadence').value = c.cadence_hours;
       var rc = c.recency||{};
       $('half-life').value = rc.half_life_hours!=null?rc.half_life_hours:20;
       $('floor-fresh').value = rc.floor_fresh_hours!=null?rc.floor_fresh_hours:36;
@@ -850,7 +848,6 @@
         ? cfg.enrichment.monthly_spend_cap_cents : 500;
       return {
         fold_threshold: numOr('fold',0.6),
-        cadence_hours: intOr('cadence',3),
         headline_max: intOr('headline-max',8),
         scoring: {
           profile_weight: numOr('sc-profile',0.70),
@@ -1080,7 +1077,7 @@
         b('Fold', o.fold_threshold)+ b('Headlines max', o.headline_max)+
         b('Half-life', o.half_life_hours+'h')+ b('Score window', o.score_window_days+'d')+
         b('Top Catches max', o.top_catch_max_hours+'h')+ b('Per-feed cap', o.source_cap)+
-        b('Cadence', o.cadence_hours+'h (advisory)')+
+        b('Poll cadence', 'every 10 min (cron)')+
       '</div></details>';
     }
     function renderHealth(h){

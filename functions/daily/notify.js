@@ -13,11 +13,14 @@ import { sendPush } from "../_lib/webpush.js";
 const LAST_PUSH_KEY = "push:last_significant";
 
 // Pick the single best item worth interrupting the reader for, or null.
-function pickSignificant(state, cfg, now) {
+// Exported for unit testing (pure over its args).
+export function pickSignificant(state, cfg, now) {
   const freshMs = (cfg.fresh_hours || 12) * 3.6e6;
   const minConf = cfg.min_confidence ?? 0.85;
-  // Only the strip is in scope — these are the most significant fresh catches.
-  const pool = (state.top_catches || []).filter((it) => {
+  // Only the curated cross-everything feed is in scope — Top 20 is the most
+  // significant ranked set the render emits (the old `top_catches` field was
+  // retired when the strip became Top 20, which silently killed this push).
+  const pool = (state.top20 || []).filter((it) => {
     const seen = it.first_seen || 0;
     const fresh = seen > 0 && now - seen <= freshMs;
     return fresh && (it.entity_floor || (it.confidence || 0) >= minConf);
