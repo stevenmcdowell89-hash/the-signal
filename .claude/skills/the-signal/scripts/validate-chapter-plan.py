@@ -16,8 +16,15 @@ rotating-section validators. Domain cadence is now a simple editorial checklist 
 ("each domain surfaces at least monthly"), not a planner-enforced gate — The Threads
 now owns continuity, so a quiet domain no longer needs a forced-include gate. The
 rotating-roster cadence map, the state-resolution helper, and their tests are gone.
-The other rules (section shape, long-shelf, release-radar, sub-format, key-facts,
-discovery quota, etc.) are unchanged.
+
+v8.37 (W-3) — RELAXES `check_section_shape`: the mandatory considered-piece backbone
+is retired. The single Long Read carries the deep work; the rounds carry the week's
+news at whatever depth the material earns. A round may be a Lead, a plain Catch-Up
+roundup, picks, or a silent yield — there is no longer a "Lead-or-yield_reason"
+hard-fail. Piece well-formedness (topic_family / word floors / companion-needs-lead /
+distinct families) and the Catch-Up no-namedrops rule are still enforced. The
+long-shelf, release-radar, sub-format, key-facts, and discovery-quota rules are
+unchanged.
 """
 
 import json
@@ -80,12 +87,12 @@ VALID_CHAPTER_TYPES = {
     "closer",
 }
 
-# v8.15 / v8.27 / v8.34 — fixed-section chapter IDs that run the considered-piece backbone shape.
-# v8.27 retired the mandatory two-anchor Lead + Companion. v8.34 INVERTS the v8.27-v8.28 spine:
-# the considered piece (a Lead — synthesis / a named-layer roundup / an angle / a feature) is now
-# the mandatory backbone and the Catch-Up is OPTIONAL grounding. A fixed section runs a considered
-# piece OR yields (yield_reason); a section with only a Catch-Up roundup FAILS (recap is the daily's
-# job). See check_section_shape().
+# Round chapter IDs whose piece/catch_up well-formedness is validated (weekly format only).
+# v8.37 (W-3): the mandatory considered-piece backbone is RETIRED — the single Long Read carries
+# the deep work and these rounds carry the week's news at whatever depth the material earns. A round
+# may run a Lead, a plain Catch-Up roundup, picks, or a silent yield; there is NO Lead-or-yield
+# hard-fail. check_section_shape() now validates only piece well-formedness + the Catch-Up
+# no-namedrops rule (nothing structural is required to be present). See check_section_shape().
 # Accept both the underscored convention (spec) and existing single-word / kebab variants
 # observed in real issue markup (id="world", id="tech", id="football", id="screen").
 # v8.27 adds The Toolkit (now a fixed-but-yields section, was rotating).
@@ -232,25 +239,23 @@ def check_issue_meta(meta):
 
 
 def check_section_shape(ch, cpath):
-    """v8.34: fixed-section chapters run the considered-piece backbone shape.
+    """v8.37 (W-3): the ROUNDS validate piece well-formedness only — no mandatory backbone.
 
-    Replaces the v8.15 mandatory two-anchor Lead + Companion (v8.27) and INVERTS the v8.27-v8.28
-    spine: the considered piece (a Lead — synthesis / a named-layer roundup / an angle / a feature)
-    is now the mandatory backbone, and the Catch-Up is OPTIONAL grounding context. A fixed section
-    runs a considered piece OR yields — it does NOT run a bare Catch-Up roundup to fill the slot
-    (exhaustive recap is the daily brief's job, not the weekly's).
+    History: v8.15 mandated a two-anchor Lead + Companion; v8.27-v8.28 made the Catch-Up the
+    spine; v8.34 inverted it to require a considered-piece Lead-or-yield. **v8.37 (W-3) retires the
+    mandatory-considered-piece requirement entirely:** the single Long Read (`08-anchor-piece`)
+    carries the deep work, and the rounds carry the week's news at whatever depth the material
+    earns. A round may run a considered Lead, a plain Catch-Up roundup, picks, or nothing (a silent
+    yield). There is NO "must have a Lead or a yield_reason" hard-fail any more.
 
-    Rules:
-      - `pieces` array: 0-2 entries. 0 or 1 role='lead'; at most one role='companion'; a
-        Companion requires a Lead.
+    What is still validated (structural well-formedness only, if the fields are present):
+      - `pieces` array: 0-2 entries. At most one role='lead'; at most one role='companion'; a
+        Companion still requires a Lead (a companion with no lead is malformed).
       - Sanity word floors only (lead 150, companion 120) — length follows material, no padding.
       - Each piece: topic_family in enum, valid word_count_target, headline_hint, link_targets.
       - If a Companion is present, Lead.topic_family != Companion.topic_family.
-      - The section must contain a considered piece (a Lead) OR a `yield_reason`. A bare Lead with
-        no Catch-Up is fine (the considered piece stands alone); a section with ONLY a Catch-Up
-        roundup (no Lead, no yield_reason) is a hard fail — it must yield instead.
-      - Catch-Up "no bare namedrops" rule: every `catch_up` item must carry a headline_hint,
-        a why_it_matters, and a non-empty link_targets.
+      - Catch-Up "no bare namedrops" rule: every `catch_up` item carries headline_hint,
+        why_it_matters, and a non-empty link_targets.
     """
     # v8.28 — the Lead is OPTIONAL: a section may be pure Catch-Up (facts) with no pieces at
     # all. `pieces` may therefore be absent or empty; if present it holds 0-2 entries
@@ -321,29 +326,16 @@ def check_section_shape(ch, cpath):
     if "lead" in tf_by_role and "companion" in tf_by_role and tf_by_role["lead"] == tf_by_role["companion"]:
         err(f"[PIECES] {cpath}: Lead.topic_family and Companion.topic_family are both '{tf_by_role['lead']}'. When a Companion runs it MUST be on a different topic family (topic-family discipline).")
 
-    # v8.34 — INVERTED spine: the considered piece (a Lead — synthesis / a roundup with a named
-    # layer / an angle / a feature) is the mandatory backbone; the Catch-Up is OPTIONAL grounding.
-    # A fixed section runs a considered piece OR yields — it does NOT run a bare Catch-Up roundup
-    # to fill the slot (exhaustive recap is the daily brief's job, not the weekly's).
-    #   valid:   a Lead (with or without catch_up/companion) | a yield_reason.
-    #   invalid: nothing at all | only a Catch-Up roundup (no Lead, no yield_reason).
+    # v8.37 (W-3) — the mandatory considered-piece backbone is RETIRED. The single Long Read
+    # (the `08-anchor-piece` slot) now carries the deep work; the ROUNDS (world/pixel_byte/
+    # toolkit/touchline/screen_sound/session) carry the week's news at whatever depth the material
+    # earns. A round may run a considered Lead, a plain Catch-Up roundup, picks, or nothing — the
+    # Lead/Catch-Up shape stays AVAILABLE but is no longer mandatory-deep. So there is no
+    # "must have a Lead or a yield_reason" hard-fail any more: a catch-up-only round is fine, and
+    # an empty/thin round is a silent yield. What IS still validated below: piece well-formedness
+    # (topic_family / word floors / companion-needs-lead / distinct families — handled above) and
+    # the Catch-Up "no bare namedrops" rule.
     catch_up = ch.get("catch_up")
-    has_lead = lead_count >= 1
-    has_companion = companion_count >= 1
-    has_catchup = isinstance(catch_up, list) and len(catch_up) >= 1
-    yield_reason = ch.get("yield_reason")
-    if not (has_lead or yield_reason):
-        if has_catchup:
-            err(
-                f"[SHAPE] {cpath}: section offers only a Catch-Up roundup — that is the daily's job. "
-                f"Run a considered piece (synthesis, a roundup with a named layer, an angle, or a feature) "
-                f"as the Lead, or yield via `yield_reason` (v8.34 considered-piece backbone)."
-            )
-        else:
-            err(
-                f"[SHAPE] {cpath}: section is empty — it needs a considered piece (a Lead) or a "
-                f"`yield_reason` (v8.34)."
-            )
 
     # v8.27 — Catch-Up "no bare namedrops": every roundup item carries what + why + link.
     if catch_up is not None:
@@ -1077,11 +1069,12 @@ def run_inline_tests():
         ]
     ), expect_pass=True)
 
-    # FAIL: world chapter missing pieces
-    run_test("weekly world chapter missing pieces", make_plan(
+    # PASS (v8.37): a round with no pieces is now fine — the considered-piece backbone is retired;
+    # the round silently yields / carries plain news. No Lead-or-yield_reason hard-fail any more.
+    run_test("weekly round with no pieces (v8.37 — no backbone required)", make_plan(
         issue_meta=weekly_meta,
         chapters=[weekly_fixed_chapter("world")]
-    ), expect_pass=False)
+    ), expect_pass=True)
 
     # FAIL: Lead and Companion share topic_family
     same_family_pieces = [
@@ -1189,13 +1182,15 @@ def run_inline_tests():
         chapters=[weekly_fixed_chapter("toolkit", pieces=lead_only, extra={"catch_up": good_catch_up})]
     ), expect_pass=True)
 
-    # v8.34: a section with ONLY Catch-Up (no Lead, no yield) FAILS — it must yield (daily's job)
+    # v8.37 (W-3): a round with ONLY a Catch-Up (no Lead, no yield_reason) now PASSES — the
+    # considered-piece backbone is retired; the single Long Read carries the deep work, so a round
+    # that just carries plain news is fine. (Under v8.34 this was a hard fail.)
     pure_catchup_ch = weekly_fixed_chapter("pixel_byte", extra={"catch_up": good_catch_up})
     pure_catchup_ch.pop("pieces", None)
-    run_test("pure catch_up section with no lead fails (v8.34 — must yield)", make_plan(
+    run_test("pure catch_up round with no lead passes (v8.37 — no backbone required)", make_plan(
         issue_meta=weekly_meta,
         chapters=[pure_catchup_ch]
-    ), expect_pass=False)
+    ), expect_pass=True)
 
     # v8.34: a section with only Catch-Up but an explicit yield_reason passes (it is yielding)
     yielded_catchup_ch = weekly_fixed_chapter("pixel_byte", extra={"catch_up": good_catch_up, "yield_reason": "thin gaming week"})

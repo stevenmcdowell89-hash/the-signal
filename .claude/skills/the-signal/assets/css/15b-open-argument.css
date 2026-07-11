@@ -1,0 +1,73 @@
+/* ═══════════ v8.37 — W-3: THE OPEN & THE ARGUMENT ═══════════
+   Caught Up (the 8-line completeness digest, Movement I) · The case against
+   (the Semafor-style counter-argument callout). Both render complete with JS
+   off — no animation or script dependency. .case-against inherits the host
+   section's --section-accent. */
+
+/* ── Caught Up: the 8-line, non-expandable digest ──
+   Discharges the week's completeness up front. A plain list, capped at 8
+   lines — there is deliberately no expand affordance to break. */
+.caught-up {
+  margin: 22px 0 10px;
+  padding: 16px 20px 14px;
+  border: 1px solid var(--rule, #d8d2c4);
+  border-radius: 6px;
+  background: rgba(0, 0, 0, .02);
+}
+.caught-up .cu-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--ghost, #8a8272);
+  margin-bottom: 10px;
+}
+.caught-up .cu-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.caught-up .cu-list li {
+  font-size: 15.5px;
+  line-height: 1.5;
+  padding: 6px 0 6px 18px;
+  border-top: 1px solid var(--rule, #e5e0d4);
+  position: relative;
+}
+.caught-up .cu-list li:first-child { border-top: none; }
+.caught-up .cu-list li::before {
+  content: "\203A"; /* › */
+  position: absolute;
+  left: 2px;
+  color: var(--ember, #C4552C);
+  font-weight: 700;
+}
+.caught-up .cu-list li a { font-weight: 600; }
+
+/* ── The case against: Semafor-style counter-argument callout ──
+   Available where a section carries a real argument (usually the Long Read).
+   Inherits the host section accent. */
+.case-against {
+  --ca-accent: var(--section-accent, #6B7A8F);
+  margin: 24px 0;
+  padding: 14px 18px 16px;
+  border-left: 4px solid var(--ca-accent);
+  border-radius: 0 6px 6px 0;
+  background: rgba(0, 0, 0, .03);
+}
+.case-against .ca-label {
+  display: inline-block;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--ca-accent);
+  margin-bottom: 6px;
+}
+.case-against .ca-body {
+  font-size: 16px;
+  line-height: 1.55;
+  margin: 0;
+}

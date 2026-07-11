@@ -138,6 +138,38 @@ Compact personal read-out reusing the `.stat-bar` / `.stat` vocabulary, wrapped 
 </section>
 ```
 
+### Caught Up — the 8-line completeness digest (Standard Weekly — Movement I, v8.37)
+
+The **hard-capped 8-line, non-expandable** news-breadth digest that discharges the week's completeness up front (§ Caught Up). Exactly ≤8 `<li>`, one missable item each — a specific fact + a link. No expand affordance, no "…and more". It renders complete with JS off (a plain list — there is nothing to expand). Caught Up owns the issue's news-breadth floor, so downstream rounds carry no safety-net headlines.
+
+```html
+<section class="caught-up" id="caught-up" aria-label="Caught Up">
+  <div class="cu-label">Caught Up</div>
+  <ul class="cu-list">
+    <li><a href="https://…">[One tight line — a specific fact the reader can act on or ignore.]</a></li>
+    <!-- ≤ 8 items total, never more, never collapsible -->
+  </ul>
+</section>
+```
+
+- **Cap is structural:** 8 `<li>` maximum. If there's a ninth, it wasn't missable enough.
+- **Voice:** flat, factual, fast — wire-headline register. No angle, no synthesis (that's the Letter / Long Read).
+
+### The case against — the Semafor counter-argument callout (Standard Weekly — v8.37)
+
+A short, honest "here's the strongest case the other way" box, available **where a section carries a real argument** — usually the Long Read, occasionally a round with a genuine thesis. Not decoration: only where there's a real argument to answer. It inherits the host section's accent. Never invent the counter-case — it must be a real position that exists in the research (Borrowed angles, our voice).
+
+```html
+<aside class="case-against">
+  <span class="ca-label">The case against</span>
+  <p class="ca-body">[The strongest honest counter-argument, sourced from real coverage — one or two sentences.]</p>
+</aside>
+```
+
+- **`.ca-label`** — the fixed "The case against" eyebrow (accent-coloured, mono-caps).
+- **`.ca-body`** — the counter-argument itself; attributed in spirit (a real position), never a strawman.
+- One per argument at most; renders as a plain bordered block with JS off.
+
 ### Release Radar & On the Radar (Standard Weekly — shared `.radar-*` markup)
 
 Both use the same date-grid vocabulary; they differ only in `id`, category set, and what they list. **Release Radar (v8.30 — mandatory, its own chapter, rendered right after Screen & Sound)** lists 15-20 upcoming media releases; **On the Radar** lists events. Never duplicate items between them.

@@ -8,7 +8,7 @@ _This file consolidates the weekly/ subdir into one file. Each former file becom
 ## overview
 
 ### Standard Weekly (default)
-The full Sunday edition. **No hard word target — a healthy Sunday read sized to the week's news, typically ~20-30 pages.** Held by per-section shape (a considered piece per section; Catch-Up optional), not a word quota; flex to the news and yield thin sections rather than padding to a number (v8.27). Section order as listed above.
+The full Sunday edition. **Target ~6,000–9,000 words (v8.37, W-3 — roughly a 40% cut from the old ~20-30-page issue).** This is a real target, not just guidance: the four-movement spine (one Long Read, brisk rounds, an 8-line Caught Up) is built to land in this band. It is still shaped by *movements and per-piece shape*, not a rigid quota — flex to the news, yield thin rounds rather than padding — but an issue drifting well past ~9k words has reverted to the old two-anchors-everywhere bulk and should be cut back to the spine. The deep length lives in the single Long Read; the rounds stay short. Section order per the four movements above.
 
 
 
@@ -22,9 +22,34 @@ Sections are divided into **fixed** (appear every issue, except where noted) and
 
 > **Why 2-3 rotating slots (v8.27, was 3-4 in v8.16).** The v8.16 roster grew to 14 rotating sections by *splitting* (The Listen out of The Shelf, The Local out of The Itinerary, plus Brickyard / Saga / Lab / Channel), which made several sections compete for the same content and let one interest flood an issue. v8.27 redesigns the roster around the reader's actual interest-domains — one home per domain — collapsing to **5 rotating sections plus one trigger-driven section**. Fewer sections + fewer slots = less slot-filling pressure and a shorter, less-padded issue, back toward the "good era" size.
 
+### Four-Movement Architecture (v8.37, W-3 — the spine)
+
+The weekly is organised as **four movements**. The movements are the spine; the branded sections below live *inside* them (identities unchanged — Touchline, Pixel & Byte, Screen & Sound, The Desk, The Threads all keep their names and CSS). The order below is the canonical issue order. **The issue ends on a verb and a human line** — a "Do This Week" and the Colophon's sign-off, not an aphorism.
+
+- **I · THE OPEN** — discharge completeness up front, then hand off.
+  - **The Letter** — the signed editor's letter (§ The Letter). The week's thesis, dots connected across domains.
+  - **The Week, Composed** — a short editor-shaped orientation to the issue: the week arranged into two or three thematic strands (what the issue holds and how it hangs together). It **replaces the old triple on-ramp** (Navigator + Long Shelf + Foreword-as-contents); the Navigator chrome still renders for jump-links, but the *reading* on-ramp is this one composed paragraph, not three overlapping tables of contents. ~80–140 words.
+  - **Caught Up** — a hard-capped **8-line, non-expandable** digest of the week's missable news across domains (§ Caught Up). This is where completeness is discharged: eight lines, then done. Because Caught Up carries the breadth, **no downstream section owes a "safety-net headline" backstop** — the old breadth-safety-net-in-every-section rule is retired (see § Caught Up).
+- **II · THE LONG READ** — exactly **ONE** deep anchor per issue, subject rotating week to week (uses the `08-anchor-piece` slot). This single Long Read is the issue's one considered centre of gravity: it **absorbs the old Saga, Deep-Dive-lite, and evergreen-feature impulses**. There is no second mandated deep anchor anywhere else in the issue — the rounds carry the week's news at whatever depth the material earns, not a forced considered-piece backbone (§ Article Structure).
+- **III · THE ROUNDS** — the week's domains, briskly. **The Touchline** (sport), **Pixel & Byte** (gaming + LEGO), **Screen & Sound** (with Release Radar), a **Bookmark** books rail (the lightweight books shelf — what to read, a few picks with a line each; the deep book piece, when there is one, is the Long Read, not here), and **The Desk** (1–2 service columns, each closing on its "Do This Week" pin). The rounds are rounds — news and picks, not essays.
+- **IV · THE CLOSE** — continuity, then forward, then act, then sign off.
+  - **The Threads** — the continuity engine (§ The Threads): "previously on…" recaps of the named sagas and the reader's life-threads.
+  - **Down the Rabbit Hole** — the signature discovery ritual (recurring sidebar; `references/sections.md`).
+  - **On the Radar** — the forward calendar.
+  - **Do This Week** — the issue's single strongest actionable pin surfaces here as the closing beat (the Desk columns each carry their own; this is the one the reader leaves on).
+  - **Colophon** — Issue in Numbers · Next Week · A Fact · the sign-off line.
+
+> **The movements group the existing sections — they are not new sections.** The Long Shelf concept is absorbed by The Week, Composed (its discovery-wildcard value moves into The Letter and the Long Read); the deep-anchor rotation across sections is replaced by the single Long Read. Everything else keeps its identity and moves under the movement it belongs to.
+
 ### Fixed vs Rotating
 
-**Fixed (every issue):** Cover, Navigator, **The Letter** (the signed editor's letter — replaces the author-less Foreword, v8.35), **The Week in Numbers** (the personal stat strip — see § The Week in Numbers), The Long Shelf, The World This Week, Pixel & Byte (gaming + LEGO), The Touchline, Screen & Sound (with Release Radar), **The Desk** (the service department — 1–2 service columns per issue; see § The Desk), **The Threads** (the continuity engine — see § The Threads), On the Radar, Footer.
+**Fixed (every issue), grouped by movement (v8.37):**
+- **I · THE OPEN:** Cover, Navigator (jump-link chrome), **The Letter**, **The Week, Composed** (the on-ramp — replaces the Long Shelf; see § The Week, Composed), **The Week in Numbers** (the personal stat strip — see § The Week in Numbers), **Caught Up** (the 8-line completeness digest — see § Caught Up).
+- **II · THE LONG READ:** **The Long Read** — exactly ONE deep anchor, rotating subject (`08-anchor-piece` slot; see § The Long Read).
+- **III · THE ROUNDS:** The Touchline, Pixel & Byte (gaming + LEGO), Screen & Sound (with Release Radar), the **Bookmark** books rail, **The Desk** (1–2 service columns; see § The Desk). *(The World This Week is not a fixed round — world coverage leads in Caught Up and, on weeks it earns the depth, as the Long Read.)*
+- **IV · THE CLOSE:** **The Threads** (the continuity engine — see § The Threads), Down the Rabbit Hole (if due), On the Radar, Do This Week (the closing pin), Colophon, Footer.
+
+The Long Shelf is retired as a section — its on-ramp job passes to The Week, Composed and its wildcards to The Letter / the Long Read. The World This Week is no longer a standalone fixed round: its safety-net breadth lives in Caught Up, its depth (when the week earns it) in the Long Read.
 
 > **Yield rather than fill (v8.34).** The "yield when the week is thin, don't pad it to appear" principle applies to **every** fixed section: a fixed section whose week offers only catch-up — the recap the daily already delivered — **yields** that week rather than running a roundup to fill the slot. The mandatory element is the considered piece (§ Article Structure), not the section's mere presence. (For Desk columns the analogue is: run the column only when its domain has real service news, and each column that runs still closes on a "Do This Week" pin.)
 
@@ -60,7 +85,7 @@ One pin per column, always last. Markup: a `.do-this-week` block (see `reference
 - **Two kinds of thread:**
   1. **Named sagas** (from `ongoing_stories`, any domain): an Iran-endgame thread, a Serie A / Antonelli title-run thread, a long-running show arc, a Switch-2-ecosystem thread — whatever the state file is tracking as live. Each gets a short "previously on / where it stands now" recap and a link.
   2. **Life-threads** (the person in the personal magazine): the marathon build from state `training_phase`, the upcoming trip from state `upcoming_trips` (e.g. the Efteling trip) — the reader's own ongoing arcs, recapped the same way ("Week 6 of the block; long run up to 18 miles; taper starts…").
-- **`ongoing_stories` is now DUAL-USE (v8.36).** Historically `ongoing_stories` fed **only** the Topic-Lock suppression backstop (§ Topic Lock) — it kept a heavily-rotated story *out* of the Lead. That suppression use is **fully intact and unchanged**. The Threads **additionally** reads the same `ongoing_stories` data and surfaces it as a reader-facing asset. The same records now do two jobs: (a) suppression backstop for topic-lock, and (b) The Threads' data source. `training_phase` + `upcoming_trips` additionally feed the life-threads.
+- **`ongoing_stories` now feeds ONLY The Threads (v8.37, W-3 — the topic-lock suppression role is dropped).** In v8.36 `ongoing_stories` was dual-use: the Topic-Lock suppression backstop *and* The Threads' data source. W-3 **retires the suppression backstop** (§ Topic Lock — the sliding-window cap and `check-topic-lock.py` are gone). `ongoing_stories` is now a single-purpose, reader-facing asset: The Threads reads it to recap named sagas across all domains. `training_phase` + `upcoming_trips` additionally feed the life-threads. Dropping suppression-by-gate in favour of The Threads' recap is deliberate — a story that keeps recurring is *recapped*, not hidden.
 - **Voice:** situation-report + "previously on" recap tone — factual, compact, each thread a few lines and a link. No new opinion or invented angle; it is a *recap*, not a Lead. It does not carry a "Do This Week" pin (that is the Desk's job).
 - **Placement:** part of the closing movement — after the rounds, near On the Radar (continuity flows naturally into the forward calendar).
 
@@ -88,6 +113,23 @@ The weekly opens on **The Letter**: a signed editor's letter in place of the old
 - **Voice:** first-person **Editor** voice is explicitly permitted here (see § Key Rules → The Cardinal Rule and Gate 1A: the Editor is visible; the *reader* stays invisible). Sign it off "— The Editor". Never address or describe the reader ("you", "your son", "as a Juventus fan") — that is still a Gate 1A leak.
 - **Markup:** keep the existing `.foreword` block and its drop-cap (the CSS and the navigator anchor are unchanged); The Letter is the same slot, renamed and re-voiced. The navigator card reads "The Letter".
 - One genuine aphorism is allowed across the whole issue (see § Editorial Voice); if you spend it, spend it here or in the Long Read — not as a per-section habit.
+
+### The Week, Composed — the on-ramp (v8.37, W-3)
+
+A short editor-shaped orientation that follows The Letter: the week arranged into **two or three thematic strands** — what the issue holds and how it hangs together — in ~80–140 words. It is the **single reading on-ramp**, replacing the old triple-table-of-contents pile-up (Navigator + Long Shelf + Foreword-as-contents). The Navigator chrome still renders for jump-links; The Week, Composed is the *prose* orientation. It carries the discovery-wildcard flavour the Long Shelf used to (one line can point at something off the beaten track). No new markup required — a titled paragraph block; reuse the `.foreword`-adjacent editorial styling or a plain `.sec-opener`.
+
+### Caught Up — the 8-line completeness digest (v8.37, W-3)
+
+**Caught Up** is a hard-capped, **8-line, non-expandable** digest in Movement I that discharges the week's completeness up front. Eight lines, one per missable item, each a single tight line (a specific fact + a link) across the reader's domains — world, sport, gaming, tech, culture. Then it stops.
+
+- **Hard cap: 8 lines, never more, and non-expandable** — no "…and 6 more", no collapsible, no companion list. If there are more than eight things, the ninth wasn't missable enough. The cap is the point: completeness is a *fixed budget*, not an open drawer.
+- **It replaces the breadth-safety-net-in-every-section rule.** Historically every fixed section's Catch-Up had to carry "one-line safety-net headlines" so demoting a story out of a Lead never dropped it. Caught Up now owns that job for the whole issue: the week's big headlines survive *here*, in one place, up front. **Downstream sections no longer carry safety-net headlines** — the rounds cover their domain's real news at the depth it earns and nothing more (§ Article Structure; the safety-net clause is retired).
+- **Voice:** flat, factual, fast — the anti-essay. No angle, no synthesis (that is the Letter's and the Long Read's job). Each line reads like a wire headline the reader can act on or ignore.
+- **Markup:** a `.caught-up` block — a titled list of ≤8 `<li>` items, each with a link. Renders complete with JS off (no expand affordance exists to break).
+
+### The Long Read — the single deep anchor (v8.37, W-3, supersedes the deprecated Anchor-Piece Rotation)
+
+Movement II is **one** deep anchor per issue — the issue's sole considered centrepiece, subject rotating week to week (world one week, a game or a training idea or a book the next). It uses the existing `08-anchor-piece` slot (`.is-anchor` on its `<section>` and its Navigator `.toc-row`), opens with a strong opener, and runs long enough to earn the space (typically 900–1,800 words; longer when the subject genuinely warrants). It **absorbs the old Saga, Deep-Dive-lite, and evergreen-feature impulses** — those are no longer separate deep beats scattered across the issue; the deep work concentrates here. Exactly one runs; there is no second mandated anchor. (The whole-issue Deep Dive special is unaffected — the Long Read is a weekly *movement*, the Deep Dive is a whole-issue interruption.)
 
 
 
@@ -138,7 +180,7 @@ Each issue includes the **fixed sections** (including **The Desk** with 1–2 se
 
 | Rotating Section | Preferred Slot | Reasoning |
 |---|---|---|
-| The Week in Numbers | Near the top, after The Letter / before The Long Shelf | A quick personal read-out to open on |
+| The Week in Numbers | Movement I — after The Week, Composed / before Caught Up | A quick personal read-out to open on |
 | The Shelf | Between Screen & Sound and The Desk (original position) | Natural flow from entertainment to books |
 | Listening | Between Screen & Sound and The Desk | Pairs with entertainment, breaks before the service desk |
 | **The Desk** *(1–2 service columns)* | Between Screen & Sound / The Shelf and The Threads | The service department sits in the "act on it" cluster before the close |
@@ -190,7 +232,7 @@ Run the **core groups** every issue. Run **rotating groups** only when that sect
 
 ### Core Groups (every issue)
 
-**Group 1 — News & Geopolitics:** dominant running story, world news. **UK / national politics is out by default** (see the UK / national politics rule in § Key Rules) — scan for it only to catch the rare genuine landscape shift (an election *result* that changes the picture, a government actually falling) and to surface a one-line safety-net mention of any big Westminster story in the Catch-Up roundup. **No story is auto-promoted to the Lead.** A UK-politics development — even a leadership challenge or a cabinet resignation — is *not* automatically a Lead-1 candidate (the v8.x auto-promote mandate was the direct engine of the Starmer ×3 run). It is covered like anything else, and it leads only if it passes the two-factor Lead test (§ Article Structure: did it move this week AND can we add the layer the daily couldn't). The news-breadth floor (Lens-not-Filter) still holds: a genuinely big world story always gets *covered*, in the Lead if it clears the test, otherwise as a Catch-Up line.
+**Group 1 — News & Geopolitics:** dominant running story, world news. **UK / national politics is out by default** (see the UK / national politics rule in § Key Rules) — scan for it only to catch the rare genuine landscape shift (an election *result* that changes the picture, a government actually falling) and to surface a one-line safety-net mention of any big Westminster story in **Caught Up** (the issue's 8-line news-breadth digest — no longer a per-section Catch-Up job). **No story is auto-promoted to the Lead.** A UK-politics development — even a leadership challenge or a cabinet resignation — is *not* automatically a Lead-1 candidate (the v8.x auto-promote mandate was the direct engine of the Starmer ×3 run). It is covered like anything else, and it leads only if it passes the two-factor Lead test (§ Article Structure: did it move this week AND can we add the layer the daily couldn't). The news-breadth floor (Lens-not-Filter) still holds: a genuinely big world story always gets *covered*, in the Lead if it clears the test, otherwise as a Catch-Up line.
 
 **Group 2a — Gaming (for Pixel & Byte, every issue):** Nintendo Switch 2, Steam Deck / Steam Machine, GeForce Now, high-quality tablet games, plus generalist gaming (the biggest game of the year gets covered even if it's not on Switch) — what came out this week + highlights of the next month + *new* rumours-with-analysis. LEGO news and releases (LEGO now lives in Pixel & Byte as an occasional "play" beat).
 
@@ -220,61 +262,26 @@ Search groups for rotating sections are in `references/sections.md`. Only search
 
 ## Component Quick Reference
 
-Use 10-14 different types per standard issue. No two consecutive sections should use the same layout pattern.
+**The weekly kit is a tight ~12 load-bearing components (v8.37, W-3 — trimmed from ~50).** The sprawling palette was part of what bloated the issue: every extra component invited another slot to fill. The standard weekly now reaches for **these twelve** and no more. No two consecutive sections use the same layout pattern; aim for 8–12 distinct types across the issue.
 
-| Component | Class(es) | When to use |
-|---|---|---|
-| The Angle box | `.angle` | Significant stories only — geopolitics, major tech shifts. **Never reprint the Angle box's text as a pull-quote (v8.35)** — the box already carries the line; echoing it as a `.pull-quote` is the banned voice-tic. |
-| Pull quote | `.pull-quote` (+`.centered`, +`.wide`) | 3-4 per issue to break prose. Must be a real quote or a genuinely resonant line from the prose — **never the Angle box reprinted verbatim (v8.35)**, and not a manufactured aphorism (see § Editorial Voice: one genuine aphorism per issue). |
-| Stats row | `.stat-bar` > `.stat` > `.stat-num.count-up` | Key numbers for a story |
-| Did You Know | `.dyk` | 3-5 scattered, section-aware colours |
-| Sidebar | `.sidebar` | Curated lists: "Family Picks", context boxes |
-| Split layout | `.split-60-40`, `.split-40-60` | Text beside image or sidebar |
-| Quick takes | `.dual-col` > `.col-card` | Two mini-articles side by side |
-| Compact takes | `.compact-take`, `.compact-grid` | Secondary stories, card format |
-| Margin note | `.margin-note` | Tufte-style aside, floats right on desktop |
-| Big number | `.big-number`, `.big-number-row` | Dramatic stat pulled mid-article |
-| Display stat | `.display-stat` | Inline accent-coloured number |
-| Mini data viz | `.sparkline`, `.pos-change`, `.mini-bar-track`/`.mini-bar-fill` | League tables, form charts |
-| Rating dots | `.rating` > `.dot.filled`/`.dot` | Reviews in Screen & Sound, Shelf |
-| Card stack | `.card-stack` > `.stack-card` | Horizontal scrollable review cards |
-| Timeline | `.timeline` > `.timeline-node` | History items, event chronologies |
-| Collapsible | `<details class="collapsible">` | Optional-depth content, spoilers |
-| Image montage | `.img-montage.layout-1-2` | Grid of 2-4 images |
-| Offset image | `.img-offset` | 60% width, text wraps around |
-| Hero bleed | `.hero-bleed` | Full-width section-opening image |
-| Float image | `.img-float-left` | Book covers, album art |
-| Also list | `.also-list` | Simple bold+description list |
-| Also cards | `.also-cards` > `.also-card` | 2-col card grid for 4+ items |
-| Read-next | `.read-next` | Section-to-section teaser link |
-| Watermark | `.sec-watermark` | Oversized label behind section content |
-| Section opener | `.sec-opener` | Dramatic section start with gradient band |
-| Reveal animation | `.reveal` | Fade+slide on scroll — apply ONLY to small leaf elements: individual images, angles, pull-quotes, individual cards. **NEVER on `<section>`, `split-60-40`, `split-40-60`, `dual-col`, `also-cards`, or any container that wraps a full section or multiple items.** |
-| Count-up | `.count-up` (+ `data-target`) | Stat numbers animate from 0 on scroll |
-| Book cards | `.book-card`, `.book-grid` | Book recommendations with rating dots |
-| Workout card | `.workout-card` | Rep scheme/protocol tables |
-| Year badge | `.year-badge` | Monospace date badges for history |
-| Category dot | `.radar-cat` (+`.film`,`.game`,`.tv`,`.lego`,`.tech`,`.book`,`.music`) | Release Radar and On the Radar |
-| Results strip | `.results-strip` > `.result-card` | Match results with large scores |
-| Platform badge | `.platform-badge` | Streaming/platform labels |
-| Inset divider | `.divider.inset` | Centred divider with breathing room |
-| Entry: stat-first | `.entry-stat` + `.entry-stat-context` | Open article with a dramatic number. Section-aware colours. |
-| Entry: quote-first | `.entry-quote` | Open article with a punchy quote. Left-bordered, section-aware. |
-| Entry: bullets-first | `.entry-bullets` | Open article with 3 key facts. Left-bordered, section-aware. |
-| Entry: question-first | `.entry-question` | Open article with a provocative question. Italic serif. |
-| Breather band | `.breather` (+ `.dark`) | Breathing room between dense sections. Contains `.breather-stat`, `.breather-context`, `.breather-teaser`. Use `.dark` variant between dark sections. |
-| Also-list tiers | `.tier-hot`, `.tier-warm`, `.tier-note` on `<li>` | Visual weight hierarchy in Also lists. Hot = left accent border + tinted background, warm = subtle border, note = faded. Section-aware. |
-| Compare panel | `.compare-panel` > `.compare-side.left` / `.compare-side.right` | Side-by-side comparisons: tech specs, football stats, book recs. Stacks on mobile. Section-aware borders. |
-| Floated sidebar | `.sidebar-float` | Text wraps around naturally. More editorial than `.split-60-40`. Section-aware background/borders. Collapses to full-width on mobile. |
-| Grain overlay | `.grain-overlay` | SVG film-grain pinned to viewport. Opt-in — placed once, outside `.mag`. Omit for cleaner issues. (Enhancement 22A) |
-| Chapter chrome | `.chapter-chrome` > `.eyebrow`/`.hair`/`.roman` | Editorial head inside any section — eyebrow label, hair-rule, roman numeral. Auto-inherits section accent. (Enhancement 22B) |
-| Folio watermark | `.folio-watermark` | Giant italic numeral bleeding off bottom-right of a section. Coexists with `.sec-watermark` (top-left). Hidden below 820px. (Enhancement 22C) |
-| Pull-break | `.pull-break` > `.pull`/`.attrib` | Dark full-bleed quote band with book-end quotation marks. **World-only flourish, max one per issue.** (Enhancement 22D) |
-| Marginalia | `.marginalia` > `.quote`/`.attrib`/`.datum`/`ul` | Floated sidebar card with italic quote, datum blocks, list. Auto-inherits section accent; auto-inverts to paper-on-dark on dark sections. (Enhancement 22E) |
-| Ember period | `.mast-period` / `.brand-period` | Ember-coloured period on "The Signal." wordmark in masthead and cover. (Enhancement 22G) |
-| Do This Week pin | `.do-this-week` > `.dtw-label`/`.dtw-action`/`.dtw-why` | **The mandatory closing element of every Desk column (v8.36).** One concrete do-it-this-week action + the why, criteria stated not vibes. Section-aware accent. See `references/component-contracts.md`. |
-| The Threads list | `.the-threads` > `.thread` (`.thread-saga` / `.thread-life`) | Continuity engine (v8.36). Each `.thread` is a "previously on…" recap + link. See § The Threads. |
-| Week in Numbers strip | `.week-in-numbers` (uses `.stat-bar` > `.stat`) | Compact personal stat strip (v8.36) — Garmin miles, FPL rank, Juve result, one money number. Distinct from the Colophon's Issue-in-Numbers. |
+| # | Component | Class(es) | When to use |
+|---|---|---|---|
+| 1 | The Angle box | `.angle` | The one sharp claim in a piece that carries a real argument. **Never reprint as a pull-quote (banned voice-tic).** |
+| 2 | Pull quote | `.pull-quote` (+`.centered`, +`.wide`) | 2–3 per issue to break prose. A real quote or a genuinely resonant line — never a minted aphorism, never the Angle box verbatim. |
+| 3 | Stats row | `.stat-bar` > `.stat` > `.stat-num.count-up` | Key numbers for a story (also the base of The Week in Numbers). |
+| 4 | Did You Know | `.dyk` | 3–5 scattered, section-aware colours. |
+| 5 | Split layout | `.split-60-40`, `.split-40-60` | Text beside an image or a sidebar — the default two-column break. |
+| 6 | Image (hero / offset) | `.hero-bleed`, `.img-offset` | Section-opening full-bleed image, or a 60%-width image the text wraps around. Every round wants at least one image. |
+| 7 | Also cards | `.also-cards` > `.also-card` | 2-col card grid for 4+ short items (picks, the Bookmark rail). |
+| 8 | Rating dots | `.rating` > `.dot.filled`/`.dot` | Reviews in Screen & Sound and the Bookmark rail. |
+| 9 | Category dot | `.radar-cat` (+`.film`,`.game`,`.tv`,`.lego`,`.tech`,`.book`,`.music`) | Release Radar and On the Radar rows. |
+| 10 | Results strip | `.results-strip` > `.result-card` | Match results with large scores (Touchline). |
+| 11 | Read-next | `.read-next` | Section-to-section teaser link that chains the movements. |
+| 12 | The case against | `.case-against` > `.ca-label`/`.ca-body` | **The Semafor-style counter-argument callout (v8.37).** Available **where a section carries a real argument** (usually the Long Read, occasionally a round with a genuine thesis): a short, honest "here's the strongest case the other way" box. Not decoration — only where there's a real argument to answer. Section-aware accent. See `references/component-contracts.md`. |
+
+**Always-on structural components (not counted in the twelve — they render where their section requires them, not as palette choices):** `.sec-watermark`, `.sec-opener`, `.reveal` (leaf elements only — never on containers), `.count-up`, and the fixed-section components `.foreword` (The Letter), `.caught-up` (Caught Up), `.do-this-week` (each Desk column's closing pin), `.the-threads` (The Threads), `.week-in-numbers` (The Week in Numbers). These are required by their movements and don't compete for palette slots.
+
+**Removed from the weekly kit (v8.37 — no separate graveyard file; recorded here).** These are retired from the *standard weekly* palette (CSS is retained for special editions, which keep their own component lists — nothing is deleted from `assets/css/`): Sidebar (`.sidebar`), Quick takes (`.dual-col`), Compact takes (`.compact-take`), Margin note (`.margin-note`), Big number (`.big-number`), Display stat (`.display-stat`), Mini data viz (`.sparkline`), Card stack (`.card-stack`), Timeline (`.timeline`), Collapsible (`<details.collapsible>`), Image montage (`.img-montage`), Float image (`.img-float-left`), Also list plain (`.also-list`), Watermark-as-choice, Book cards (`.book-card` — fold into image + rating dots), Workout card (`.workout-card`), Year badge (`.year-badge`), Platform badge (`.platform-badge`), Inset divider (`.divider.inset`), Breather band (`.breather`), Also-list tiers (`.tier-*`), Compare panel (`.compare-panel`), Floated sidebar (`.sidebar-float`), Grain overlay (`.grain-overlay`), Chapter chrome (`.chapter-chrome`), Folio watermark (`.folio-watermark`), Pull-break (`.pull-break`), Marginalia (`.marginalia`), Ember period (`.mast-period`). The four **entry-opener variants** (`.entry-stat` / `.entry-quote` / `.entry-bullets` / `.entry-question`) remain available as *openers* (plain prose is the default; use one only when the content genuinely leads with a number / quote / three facts / a live question) but are not counted among the twelve.
 
 **Entry patterns are a palette, not a rota (v8.35 — rotation enforcement retired).** The `.entry-stat`, `.entry-quote`, `.entry-bullets`, `.entry-question` and plain-prose openings are available whenever one genuinely fits the material — reach for the one the piece earns, never to satisfy a rotation. The old "no two adjacent articles may open the same way" mandate is **retired**: forcing a different opener each time was a source of the mechanical voice-tic W-1 kills at the source. Plain prose is a first-class opening; use a stat/quote/bullet/question opener only when the content actually leads with a number, a real quote, three facts, or a live question.
 

@@ -246,7 +246,7 @@ The reader-facing continuity section: the magazine's "previously on…". Built o
 - **Two kinds of thread:**
   1. **Named sagas** (`.thread-saga`, from `ongoing_stories`, any domain): an Iran-endgame thread, a Serie A / Antonelli title-run thread, a long-running show arc, a Switch-2-ecosystem thread. Each is a few lines — a "previously on / where it stands now" recap — plus a link.
   2. **Life-threads** (`.thread-life`): the reader's own ongoing arcs — the marathon build from state `training_phase` ("Week 6 of the block; long run up to 18 miles"), the upcoming trip from state `upcoming_trips` (the Efteling trip). Recapped the same way.
-- **`ongoing_stories` is now DUAL-USE (v8.36).** Historically it fed *only* the Topic-Lock suppression backstop (keeping a heavily-rotated story out of the Lead). **That suppression use is fully intact and unchanged.** The Threads additionally reads the same records and surfaces them as a reader-facing asset. Same data, two jobs: (a) topic-lock suppression backstop, (b) The Threads' data source. `training_phase` + `upcoming_trips` additionally feed the life-threads. Suppressing a topic from the Lead does **not** remove it from The Threads — a cooling-off story is exactly what the reader wants recapped.
+- **`ongoing_stories` now feeds ONLY The Threads (v8.37, W-3).** In v8.36 it was dual-use (the Topic-Lock suppression backstop *and* The Threads' source). W-3 **retires the suppression backstop** (`check-topic-lock.py` deleted; § Topic Lock in `editorial-spec.md`). `ongoing_stories` is now a single-purpose, reader-facing asset — The Threads reads it to recap named sagas — plus the Colophon "Next Week" note. `training_phase` + `upcoming_trips` additionally feed the life-threads. A recurring story is *recapped here*, not suppressed from a Lead.
 - **Voice:** situation-report + "previously on" recap — factual, compact, each thread a few lines and a link. No invented angle or new opinion; it is a recap, not a Lead, and carries **no "Do This Week" pin** (that is the Desk's job).
 - **Typically 3–6 threads.** Pick the live ones; don't pad. A thread with no genuine development since last issue can be held.
 
@@ -262,11 +262,11 @@ Masthead echo, issue info line.
 
 ### Topic Families & Recent Leads
 
-**Topic families** are closed-vocabulary tags on every Lead (and any optional Companion) piece in the chapter plan. Used by the planner-side validator to enforce Lead ≠ Companion topic family within a section *when a companion is present*. Used by the Gate 1 grep to enforce the recent-leads bar on repeat-promoted ongoing stories.
+**Topic families** are closed-vocabulary tags on every Lead (and any optional Companion) piece in the chapter plan. Used by the planner-side validator to enforce Lead ≠ Companion topic family within a section *when a companion is present*.
 
 The full enumeration lives in `references/chapter-plan-schema.md`. Adding a new family requires spec amendment.
 
-**Recent leads (sliding-window cap, v8.18).** Every time a topic family anchors any fixed section's Lead, the date is appended to that topic's `lead_history` array in state. `recent_leads` = count of entries within the last **26 weeks** of the current issue date. A topic with `recent_leads >= 3` requires `weeks_since_last_lead >= recent_leads × 2` before it can lead again. Older entries age out of the window automatically, so a topic that goes quiet for 6 months becomes promotable again without manual override.
+**Recent-leads sliding-window cap — RETIRED (v8.37, W-3).** The `lead_history` / `recent_leads` / `weeks_since_last_lead` frequency cap and its Gate-1 grep are gone (`check-topic-lock.py` deleted). `ongoing_stories` no longer feeds any suppression gate — a recurring story is recapped in **The Threads**, not held out of a Lead. Choosing this week's Long Read subject is editorial judgement now, not a cap.
 
 **The Ledger ↔ The Session boundary** is enforced: The Ledger's finance content is finance only; fitness deep-dives go to The Session. Both are Desk columns (v8.36), but the domain boundary holds. Cross-classification fails Gate 2.
 

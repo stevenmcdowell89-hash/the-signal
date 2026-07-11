@@ -55,8 +55,11 @@ it scores at the failure's level.
 ## Dimension 1 — Voice (plain English)
 
 Is the prose communicating, or performing a register? This is the same
-question the Phase 7 plain-English gate asks, graded on a scale instead of
-pass/fail.
+question the Deep-Dive / literary-special Phase 7 plain-English reading pass
+asks, graded on a scale instead of pass/fail. **(v8.37, W-3:** the standalone
+plain-English random-sample *weekly* gate is retired — folded into the single
+holistic editorial-quality read arriving in W-4; this dimension is how that
+holistic read scores voice.)
 
 - **5** — Plain. Direct subject-verb-object sentences, every sentence
   adding information, no rhetorical pose. Reads like someone who knows the

@@ -109,7 +109,7 @@ The WWI Deep Dive (May 2026, post-mortem) failed by performing magazine essayism
 
 Different costumes; same failure. The prose was busy performing a register instead of communicating the subject.
 
-**(v8.30) Not Deep-Dive-only.** Though written for the Deep Dive, the principle below and both trope lists apply to **every format** — the Phase 7 plain-English read now samples all issues, weeklies included. A weekly's hollow connective sentences and hedged answers (see the last two trope bullets) are the same "perform instead of deliver" failure and fail the same read.
+**(v8.30, narrowed v8.37) Deep Dive + literary specials.** The principle below and both trope lists were the standard for the Deep Dive and are the calibration for the literary special-edition reading pass. **The standalone plain-English random-sample reading pass no longer runs as a weekly gate (v8.37, W-3):** its per-weekly, 3-random-paragraph sampling is retired and folded into the single **holistic editorial-quality read** that lands in W-4 (see `docs/signal-final-recommendations-2026-07.md` §5 gate ledger — the ~8 compliance scripts collapse into one holistic read). The trope lists stay here as calibration for the Deep Dive / literary formats and for that holistic read; a weekly's hollow connective sentences and hedged answers are still the same "perform instead of deliver" failure, now judged holistically rather than by random sample.
 
 **The principle: write plainly.**
 
@@ -442,12 +442,11 @@ Beginner's guide. **4,000-6,000 words, 15-22 pages.** Manual trigger: "Run a Sta
 
 **The Essentials chapter — pick density.** The Essentials is the heart of a Starter Kit and must hit the per-pick density floor (see "Visual-density floor" above). The pattern is:
 
-- 5-7 picks rendered as cross-format `.pick` items (image left/right alternating, `.pick-body` containing `.pick-tag` "Top Pick" / "Strong Pick" pill, `<h3>` title, multi-paragraph writeup, `.pick-stats` info block, optional `figure.image-quote` or `.pullquote` between picks). **Every pick must carry a real, sourced image** — a `figure.fig` hero wrapping `.pick-img` (no bare `<img>`; no pick ships imageless). Research must surface a verified image for each title (see SKILL.md Phase 3a); the `.pick` image floats and the body wraps beside then below it, so a short image with long text no longer leaves a dead column.
+- 5-7 picks rendered as cross-format `.pick` items (image left/right alternating, `.pick-body` containing `.pick-tag` "Top Pick" / "Strong Pick" pill, `<h3>` title, multi-paragraph writeup, `.pick-stats` info block, optional `figure.image-quote` or `.pullquote` between picks).
 - The `.essentials` numbered-ring list is ONLY for short concept lists (e.g. "5 essential techniques" inside Why This Matters). NOT for the main pick chapter.
 - The audio drama Starter Kit (April 2026) sets the floor — each pick had an image, a stats sidebar, a 4-number stat row, a "did-you-know" callout, and a source strip. Reproduce that density using the v8.22 vocabulary.
 
-- Use 10-14 component types: `.pick` + `.pick-stats` for The Essentials picks, `.bignum-row` for headline counts, `.pullquote` between picks, `.week-plan` for The One-Week Plan, `.sk-mistake` callout list (ringed × badge + optional `.sk-mistake-fix` "do this instead" line) for Common Mistakes, `.sk-takeaway` conviction band closing Why This Matters, `.also-cards` for Where to Go Deeper, `figure.image-quote` for visual rhythm. The accent is warm terracotta (`--accent-tan`), not the old low-contrast bone-soft.
-- **Component variety is mechanically gated (v8.31).** `validate-issue.py` → `check_special_component_variety` hard-fails a Starter Kit that renders fewer than **9** distinct presentational component types. See the cross-format floor table in `specials.md` § "Component list". The "10-14" above is the target; 9 is the hard floor.
+- Use 10-14 component types: `.pick` + `.pick-stats` for The Essentials picks, `.bignum-row` for headline counts, `.pullquote` between picks, `.week-plan` for The One-Week Plan, `.also-cards` for Where to Go Deeper, `figure.image-quote` for visual rhythm.
 
 
 
@@ -493,6 +492,6 @@ When the Versus is comparing two holidays — two parks, two resorts, two cities
 ## weekly
 
 ### Standard Weekly (default)
-The full Sunday edition. **No hard word target — a healthy Sunday read sized to the week's news, typically ~20-30 pages.** Held by per-section shape (a considered piece per section; Catch-Up optional), not a word quota; flex to the news and yield thin sections rather than padding to a number (v8.27). Section order as listed above.
+The full Sunday edition. **Target ~6,000–9,000 words (v8.37, W-3 — roughly a 40% cut from the old ~20-30-page issue).** This is a real target, not just guidance: the four-movement spine (one Long Read, brisk rounds, an 8-line Caught Up) is built to land in this band. It is still shaped by *movements and per-piece shape*, not a rigid quota — flex to the news, yield thin rounds rather than padding — but an issue drifting well past ~9k words has reverted to the old two-anchors-everywhere bulk and should be cut back to the spine. The deep length lives in the single Long Read; the rounds stay short. Section order per the four movements above.
 
 

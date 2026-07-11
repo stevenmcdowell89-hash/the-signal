@@ -1,5 +1,51 @@
 # The Signal — Changelog
 
+8.37.0 — The spine & the Long Read (weekly W-3, from `docs/signal-final-recommendations-2026-07.md`
+  § STREAM 1 Phase W-3). Reorganises the weekly into a four-movement spine, cuts length
+  ~40%, trims the component palette to a tight ~12, and retires three gates. Spec +
+  sliced views + checklist + schema + one validator relaxation + new component-contract +
+  CSS; two scripts deleted; JS-off rendering intact.
+
+  - **Four-movement architecture** (`editorial-spec.md` § Section Structure → new
+    "Four-Movement Architecture", + § The Week, Composed / § Caught Up / § The Long Read;
+    re-sliced `spec/weekly.md`; `compliance-checklist.md` Coverage; `sections.md`):
+    **I THE OPEN** (The Letter → The Week, Composed → The Week in Numbers → **Caught Up**,
+    an 8-line non-expandable digest) · **II THE LONG READ** (exactly ONE deep anchor,
+    rotating subject, `08-anchor-piece` slot — absorbs the old Saga / Deep-Dive-lite /
+    evergreen-feature impulses) · **III THE ROUNDS** (Touchline, Pixel & Byte, Screen &
+    Sound + a Bookmark books rail, The Desk) · **IV THE CLOSE** (The Threads → Down the
+    Rabbit Hole → On the Radar → Do This Week → Colophon; ends on a verb + a human line).
+    Branded identities kept; the Long Shelf is retired (its on-ramp job → The Week,
+    Composed; wildcards → The Letter / the Long Read).
+  - **Considered-piece-in-every-section backbone RETIRED.** The single Long Read carries
+    the deep work; rounds carry the week's news at the depth the material earns.
+    `validate-chapter-plan.py`'s `check_section_shape` no longer hard-fails a round that
+    lacks a Lead/yield (piece well-formedness + the Catch-Up no-namedrops rule still
+    enforced). `chapter-plan-schema.md` `pieces` description + `compliance-checklist.md`
+    1G updated.
+  - **Caught Up (8-line cap) added; the breadth-safety-net-in-every-section rule retired.**
+    Caught Up discharges completeness up front, so rounds no longer carry safety-net
+    headlines. New `.caught-up` contract + CSS.
+  - **The Semafor "The case against" callout** added — `.case-against` component
+    (`component-contracts.md` + CSS `15b-open-argument.css`), a sourced counter-argument
+    box available where a section carries a real argument.
+  - **Length cut ~40% → ~6,000–9,000-word target** (was "~20–30 pages"), and the
+    **component palette trimmed to a tight ~12** (Angle, Pull quote, Stats row, Did You
+    Know, Split layout, Image, Also cards, Rating dots, Category dot, Results strip,
+    Read-next, The case against). The rest marked removed inline in § Component Quick
+    Reference (no graveyard file; CSS retained for special editions).
+  - **Three gates retired:** `check-topic-lock.py` (topic-lock sliding-window) **deleted**
+    + its Gate-1 grep removed — `ongoing_stories` now feeds ONLY The Threads; the
+    suppression role is intentionally dropped in favour of the continuity recap.
+    `check-theme-clustering.py` **deleted**. The standalone plain-English random-sample
+    **weekly** reading pass retired (folded into the holistic read arriving in W-4; the
+    Deep Dive / literary-special reading pass is unchanged). All phase-pipeline
+    invocations removed from `SKILL.md`; `quality-rubric.md` note updated.
+  - Preserved wholesale: prose floor, fact density, sourcing rigour
+    (`validate-research-bundle`), the image-integrity chain (`validate-issue` image checks
+    + `auto-repair-images`), branded identities, Down the Rabbit Hole, reading-time badges,
+    the editorial cover, and JS-off rendering.
+
 8.36.0 — Service & continuity (weekly W-2, from `docs/signal-final-recommendations-2026-07.md`
   § STREAM 1 Phase W-2). Restores the service layer and stands up a reader-facing
   continuity engine, and RETIRES two planner validators (per the §5 gate ledger).

@@ -150,10 +150,40 @@ the spec/template/CSS additions don't touch the already-rendered issue. Grep-swe
 no dangling "deficit promotion" / "hard cadence floor" mandate in the spec or
 checklist; remaining "Money"/"Places" hits are all rebrand-context ("was 'Money'").
 
-### Weekly W-3 — The spine & the Long Read ⬜
-Four-movement architecture (OPEN / LONG READ / ROUNDS / CLOSE); Caught Up; single
-Long Read; "The case against" callout; ~40% length cut; ~12-component palette;
-retire topic-lock sliding-window + its Gate-1 grep (The Threads owns continuity).
+### Weekly W-3 — The spine & the Long Read ✅
+Commit: _Weekly W-3: four-movement spine + Caught Up + single Long Read, ~40% length cut, ~12-component palette, retire topic-lock/theme-clustering/plain-English-random-sample_
+
+Spec-heavy reorganisation + one validator relaxation + a new component + CSS + two
+script deletions. Bumped skill to **v8.37.0**. No new templates (the Long Read reuses
+the existing `08-anchor-piece` slot; Caught Up / case-against are markup contracts + CSS).
+
+| Item | What changed | Decision |
+|---|---|---|
+| Four-movement spine | `editorial-spec.md` § Section Structure gains a "Four-Movement Architecture" block + § The Week, Composed / § Caught Up / § The Long Read; Fixed-list regrouped by movement; re-sliced to `spec/weekly.md`; `compliance-checklist.md` Coverage rewritten around the movements; `sections.md`. | **I OPEN** (Letter → The Week, Composed → Week in Numbers → **Caught Up**) · **II LONG READ** (one anchor) · **III ROUNDS** (Touchline, Pixel & Byte, Screen & Sound, Bookmark books rail, The Desk) · **IV CLOSE** (Threads → Rabbit Hole → On the Radar → Do This Week → Colophon; ends on a verb + a human line). Branded identities kept; **Long Shelf retired** (on-ramp → The Week, Composed; wildcards → Letter/Long Read). World is no longer a standalone round (breadth → Caught Up, depth → Long Read). |
+| Single Long Read | Movement II is exactly ONE deep anchor, rotating subject, reusing `08-anchor-piece` (`.is-anchor`). Absorbs the old Saga / Deep-Dive-lite / evergreen-feature impulses. | No new template — reuses the existing anchor slot. The whole-issue Deep Dive special is untouched (the Long Read is a *movement*, not a format). |
+| Stop forcing two deep anchors | `validate-chapter-plan.py` `check_section_shape` **relaxed**: removed the "must have a Lead or `yield_reason`" hard-fail. A round may be a Lead, a plain Catch-Up, picks, or a silent yield. Piece well-formedness + Catch-Up no-namedrops still enforced. Two inline tests flipped to `expect_pass=True`; docstring/header + `chapter-plan-schema.md` `pieces` + checklist 1G updated. | The single Long Read carries the deep work, so the per-section considered-piece backbone is redundant bulk. Kept the Lead/Catch-Up shape *available*, not mandatory-deep. |
+| Caught Up + retire breadth-safety-net | New `.caught-up` (≤8-line, non-expandable) contract + CSS `15b-open-argument.css`. The per-section "one-line safety-net headlines" job removed from § Article Structure / § Section Rules / Search-Checklist / checklist. | Completeness is a *fixed 8-line budget* up front, not an open drawer in every section. Renders complete JS-off (no expand affordance to break). |
+| The case against | New `.case-against` > `.ca-label`/`.ca-body` — Semafor-style sourced counter-argument. Palette row #12 + `component-contracts.md` + CSS. | Available only **where a section carries a real argument** (usually the Long Read); a real position, never a strawman (Borrowed angles, our voice). Section-accent, JS-off. |
+| Length ~40% cut | `~6,000–9,000-word` target replaces "~20–30 pages" in § Identity + Standard Weekly overview (→ sliced). | A real target the four-movement spine is built to hit; past ~9k = reverted to old bulk. |
+| Palette → tight ~12 | § Component Quick Reference rewritten: **12 surviving** — Angle · Pull quote · Stats row · Did You Know · Split layout · Image (hero/offset) · Also cards · Rating dots · Category dot · Results strip · Read-next · **The case against**. ~30 others marked **removed inline** (no graveyard file; CSS retained for specials). Always-on structural components (watermark, opener, reveal, count-up, `.foreword`/`.caught-up`/`.do-this-week`/`.the-threads`/`.week-in-numbers`) listed separately, not counted in the 12. | Decisive trim — the sprawling palette invited slot-filling. |
+| Retire topic-lock | **`check-topic-lock.py` deleted**; its Gate-1 grep + the § Topic Lock machinery gutted (heading kept so the slicer still resolves `02b-topic-lock`); SKILL Phase-7 invocation + the `lead_history` append instruction removed. `ongoing_stories` now feeds **ONLY The Threads** + the Colophon "Next Week" note — the suppression role is **intentionally dropped** in favour of the continuity recap (said so in the spec). | Per §5 gate ledger. The Threads owns continuity; suppression-by-gate is redundant. |
+| Retire theme-clustering | **`check-theme-clustering.py` deleted**; SKILL Phase-7 invocation + Key-Rules backstop references removed. | The four-movement spine (one Long Read + brisk rounds) removes the structural cause; one of the ~8 scripts §5 collapses. |
+| Retire plain-English random-sample (weekly) | The standalone 3-random-paragraph weekly reading pass retired in `SKILL.md`, `quality-rubric.md`, and `editorial-spec.md` (v8.30 "not Deep-Dive-only" note narrowed). Folded into the holistic read arriving in W-4. | The **Deep Dive / literary-special** reading pass + trope lists are kept as calibration. |
+
+**Validation:** `ast.parse` clean on `validate-chapter-plan.py`; inline `--test` **53/53**;
+`slice-spec.sh` exit 0, **0 FAILs**, four movements confirmed in `spec/weekly.md`;
+`validate-issue.py --format weekly --skip-image-urls` on
+`issues/signal_weekly_2026-07-05.html` → **PASS (exit 0)** (an old issue predating the
+movements; it isn't structurally rejected — validate-issue.py checks structure/back-link/
+placeholders/CSS/navigator, none of which changed). Grep-swept: no dangling
+topic-lock/theme-clustering/two-deep-anchors/breadth-safety-net/plain-English-random-sample
+live references; palette lists exactly 12.
+
+**Deferrals:** The Week, Composed and Caught Up are specified as markup contracts + CSS but
+have **no dedicated template-part** (they reuse `.foreword`-adjacent / `.sec-opener` styling and
+a plain list) — a scaffolded template-part can follow if wanted. The **holistic editorial-quality
+read** that replaces the retired plain-English weekly gate lands in **W-4** (the gate ledger
+collapses to three there); until then the weekly has no standalone prose-performance gate.
 
 ### Weekly W-4 — Personalization loop & consolidation ⬜
 Saved This Week reader input feeding The Letter + The Threads (the daily→weekly

@@ -197,29 +197,24 @@ awk '/<figcaption/,/<\/figcaption>/' FILE | grep -v -E 'Photo:|Still:|Credit:|Im
 
 **Why this is Gate 1, not Gate 2:** image-caption mismatch is fabrication of visual claims, parallel to fabrication of factual claims (1B). One v8.10.x issue had the same YouTube thumbnail captioned as two different venues in two different chapters — a confident lie the reader would only notice on close inspection. Mechanical detection prevents the class entirely.
 
-### 1G. Considered-piece backbone structural compliance (v8.27, inverted v8.34 — replaces the v8.15 two-anchor rule)
+### 1G. Round shape + the single Long Read (v8.37, W-3 — the considered-piece backbone is RETIRED)
 
-For every fixed section in the stitched HTML, confirm the **considered-piece backbone** shape (v8.34): one considered piece (a Lead — synthesis, a roundup with a named layer, an angle, or a feature) that passes the two-factor test, with an **optional** Catch-Up roundup grounding it (or an optional Companion, or — for a section running short, especially The Toolkit — a visible yield). The v8.15 two-deep-anchor mandate is retired, and the v8.27-v8.28 catch-up spine is inverted: the Catch-Up is no longer the mandatory element. The failure modes are: (a) a section running only a Catch-Up roundup with no considered piece and no visible yield (recap is the daily's job — it must yield); (b) a Catch-Up that is bare namedrops (items naming a thing with no "why it matters" and no link). A bare considered piece with no Catch-Up is fine. The chapter-plan validator (`check_section_shape`) catches these at Phase 4; this is the stitched-HTML reading pass.
+The **mandatory considered-piece-in-every-section backbone is gone (v8.37).** The four-movement spine has **one** deep anchor — the **Long Read** (`.is-anchor` section) — which carries the issue's considered work. The **rounds** (world/pixel_byte/toolkit/touchline/screen_sound/session) carry the week's news at whatever depth the material earns: a considered Lead, a plain Catch-Up roundup, picks, or a silent yield are all fine. Confirm instead:
+- **Exactly one Long Read** (`.is-anchor`) runs, and it is a real deep piece.
+- **Caught Up** (Movement I) is present, ≤8 lines, non-expandable — it owns news-breadth; rounds carry **no** safety-net headlines.
+- Any Catch-Up in a round is not **bare namedrops** — each item names a thing, says why it matters, and links.
 
 ```bash
 # Sketch:
-# For each fixed section (world, pixel_byte, toolkit, touchline, screen_sound, session) that APPEARS:
-#   - A Lead (substantial H2 + body, >= 300 words).
-#   - PLUS a second element: a Catch-Up roundup (several items, each what/why/link),
-#     OR a Companion article (>= 200 words, distinct topic), OR a visible short/yield note.
-#   - Catch-Up items must NOT be bare namedrops: each names a thing, says why it matters, and links.
-# A bare Lead alone, or a namedrop-only roundup, is a hard fail.
-# The Toolkit may be ABSENT entirely (it yields on thin weeks) — absence is not a failure.
+# - Exactly one section carries class "is-anchor" (the Long Read). Zero or two+ is a fail.
+# - A .caught-up block exists with <= 8 <li> and no <details>/expand affordance.
+# - For each round that runs a catch_up roundup: each item has why-it-matters + a link
+#   (bare namedrops fail). A round may be short, picks-only, or absent — none of these fail.
 ```
 
-### 1H. Recent-leads sliding-window cap (v8.15, refined v8.18)
+### 1H. Recent-leads sliding-window cap — RETIRED (v8.37, W-3)
 
-For each topic in state-file ongoing_stories, compute `recent_leads` = count of entries in `lead_history` with date within the last 26 weeks of the issue date. If `recent_leads >= 3`:
-1. Read the topic's named-entity tag (e.g. "Iran War" -> ["iran", "tehran", "hormuz", "khamenei"])
-2. Scan each fixed section's Lead H2 + first paragraph
-3. If named entities appear in H2 OR appear 3+ times in first paragraph AND `recent_leads * 2 > weeks_since_last_lead`: hard fail with reason "topic-lock"
-
-Leads older than 26 weeks age out of the window automatically — they don't count toward `recent_leads`. Topics that have gone quiet for 6 months become promotable again without override (v8.18 change from the v8.15 unbounded lifetime counter).
+The topic-lock sliding-window cap (`recent_leads` / `weeks_since_last_lead` / the named-entity Gate-1 grep / `check-topic-lock.py`) is **retired**. `ongoing_stories` no longer feeds any suppression gate — it feeds **only The Threads** (§ The Threads) and the Colophon "Next Week" note. A story that keeps recurring is *recapped in The Threads*, not suppressed. Deciding this week's Long Read subject (don't re-run last week's on a holding pattern) is editorial judgement, not a gate. State files may retain `lead_history` for reference; nothing reads it.
 
 ### 1I. Per-section mandatory links (promoted from Gate 1D v8.15)
 
@@ -267,12 +262,17 @@ See `references/spec/global.md` § image-integrity → "Image URL verification c
 
 Only proceed here after Gate 1 passes clean.
 
-### Coverage
-- [ ] Issue is a healthy Sunday read sized to the week — no hard word target; don't pad to a number, don't pad a thin section (v8.27).
+### Coverage (four-movement spine, v8.37)
+- [ ] **Four movements present, in order:** I THE OPEN (The Letter → The Week, Composed → The Week in Numbers → Caught Up) · II THE LONG READ (exactly one deep anchor) · III THE ROUNDS (Touchline, Pixel & Byte, Screen & Sound, the Bookmark books rail, The Desk) · IV THE CLOSE (The Threads → Down the Rabbit Hole if due → On the Radar → Do This Week → Colophon). Branded identities intact.
+- [ ] **Length ~6,000–9,000 words (v8.37).** A ~40% cut from the old issue; the deep length lives in the single Long Read, the rounds stay brisk. An issue drifting well past ~9k has reverted to old bulk — cut back to the spine.
+- [ ] **Exactly ONE Long Read** (`.is-anchor`), a real deep piece, rotating subject. No second mandated deep anchor in the rounds — the old "considered piece in every section / two deep anchors" mandate is retired.
+- [ ] **Caught Up** present, ≤8 lines, non-expandable (no `<details>`, no "…more"). It owns news-breadth; **rounds carry no safety-net headlines** (the breadth-safety-net-in-every-section rule is retired).
+- [ ] **The Week, Composed** present — the single prose on-ramp (replaces the old triple table-of-contents; the Long Shelf is gone).
 - [ ] Every major section has at least one relevant image
-- [ ] **Lead + Catch-Up shape, Lead OPTIONAL (v8.28).** A section may run a Catch-Up only (pure facts, no Lead) — that's fine and often better (gaming, results). A bare Lead with no Catch-Up/companion/yield is a fail; an empty section is a fail.
-- [ ] **If a Lead runs, two-factor test + borrowed angle:** it *moved this week* (not a holding pattern — "still in crisis / clings on / waiting on the vote") AND the something-extra is a *sourced* angle real commentators hold, voiced as ours — never invented (the Star Wars "nothing" essay and the Starmer ×3 run are the anchor failures).
-- [ ] **The Catch-Up carries specific facts, not namedrops** — every item a real fact (name/number/date) + why it matters + a link; a beat-label with no fact is cut ("namedropped three game releases and moved on"). Plus one-line safety-net headlines for the week's majors.
+- [ ] **Rounds carry news at the depth the material earns (Lead OPTIONAL, no backbone).** A round may run a considered Lead, a plain Catch-Up roundup, picks, or a silent yield — all fine. Don't force a considered piece where there's no real one; the Long Read is where depth lives.
+- [ ] **If a round runs a Lead, two-factor test + borrowed angle:** it *moved this week* (not a holding pattern) AND the something-extra is a *sourced* angle, voiced as ours — never invented.
+- [ ] **Any round Catch-Up carries specific facts, not namedrops** — every item a real fact (name/number/date) + why it matters + a link; a beat-label with no fact is cut ("namedropped three game releases and moved on"). (No safety-net-headlines job — that moved to Caught Up.)
+- [ ] **The case against** callout used only where a section carries a real argument (usually the Long Read) — a sourced counter-argument, never a strawman, never decoration.
 - [ ] **UK politics is out by default** (v8.27). It appears only as a genuine landscape shift (an election *result* that changes the picture, a government actually falling) that also passes the two-factor Lead test; reshuffles / leadership will-he-won't-he / resignation-call counts / Stormont process / polling chatter are out (a one-line safety-net mention at most). It is never auto-promoted to the Lead.
 - [ ] If a Companion runs, it's on a visibly different topic from the Lead (not a re-framing of the same story).
 - [ ] No fixed section reads as 70%+ about one story when there's been substantial coverage of that story across recent issues.
@@ -284,14 +284,15 @@ Only proceed here after Gate 1 passes clean.
 - [ ] Issue has news AND features/evergreen — not purely news
 - [ ] On the Radar: 8-10 items, no overlap with Release Radar, specific and non-patronising
 
-### Rotating Sections
-- [ ] 2-3 rotating sections selected from state file cadence priority (v8.27 — was 3-4). Roster: The Shelf, This Week in History, Listening, Money, Places.
+### Rotating Sections & The Desk
+- [ ] 1-2 non-Desk rotating sections (The Shelf, This Week in History, Listening) + 1-2 Desk service columns (The Session, The Ledger, The Itinerary, The Toolkit — each closing on a "Do This Week" pin), per state-file cadence priority + real service news.
 - [ ] The Saga is trigger-driven, NOT scheduled by cadence — present only if a public peg (researcher-found) or private peg (`currently_reading`/`currently_watching` or manual trigger) fired it.
-- [ ] The Toolkit (fixed-but-yields) appears only when there's tech news; on return it covers the full gap since last appearance, not just 7 days.
+- [ ] The Toolkit (Desk column, yields strictly) appears only when there's tech news; on return it covers the full gap since last appearance, not just 7 days.
 - [ ] Only selected sections researched — no wasted research
-- [ ] Catch-up rule respected (Shelf, Toolkit, Listening, Money, Places — full gap since last appearance)
+- [ ] Catch-up rule respected (Shelf, Toolkit, Listening, Ledger, Itinerary — full gap since last appearance)
 - [ ] Navigator only shows sections present in this issue
-- [ ] Down the Rabbit Hole included as sidebar if due (3-4 weeks)
+- [ ] **Down the Rabbit Hole** included in Movement IV THE CLOSE (before On the Radar) if due (3-4 weeks)
+- [ ] **Component palette: the tight ~12 kit (v8.37).** The issue reaches for the twelve load-bearing components (Angle, Pull quote, Stats row, Did You Know, Split layout, Image, Also cards, Rating dots, Category dot, Results strip, Read-next, The case against) + the always-on structural components; the retired components (see § Component Quick Reference "Removed from the weekly kit") don't reappear.
 
 ### Sub-formats (v8.17)
 - [ ] If Screen & Sound's chapter plan was Director's Cut (`sub_format: "directors_cut"`), the rendered Lead reads as an essay (not a current-week news beat), is 550+ words, and the section still carries its Catch-Up roundup (a Companion may carry the displaced current-week beat, but the week's releases are covered either way). `last_directors_cut_date` is updated post-publish.
