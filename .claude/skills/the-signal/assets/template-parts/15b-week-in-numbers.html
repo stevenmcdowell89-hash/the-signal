@@ -1,0 +1,20 @@
+<!-- ══════ THE WEEK IN NUMBERS — personal stat strip (v8.36) ══════
+  Fixed, compact PERSONAL stat strip. Numbers about THE READER'S week, not the
+  news: Garmin miles + current training block (state `training_phase`), FPL
+  rank, the Juventus result, one money number (from The Ledger's world). Reuses
+  the .stat-bar / .stat vocabulary, wrapped in .week-in-numbers. 4–5 stats;
+  drop a stat rather than invent it if a number isn't available.
+  DISTINCT from the Colophon's "Issue in Numbers" (that counts the issue —
+  words/sections/links/images; this counts the reader's week). Both ship; never
+  merge. Renders near the TOP of the issue (after The Letter). No JS needed.
+  See references/sections.md § The Week in Numbers, references/component-contracts.md.
+-->
+<section class="week-in-numbers" id="week-in-numbers" aria-label="The Week in Numbers">
+  <div class="win-label">The Week in Numbers</div>
+  <div class="stat-bar">
+    <div class="stat"><div class="stat-num">[31.2]</div><div class="stat-label">Garmin miles · [base block, wk 6]</div></div>
+    <div class="stat"><div class="stat-num">[412k]</div><div class="stat-label">FPL rank</div></div>
+    <div class="stat"><div class="stat-num">[2–1]</div><div class="stat-label">Juventus</div></div>
+    <div class="stat"><div class="stat-num">[4.75%]</div><div class="stat-label">[top easy-access AER]</div></div>
+  </div>
+</section>

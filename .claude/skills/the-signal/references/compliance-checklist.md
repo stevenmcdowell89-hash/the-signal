@@ -232,17 +232,13 @@ Hard fail if any item is link-free.
 
 For long_shelf section: count items with class="wildcard" (or data-wildcard="true"). Must be >= 2. Hard fail otherwise.
 
-### 1K. Long Game ↔ Session boundary
+### 1K. The Ledger ↔ Session boundary
 
-For long_game section: scan body for fitness-cluster vocabulary (sets, reps, deload, taper, mileage, HRV, kettlebell, deadlift, squat, lifting, run pace). 3+ matches = misclassified fitness content in a finance section. Hard fail.
+For the Ledger (money) Desk column: scan body for fitness-cluster vocabulary (sets, reps, deload, taper, mileage, HRV, kettlebell, deadlift, squat, lifting, run pace). 3+ matches = misclassified fitness content in a finance column. Hard fail. (Both are Desk columns as of v8.36, but the domain boundary still holds.)
 
-### 1L. Rotating cadence floor (planner enforcement)
+### 1L / 1M. Rotating cadence floor + deficit promotion — RETIRED (v8.36)
 
-For each rotating section in the issue, verify `weeks_since_last_appeared >= cadence_low` (per state file). If a section is scheduled inside its floor without a `deficit_override_reason`, hard fail with reason "cadence-floor".
-
-### 1M. Deficit-eligible section omitted
-
-For each rotating section with `weeks_since_last_appeared >= 2 * cadence_high`, verify it appears in the issue. If absent without a `deficit_override_reason`, hard fail with reason "cadence-deficit".
+The hard-cadence-floor (old planner rule 7) and deficit-promotion (old planner rule 8) checks are **retired** — `validate-chapter-plan.py` no longer enforces them, and there is no `deficit_override_reason` escape hatch. Replaced by a single **editorial checklist line, not a gate**: *each domain surfaces at least monthly.* Over any ~4-issue stretch, aim for each rotating domain (The Shelf, This Week in History, Listening, and each Desk column — The Session, The Ledger, The Itinerary, The Toolkit) to appear at least once. This is editorial judgement; nothing hard-fails on it. The Threads owns continuity now, so a quiet domain no longer needs a forced-include gate.
 
 ### 1F+. Image URL verification chain (v8.13.7+ — UNBREAKABLE)
 

@@ -1,0 +1,80 @@
+<!-- ══════ THE DESK — service department (v8.36) ══════
+  The Desk groups four SERVICE COLUMNS — The Session (fitness), The Ledger
+  (money), The Itinerary (travel/parks/NI), The Toolkit (tech). 1–2 run per
+  issue, picked by which domain is most overdue AND has real service news.
+  EVERY column that runs CLOSES on a mandatory `.do-this-week` pin: one
+  concrete do-it-this-week action, the WHY attached, criteria stated not vibes.
+  Each column uses its own section class (.session-section / .ledger-section /
+  .itinerary-section / .toolkit-section) so it inherits its own accent. The pin
+  inherits the host column's --section-accent. See references/component-contracts.md
+  § The Desk, references/sections.md § The Desk, assets/css/15a-service-continuity.css.
+  Render 1–2 of the four <section> blocks below.
+-->
+<hr class="divider dv-ledger">
+
+<!-- ── Desk column: THE LEDGER (money) — was "Money" ── -->
+<section class="sec ledger-section" id="ledger">
+  <div class="sec-watermark">Ledger</div>
+  <span class="section-label" style="color:var(--ledger-accent)">The Desk — The Ledger</span>
+  <h2>[Money headline — one of finance / fintech / side-hustle]</h2>
+  <p>[The considered money piece — a synthesis or angle the daily couldn't add.]</p>
+  <!-- Data-forward: .big-number-row / .compare-panel / .stat-bar as the content earns -->
+  <!-- MANDATORY closing element — one per column, always last: -->
+  <div class="do-this-week">
+    <span class="dtw-label">Do This Week</span>
+    <p class="dtw-action">[One concrete, named action — e.g. "Move your emergency fund to Chase Saver at 4.75% AER".]</p>
+    <p class="dtw-why">[Why THIS one — the stated criterion, e.g. "top easy-access rate right now with no intro-bonus cliff".]</p>
+  </div>
+  <div class="read-next">Up next: <a href="#threads">The Threads <span class="arrow">→</span></a> — [teaser]</div>
+</section>
+
+<!-- ── Desk column: THE ITINERARY (travel/parks/NI) — was "Places" ── -->
+<section class="sec itinerary-section" id="itinerary">
+  <div class="sec-watermark">Itinerary</div>
+  <span class="section-label" style="color:var(--itinerary-accent)">The Desk — The Itinerary</span>
+  <h2>[Travel / parks / NI-local headline]</h2>
+  <p>[Destination profile, park news, or an NI local find genuinely worth acting on.]</p>
+  <!-- .timeline (trip/event dates) / .split-60-40 (destination + image) / .img-montage -->
+  <div class="do-this-week">
+    <span class="dtw-label">Do This Week</span>
+    <p class="dtw-action">[One concrete travel action — a booking window opening, a date to reserve, an event to attend.]</p>
+    <p class="dtw-why">[Why now / why this one — the stated criterion.]</p>
+  </div>
+  <div class="read-next">Up next: <a href="#threads">The Threads <span class="arrow">→</span></a> — [teaser]</div>
+</section>
+
+<!-- ── Desk column: THE SESSION (fitness) ── -->
+<section class="sec session-section" id="session">
+  <div class="sec-watermark">Session</div>
+  <span class="section-label" style="color:var(--session-accent)">The Desk — The Session</span>
+  <h2>[Fitness feature headline]</h2>
+  <p>[Sourced, evidence-led fitness feature — training / gear / science angle.]</p>
+  <div class="workout-card reveal">
+    <div class="workout-card-title">[Protocol Name]</div>
+    <table>
+      <tr><th>Scheme</th><th>Reps</th><th>Notes</th></tr>
+      <tr><td>[Name]</td><td>[Reps]</td><td>[Description]</td></tr>
+    </table>
+  </div>
+  <div class="do-this-week">
+    <span class="dtw-label">Do This Week</span>
+    <p class="dtw-action">[One concrete session/protocol/deload to run this week.]</p>
+    <p class="dtw-why">[Why this fits the current block — the stated criterion.]</p>
+  </div>
+  <div class="read-next">Up next: <a href="#threads">The Threads <span class="arrow">→</span></a> — [teaser]</div>
+</section>
+
+<!-- ── Desk column: THE TOOLKIT (tech) — yields strictly ── -->
+<section class="sec toolkit-section" id="toolkit">
+  <div class="sec-watermark">Toolkit</div>
+  <span class="section-label" style="color:var(--toolkit-accent)">The Desk — The Toolkit</span>
+  <h2>[Tech / Android / e-ink discovery headline]</h2>
+  <p>[A tool/app/feature genuinely worth finding — consumer, not dev/enterprise.]</p>
+  <!-- .also-cards / .compare-panel (product A vs B) / .sidebar-float ("What it replaces") -->
+  <div class="do-this-week">
+    <span class="dtw-label">Do This Week</span>
+    <p class="dtw-action">[One concrete tech action — a specific app to install, a setting to change.]</p>
+    <p class="dtw-why">[Why this one — the stated criterion.]</p>
+  </div>
+  <div class="read-next">Up next: <a href="#threads">The Threads <span class="arrow">→</span></a> — [teaser]</div>
+</section>

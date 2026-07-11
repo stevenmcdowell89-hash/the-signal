@@ -14,6 +14,12 @@ The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan
 
 > **Note (v8.27):** `toolkit` is now a fixed-but-yields section; when it does not appear in an issue it is simply omitted from `chapters`. The Saga is trigger-driven and is never a rotating cadence chapter.
 
+> **Note (v8.36 — Weekly W-2, The Desk + The Threads + The Week in Numbers).**
+> - **Rebranded rotating chapter_ids:** the money column is now `ledger` (was `money`/`the_money`) and the travel column is `itinerary` (was `places`/`the_places`). The change is reader-facing; the state-file continuity keys stay `the_money.last_appeared` / `the_places.last_appeared`.
+> - **The Desk** is a service *department* grouping 1–2 running service columns — `session`, `ledger`, `itinerary`, `toolkit`. `session` and `toolkit` keep the fixed-section `pieces` shape above; `ledger` and `itinerary` remain plain rotating chapters. **Every Desk column that runs closes on a `.do-this-week` pin** — one concrete do-it-this-week action (rendered, not a plan field).
+> - **New plain chapters** (no `pieces` shape, not shape-validated): `threads` (The Threads — the continuity engine off `ongoing_stories` + `training_phase` + `upcoming_trips`) and `week_in_numbers` (The Week in Numbers — the personal stat strip). Both render from state; neither is enforced by `validate-chapter-plan.py`.
+> - **Retired (v8.36):** the hard-cadence-floor and deficit-promotion validators are gone — domain cadence is now an editorial checklist line, not a planner gate. There is no `deficit_override_reason` / `deficit_overrides` field any more.
+
 **v8.17 additions:** optional `sub_format` field on the `screen_sound` and `history` chapters. Allowed values: `null` (default), `"directors_cut"` (screen_sound only), `"closer_look"` (history only). When `sub_format = "directors_cut"`, the Lead piece's word_count_target.min must be ≥ 550. When `sub_format = "closer_look"`, the history chapter must carry a single `featured_item` with word_count_target.min ≥ 600 and NO `items`/`also_items` array.
 
 ---

@@ -116,13 +116,50 @@ surfaces; the Top-20-only back-compat toggle path); the **community digest**
 `test-d1.mjs` **12/12** and `test-d2.mjs` **20/20** still pass. `node --check`
 clean on all touched JS + both HTML inline scripts.
 
-## Batch 5 — Weekly W-2/W-3/W-4 (the rebuild) ⬜
-The Desk (rotating service columns + "Do This Week"); The Threads continuity
-engine; The Week in Numbers; four-movement architecture (OPEN / LONG READ /
-ROUNDS / CLOSE); Caught Up; single Long Read; "The case against" callout; ~40%
-length cut; ~12-component palette; Saved This Week loop; editorial-charter
-consolidation. **Gate ledger:** retire to exactly three (image-URL chain, markup
-contracts, one holistic quality read).
+## Batch 5 — Weekly W-2/W-3/W-4 (the rebuild) 🚧
+The weekly rebuild lands in three phases (W-2, W-3, W-4). W-2 is done; W-3/W-4
+remain. The batch stays 🚧 until W-4 lands.
+
+### Weekly W-2 — Service & continuity ✅
+Commit: _Weekly W-2: The Desk + "Do This Week", The Threads, The Week in Numbers, retire cadence-floor + deficit-promotion_
+
+Spec + scaffold + two script-rule removals. Bumped skill to **v8.36.0**. A prior
+partial run had staged — uncommitted — the `editorial-spec.md` / `sections.md` /
+`component-contracts.md` edits, the template-parts (`13a-the-desk.html`,
+`15a-the-threads.html`, `15b-week-in-numbers.html`), the CSS
+(`15a-service-continuity.css`), and a `check_rotating_cadence` no-op stub. This
+batch **completed and cleaned that up**: deleted the dead `_resolve_rotating_state`
+helper + `ROTATING_SECTION_CADENCE` / `CHAPTER_ID_TO_ROTATING_KEY` maps + the
+inline cadence tests (leaving the script's other rules intact), regenerated the
+sliced spec views via `slice-spec.sh`, added the "Do This Week" pin to the
+standalone `14-session.html`, updated `SKILL.md` / `CHANGELOG.md` / the schema /
+the compliance checklist, and verified the two validations.
+
+| Item | What changed | Decision |
+|---|---|---|
+| The Desk (service department) | New department grouping four rotating **service columns** — The Session, The Ledger (rebrand of "Money"), The Itinerary (rebrand of "Places"), The Toolkit — **1–2 per issue**. Spec in `editorial-spec.md` (§ The Desk + Fixed/Rotating + Cadence Table) → sliced to `spec/weekly.md`; briefs in `sections.md`; chapter_ids in `chapter-plan-schema.md`. New template-part `13a-the-desk.html`; CSS in `15a-service-continuity.css`. | Grouped as a **department, not a merge** — each column is a standalone `<section>` (`.ledger-section` etc.) carrying its own accent/brief and a shared "The Desk — [Column]" label; 1–2 render per issue. Columns picked by "most overdue **and** has actionable service news", not a cadence clock. Rebrand is **reader-facing only** — state keys stay `the_money`/`the_places` for continuity. |
+| "Do This Week" pin | Mandatory closing element of **every** Desk column: `.do-this-week` > `.dtw-label`/`.dtw-action`/`.dtw-why` — one concrete action + the why + the stated criterion (not vibes). Contract in `component-contracts.md`; in `13a-the-desk.html` (all four columns) + `14-session.html`; CSS in `15a-service-continuity.css`. | The pin **auto-tints to the host column's accent** via `var(--section-accent)` (already set per section in `04-layout-sections.css` for session/ledger/itinerary/toolkit), so writers add no CSS. Exempt from the one-aphorism cap; renders with JS off. |
+| The Threads (continuity engine) | New reader-facing "previously on…" section off `ongoing_stories`, extended beyond World to named sagas across all domains + the reader's life-threads (`training_phase`, `upcoming_trips`). Spec § The Threads; contract + template-part `15a-the-threads.html`; CSS `15a-service-continuity.css`. | **`ongoing_stories` made DUAL-USE:** the topic-lock suppression backstop (`check-topic-lock.py`) and the existing Ongoing-tracker box are **kept unchanged**; The Threads *additionally* reads the same records. `.thread-saga` (from ongoing_stories) vs `.thread-life` (the person). It's a recap, not a Lead — **no** Do-This-Week pin. Stood up as a section now; formally joins the CLOSE movement in W-3. |
+| The Week in Numbers | Small personal stat strip near the top: Garmin miles + training block (`training_phase`), FPL rank, the Juventus result, one money number (from The Ledger). Spec names each source. Contract + template-part `15b-week-in-numbers.html`; CSS `15a-service-continuity.css`. | Reuses `.stat-bar`/`.stat`; kept **distinct** from the Colophon's Issue-in-Numbers (a boxed note in the spec forbids merging). Numbers come from `signal-state.json` / the D-3 digest where available. |
+| Retire cadence-floor + deficit-promotion | Removed old planner **rule 7** (hard cadence floor) and **rule 8** (deficit promotion) from `validate-chapter-plan.py`: the `check_rotating_cadence` fn, the `_resolve_rotating_state` helper, the `ROTATING_SECTION_CADENCE` / `CHAPTER_ID_TO_ROTATING_KEY` maps, the `deficit_override_reason` escape hatch, and the inline cadence tests. Compliance-checklist §§ 1L/1M and the spec's Selection Rule 6 now carry a single editorial line — *each domain surfaces at least monthly* — **with no enforcement**. | Per §5 gate ledger — retire, don't add. The Threads owns continuity, so a quiet domain no longer needs a forced-include gate. **Did not touch** the other rules in the script (section shape, long-shelf, release-radar, sub-format, key-facts, discovery quota — they belong to later phases). |
+
+**Validation:** `ast.parse` clean on `validate-chapter-plan.py`; inline `--test`
+suite **53/53** (cadence tests removed). `validate-issue.py --format weekly
+--skip-image-urls` on `issues/signal_weekly_2026-07-05.html` → **PASS (exit 0)** —
+the spec/template/CSS additions don't touch the already-rendered issue. Grep-swept:
+no dangling "deficit promotion" / "hard cadence floor" mandate in the spec or
+checklist; remaining "Money"/"Places" hits are all rebrand-context ("was 'Money'").
+
+### Weekly W-3 — The spine & the Long Read ⬜
+Four-movement architecture (OPEN / LONG READ / ROUNDS / CLOSE); Caught Up; single
+Long Read; "The case against" callout; ~40% length cut; ~12-component palette;
+retire topic-lock sliding-window + its Gate-1 grep (The Threads owns continuity).
+
+### Weekly W-4 — Personalization loop & consolidation ⬜
+Saved This Week reader input feeding The Letter + The Threads (the daily→weekly
+bridge, depends on D-3 digest); synthesis-by-juxtaposition; collapse the
+v8.13→v8.36 patch-stack into one editorial charter. **Gate ledger:** retire to
+exactly three (image-URL chain, markup contracts, one holistic quality read).
 
 ## Batch 6 — Cross-cutting + Specials + Sources + D-4 ⬜
 - **Cross-cutting:** H3 weekly-as-front-door hero · H4 `prefers-color-scheme`

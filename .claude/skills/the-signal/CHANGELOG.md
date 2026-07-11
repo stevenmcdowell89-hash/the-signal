@@ -1,5 +1,45 @@
 # The Signal — Changelog
 
+8.36.0 — Service & continuity (weekly W-2, from `docs/signal-final-recommendations-2026-07.md`
+  § STREAM 1 Phase W-2). Restores the service layer and stands up a reader-facing
+  continuity engine, and RETIRES two planner validators (per the §5 gate ledger).
+  Spec + new template-parts + CSS + two script-rule removals; JS-off rendering intact.
+
+  - **The Desk — the restored service department** (`editorial-spec.md` § The Desk +
+    Fixed/Rotating + Cadence Table, `sections.md`, `spec/weekly.md`, `component-contracts.md`).
+    Groups four rotating **service columns** — **The Session** (fitness), **The Ledger**
+    (money — rebrand of "Money"), **The Itinerary** (travel/parks/NI — rebrand of "Places"),
+    **The Toolkit** (tech) — of which **1–2 run per issue**, chosen by which domain is most
+    overdue *and* has real, actionable service news. **Each column closes on a mandatory
+    "Do This Week" pin** (`.do-this-week` > `.dtw-label`/`.dtw-action`/`.dtw-why`): one
+    concrete do-it-this-week action, the why attached, the selection criterion stated — not
+    vibes. New template-part `13a-the-desk.html` (the four columns, each closing on the pin;
+    also referenced from `14-session.html`); CSS in new `15a-service-continuity.css`
+    (section-accent-inheriting pin) + a cross-ref note in `12-section-session.css`. The
+    Ledger/Itinerary rebrand is reader-facing — CSS classes `.ledger-section`/`.itinerary-section`
+    and tokens already existed; state keys stay `the_money`/`the_places`.
+  - **The Threads — the continuity engine** (`editorial-spec.md` § The Threads,
+    `component-contracts.md`, new template-part `15a-the-threads.html`, CSS `15a-service-continuity.css`).
+    A fixed reader-facing "previously on…" section off `ongoing_stories`, extended beyond
+    World to named sagas across all domains, plus the reader's life-threads (`training_phase`,
+    `upcoming_trips`). **`ongoing_stories` is now DUAL-USE:** the topic-lock suppression
+    backstop (`check-topic-lock.py`) and the existing Ongoing-tracker box are unchanged; The
+    Threads additionally surfaces the same records. It is a recap, not a Lead — no "Do This
+    Week" pin.
+  - **The Week in Numbers — personal stat strip** (`editorial-spec.md` § The Week in Numbers,
+    `sections.md`, `component-contracts.md`, new template-part `15b-week-in-numbers.html`, CSS
+    `15a-service-continuity.css`). A small strip near the top: Garmin miles + training block
+    (`training_phase`), FPL rank, the Juventus result, one money number from The Ledger — the
+    spec states each number's source. Reuses `.stat-bar`/`.stat`; kept distinct from the
+    Colophon's Issue-in-Numbers (both ship, never merge).
+  - **Retired: hard-cadence-floor (old rule 7) + deficit-promotion (old rule 8)** in
+    `scripts/validate-chapter-plan.py` — the two `check_rotating_cadence` rules, the roster
+    cadence map, the state-resolution helper, the `deficit_override_reason` escape hatch, and
+    their inline tests are all removed (53/53 remaining tests pass; the other rules untouched).
+    Compliance-checklist §§ 1L/1M and the spec's Selection Rules replace them with a single
+    **editorial checklist line, not a gate**: *each domain surfaces at least monthly.* The
+    Threads now owns continuity, so a quiet domain no longer needs a forced-include gate.
+
 8.35.0 — Voice & the person (weekly W-1, from `docs/signal-final-recommendations-2026-07.md`
   § STREAM 1 Phase W-1). Puts a person in the personal magazine and kills the recurring
   voice-tic at the source. No new gate or validator — this phase RETIRES checks (per the

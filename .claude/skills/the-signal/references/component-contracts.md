@@ -86,6 +86,58 @@ This reference defines the exact HTML component patterns for every section in ev
 ```
 **Placement:** between On the Radar and the Footer. Single full-width block on paper background. Standard weekly only — special editions already have their own sign-off via Meanwhile.
 
+### The Desk — "Do This Week" pin (Standard Weekly — closes every Desk column, v8.36)
+
+The **mandatory closing element of every Desk column** (The Session, The Ledger, The Itinerary, The Toolkit). One concrete do-it-this-week action, the *why* attached, the selection criterion stated (not vibes). One pin per column, always the last child of the column's `<section>`. It inherits the host column's section accent — no per-column CSS needed. Not an aphorism; not the Lead.
+
+```html
+<div class="do-this-week">
+  <span class="dtw-label">Do This Week</span>
+  <p class="dtw-action">[The one concrete action — a named product / protocol / booking.]</p>
+  <p class="dtw-why">[Why this one — the stated criterion, e.g. "top easy-access rate, no intro-bonus cliff".]</p>
+</div>
+```
+
+- **`.dtw-action`** — the imperative + the specific named thing ("Move your emergency fund to Chase Saver at 4.75% AER"). Never a hedge ("consider…").
+- **`.dtw-why`** — the criterion that makes *this* the pick. This is what separates the pin from a vibe.
+- Renders with JS off (plain block, section-accent border). No script dependency.
+
+### The Threads — continuity engine (Standard Weekly — fixed, near the close, v8.36)
+
+Reader-facing "previously on…" list built off `ongoing_stories` (+ `training_phase` / `upcoming_trips` for life-threads). Each `.thread` is a recap line or two and a link. No pin (recap, not service).
+
+```html
+<section class="sec the-threads" id="threads">
+  <span class="section-label">The Threads</span>
+  <h2>Where things stand</h2>
+  <div class="thread thread-saga">
+    <div class="thread-title">[Saga name — e.g. Iran endgame]</div>
+    <p class="thread-recap">[Previously on / where it stands now — a few lines.] <a href="https://…">Follow it</a></p>
+  </div>
+  <div class="thread thread-life">
+    <div class="thread-title">[Life-thread — e.g. Marathon build]</div>
+    <p class="thread-recap">[Week 6 of the block; long run up to 18 miles; taper starts in three weeks.] <a href="https://…">…</a></p>
+  </div>
+  <!-- typically 3–6 threads -->
+</section>
+```
+
+### The Week in Numbers — personal stat strip (Standard Weekly — fixed, near the top, v8.36)
+
+Compact personal read-out reusing the `.stat-bar` / `.stat` vocabulary, wrapped in `.week-in-numbers`. Distinct from the Colophon's "Issue in Numbers" (that counts the issue; this counts the reader's week).
+
+```html
+<section class="week-in-numbers" id="week-in-numbers" aria-label="The Week in Numbers">
+  <div class="win-label">The Week in Numbers</div>
+  <div class="stat-bar">
+    <div class="stat"><div class="stat-num">31.2</div><div class="stat-label">Garmin miles · base wk 6</div></div>
+    <div class="stat"><div class="stat-num">412k</div><div class="stat-label">FPL rank</div></div>
+    <div class="stat"><div class="stat-num">2–1</div><div class="stat-label">Juventus</div></div>
+    <div class="stat"><div class="stat-num">4.75%</div><div class="stat-label">top easy-access AER</div></div>
+  </div>
+</section>
+```
+
 ### Release Radar & On the Radar (Standard Weekly — shared `.radar-*` markup)
 
 Both use the same date-grid vocabulary; they differ only in `id`, category set, and what they list. **Release Radar (v8.30 — mandatory, its own chapter, rendered right after Screen & Sound)** lists 15-20 upcoming media releases; **On the Radar** lists events. Never duplicate items between them.

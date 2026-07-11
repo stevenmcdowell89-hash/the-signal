@@ -1,0 +1,108 @@
+/* ═══════════ v8.36 — SERVICE & CONTINUITY (W-2) ═══════════
+   The Desk "Do This Week" pin · The Threads continuity list · The Week in
+   Numbers personal strip. All renderable with JS off (no animation/script
+   dependency). Components inherit the host section's --section-accent so the
+   Desk pin auto-tints per column (Session / Ledger / Itinerary / Toolkit). */
+
+/* ── The Desk: "Do This Week" pin ──
+   Mandatory closing element of every Desk column. Section-accent left border +
+   accent label; sits at the foot of the column. */
+.do-this-week {
+  --dtw-accent: var(--section-accent, #C48B2C);
+  margin: 28px 0 4px;
+  padding: 16px 20px 18px;
+  border-left: 4px solid var(--dtw-accent);
+  border-radius: 0 6px 6px 0;
+  background: rgba(0, 0, 0, .035);
+}
+.do-this-week .dtw-label {
+  display: inline-block;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--dtw-accent);
+  margin-bottom: 8px;
+}
+.do-this-week .dtw-action {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1.25;
+  margin: 0 0 6px;
+}
+.do-this-week .dtw-why {
+  font-size: 15px;
+  line-height: 1.5;
+  margin: 0;
+  opacity: .82;
+}
+/* On dark-ground Desk columns the tint needs to lift off the dark, not sink. */
+.session-section .do-this-week,
+.ledger-section .do-this-week,
+.itinerary-section .do-this-week,
+.toolkit-section .do-this-week {
+  background: rgba(0, 0, 0, .04);
+}
+
+/* ── The Threads: continuity list ──
+   Fixed "previously on…" recap. Warm neutral ground; each thread a title +
+   recap line. No pin (recap, not service). */
+.the-threads {
+  --threads-accent: var(--section-accent, #8A6D3B);
+  background: #F6F3EC;
+}
+.the-threads .section-label { color: var(--threads-accent); }
+.the-threads .sec-watermark { color: var(--threads-accent); }
+.the-threads h2 { font-size: 28px; font-weight: 700; margin-bottom: 18px; }
+.the-threads .thread {
+  padding: 14px 0 14px 16px;
+  border-left: 3px solid var(--rule);
+  margin: 0 0 14px;
+}
+.the-threads .thread:last-of-type { margin-bottom: 20px; }
+.the-threads .thread-saga { border-left-color: var(--threads-accent); }
+.the-threads .thread-life {
+  border-left-color: var(--session-accent, #C56A2C);
+  border-left-style: dashed;
+}
+.the-threads .thread-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .6px;
+  text-transform: uppercase;
+  color: var(--ghost);
+  margin-bottom: 4px;
+}
+.the-threads .thread-recap {
+  font-size: 16px;
+  line-height: 1.55;
+  margin: 0;
+}
+.the-threads .thread-recap a { font-weight: 600; }
+
+/* ── The Week in Numbers: personal stat strip ──
+   Compact personal read-out reusing .stat-bar / .stat. Distinct from the
+   Colophon's Issue-in-Numbers. Renders near the top. */
+.week-in-numbers {
+  margin: 20px 0 8px;
+  padding: 0;
+}
+.week-in-numbers .win-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--ghost);
+  margin-bottom: 8px;
+}
+.week-in-numbers .stat-bar { margin: 0; }
+.week-in-numbers .stat-num { font-size: 26px; }
+/* On narrow viewports the four personal stats stack two-up. */
+@media (max-width: 620px) {
+  .week-in-numbers .stat-bar { grid-template-columns: repeat(2, 1fr); }
+  .week-in-numbers .stat-bar .stat:nth-child(2) { border-right: none; }
+}

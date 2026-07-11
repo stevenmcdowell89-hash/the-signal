@@ -1,4 +1,8 @@
 /* ═══════════ THE SESSION ═══════════ */
+/* v8.36 (W-2): The Session is now a Desk service column and closes on a
+   "Do This Week" pin (.do-this-week, defined in 15a-service-continuity.css).
+   The pin auto-tints to the session accent via .session-section's
+   --section-accent (set in 04-layout-sections.css). */
 .session-section { background: var(--session-bg); }
 .session-section .section-label { color: var(--session-accent); }
 .session-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }

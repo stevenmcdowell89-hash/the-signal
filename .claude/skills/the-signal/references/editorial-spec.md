@@ -36,17 +36,58 @@ Sections are divided into **fixed** (appear every issue, except where noted) and
 
 ### Fixed vs Rotating
 
-**Fixed (every issue):** Cover, Navigator, **The Letter** (the signed editor's letter — replaces the author-less Foreword, v8.35), The Long Shelf, The World This Week, Pixel & Byte (gaming + LEGO), The Toolkit (tech & tools — *fixed slot but routinely yields*; see its brief), The Touchline, Screen & Sound (with Release Radar), The Session (omit if nothing found), On the Radar, Footer.
+**Fixed (every issue):** Cover, Navigator, **The Letter** (the signed editor's letter — replaces the author-less Foreword, v8.35), **The Week in Numbers** (the personal stat strip — see § The Week in Numbers), The Long Shelf, The World This Week, Pixel & Byte (gaming + LEGO), The Touchline, Screen & Sound (with Release Radar), **The Desk** (the service department — 1–2 service columns per issue; see § The Desk), **The Threads** (the continuity engine — see § The Threads), On the Radar, Footer.
 
-> **Yield rather than fill (v8.34).** The Toolkit's "yield when the week is thin, don't pad it to appear" principle now applies to **every** fixed section: a fixed section whose week offers only catch-up — the recap the daily already delivered — **yields** that week rather than running a roundup to fill the slot. The mandatory element is the considered piece (§ Article Structure), not the section's mere presence.
+> **Yield rather than fill (v8.34).** The "yield when the week is thin, don't pad it to appear" principle applies to **every** fixed section: a fixed section whose week offers only catch-up — the recap the daily already delivered — **yields** that week rather than running a roundup to fill the slot. The mandatory element is the considered piece (§ Article Structure), not the section's mere presence. (For Desk columns the analogue is: run the column only when its domain has real service news, and each column that runs still closes on a "Do This Week" pin.)
 
-> **The Toolkit is a fixed slot that is expected to disappear regularly.** It is "fixed" only in the sense that it is always *considered* every week — but it carries consumer-tech / AI / apps news, which is not weekly. When the week is thin it **yields entirely** (don't pad it to appear). When it returns it must cover the **entire gap since its last appearance** (the catch-up rule, as The Shelf has), so yielding never drops a fortnight of tech news — it batches it into one good roundup. In practice it appears roughly every other week.
+**The Desk (service department — the home for all service content, v8.36).** The Desk groups four **service columns**, of which **1–2 appear per issue** — picked by which domain is most overdue *and* has real service news to act on this week:
+- **The Session** (fitness) — keeps its existing fitness brief and content rules.
+- **The Ledger** (money / personal finance / consumer fintech / side-hustle & Etsy) — the rebrand of the former "Money" rotating section; same three streams, new name (the CSS `.ledger-section` / `--ledger-*` tokens already exist).
+- **The Itinerary** (travel / theme parks / NI-local) — the rebrand of the former "Places" rotating section; same content.
+- **The Toolkit** (tech / Android / e-ink) — keeps its existing tech brief.
 
-**Rotating (cadence-based, pick 2-3 per issue):** The Shelf (books), This Week in History, Listening (podcasts + audio drama + music), Money (personal finance + fintech + side-hustle), Places (European travel + theme parks + NI local).
+The Session and The Toolkit are **no longer standalone fixed sections** — they are Desk columns alongside The Ledger and The Itinerary. Each Desk column that runs **ends in a "Do This Week" pin** (see § The Desk below): exactly one concrete, do-it-this-week action with the *why* attached and the selection **criteria stated, not vibes**.
+
+**Rotating, non-Desk (cadence-based, pick 1-2 per issue on top of the Desk columns):** The Shelf (books), This Week in History, Listening (podcasts + audio drama + music). These three are *not* service columns and carry no "Do This Week" pin — they are discovery/reflection, not the service desk.
 
 **Trigger-driven (no cadence timer):** The Saga (lore deep-dive). It does NOT rotate on a clock — it runs only on a *reason*: a live public peg the researcher finds (a finale aired, a new book/season in a series the reader follows released, an author AMA), or a private peg the reader supplies (`currently_reading` / `currently_watching` in state, or a manual "run a Saga on …" trigger). See its brief in `references/sections.md` and the trigger note under § Auto-Triggered Specials.
 
 See **Rotation Mechanics** below for scheduling rules.
+
+### The Desk — the service department (v8.36)
+
+The Desk is the restored **service department**: the one place in the issue whose job is not to inform but to help the reader *do* something this week. It groups four rotating **service columns** — **The Session** (fitness), **The Ledger** (money), **The Itinerary** (travel/parks/NI), **The Toolkit** (tech) — and **1–2 run per issue**, chosen by which domain is most overdue *and* has real, actionable service news (not by a cadence clock alone). A domain with nothing actionable this week yields rather than padding to appear. Full column briefs live in `references/sections.md` § The Desk.
+
+**The "Do This Week" pin — the mandatory closing element of every Desk column.** Every Desk column that runs **ends on exactly one "Do This Week" pin**: a single concrete, do-it-this-week action, with the *why* attached and the **selection criteria stated, not vibes**. The pin names the specific thing and says why *that* one — not a hedge.
+
+- **Good:** "Move your emergency fund to Chase Saver at 4.75% AER — it's the top easy-access rate right now with no intro-bonus cliff."
+- **Bad:** "Consider a high-interest savings account." (no named product, no stated criterion, not do-it-this-week).
+
+One pin per column, always last. Markup: a `.do-this-week` block (see `references/component-contracts.md`). The pin is service, not an aphorism — it is exempt from the one-aphorism-per-issue cap and is *not* the section's Lead.
+
+### The Threads — the continuity engine (v8.36)
+
+**The Threads** is a fixed, reader-facing continuity section built off the state file's `ongoing_stories` — extended **beyond World** to named sagas across **all** domains, plus the reader's own **life-threads**. It is the "previously on…" of the magazine: each thread is a few lines of situation-report recap with a link, so a story the reader has been half-following snaps back into focus.
+
+- **Two kinds of thread:**
+  1. **Named sagas** (from `ongoing_stories`, any domain): an Iran-endgame thread, a Serie A / Antonelli title-run thread, a long-running show arc, a Switch-2-ecosystem thread — whatever the state file is tracking as live. Each gets a short "previously on / where it stands now" recap and a link.
+  2. **Life-threads** (the person in the personal magazine): the marathon build from state `training_phase`, the upcoming trip from state `upcoming_trips` (e.g. the Efteling trip) — the reader's own ongoing arcs, recapped the same way ("Week 6 of the block; long run up to 18 miles; taper starts…").
+- **`ongoing_stories` is now DUAL-USE (v8.36).** Historically `ongoing_stories` fed **only** the Topic-Lock suppression backstop (§ Topic Lock) — it kept a heavily-rotated story *out* of the Lead. That suppression use is **fully intact and unchanged**. The Threads **additionally** reads the same `ongoing_stories` data and surfaces it as a reader-facing asset. The same records now do two jobs: (a) suppression backstop for topic-lock, and (b) The Threads' data source. `training_phase` + `upcoming_trips` additionally feed the life-threads.
+- **Voice:** situation-report + "previously on" recap tone — factual, compact, each thread a few lines and a link. No new opinion or invented angle; it is a *recap*, not a Lead. It does not carry a "Do This Week" pin (that is the Desk's job).
+- **Placement:** part of the closing movement — after the rounds, near On the Radar (continuity flows naturally into the forward calendar).
+
+### The Week in Numbers — the personal stat strip (v8.36)
+
+**The Week in Numbers** is a small, fixed, compact **personal** stat strip near the top of the issue: a handful of numbers about *the reader's* week, not the news. Drawn from state and the week's results:
+
+- **Garmin miles + current training block** (from state `training_phase`) — e.g. "31.2 mi · Base block, wk 6".
+- **FPL rank** — the reader's Fantasy Premier League overall rank movement.
+- **The Juventus result** — the week's Juve scoreline.
+- **One money number** — a single figure from The Ledger's world (a savings rate, an Etsy month, an ISA milestone).
+
+It uses the existing `.stat-bar` / `.stat` component vocabulary (compact, not a full section). 4–5 stats, quietly personal.
+
+> **Distinct from the Colophon's "Issue in Numbers" (v8.36).** The Week in Numbers is about **the reader's week** (his miles, his rank, his team's result). The Colophon's Block 1 "Issue in Numbers" (§ End-of-Issue Colophon) is about **the issue itself** (word count, sections, links, images). **Keep both** — they measure different things; never merge them or let one's stats leak into the other.
 
 
 For individual section content rules, voice notes, and research guidance, see `references/sections.md`. Only read sections appearing in this issue.
@@ -72,7 +113,7 @@ Every issue ends with a **Colophon** — a sign-off block between On the Radar a
 
 ### Block 1 — Issue in Numbers
 
-A small stat grid summarising the issue itself: word count, number of sections, number of links, articles read, images. If an anchor piece ran, include "Anchor: [section name]". 4-6 stats, quietly pleasing rather than boastful.
+A small stat grid summarising the issue itself: word count, number of sections, number of links, articles read, images. If an anchor piece ran, include "Anchor: [section name]". 4-6 stats, quietly pleasing rather than boastful. **This is the issue's numbers, not the reader's — keep it distinct from § The Week in Numbers (v8.36), which counts the reader's own week (Garmin miles, FPL rank, the Juve result). Both ship; they never merge.**
 
 ### Block 2 — Next Week
 
@@ -147,6 +188,8 @@ Rotating sections use their existing single-feature shape — they don't need Le
 
 Re-promoting an ongoing story to the Lead slot is gated by a **sliding-window frequency cap**. The cap tightens with the topic's recent lead history and decays as that history ages, so a story that has been in heavy rotation cools off automatically without needing editorial override.
 
+> **`ongoing_stories` is dual-use as of v8.36.** The suppression role described in this whole section — keeping a heavily-rotated topic *out* of the Lead — is unchanged and still authoritative. In addition, the **same `ongoing_stories` records are now the data source for § The Threads**, the reader-facing continuity engine, which surfaces them as "previously on…" recaps. Suppressing a topic from the Lead does **not** remove it from The Threads — a story cooling off in the Lead rotation is exactly the kind of thread the reader wants recapped. The two uses are independent: topic-lock reads `lead_history` / `recent_leads` to gate the Lead; The Threads reads the tracked story itself to recap it.
+
 ### State-file shape per `ongoing_stories` entry
 
 - `lead_history` (array of ISO date strings) — every date this topic anchored any fixed section's Lead. Example: `["2026-03-15", "2026-03-22", "2026-04-19", "2026-05-03"]`. Append each new lead date; never trim (entries age out of the window automatically).
@@ -190,41 +233,46 @@ The 26-week window is the single knob. Shorter window (e.g. 13 weeks) → topics
 
 - **The Toolkit (fixed-but-yields)** — Same app/tool cannot anchor two consecutive Toolkit appearances. Track `last_toolkit_app` in state file (slug like `todoist`, `obsidian`, `perplexity`).
 - **The Session** — State-file `last_session_topic` tracks the cluster (running_science / concurrent_training / hypertrophy / kettlebells / gymnastics_rings / recovery_mobility / wearable_data / nutrition_recomp / landmine_training / home_gym_programming). Same cluster cannot anchor two consecutive Session Leads.
-- **Money ↔ The Session boundary** — Money's finance content (ISAs, pensions, savings, investing, market trends, UK personal-finance reads) is finance only. Fitness deep-dives belong in The Session. Misclassification = Gate 2 hard fail (compliance-checklist).
+- **The Ledger ↔ The Session boundary** — The Ledger's finance content (ISAs, pensions, savings, investing, market trends, UK personal-finance reads) is finance only. Fitness deep-dives belong in The Session. Both are Desk columns (v8.36), but the domain boundary still holds: misclassification = Gate 2 hard fail (compliance-checklist).
 
 ---
 
 ## Rotation Mechanics
 
-Each issue includes the **fixed sections** plus **2-3 rotating sections** selected based on cadence and editorial judgement.
+Each issue includes the **fixed sections** (including **The Desk** with 1–2 service columns) plus **1-2 non-Desk rotating sections** selected based on cadence and editorial judgement.
 
-### Cadence Table (v8.27 — redesigned roster, one home per domain)
+### Cadence Table (v8.36 — The Desk service columns + non-Desk rotating)
+
+**The Desk service columns (pick 1–2 per issue — see § The Desk):** chosen by which domain is most overdue *and* has real, actionable service news this week. The cadence below is guidance for "most overdue", not a hard clock.
+
+| Desk column | Target Cadence | Research Window | Notes |
+|---|---|---|---|
+| The Session | Roughly every other issue | Since last appearance | Fitness (absorbs the old Workshop + Lab as angles). Closes on a "Do This Week" pin |
+| The Ledger | Every 3-4 weeks | Since last appearance | Personal finance + consumer fintech + side-hustle/Etsy (was "Money"). Closes on a "Do This Week" pin |
+| The Itinerary | Every 3-4 weeks (more near trips) | Since last appearance + forward 2-4 weeks for events | Travel + theme parks + NI local (was "Places"). Closes on a "Do This Week" pin |
+| The Toolkit | Roughly every other issue | Since last appearance | Tech / Android / e-ink (yields strictly when thin). Closes on a "Do This Week" pin |
+
+**Non-Desk rotating sections (pick 1–2 per issue):**
 
 | Section | Target Cadence | Research Window | Notes |
 |---|---|---|---|
 | The Shelf | Every 2-3 weeks | Since last appearance | Books (primary), narrative history. Catch-up rule: covers full gap |
 | This Week in History | Every 2-3 weeks | Current week | History is date-bound |
 | Listening | Every 3-4 weeks | Since last appearance | Podcasts + audio drama + music (absorbs the old Listen + Channel) |
-| Money | Every 3-4 weeks | Since last appearance | Personal finance + consumer fintech + side-hustle/Etsy (absorbs Long Game + Wallet + Ledger) |
-| Places | Every 3-4 weeks (more near trips) | Since last appearance + forward 2-4 weeks for events | European travel + theme parks + NI local (absorbs Itinerary + Local) |
 
-**Trigger-driven (NOT on this table):** **The Saga** (lore deep-dive) has no cadence timer — it runs on a live peg, not a clock. See § Auto-Triggered Specials → "The Saga (trigger-driven)" and its brief in `references/sections.md`. The planner does not deficit-promote it.
+**Trigger-driven (NOT on this table):** **The Saga** (lore deep-dive) has no cadence timer — it runs on a live peg, not a clock. See § Auto-Triggered Specials → "The Saga (trigger-driven)" and its brief in `references/sections.md`.
 
-**Folded away in v8.27 (do not schedule — they no longer exist as standalone sections):** The Workshop and The Lab fold into **The Session** (training science + gear are now rotating angles within it); LEGO folds into **Pixel & Byte**; The Listen + The Channel → **Listening**; The Long Game + The Wallet + The Ledger → **Money**; The Itinerary + The Local → **Places**. The Toolkit is no longer rotating — it is a fixed-but-yields section (see § Section Structure).
+**Folded away in v8.27–v8.36 (do not schedule — they no longer exist as standalone sections):** The Workshop and The Lab fold into **The Session** (training science + gear are now angles within it); LEGO folds into **Pixel & Byte**; The Listen + The Channel → **Listening**; the old Long Game + Wallet + Ledger names → **The Ledger** (v8.36, the rebrand of "Money"); the old Itinerary + Local names → **The Itinerary** (v8.36, the rebrand of "Places"). The Session and The Toolkit are no longer standalone fixed sections — they are **Desk service columns** (v8.36; see § The Desk).
 
 ### Selection Rules
 
 1. **Check the state file** (`signal-state.json`) for `rotating_sections` — each entry has `last_appeared` date.
-2. **Pick the most overdue sections first.** If The Shelf last appeared 3 weeks ago and Money 2 weeks ago, The Shelf has priority.
-3. **Cap at 2-3 rotating sections per issue** to maintain pacing. Rotating sections should be substantive (300-600 words each, except The Shelf which can be longer). The issue's bulk comes from the fixed sections' considered pieces; rotating sections add variety on top, not bulk. Fewer slots is deliberate (v8.27) — it keeps the issue from padding.
-4. **Places overrides normal cadence** when a trip is approaching — it appears every issue or every other issue in the lead-up. Check state file for `upcoming_trips`.
-5. **Don't force it.** If research for a rotating section turns up nothing worthwhile, skip it even if it's overdue. The cadence is a guide, not a mandate.
-6. **Ensure variety across a month.** Over any 4-issue stretch, aim for each of the 5 rotating sections (The Shelf, This Week in History, Listening, Money, Places) to appear at least once. The Saga is excluded — it is trigger-driven, not on a cadence (see Cadence Table).
-7. **Hard cadence floor (planner-enforced).** A rotating section CANNOT be scheduled unless `weeks_since_last_appeared >= cadence_low` (the lower bound of its cadence band). The planner-side validator rejects any chapter plan that schedules a section inside its floor. Override: if no other rotating section is eligible (rare; only happens when most of the roster is too-soon AND the issue still needs slots), the planner picks the most-overdue section and the validator emits a warning instead of a hard fail.
-
-8. **Deficit promotion (mandatory force-include).** A rotating section with `weeks_since_last_appeared >= 2 * cadence_high` is force-included in the next eligible issue, regardless of editorial preference. The planner must include it; the validator rejects any plan that leaves a deficit-eligible section out without an explicit reason field (`"deficit_override_reason"`). Prevents the Ledger / Wallet droughts seen in early v8.x.
-
-9. **Default research window when `last_appeared` is null.** When a rotating section appears for the first time after a state file reset (or first-ever appearance), its research window defaults to "past 4 weeks" — NOT open-ended. Prevents the first appearance of a section from surfacing months-old news (e.g. the Revolut-from-March bug). Override via explicit `initial_research_window_weeks` field in state if the editor wants different.
+2. **Pick the most overdue sections first.** If The Shelf last appeared 3 weeks ago and Listening 2 weeks ago, The Shelf has priority. For **Desk columns**, weigh overdue-ness *together with* whether the domain has real, actionable service news this week (§ The Desk).
+3. **Cap at 1-2 non-Desk rotating sections per issue** (on top of the 1–2 Desk columns) to maintain pacing. Rotating sections should be substantive (300-600 words each, except The Shelf which can be longer). The issue's bulk comes from the fixed sections' considered pieces; rotating sections add variety on top, not bulk. Fewer slots is deliberate (v8.27) — it keeps the issue from padding.
+4. **The Itinerary overrides normal cadence** when a trip is approaching — that Desk column appears every issue or every other issue in the lead-up. Check state file for `upcoming_trips`.
+5. **Don't force it.** If research for a rotating section (or a Desk column) turns up nothing worthwhile, skip it even if it's overdue. The cadence is a guide, not a mandate.
+6. **Each domain at least monthly (editorial checklist, not a gate).** Over any ~4-issue stretch aim for each rotating domain — The Shelf, This Week in History, Listening, and each Desk column (The Session, The Ledger, The Itinerary, The Toolkit) — to appear at least once; this is editorial judgement, not a planner-enforced floor. The old hard-cadence-floor and deficit-promotion validators are **retired (v8.36)** — domain cadence is now this checklist line, not a planner gate. The Threads owns continuity (§ The Threads), so a domain being quiet in the rotation no longer needs a forced-include gate to keep its story alive. The Saga is excluded from the checklist — it is trigger-driven, not on a cadence (see Cadence Table).
+7. **Default research window when `last_appeared` is null.** When a rotating section appears for the first time after a state file reset (or first-ever appearance), its research window defaults to "past 4 weeks" — NOT open-ended. Prevents the first appearance of a section from surfacing months-old news (e.g. the Revolut-from-March bug). Override via explicit `initial_research_window_weeks` field in state if the editor wants different.
 
 ### Placement: Interleave, Don't Stack
 
@@ -232,14 +280,15 @@ Each issue includes the **fixed sections** plus **2-3 rotating sections** select
 
 | Rotating Section | Preferred Slot | Reasoning |
 |---|---|---|
-| The Shelf | Between Screen & Sound and The Session (original position) | Natural flow from entertainment to books |
-| Listening | Between Screen & Sound and The Session | Pairs with entertainment, breaks before fitness |
-| Money | Between The Touchline and Screen & Sound | A breather between dense sections |
-| Places | Between The Session and On the Radar | Travel/events naturally leads into the calendar |
-| This Week in History | Between The Session and On the Radar (original position) | Reflective close before the forward-looking calendar |
+| The Week in Numbers | Near the top, after The Letter / before The Long Shelf | A quick personal read-out to open on |
+| The Shelf | Between Screen & Sound and The Desk (original position) | Natural flow from entertainment to books |
+| Listening | Between Screen & Sound and The Desk | Pairs with entertainment, breaks before the service desk |
+| **The Desk** *(1–2 service columns)* | Between Screen & Sound / The Shelf and The Threads | The service department sits in the "act on it" cluster before the close |
+| This Week in History | Between The Desk and On the Radar (original position) | Reflective close before the forward-looking calendar |
+| The Threads | Between the rounds and On the Radar (part of the close) | Continuity recap flows naturally into the forward calendar |
 | The Saga *(trigger-driven)* | Between Screen & Sound and The Shelf | Sits in the "story" cluster when a peg fires it |
 
-The Toolkit, when it appears (fixed-but-yields), sits between The World This Week and Pixel & Byte — productivity/tech feels at home near the gaming section.
+**Within The Desk:** the 1–2 running columns sit together as the service department. The Ledger and The Itinerary read well mid-issue as a breather between dense sections; The Session and The Toolkit close the department. Each column ends on its "Do This Week" pin.
 
 **When 2-3 rotating sections appear in the same issue:**
 - Spread them across different slots — never place two rotating sections back-to-back.
@@ -341,6 +390,9 @@ Use 10-14 different types per standard issue. No two consecutive sections should
 | Pull-break | `.pull-break` > `.pull`/`.attrib` | Dark full-bleed quote band with book-end quotation marks. **World-only flourish, max one per issue.** (Enhancement 22D) |
 | Marginalia | `.marginalia` > `.quote`/`.attrib`/`.datum`/`ul` | Floated sidebar card with italic quote, datum blocks, list. Auto-inherits section accent; auto-inverts to paper-on-dark on dark sections. (Enhancement 22E) |
 | Ember period | `.mast-period` / `.brand-period` | Ember-coloured period on "The Signal." wordmark in masthead and cover. (Enhancement 22G) |
+| Do This Week pin | `.do-this-week` > `.dtw-label`/`.dtw-action`/`.dtw-why` | **The mandatory closing element of every Desk column (v8.36).** One concrete do-it-this-week action + the why, criteria stated not vibes. Section-aware accent. See `references/component-contracts.md`. |
+| The Threads list | `.the-threads` > `.thread` (`.thread-saga` / `.thread-life`) | Continuity engine (v8.36). Each `.thread` is a "previously on…" recap + link. See § The Threads. |
+| Week in Numbers strip | `.week-in-numbers` (uses `.stat-bar` > `.stat`) | Compact personal stat strip (v8.36) — Garmin miles, FPL rank, Juve result, one money number. Distinct from the Colophon's Issue-in-Numbers. |
 
 **Entry patterns are a palette, not a rota (v8.35 — rotation enforcement retired).** The `.entry-stat`, `.entry-quote`, `.entry-bullets`, `.entry-question` and plain-prose openings are available whenever one genuinely fits the material — reach for the one the piece earns, never to satisfy a rotation. The old "no two adjacent articles may open the same way" mandate is **retired**: forcing a different opener each time was a source of the mechanical voice-tic W-1 kills at the source. Plain prose is a first-class opening; use a stat/quote/bullet/question opener only when the content actually leads with a number, a real quote, three facts, or a live question.
 
@@ -865,7 +917,7 @@ The Saga (lore deep-dive — worldbuilding essays: Maul's arc across the shows, 
 
 If neither peg is live, The Saga simply doesn't run that week — it is never scheduled to fill a slot.
 
-**Generalised principle: sections that depend on private context are reader-triggerable, not calendar-driven.** The magazine asks for / reads that context rather than guessing. This is the same reason The Session reads `training_phase` and Places reads `upcoming_trips`; v8.27 extends the pattern to reading/watching (`currently_reading` / `currently_watching`) for The Saga, and lets it inform Shelf and Screen & Sound pegs too.
+**Generalised principle: sections that depend on private context are reader-triggerable, not calendar-driven.** The magazine asks for / reads that context rather than guessing. This is the same reason The Session reads `training_phase` and The Itinerary reads `upcoming_trips`; v8.27 extends the pattern to reading/watching (`currently_reading` / `currently_watching`) for The Saga, and lets it inform Shelf and Screen & Sound pegs too.
 
 ### Guardrails
 
@@ -960,15 +1012,15 @@ Every fixed content section runs the **considered-piece backbone** shape (§ Art
 - **Screen & Sound:** culture-critic voice. If a Companion runs, **it cannot be the same franchise as the Lead.** Same franchise cannot lead 3 issues consecutively (track in `ongoing_stories` as franchise tags). Every show/film/album recommendation must link.
 - **Screen & Sound — Director's Cut sub-format (monthly).** Once every 4 standard weeklies, Screen & Sound's Lead runs as a Director's Cut — a 550-750 word essay on one show, film, director, or arc rather than the week's news beat. Voice: culture critic, not news reviewer. A Companion (different topic family) may carry the displaced current-week news beat, but the Catch-Up roundup still covers the week's releases. Track in state file `last_directors_cut_date`; planner-side hard rule `weeks_since_last_directors_cut >= 4`. Tagged in chapter plan as `sub_format: "directors_cut"`. Validator raises the Lead's word_count_target floor to 550 when set.
 - **This Week in History — A Closer Look sub-format (every 6 weeks).** When History is scheduled AND `weeks_since_last_closer_look >= 6`, the section runs as A Closer Look — a single 600-800 word narrative deep dive on one event or figure, replacing the standard "one featured event + 3-4 also-this-weeks" pattern. Pre-WW2 strongly preferred. Wikipedia link mandatory. Track in state file `last_closer_look_date`. Tagged in chapter plan as `sub_format: "closer_look"`. Validator enforces single-item structure (no `also_items`) and 600-word floor on the featured item.
-- **The Session (absorbs Workshop + Lab):** Lead + a 200–250-word Companion deep note on a different training-topic cluster (training science and gear are now rotating angles *within* Session, not separate sections). State-file `last_session_topic` enforces same-cluster-not-consecutive. Fitness tech is Session's — Pixel & Byte and The Toolkit carry no wearable *training* leads.
+- **The Session (Desk column, absorbs Workshop + Lab):** Lead + a 200–250-word Companion deep note on a different training-topic cluster (training science and gear are now rotating angles *within* Session, not separate sections). State-file `last_session_topic` enforces same-cluster-not-consecutive. Fitness tech is Session's — Pixel & Byte and The Toolkit carry no wearable *training* leads. As a Desk column (v8.36) it closes on a "Do This Week" pin.
 - **The Long Shelf:** 8 items, 2 of 8 MUST carry `wildcard: true` in the chapter plan. Wildcards = topics outside the magazine's usual coverage areas (not gaming, sport, Star Wars, fantasy/sci-fi, fitness, UK consumer fintech, theme parks, history podcasts). Validator counts and fails if < 2.
 - **On the Radar:** Every item must link to its canonical source (Wikipedia, official page, league page). The 2-3 most important items per issue get a "Why it matters" half-line (10-15 words) below the date+event line.
 - **On the Radar ≠ Release Radar** — they complement, never duplicate. On the Radar assumes intelligence — no explaining parkrun, no generic event types.
 - **The Release Radar (mandatory weekly element, v8.30):** the magazine's standing answer to "what's coming out?" — **15-20 upcoming releases across ≥4 of the seven media categories** (film, TV, game, LEGO, tech, book, music), each with a date, a `status` (`upcoming`-weighted, reusing the v8.29 tag), a category dot (`.radar-cat`), and a link. Sub-sections (Now Showing / Coming Soon / Leaving Soon / Also Streaming) order items chronologically. It owns **all** product/media release coverage (On the Radar stays events-only; gaming releases still get their explainer in Pixel & Byte, but the *dated list* lives here). **Enforced:** the planner emits a `release_radar` chapter and `validate-chapter-plan.py` hard-fails a weekly that drops it or ships fewer than 15 items / 4 categories. This existed as prose-only "tail content" and silently vanished from the 1 June test — the gate is the fix.
 - **Music:** lives in **Listening** when it runs (podcasts + audio drama + music), and lightly in The Shelf otherwise; music releases in Release Radar when neither is present.
 - **History:** rotating, pre-WW2 preferred. Images must match the historical event.
-- **Places:** owns all travel/parks/NI local content when present (absorbs the old Itinerary + Local). One-liners in On the Radar when absent.
-- **The Shelf catches up** — research covers the full gap since last appearance. Same catch-up rule for The Toolkit, Listening, Money, Places on return.
+- **The Itinerary (Desk column, was "Places"):** owns all travel/parks/NI local content when present (absorbs the old Itinerary + Local). One-liners in On the Radar when absent. Closes on a "Do This Week" pin.
+- **The Shelf catches up** — research covers the full gap since last appearance. Same catch-up rule for The Toolkit, Listening, The Ledger, The Itinerary on return.
 - **No single interest owns the issue.** No one topic gets more than ~one section plus a passing mention — the issue reflects the reader's range, not feed volume. (`check-theme-clustering.py` is the backstop; the redesigned roster removes the structural cause that let fitness/Star-Wars/wearables flood an issue.)
 - **No:** work/enterprise content (unless front-page-of-broadsheet significant), celebrity culture, royal family, generic fitness advice, AI-generated images, fabricated links.
 - **UK / national politics rule (v8.27 — reset to OUT BY DEFAULT).** UK politics is **not an interest area**. It was originally banned as noise; after the council elections went uncovered the intent was to *soften* the ban so the genuinely-big-and-interesting got in — but the spec over-corrected into a politics-chasing engine (the direct cause of the Starmer ×3 run). The correct rule:
