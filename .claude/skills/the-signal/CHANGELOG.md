@@ -1,5 +1,19 @@
 # The Signal — Changelog
 
+8.40.0 — Reciprocal cross-stream link (H6, from
+  `docs/signal-final-recommendations-2026-07.md` § CROSS-CUTTING). The weekly's CLOSE
+  movement now points back to the daily Brief, reciprocating the home's front-door
+  hero (H3) which points the daily reader forward to the week's Read. Light-touch:
+  a single line, not a section.
+
+  - **H6 — weekly → daily pointer.** Added `.colophon-daily` to the Colophon
+    template-part (`assets/template-parts/17-colophon.html`), just above the sign-off:
+    _"Following up on the week's threads? The Brief runs daily →"_ linking to `../#brief`.
+    CSS in `assets/css/19-phase2-typography.css`. Documented in `references/editorial-spec.md`
+    § End-of-Issue Colophon and re-sliced. It's a link, not a new section — no heading,
+    no stats. Old shipped issues predate the line; `validate-issue.py` doesn't require it,
+    so they still PASS. The Brief→weekly half of the reciprocal pair is the home's H3 hero.
+
 8.39.0 — Special editions rationalised (STREAM 3, items S1–S6, from
   `docs/signal-final-recommendations-2026-07.md` § STREAM 3). The weekly rebuild left
   the special formats untouched; this pass resolves the ghost formats, merges the

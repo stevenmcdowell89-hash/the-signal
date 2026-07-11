@@ -224,6 +224,8 @@ One or two sentences teasing what's coming: a tracked ongoing story, a rotating 
 
 The standing feature. **One curious fact, unrelated to any story in this issue.** 20-40 words. The tone is Snapple-cap-meets-QI: surprising, verifiable, and genuinely interesting to a curious generalist. Rotate weekly — never repeat a fact within a 12-issue window. Source from Wikipedia curiosities, reference books, or a fact you came across during research and couldn't fit anywhere.
 
+**Reciprocal daily pointer (H6, v8.40).** Just above the sign-off, the Colophon carries one quiet line — `.colophon-daily` — pointing the reader back to the daily Brief: _"Following up on the week's threads? The Brief runs daily →"_ (links to `../#brief`). This reciprocates the home's front-door hero, which points the daily reader forward to this week's Read. It's a **link, not a section** — one line, no heading, no stats. The Brief carries the week's live facts; the weekly is the layer over them, so the two now cross-link in both directions.
+
 The Colophon closes with a small sign-off line (`.colophon-sign`) — issue number, date, and the standing tagline.
 
 ## Pipeline chrome (auto-injected, do not author)

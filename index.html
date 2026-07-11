@@ -3,6 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <script>
+    // Reader prefs (H4/H7): apply the saved theme + text size BEFORE first paint
+    // so there's no dark/light flash. 'auto'/unset leaves prefers-color-scheme in
+    // charge; an explicit choice from Settings -> Reader wins. Text size scales
+    // the root font, so the whole home grows/shrinks proportionally.
+    (function(){ try {
+      var t = localStorage.getItem('signal-theme');
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+      var s = localStorage.getItem('signal-text-size');
+      if (s === 'small' || s === 'large') document.documentElement.setAttribute('data-text-size', s);
+    } catch(_){} })();
+  </script>
   <title>The Signal</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Serif+4:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
@@ -19,9 +31,33 @@
       --terracotta: #C46A4F;
       --line: rgba(255,255,255,0.08);
       --line-strong: rgba(255,255,255,0.16);
+      --surface: rgba(255,255,255,0.03);
+    }
+    /* H4 — warm-paper light mode, so moving home <-> issue isn't a dark/light
+       jolt: the issues render on warm paper (--paper #FAFAF8 / --ink #111119),
+       so the home mirrors that palette. prefers-color-scheme drives it by
+       default; an explicit Reader theme choice (data-theme on <html>, set from
+       Settings) overrides the OS in either direction. Accents (coral/orange/
+       gold) are unchanged — they read on paper and on ink. */
+    :root[data-theme="light"] {
+      --bg: #FAFAF8; --bg-2: #F5F4F0; --bg-3: #EFEDE7;
+      --ink: #1B1B2F; --ink-2: #4A4E5E; --ink-dim: #83879A;
+      --line: rgba(0,0,0,0.10); --line-strong: rgba(0,0,0,0.20);
+      --surface: rgba(0,0,0,0.03);
+    }
+    @media (prefers-color-scheme: light) {
+      :root:not([data-theme="dark"]) {
+        --bg: #FAFAF8; --bg-2: #F5F4F0; --bg-3: #EFEDE7;
+        --ink: #1B1B2F; --ink-2: #4A4E5E; --ink-dim: #83879A;
+        --line: rgba(0,0,0,0.10); --line-strong: rgba(0,0,0,0.20);
+        --surface: rgba(0,0,0,0.03);
+      }
     }
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html { -webkit-text-size-adjust: 100%; }
+    /* Reader text-size control (H7) — scales all rem units proportionally. */
+    html[data-text-size="small"] { font-size: 93.75%; }
+    html[data-text-size="large"] { font-size: 112.5%; }
     body {
       background: var(--bg);
       color: var(--ink);
@@ -73,6 +109,48 @@
       transition: color 0.15s, border-color 0.15s;
     }
     .quality-link:hover { color: var(--coral); border-color: var(--line-strong); }
+
+    /* ---------- Front door: the weekly hero (H3) ---------- */
+    .frontdoor {
+      display: grid;
+      grid-template-columns: minmax(140px, 240px) 1fr;
+      gap: 1.4rem;
+      align-items: stretch;
+      text-decoration: none;
+      color: inherit;
+      background: linear-gradient(135deg, var(--bg-2), var(--bg-3));
+      border: 1px solid var(--line-strong);
+      border-radius: 16px;
+      overflow: hidden;
+      padding: 0;
+      margin: 0.5rem 0 0.5rem;
+      box-shadow: 0 8px 32px var(--shadow, rgba(0,0,0,0.28));
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+    .frontdoor:hover { transform: translateY(-3px); border-color: var(--coral); box-shadow: 0 14px 44px rgba(0,0,0,0.4); }
+    .fd-cover {
+      background: var(--bg-3) var(--cover, none) center/cover no-repeat;
+      min-height: 150px;
+    }
+    .fd-cover.is-empty { background: linear-gradient(135deg, var(--coral), var(--orange)); opacity: 0.85; }
+    .fd-body { padding: 1.4rem 1.5rem 1.5rem 0; display: flex; flex-direction: column; gap: 0.5rem; }
+    .fd-kicker {
+      font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.22em;
+      font-weight: 700; color: var(--coral);
+    }
+    .fd-title { font-family: 'Playfair Display', serif; font-weight: 700; font-size: clamp(1.4rem, 3.2vw, 2rem); line-height: 1.1; }
+    .fd-summary { color: var(--ink-2); font-size: 0.92rem; line-height: 1.5; }
+    .fd-cta {
+      margin-top: auto; align-self: flex-start;
+      font-size: 0.78rem; font-weight: 700; letter-spacing: 0.04em;
+      color: #fff; background: linear-gradient(135deg, var(--coral), var(--orange));
+      padding: 0.5rem 1rem; border-radius: 999px;
+    }
+    @media (max-width: 620px) {
+      .frontdoor { grid-template-columns: 1fr; }
+      .fd-cover { min-height: 120px; }
+      .fd-body { padding: 0 1.2rem 1.3rem; }
+    }
 
     /* ---------- Section label ---------- */
     .section-label {
@@ -513,7 +591,7 @@
     .catch-title { font-weight: 600; line-height: 1.32; font-size: 1rem; transition: color 0.15s; }
     .catch:hover .catch-title { color: var(--coral); }
     .catch-hook { color: var(--ink-2); font-size: 0.85rem; line-height: 1.45; margin-top: 0.35rem; }
-    .edition-brief { color: var(--ink); font-size: 0.92rem; line-height: 1.55; margin: 0.2rem 0 1rem; padding: 0.7rem 0.9rem; border-left: 3px solid var(--coral); background: rgba(255,255,255,0.03); border-radius: 0 6px 6px 0; }
+    .edition-brief { color: var(--ink); font-size: 0.92rem; line-height: 1.55; margin: 0.2rem 0 1rem; padding: 0.7rem 0.9rem; border-left: 3px solid var(--coral); background: var(--surface); border-radius: 0 6px 6px 0; }
     .catch-why { color: var(--ink); font-size: 0.86rem; line-height: 1.45; margin-top: 0.35rem; font-style: italic; border-left: 2px solid var(--coral); padding-left: 0.5rem; }
     /* skim vs understand (D-3): expandable "what's new" hook line */
     .catch-more { background: none; border: none; color: var(--coral); font-size: 0.78rem; cursor: pointer; padding: 0.25rem 0 0; margin-top: 0.1rem; opacity: 0.85; }
@@ -766,7 +844,23 @@
       </div>
     </header>
 
-    <!-- Top-level tabs: the Brief (daily) is the default front door -->
+    <!-- H3 — the weekly is the home's front door: a persistent hero above the
+         brief tabs, linking to the latest weekly issue. The daily Brief + the
+         specials read as feeds underneath it. Authored with the current latest
+         weekly so it works with JS off; the archive manifest (H8) updates it to
+         whatever the newest weekly is when it loads. Hidden only if a manifest
+         load ever reports zero weeklies (graceful degradation). -->
+    <a class="frontdoor" id="frontdoor" href="issues/signal_weekly_2026-07-05.html" data-cover-slug="signal_weekly_2026-07-05">
+      <div class="fd-cover"></div>
+      <div class="fd-body">
+        <div class="fd-kicker">This Sunday &middot; The Read</div>
+        <div class="fd-title" id="fd-title">Issue #15 &middot; 29 June – 5 July 2026</div>
+        <div class="fd-summary" id="fd-summary">America marks 250 years in a year that won't sit still, DR Congo's Ebola outbreak becomes one of the worst on record, the World Cup reaches the last 16 as Wimbledon's seeds tumble, and why Zone 2 is personal.</div>
+        <div class="fd-cta">Read this week's issue &rarr;</div>
+      </div>
+    </a>
+
+    <!-- Top-level tabs: the daily Brief + specials sit UNDER the weekly hero -->
     <section aria-label="The Signal">
       <div class="tabs" role="tablist" aria-label="Sections">
         <button id="tab-brief" class="tab is-active" role="tab" data-tab="brief"
@@ -1156,7 +1250,7 @@
     document.querySelectorAll('[data-cover-slug]').forEach(function (el) {
       var slug = el.dataset.coverSlug;
       var coverUrl = '/assets/covers/' + slug + '.jpg';
-      var coverEl = el.querySelector('.hero-cover, .card-cover, .continue-cover') || el;
+      var coverEl = el.querySelector('.hero-cover, .card-cover, .continue-cover, .fd-cover') || el;
 
       // Probe the cover; if it 404s, show a fallback state.
       var img = new Image();

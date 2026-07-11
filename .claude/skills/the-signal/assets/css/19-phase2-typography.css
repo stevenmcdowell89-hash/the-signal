@@ -238,8 +238,22 @@
 .colophon-fact p {
   font-style: italic;
 }
+/* H6 — reciprocal daily pointer: a quiet line back to the Brief. */
+.colophon-daily {
+  margin-top: 28px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--slate);
+}
+.colophon-daily a {
+  color: var(--rose);
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: 1px solid transparent;
+}
+.colophon-daily a:hover { border-bottom-color: var(--rose); }
 .colophon-sign {
-  margin-top: 36px;
+  margin-top: 24px;
   padding-top: 20px;
   border-top: 1px solid var(--rule);
   font-family: 'JetBrains Mono', monospace;
