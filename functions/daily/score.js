@@ -120,9 +120,10 @@ export function scoreProfile(item, profile, extraMutes, scoring) {
   const tiers = signalTiersFor(profile, bestDomain);
   const sc = scoring || {};
   const hiHit = tiers.high.some(titleHit);
+  const loHit = tiers.low.some(titleHit);
   let signal = 1;
   if (hiHit) signal *= (sc.signal_high ?? 1.6);
-  if (tiers.low.some(titleHit)) signal *= (sc.signal_low ?? 0.5);
+  if (loHit) signal *= (sc.signal_low ?? 0.5);
   best = Math.max(0, best) * Math.max(0.3, Math.min(2, signal));
 
   // Special handling: suppression + demotion (§7.6).
@@ -135,7 +136,21 @@ export function scoreProfile(item, profile, extraMutes, scoring) {
     if (matchesAny(title, sh.demote_patterns)) demote = true;
   }
 
-  return { score: best, entityFloor, entityId, muted: false, demote, signalHigh: hiHit };
+  return { score: best, entityFloor, entityId, muted: false, demote, signalHigh: hiHit, signalLow: loHit };
+}
+
+// Content-led signal tier for a scored item, from its high/low keyword hits.
+// "high" = confirmed/official, "low" = rumour/linked, "neutral" = plain report.
+// This is what the developing-delta compares across polls. Pure + exported.
+export function signalTierOf(pr) {
+  return pr.signalHigh ? "high" : (pr.signalLow ? "low" : "neutral");
+}
+
+// Human phrasing for a signal tier — the words the delta line renders
+// ("was rumoured → now confirmed"). Mechanical v1, domain-agnostic, no AI.
+// Pure + exported so the phrasing is unit-testable.
+export function signalPhrase(tier) {
+  return ({ high: "confirmed", low: "rumoured", neutral: "reported" })[tier] || "reported";
 }
 
 // Score the whole batch: baselines, velocity, profile, confidence, fold.
@@ -239,6 +254,7 @@ export async function scoreBatch(db, items, config, now, capBySource = new Map()
     it.entity_floor = pr.entityFloor;
     it.entity_id = pr.entityId || null;
     it.signal_high = !!pr.signalHigh;
+    it.signal_tier = signalTierOf(pr); // "high" | "low" | "neutral" — logged + delta'd
     it.muted = pr.muted;
 
     // 4) confidence: blend interest + source-significance, scale by source
@@ -285,12 +301,27 @@ export async function scoreBatch(db, items, config, now, capBySource = new Map()
       it.confidence = Math.min(1, it.confidence + (rc.developing_boost ?? 0.05));
     }
 
+    // 5c) Developing-delta (D-2 — "what changed since yesterday"): the daily's
+    //     one content move. When a developing cluster's signal tier has shifted
+    //     since its last-surfaced point (rumour → confirmed, etc.), expose a
+    //     mechanical delta the home renders and promotes into "Still developing".
+    //     No new AI/model dependency — it's a comparison of two logged tiers.
+    if (it.developing && prev && prev.signal && prev.signal !== it.signal_tier) {
+      it.delta = {
+        was: prev.signal,
+        now: it.signal_tier,
+        was_label: signalPhrase(prev.signal),
+        now_label: signalPhrase(it.signal_tier),
+        prev_headline: prev.headline || null,
+      };
+    }
+
     it.above_fold = !it.muted && it.confidence >= fold;
 
     // Log a story point only for surfaced catches + discussion items (movement
     // evidence for the weekly + future velocity) — not the whole firehose.
     if (!it.muted && (it.above_fold || DISCUSSION.has(it.source_type))) {
-      storyRows.push({ cluster_id: it.id, ts: now, score: it.rawScore, headline: it.title, domain: it.domain });
+      storyRows.push({ cluster_id: it.id, ts: now, score: it.rawScore, headline: it.title, domain: it.domain, signal: it.signal_tier });
     }
   }
 

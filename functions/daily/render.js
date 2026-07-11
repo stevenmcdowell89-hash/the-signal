@@ -60,6 +60,11 @@ function publicItem(it) {
     source_count: it.source_count || 1,
     status: it.developing ? "developing" : null,
     days_active: it.developing ? (it.days_active || null) : null,
+    // Developing-delta (D-2): what changed since this cluster was last surfaced
+    // ({ was, now, was_label, now_label }). Null for items that haven't moved a
+    // tier — so the state shape is unchanged for the vast majority of cards.
+    delta: it.delta || null,
+    signal_tier: it.signal_tier || null,
     discussion: discussionFromLinks(links),
     confidence: Math.round((it.confidence || 0) * 100) / 100,
     first_seen: it.first_seen,
@@ -420,6 +425,16 @@ export function buildState(items, meta, now, config) {
   }
   const top20 = top20wide.slice(0, 20);
 
+  // "Still developing" (D-2): the small recurring thread of stories the reader is
+  // FOLLOWING — developing clusters whose signal tier moved since they were last
+  // surfaced (they carry a `delta`). Ranked by confidence, capped so it stays a
+  // thread, not a feed. Empty on a day when nothing moved a tier.
+  const developing = live
+    .filter((i) => i.developing && i.delta)
+    .sort((a, b) => (b.confidence || 0) - (a.confidence || 0))
+    .slice(0, 6)
+    .map(publicItem);
+
   return {
     generated_at: now,
     status: {
@@ -440,6 +455,7 @@ export function buildState(items, meta, now, config) {
     })),
     today_tonight: todayAndTonight(live, now, tw),
     headlines: headlines.map(publicItem),
+    developing,
     // Wider breadth-eligible pool the AI Editor's Picks pass curates from (when on);
     // ignored by the front-end. Already importance-sorted (hRanked).
     headline_candidates: hRanked.slice(0, 16).map(publicItem),

@@ -561,6 +561,51 @@
     .brief-footer { font-size: 0.74rem; color: var(--ink-dim); text-align: center; padding: 1.1rem 0; border-top: 1px solid var(--line); }
     .brief-empty { color: var(--ink-dim); font-size: 0.92rem; padding: 2rem 1rem; text-align: center; background: var(--bg-2); border: 1px dashed var(--line-strong); border-radius: 12px; }
 
+    /* per-item read state (D-2): opened cards dim + collapse so the brief shrinks
+       through the day. The head (title, chips) stays; the body/footer fold away. */
+    .catch.is-read { opacity: 0.5; border-left-color: var(--line); padding-top: 0.6rem; padding-bottom: 0.6rem; }
+    .catch.is-read .catch-hook, .catch.is-read .catch-why, .catch.is-read .catch-summary,
+    .catch.is-read .catch-foot, .catch.is-read .catch-delta { display: none; }
+    .catch.is-read .catch-title { font-weight: 500; font-size: 0.9rem; }
+
+    /* save-for-later star (D-2) */
+    .catch-save {
+      flex: 0 0 auto; cursor: pointer; font-size: 0.98rem; line-height: 1; margin-left: 0.5rem;
+      color: var(--ink-dim); -webkit-tap-highlight-color: transparent; user-select: none;
+      transition: color 0.15s, transform 0.15s;
+    }
+    .catch-save:hover { color: var(--gold); transform: scale(1.15); }
+    .catch-save.is-saved { color: var(--gold); }
+
+    /* developing-delta line (D-2): "was rumoured → now confirmed" */
+    .catch-delta {
+      font-size: 0.74rem; color: var(--gold); font-weight: 700; margin-top: 0.4rem;
+      display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap; letter-spacing: 0.02em;
+    }
+    .catch-delta .d-was { color: var(--ink-dim); text-decoration: line-through; font-weight: 600; }
+    .catch-delta .d-arrow { color: var(--ink-dim); }
+
+    /* One Big Thing lead (D-2): headlines[0] promoted to a distinct lead block */
+    .lead {
+      display: block; text-decoration: none; color: var(--ink);
+      background: linear-gradient(135deg, rgba(233,69,96,0.10), rgba(255,107,53,0.05));
+      border: 1px solid rgba(233,69,96,0.25); border-left: 3px solid var(--coral);
+      border-radius: 14px; padding: 1.1rem 1.2rem; margin: 0 0 1.2rem;
+      transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+    }
+    .lead:hover { transform: translateY(-2px); border-color: rgba(233,69,96,0.5); box-shadow: 0 6px 20px rgba(0,0,0,0.28); }
+    .lead-meta {
+      display: flex; align-items: center; gap: 0.55rem; flex-wrap: wrap; margin-bottom: 0.5rem;
+      font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.16em; font-weight: 800; color: var(--orange);
+    }
+    .lead-title {
+      font-family: 'Playfair Display', serif; font-weight: 700;
+      font-size: clamp(1.25rem, 3vw, 1.6rem); line-height: 1.2; margin-bottom: 0.5rem;
+      transition: color 0.15s;
+    }
+    .lead:hover .lead-title { color: var(--coral); }
+    .lead-why { color: var(--ink-2); font-size: 0.95rem; line-height: 1.5; }
+
     /* ---------- Responsive ---------- */
     @media (max-width: 640px) {
       body { padding: 1rem 0.85rem 5rem; }
@@ -1181,6 +1226,45 @@
       function lastLook(){ try { return Number(localStorage.getItem(WM_KEY))||0; } catch(_){ return 0; } }
       function setLook(ts){ try { localStorage.setItem(WM_KEY, String(ts)); } catch(_){} }
 
+      // -------- Per-item read state (D-2, client-only) --------
+      // Opened item ids persist so read cards dim/collapse and the brief visibly
+      // shrinks through the day. Independent of the "N new since HH:MM" watermark
+      // (that keys off first_seen, untouched here). The id set is capped so it
+      // can't grow unbounded — oldest reads fall off the front once over the cap.
+      var READ_KEY = 'signal-brief-read', READ_CAP = 500;
+      function capIds(arr, cap){ return arr.length > cap ? arr.slice(arr.length - cap) : arr; }
+      var _read = (function(){ try { return capIds(JSON.parse(localStorage.getItem(READ_KEY)||'[]'), READ_CAP); } catch(_){ return []; } })();
+      var _readSet = new Set(_read);
+      function isRead(id){ return _readSet.has(id); }
+      function markRead(id){
+        if (!id || _readSet.has(id)) return;
+        _read.push(id); _read = capIds(_read, READ_CAP); _readSet = new Set(_read);
+        try { localStorage.setItem(READ_KEY, JSON.stringify(_read)); } catch(_){}
+      }
+
+      // -------- Save-for-later (D-2, client-only; clean seam for a later KV/cross-
+      // device sync). Stores enough per item {id,title,link,ts,domain} that a later
+      // weekly digest can consume it directly — half the daily→weekly bridge. --------
+      var SAVED_KEY = 'signal-saved', SAVED_CAP = 300;
+      function savedList(){ try { var v=JSON.parse(localStorage.getItem(SAVED_KEY)||'[]'); return Array.isArray(v)?v:[]; } catch(_){ return []; } }
+      var _savedSet = new Set(savedList().map(function(x){ return x.id; }));
+      function isSaved(id){ return _savedSet.has(id); }
+      function saveRecord(it){
+        var l = firstLink(it);
+        return { id: it.id, title: it.title, link: l ? l.url : null,
+                 ts: it.published || it.first_seen || null, domain: it.domain,
+                 domain_label: it.domain_label || null, saved_at: Date.now() };
+      }
+      function toggleSave(it){
+        var list = savedList();
+        var i = list.findIndex(function(x){ return x.id === it.id; });
+        if (i >= 0) list.splice(i, 1);
+        else { list.unshift(saveRecord(it)); if (list.length > SAVED_CAP) list = list.slice(0, SAVED_CAP); }
+        try { localStorage.setItem(SAVED_KEY, JSON.stringify(list)); } catch(_){}
+        _savedSet = new Set(list.map(function(x){ return x.id; }));
+        return isSaved(it.id);
+      }
+
       function firstLink(it){
         if (!it.links || !it.links.length) return null;
         // Graceful target order: discussion → article → post → feed (§5).
@@ -1211,7 +1295,7 @@
         opts = opts || {};
         var primary = firstLink(it);
         var a = document.createElement('a');
-        a.className = 'catch' + (it.register ? ' reg-' + esc(it.register) : '');
+        a.className = 'catch' + (it.register ? ' reg-' + esc(it.register) : '') + (isRead(it.id) ? ' is-read' : '');
         a.href = primary ? primary.url : '#';
         a.target = '_blank'; a.rel = 'noopener';
 
@@ -1224,13 +1308,20 @@
         // Trust + importance cue: N feeds carried this story (only worth showing at ≥2).
         if ((it.source_count||1) >= 2) left += '<span class="catch-src" title="Carried by '+it.source_count+' of your sources">◆ ' + it.source_count + ' sources</span>';
         var t = reltime(it);
-        var headHtml = '<div class="catch-head">' + left + (t ? '<span class="catch-time">' + esc(t) + '</span>' : '') + '</div>';
+        // Save star sits at the far right; when there's no time chip it takes over
+        // the margin-auto so it still hugs the right edge.
+        var saveMark = '<span class="catch-save' + (isSaved(it.id) ? ' is-saved' : '') + '"' +
+          (t ? '' : ' style="margin-left:auto"') + ' role="button" aria-label="Save for later" title="Save for later">' +
+          (isSaved(it.id) ? '★' : '☆') + '</span>';
+        var headHtml = '<div class="catch-head">' + left + (t ? '<span class="catch-time">' + esc(t) + '</span>' : '') + saveMark + '</div>';
 
         // Body: exactly ONE AI line per card. The curated "why it matters" wins when
         // present (Headlines/Top 20), else the enrichment hook, else the story's own
         // summary. An item can carry both a `why` and a `hook`; show only the `why` so
         // every card across every section reads as title + one line.
         var body = '';
+        // Developing-delta (D-2): what changed since this cluster was last surfaced.
+        if (it.delta && it.delta.now_label) body += deltaLine(it.delta);
         if (it.why) body += '<div class="catch-why">' + esc(it.why) + '</div>';
         else if (it.hook) body += '<div class="catch-hook">' + esc(it.hook) + '</div>';
         else if (it.summary) body += '<div class="catch-summary">' + esc(it.summary) + '</div>';
@@ -1256,7 +1347,23 @@
 
         a.innerHTML = headHtml + '<div class="catch-title">' + esc(it.title) + '</div>' + body + foot;
         a.querySelectorAll('.catch-links a').forEach(function(x){ x.addEventListener('click', function(e){ e.stopPropagation(); }); });
+        // Save toggle — never navigates the card.
+        var saveEl = a.querySelector('.catch-save');
+        if (saveEl) saveEl.addEventListener('click', function(e){
+          e.preventDefault(); e.stopPropagation();
+          var ns = toggleSave(it);
+          saveEl.classList.toggle('is-saved', ns); saveEl.textContent = ns ? '★' : '☆';
+          if (currentView === 'saved') paint(); // reflect removal in the Saved list
+        });
+        // Opening the card marks it read → it collapses in place.
+        a.addEventListener('click', function(){ markRead(it.id); a.classList.add('is-read'); });
         return a;
+      }
+
+      // Delta line HTML — "↗ was rumoured → now confirmed". Pure string builder.
+      function deltaLine(d){
+        return '<div class="catch-delta">↗ <span class="d-was">' + esc(d.was_label||'') + '</span>' +
+          ' <span class="d-arrow">→</span> <span class="d-now">' + esc(d.now_label||'') + '</span></div>';
       }
 
       function group(title, count){
@@ -1314,6 +1421,7 @@
         if ((state.top20||[]).length) tabs.push(['top','Top 20']);
         (state.editions||[]).forEach(function(e){ if (viewItems(state, e.id).length) tabs.push([e.id, e.label]); });
         tabs.push(['communities','Communities']);
+        if (savedList().length) tabs.push(['saved','Saved']); // D-2: only when there's something saved
         return tabs;
       }
       function subMatch(it){
@@ -1333,6 +1441,7 @@
           var count = s[0]==='headlines' ? (state.headlines||[]).length
                     : s[0]==='top' ? (state.top20||[]).length
                     : s[0]==='communities' ? (state.communities||[]).length
+                    : s[0]==='saved' ? savedList().length
                     : viewItems(state, s[0]).length;
           var b = document.createElement('button');
           b.className = 'bfilter' + (currentView===s[0] ? ' is-active' : '');
@@ -1398,6 +1507,7 @@
         root.appendChild(superNav(state));
         var sn = subNav(state); if (sn) root.appendChild(sn);
         if (currentView === 'communities') renderCommunities(state);
+        else if (currentView === 'saved') renderSaved(state);
         else if (currentView === 'headlines') renderHeadlines(state);
         else if (currentView === 'top') renderTop20(state);
         else renderGroup(state, currentView);
@@ -1436,15 +1546,59 @@
           g0.appendChild(strip); root.appendChild(g0);
         }
         var hl = state.headlines||[];
+        var shown = {};
+        // One Big Thing (D-2): promote headlines[0] into a distinct lead block;
+        // it is NOT repeated in the Headlines list below.
         if (hl.length){
+          root.appendChild(leadEl(hl[0]));
+          shown[hl[0].id] = true;
+        }
+        var rest = hl.slice(1);
+        if (rest.length){
           var g1 = group('Headlines');
-          hl.forEach(function(it,i){ g1.appendChild(catchEl(it, { rank: i+1, showDomain: true })); });
+          rest.forEach(function(it,i){ shown[it.id]=true; g1.appendChild(catchEl(it, { rank: i+2, showDomain: true })); });
           root.appendChild(g1);
-        } else if (!(state.today_tonight||[]).length){
+        } else if (!hl.length && !(state.today_tonight||[]).length){
           var e=document.createElement('div'); e.className='brief-empty';
           e.textContent='No big headlines right now — check News, Sport or your Interests.';
           root.appendChild(e);
         }
+        // Still developing (D-2): the recurring thread of stories the reader is
+        // following — developing clusters whose signal tier moved (they carry a
+        // delta). Skip any already shown as the lead / in Headlines above.
+        var dev = (state.developing||[]).filter(function(it){ return !shown[it.id]; });
+        if (dev.length){
+          var gd = group('Still developing', dev.length);
+          gd.className='brief-group domain-sec';
+          dev.forEach(function(it){ gd.appendChild(catchEl(it, { showDomain: true })); });
+          root.appendChild(gd);
+        }
+      }
+
+      // One Big Thing lead card — bigger type, `why` always shown, source-count +
+      // Developing inline, plus the save star and any delta. A distinct block, not
+      // a .catch, so it never collapses with the read-state styling.
+      function leadEl(it){
+        var primary = firstLink(it);
+        var a = document.createElement('a');
+        a.className = 'lead';
+        a.href = primary ? primary.url : '#'; a.target='_blank'; a.rel='noopener';
+        var meta = '<span>The one big thing</span>';
+        if ((it.source_count||1) >= 2) meta += '<span class="catch-src" title="Carried by '+it.source_count+' of your sources">◆ '+it.source_count+' sources</span>';
+        if (it.status === 'developing') meta += '<span class="catch-dev">DEVELOPING'+(it.days_active?' · '+it.days_active+'d':'')+'</span>';
+        var saveMark = '<span class="catch-save'+(isSaved(it.id)?' is-saved':'')+'" role="button" aria-label="Save for later" title="Save for later" style="margin-left:auto">'+(isSaved(it.id)?'★':'☆')+'</span>';
+        var why = it.why || it.hook || it.summary || '';
+        a.innerHTML = '<div class="lead-meta">'+meta+saveMark+'</div>'+
+          '<div class="lead-title">'+esc(it.title)+'</div>'+
+          (why ? '<div class="lead-why">'+esc(why)+'</div>' : '')+
+          (it.delta && it.delta.now_label ? deltaLine(it.delta) : '');
+        var saveEl = a.querySelector('.catch-save');
+        if (saveEl) saveEl.addEventListener('click', function(e){
+          e.preventDefault(); e.stopPropagation();
+          var ns = toggleSave(it); saveEl.classList.toggle('is-saved', ns); saveEl.textContent = ns ? '★' : '☆';
+        });
+        a.addEventListener('click', function(){ markRead(it.id); });
+        return a;
       }
 
       // Top 20: the single ranked cross-everything feed.
@@ -1541,6 +1695,30 @@
           arr.forEach(function(it){ g.appendChild(catchEl(it, { showDomain: true })); });
           root.appendChild(g);
         });
+      }
+
+      // Saved (D-2): the reader's save-for-later list, newest first. Reconstructs a
+      // minimal item from the stored record ({id,title,link,ts,domain}) — enough for
+      // the card + a later weekly digest to consume. Cards keep their filled star, so
+      // a second tap un-saves and the list repaints.
+      function renderSaved(state){
+        var list = savedList();
+        if (!list.length){
+          var e=document.createElement('div'); e.className='brief-empty';
+          e.textContent='Nothing saved yet. Tap the ☆ on any card to keep it here for later.';
+          root.appendChild(e); return;
+        }
+        var g = group('Saved for later', list.length);
+        g.className='brief-group domain-sec';
+        list.forEach(function(rec){
+          var it = {
+            id: rec.id, title: rec.title, domain: rec.domain, domain_label: rec.domain_label,
+            first_seen: rec.ts, published: rec.ts,
+            links: rec.link ? [{ type:'article', url: rec.link, label:'Open' }] : [],
+          };
+          g.appendChild(catchEl(it, { showDomain: true }));
+        });
+        root.appendChild(g);
       }
 
       // Shared tappable below-the-fold tail.

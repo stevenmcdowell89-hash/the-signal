@@ -51,7 +51,8 @@ export async function initSchema(db) {
       ts INTEGER,
       score REAL,
       headline TEXT,
-      domain TEXT
+      domain TEXT,
+      signal TEXT
     )`),
     db.prepare(`CREATE INDEX IF NOT EXISTS idx_story_cluster ON story_log(cluster_id, ts)`),
     db.prepare(`CREATE TABLE IF NOT EXISTS runs (
@@ -76,6 +77,15 @@ export async function initSchema(db) {
   // for Headlines). Idempotent migration for databases created before the column.
   try {
     await db.prepare(`ALTER TABLE items ADD COLUMN source_count INTEGER DEFAULT 1`).run();
+  } catch (_) {
+    /* column already exists */
+  }
+  // Developing-delta (D-2): the last-surfaced signal tier per cluster, so the
+  // next poll can compute "was rumoured → now confirmed". Idempotent migration
+  // for databases created before the column; getLastStoryPoints also degrades
+  // gracefully if this ALTER hasn't run yet (old DB), so a miss never throws.
+  try {
+    await db.prepare(`ALTER TABLE story_log ADD COLUMN signal TEXT`).run();
   } catch (_) {
     /* column already exists */
   }
@@ -203,8 +213,8 @@ export async function bulkInsertSamples(db, rows) {
 export async function bulkLogStories(db, rows) {
   if (!rows.length) return;
   const stmts = rows.map((r) =>
-    db.prepare(`INSERT INTO story_log (cluster_id, ts, score, headline, domain) VALUES (?,?,?,?,?)`)
-      .bind(r.cluster_id, r.ts, r.score, r.headline, r.domain)
+    db.prepare(`INSERT INTO story_log (cluster_id, ts, score, headline, domain, signal) VALUES (?,?,?,?,?,?)`)
+      .bind(r.cluster_id, r.ts, r.score, r.headline, r.domain, r.signal || null)
   );
   await runChunked(db, stmts);
 }
@@ -222,10 +232,10 @@ export async function sourceBaselineCut(db, source, sinceMs) {
   return scores[Math.min(idx, scores.length - 1)];
 }
 
-export async function logStory(db, clusterId, score, headline, domain, ts) {
+export async function logStory(db, clusterId, score, headline, domain, ts, signal = null) {
   await db
-    .prepare(`INSERT INTO story_log (cluster_id, ts, score, headline, domain) VALUES (?,?,?,?,?)`)
-    .bind(clusterId, ts, score, headline, domain)
+    .prepare(`INSERT INTO story_log (cluster_id, ts, score, headline, domain, signal) VALUES (?,?,?,?,?,?)`)
+    .bind(clusterId, ts, score, headline, domain, signal)
     .run();
 }
 
@@ -240,17 +250,29 @@ export async function lastStoryPoint(db, clusterId, beforeTs) {
 // The most recent story point per cluster, in ONE query → Map(cluster_id ->
 // {ts, score}). Replaces 1-query-per-item velocity lookups.
 export async function getLastStoryPoints(db, beforeTs) {
-  const { results } = await db
-    .prepare(
-      `SELECT s.cluster_id AS cluster_id, s.ts AS ts, s.score AS score
-         FROM story_log s
+  // Pull the previous point's headline + signal tier too (D-2 developing-delta).
+  // On an OLD database whose story_log predates the `signal` column, the SELECT
+  // referencing it would throw — fall back to the columns that always exist so a
+  // missing column degrades gracefully (velocity + delta just see signal: null).
+  const join = `FROM story_log s
          JOIN (SELECT cluster_id, MAX(ts) AS mt FROM story_log WHERE ts < ? GROUP BY cluster_id) m
-           ON s.cluster_id = m.cluster_id AND s.ts = m.mt`
-    )
-    .bind(beforeTs)
-    .all();
+           ON s.cluster_id = m.cluster_id AND s.ts = m.mt`;
+  let results;
+  try {
+    ({ results } = await db
+      .prepare(`SELECT s.cluster_id AS cluster_id, s.ts AS ts, s.score AS score,
+                       s.headline AS headline, s.signal AS signal ${join}`)
+      .bind(beforeTs)
+      .all());
+  } catch (_) {
+    ({ results } = await db
+      .prepare(`SELECT s.cluster_id AS cluster_id, s.ts AS ts, s.score AS score ${join}`)
+      .bind(beforeTs)
+      .all());
+  }
   const map = new Map();
-  for (const r of results || []) map.set(r.cluster_id, { ts: r.ts, score: r.score });
+  for (const r of results || [])
+    map.set(r.cluster_id, { ts: r.ts, score: r.score, headline: r.headline || null, signal: r.signal || null });
   return map;
 }
 

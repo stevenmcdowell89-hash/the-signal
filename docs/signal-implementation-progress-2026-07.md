@@ -58,10 +58,33 @@ checks. Grep-swept the spec + checklist: no dangling "Entry pattern rotation"
 mandate or weekly "Foreword" reference remains (remaining `Foreword` hits are all
 special-edition formats, which are out of scope for W-1).
 
-## Batch 3 — Daily D-2 (daily-ness structural moves) ⬜
-Per-item read state; "what changed since yesterday" developing-delta (extend
-`story_log` in `score.js`) + "Still developing" thread; One Big Thing lead;
-save-for-later (half the daily→weekly bridge).
+## Batch 3 — Daily D-2 (daily-ness structural moves) ✅
+
+Commit: _Daily D-2: read-state, developing-delta + Still developing, One Big Thing lead, save-for-later_
+
+The daily's structural moves — three client-only (read-state, One Big Thing,
+save-for-later) and one that flows through the engine (the developing-delta). **No
+new AI/model dependency, no new AI pass** (honours §2c) — the delta is a mechanical
+comparison of two logged signal tiers.
+
+| Item | What changed | Decision |
+|---|---|---|
+| Per-item read state | `index.html`: opened item ids persist in `localStorage` (`signal-brief-read`); read cards get `.is-read` → dim + collapse (body/footer/delta fold away, title stays) so the brief visibly shrinks through the day. Marked on card open. | **Capped** at 500 ids (`capIds` keeps the most-recent, drops the oldest front) so the set can't grow unbounded. Kept **independent of the "N new since HH:MM" watermark** (that keys off `first_seen`, untouched). |
+| Developing-delta — the one content move | `story_log` extended with a **`signal` column** (the last-surfaced signal tier); `score.js` sets `it.signal_tier` (`high`/`low`/`neutral` via `signalTierOf`) and, for a **developing** cluster whose tier moved since its last logged point, attaches `it.delta = { was, now, was_label, now_label, prev_headline }`. `render.js` exposes `delta`/`signal_tier` on every item and builds a capped `state.developing` (developing items **with** a delta). `index.html` renders a delta line and a **"Still developing"** group. | **Schema:** one idempotent `ALTER TABLE story_log ADD COLUMN signal TEXT` (mirrors the existing `source_count` pattern); `getLastStoryPoints` tries the signal-aware SELECT and **falls back** to the legacy columns on an old DB, so a missing column degrades gracefully instead of throwing. **Phrasing:** domain-agnostic `signalPhrase` — `high→confirmed`, `low→rumoured`, `neutral→reported` (renders "was rumoured → now confirmed"). Chose general words over football-specific ("here we go") since the delta spans all domains. |
+| One Big Thing lead | `index.html`: `headlines[0]` promoted into a distinct `.lead` block (bigger serif type, `why` always shown, source-count + Developing + delta inline). The remaining headlines render below starting at rank 2; **the lead is not repeated** in that list, and any "Still developing" item already shown as lead/headline is de-duped out. | Purely a render move — no state change; the lead reads from the existing `state.headlines`. |
+| Save-for-later | `index.html`: a ☆/★ star on every card (and the lead) toggles a `localStorage` list (`signal-saved`) storing **`{id,title,link,ts,domain,domain_label,saved_at}`** — enough for a later weekly digest to consume. A **"Saved"** tab (shown only when non-empty) lists them newest-first. | **localStorage-first with a clean seam** for a later KV/cross-device path (B4/W-4 bridge). Capped at 300. Star click `preventDefault`+`stopPropagation` so it never navigates or marks-read. |
+
+**Test:** `scratchpad/test-d2.mjs` — a 20-assertion node harness with an in-memory
+D1 stub (`.prepare().bind().all()/run()` + `.batch()`) whose `story_log` persists
+across two `scoreBatch` runs: asserts the delta is computed when a cluster's signal
+tier changes across runs (low→high, phrased "rumoured→confirmed"), that
+`state.developing` surfaces the moved item but **not** a developing item without a
+delta, and that `publicItem.delta` is `null` (shape unchanged) for unmoved items —
+**20/20 passing**. Regression: `scratchpad/test-d1.mjs` **12/12 still passing**.
+Client-only pieces (read-state capping, save, One Big Thing/lead rendering) can't be
+browser-run here — verified via `node --check` on the extracted inline `<script>`
+(parses clean) plus self-review; the testable pure logic (`signalPhrase`,
+`signalTierOf`, delta computation) is covered by the harness.
 
 ## Batch 4 — Daily D-3 (bridge & content depth) ⬜
 `GET /api/daily/digest?since=7d` endpoint; consolidate `picks`/`top20` then add a
