@@ -172,6 +172,23 @@
       background: var(--line);
     }
 
+    /* ---------- Archive search (D-4) ---------- */
+    .archive-search {
+      width: 100%;
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 0.95rem;
+      color: var(--ink);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0.65rem 0.9rem;
+      margin: 0 0 1.1rem;
+    }
+    .archive-search:focus { outline: none; border-color: var(--coral); }
+    .archive-search::placeholder { color: var(--ink-dim); }
+    .card.is-hidden { display: none; }
+    .archive-empty { color: var(--ink-dim); font-size: 0.9rem; padding: 0.5rem 0 1.5rem; }
+
     /* ---------- Archive tabs ---------- */
     .tabs {
       display: flex;
@@ -781,6 +798,9 @@
   // rotate the endpoint without notice).
   function ensurePushSubscription(reg) {
     try {
+      // Reader pref (H7): a device that turned notifications off in Settings →
+      // Reader shouldn't be prompted or subscribed.
+      try { if (localStorage.getItem('signal-notify') === 'off') return; } catch (_) {}
       if (!('Notification' in window) || !('PushManager' in window)) return;
       var isStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches)
         || window.navigator.standalone === true;
@@ -918,7 +938,8 @@
     </section>
 
       <h2 class="section-label">The archive</h2>
-      <ul class="grid">
+      <input type="search" id="archive-search" class="archive-search" placeholder="Search the archive…" aria-label="Search the archive" hidden>
+      <ul class="grid" id="read-grid">
 
         <li>
           <a class="card" href="issues/signal_deep-dive_2026-06-30.html" data-cover-slug="signal_deep-dive_2026-06-30">
@@ -1100,7 +1121,7 @@
       </div>
 
       <div id="panel-specials" class="tab-panel" role="tabpanel" aria-labelledby="tab-specials" hidden>
-      <ul class="grid">
+      <ul class="grid" id="specials-grid">
         <li>
           <a class="card" href="issues/signal_countdown_2026-06-14.html" data-cover-slug="signal_countdown_2026-06-14">
             <div class="card-cover"></div>
@@ -1514,8 +1535,9 @@
         }
         refreshBtn.hidden = false;
         try {
+          var notifyOff = false; try { notifyOff = localStorage.getItem('signal-notify') === 'off'; } catch (_) {}
           if ('setAppBadge' in navigator) {
-            if (newCount > 0 && look) navigator.setAppBadge(newCount); else navigator.clearAppBadge();
+            if (!notifyOff && newCount > 0 && look) navigator.setAppBadge(newCount); else navigator.clearAppBadge();
           }
         } catch (_) {}
         paint();
@@ -1880,6 +1902,84 @@
       });
 
       load();
+    })();
+
+    // -------- Archive from the manifest (H8) --------
+    // The archive grids + the two tab counts + the weekly front-door hero are
+    // driven by /archive-manifest.json (built by scripts/build-archive-manifest.py
+    // from the issues/ directory) — killing the stale hand-maintained counts and
+    // keeping grouping correct. The static HTML authored in the page is the no-JS
+    // / offline fallback; when the manifest loads it re-renders from real data.
+    // Stored on window for the archive search (D-4).
+    (function () {
+      function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+      function probeCover(el){
+        var slug = el.getAttribute('data-cover-slug'); if (!slug) return;
+        var url = '/assets/covers/' + slug + '.jpg';
+        var coverEl = el.querySelector('.hero-cover, .card-cover, .fd-cover') || el;
+        var img = new Image();
+        img.onload = function(){ coverEl.style.setProperty('--cover', 'url("'+url+'")'); };
+        img.onerror = function(){ coverEl.classList.add('is-empty'); };
+        img.src = url;
+      }
+      function probeAll(container){ container.querySelectorAll('[data-cover-slug]').forEach(probeCover); }
+      function cardLi(it){
+        var rt = it.read_time ? ' &middot; ' + it.read_time + ' min' : '';
+        return '<li><a class="card" href="'+esc(it.url)+'" data-cover-slug="'+esc(it.slug)+'" data-search="'+esc(((it.title||'')+' '+(it.summary||'')+' '+(it.format_label||'')).toLowerCase())+'">'
+          + '<div class="card-cover"></div>'
+          + '<div class="card-body">'
+          + '<div class="card-format">'+esc(it.format_label)+'</div>'
+          + '<div class="card-title">'+esc(it.title)+'</div>'
+          + '<div class="card-summary">'+esc(it.summary)+'</div>'
+          + '<div class="card-date">'+esc(it.date_label||'')+rt+'</div>'
+          + '</div></a></li>';
+      }
+      function apply(m){
+        if (!m || !m.counts) return;
+        window.__signalManifest = m;
+        var lw = m.latest_weekly;
+        // Tab counts — the real, live numbers (no more hardcoded "· 12").
+        var rc = document.querySelector('#tab-read .tab-count'); if (rc) rc.innerHTML = '&middot;&nbsp;' + m.counts.weekly;
+        var sc = document.querySelector('#tab-specials .tab-count'); if (sc) sc.innerHTML = '&middot;&nbsp;' + m.counts.special;
+        // Front-door hero (H3) → the latest weekly. Degrade gracefully if none.
+        var fd = document.getElementById('frontdoor');
+        if (fd) {
+          if (lw) {
+            fd.setAttribute('href', lw.url);
+            fd.setAttribute('data-cover-slug', lw.slug);
+            var ft = document.getElementById('fd-title');
+            if (ft) ft.textContent = (lw.issue_number ? 'Issue #' + lw.issue_number + ' · ' : '') + (lw.title || '');
+            var fs = document.getElementById('fd-summary'); if (fs) fs.textContent = lw.summary || '';
+            probeCover(fd);
+          } else { fd.hidden = true; }
+        }
+        // Panel-read hero mirrors the front door.
+        var hero = document.querySelector('#panel-read .hero-card');
+        if (hero && lw) {
+          hero.setAttribute('href', lw.url);
+          hero.setAttribute('data-cover-slug', lw.slug);
+          var hf = hero.querySelector('.hero-format'); if (hf) hf.textContent = (lw.issue_number ? 'Issue #' + lw.issue_number + ' · ' : '') + 'Standard Weekly';
+          var htl = hero.querySelector('.hero-title'); if (htl) htl.textContent = lw.title || '';
+          var hs = hero.querySelector('.hero-summary'); if (hs) hs.textContent = lw.summary || '';
+          probeCover(hero);
+        }
+        var weeklies = m.issues.filter(function(i){ return i.stream === 'weekly'; });
+        var specials = m.issues.filter(function(i){ return i.stream === 'special'; });
+        var readGrid = document.getElementById('read-grid');
+        if (readGrid) {
+          var archive = lw ? weeklies.filter(function(i){ return i.slug !== lw.slug; }) : weeklies;
+          readGrid.innerHTML = archive.map(cardLi).join('');
+          probeAll(readGrid);
+        }
+        var specGrid = document.getElementById('specials-grid');
+        if (specGrid) { specGrid.innerHTML = specials.map(cardLi).join(''); probeAll(specGrid); }
+        // Signal to the search wiring that the archive is manifest-backed.
+        document.dispatchEvent(new CustomEvent('signal:archive-ready'));
+      }
+      fetch('/archive-manifest.json', { cache: 'no-store' })
+        .then(function(r){ return r.ok ? r.json() : null; })
+        .then(function(m){ if (m) apply(m); })
+        .catch(function(){ /* keep the static HTML fallback */ });
     })();
 
     // -------- Archive tabs --------

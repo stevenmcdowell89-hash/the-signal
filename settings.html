@@ -3,10 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <script>
+    // Reader prefs (H4/H7): apply saved theme + text size before first paint.
+    (function(){ try {
+      var t = localStorage.getItem('signal-theme');
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+      var s = localStorage.getItem('signal-text-size');
+      if (s === 'small' || s === 'large') document.documentElement.setAttribute('data-text-size', s);
+    } catch(_){} })();
+  </script>
   <title>The Signal — Settings</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root{ --bg:#1A1A2E; --bg-2:#16213E; --bg-3:#20253E; --ink:#E8E8E8; --ink-2:#B6BAC6; --ink-dim:#888; --coral:#E94560; --orange:#FF6B35; --gold:#C9A66B; --line:rgba(255,255,255,0.08); --line-strong:rgba(255,255,255,0.16); }
+    /* H4/H7 — warm-paper light mode, continuous with the issues + home. */
+    :root[data-theme="light"]{ --bg:#FAFAF8; --bg-2:#FFFFFF; --bg-3:#F1EFE9; --ink:#1B1B2F; --ink-2:#4A4E5E; --ink-dim:#83879A; --line:rgba(0,0,0,0.10); --line-strong:rgba(0,0,0,0.20); }
+    @media (prefers-color-scheme: light){ :root:not([data-theme="dark"]){ --bg:#FAFAF8; --bg-2:#FFFFFF; --bg-3:#F1EFE9; --ink:#1B1B2F; --ink-2:#4A4E5E; --ink-dim:#83879A; --line:rgba(0,0,0,0.10); --line-strong:rgba(0,0,0,0.20); } }
+    html[data-text-size="small"]{ font-size:93.75%; }
+    html[data-text-size="large"]{ font-size:112.5%; }
     *,*::before,*::after{ margin:0; padding:0; box-sizing:border-box; }
     body{ background:var(--bg); color:var(--ink); font-family:'Source Sans 3',sans-serif; line-height:1.5; padding:1.5rem 1.25rem 5rem; -webkit-font-smoothing:antialiased; }
     .container{ max-width:760px; margin:0 auto; }
@@ -60,6 +74,12 @@
       padding:0.45rem 1.05rem; font-size:0.82rem; white-space:nowrap; flex:0 0 auto; }
     .tab:hover{ color:var(--ink); border-color:var(--line-strong); }
     .tab.active{ background:linear-gradient(135deg,var(--coral),var(--orange)); color:#fff; border-color:transparent; }
+    .tab-div{ align-self:center; color:var(--ink-dim); font-size:0.68rem; text-transform:uppercase; letter-spacing:0.12em; padding:0 0.35rem; flex:0 0 auto; }
+    /* Reader segmented controls (H7) */
+    .segmented{ display:inline-flex; border:1px solid var(--line); border-radius:999px; overflow:hidden; max-width:100%; }
+    .segmented button{ background:var(--bg-3); color:var(--ink-2); border:0; border-right:1px solid var(--line); padding:0.45rem 1.1rem; font-size:0.82rem; white-space:nowrap; }
+    .segmented button:last-child{ border-right:0; }
+    .segmented button.active{ background:linear-gradient(135deg,var(--coral),var(--orange)); color:#fff; }
     .panel[hidden]{ display:none; }
     .panel{ animation:fade 0.15s ease; }
     @keyframes fade{ from{ opacity:0; transform:translateY(2px); } to{ opacity:1; transform:none; } }
@@ -168,15 +188,47 @@
   <div class="container">
     <a class="back" href="/">&larr; The Signal</a>
     <h1>Settings</h1>
-    <div class="sub">The Brief — sources, profile &amp; engine. Reads are open; saving needs the held token (entered once per device).</div>
+    <div class="sub"><b>Reader</b> controls (theme, text size, notifications) are saved on this device — no token. The <b>Engine</b> console (sources, profile, AI passes, spend) reads openly but saving needs the held token, entered once per device.</div>
 
     <nav class="tabs" id="tabs">
+      <button class="tab" data-tab="reader">Reader</button>
+      <span class="tab-div" aria-hidden="true">Engine ›</span>
       <button class="tab" data-tab="status">Status</button>
       <button class="tab" data-tab="interests">Interests</button>
       <button class="tab" data-tab="sources">Sources</button>
       <button class="tab" data-tab="ai">AI</button>
       <button class="tab" data-tab="engine">Engine</button>
     </nav>
+
+    <!-- READER — client-side prefs (H7). No token: everything here lives in
+         localStorage and applies live. The Engine panels below stay token-gated. -->
+    <div class="panel" data-panel="reader">
+    <div class="card">
+      <h2>Reader — how it looks &amp; feels</h2>
+      <p class="hint" style="margin-bottom:0.9rem">Saved on this device only. No token needed.</p>
+      <label>Theme</label>
+      <div class="segmented" id="pref-theme" role="group" aria-label="Theme">
+        <button type="button" data-val="auto">Auto</button>
+        <button type="button" data-val="light">Warm paper</button>
+        <button type="button" data-val="dark">Dark</button>
+      </div>
+      <div class="hint">Auto follows your device's light/dark setting. Warm paper matches the Sunday issues, so home &harr; issue isn't a jolt.</div>
+      <label style="margin-top:1.1rem">Text size</label>
+      <div class="segmented" id="pref-textsize" role="group" aria-label="Text size">
+        <button type="button" data-val="small">Small</button>
+        <button type="button" data-val="medium">Medium</button>
+        <button type="button" data-val="large">Large</button>
+      </div>
+      <div class="hint">Scales the Brief and this page. Issues keep their own reading size.</div>
+    </div>
+    <div class="card">
+      <h2>Notifications</h2>
+      <div class="toggle"><input type="checkbox" id="pref-notify"><label for="pref-notify">Show new-story alerts on this device (the app badge + the big-story push)</label></div>
+      <div class="hint" id="notify-perm-hint" style="margin-top:0.5rem"></div>
+      <button class="btn-sm" id="notify-enable" style="margin-top:0.6rem" hidden>Enable browser notifications</button>
+      <div class="hint" style="margin-top:0.8rem">This is a per-device on/off. <b>How often</b> the engine pushes and the "big enough" thresholds live in <b>Engine &rarr; Push</b> (token-gated).</div>
+    </div>
+    </div><!-- /panel:reader -->
 
     <div class="panel" data-panel="status">
     <div class="card">
@@ -983,6 +1035,55 @@
     $('signal-low').addEventListener('input', updatePreview);
     $('save').addEventListener('click', save);
 
+    // Reader controls (H7) — client-side prefs, NO token. Theme + text size apply
+    // live and persist to localStorage under the same keys the home + this page
+    // read on load; notifications is a per-device on/off the home honours before
+    // it badges / subscribes.
+    (function initReader(){
+      function seg(id, key, dflt, apply){
+        var box=document.getElementById(id); if(!box) return;
+        var cur; try{ cur=localStorage.getItem(key); }catch(_){}
+        cur = cur || dflt;
+        var btns=[].slice.call(box.querySelectorAll('button'));
+        function paint(v){ btns.forEach(function(b){ b.classList.toggle('active', b.dataset.val===v); }); }
+        paint(cur); apply(cur);
+        btns.forEach(function(b){ b.addEventListener('click', function(){
+          var v=b.dataset.val; paint(v);
+          try{ if(v===dflt) localStorage.removeItem(key); else localStorage.setItem(key, v); }catch(_){}
+          apply(v);
+        }); });
+      }
+      seg('pref-theme','signal-theme','auto', function(v){
+        if(v==='light'||v==='dark') document.documentElement.setAttribute('data-theme', v);
+        else document.documentElement.removeAttribute('data-theme');
+      });
+      seg('pref-textsize','signal-text-size','medium', function(v){
+        if(v==='small'||v==='large') document.documentElement.setAttribute('data-text-size', v);
+        else document.documentElement.removeAttribute('data-text-size');
+      });
+      var nt=document.getElementById('pref-notify');
+      var enable=document.getElementById('notify-enable');
+      var hint=document.getElementById('notify-perm-hint');
+      function notifyPref(){ try{ return localStorage.getItem('signal-notify')!=='off'; }catch(_){ return true; } }
+      function refreshHint(){
+        if(!hint) return;
+        if(!('Notification' in window)){ hint.textContent='This browser does not support notifications.'; if(enable) enable.hidden=true; return; }
+        var p=Notification.permission;
+        if(p==='granted'){ hint.textContent='Browser notifications are allowed.'; if(enable) enable.hidden=true; }
+        else if(p==='denied'){ hint.textContent='Blocked in the browser — re-allow them in your browser or site settings.'; if(enable) enable.hidden=true; }
+        else { hint.textContent='Browser permission not granted yet.'; if(enable) enable.hidden=!notifyPref(); }
+      }
+      if(nt){ nt.checked=notifyPref(); nt.addEventListener('change', function(){
+        try{ localStorage.setItem('signal-notify', nt.checked?'on':'off'); }catch(_){}
+        refreshHint();
+      }); }
+      if(enable){ enable.addEventListener('click', function(){
+        if(!('Notification' in window)) return;
+        Notification.requestPermission().then(refreshHint);
+      }); }
+      refreshHint();
+    })();
+
     // Sub-tabs: show one panel at a time, remember the last one. Hidden panels
     // keep their inputs in the DOM, so Save still persists every tab.
     (function initTabs(){
@@ -997,7 +1098,7 @@
       }
       tabs.forEach(function(t){ t.addEventListener('click', function(){ activate(t.dataset.tab); window.scrollTo(0,0); }); });
       var saved; try{ saved=localStorage.getItem(TAB_KEY); }catch(_){}
-      activate(saved||'status');
+      activate(saved||'reader');
     })();
     $('forget').addEventListener('click', function(){ try{localStorage.removeItem(TOKEN_KEY);}catch(_){} msg('Token forgotten on this device.', 'ok'); });
     $('runnow').addEventListener('click', function(){

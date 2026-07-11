@@ -35,5 +35,9 @@ echo "→ Generating cover thumbnail(s)..."
 python3 scripts/extract-covers.py "$@"
 
 echo
+echo "→ Rebuilding the archive manifest (H8 — the home reads this for counts/grouping)..."
+python3 scripts/build-archive-manifest.py
+
+echo
 echo "→ Done. Commit the rewritten HTML, any new files under /assets/cached/,"
-echo "  and the cover under /assets/covers/."
+echo "  the cover under /assets/covers/, and archive-manifest.json."
