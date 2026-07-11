@@ -1,12 +1,24 @@
 # The Signal — Editorial Specification
 
-> **v8.34** — Weekly refocus (a scope/spine change, not a feature). The daily brief now reliably owns week-in-the-loop catch-up, so the weekly is reframed to add **the layer time gives** for a reader who arrives already informed. Three moves, all by adjusting existing principles/gates (no new rule, no new script — per the anti-accretion meta-rule): **(1) Identity** names the division — the daily owns the catch-up; the weekly's news job is synthesis across the week and roundups that combine piecemeal items, alongside the evergreen / recommendations / discovery it already does. **(2) The section spine is inverted** — the mandatory element of a fixed section is now the **considered piece** (synthesis, a roundup with a *named* layer, an angle, or a feature), and the Catch-Up drops to **optional grounding context**, never exhaustive coverage; a fixed section with only catch-up to offer **yields** that week (it's the daily's job) rather than running a roundup to fill the slot. Enforced by adjusting `validate-chapter-plan.py`'s `check_section_shape` to require the considered-piece backbone instead of the catch-up spine. **(3) The two-factor Lead test keeps factor 1** (did it move this week) and **moves factor 2's reference point** from "beat the BBC headline" to *what the informed reader already absorbed across the week from the daily* — does the piece add the layer the daily couldn't: the week's arc tied together, or the combined picture across separate items? Kept profile-invisible per the Cardinal Rule. The craft / research / quality / compliance machinery is unchanged.
->
-> **v8.28** — Substance & trust (a follow-up to v8.27, after a test weekly read as confident fluff). Two root causes, fixed at source. **(1) Structure demanded generation** — a lead per section + word floors made the writer invent angles and pad. Fix: the **Lead is now optional** (a section can be pure facts/Catch-Up), **word floors are guidance not quotas** (length follows the material), and a per-section **fallback hierarchy** — real sourced angle → just state the facts → yield — where *inventing an angle to fill a slot is never the answer*. New Cardinal rule **"Borrowed angles, our voice"**: the magazine never invents an opinion/thesis/counterargument; it borrows real ones from research and voices them as its own (no citation duty, no robotic "X said Y"). Not everything needs an angle — gaming releases and evidence explainers (the muscle-in-a-deficit piece) are better as plain facts. Catch-Up items must carry a *specific fact* or be cut; recommendation sections with no real items yield rather than invent. **(2) Nothing verified inbound facts** (images were a fortress, facts wide open) — the writer states only facts in the research bundle, a stated result must have *happened by the issue date* and trace to a source (extends the release-date check to results/fixtures), closing the Monaco "Norris on pole" class. Process fix: the researcher spawns as a **writable** agent (it must write the bundle; the read-only Explore agent silently couldn't, starving issues of facts). Specials included (Deep Dive Argument / Rewind Throughline / Versus Verdict must reflect a frame real coverage supports). Net spec size held at or below the v8.27 baseline (consolidation, not accretion).
->
-> **v8.27** — Editorial reset (a *reduction*, not a feature). Four moves to pull the magazine back toward "catch what he missed, tell him what he's interested in": (1) the **Lead earns its slot by reward-per-attention**, judged on a two-factor test — *did it move this week* AND *can we add something beyond the headline he already has* — so the biggest story leads only when it genuinely developed and we bring an angle (ended the Starmer ×3 holding-pattern leads); (2) **UK politics back to out-by-default** (the v8.x "Lead-grade, cover fully" framing for leadership challenges/reshuffles was an over-correction and the direct engine of the Starmer run); (3) section shape is now **one angled Lead + a substantive Catch-Up roundup** (retires the v8.15 mandatory two-deep-anchor Lead+Companion; Companion is now optional, the Catch-Up carries missable domain news — what/why/link, no bare namedrops — plus one-line safety-net headlines so demoting a known story out of the Lead never drops it); (4) **roster redesigned from the reader's interest-domains** (one home per domain): fixed = World · Pixel & Byte (gaming + LEGO) · The Toolkit (tech & tools, fixed-but-yields with full gap-coverage on return) · The Touchline · Screen & Sound · The Session (absorbs Workshop + Lab); rotating = The Shelf · This Week in History · Listening (Listen + Channel) · Money (Long Game + Wallet + Ledger) · Places (Itinerary + Local); **The Saga is now trigger-driven, not timer-driven** (runs on a live public peg the researcher finds, or a private peg the reader supplies via `currently_reading`/`currently_watching` state or a manual trigger — the same reader-supplied-context principle that already makes Next and Lookahead manual-only). Governance: the freshness / topic-lock / theme-clustering patches collapse into one "what to lead with" principle; no new scripts; a `novelty` dimension added to the quality rubric. Rotating slots per issue drop from 3–4 to 2–3.
->
-> *Earlier feature-versions (v8.15–v8.20) — see `CHANGELOG.md` for the full history.*
+> **This spec is one charter, not a patch pile (v8.38, W-4).** The version-by-version narrative (v8.13 → v8.38 — every incremental fix, retirement, and rename) now lives in `CHANGELOG.md`, not here. The living spec below reads as a single standing charter: the north-star and the rules **as they are now**. When you need to know *why* a rule reads the way it does, or the date a gate was retired, read `CHANGELOG.md`.
+
+## Editorial Charter
+
+**The north-star — one question.** *Did this issue tell him what the week added up to, and give him one thing to do?* Everything below serves that. When a rule and the north-star seem to disagree, the north-star wins and the rule is probably stale — fix it.
+
+**What The Signal is.** A weekly personal Sunday-morning magazine for **one reader** (see § The Reader) — not a news digest. The **daily brief owns week-in-the-loop catch-up**; by Sunday the reader arrives **already informed**. So the weekly's job is the **layer time gives**: synthesis across the week (the arc tied together), roundups that combine what arrived piecemeal, evergreen features, recommendations, curiosity, and reference data. It tells him what the week *added up to*, and sends him off with something to *do*.
+
+**The standing rules — as they are now:**
+
+1. **The Cardinal Rule — reader invisible, Editor visible, angles borrowed.** The *reader* is never addressed or described (no "you", "your son", no profile callbacks) — the profile guides selection, then disappears. The *Editor* is a visible, named, first-person voice (The Letter, and lightly throughout). Every angle/opinion/counterargument is **borrowed from real sources and voiced as ours** — the magazine never invents a thesis. See § Key Rules for the full statement.
+2. **The four-movement spine.** Every weekly runs **I THE OPEN** (The Letter → The Week, Composed → The Week in Numbers → Caught Up) · **II THE LONG READ** (exactly one deep anchor, rotating subject) · **III THE ROUNDS** (Touchline, Pixel & Byte, Screen & Sound, the Bookmark books rail, The Desk) · **IV THE CLOSE** (The Threads → Down the Rabbit Hole → On the Radar → Do This Week → Colophon). Branded identities are kept; the issue ends on a **verb and a human line**, never an aphorism. See § Section Structure.
+3. **One deep centre, brisk rounds.** The deep work concentrates in the **single Long Read**. The rounds carry the week's news at the depth the material earns and **yield when thin** — there is no considered-piece-in-every-section backbone. Completeness is discharged up front by the 8-line **Caught Up**, so no round owes a safety-net headline.
+4. **Length follows the material.** Target **~6,000–9,000 words**; a tight **~12-component palette**. Padding a thin idea to a floor is banned; so is bulk for its own sake.
+5. **Substance and trust.** A high prose floor and fact density; **every load-bearing fact traces to the research bundle**; a stated result must have *happened* by the run date; the **image-integrity chain is unbreakable** (§ Image URL verification chain). Sourcing rigour and anti-fabrication are preserved wholesale.
+6. **Continuity is a feature, not a gate.** `ongoing_stories` feeds **The Threads** (the "previously on…" recap across all domains) plus the reader's life-threads — it no longer suppresses anything.
+7. **The daily→weekly bridge is real data.** Weekly generation reads the daily digest endpoint (`GET /api/daily/digest?since=7d`) and the reader's **Saved This Week** state when composing The Letter and The Threads (§ The daily→weekly bridge).
+
+**The gate ledger — exactly three ship-quality gates (§ the ledger lives in `references/compliance-checklist.md`).** The rebuild collapsed ~8 compliance scripts to **three**: (1) the **image-URL verification chain** (`validate-issue.py` image checks + `auto-repair-images.py`); (2) **markup contracts** (`validate-issue.py` structural/placeholder/back-link/markup checks, including the Issue-in-Numbers stats assertion); (3) **one holistic editorial-quality read** — the single judgement that answers the north-star question. `validate-research-bundle.py` (anti-fabrication) and `validate-chapter-plan.py`'s structural checks remain, but as **upstream production aids**, not ship gates. Do not add gates; retire them.
 
 ## Identity
 
@@ -114,6 +126,41 @@ It uses the existing `.stat-bar` / `.stat` component vocabulary (compact, not a 
 
 > **Distinct from the Colophon's "Issue in Numbers" (v8.36).** The Week in Numbers is about **the reader's week** (his miles, his rank, his team's result). The Colophon's Block 1 "Issue in Numbers" (§ End-of-Issue Colophon) is about **the issue itself** (word count, sections, links, images). **Keep both** — they measure different things; never merge them or let one's stats leak into the other.
 
+### The daily→weekly bridge — the digest + Saved This Week (v8.38, W-4)
+
+The daily and the weekly **share real data** — this is the personalization loop that makes the weekly's "already-informed reader" premise run on bytes, not assertion. When composing the issue, weekly generation reads **two** inputs from the daily side, in **Phase 0/3** (before The Letter and The Threads are written):
+
+1. **The daily digest endpoint — `GET /api/daily/digest?since=7d`** (Daily D-3). Returns `{ surfaced, moved, saga_lines, ... }`: what the daily brief *surfaced* this week and, crucially, what **moved** (a story that changed signal-tier — "was *linked with* → now *here we go*") plus per-saga one-liners. This is the machine-generated record of the week's arc.
+2. **Saved This Week — the reader's own input** (a lightweight state field, below). What the reader chose to *keep* from the daily brief this week. This is the human signal on top of the machine signal.
+
+**Where each is consumed:**
+
+- **The Letter** reads `digest.moved` + `digest.saga_lines` + `saved_this_week` to find **the week's thesis and the cross-domain dots**. The Editor's job in The Letter is to connect what moved with what the reader cared enough to save — the strongest thread through the week is usually where a *moved* story and a *saved* item rhyme. (The machinery stays invisible per the Cardinal Rule — never write "you saved this" or "the daily carried X".)
+- **The Threads** reads `digest.saga_lines` + `saved_this_week` (matched against `ongoing_stories` topics/aliases) to decide **which sagas to recap and how far they moved** since last week, and to surface a saved thread the reader is actively following even if `ongoing_stories` hadn't flagged it. A saved item that maps to a tracked saga raises that thread's priority in The Threads.
+
+**The `saved_this_week` state field (shape).** A lightweight array in `state/signal-state.json`, populated by the daily save-for-later affordance (Daily D-2) and consumed read-only by the weekly. Cleared/rotated after each weekly ships (keep the last issue's set for reference under `saved_last_week` if useful). Shape:
+
+```json
+"saved_this_week": [
+  {
+    "title": "Antonelli confirmed at Mercedes for 2027",
+    "url": "https://...",
+    "domain": "touchline",
+    "saved_at": "2026-07-08",
+    "daily_why": "the seat the paddock spent all spring guessing about",
+    "saga": "antonelli-title-run"
+  }
+]
+```
+
+- `title`, `url` — the saved item (carry the daily's `{title, why, link}` straight through).
+- `domain` — maps to a weekly section/round for routing (`touchline`, `pixel_byte`, `world`, …).
+- `saved_at` — ISO date; lets the weekly weight recent saves.
+- `daily_why` — the `why` the daily already computed (reused, not re-derived).
+- `saga` — optional; the `ongoing_stories` topic slug this item belongs to, if any. When present, The Threads uses it to raise that thread's recap priority.
+
+If `saved_this_week` is empty or the digest endpoint returns nothing (a quiet week, or the daily was down), The Letter and The Threads fall back to `ongoing_stories` + the research bundle as before — the bridge **enriches**, it is never a hard dependency.
+
 
 For individual section content rules, voice notes, and research guidance, see `references/sections.md`. Only read sections appearing in this issue.
 
@@ -143,6 +190,16 @@ A short editor-shaped orientation that follows The Letter: the week arranged int
 
 Movement II is **one** deep anchor per issue — the issue's sole considered centrepiece, subject rotating week to week (world one week, a game or a training idea or a book the next). It uses the existing `08-anchor-piece` slot (`.is-anchor` on its `<section>` and its Navigator `.toc-row`), opens with a strong opener, and runs long enough to earn the space (typically 900–1,800 words; longer when the subject genuinely warrants). It **absorbs the old Saga, Deep-Dive-lite, and evergreen-feature impulses** — those are no longer separate deep beats scattered across the issue; the deep work concentrates here. Exactly one runs; there is no second mandated anchor. (The whole-issue Deep Dive special is unaffected — the Long Read is a weekly *movement*, the Deep Dive is a whole-issue interruption.)
 
+### Synthesis-by-juxtaposition — a prose technique for contested material (v8.38, W-4)
+
+**Synthesis-by-juxtaposition** is the magazine's technique for World-adjacent and other **genuinely contested** material — now that world coverage lives in **Caught Up** and, when the week earns it, the **Long Read**. Instead of the Editor adjudicating a dispute (which would breach the Cardinal rule against inventing a thesis), the piece places **2–4 short, ATTRIBUTED, genuinely conflicting excerpts in sequence** and lets **the arrangement carry the meaning**. The reader draws the conclusion the ordering implies; the magazine never states it.
+
+- **Attribution is mandatory and load-bearing.** Every excerpt names its source (outlet, analyst, named commentator) and traces to the research bundle as an `opinion` fact with a real `quote` (§ Key Rules → Borrowed angles; RT-22). An unattributed or invented "some argue…" excerpt is a fabrication fail — this technique **only** works with real, citable disagreement.
+- **The excerpts must genuinely conflict.** Two takes that agree, or a strawman set up to be knocked down, defeat the purpose. Choose views that actually diverge (the hawk and the regional analyst; the launch-day rave and the considered pan) so the *gap between them* is the content.
+- **The arrangement is the argument — so order deliberately.** Sequence for the reading you want the *juxtaposition* (not your narration) to produce: e.g. confident claim → the fact that complicates it → the quieter view that reframes both. Do not add a connective sentence telling the reader what to conclude ("what this really shows is…") — that is the hollow-connective-sentence trope and it collapses the technique back into invented thesis.
+- **It is a prose technique, not a new component.** No new markup or CSS: render the excerpts with the existing vocabulary — a short run of attributed `<blockquote>`s, or the `.source-strip` / image-quote pattern — inside Caught Up's context or the Long Read's body. It counts against the ~12-component palette only insofar as it reuses those existing components. If a future issue needs a visually distinct stacked-juxtaposition block, add a contract to `references/component-contracts.md` then — until then it is prose.
+- **Where it belongs.** Caught Up (a single tight juxtaposition of two attributed lines on the week's most-contested story) and the Long Read (a fuller 3–4-excerpt sequence when the anchor is a genuine dispute). It replaces the retired impulse to write a World section that adjudicated — the magazine arranges the disagreement instead of resolving it.
+
 ## Anchor-Piece Rotation (deprecated v8.15)
 
 Removed. Replaced by the Lead + Companion structure (see § Article Structure). The anchor-piece rotation was unenforced across 8 weekly issues; the new two-anchor structure subsumes its purpose of giving every issue a second centre of gravity.
@@ -156,6 +213,8 @@ Every issue ends with a **Colophon** — a sign-off block between On the Radar a
 ### Block 1 — Issue in Numbers
 
 A small stat grid summarising the issue itself: word count, number of sections, number of links, articles read, images. If an anchor piece ran, include "Anchor: [section name]". 4-6 stats, quietly pleasing rather than boastful. **This is the issue's numbers, not the reader's — keep it distinct from § The Week in Numbers (v8.36), which counts the reader's own week (Garmin miles, FPL rank, the Juve result). Both ship; they never merge.**
+
+> **The stats must be real and distinct (markup-safety assertion, v8.38).** Every Issue-in-Numbers figure is a *different* real count, and none of them is just the issue number. The recurring defect is a placeholder issue that shipped `13 / 13 / 13 / 13` (every stat left at the issue number). `validate-issue.py`'s **markup gate** now asserts this cheaply: if the Issue-in-Numbers block's numeric stats are all identical, or every stat equals the issue number, it fails as a markup-safety defect. Fill each figure with its real count — the word count is not the section count is not the link count.
 
 ### Block 2 — Next Week
 
@@ -1191,12 +1250,12 @@ A candidate the researcher cannot verify is **dropped**, not passed through with
 
 **Layer 3 — Bundle gate (Phase 3b, `validate-research-bundle.py`).** Rejects any bundle with: a candidate missing `verified`; a candidate with non-2xx `head_status`; a candidate with non-`image/*` `content_type`; fewer than `min_unique_candidates` distinct URLs; URLs without an image extension and no `direct_cdn: true` flag.
 
-**Layer 4 — Writer contract.** Writers MUST use `src=` values **verbatim** from `image_candidates`. Inventing URLs (even legitimate-looking CDN paths) is forbidden — caught by Phase 7.8 D7.
+**Layer 4 — Writer contract.** Writers MUST use `src=` values **verbatim** from `image_candidates`. Inventing URLs (even legitimate-looking CDN paths) is forbidden — enforced upstream by Layer 3 (the bundle gate) + Layer 2 (orchestrator re-fetch), and any that slip through are rotated out by Layer 5's auto-repair.
 
-**Layer 5 — DOM gates (Phase 7.8, `visual-smoke-test.py`).**
-- **D3 page-url-as-image:** any image URL whose path has no recognised image extension fails. Catches the "page URL pasted as `<img src>`" pattern.
-- **D6 duplicate image URLs:** any URL used more than `max_uses_per_url` times (default 1) fails. Enforces the no-duplicate-src rule above mechanically.
-- **D7 unbundled images:** with `--bundle <path>`, every DOM image URL must appear verbatim in `image_candidates`. Catches URLs the writer invented.
+**Layer 5 — DOM checks + auto-repair (Phase 7.6 `validate-issue.py` + Phase 9 round 0 `auto-repair-images.py`).** *(v8.38, W-4: the old standalone `visual-smoke-test.py` DOM gate is deleted; its image-safety intent lives here, inside the image-URL verification chain gate.)*
+- **Page-url-as-image (old D3):** `validate-issue.py`'s `static_image_url_check` fails any image URL whose path has no recognised image extension — the "page URL pasted as `<img src>`" pattern. Runs even offline.
+- **Duplicate image URLs (old D6):** `auto-repair-images.py` detects any URL used more than once in the rendered DOM and rotates in an unused bundle URL. The no-duplicate-src rule (§ Image-caption integrity, Gate 1F) is the manual backstop.
+- **Unbundled images (old D7):** enforced upstream by Layer 3 + Layer 2 (the bundle is the only authority); `auto-repair-images.py` substitutes any DOM URL not traceable to `image_candidates`.
 
 **Layer 6 — CI workflow (`.github/workflows/issue-validation.yml`).** Runs all gates on every push and PR in an unrestricted-egress environment. The image-URL HEAD check that degrades to a warning in the sandboxed pipeline runs for real here. On failure, auto-files a GitHub issue labelled `validation-failed`. For full enforcement, branch protection on `main` requires this workflow to pass before merge (one-time UI setup).
 

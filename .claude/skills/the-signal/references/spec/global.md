@@ -5,6 +5,30 @@ _This file consolidates the global/ subdir into one file. Each former file becom
 
 ---
 
+## charter
+
+## Editorial Charter
+
+**The north-star — one question.** *Did this issue tell him what the week added up to, and give him one thing to do?* Everything below serves that. When a rule and the north-star seem to disagree, the north-star wins and the rule is probably stale — fix it.
+
+**What The Signal is.** A weekly personal Sunday-morning magazine for **one reader** (see § The Reader) — not a news digest. The **daily brief owns week-in-the-loop catch-up**; by Sunday the reader arrives **already informed**. So the weekly's job is the **layer time gives**: synthesis across the week (the arc tied together), roundups that combine what arrived piecemeal, evergreen features, recommendations, curiosity, and reference data. It tells him what the week *added up to*, and sends him off with something to *do*.
+
+**The standing rules — as they are now:**
+
+1. **The Cardinal Rule — reader invisible, Editor visible, angles borrowed.** The *reader* is never addressed or described (no "you", "your son", no profile callbacks) — the profile guides selection, then disappears. The *Editor* is a visible, named, first-person voice (The Letter, and lightly throughout). Every angle/opinion/counterargument is **borrowed from real sources and voiced as ours** — the magazine never invents a thesis. See § Key Rules for the full statement.
+2. **The four-movement spine.** Every weekly runs **I THE OPEN** (The Letter → The Week, Composed → The Week in Numbers → Caught Up) · **II THE LONG READ** (exactly one deep anchor, rotating subject) · **III THE ROUNDS** (Touchline, Pixel & Byte, Screen & Sound, the Bookmark books rail, The Desk) · **IV THE CLOSE** (The Threads → Down the Rabbit Hole → On the Radar → Do This Week → Colophon). Branded identities are kept; the issue ends on a **verb and a human line**, never an aphorism. See § Section Structure.
+3. **One deep centre, brisk rounds.** The deep work concentrates in the **single Long Read**. The rounds carry the week's news at the depth the material earns and **yield when thin** — there is no considered-piece-in-every-section backbone. Completeness is discharged up front by the 8-line **Caught Up**, so no round owes a safety-net headline.
+4. **Length follows the material.** Target **~6,000–9,000 words**; a tight **~12-component palette**. Padding a thin idea to a floor is banned; so is bulk for its own sake.
+5. **Substance and trust.** A high prose floor and fact density; **every load-bearing fact traces to the research bundle**; a stated result must have *happened* by the run date; the **image-integrity chain is unbreakable** (§ Image URL verification chain). Sourcing rigour and anti-fabrication are preserved wholesale.
+6. **Continuity is a feature, not a gate.** `ongoing_stories` feeds **The Threads** (the "previously on…" recap across all domains) plus the reader's life-threads — it no longer suppresses anything.
+7. **The daily→weekly bridge is real data.** Weekly generation reads the daily digest endpoint (`GET /api/daily/digest?since=7d`) and the reader's **Saved This Week** state when composing The Letter and The Threads (§ The daily→weekly bridge).
+
+**The gate ledger — exactly three ship-quality gates (§ the ledger lives in `references/compliance-checklist.md`).** The rebuild collapsed ~8 compliance scripts to **three**: (1) the **image-URL verification chain** (`validate-issue.py` image checks + `auto-repair-images.py`); (2) **markup contracts** (`validate-issue.py` structural/placeholder/back-link/markup checks, including the Issue-in-Numbers stats assertion); (3) **one holistic editorial-quality read** — the single judgement that answers the north-star question. `validate-research-bundle.py` (anti-fabrication) and `validate-chapter-plan.py`'s structural checks remain, but as **upstream production aids**, not ship gates. Do not add gates; retire them.
+
+
+
+---
+
 ## identity
 
 ## Identity
@@ -312,12 +336,12 @@ A candidate the researcher cannot verify is **dropped**, not passed through with
 
 **Layer 3 — Bundle gate (Phase 3b, `validate-research-bundle.py`).** Rejects any bundle with: a candidate missing `verified`; a candidate with non-2xx `head_status`; a candidate with non-`image/*` `content_type`; fewer than `min_unique_candidates` distinct URLs; URLs without an image extension and no `direct_cdn: true` flag.
 
-**Layer 4 — Writer contract.** Writers MUST use `src=` values **verbatim** from `image_candidates`. Inventing URLs (even legitimate-looking CDN paths) is forbidden — caught by Phase 7.8 D7.
+**Layer 4 — Writer contract.** Writers MUST use `src=` values **verbatim** from `image_candidates`. Inventing URLs (even legitimate-looking CDN paths) is forbidden — enforced upstream by Layer 3 (the bundle gate) + Layer 2 (orchestrator re-fetch), and any that slip through are rotated out by Layer 5's auto-repair.
 
-**Layer 5 — DOM gates (Phase 7.8, `visual-smoke-test.py`).**
-- **D3 page-url-as-image:** any image URL whose path has no recognised image extension fails. Catches the "page URL pasted as `<img src>`" pattern.
-- **D6 duplicate image URLs:** any URL used more than `max_uses_per_url` times (default 1) fails. Enforces the no-duplicate-src rule above mechanically.
-- **D7 unbundled images:** with `--bundle <path>`, every DOM image URL must appear verbatim in `image_candidates`. Catches URLs the writer invented.
+**Layer 5 — DOM checks + auto-repair (Phase 7.6 `validate-issue.py` + Phase 9 round 0 `auto-repair-images.py`).** *(v8.38, W-4: the old standalone `visual-smoke-test.py` DOM gate is deleted; its image-safety intent lives here, inside the image-URL verification chain gate.)*
+- **Page-url-as-image (old D3):** `validate-issue.py`'s `static_image_url_check` fails any image URL whose path has no recognised image extension — the "page URL pasted as `<img src>`" pattern. Runs even offline.
+- **Duplicate image URLs (old D6):** `auto-repair-images.py` detects any URL used more than once in the rendered DOM and rotates in an unused bundle URL. The no-duplicate-src rule (§ Image-caption integrity, Gate 1F) is the manual backstop.
+- **Unbundled images (old D7):** enforced upstream by Layer 3 + Layer 2 (the bundle is the only authority); `auto-repair-images.py` substitutes any DOM URL not traceable to `image_candidates`.
 
 **Layer 6 — CI workflow (`.github/workflows/issue-validation.yml`).** Runs all gates on every push and PR in an unrestricted-egress environment. The image-URL HEAD check that degrades to a warning in the sandboxed pipeline runs for real here. On failure, auto-files a GitHub issue labelled `validation-failed`. For full enforcement, branch protection on `main` requires this workflow to pass before merge (one-time UI setup).
 

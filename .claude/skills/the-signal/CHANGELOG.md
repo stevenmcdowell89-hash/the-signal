@@ -1,5 +1,62 @@
 # The Signal — Changelog
 
+8.38.0 — Personalization loop, charter consolidation & the THREE-gate ledger (weekly W-4,
+  the FINAL phase of the July rebuild, from `docs/signal-final-recommendations-2026-07.md`
+  § STREAM 1 Phase W-4 + §5 the Gate Ledger). Ends the weekly rebuild: the daily→weekly
+  bridge runs on real data, the patch-stack becomes one charter, and the gate ledger closes
+  at exactly three ship-quality gates. Spec + sliced views + checklist + state field +
+  one validator assertion; two scripts deleted; JS-off rendering intact.
+
+  - **"Saved This Week" — the daily→weekly bridge (personalization loop).** New lightweight
+    `saved_this_week` array in `state/signal-state.json` (shape: `{title, url, domain,
+    saved_at, daily_why, saga?}`), populated by the daily save-for-later affordance (D-2),
+    consumed READ-ONLY by weekly generation. Documented in `editorial-spec.md` § The
+    daily→weekly bridge: weekly generation reads `GET /api/daily/digest?since=7d` (`{surfaced,
+    moved, saga_lines}`, D-3) **plus** `saved_this_week` when composing **The Letter** (reads
+    `digest.moved` + `digest.saga_lines` + `saved_this_week` for the week's thesis and the
+    cross-domain dots) and **The Threads** (matches `saved_this_week` + `digest.saga_lines`
+    against `ongoing_stories` to pick and prioritise saga recaps). Enriches, never a hard
+    dependency; machinery stays invisible per the Cardinal Rule.
+  - **Synthesis-by-juxtaposition** documented as a **prose technique** (no new component):
+    2–4 ATTRIBUTED conflicting excerpts placed in sequence, the arrangement carrying the
+    meaning, for contested World/Long-Read material (now in Caught Up / the Long Read).
+    Attribution mandatory (traces to bundle `opinion` facts); the excerpts must genuinely
+    conflict; no connective sentence telling the reader what to conclude. Reuses the existing
+    blockquote / `.source-strip` vocabulary. `editorial-spec.md` § Synthesis-by-juxtaposition.
+  - **The patch-stack consolidated into ONE Editorial Charter.** New `## Editorial Charter`
+    at the top of `editorial-spec.md` (north-star + the standing rules as they NOW are),
+    sliced into `spec/global.md § charter`. The v8.13→v8.38 version-by-version narrative is
+    removed from `editorial-spec.md`'s top blockquotes and from `SKILL.md`'s L21 patch
+    paragraph — it lives in this CHANGELOG only (history preserved, not lost). The living
+    spec now reads as one charter, not a patch pile.
+  - **THE GATE LEDGER — exactly THREE ship-quality gates (§5).** `compliance-checklist.md`
+    now opens with the three-gate ledger table and nothing else ships-blocks:
+    1. **Image-URL verification chain** — `validate-issue.py` image-URL HEAD + static
+       extension checks **+** `auto-repair-images.py` (duplicate/unbundled/page-URL repair). KEEP.
+    2. **Markup contracts** — `validate-issue.py` structural/placeholder/back-link/markup +
+       component-variety checks, **now folding in the Issue-in-Numbers stats assertion**
+       (`check_issue_in_numbers_stats`: stats aren't all identical / aren't just the issue
+       number — the 13/13/13/13 placeholder defect; a lightweight markup-safety assertion,
+       NOT a new script). KEEP.
+    3. **One holistic editorial-quality read** — the Phase 9.5 reading pass, reframed from
+       observational scorer to **the third gate** (blocking-ish: a north-star NO is a repair
+       target within the 3-round budget; Phase 10 still always publishes). Judges the single
+       question: *did this issue tell him what the week added up to, and give him one thing
+       to do?* Replaces the ~8 compliance scripts; absorbs the prose-rhythm, theme-clustering,
+       topic-lock, plain-English, and scorer intents.
+  - **`check-prose-rhythm.py` and `visual-smoke-test.py` DELETED**, phase invocations removed
+    (SKILL.md Phase 7.75 + 7.8, the CI workflow, the gate-discipline list). Prose-rhythm's
+    "paragraph wall" intent → gate 3 (the holistic read). Visual-smoke-test's image-safety
+    intent (old D3/D6/D7) → gate 1 (`validate-issue.py` extension check + `auto-repair-images.py`
+    dedup, which is self-contained); its holiday-chrome intent (old D1/D2/D4/D5) → gate 2
+    (`validate-issue.py` holiday activation/components + Gate-1E greps + the stitcher override).
+  - **Upstream production aids, explicitly NOT ship gates:** `validate-research-bundle.py`
+    (anti-fabrication / sourcing rigour — preserved wholesale) and `validate-chapter-plan.py`'s
+    remaining structural checks. They gate the bundle / plan, not the shipped issue.
+  - Preserved wholesale per the out-of-scope section: prose floor, fact density, sourcing
+    rigour, the image-integrity chain, branded identities, Down the Rabbit Hole, reading-time
+    badges, editorial cover. Did NOT add List 1's voice-tic or Issue-in-Numbers standalone gates.
+
 8.37.0 — The spine & the Long Read (weekly W-3, from `docs/signal-final-recommendations-2026-07.md`
   § STREAM 1 Phase W-3). Reorganises the weekly into a four-movement spine, cuts length
   ~40%, trims the component palette to a tight ~12, and retires three gates. Spec +

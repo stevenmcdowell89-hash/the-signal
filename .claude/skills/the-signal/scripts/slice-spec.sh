@@ -164,6 +164,8 @@ echo ""
 # ─────────────────────────────────────────────────────────────────────────────
 
 echo "── global/ ──"
+# v8.38 (W-4) — the Editorial Charter (north-star + standing rules) leads every role read.
+extract_heading  "$OUT_DIR/global/00-charter.md" "Editorial Charter"
 # Identity is H2 "Identity" + "The Reader" (the reader intro continues identity)
 extract_h2_multi "$OUT_DIR/global/01-identity.md" "Identity" "The Reader"
 extract_heading  "$OUT_DIR/global/02-key-rules.md" "Key Rules"

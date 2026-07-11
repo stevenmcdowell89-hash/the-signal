@@ -1,26 +1,30 @@
 # The Signal — Compliance Checklist
 
-Two gates. Gate 1 is a mechanical text scan — run it BEFORE reading Gate 2. If Gate 1 fails, fix before proceeding. Gate 2 is editorial and visual quality.
+## THE GATE LEDGER — exactly three ship-quality gates (v8.38, W-4)
 
-**v8.11.0 update:** Gate 1 now runs **per chapter during the pipeline** (Phase 7), not just at end of run. Each writer self-audits via `references/pre-flight.md` before submission. The main loop then grep-scans every chapter against this gate before stitching. Most regressions are caught upstream by pre-flight; this file catches what slipped through.
+The weekly rebuild collapsed the old ~8 compliance scripts to **three ship-quality gates**. This is the whole quality ledger — nothing else blocks a ship, and no fourth gate is to be added (per `docs/signal-final-recommendations-2026-07.md` §5). Retire gates, don't accrete them.
 
-**v8.13.4 update — what is now MECHANIZED vs what remains MANUAL.**
-- **Mechanized** (run by the orchestrator as scripts, exit-code gated):
-  - `scripts/validate-chapter-plan.py` — Phase 4 plan validity.
-  - `scripts/stitch-issue.sh` — Phase 6 holiday-activation rewrite + banned-vocabulary scan (`sp-*` tokens on holiday formats) + positive `.hol-half` presence.
-  - `scripts/check-release-dates.sh` — Phase 7.5 date/release-fact surface.
-  - `scripts/validate-issue.py` — Phase 7.6 structural well-formedness, the **"Return to The Signal" back-link button** (marker + `.signal-back-to-archive` anchor → `../`, universal across every format), banned literal placeholders in DOM, holiday-identity body activation (real `<body>` after `</head>`, not example in comment), required holiday components (`.hol-masthead` / `.hol-cover` / `.hol-half`), multi-venue body flag + two distinct `data-venue` values, and image-URL HEAD-checks.
-- **Manual** (still requires a reading pass — no script can judge prose):
-  - **1A Reader-profile leaks** below.
-  - **1B Fabrication** of facts, dates, quotes, attribution (date register is partially mechanized via `check-release-dates.sh`; the agent still walks the surface).
-  - **1C Staleness** (rotating-section topics not in spec, ongoing-stories continuity).
-  - **1D Link health** (only structural URL reachability is mechanized; relevance is not).
-  - **1E Markup contract** (partially mechanized via the stitch-time grep gate; spot-check anything novel).
-  - **1F Image-caption integrity** (whether the caption matches the image is still a human/agent judgement).
+| # | Ship-quality gate | Enforced by | What it guarantees |
+|---|---|---|---|
+| **1** | **Image-URL verification chain** | `validate-issue.py` (image-URL HEAD + static extension checks) **+** `auto-repair-images.py` (rotates out duplicate / unbundled / page-URL image slots) | No broken, fabricated, duplicate, or page-URL-as-image ships. Real safety — broken images are a visible failure. |
+| **2** | **Markup contracts** | `validate-issue.py` (structural well-formedness, banned literal placeholders, the "Return to The Signal" back-link, holiday activation + components, non-holiday special component variety, **and the Issue-in-Numbers stats assertion** — stats aren't all identical / aren't just the issue number) **+** the Gate-1E markup greps below | Rendering safety: the DOM matches the CSS contracts, so nothing renders with the wrong contrast or a missing structural element. |
+| **3** | **One holistic editorial-quality read** | The Phase 9.5 reading pass (a dedicated reader agent), judging the single question | *Did this issue tell him what the week added up to, and give him one thing to do?* This **replaces the ~8 retired compliance scripts** — it absorbs the intent of the retired prose-rhythm, theme-clustering, topic-lock, and plain-English checks, and the observational scorer, into one judgement made to matter. |
 
-If a check in this file is duplicated by a mechanized gate, the mechanized gate is authoritative and the prose here is a reading aid only.
+**Upstream production aids (NOT ship gates).** Two scripts remain in the pipeline but are **production aids**, not part of the three-gate ship ledger — they help *produce* a sound issue, upstream of the gates:
+- `validate-research-bundle.py` — **anti-fabrication / sourcing rigour** (Phase 3b). Preserved wholesale; sourcing rigour is non-negotiable. It gates the *research bundle*, not the shipped issue.
+- `validate-chapter-plan.py` — the remaining **structural plan checks** (Phase 4: Release Radar presence, piece well-formedness, the Catch-Up no-namedrops rule). It gates the *plan*, not the shipped issue.
 
-Gate 1 has six sections: 1A reader-profile leaks, 1B fabrication, 1C staleness, 1D links, **1E markup contract compliance** (special editions only), **1F image-caption integrity**. Sections 1E and 1F are bash grep recipes — run them, every command must return the expected value before proceeding.
+Also still run, as mechanical production steps (not editorial gates): `verify-orchestrator-model.sh` (Step Zero), `stitch-issue.sh` (holiday rewrite + banned-vocab scan), `check-release-dates.sh` (Phase 7.5 fact-date surface), and `check-image-diversity.sh` (Phase 7.7 image-source diversity).
+
+**Retired — do NOT reintroduce (folded into structure or the holistic read):** per-section closer/aphorism check · entry-pattern-rotation enforcement · deficit-promotion validator · hard-cadence-floor validator · topic-lock sliding-window + its Gate-1 grep (`check-topic-lock.py`, deleted) · theme-clustering (`check-theme-clustering.py`, deleted) · **prose-rhythm (`check-prose-rhythm.py`, deleted — intent → gate 3)** · **DOM visual-smoke-test (`visual-smoke-test.py`, deleted — image intent → gate 1, holiday-chrome intent → gate 2)** · the standalone plain-English random-sample weekly pass · the observational-only scorer as a bolt-on. Do **not** add List 1's proposed voice-tic gate or Issue-in-Numbers standalone gate (the stats assertion lives inside gate 2, not as its own script).
+
+---
+
+## Reading aids for the three gates
+
+The detailed sections below are the **reading aids** that feed the three gates — they are not additional gates. **Gate 1 (image chain)** and **Gate 2 (markup)** are mechanized by `validate-issue.py` + `auto-repair-images.py`; the greps and lists here (especially 1E, 1F, and the image-URL chain table) are the manual backstops and the human-judgement items those scripts cannot mechanize. **Gate 3 (the holistic read)** uses the Gate 2 editorial-quality and coverage lists below as its calibration — they describe what a good issue looks like, so the reader agent knows what it's judging. Where a check here is duplicated by a mechanized gate, the mechanized gate is authoritative and the prose is a reading aid only.
+
+The manual scan runs **per chapter during the pipeline** (Phase 7) and again on the stitched issue: each writer self-audits via `references/pre-flight.md`; the main loop grep-scans every chapter before stitching; the holistic read (gate 3) reads the finished issue.
 
 ---
 
@@ -244,10 +248,11 @@ Gate 1F handles per-issue scans the writer/orchestrator can run by eye. The veri
 | 3a | (researcher subagent) | Every `image_candidates[i]` carries a `verified` block with `head_status: 200`, `content_type: image/*`. Bundle floor ≥16 unique URLs. |
 | **3a-verify** | (orchestrator WebFetch loop) | Orchestrator re-fetches every URL itself and OVERWRITES the researcher's `verified` block with the orchestrator's actual result. Closes the self-attestation hole. |
 | 3b | `scripts/validate-research-bundle.py` | Rejects bundle if any candidate is unverified / non-2xx / non-image / no image extension / fewer than `min_unique_candidates` distinct URLs. |
-| 7.8 D3 | `scripts/visual-smoke-test.py` | Any DOM image URL with no image extension fails. |
-| 7.8 D6 | `scripts/visual-smoke-test.py` | Any URL used more than `max_uses_per_url` times in the DOM fails (default 1). |
-| 7.8 D7 | `scripts/visual-smoke-test.py --bundle` | Every DOM image URL must appear verbatim in `image_candidates`. |
+| 7.6 | `scripts/validate-issue.py` | Every DOM image URL reachable (HEAD 2xx/3xx) **and** the static extension check: any image URL with no image extension fails (the old D3 page-URL-as-image). |
+| 9 (round 0) | `scripts/auto-repair-images.py` | Rotates out DOM defects from the bundle: duplicate URLs (old D6), unbundled URLs (old D7), page-URL-as-image (old D3). Self-contained; runs before any repair agent. |
 | CI | `.github/workflows/issue-validation.yml` | All gates re-run in unrestricted-egress environment on every push/PR. Auto-files `validation-failed` issue on failure. |
+
+> **v8.38, W-4:** the old standalone `visual-smoke-test.py` (Phase 7.8) is **deleted**. Its image-safety checks (old D3/D6/D7) now live inside this chain — `validate-issue.py` does the extension check, `auto-repair-images.py` does the dedup/unbundled repair, and the bundle gate + orchestrator re-fetch (rows above) prevent unbundled URLs upstream. Its holiday-chrome DOM checks (old D1/D2/D4/D5) folded into the markup gate (`validate-issue.py` holiday activation/components + the Gate-1E greps).
 
 See `references/spec/global.md` § image-integrity → "Image URL verification chain" for the full layer-by-layer description and rationale.
 

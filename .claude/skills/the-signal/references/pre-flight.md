@@ -405,7 +405,7 @@ Three failure modes that emerged during the May 2026 multi-venue Field Guide reb
 
 3. **Per-slot header floor: 1 minimum.** Every meal-slot section in a meal-slots chapter (Field Guide) or equivalent ranked-list section in a Countdown gets a wide header band image under the slot title and intro paragraph. Five slots = five headers.
 
-4. **Same-image-different-context cap: max 2 issue-wide, max 1 per chapter.** A URL may appear at most twice across the entire issue, and at most once per chapter (the `visual-smoke-test.py` D6 gate enforces this; the `--max-uses-per-url 2` flag is the upper limit for deliberate cross-context use like a cover collage + later full-size hero). Same-context duplicates (pick hero + same-venue slot header in the same chapter) are a regression — swap to the venue's secondary image or to a different venue's bundle entry.
+4. **Same-image-different-context cap: max 2 issue-wide, max 1 per chapter.** A URL may appear at most twice across the entire issue, and at most once per chapter (`auto-repair-images.py` rotates out DOM duplicates in Phase 9 round 0; the manual no-duplicate-src backstop is Gate 1F in `compliance-checklist.md`). Same-context duplicates (pick hero + same-venue slot header in the same chapter) are a regression — swap to the venue's secondary image or to a different venue's bundle entry.
 
 5. **Visual scatter across the issue.** Every chapter carries at least one decorative anchor (drop-cap, fleuron divider, pull-quote, ribbon tab, T-MINUS banner, Trip-in-Numbers, hype marquee). For multi-venue issues, decorative anchors at each half's close are mandatory — the half boundaries are the strongest hype-punch positions in the layout.
 

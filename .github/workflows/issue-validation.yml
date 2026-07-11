@@ -113,10 +113,8 @@ jobs:
             echo "── Phase 7.7: check-image-diversity.sh ──"
             bash "$SKILL/scripts/check-image-diversity.sh" "$f" || FAILED=1
 
-            # Phase 7.8 — DOM visual smoke test (no bundle here — D7 skipped)
-            echo ""
-            echo "── Phase 7.8: visual-smoke-test.py ──"
-            python3 "$SKILL/scripts/visual-smoke-test.py" "$f" || FAILED=1
+            # (v8.38, W-4: Phase 7.8 visual-smoke-test.py deleted — its image checks
+            #  folded into validate-issue.py + auto-repair-images.py; see §5 gate ledger.)
           done
           if [ "$FAILED" = "1" ]; then
             echo ""

@@ -102,6 +102,41 @@ It uses the existing `.stat-bar` / `.stat` component vocabulary (compact, not a 
 
 > **Distinct from the Colophon's "Issue in Numbers" (v8.36).** The Week in Numbers is about **the reader's week** (his miles, his rank, his team's result). The Colophon's Block 1 "Issue in Numbers" (§ End-of-Issue Colophon) is about **the issue itself** (word count, sections, links, images). **Keep both** — they measure different things; never merge them or let one's stats leak into the other.
 
+### The daily→weekly bridge — the digest + Saved This Week (v8.38, W-4)
+
+The daily and the weekly **share real data** — this is the personalization loop that makes the weekly's "already-informed reader" premise run on bytes, not assertion. When composing the issue, weekly generation reads **two** inputs from the daily side, in **Phase 0/3** (before The Letter and The Threads are written):
+
+1. **The daily digest endpoint — `GET /api/daily/digest?since=7d`** (Daily D-3). Returns `{ surfaced, moved, saga_lines, ... }`: what the daily brief *surfaced* this week and, crucially, what **moved** (a story that changed signal-tier — "was *linked with* → now *here we go*") plus per-saga one-liners. This is the machine-generated record of the week's arc.
+2. **Saved This Week — the reader's own input** (a lightweight state field, below). What the reader chose to *keep* from the daily brief this week. This is the human signal on top of the machine signal.
+
+**Where each is consumed:**
+
+- **The Letter** reads `digest.moved` + `digest.saga_lines` + `saved_this_week` to find **the week's thesis and the cross-domain dots**. The Editor's job in The Letter is to connect what moved with what the reader cared enough to save — the strongest thread through the week is usually where a *moved* story and a *saved* item rhyme. (The machinery stays invisible per the Cardinal Rule — never write "you saved this" or "the daily carried X".)
+- **The Threads** reads `digest.saga_lines` + `saved_this_week` (matched against `ongoing_stories` topics/aliases) to decide **which sagas to recap and how far they moved** since last week, and to surface a saved thread the reader is actively following even if `ongoing_stories` hadn't flagged it. A saved item that maps to a tracked saga raises that thread's priority in The Threads.
+
+**The `saved_this_week` state field (shape).** A lightweight array in `state/signal-state.json`, populated by the daily save-for-later affordance (Daily D-2) and consumed read-only by the weekly. Cleared/rotated after each weekly ships (keep the last issue's set for reference under `saved_last_week` if useful). Shape:
+
+```json
+"saved_this_week": [
+  {
+    "title": "Antonelli confirmed at Mercedes for 2027",
+    "url": "https://...",
+    "domain": "touchline",
+    "saved_at": "2026-07-08",
+    "daily_why": "the seat the paddock spent all spring guessing about",
+    "saga": "antonelli-title-run"
+  }
+]
+```
+
+- `title`, `url` — the saved item (carry the daily's `{title, why, link}` straight through).
+- `domain` — maps to a weekly section/round for routing (`touchline`, `pixel_byte`, `world`, …).
+- `saved_at` — ISO date; lets the weekly weight recent saves.
+- `daily_why` — the `why` the daily already computed (reused, not re-derived).
+- `saga` — optional; the `ongoing_stories` topic slug this item belongs to, if any. When present, The Threads uses it to raise that thread's recap priority.
+
+If `saved_this_week` is empty or the digest endpoint returns nothing (a quiet week, or the daily was down), The Letter and The Threads fall back to `ongoing_stories` + the research bundle as before — the bridge **enriches**, it is never a hard dependency.
+
 
 For individual section content rules, voice notes, and research guidance, see `references/sections.md`. Only read sections appearing in this issue.
 
@@ -130,6 +165,16 @@ A short editor-shaped orientation that follows The Letter: the week arranged int
 ### The Long Read — the single deep anchor (v8.37, W-3, supersedes the deprecated Anchor-Piece Rotation)
 
 Movement II is **one** deep anchor per issue — the issue's sole considered centrepiece, subject rotating week to week (world one week, a game or a training idea or a book the next). It uses the existing `08-anchor-piece` slot (`.is-anchor` on its `<section>` and its Navigator `.toc-row`), opens with a strong opener, and runs long enough to earn the space (typically 900–1,800 words; longer when the subject genuinely warrants). It **absorbs the old Saga, Deep-Dive-lite, and evergreen-feature impulses** — those are no longer separate deep beats scattered across the issue; the deep work concentrates here. Exactly one runs; there is no second mandated anchor. (The whole-issue Deep Dive special is unaffected — the Long Read is a weekly *movement*, the Deep Dive is a whole-issue interruption.)
+
+### Synthesis-by-juxtaposition — a prose technique for contested material (v8.38, W-4)
+
+**Synthesis-by-juxtaposition** is the magazine's technique for World-adjacent and other **genuinely contested** material — now that world coverage lives in **Caught Up** and, when the week earns it, the **Long Read**. Instead of the Editor adjudicating a dispute (which would breach the Cardinal rule against inventing a thesis), the piece places **2–4 short, ATTRIBUTED, genuinely conflicting excerpts in sequence** and lets **the arrangement carry the meaning**. The reader draws the conclusion the ordering implies; the magazine never states it.
+
+- **Attribution is mandatory and load-bearing.** Every excerpt names its source (outlet, analyst, named commentator) and traces to the research bundle as an `opinion` fact with a real `quote` (§ Key Rules → Borrowed angles; RT-22). An unattributed or invented "some argue…" excerpt is a fabrication fail — this technique **only** works with real, citable disagreement.
+- **The excerpts must genuinely conflict.** Two takes that agree, or a strawman set up to be knocked down, defeat the purpose. Choose views that actually diverge (the hawk and the regional analyst; the launch-day rave and the considered pan) so the *gap between them* is the content.
+- **The arrangement is the argument — so order deliberately.** Sequence for the reading you want the *juxtaposition* (not your narration) to produce: e.g. confident claim → the fact that complicates it → the quieter view that reframes both. Do not add a connective sentence telling the reader what to conclude ("what this really shows is…") — that is the hollow-connective-sentence trope and it collapses the technique back into invented thesis.
+- **It is a prose technique, not a new component.** No new markup or CSS: render the excerpts with the existing vocabulary — a short run of attributed `<blockquote>`s, or the `.source-strip` / image-quote pattern — inside Caught Up's context or the Long Read's body. It counts against the ~12-component palette only insofar as it reuses those existing components. If a future issue needs a visually distinct stacked-juxtaposition block, add a contract to `references/component-contracts.md` then — until then it is prose.
+- **Where it belongs.** Caught Up (a single tight juxtaposition of two attributed lines on the week's most-contested story) and the Long Read (a fuller 3–4-excerpt sequence when the anchor is a genuine dispute). It replaces the retired impulse to write a World section that adjudicated — the magazine arranges the disagreement instead of resolving it.
 
 
 

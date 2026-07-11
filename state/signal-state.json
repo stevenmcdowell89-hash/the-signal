@@ -359,6 +359,9 @@
       }
     }
   ],
+  "saved_this_week_note": "Daily->weekly bridge (W-4). Populated by the daily save-for-later affordance; consumed READ-ONLY by weekly generation when composing The Letter and The Threads, alongside GET /api/daily/digest?since=7d. Each entry: {title, url, domain, saved_at, daily_why, saga?}. Cleared/rotated after each weekly ships (prior set may be kept under saved_last_week). See references/editorial-spec.md - The daily->weekly bridge. Enriches, never a hard dependency: empty is fine.",
+  "saved_this_week": [],
+  "saved_last_week": [],
   "last_special_date": "2026-06-30",
   "last_special_format": "deep_dive",
   "consecutive_specials_count": 0,

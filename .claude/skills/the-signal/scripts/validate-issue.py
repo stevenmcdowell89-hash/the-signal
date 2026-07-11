@@ -764,6 +764,75 @@ def check_toc_numerals(html: str, fmt: str, report: Report) -> None:
         report.ok("toc-numerals", f"weekly TOC numerals are uppercase Roman starting at I ({len(numerals)} entries)")
 
 
+COLOPHON_STATS_RE = re.compile(
+    r'<ul\b[^>]*\bclass="[^"]*\bcolophon-stats\b[^"]*"[^>]*>(.*?)</ul>',
+    re.IGNORECASE | re.DOTALL,
+)
+COLOPHON_SIGN_RE = re.compile(
+    r'class="[^"]*\bcolophon-sign\b[^"]*"[^>]*>.*?Issue\s*#\s*(\d+)',
+    re.IGNORECASE | re.DOTALL,
+)
+STRONG_INT_RE = re.compile(r'<strong\b[^>]*>\s*([\d,]+)\s*</strong>', re.IGNORECASE)
+
+
+def check_issue_in_numbers_stats(html: str, report: Report) -> None:
+    """Lightweight markup-safety assertion (v8.38, W-4): the Colophon's
+    "Issue in Numbers" stats must be real and distinct — not all identical,
+    and not just the issue number repeated.
+
+    The recurring defect is a placeholder Colophon that shipped 13/13/13/13
+    (every stat left at the issue number). This is mechanically detectable
+    from the text alone, so it lives here in the markup gate rather than as a
+    standalone script (per the gate-ledger: exactly three ship gates, no new
+    scripts). Absent on special editions (they use Meanwhile, not a Colophon)
+    — the check no-ops when there is no .colophon-stats block.
+    """
+    body = body_text_only(html)
+    m = COLOPHON_STATS_RE.search(body)
+    if not m:
+        return  # no Issue-in-Numbers block (specials / older issues) — nothing to assert
+    nums: list[int] = []
+    for raw in STRONG_INT_RE.findall(m.group(1)):
+        try:
+            nums.append(int(raw.replace(",", "")))
+        except ValueError:
+            continue
+    if len(nums) < 2:
+        report.ok("issue-in-numbers", f"{len(nums)} numeric stat(s) — too few to compare")
+        return
+
+    sign = COLOPHON_SIGN_RE.search(body)
+    issue_no = int(sign.group(1)) if sign else None
+
+    if len(set(nums)) == 1:
+        val = nums[0]
+        if issue_no is not None and val == issue_no:
+            report.fail(
+                "issue-in-numbers",
+                f"all {len(nums)} Issue-in-Numbers stats are the issue number ({val}) — "
+                f"the 13/13/13/13 placeholder defect. Fill each figure with its real count "
+                f"(word count, sections, links, images are all different numbers).",
+            )
+        else:
+            report.fail(
+                "issue-in-numbers",
+                f"all {len(nums)} Issue-in-Numbers stats are identical ({val}). "
+                f"These count different things (words, sections, links, images) and must differ.",
+            )
+    elif issue_no is not None and all(n == issue_no for n in nums):
+        # Unreachable given the identical branch, but explicit for clarity.
+        report.fail(
+            "issue-in-numbers",
+            f"every Issue-in-Numbers stat equals the issue number ({issue_no}).",
+        )
+    else:
+        report.ok(
+            "issue-in-numbers",
+            f"{len(nums)} distinct-enough stats {nums}"
+            + (f" (issue #{issue_no})" if issue_no is not None else ""),
+        )
+
+
 def check_css_class_sanity(html: str, report: Report) -> None:
     style_match = re.search(r"<style\b[^>]*>(.*?)</style>", html, re.DOTALL | re.IGNORECASE)
     if not style_match:
@@ -862,6 +931,7 @@ def main(argv: list[str]) -> int:
     check_toc_anchors(html, report)
     check_weekly_navigator(html, fmt, report)
     check_toc_numerals(html, fmt, report)
+    check_issue_in_numbers_stats(html, report)
 
     # Holiday-only checks
     if fmt in HOLIDAY_FORMATS:

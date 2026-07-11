@@ -116,9 +116,11 @@ surfaces; the Top-20-only back-compat toggle path); the **community digest**
 `test-d1.mjs` **12/12** and `test-d2.mjs` **20/20** still pass. `node --check`
 clean on all touched JS + both HTML inline scripts.
 
-## Batch 5 — Weekly W-2/W-3/W-4 (the rebuild) 🚧
-The weekly rebuild lands in three phases (W-2, W-3, W-4). W-2 is done; W-3/W-4
-remain. The batch stays 🚧 until W-4 lands.
+## Batch 5 — Weekly W-2/W-3/W-4 (the rebuild) ✅
+The weekly rebuild landed in three phases (W-2, W-3, W-4). **All three done** —
+the batch is complete. W-4 (below) was the final phase: it closed the daily→weekly
+bridge on real data, consolidated the patch-stack into one Editorial Charter, and
+closed the gate ledger at exactly three ship-quality gates.
 
 ### Weekly W-2 — Service & continuity ✅
 Commit: _Weekly W-2: The Desk + "Do This Week", The Threads, The Week in Numbers, retire cadence-floor + deficit-promotion_
@@ -185,11 +187,36 @@ a plain list) — a scaffolded template-part can follow if wanted. The **holisti
 read** that replaces the retired plain-English weekly gate lands in **W-4** (the gate ledger
 collapses to three there); until then the weekly has no standalone prose-performance gate.
 
-### Weekly W-4 — Personalization loop & consolidation ⬜
-Saved This Week reader input feeding The Letter + The Threads (the daily→weekly
-bridge, depends on D-3 digest); synthesis-by-juxtaposition; collapse the
-v8.13→v8.36 patch-stack into one editorial charter. **Gate ledger:** retire to
-exactly three (image-URL chain, markup contracts, one holistic quality read).
+### Weekly W-4 — Personalization loop & consolidation ✅
+Commit: _Weekly W-4: Saved This Week bridge, one Editorial Charter, gate ledger closed to three_
+
+The FINAL phase of the July weekly rebuild. Spec + sliced views + checklist +
+one state field + one validator assertion; two scripts deleted. Bumped skill to
+**v8.38.0**. No new templates (synthesis-by-juxtaposition reuses existing
+blockquote/`.source-strip` vocabulary; the stats assertion is code, not markup).
+
+| Item | What changed | Decision |
+|---|---|---|
+| **Saved This Week — the daily→weekly bridge** | New `saved_this_week` array in `state/signal-state.json` (`{title, url, domain, saved_at, daily_why, saga?}` + a `_note` documenting it; `saved_last_week` kept for reference). Documented in `editorial-spec.md` § The daily→weekly bridge (→ carried into the Charter): weekly generation reads `GET /api/daily/digest?since=7d` (`{surfaced, moved, saga_lines}`) **plus** `saved_this_week` when composing The Letter and The Threads. | **The Letter** consumes `digest.moved` + `digest.saga_lines` + `saved_this_week` (the week's thesis / cross-domain dots — the strongest thread is where a *moved* story and a *saved* item rhyme). **The Threads** matches `saved_this_week` + `digest.saga_lines` against `ongoing_stories` topics/aliases to pick + prioritise saga recaps. Populated by the D-2 save-for-later affordance; consumed **read-only**. **Enriches, never a hard dependency** — empty/absent falls back to `ongoing_stories` + bundle. Machinery stays invisible per the Cardinal Rule. |
+| **Synthesis-by-juxtaposition** | Documented as a **prose technique** (not a new component) in `editorial-spec.md` § Synthesis-by-juxtaposition: 2–4 **attributed** conflicting excerpts in sequence for contested World/Long-Read material (now in Caught Up / the Long Read). | Attribution mandatory (traces to bundle `opinion` facts); excerpts must genuinely conflict; **no connective sentence** telling the reader what to conclude (that's the hollow-connective trope). Reuses blockquote / `.source-strip` — a contract can be added later if a visually distinct block is ever wanted. |
+| **One Editorial Charter (consolidation)** | New `## Editorial Charter` at the top of `editorial-spec.md` (north-star + the standing rules as they NOW are) → sliced to `spec/global.md § charter` (added `extract_heading` for it in `slice-spec.sh`). The v8.13→v8.38 version narrative **removed** from `editorial-spec.md`'s top blockquotes **and** from `SKILL.md` L21's patch paragraph — history now lives in `CHANGELOG.md` only. | The living spec reads as **one charter, not a patch pile**. CHANGELOG history preserved (not deleted). SKILL.md L21 is now a lean charter/CHANGELOG pointer + a one-paragraph current-state summary. |
+| **GATE LEDGER — exactly three** | `compliance-checklist.md` now **opens** with the three-gate ledger table; the detailed Gate 1/2/3 content is reframed as **reading aids** feeding those gates, not additional gates. | **(1) Image-URL verification chain** — `validate-issue.py` image checks + `auto-repair-images.py`. **(2) Markup contracts** — `validate-issue.py` structural/placeholder/back-link/markup + component-variety, **folding in the Issue-in-Numbers stats assertion**. **(3) One holistic editorial-quality read** — Phase 9.5 reframed from observational scorer to the third gate (blocking-ish; Phase 10 still always publishes), judging *did this issue tell him what the week added up to, and give him one thing to do?* `validate-research-bundle.py` + `validate-chapter-plan.py` are **upstream production aids, NOT ship gates** (said so explicitly). |
+| **Issue-in-Numbers stats assertion** | Added `check_issue_in_numbers_stats` to `validate-issue.py` (wired into the universal checks): fails if the Colophon's `.colophon-stats` numeric figures are **all identical** or **all equal the issue number** (the 13/13/13/13 placeholder defect). Documented in `editorial-spec.md` § Block 1 + the ledger. | **A lightweight markup-safety assertion inside the markup gate — NOT a new standalone script** (per List 1 W9's reframe). No-ops on specials (no Colophon). |
+| **Delete prose-rhythm + visual-smoke-test** | `check-prose-rhythm.py` and `visual-smoke-test.py` **deleted**; phase invocations removed from `SKILL.md` (Phase 7.75 + 7.8), the gate-discipline list, and the CI workflow (`.github/workflows/issue-validation.yml`). | Prose-rhythm's "paragraph wall" intent → **gate 3** (the holistic read). Visual-smoke's image-safety intent (old D3/D6/D7) → **gate 1** (`validate-issue.py` extension check + `auto-repair-images.py` dedup — self-contained, no import of the deleted script); its holiday-chrome intent (D1/D2/D4/D5) → **gate 2** (holiday activation/components + Gate-1E greps + the stitcher override). |
+
+**Validation:** `ast.parse` clean on `validate-issue.py` (+ `auto-repair-images.py` unaffected).
+`validate-issue.py --format weekly --skip-image-urls` on `issues/signal_weekly_2026-07-05.html`
+→ **PASS (exit 0)**; the new `issue-in-numbers` check reads `[6900, 12, 90, 10, 40]` (issue #15)
+→ distinct, PASS. `slice-spec.sh` exit 0, **0 FAILs**, charter present in `spec/global.md`.
+Grep-swept: `compliance-checklist.md` presents exactly the three ship-quality gates; **no
+dangling live references** to `check-prose-rhythm` / `visual-smoke-test` (only "deleted/folded"
+context) anywhere in SKILL/spec/checklist/CI.
+
+**Deferrals (unchanged from W-3):** The Week, Composed + Caught Up still have no dedicated
+template-part (reuse existing styling). Synthesis-by-juxtaposition ships as prose-only (no
+distinct markup) by design. The `saved_this_week` field is documented + wired in the spec/state
+but the daily side that *populates* it (D-2 localStorage → KV/endpoint sync) remains a Stream-2
+work-item; the weekly consumes it read-only and degrades gracefully when it's empty.
 
 ## Batch 6 — Cross-cutting + Specials + Sources + D-4 ⬜
 - **Cross-cutting:** H3 weekly-as-front-door hero · H4 `prefers-color-scheme`

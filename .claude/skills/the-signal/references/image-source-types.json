@@ -159,6 +159,6 @@
     "min_distinct_source_types": 3,
     "min_unique_candidates": 16,
     "max_uses_per_url": 1,
-    "_doc": "single_domain_max_pct is the RT-5 hard fail. wikimedia_max_pct and wikimedia_max_count are tighter editorial guidance (the lower of the two wins). min_distinct_source_types enforces the 3-of-5 menu. min_unique_candidates (v8.13.7) is the floor on distinct verified URLs the researcher must surface so writers can fill every chapter slot without reuse. max_uses_per_url (v8.13.7) is enforced by Phase 7.8 (visual-smoke-test.py D6) against the rendered DOM, not the bundle."
+    "_doc": "single_domain_max_pct is the RT-5 hard fail. wikimedia_max_pct and wikimedia_max_count are tighter editorial guidance (the lower of the two wins). min_distinct_source_types enforces the 3-of-5 menu. min_unique_candidates (v8.13.7) is the floor on distinct verified URLs the researcher must surface so writers can fill every chapter slot without reuse. max_uses_per_url (v8.13.7) is enforced against the rendered DOM by auto-repair-images.py (Phase 9 round 0, which rotates out duplicates), not the bundle. (v8.38: the old visual-smoke-test.py D6 gate is deleted; its intent lives in auto-repair-images.py + the Gate 1F manual no-duplicate-src backstop.)"
   }
 }
