@@ -121,6 +121,7 @@ export async function onRequestGet({ env }) {
     top20: featState("top20"),
     digests: featState("digests"),
     briefs: featState("briefs"),
+    community: featState("community"),
     editions: featState("editions"),
     merge: featState("merge"),
   };

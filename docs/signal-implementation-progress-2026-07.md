@@ -86,11 +86,35 @@ browser-run here — verified via `node --check` on the extracted inline `<scrip
 (parses clean) plus self-review; the testable pure logic (`signalPhrase`,
 `signalTierOf`, delta computation) is covered by the harness.
 
-## Batch 4 — Daily D-3 (bridge & content depth) ⬜
-`GET /api/daily/digest?since=7d` endpoint; consolidate `picks`/`top20` then add a
-community digest + optional saga/delta passes under the shared cap; skim-vs-
-understand (keep hook + why); football saga + fixtures rail; smartMerge default;
-morning/evening framing.
+## Batch 4 — Daily D-3 (bridge & content depth) ✅
+
+Commit: _Daily D-3: consolidate picks/top20 → one curation call, daily→weekly digest endpoint, community digest, skim-vs-understand, morning/evening, smartMerge default_
+
+Consolidate FIRST (per §2c), then add only distinct new jobs — **net AI-pass count
+is unchanged**: `picks`+`top20` (2 model calls) → **one** `curate` call; added
+**community digest** (1). The football-saga / written-delta AI line was **deliberately
+NOT added** (mechanical D-2 delta already does that job — the correct §2c call).
+
+| Item | What changed | Decision |
+|---|---|---|
+| **Consolidate `picks`/`top20`** | New `curateEditorial` makes ONE `callModel` over the UNION of both candidate pools, producing a single ranked "why it matters" set. Headlines = the breadth-eligible subset (capped to `picks.count`); Top 20 = the cross-everything subset (capped to `top20.count`) — two VIEWS of one call. Removed `editPicks`/`curateTop20`, `picksSystem`/`top20System`, the `editorial:picks`/`editorial:top20` KV keys (→ `editorial:curate`). Spend logged under `curate`. | **Back-compat:** kept `ai.picks.enabled`/`ai.top20.enabled` as the per-SURFACE toggles — the merged call is scoped to only the enabled surfaces' candidates, and each surface is left mechanical when its toggle is off. No reader toggle is silently dropped. Added a shared `ai.curate` block (model/interval/guidance, guidance falls back to top20→picks). Health card keeps its `picks`/`top20` keys, driven from the one call's per-surface status. |
+| **Daily→weekly digest** | `GET /api/daily/digest?since=7d` (open read, wired in `_worker.js`). Reads `story_log` via new `db.getStoryLogSince` + optional `db.getItemsByIds` for links. Pure `functions/daily/digest.js`: `parseSince` (7d/72h/90m/bare-number-days, clamped 1h–60d) + `assembleDigest`. Returns `{ since, since_ms, generated_at, counts, surfaced:[…], moved:[{id,title,domain,was,now,was_label,now_label,…}], saga_lines:[…] }`. | **`moved`** = clusters whose first→last non-null D-2 signal tier differs (rumoured→confirmed). Mechanical `saga_lines` one-liners so the weekly (W-4) has them without an AI pass. **Graceful:** missing table/column/DB → empty arrays, never a 500 (matches `getLastStoryPoints`' legacy-column fallback). |
+| **Community digest** | New `communityDigest` pass over `state.communities`: "what Reddit/HN/Bluesky are arguing about today" → `state.community_digest`. Own toggle (`ai.community`), shared cap, cached by community-set hash + 45-min throttle. Rendered above the Communities feed in `index.html`; Settings card + health row added. | Distinct job vs the per-edition briefs (those summarise a domain section; this reads the community sources as one conversation). One cached pass, ≥3 posts required. |
+| **Football saga / written developing-delta line** | **NOT added — SKIPPED.** | Correct §2c call: the mechanical D-2 delta already renders "was rumoured → now confirmed" + the "Still developing" thread, domain-agnostically and with no model cost. An AI saga one-liner would be redundant. The digest endpoint's mechanical `saga_lines` feed the weekly instead. |
+| **Skim vs understand** | `catchEl` now shows `why` as the visible line AND, when a distinct `hook` also exists, an expandable "+ what's new" toggle reveals the hook instead of dropping it. Collapses under read-state. | Both lines reachable; skim stays one line. |
+| **Morning / evening framing** | `render.js` stamps `state.edition_phase` (`morning` before ~13:00 UTC, else `evening`) + `state.edition.phase`. `index.html` frames the masthead status ("This morning/evening · Caught up · HH:MM") and titles the developing thread "What moved since this morning" in the evening. | Small, mechanical; UTC hour (reader is UK). Content is the same living surface. |
+| **smartMerge default** | **Enabled by default** (`ai.merge.enabled: true`). | **Decision:** enable-by-default over the entity-merge extension. The guards make it safe — same-domain groups only, candidate-capped, no-op on any failure — and it FOLDS the merged members' `source_count`+`links` into the survivor rather than truly losing the story. Existing saved configs that explicitly saved merge off keep their choice (merge default only reaches fresh/untouched configs), so no brief silently loses content. |
+
+**Test:** `scratchpad/test-d3.mjs` — 38 assertions, all passing: `parseSince`
+(7d/72h/90m/number/invalid/clamp); `assembleDigest` (moved reflects tier change,
+empty→empty, null-signal surfaced-not-moved, saga_lines); the digest **handler**
+with an in-memory D1 stub (moved/surfaced, empty DB→empty+200, no-DB→200); the
+**consolidated curate** pass with a stubbed `callModel` (AI-off leaves mechanical
+Headlines/Top 20 untouched; one stubbed call orders + attaches `why` to BOTH
+surfaces; the Top-20-only back-compat toggle path); the **community digest**
+(off→no-op, on→writes `state.community_digest`, <3 posts→no-op). Regression:
+`test-d1.mjs` **12/12** and `test-d2.mjs` **20/20** still pass. `node --check`
+clean on all touched JS + both HTML inline scripts.
 
 ## Batch 5 — Weekly W-2/W-3/W-4 (the rebuild) ⬜
 The Desk (rotating service columns + "Do This Week"); The Threads continuity

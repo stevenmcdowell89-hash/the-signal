@@ -15,7 +15,6 @@ import { callModel } from "./llm.js";
 import { mergeLinks } from "./dedup.js";
 
 const BRIEFS_KEY = "editorial:briefs";
-const PICKS_KEY = "editorial:picks";
 const DIGESTS_KEY = "editorial:digests";
 const MERGE_KEY = "editorial:merge";
 const EDITIONS_KEY = "editorial:editions";
@@ -136,7 +135,19 @@ export async function editionBriefs(env, state, items, config, now) {
   return { degraded: false, reason: calls ? "ok" : "cached", spentCents, calls };
 }
 
-// ---- Editor's Picks ------------------------------------------------------------
+// ---- Curation (consolidated Headlines + Top 20) --------------------------------
+// D-3 §2c consolidation: `picks` (front-page Headlines) and `top20` (whole-brief
+// feed) were two near-identical model calls — same schema, same "order + attach a
+// why it matters" template. They are now ONE ranked-with-reasons set produced by a
+// single model call over the UNION of both candidate pools; Headlines and Top 20
+// are two VIEWS of it (Headlines = the breadth-eligible subset, capped to the
+// picks count; Top 20 = the cross-everything subset, capped to the top20 count).
+// The per-surface `ai.picks.enabled` / `ai.top20.enabled` toggles are still
+// honoured (back-compat) — each just governs whether its VIEW is AI-curated, and
+// the single call is scoped to only the enabled surfaces' candidates. On any
+// gate/parse/cap failure both surfaces keep their mechanical order.
+const CURATE_KEY = "editorial:curate";
+
 const PICKS_SCHEMA = {
   type: "object",
   properties: {
@@ -154,118 +165,105 @@ const PICKS_SCHEMA = {
   additionalProperties: false,
 };
 
-function picksSystem(count, guidance, ctx) {
+function curateSystem(guidance, ctx) {
   const steer = (guidance || "").trim();
-  return `You are the front-page editor of one reader's personal daily brief.
+  return `You are the editor of one reader's personal daily brief. The candidate stories below (each with an id) span every area — News, Sport, Gaming, Tech, Culture and the rest. They feed two surfaces at once: a short front-page "Headlines" and a longer "Top across everything" feed, both drawn from THIS one ranked list.
 
-The reader's configured priorities — honour these FIRST (they come from the reader's own settings, and define what "important" means for this reader):
+The reader's configured priorities — honour these FIRST (they come from the reader's own settings and define what "important" means for this reader):
 ${ctx}
 
-From the candidate stories below (each with an id), choose the ones that genuinely belong on the front page and order them by importance to THIS reader, consistent with the priorities above — most important first, at most ${count || 8}. For each chosen story write a ONE-line "why it matters": max ~18 words, specific (name the actual stake/number/consequence), no hype, no spoilers. Drop anything that isn't real front-page material rather than padding to the limit. Return only the chosen stories, by their given id, in your chosen order.${steer ? `\n\nAdditional reader guidance (layer on top of the priorities above, do not override them): ${steer}` : ""}`;
+Rank the stories by importance to this reader, most important first — lead with the genuinely consequential and confirmed over speculation, and span areas rather than letting one topic dominate. For EACH story you keep, write a ONE-line "why it matters": max ~18 words, specific (name the actual stake/number/consequence), no hype, no spoilers. Drop only genuine non-stories rather than padding. Return the stories you keep, by their given id, in your chosen order.${steer ? `\n\nAdditional reader guidance (layer on top of the priorities above, do not override them): ${steer}` : ""}`;
 }
 
-// Reorders state.headlines within the mechanical candidate set and attaches a `why`
-// to each — never promotes an item the mechanical bar rejected. Cached by the sorted
-// candidate ids. On any failure the mechanical headlines stand unchanged.
-export async function editPicks(env, state, items, config, now) {
-  const ai = config.ai || {};
-  const feat = ai.picks || {};
-  const g = await gate(env, ai, feat);
-  if (!g.ok) return { degraded: true, reason: g.reason };
+// Apply a curated {id,why} order to a surface: reorder within the mechanical
+// candidate set + attach the why, never promoting an id outside `viewIds`.
+function applyCurated(order, byId, viewIds, cap) {
+  return order
+    .filter((p) => p && viewIds.has(p.id))
+    .map((p) => { const it = byId.get(p.id); return it ? { ...it, why: p.why } : null; })
+    .filter(Boolean)
+    .slice(0, cap);
+}
 
-  const cands = (state.headline_candidates && state.headline_candidates.length)
+// One curation pass → both Headlines and Top 20. Returns per-surface status so the
+// health card keeps its `picks` / `top20` keys.
+export async function curateEditorial(env, state, items, config, now) {
+  const ai = config.ai || {};
+  const picksFeat = ai.picks || {};
+  const top20Feat = ai.top20 || {};
+  const curate = ai.curate || {};
+  const wantHeadlines = picksFeat.enabled !== false;
+  const wantTop20 = top20Feat.enabled !== false;
+
+  // Both surface toggles off, or the layer/key/cap gate fails → mechanical stands.
+  if (!wantHeadlines && !wantTop20) {
+    return { headlines: { on: false, reason: "feature off" }, top20: { on: false, reason: "feature off" } };
+  }
+  const g = await gate(env, ai, { enabled: true });
+  if (!g.ok) {
+    return { headlines: { on: false, reason: g.reason }, top20: { on: false, reason: g.reason } };
+  }
+
+  const hCands = (state.headline_candidates && state.headline_candidates.length)
     ? state.headline_candidates : (state.headlines || []);
-  if (!cands.length) return { degraded: false, reason: "no candidates" };
-  const byId = new Map(cands.map((c) => [c.id, c]));
-
-  const hash = await sha1(cands.map((c) => c.id).sort().join(","));
-  const cache = (await loadCache(env, PICKS_KEY)) || { ts: 0, hash: "", order: [] };
-  const apply = (order) => {
-    const picked = order.map((p) => { const it = byId.get(p.id); return it ? { ...it, why: p.why } : null; })
-      .filter(Boolean).slice(0, feat.count || 8);
-    if (picked.length) state.headlines = picked;
-  };
-  if (cache.hash === hash && cache.order.length) { apply(cache.order); return { degraded: false, reason: "cached" }; }
-  if (now - (cache.ts || 0) < (feat.min_interval_min ?? 30) * 60000 && cache.order.length) {
-    apply(cache.order); return { degraded: false, reason: "throttled" };
-  }
-
-  const lines = cands.map((c) => `${c.id} | (${c.domain_label || c.domain}) ${c.title}${c.hook ? " — " + c.hook : ""}`).join("\n");
-  try {
-    const { parsed, cents } = await callModel(env, {
-      system: picksSystem(feat.count, feat.guidance, profileContext(config)),
-      user: `Candidate stories:\n${lines}`,
-      schema: PICKS_SCHEMA, model: feat.model, max_tokens: 700,
-    });
-    if (cents) await addSpendCents(env, cents, "picks");
-    const order = (parsed && Array.isArray(parsed.picks)) ? parsed.picks.filter((p) => p && byId.has(p.id)) : [];
-    if (order.length) {
-      apply(order);
-      await saveCache(env, PICKS_KEY, { ts: now, hash, order });
-      return { degraded: false, reason: "ok", spentCents: cents };
-    }
-    return { degraded: false, reason: "no usable picks", spentCents: cents };
-  } catch (e) {
-    return { degraded: false, reason: "error: " + String(e.message || e).slice(0, 60) };
-  }
-}
-
-// ---- Curate Top 20 -------------------------------------------------------------
-const TOP20_KEY = "editorial:top20";
-
-function top20System(count, guidance, ctx) {
-  const steer = (guidance || "").trim();
-  return `You are the editor of one reader's "Top ${count || 20} across everything" — the single trustworthy cross-domain feed spanning News, Sport, Gaming, Tech, Culture and every other area of the brief.
-
-The reader's configured priorities — honour these FIRST (they define what "important" means for this reader):
-${ctx}
-
-From the candidate stories below (each with an id, across all areas), choose the ones that genuinely matter most to THIS reader and order them by importance — most important first, at most ${count || 20}, spanning areas (don't let one topic dominate). For each chosen story write a ONE-line "why it matters": max ~18 words, specific, no hype, no spoilers. Drop weak entries rather than padding to the limit. Return only the chosen stories, by their given id, in your chosen order.${steer ? `\n\nAdditional reader guidance (layer on top of the priorities above, do not override them): ${steer}` : ""}`;
-}
-
-// Curates state.top20 (orders + attaches `why`) from the wider top20_candidates pool,
-// across the WHOLE brief — never promotes outside the candidate set. Same template as
-// editPicks; cached by candidate ids. On any failure the mechanical Top 20 stands.
-export async function curateTop20(env, state, items, config, now) {
-  const ai = config.ai || {};
-  const feat = ai.top20 || {};
-  const g = await gate(env, ai, feat);
-  if (!g.ok) return { degraded: true, reason: g.reason };
-
-  const cands = (state.top20_candidates && state.top20_candidates.length)
+  const tCands = (state.top20_candidates && state.top20_candidates.length)
     ? state.top20_candidates : (state.top20 || []);
-  if (!cands.length) return { degraded: false, reason: "no candidates" };
+  const hIds = new Set(hCands.map((c) => c.id));
+  const tIds = new Set(tCands.map((c) => c.id));
+
+  // Candidate set = only the enabled surfaces' pools, unioned (Top 20 order first,
+  // then any Headlines-only ids the ≤N/domain Top-20 caps excluded).
+  const unionMap = new Map();
+  if (wantTop20) for (const c of tCands) unionMap.set(c.id, c);
+  if (wantHeadlines) for (const c of hCands) if (!unionMap.has(c.id)) unionMap.set(c.id, c);
+  const cands = [...unionMap.values()];
+  if (!cands.length) {
+    return { headlines: { on: false, reason: "no candidates" }, top20: { on: false, reason: "no candidates" } };
+  }
   const byId = new Map(cands.map((c) => [c.id, c]));
 
-  const hash = await sha1(cands.map((c) => c.id).sort().join(","));
-  const cache = (await loadCache(env, TOP20_KEY)) || { ts: 0, hash: "", order: [] };
-  const apply = (order) => {
-    const picked = order.map((p) => { const it = byId.get(p.id); return it ? { ...it, why: p.why } : null; })
-      .filter(Boolean).slice(0, feat.count || 20);
-    if (picked.length) state.top20 = picked;
+  const applyAll = (order) => {
+    if (wantHeadlines) {
+      const picked = applyCurated(order, byId, hIds, picksFeat.count || 8);
+      if (picked.length) state.headlines = picked;
+    }
+    if (wantTop20) {
+      const picked = applyCurated(order, byId, tIds, top20Feat.count || 20);
+      if (picked.length) state.top20 = picked;
+    }
   };
-  if (cache.hash === hash && cache.order.length) { apply(cache.order); return { degraded: false, reason: "cached" }; }
-  if (now - (cache.ts || 0) < (feat.min_interval_min ?? 30) * 60000 && cache.order.length) {
-    apply(cache.order); return { degraded: false, reason: "throttled" };
+  const surfaceStatus = (reason) => ({
+    headlines: { on: wantHeadlines && reason !== "off", reason: wantHeadlines ? reason : "feature off" },
+    top20: { on: wantTop20 && reason !== "off", reason: wantTop20 ? reason : "feature off" },
+  });
+
+  const hash = await sha1(cands.map((c) => c.id).sort().join(","));
+  const cache = (await loadCache(env, CURATE_KEY)) || { ts: 0, hash: "", order: [] };
+  const interval = (curate.min_interval_min ?? picksFeat.min_interval_min ?? 30);
+  if (cache.hash === hash && cache.order.length) { applyAll(cache.order); return { ...surfaceStatus("cached"), model: curate.model }; }
+  if (now - (cache.ts || 0) < interval * 60000 && cache.order.length) {
+    applyAll(cache.order); return { ...surfaceStatus("throttled"), model: curate.model };
   }
 
+  const guidance = curate.guidance || top20Feat.guidance || picksFeat.guidance || "";
   const lines = cands.map((c) => `${c.id} | (${c.domain_label || c.domain}) ${c.title}${c.hook ? " — " + c.hook : ""}`).join("\n");
   try {
     const { parsed, cents } = await callModel(env, {
-      system: top20System(feat.count, feat.guidance, profileContext(config)),
+      system: curateSystem(guidance, profileContext(config)),
       user: `Candidate stories (across all areas):\n${lines}`,
-      schema: PICKS_SCHEMA, model: feat.model, max_tokens: 1200,
+      schema: PICKS_SCHEMA, model: curate.model, max_tokens: Math.min(1600, 300 + cands.length * 30),
     });
-    if (cents) await addSpendCents(env, cents, "top20");
+    if (cents) await addSpendCents(env, cents, "curate");
     const order = (parsed && Array.isArray(parsed.picks)) ? parsed.picks.filter((p) => p && byId.has(p.id)) : [];
     if (order.length) {
-      apply(order);
-      await saveCache(env, TOP20_KEY, { ts: now, hash, order });
-      return { degraded: false, reason: "ok", spentCents: cents };
+      applyAll(order);
+      await saveCache(env, CURATE_KEY, { ts: now, hash, order });
+      return { ...surfaceStatus("ok"), model: curate.model, spentCents: cents };
     }
-    return { degraded: false, reason: "no usable picks", spentCents: cents };
+    return { ...surfaceStatus("no usable order"), model: curate.model, spentCents: cents };
   } catch (e) {
-    return { degraded: false, reason: "error: " + String(e.message || e).slice(0, 60) };
+    const reason = "error: " + String(e.message || e).slice(0, 60);
+    return { ...surfaceStatus(reason), model: curate.model };
   }
 }
 
@@ -333,6 +331,69 @@ export async function digestRollups(env, state, items, config, now) {
   if (spentCents > 0) await addSpendCents(env, spentCents, "digests");
   state.rollup_digests = out;
   return { degraded: false, reason: calls ? "ok" : "cached", spentCents, calls };
+}
+
+// ---- Community digest ----------------------------------------------------------
+// D-3: one cached pass over the Reddit/HN/Bluesky feed → "what the communities are
+// arguing about today". Distinct job from the per-edition briefs (those summarise a
+// domain section; this reads across the community sources as a single conversation).
+// Own toggle, shared cap, cached by the community item-set hash + a min-interval.
+const COMMUNITY_KEY = "editorial:community";
+const COMMUNITY_SCHEMA = {
+  type: "object",
+  properties: { digest: { type: "string" } },
+  required: ["digest"],
+  additionalProperties: false,
+};
+
+function communitySystem(guidance, ctx) {
+  const steer = (guidance || "").trim();
+  return `You summarise what the reader's community feeds — Reddit, Hacker News and Bluesky — are most engaged with or arguing about today, in 2–3 sentences.
+
+The reader's configured priorities (use them to judge what's worth surfacing):
+${ctx}
+
+Below are today's community posts, each tagged with its source. Capture the genuine debates, reactions and shared preoccupations — what people are actually discussing — not just a list of headlines. Specific and factual; name the actual threads/topics. No hype, no "various discussions about". If the day is quiet, say so briefly.${steer ? `\n\nAdditional reader guidance: ${steer}` : ""}`;
+}
+
+// Writes state.community_digest = "2–3 sentence synthesis" of state.communities.
+export async function communityDigest(env, state, items, config, now) {
+  const ai = config.ai || {};
+  const feat = ai.community || {};
+  const g = await gate(env, ai, feat);
+  if (!g.ok) return { degraded: true, reason: g.reason };
+
+  const list = (state.communities || []).slice(0, feat.max_items || 30);
+  if (list.length < 3) return { degraded: false, reason: "too few community posts" };
+
+  const hash = await sha1(list.map((i) => i.id).sort().join(","));
+  const cache = (await loadCache(env, COMMUNITY_KEY)) || { ts: 0, hash: "", text: "" };
+  if (cache.hash === hash && cache.text) { state.community_digest = cache.text; return { degraded: false, reason: "cached" }; }
+  if (now - (cache.ts || 0) < (feat.min_interval_min ?? 45) * 60000 && cache.text) {
+    state.community_digest = cache.text; return { degraded: false, reason: "throttled" };
+  }
+
+  const srcLabel = { reddit: "Reddit", hn: "Hacker News", bluesky: "Bluesky" };
+  const lines = list.map((i, n) =>
+    `${n + 1}. [${srcLabel[i.source_type] || i.source_type || "community"}] ${i.title}`).join("\n");
+  try {
+    const { parsed, cents } = await callModel(env, {
+      system: communitySystem(feat.guidance, profileContext(config)),
+      user: `Today's community posts:\n${lines}`,
+      schema: COMMUNITY_SCHEMA, model: feat.model, max_tokens: 220,
+    });
+    if (cents) await addSpendCents(env, cents, "community");
+    if (parsed && parsed.digest) {
+      state.community_digest = parsed.digest.trim();
+      await saveCache(env, COMMUNITY_KEY, { ts: now, hash, text: state.community_digest });
+      return { degraded: false, reason: "ok", spentCents: cents };
+    }
+    if (cache.text) state.community_digest = cache.text;
+    return { degraded: false, reason: "no usable digest", spentCents: cents };
+  } catch (e) {
+    if (cache.text) state.community_digest = cache.text;
+    return { degraded: false, reason: "error: " + String(e.message || e).slice(0, 60) };
+  }
 }
 
 // ---- Smart merge ---------------------------------------------------------------
@@ -509,14 +570,17 @@ export async function augmentEditorial(env, state, items, config, now) {
   const ai = config.ai || {};
   const status = { ts: now };
   if (!ai.enabled) { delete state.headline_candidates; delete state.top20_candidates; return status; }
-  const p = await editPicks(env, state, items, config, now);
-  status.picks = { on: !p.degraded, reason: p.reason, model: (ai.picks || {}).model };
-  const t = await curateTop20(env, state, items, config, now);
-  status.top20 = { on: !t.degraded, reason: t.reason, model: (ai.top20 || {}).model };
+  // ONE curation call feeds both Headlines and Top 20 (D-3 consolidation); the
+  // health card keeps its per-surface `picks` / `top20` keys.
+  const c = await curateEditorial(env, state, items, config, now);
+  status.picks = { on: c.headlines.on, reason: c.headlines.reason, model: c.model || (ai.picks || {}).model };
+  status.top20 = { on: c.top20.on, reason: c.top20.reason, model: c.model || (ai.top20 || {}).model };
   const b = await editionBriefs(env, state, items, config, now);
   status.briefs = { on: !b.degraded, reason: b.reason, model: (ai.briefs || {}).model };
   const d = await digestRollups(env, state, items, config, now);
   status.digests = { on: !d.degraded, reason: d.reason, model: (ai.digests || {}).model };
+  const cd = await communityDigest(env, state, items, config, now);
+  status.community = { on: !cd.degraded, reason: cd.reason, model: (ai.community || {}).model };
   const o = await orderEditions(env, state, items, config, now);
   status.editions = { on: !o.degraded, reason: o.reason, model: (ai.editions || {}).model };
   // Backfill the voiced Start-here reason from the curated "why it matters" (Picks /

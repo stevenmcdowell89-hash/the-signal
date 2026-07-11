@@ -323,7 +323,8 @@ export async function resetState(env) {
   const keys = [
     STATE_KEY, SOURCE_STATUS_KEY, ENRICH_STATUS_KEY, AI_STATUS_KEY, RUN_PROGRESS_KEY,
     REDDIT_CURSOR_KEY, REDDIT_BATCH_KEY,
-    "editorial:briefs", "editorial:picks", "editorial:digests", "editorial:merge",
+    "editorial:briefs", "editorial:curate", "editorial:picks", "editorial:top20",
+    "editorial:digests", "editorial:merge", "editorial:editions", "editorial:community",
   ];
   await Promise.all(keys.map((k) => env.DAILY_STATE.delete(k)));
   // Mark Reddit as "just rolled" rather than clearing the stamp: this debounces a

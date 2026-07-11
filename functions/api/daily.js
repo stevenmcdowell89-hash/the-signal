@@ -3,7 +3,8 @@
 //                        run() directly; this lets a device force a refresh).
 
 import { run, getState, resetState, RUN_PROGRESS_KEY } from "../daily/pipeline.js";
-import { initSchema, resetEngine } from "../daily/db.js";
+import { initSchema, resetEngine, getStoryLogSince, getItemsByIds } from "../daily/db.js";
+import { parseSince, assembleDigest } from "../daily/digest.js";
 import { tokenOk } from "./config.js";
 
 function json(obj, status = 200) {
@@ -45,6 +46,26 @@ export async function onRequestReset({ request, env }) {
   } catch (e) {
     return json({ error: String((e && e.message) || e) }, 500);
   }
+}
+
+// GET /api/daily/digest?since=7d — the daily→weekly bridge (D-3). Reads the
+// story_log/items movement history from D1 and returns what SURFACED and what
+// MOVED (signal tier changed) over the window. Open read — the weekly (Stream 1
+// W-4) consumes it. `since` is flexible: "7d", "72h", "90m", or a bare number of
+// days. Missing tables/columns degrade to empty arrays, never a 500.
+export async function onRequestDigest({ request, env }) {
+  const now = Date.now();
+  let sinceRaw = "7d";
+  try { sinceRaw = new URL(request.url).searchParams.get("since") || "7d"; } catch (_) {}
+  const sinceMs = parseSince(sinceRaw, now);
+  let rows = [];
+  let itemsById = null;
+  if (env.DAILY_DB) {
+    try { await initSchema(env.DAILY_DB); } catch (_) {}
+    try { rows = await getStoryLogSince(env.DAILY_DB, sinceMs); } catch (_) { rows = []; }
+    try { itemsById = await getItemsByIds(env.DAILY_DB, rows.map((r) => r.cluster_id)); } catch (_) { itemsById = null; }
+  }
+  return json(assembleDigest(rows, { since: sinceRaw, sinceMs, now, itemsById }));
 }
 
 // GET /api/daily/run-status — live run progress for the Settings "Run now"

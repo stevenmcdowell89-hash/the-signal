@@ -350,11 +350,18 @@ export function buildState(items, meta, now, config) {
   // Edition framing: a dated header + a mechanical "Start here" (the top fresh
   // catch titles) so the brief reads like a morning edition, not a feed.
   let dateLabel = "";
+  let hour = 0;
   try {
     dateLabel = new Date(now).toLocaleDateString("en-GB", {
       weekday: "long", day: "numeric", month: "long",
     });
+    hour = new Date(now).getUTCHours(); // reader is UK (UTC/BST) — UTC hour is close enough
   } catch (_) {}
+  // Morning / evening framing (D-3, mechanical): before ~1pm the brief is the
+  // morning lead; after, it's the evening "what moved since this morning" recap.
+  // The front-end reflects this in the masthead/status line only — the content is
+  // the same living surface either way.
+  const edition_phase = hour < 13 ? "morning" : "evening";
 
   // Communities (§ Reddit/HN/Bluesky): every community-sourced live item, ranked,
   // so "catch up on everything from Reddit/HN in one place" misses nothing — not
@@ -441,7 +448,8 @@ export function buildState(items, meta, now, config) {
       caught_up: true,
       time: new Date(now).toISOString(),
     },
-    edition: { date_label: dateLabel },
+    edition: { date_label: dateLabel, phase: edition_phase },
+    edition_phase,
     editions: editionsList,
     top20: top20.map(publicItem),
     // Start here — tappable, voiced, linked (not bare titles). `why` seeds from the

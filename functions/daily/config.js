@@ -65,7 +65,20 @@ export function defaultConfig() {
       enabled: true,
       model: "claude-haiku-4-5", // default model for every pass (per-pass `model` overrides)
       monthly_cap_cents: 800, // shared across enrichment + all editorial passes
-      // Editor's Picks — curate + order the front-page Headlines, write "why it matters".
+      // Curation (D-3 consolidation) — ONE model call ranks the whole candidate set
+      // + writes each "why it matters"; Headlines and Top 20 are two VIEWS of that
+      // single ranked set (Headlines = the breadth-eligible prefix, Top 20 = the
+      // cross-everything feed). Shared model/interval/guidance live here; the two
+      // `picks`/`top20` blocks below stay as the per-SURFACE toggles + counts so a
+      // reader's saved `ai.picks`/`ai.top20` switches are still honoured (back-compat).
+      curate: {
+        enabled: true,
+        model: "claude-haiku-4-5",
+        min_interval_min: 30,
+        guidance: "", // falls back to the top20 → picks guidance when blank
+      },
+      // Headlines surface — front-page view of the curated set. `enabled` is the
+      // reader's toggle for whether Headlines is AI-curated; `count` caps it.
       picks: {
         enabled: true,
         model: "claude-haiku-4-5",
@@ -73,13 +86,22 @@ export function defaultConfig() {
         min_interval_min: 30,
         guidance: "Lead with what genuinely changes the reader's day or world — confirmed, consequential developments over speculation. Order by importance to this reader; a precise reason to care is the bar.",
       },
-      // Curate Top 20 — order the whole-brief feed + write "why it matters".
+      // Top 20 surface — cross-everything view of the same curated set.
       top20: {
         enabled: true,
         model: "claude-haiku-4-5",
         count: 20,
         min_interval_min: 30,
         guidance: "Order the whole brief by what matters most to this reader across every area — not just the front page. Lead with the genuinely consequential; span areas rather than letting one topic dominate.",
+      },
+      // Community digest (D-3) — one cached pass over the Reddit/HN/Bluesky feed:
+      // "what the communities are arguing about today". Own toggle, shared cap.
+      community: {
+        enabled: true,
+        model: "claude-haiku-4-5",
+        max_items: 30,
+        min_interval_min: 45,
+        guidance: "Summarise what the community feeds (Reddit, Hacker News, Bluesky) are most engaged with or arguing about today — the genuine debates and reactions, not just the headlines. 2–3 sentences, specific: name the actual threads/topics.",
       },
       // Firehose digests — synthesise each "+N more in {topic}" tail.
       digests: {
@@ -105,10 +127,15 @@ export function defaultConfig() {
         min_interval_min: 30,
         guidance: "Within each area, lead with what genuinely matters most to this reader today — confirmed and consequential over routine.",
       },
-      // Smart merge — collapse same-story dupes the mechanical dedup missed. RISKIEST
-      // (removes content) → off by default.
+      // Smart merge — collapse same-story dupes the mechanical dedup missed. It is
+      // the only pass that removes content, so it stays CONSERVATIVE: same-domain
+      // groups only, candidate-capped, no-op on any failure, and it FOLDS the merged
+      // members' source_count + links into the survivor (so the story isn't lost,
+      // just de-duplicated). D-3 decision: enable by default for stronger default
+      // cross-source dedup — the guards above make it safe, and it degrades to a
+      // no-op when the model is off / capped / unsure.
       merge: {
-        enabled: false,
+        enabled: true,
         model: "claude-haiku-4-5",
         max_candidates: 40,
         min_interval_min: 60,
@@ -250,7 +277,7 @@ function mergeConfig(def, saved) {
   out.recency = { ...def.recency, ...(saved.recency || {}) };
   out.scoring = { ...def.scoring, ...(saved.scoring || {}) };
   out.ai = { ...def.ai, ...(saved.ai || {}) };
-  for (const k of ["picks", "top20", "digests", "briefs", "editions", "merge"]) {
+  for (const k of ["curate", "picks", "top20", "digests", "briefs", "editions", "merge", "community"]) {
     out.ai[k] = { ...def.ai[k], ...((saved.ai || {})[k] || {}) };
   }
   out.push = { ...def.push, ...(saved.push || {}) };

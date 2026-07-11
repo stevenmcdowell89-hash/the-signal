@@ -290,7 +290,8 @@
     </div>
 
     <div class="card">
-      <h2>Editor's Picks</h2>
+      <h2>Headlines (curated)</h2>
+      <div class="hint" style="margin-bottom:0.5rem">Headlines and Top 20 are two views of ONE curation call — this toggle governs whether the front-page Headlines view is AI-curated; its guidance/count shape that view.</div>
       <div class="toggle"><input type="checkbox" id="ai-picks-on"><label for="ai-picks-on">Curate &amp; order the front-page Headlines, each rewritten as a single AI headline line (what happened + why it matters in one line)</label></div>
       <label for="ai-picks-guidance" style="margin-top:0.6rem">Guidance — how to pick &amp; order</label>
       <textarea id="ai-picks-guidance" rows="3"></textarea>
@@ -304,7 +305,8 @@
     </div>
 
     <div class="card">
-      <h2>Curate Top 20</h2>
+      <h2>Top 20 (curated)</h2>
+      <div class="hint" style="margin-bottom:0.5rem">The cross-everything view of the same single curation call. This toggle governs whether the Top 20 feed is AI-ordered.</div>
       <div class="toggle"><input type="checkbox" id="ai-top20-on"><label for="ai-top20-on">Order the whole-brief "Top 20 across everything" feed, with a "why it matters" line</label></div>
       <label for="ai-top20-guidance" style="margin-top:0.6rem">Guidance — how to order across everything</label>
       <textarea id="ai-top20-guidance" rows="3"></textarea>
@@ -346,9 +348,23 @@
     </div>
 
     <div class="card">
+      <h2>Community digest</h2>
+      <div class="toggle"><input type="checkbox" id="ai-community-on"><label for="ai-community-on">A short "what Reddit / Hacker News / Bluesky are arguing about today" intro on the Communities tab</label></div>
+      <label for="ai-community-guidance" style="margin-top:0.6rem">Guidance — what to capture</label>
+      <textarea id="ai-community-guidance" rows="3"></textarea>
+      <details class="adv" style="margin-top:0.5rem"><summary class="hint" style="cursor:pointer">▸ Advanced (model · limit · interval)</summary>
+      <div class="row" style="margin-top:0.5rem">
+        <div><label for="ai-community-model">Model (blank = shared)</label><input type="text" id="ai-community-model"></div>
+        <div><label for="ai-community-max">Max posts considered</label><input type="number" id="ai-community-max" min="3" max="80"></div>
+        <div><label for="ai-community-interval">Min minutes between runs</label><input type="number" id="ai-community-interval" min="0" max="240"></div>
+      </div>
+      </details>
+    </div>
+
+    <div class="card">
       <h2>Smart merge</h2>
       <div class="toggle"><input type="checkbox" id="ai-merge-on"><label for="ai-merge-on">Collapse same-story duplicates the mechanical dedup missed</label></div>
-      <div class="hint" style="margin-top:0.4rem">The only pass that removes content — off by default. Domain-bounded and capped; on any failure it no-ops to the mechanical dedup.</div>
+      <div class="hint" style="margin-top:0.4rem">The only pass that removes content. Domain-bounded and capped, it folds the duplicates' sources into the survivor (so nothing is truly lost); on any failure it no-ops to the mechanical dedup.</div>
       <label for="ai-merge-guidance" style="margin-top:0.6rem">Guidance — when two items are the same story</label>
       <textarea id="ai-merge-guidance" rows="3"></textarea>
       <details class="adv" style="margin-top:0.5rem"><summary class="hint" style="cursor:pointer">▸ Advanced (model · limit · interval)</summary>
@@ -733,9 +749,9 @@
       $('ai-on').checked = !!ai.enabled;
       $('ai-model').value = sharedModel;
       $('ai-cap').value = ai.monthly_cap_cents!=null?ai.monthly_cap_cents:800;
-      var aiNum = { picks:'count', top20:'count', digests:'max_rollups', briefs:'max_sentences', merge:'max_candidates' };
-      var aiNumId = { picks:'count', top20:'count', digests:'max', briefs:'max', merge:'max' };
-      ['picks','top20','digests','briefs','editions','merge'].forEach(function(k){
+      var aiNum = { picks:'count', top20:'count', digests:'max_rollups', briefs:'max_sentences', community:'max_items', merge:'max_candidates' };
+      var aiNumId = { picks:'count', top20:'count', digests:'max', briefs:'max', community:'max', merge:'max' };
+      ['picks','top20','digests','briefs','community','editions','merge'].forEach(function(k){
         var f = ai[k]||{};
         $('ai-'+k+'-on').checked = !!f.enabled;
         // Per-pass model shown blank when it matches the shared model (blank = shared).
@@ -834,6 +850,7 @@
         top20: feat('top20','count','count'),
         digests: feat('digests','max_rollups','max'),
         briefs: feat('briefs','max_sentences','max'),
+        community: feat('community','max_items','max'),
         editions: feat('editions', null, null),
         merge: feat('merge','max_candidates','max')
       };
@@ -1039,7 +1056,7 @@
     var AI_TAB_TOGGLE = {
       'enrichment':'enr-on', 'ai.picks':'ai-picks-on', 'ai.top20':'ai-top20-on',
       'ai.digests':'ai-digests-on', 'ai.briefs':'ai-briefs-on',
-      'ai.editions':'ai-editions-on', 'ai.merge':'ai-merge-on',
+      'ai.community':'ai-community-on', 'ai.editions':'ai-editions-on', 'ai.merge':'ai-merge-on',
     };
     // Toggle one AI function on/off straight from the dashboard. Sends a minimal
     // nested patch (e.g. {ai:{picks:{enabled:false}}}) the config POST merges over live.
@@ -1087,10 +1104,11 @@
       // Enrichment is the base per-item read; the rest are editorial passes on top.
       var FN = [
         { key:'enrichment', label:'Enrichment',      src:e,             path:'enrichment' },
-        { key:'picks',      label:"Editor's Picks",  src:ai.picks||{},  path:'ai.picks' },
-        { key:'top20',      label:'Top 20',          src:ai.top20||{},  path:'ai.top20' },
+        { key:'picks',      label:'Headlines (curated)', src:ai.picks||{},  path:'ai.picks' },
+        { key:'top20',      label:'Top 20 (curated)',    src:ai.top20||{},  path:'ai.top20' },
         { key:'digests',    label:'Firehose digests',src:ai.digests||{},path:'ai.digests' },
         { key:'briefs',     label:'Edition briefs',  src:ai.briefs||{}, path:'ai.briefs' },
+        { key:'community',  label:'Community digest',src:ai.community||{},path:'ai.community' },
         { key:'editions',   label:'Order editions',  src:ai.editions||{},path:'ai.editions' },
         { key:'merge',      label:'Smart merge',     src:ai.merge||{},  path:'ai.merge' },
       ];

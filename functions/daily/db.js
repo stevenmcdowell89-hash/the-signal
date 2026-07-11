@@ -276,6 +276,50 @@ export async function getLastStoryPoints(db, beforeTs) {
   return map;
 }
 
+// Story-log rows within a window, oldest-first (the daily→weekly digest reads
+// this to tell what surfaced from what MOVED). Degrades gracefully: on an OLD
+// database whose story_log predates the `signal` column the signal-aware SELECT
+// throws, so fall back to the always-present columns; a missing table returns [].
+export async function getStoryLogSince(db, sinceMs) {
+  const base = `FROM story_log WHERE ts >= ? ORDER BY ts ASC`;
+  try {
+    const { results } = await db
+      .prepare(`SELECT cluster_id, ts, score, headline, domain, signal ${base}`)
+      .bind(sinceMs).all();
+    return results || [];
+  } catch (_) {
+    try {
+      const { results } = await db
+        .prepare(`SELECT cluster_id, ts, score, headline, domain ${base}`)
+        .bind(sinceMs).all();
+      return (results || []).map((r) => ({ ...r, signal: null }));
+    } catch (_2) {
+      return [];
+    }
+  }
+}
+
+// canonical_url + domain for a set of item ids → Map(id → row), so the digest can
+// attach a tappable link. Best-effort: items are pruned at ~14d while story_log
+// keeps ~60d, so a moved-weeks-ago cluster may have no live item (link stays null).
+export async function getItemsByIds(db, ids) {
+  const map = new Map();
+  const list = [...new Set(ids || [])].filter((x) => x != null);
+  if (!list.length) return map;
+  const CHUNK = 100;
+  for (let i = 0; i < list.length; i += CHUNK) {
+    const slice = list.slice(i, i + CHUNK);
+    const holes = slice.map(() => "?").join(",");
+    try {
+      const { results } = await db
+        .prepare(`SELECT id, canonical_url, domain FROM items WHERE id IN (${holes})`)
+        .bind(...slice).all();
+      for (const r of results || []) map.set(r.id, r);
+    } catch (_) { /* missing table / column → skip, link stays null */ }
+  }
+  return map;
+}
+
 export async function logRun(db, r) {
   await db
     .prepare(

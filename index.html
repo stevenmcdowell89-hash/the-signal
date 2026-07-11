@@ -515,6 +515,10 @@
     .catch-hook { color: var(--ink-2); font-size: 0.85rem; line-height: 1.45; margin-top: 0.35rem; }
     .edition-brief { color: var(--ink); font-size: 0.92rem; line-height: 1.55; margin: 0.2rem 0 1rem; padding: 0.7rem 0.9rem; border-left: 3px solid var(--coral); background: rgba(255,255,255,0.03); border-radius: 0 6px 6px 0; }
     .catch-why { color: var(--ink); font-size: 0.86rem; line-height: 1.45; margin-top: 0.35rem; font-style: italic; border-left: 2px solid var(--coral); padding-left: 0.5rem; }
+    /* skim vs understand (D-3): expandable "what's new" hook line */
+    .catch-more { background: none; border: none; color: var(--coral); font-size: 0.78rem; cursor: pointer; padding: 0.25rem 0 0; margin-top: 0.1rem; opacity: 0.85; }
+    .catch-more:hover { opacity: 1; }
+    .catch-more-body { margin-top: 0.25rem; }
     .tail-digest { color: var(--ink-2); font-size: 0.86rem; line-height: 1.5; margin: 0.6rem 0 0.3rem; }
     .catch-summary { color: var(--ink-2); font-size: 0.85rem; line-height: 1.5; margin-top: 0.35rem;
       display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
@@ -565,7 +569,7 @@
        through the day. The head (title, chips) stays; the body/footer fold away. */
     .catch.is-read { opacity: 0.5; border-left-color: var(--line); padding-top: 0.6rem; padding-bottom: 0.6rem; }
     .catch.is-read .catch-hook, .catch.is-read .catch-why, .catch.is-read .catch-summary,
-    .catch.is-read .catch-foot, .catch.is-read .catch-delta { display: none; }
+    .catch.is-read .catch-foot, .catch.is-read .catch-delta, .catch.is-read .catch-more { display: none; }
     .catch.is-read .catch-title { font-weight: 500; font-size: 0.9rem; }
 
     /* save-for-later star (D-2) */
@@ -1315,14 +1319,20 @@
           (isSaved(it.id) ? '★' : '☆') + '</span>';
         var headHtml = '<div class="catch-head">' + left + (t ? '<span class="catch-time">' + esc(t) + '</span>' : '') + saveMark + '</div>';
 
-        // Body: exactly ONE AI line per card. The curated "why it matters" wins when
-        // present (Headlines/Top 20), else the enrichment hook, else the story's own
-        // summary. An item can carry both a `why` and a `hook`; show only the `why` so
-        // every card across every section reads as title + one line.
+        // Body: the curated "why it matters" wins as the visible line (Headlines/
+        // Top 20), else the enrichment hook, else the story's own summary. Skim vs
+        // understand (D-3): when an item carries BOTH a `why` (why it matters) and a
+        // distinct `hook` (what's new), keep the second line REACHABLE via an expand
+        // toggle instead of dropping it — so a skim shows one line, a tap shows both.
         var body = '';
         // Developing-delta (D-2): what changed since this cluster was last surfaced.
         if (it.delta && it.delta.now_label) body += deltaLine(it.delta);
-        if (it.why) body += '<div class="catch-why">' + esc(it.why) + '</div>';
+        if (it.why) {
+          body += '<div class="catch-why">' + esc(it.why) + '</div>';
+          if (it.hook && it.hook.trim() && it.hook.trim() !== it.why.trim())
+            body += '<button class="catch-more" type="button">+ what’s new</button>' +
+                    '<div class="catch-hook catch-more-body" hidden>' + esc(it.hook) + '</div>';
+        }
         else if (it.hook) body += '<div class="catch-hook">' + esc(it.hook) + '</div>';
         else if (it.summary) body += '<div class="catch-summary">' + esc(it.summary) + '</div>';
 
@@ -1347,6 +1357,13 @@
 
         a.innerHTML = headHtml + '<div class="catch-title">' + esc(it.title) + '</div>' + body + foot;
         a.querySelectorAll('.catch-links a').forEach(function(x){ x.addEventListener('click', function(e){ e.stopPropagation(); }); });
+        // "+ what's new" expand — reveals the hook without navigating or marking read.
+        var moreBtn = a.querySelector('.catch-more');
+        if (moreBtn) moreBtn.addEventListener('click', function(e){
+          e.preventDefault(); e.stopPropagation();
+          var mb = a.querySelector('.catch-more-body');
+          if (mb){ mb.hidden = !mb.hidden; moreBtn.textContent = mb.hidden ? '+ what’s new' : '– what’s new'; }
+        });
         // Save toggle — never navigates the card.
         var saveEl = a.querySelector('.catch-save');
         if (saveEl) saveEl.addEventListener('click', function(e){
@@ -1391,7 +1408,11 @@
         var newCount = look ? allLive.filter(function(i){ return (i.first_seen||0) > look; }).length : 0;
         var when = state.generated_at ? hhmm(state.generated_at) : '';
         var prev = statusText.parentNode.querySelector('.brief-new'); if (prev) prev.remove();
-        statusText.innerHTML = 'Caught up' + (when ? ' &middot; '+when : '');
+        // Morning / evening framing (D-3): frame the masthead status by the edition
+        // phase the engine stamped (state.edition_phase). Mechanical, cosmetic.
+        var phase = state.edition_phase || (state.edition && state.edition.phase);
+        var greet = phase === 'evening' ? 'This evening' : phase === 'morning' ? 'This morning' : '';
+        statusText.innerHTML = (greet ? greet + ' &middot; ' : '') + 'Caught up' + (when ? ' &middot; '+when : '');
         if (newCount > 0 && look) {
           var badge = document.createElement('span'); badge.className='brief-new';
           badge.textContent = newCount + ' new since ' + hhmm(look);
@@ -1568,7 +1589,9 @@
         // delta). Skip any already shown as the lead / in Headlines above.
         var dev = (state.developing||[]).filter(function(it){ return !shown[it.id]; });
         if (dev.length){
-          var gd = group('Still developing', dev.length);
+          // Evening editions frame this thread as the "what moved" recap (D-3).
+          var devTitle = (state.edition_phase === 'evening') ? 'What moved since this morning' : 'Still developing';
+          var gd = group(devTitle, dev.length);
           gd.className='brief-group domain-sec';
           dev.forEach(function(it){ gd.appendChild(catchEl(it, { showDomain: true })); });
           root.appendChild(gd);
@@ -1686,6 +1709,10 @@
           root.appendChild(e);
           return;
         }
+        // AI community digest (D-3) — "what Reddit/HN/Bluesky are arguing about
+        // today", shown above the grouped feed. Absent when the pass is off/capped.
+        var cd = state.community_digest;
+        if (cd && !currentSub){ var cbd=document.createElement('div'); cbd.className='edition-brief'; cbd.textContent=cd; root.appendChild(cbd); }
         var bySrc = {};
         items.forEach(function(it){ var k=it.source_type||'other'; (bySrc[k]=bySrc[k]||[]).push(it); });
         ['reddit','hn','bluesky','other'].forEach(function(k){

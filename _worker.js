@@ -21,6 +21,7 @@ import {
   onRequestPost as dailyRun,
   onRequestReset as dailyReset,
   onRequestRunStatus as dailyRunStatus,
+  onRequestDigest as dailyDigest,
 } from "./functions/api/daily.js";
 import { onRequestGet as healthGet } from "./functions/api/health.js";
 import { onRequestGet as resolveFeed } from "./functions/api/resolve-feed.js";
@@ -43,6 +44,7 @@ export default {
     if (p === "/api/daily/run" && method === "POST") return dailyRun({ request, env, ctx });
     if (p === "/api/daily/reset" && method === "POST") return dailyReset({ request, env });
     if (p === "/api/daily/run-status" && method === "GET") return dailyRunStatus({ request, env });
+    if (p === "/api/daily/digest" && method === "GET") return dailyDigest({ request, env });
     if (p === "/api/health" && method === "GET") return healthGet({ request, env });
 
     // --- Config surface (reads open, writes token-gated) ---
