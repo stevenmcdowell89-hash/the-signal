@@ -442,11 +442,12 @@ Beginner's guide. **4,000-6,000 words, 15-22 pages.** Manual trigger: "Run a Sta
 
 **The Essentials chapter — pick density.** The Essentials is the heart of a Starter Kit and must hit the per-pick density floor (see "Visual-density floor" above). The pattern is:
 
-- 5-7 picks rendered as cross-format `.pick` items (image left/right alternating, `.pick-body` containing `.pick-tag` "Top Pick" / "Strong Pick" pill, `<h3>` title, multi-paragraph writeup, `.pick-stats` info block, optional `figure.image-quote` or `.pullquote` between picks).
+- 5-7 picks rendered as cross-format `.pick` items (image left/right alternating, `.pick-body` containing `.pick-tag` "Top Pick" / "Strong Pick" pill, `<h3>` title, multi-paragraph writeup, `.pick-stats` info block, optional `figure.image-quote` or `.pullquote` between picks). **Every pick must carry a real, sourced image** — a `figure.fig` hero wrapping `.pick-img` (no bare `<img>`; no pick ships imageless). Research must surface a verified image for each title (see SKILL.md Phase 3a); the `.pick` image floats and the body wraps beside then below it, so a short image with long text no longer leaves a dead column.
 - The `.essentials` numbered-ring list is ONLY for short concept lists (e.g. "5 essential techniques" inside Why This Matters). NOT for the main pick chapter.
 - The audio drama Starter Kit (April 2026) sets the floor — each pick had an image, a stats sidebar, a 4-number stat row, a "did-you-know" callout, and a source strip. Reproduce that density using the v8.22 vocabulary.
 
-- Use 10-14 component types: `.pick` + `.pick-stats` for The Essentials picks, `.bignum-row` for headline counts, `.pullquote` between picks, `.week-plan` for The One-Week Plan, `.also-cards` for Where to Go Deeper, `figure.image-quote` for visual rhythm.
+- Use 10-14 component types: `.pick` + `.pick-stats` for The Essentials picks, `.bignum-row` for headline counts, `.pullquote` between picks, `.week-plan` for The One-Week Plan, `.sk-mistake` callout list (ringed × badge + optional `.sk-mistake-fix` "do this instead" line) for Common Mistakes, `.sk-takeaway` conviction band closing Why This Matters, `.also-cards` for Where to Go Deeper, `figure.image-quote` for visual rhythm. The accent is warm terracotta (`--accent-tan`), not the old low-contrast bone-soft.
+- **Component variety is mechanically gated (v8.31).** `validate-issue.py` → `check_special_component_variety` hard-fails a Starter Kit that renders fewer than **9** distinct presentational component types. See the cross-format floor table in `specials.md` § "Component list". The "10-14" above is the target; 9 is the hard floor.
 
 
 

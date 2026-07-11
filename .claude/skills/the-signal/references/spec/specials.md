@@ -92,9 +92,11 @@ Every non-holiday special edition obeys these rules. Holiday specials (Countdown
 - `.keep-digging` — closing cross-media grid of `.kd-item` cards. Each card carries `data-medium="podcast|tv|film|game|video|book"` (which paints the per-type pill colour + glyph) and contains `.kd-medium` pill, `.kd-title` heading, optional `.kd-episode` italic line (mandatory on podcasts — series-only refs forbidden), `.kd-why` italic gloss.
 
 **Starter Kit flair:**
-- All baseline components above. Distinct `--accent` colour set on `body[data-special="starter-kit"]`.
+- All baseline components above. Accent is warm terracotta (`--accent: var(--accent-tan)`) set on `body[data-special="starter-kit"]` — replaced the old low-contrast bone-soft (v8.31) so the ring badges and rails read as live.
 - `.essentials` ordered list — each `<li>` gets a numbered ring badge. **Use only for short concept lists** ("5 essential techniques", "7 things to learn first"). NOT for detailed-pick chapters — those use the cross-format `.pick` (each pick gets image + body + `.pick-stats` + a `.pullquote` or `.image-quote` for visual rhythm).
 - `.week-plan` vertical timeline — the killer feature. Seven `.wp-day` items with badged day-marks (Day N / Mon) on the left of an accent rail, body on the right.
+- `.sk-mistake` — Common Mistakes callout list (v8.31). Each `<li>` gets a ringed × badge (same ring family as `.essentials`, caution register); an optional `.sk-mistake-fix` span renders a "→ do this instead" line. Gives the Common Mistakes chapter a distinctive treatment instead of plain prose.
+- `.sk-takeaway` — a quiet single-line conviction band (v8.31) closing Why This Matters: `.sk-takeaway-mark` mono eyebrow + one italic sentence on a hairline-bordered paper band. A lighter cousin of Deep Dive's `.argument`.
 
 **What was removed (v8.21 redesign):**
 - All scroll motion (`.sp-parallax`, `.sp-stagger`, `.sp-wipe`, `.sp-curtain`)
@@ -103,6 +105,16 @@ Every non-holiday special edition obeys these rules. Holiday specials (Countdown
 - Old editorial breakouts (`.sp-manifesto`, `.sp-bignum`, `.sp-gallery`, `.sp-diptych`, `.sp-marquee`)
 - The Blueprint format (retired in v8.22 — never used after 6+ specials, planning use cases absorbed by Deep Dive and Shortlist)
 - These components/formats are no longer in the CSS bundle for non-holiday specials. Don't reference them in new issues. They remain in already-published issues since their CSS is inlined at generation time.
+
+**Enforced variety floor (v8.31) — non-holiday specials.**
+The "Use N-M component types" guidance per format is no longer advisory only. After stitch, `validate-issue.py` → `check_special_component_variety` counts the **distinct presentational component types** actually rendered in the body (drop caps, pullquotes, marginalia, bignum rows, figures, image-quotes, source strips, kickers, ornaments, picks, also-cards, and each format's distinctive flair) and **hard-fails** an issue below the floor. This is the same kind of gate that already guards holiday components — it stops a special from shipping as a plain page. Holiday formats (Countdown, Field Guide) are exempt; they keep their own component gate.
+
+| Format | Target (guidance) | Hard floor (gated) |
+|---|---|---|
+| Deep Dive, Rewind, Starter Kit | 10-14 | **9** |
+| Versus, Season Review, Shortlist, Lookahead, Next | 8-12 | **7** |
+
+Scaffold (`.chapter`, `.cover`, `.foreword`, `.mast`), animation/utility (`.reveal`, `.sp-rise`, `.sp-fade`), and layout modifiers (`.is-wide`, `.is-left`, …) do NOT count toward the floor — only real presentational components do. A component counts once regardless of how many times it repeats.
 
 
 
@@ -174,7 +186,7 @@ The Saga (lore deep-dive — worldbuilding essays: Maul's arc across the shows, 
 
 If neither peg is live, The Saga simply doesn't run that week — it is never scheduled to fill a slot.
 
-**Generalised principle: sections that depend on private context are reader-triggerable, not calendar-driven.** The magazine asks for / reads that context rather than guessing. This is the same reason The Session reads `training_phase` and The Itinerary reads `upcoming_trips`; v8.27 extends the pattern to reading/watching (`currently_reading` / `currently_watching`) for The Saga, and lets it inform Shelf and Screen & Sound pegs too.
+**Generalised principle: sections that depend on private context are reader-triggerable, not calendar-driven.** The magazine asks for / reads that context rather than guessing. This is the same reason The Session reads `training_phase` and Places reads `upcoming_trips`; v8.27 extends the pattern to reading/watching (`currently_reading` / `currently_watching`) for The Saga, and lets it inform Shelf and Screen & Sound pegs too.
 
 ### Guardrails
 
