@@ -8,9 +8,14 @@ _July 2026. This is the single source of truth. It merges the two prior review d
 
 Keep both prior docs for detail and reference — in particular **List 2 Part C holds the full per-domain source URLs** this plan points to. But when List 1 and List 2 disagree, follow this document.
 
-**For the implementer:** this is a recommendations/scope document, not code. It is sequenced so you can implement it in order. File paths are given as anchors, not prescriptions. Two standing instructions:
+**For the implementer:** this is a recommendations/scope document, not code. It is sequenced so you can implement it in order. File paths are given as anchors, not prescriptions. Three standing instructions:
 1. **Bias to the rebuild.** The weekly is a redesign, not a patch. Do not re-add machinery this plan says to retire.
 2. **Sources are yours to add, not the owner's.** The daily source expansion (Part 3 / §Sources) is an implementation work-item — wire the feeds in and validate them on ingest. Do **not** hand the owner a list to paste into Settings.
+3. **Reddit API access is impossible — see §Hard constraints.** Do not plan, build, or leave references to a Reddit Data API / OAuth path.
+
+## Hard constraints (non-negotiable)
+
+- **Reddit Data API / OAuth is NOT available and is NOT an option — permanently.** Do not treat it as pending, planned, or "approvable." Reddit is served **only** via the public per-subreddit `.rss` endpoints, and the size-tiered rotation (big/medium/small pools in `functions/daily/config.js`) that keeps polls under Reddit's per-IP rate limit is a **permanent** part of the design, not a temporary workaround to retire. As part of implementation, **remove every remaining reference to the Reddit API / OAuth** — the `REDDIT_CLIENT_ID`/`REDDIT_CLIENT_SECRET` code paths and comments in `functions/daily/feeds.js`, `functions/daily/ingest.js`, and `functions/daily/pipeline.js`; the "Reddit — public `.rss` only" note is already the correct framing in `OPERATIONS.md` (the old `docs/reddit-data-api-application.md` has been deleted). Add new subreddits sparingly and as `tier:small`. Never reintroduce an OAuth path.
 
 ---
 
@@ -113,7 +118,8 @@ Implement as the four-phase migration from List 2 §A4. This is the centrepiece;
 - **Morning / evening framing** — use `generated_at` hour for a morning lead vs an evening "what moved since this morning" recap. _(Merged B11 + B-T2h.)_
 
 **Tier D-4 — polish**
-- Client-side search · per-domain "one thing to know" header line · "by the numbers" chip · tap-source-count-to-list-sources · daily cost/quality history log · warmer hook register for `colour`/`discovery` items only · retire the Reddit rotation workaround once the Data API is approved · fix/note the RSS velocity blind spot (constant `rawScore` ⇒ velocity always 0 for RSS; add a cross-feed "burst" signal).
+- Client-side search · per-domain "one thing to know" header line · "by the numbers" chip · tap-source-count-to-list-sources · daily cost/quality history log · warmer hook register for `colour`/`discovery` items only · fix/note the RSS velocity blind spot (constant `rawScore` ⇒ velocity always 0 for RSS; add a cross-feed "burst" signal).
+- **Reddit stays public-`.rss`-only** — the size-tiered rotation is permanent, not a workaround to retire (see §Hard constraints).
 
 **Daily source expansion — see §Sources below (an implementation work-item).**
 

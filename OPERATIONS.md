@@ -254,9 +254,13 @@ hooks) and records it in the footer. The daily can never run an unbounded bill.
 - Run logs and per-story movement evidence live in D1 (`runs`, `story_log`) —
   the latter is what the weekly reads to tell "moved" from "still exists".
 
-### Phase 2 — Reddit
+### Reddit — public `.rss` only (no API)
 
-Reddit is approval-gated (~2–4 weeks). Draft application + the tagged subreddit
-set: `docs/reddit-data-api-application.md`. It drops in as tagged sources +
-OAuth secret with no engine rework (the baseline/velocity machinery already
-supports it).
+The Reddit **Data API / OAuth is not available and is not a planned option** —
+treat it as permanently off the table. Reddit is served **only** via the public
+per-subreddit `.rss` endpoints, with the size-tiered rotation (big/medium/small
+pools in `functions/daily/config.js`) that keeps total polls under Reddit's
+per-IP rate limit. That rotation is a **permanent** part of the design, not a
+temporary workaround awaiting API approval. Add subreddits sparingly and as
+`tier:small`. There is no `REDDIT_CLIENT_ID`/`REDDIT_CLIENT_SECRET` path to
+enable — do not reintroduce one.

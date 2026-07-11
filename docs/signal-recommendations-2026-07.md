@@ -96,7 +96,7 @@ The weekly's claim to being the anchor is that it can step back and _have a view
 - **B9. Client-side search.** _For you:_ find that thing you saw this morning instead of scrolling for it.
 - **B10. Daily cost/quality history log.** _For you:_ invisible — observability for tuning.
 - **B11. Optional "morning edition" snapshot.** _For you:_ a defined "here's your morning" moment for reading on waking.
-- **B12. Retire the Reddit rotation workaround** once the Data API is approved. _For you:_ more reliable community content, fewer gaps.
+- **B12. Reddit stays public-`.rss`-only (permanent constraint).** The Reddit Data API / OAuth is **not available and not an option** — the size-tiered rotation in `config.js` is a permanent part of the design, not a workaround to retire. Keep it lean (new subreddits as `tier:small`); do not build or assume an OAuth path. _For you:_ Reddit community texture keeps working within the rate limit; nothing here is waiting on an approval that will never come.
 - **B13. Fix/note the RSS velocity blind spot** (constant `rawScore` makes velocity always 0 for RSS; add a cross-feed "burst" signal). _For you:_ a story breaking across many feeds at once is recognised as important — better ordering.
 
 ---
