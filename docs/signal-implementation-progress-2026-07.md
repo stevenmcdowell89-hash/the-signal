@@ -277,7 +277,41 @@ Economist, Belfast Telegraph, 17th Shard, Locus, `starwars.com/news/feed` (may 4
 Star Wars News Net remains the working default). Tests: `test-sources.mjs` 897/897;
 D-1/2/3 regressions 12/20/38 all green; 5 new feeds spot-fetched → 200 + valid XML.
 
-The rest of Batch 6 (cross-cutting H3–H8, specials S1–S6, D-4 polish) remains ⬜.
+### Specials S1–S6 ✅ (skill v8.39.0; source `editorial-spec.md` + re-sliced `spec/*.md`)
+Special-edition rebuild from § STREAM 3. Deep Dive kept as the flagship; the weekly's
+single Long Read does **not** replace it. Source-of-truth edits went into
+`references/editorial-spec.md` and `SKILL.md`; `spec/*.md` regenerated via
+`bash scripts/slice-spec.sh` (exit 0, no FAIL).
+
+- **S1 — three ghost formats resolved (per-format decision):** **Rewind → ACTIVE,
+  calendar-scheduled** (its P1 last-Sunday-of-June/December window stands; never shipping was a
+  trip-deferral artefact). **Season Review → ACTIVE, event-scheduled** (fires as a P2 event on a
+  followed season's final result; never shipping was a supply gap). **Lookahead → RETIRED/FOLDED**
+  (handled by S2). Each § now opens with an explicit `Status:` marker.
+- **S2 — Lookahead cut/folded into the weekly:** overlapped Release Radar + On the Radar; marked
+  RETIRED/FOLDED in the format § and the manual-only-formats note, intent routed to the weekly's
+  radar sections + Colophon Next-Week. `lookahead` slug stays validator-recognised (archive back-compat).
+- **S3 — Gate 1A + fact-provenance scoped onto the light formats:** `compliance-checklist.md` § 1A
+  now names Guide (both modes) + Next; new § "The Guide / Next" adds reader-invisibility (the
+  audio-drama Starter Kit second-person leak), fact-provenance/RT-22 (the Shortlist unsourced stat),
+  and research-bundle checks. 1A stays split (reader invisible; Editor first-person allowed).
+- **S4 — recommendation cluster merged to two:** kept **Next**; folded **Shortlist + Starter Kit**
+  into one **Guide** (beginner mode = One-Week Plan; category mode = Lens + Cheat Sheet). New § The
+  Guide; old §§ kept with FOLDED markers; P3 pool table + `KNOWN_FORMATS` updated (`guide` added,
+  old slugs kept back-compat, marked folded); Blueprint (v8.22) cited as precedent.
+- **S5 — trigger stack simplified (chosen option):** collapsed **`deep_dive_schedule` into
+  P1/P2/P3** — retired the standalone quarterly Deep-Dive timer; Deep Dive now fires via P2 (major
+  launch), P3 (dry-spell pool), or manual. `deep_dive_backlog` kept as the topic queue.
+- **S6 — hard length ceilings in `validate-issue.py`:** new `LENGTH_CEILINGS` + `check_length_ceiling`
+  (ship FAIL, folded into the existing gate — not a new script). Ceilings per format: deep-dive
+  **20k**, rewind **15k**, season-review **13k**, field-guide **12k**, weekly **11k**, countdown
+  **11k**, versus **10k**, lookahead **8k**, guide/starter-kit **7.5k**, next **7k**, shortlist
+  **6.5k**; formats without a ceiling report OK (never crash). Verified: ~15k Field Guide and ~24k
+  retired Deep Dive both trip it; the shipping 18.6k Deep Dive passes.
+- **S7/S8 — deferred** (polish): nine-signature-moments / graveyard audit and holiday-motion vs
+  JS-off reconciliation not done this pass.
+
+The rest of Batch 6 (cross-cutting H3–H8, D-4 polish) remains ⬜; Specials S1–S6 ✅ and Sources ✅.
 
 ---
 

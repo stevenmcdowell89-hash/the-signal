@@ -1,5 +1,49 @@
 # The Signal — Changelog
 
+8.39.0 — Special editions rationalised (STREAM 3, items S1–S6, from
+  `docs/signal-final-recommendations-2026-07.md` § STREAM 3). The weekly rebuild left
+  the special formats untouched; this pass resolves the ghost formats, merges the
+  recommendation cluster, simplifies the trigger stack, and wires hard length ceilings.
+  The Deep Dive stays the flagship; the weekly's single Long Read does NOT replace it.
+  Spec (source `editorial-spec.md`) + re-sliced `spec/*.md` + checklist + one validator.
+  No new gates beyond the length ceiling (folded into the existing markup/ship gate).
+
+  - **S1 — the three ghost formats resolved (Rewind, Season Review, Lookahead — never
+    shipped).** Rewind → **ACTIVE, calendar-scheduled**: its P1 last-Sunday-of-June/December
+    window stands; never shipping was a trip-deferral artefact, not a missing trigger.
+    Season Review → **ACTIVE, event-scheduled**: fires as a P2 event when a followed season's
+    final result is detected; never shipping was a supply gap. Lookahead → **RETIRED/FOLDED**
+    (see S2). Each carries an explicit `Status:` marker at the top of its § in the spec.
+  - **S2 — Lookahead cut/folded into the weekly.** It overlapped the weekly's Release Radar +
+    On the Radar; the rebuild folds forward-looking picks *into* the anchor. Marked
+    RETIRED/FOLDED in the format § and in the manual-only-formats note; intent routed to the
+    weekly's radar sections + the Colophon Next-Week note. `lookahead` slug stays
+    validator-recognised for the two archived drafts.
+  - **S3 — Gate 1A (reader-invisibility) + fact-provenance scoped onto the light formats.**
+    The audio-drama Starter Kit leaked second person through its One-Week Plan / On-Ramp prose;
+    a Shortlist cited an unsourced stat. `compliance-checklist.md` § 1A now names Guide (both
+    modes) + Next as in-scope, and a new § "The Guide / Next — light recommendation formats"
+    adds the reader-invisibility, fact-provenance (RT-22), and research-bundle checks. 1A stays
+    split (reader invisible; Editor first-person allowed, W-1/v8.35).
+  - **S4 — recommendation cluster merged to two.** Kept **Next**; folded **Shortlist +
+    Starter Kit** into one **Guide** (beginner mode = One-Week Plan; category mode = Lens +
+    Cheat Sheet). New § The Guide in the spec; both old §§ retained with FOLDED markers; P3
+    pool table + KNOWN_FORMATS updated (`guide` added; `shortlist`/`starter-kit` kept for
+    back-compat, marked folded). Precedent cited: the retired Blueprint (v8.22).
+  - **S5 — trigger stack simplified: `deep_dive_schedule` collapsed into P1/P2/P3.** The
+    standalone quarterly Deep-Dive timer (a `next_due`/`cadence_weeks` state-machine on top of
+    the trigger stack) is retired; Deep Dive now fires only via P2 (major launch), P3 (dry-spell
+    pool), or manual request. `deep_dive_backlog` is kept as the topic queue; residual
+    `deep_dive_schedule` objects are inert.
+  - **S6 — hard per-format length ceilings wired into `validate-issue.py`.** New
+    `LENGTH_CEILINGS` map + `check_length_ceiling` (a ship FAIL folded into the existing gate,
+    not a new script): deep-dive 20k, rewind 15k, season-review 13k, field-guide 12k, weekly
+    11k, countdown 11k, versus 10k, lookahead 8k, guide/starter-kit 7.5k, next 7k, shortlist
+    6.5k. Formats without a ceiling report OK (never crash). Verified: the ~15k Field Guide and
+    the ~24k retired Deep Dive both trip it; the shipping 18.6k Deep Dive passes.
+  - **S7/S8 — deferred** (polish): the nine-signature-moments / removed-components-graveyard
+    audit and the holiday-motion-vs-JS-off reconciliation were not done this pass.
+
 8.38.0 — Personalization loop, charter consolidation & the THREE-gate ledger (weekly W-4,
   the FINAL phase of the July rebuild, from `docs/signal-final-recommendations-2026-07.md`
   § STREAM 1 Phase W-4 + §5 the Gate Ledger). Ends the weekly rebuild: the daily→weekly

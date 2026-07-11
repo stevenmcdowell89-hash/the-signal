@@ -322,9 +322,30 @@ All special editions use the same design system and component library. Use sideb
 
 ---
 
+## guide
+
+### The Guide
+**The merged recommendation format (v8.39, S4 — the cluster collapsed to two).** The old recommendation cluster was four near-siblings (Next, Shortlist, Starter Kit, and the retired Blueprint). It is now **two**: **Next** (progression from a known anchor — kept, unchanged) and **The Guide** (everything else a curated recommendation issue does). The Guide has **two modes**; the researcher/planner picks the mode from the request, not a new format:
+
+- **Beginner mode** (was: Starter Kit). For a reader with *no* entry point into a topic. **4,000-6,000 words, 15-22 pages.** Trigger: "Run a Guide — [topic] (beginner)" or the legacy "Run a Starter Kit — [topic]". Structure and killer feature are the Starter Kit's, unchanged: Cover → Foreword → Why This Matters → The Essentials (5-7 items, per-pick density floor) → Common Mistakes → **The One-Week Plan** (the killer feature — day-by-day, `.week-plan`) → Where to Go Deeper → Footer. See § The Starter Kit for the full mode spec.
+- **Category mode** (was: Shortlist). For a curated, tiered roundup in a category. **3,500-5,500 words, 14-20 pages.** Trigger: "Run a Guide — [topic] (category)" or the legacy "Run a Shortlist — [topic]". Structure and killer feature are the Shortlist's, unchanged: Cover → Foreword → **The Lens** (criteria) → tiered picks (Top / Strong / Wildcards) → Also Worth Knowing → **The Cheat Sheet** (summary table) → Meanwhile... → Footer. **The Lens + The Cheat Sheet** bookend is the killer feature. See § The Shortlist for the full mode spec.
+
+- **Which mode.** No entry point → beginner. A known category the reader wants the magazine's picks in → category. If the reader has *just finished a specific thing* and wants the next step, that's **Next**, not a Guide.
+- **Auto-trigger.** The Guide inherits both folded formats' Priority-3 editorial-picks slots (see § Auto-Trigger Logic): a beginner-mode "getting into X" pick, or a category-mode "a roundup that hasn't been covered recently" pick.
+- **Reader-invisibility + fact-provenance.** Both modes are **light formats** subject to Gate 1A (reader stays invisible — the audio-drama Starter Kit's second-person leak is the reference failure) and the fact-provenance / research-bundle expectation (a Shortlist once cited an unsourced stat). See `compliance-checklist.md` § The Guide / Next.
+- **Validator.** Ships as `--format guide` (or the back-compat `starter-kit` / `shortlist` slugs). Length ceiling: category mode is the lighter, beginner mode the more generous — the validator caps The Guide at the beginner-mode ceiling.
+
+
+
+---
+
 ## lookahead
 
 ### The Lookahead
+**Status: RETIRED — folded into the weekly (v8.39, S2).** Lookahead never shipped, and the July rebuild removed its reason to exist: its forward-looking job is now carried inside the standard weekly by **Release Radar** and **On the Radar** (the rounds' present-and-near-future coverage) plus the Colophon's **Next Week** note. A whole issue dedicated to a 6-8-week survey overlaps that weekly work rather than adding to it — the rebuild's direction is that forward-looking picks fold *into* the anchor, not stand as a rare interruption of it. The section below is kept for reference (and the `lookahead` slug stays validator-recognised for back-compat with the two archived drafts), but **do not schedule or manually run a Lookahead** — route the intent to the weekly's radar sections. If a genuinely event-dense window needs its own treatment, a **Rewind** (backward) or a **Countdown** (single event) is the live format; there is no forward-panoramic special.
+
+_Original spec (retained for reference only):_
+
 Multi-event preview of a defined window (6-8 weeks default). **4,500-6,500 words, 16-22 pages.** Manual trigger: "Run a Lookahead — [window]." E.g. "the next six weeks", "June 2026", "the run-up to the F1 summer break", "the Switch 2 launch window". Canonical chapter order: Cover → Foreword → The Window in Numbers → The Calendar (chronological, every item with a verdict) → The Crunch Weeks → What Else Is Brewing → Footer.
 
 - **Different from Countdown.** Countdown is one event built into hype. Lookahead is **many** events surveyed editorially — gaming, film, sport fixtures, book releases, calendar anniversaries — across the same window, with the magazine's verdict on each.
@@ -381,6 +402,8 @@ Each pick gets that three-part instruction (Start / Reassess / Then), or a justi
 ## rewind
 
 ### The Rewind
+**Status: ACTIVE — calendar-scheduled (v8.39, S1).** Never having shipped is a scheduling-collision artefact (the half-year mark fell inside trip windows that took priority, and Rewinds defer near trips — see Trip-Aware Scheduling), not a missing trigger. The concrete firing window is defined and stands: it fires as a **Priority-1 calendar trigger** on the **last Sunday of June** ("H1 in Review") and the **last Sunday of December** ("The Year in Review"), deferring only if within 7 days of a trip. It is not dormant; the next uncontested half-year/year-end mark fires it.
+
 Panoramic retrospective across **all** interests. **8,000-12,000 words, 25-40 pages.** Manual trigger: "Run a Rewind — [period]." Canonical chapter order: Cover → Foreword → The Period in Numbers (stat bars, big-number-row) → The Throughline → Highs → Lows → What We Missed → The Memory Test → Picks of the Period → Footer.
 
 - **Panoramic, not single-subject.** Rewind looks across gaming, football, F1, fitness, books, tech, world news, life — the lot. Season Review covers a single concluded subject; Rewind covers a defined time period across everything. If the topic fits one lane only, use Season Review instead.
@@ -400,6 +423,8 @@ Panoramic retrospective across **all** interests. **8,000-12,000 words, 25-40 pa
 ## season-review
 
 ### The Season Review
+**Status: ACTIVE — event-scheduled (v8.39, S1).** Never having shipped is a *supply* gap (no followed season had concluded and been detected in a window that didn't already carry a special), not a missing trigger. The concrete firing window is defined: it fires as a **Priority-2 event trigger** the moment research finds a followed season's final matchday/closing result (see § Auto-Trigger Logic — Serie A / Premier League / major tournament rows). It is not dormant; when a season concludes it fires there.
+
 End-of-season retrospective. **7,000-10,000 words, 22-35 pages.** Manual trigger: "Run a Season Review for [subject]." Cover → Foreword → Full narrative → Data/stats → The Scorecards → What's Next → Long Shelf → Footer.
 - **Only for things that have concluded.** A Serie A season, a completed book series, a console generation, a TV show that just wrapped, a year of training. If it's still ongoing, use a Deep Dive instead.
 
@@ -414,7 +439,9 @@ End-of-season retrospective. **7,000-10,000 words, 22-35 pages.** Manual trigger
 ## shortlist
 
 ### The Shortlist
-Opinionated recommendation list. **3,500-5,500 words, 14-20 pages.** Manual trigger: "Run a Shortlist — [topic]." Cover → Foreword → The Lens (selection criteria) → The Shortlist (tiered picks: Top Picks, Strong Picks, Wildcards) → Also Worth Knowing (horizon items) → The Cheat Sheet (summary table) → Meanwhile... → Footer.
+**Status: FOLDED into The Guide — category mode (v8.39, S4).** Shortlist is now **The Guide run in category mode**: same category-roundup job, same killer feature (The Lens + The Cheat Sheet bookending tiered picks). This section is retained as the category-mode spec The Guide points at; the `shortlist` slug stays validator-recognised for back-compat with the archive, but new issues run as **Guide**. Same precedent as Starter Kit — the retired Blueprint.
+
+Opinionated recommendation list. **3,500-5,500 words, 14-20 pages.** Manual trigger: "Run a Guide — [topic] (category mode)" (legacy: "Run a Shortlist — [topic]"). Cover → Foreword → The Lens (selection criteria) → The Shortlist (tiered picks: Top Picks, Strong Picks, Wildcards) → Also Worth Knowing (horizon items) → The Cheat Sheet (summary table) → Meanwhile... → Footer.
 - **Tiered, not ranked.** Picks are grouped into tiers (Top Picks 2-3, Strong Picks 2-3, Wildcards 1-2) rather than numbered 1-7. Each tier has a different editorial tone: Top Picks get the most space and strongest recommendation; Strong Picks are excellent with a caveat or two; Wildcards are unusual choices that reward the right temperament.
 
 **The killer feature — The Lens + The Cheat Sheet, bookending the picks.** The Lens at the start is the editor's stated criteria — what was looked for, what was excluded, why this set rather than another. Rendered as a `.lens` block: mono-caps eyebrow, a short italic-serif statement of the criteria, then a numbered `.lens-criteria` list (3-5 entries) of the specific things the magazine looked for. Without The Lens, the picks read as "stuff the magazine likes"; with The Lens they read as "stuff the magazine likes *for this specific reason*." The Cheat Sheet at the end is the at-a-glance summary table: `.cheat-sheet` with `#` / `Pick` / `Tier` / `Why` columns, every row tagged `data-tier="top|strong|wildcard"` so the tier pill colour-codes inline. Reader who skim-reads the issue can lift the whole shortlist in 30 seconds from the Cheat Sheet alone.
@@ -432,7 +459,9 @@ Opinionated recommendation list. **3,500-5,500 words, 14-20 pages.** Manual trig
 ## starter-kit
 
 ### The Starter Kit
-Beginner's guide. **4,000-6,000 words, 15-22 pages.** Manual trigger: "Run a Starter Kit — [topic]." Cover → Foreword → Why This Matters → The Essentials (5-7 items) → Common Mistakes → The One-Week Plan → Where to Go Deeper → Footer.
+**Status: FOLDED into The Guide — beginner mode (v8.39, S4).** The recommendation cluster is merged to two live formats — **Next** and **The Guide** (see § The Guide). Starter Kit is now **The Guide run in beginner mode**: same beginner's-guide job, same killer feature (The One-Week Plan). This section is retained as the beginner-mode spec The Guide points at; the `starter-kit` slug stays validator-recognised for back-compat with the archive, but new issues run as **Guide**. Precedent: the retired **Blueprint** (folded v8.22) — a recommendation format collapsed into a neighbour rather than kept as a near-duplicate.
+
+Beginner's guide. **4,000-6,000 words, 15-22 pages.** Manual trigger: "Run a Guide — [topic] (beginner mode)" (legacy: "Run a Starter Kit — [topic]"). Cover → Foreword → Why This Matters → The Essentials (5-7 items) → Common Mistakes → The One-Week Plan → Where to Go Deeper → Footer.
 - A structured progression from zero to competent. Practical, opinionated, designed for sharing or for new interests.
 - Best for: "Getting into Malazan", "Home kettlebell training from scratch", "Specialty coffee basics", "Starting an Etsy template shop", "Fantasy Premier League for beginners."
 - **Opinionated curation.** The Essentials are not a balanced list of all options — they're the 5-7 things the magazine recommends, with reasoning. "Buy this, not that" energy.

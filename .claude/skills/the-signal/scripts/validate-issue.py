@@ -45,9 +45,39 @@ from pathlib import Path
 HOLIDAY_FORMATS = {"countdown", "field-guide"}
 SPECIAL_FORMATS = {
     "countdown", "field-guide", "rewind", "versus", "season-review",
-    "deep-dive", "shortlist", "starter-kit", "lookahead", "next",
-}  # v8.31: +lookahead/+next (live slugs); -blueprint (retired v8.22)
+    "deep-dive", "guide", "shortlist", "starter-kit", "lookahead", "next",
+}  # v8.31: +lookahead/+next (live slugs); -blueprint (retired v8.22).
+   # v8.39 (S4): +guide (merged recommendation format). shortlist + starter-kit
+   # are FOLDED into guide but kept here as recognised slugs for back-compat with
+   # the archive. v8.39 (S2): lookahead is RETIRED/FOLDED into the weekly but its
+   # slug stays recognised for the two archived drafts.
 KNOWN_FORMATS = {"weekly"} | SPECIAL_FORMATS
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Per-format hard length ceilings (v8.39, S6).
+# A ship-quality FAIL: a special that overshoots its ceiling is "too long for a
+# Sunday with coffee" (Field Guide came in ~15k, a retired Deep Dive ~24k). Caps
+# are HARD maxima sitting well above each format's target band, tuned so every
+# currently-shipping issue passes and only genuine runaways trip. Word count is
+# measured on rendered body text (chrome included) — see check_length_ceiling.
+# Deep Dive is the flagship and gets the most generous cap; the light
+# recommendation formats get the least. Formats absent from this map are not
+# ceilinged (the check reports OK and moves on — never crashes).
+# ─────────────────────────────────────────────────────────────────────────────
+LENGTH_CEILINGS = {
+    "deep-dive":     20000,  # flagship; 12,000+ where earned. 24k WWI DD trips it.
+    "rewind":        15000,  # literary panorama, 8-12k target
+    "season-review": 13000,  # 7-10k target
+    "field-guide":   12000,  # 6-10k target; the ~15k over-long sample trips it
+    "weekly":        11000,  # ~6-9k four-movement target
+    "countdown":     11000,  # hype format
+    "versus":        10000,  # 5-7k target
+    "lookahead":      8000,  # retired/folded; kept for back-compat
+    "guide":          7500,  # merged format, capped at the more generous beginner mode
+    "starter-kit":    7500,  # back-compat alias for guide beginner mode
+    "next":           7000,  # 3.5-5.5k target
+    "shortlist":      6500,  # back-compat alias for guide category mode
+}
 
 # Literal placeholder strings that must never ship.
 BANNED_PLACEHOLDERS = [
@@ -833,6 +863,35 @@ def check_issue_in_numbers_stats(html: str, report: Report) -> None:
         )
 
 
+def check_length_ceiling(html: str, fmt: str, report: Report) -> None:
+    """Hard per-format word ceiling (v8.39, S6).
+
+    'Sunday with coffee' means an issue a person actually finishes. A Field
+    Guide that came in ~15k words and a retired Deep Dive at ~24k both broke
+    that contract. This asserts a HARD maximum per format — a ship FAIL, folded
+    into the existing markup/ship gate, not a new script. Formats with no
+    ceiling defined report OK and are skipped (never a crash).
+    """
+    ceiling = LENGTH_CEILINGS.get(fmt)
+    if ceiling is None:
+        report.ok("length-ceiling", f"no ceiling defined for format '{fmt}' — skipped")
+        return
+    # Count words on rendered body text: strip comments/style/script, then tags.
+    text = body_text_only(html)
+    text = re.sub(r"<[^>]+>", " ", text)
+    words = len(text.split())
+    if words > ceiling:
+        report.fail(
+            "length-ceiling",
+            f"{words:,} words exceeds the {fmt} ceiling of {ceiling:,} — "
+            f"too long for a Sunday with coffee. Cut to the format's target band "
+            f"(the ceiling sits well above target; overshooting it means bloat, "
+            f"not depth). Deep Dive is the flagship and gets the most generous cap.",
+        )
+    else:
+        report.ok("length-ceiling", f"{words:,} words within {fmt} ceiling {ceiling:,}")
+
+
 def check_css_class_sanity(html: str, report: Report) -> None:
     style_match = re.search(r"<style\b[^>]*>(.*?)</style>", html, re.DOTALL | re.IGNORECASE)
     if not style_match:
@@ -932,6 +991,7 @@ def main(argv: list[str]) -> int:
     check_weekly_navigator(html, fmt, report)
     check_toc_numerals(html, fmt, report)
     check_issue_in_numbers_stats(html, report)
+    check_length_ceiling(html, fmt, report)
 
     # Holiday-only checks
     if fmt in HOLIDAY_FORMATS:
