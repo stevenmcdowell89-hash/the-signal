@@ -14,6 +14,36 @@ validators and consistency checks.
 ## Status legend
 - ✅ done & committed · 🚧 in progress · ⬜ not started
 
+## Overall status — COMPLETE ✅
+
+All six batches of `docs/signal-final-recommendations-2026-07.md` have landed on
+`claude/signal-recommendations-2026-07-x1v7xu`:
+
+| Batch | Scope | Status |
+|---|---|---|
+| 1 | Daily D-1 — bugs & fast wins | ✅ |
+| 2 | Weekly W-1 — voice & the person | ✅ |
+| 3 | Daily D-2 — daily-ness structural moves | ✅ |
+| 4 | Daily D-3 — bridge & content depth | ✅ |
+| 5 | Weekly W-2/W-3/W-4 — the rebuild | ✅ |
+| 6 | Cross-cutting H3–H8 · Specials S1–S6 · Sources · D-4 | ✅ |
+
+**Deferred (polish only — the whole plan is otherwise complete):**
+- **Specials S7/S8** — nine-signature-moments / graveyard audit and the holiday-motion
+  vs JS-off reconciliation (Batch 6, § Specials).
+- **D-4 "by the numbers" chip** and **daily cost/quality history log** — the spend
+  ledger stores monthly totals only, so a per-day history needs a new daily ledger +
+  health field + Settings render (a feature with its own test/risk, beyond polish).
+- **Weekly template-parts** for The Week, Composed + Caught Up (they reuse existing
+  styling); synthesis-by-juxtaposition ships prose-only by design (Batch 5, W-3/W-4).
+- **`saved_this_week` population** — the weekly consumes it read-only + degrades
+  gracefully; the daily→KV sync that fills it is a standing Stream-2 work-item (Batch 5).
+
+Everything else in the plan is implemented and committed. Every hard constraint
+(§Hard constraints) is honoured: no Reddit Data API / OAuth (public `.rss` only), the
+rebuild wins over incremental patches for the weekly, sources are wired in not handed
+to the owner, and the weekly gate ledger holds at exactly three.
+
 ---
 
 ## Batch 1 — Daily D-1 bugs & fast wins ✅
@@ -218,7 +248,7 @@ distinct markup) by design. The `saved_this_week` field is documented + wired in
 but the daily side that *populates* it (D-2 localStorage → KV/endpoint sync) remains a Stream-2
 work-item; the weekly consumes it read-only and degrades gracefully when it's empty.
 
-## Batch 6 — Cross-cutting + Specials + Sources + D-4 ⬜
+## Batch 6 — Cross-cutting + Specials + Sources + D-4 ✅
 - **Cross-cutting:** H3 weekly-as-front-door hero · H4 `prefers-color-scheme`
   seam · H6 reciprocal cross-stream links · H7 Settings Reader/Engine split · H8
   auto-generate archive from a manifest.
@@ -311,7 +341,85 @@ single Long Read does **not** replace it. Source-of-truth edits went into
 - **S7/S8 — deferred** (polish): nine-signature-moments / graveyard audit and holiday-motion vs
   JS-off reconciliation not done this pass.
 
-The rest of Batch 6 (cross-cutting H3–H8, D-4 polish) remains ⬜; Specials S1–S6 ✅ and Sources ✅.
+### Cross-cutting H3–H8 ✅ (skill v8.40.0 for H6; index.html + settings.html + new script)
+The home reframed around the weekly, de-jolted, and given real reader controls +
+an auto-generated archive. Three commits.
+
+- **H3 — the weekly is the home's front door.** A persistent `.frontdoor` hero
+  ("This Sunday · The Read") sits **above** the brief tabs in `index.html`, linking
+  to the latest weekly; the daily Brief + specials read as feeds underneath. Authored
+  with the current latest weekly so it works JS-off; the H8 manifest updates it to
+  whatever the newest weekly is. Hidden only if a manifest ever reports zero weeklies.
+- **H4 — de-jolt the seam.** `prefers-color-scheme` now drives a **warm-paper light
+  mode** on the home (palette-var overrides mirroring the issues' `#FAFAF8`/`#111119`),
+  accents unchanged. An explicit Reader theme choice (`data-theme` on `<html>`) wins
+  in both directions; an early inline script applies theme + text-size before first
+  paint (no flash). Settings is theme-aware too.
+- **H6 — reciprocal cross-stream links.** Brief→weekly is the H3 hero; weekly→daily
+  is a new `.colophon-daily` line in the weekly CLOSE (Colophon) pointing back to
+  `../#brief`. Skill spec + template-part + CSS; bumped `the-signal` to **v8.40.0**.
+  Light — a link, not a section. Old issues predate it; `validate-issue.py` doesn't
+  require it, so they still PASS.
+- **H7 — Settings split into Reader / Engine.** New token-free **Reader** area (first
+  tab, now the default): theme (Auto / Warm paper / Dark — ties to H4), text size
+  (S/M/L, scales the root font), a per-device notifications on/off + browser-permission
+  button — all client-side in `localStorage`, working WITHOUT the pipeline token. The
+  home honours the notify pref before it badges/subscribes. The pipeline console
+  (Status, Interests, Sources, AI, Engine) stays grouped under an "Engine ›" divider
+  and **token-gated** for saves.
+- **H8 — auto-generated archive manifest.** New `scripts/build-archive-manifest.py`
+  (sibling to `extract-issue-meta.py`) scans `issues/` → `archive-manifest.json`
+  `{counts, latest_weekly, issues:[{slug,url,format,format_label,stream,title,summary,
+  date,date_label,issue_number,cover,read_time}]}` — deriving structure from the
+  filesystem, lifting curated card copy from `index.html` so nothing is lost. The home
+  fetches it and re-renders the Read + Specials grids, sets the two tab counts from
+  real data (killing the hardcoded "· 12"s), refreshes the front-door hero, exposes it
+  for archive search, and shows read-time per card. Static HTML is the no-JS/offline
+  fallback. Wired into `scripts/post-publish.sh`. Manifest today: **28 issues (15
+  weekly, 13 special)**.
+
+**Cross-cutting tests:** `build-archive-manifest.py` ast-parses clean, runs, emits
+valid JSON with every expected field (no missing summaries/dates); `node --check`
+clean on all inline scripts in `index.html` (3) + `settings.html` (2); `slice-spec.sh`
+exit 0 and `validate-issue.py --format weekly --skip-image-urls` on the 2026-07-05
+weekly → PASS after the H6 template/CSS/spec edit.
+
+### D-4 polish ✅ (RSS velocity is a real burst signal; two polish items deferred)
+- **RSS velocity blind spot — FIXED with a real burst signal.** RSS items carry a
+  constant `rawScore` (no popularity signal → flat 0.5 baseline), so Δscore velocity
+  was **always 0 for RSS** — only HN/Bluesky/Reddit ever registered movement. Added a
+  **cross-feed burst** proxy in `score.js`: `Δsource_count/Δhr × 5` (how fast NEW feeds
+  pick up the same cluster), blended as `velocity = max(scoreVel, burstVel)`. Threaded
+  `source_count` through the story-point log: idempotent `story_log.source_count` ALTER,
+  `bulkLogStories` + `getLastStoryPoints` carry it (graceful fallback on an old DB).
+  New harness `scratchpad/test-d4.mjs` (5 assertions) proves burst fires for RSS despite
+  constant rawScore and stays 0 when feed-count is flat; **D-1/D-2/D-3/sources
+  regressions 12/20/38/897 all still green**.
+- **Client-side search over the brief.** A `#brief-search` filter box (revealed once
+  data loads) hides non-matching `.catch`/`.lead` cards + empty groups, with a "no
+  matches" note; re-applied after every repaint.
+- **Archive search.** The H8 manifest cards carry `data-search`; `#archive-search`
+  (revealed on `signal:archive-ready`) filters the Read archive by text.
+- **Per-domain "one thing to know" header line.** Each domain section in `renderGroup`
+  opens with a `.domain-lead` — the section brief if the engine wrote one, else the top
+  item's why/hook.
+- **Tap-source-count-to-list-sources.** The "◆ N sources" chip is now tappable →
+  toggles a `.catch-sources` list of the item's contributing out-links; never navigates
+  or marks-read.
+- **Read-time per issue.** Surfaced on every archive card from the manifest.
+- **Warmer hook register for `colour`/`discovery` only.** A minimal tone note added to
+  the enrichment system prompt (`enrich.js`): warm those two registers; keep
+  `consequential`/`take` (hard news) plain and neutral.
+
+**D-4 deferred (2 items, noted here in one place):** the **"by the numbers" chip** and
+the **daily cost/quality history log in Settings→Engine** — the spend ledger
+(`config.js`) stores only **monthly** totals (`spend:YYYY-MM` / `spendfn:YYYY-MM`), so a
+real per-day history needs a new daily-keyed ledger write + a `/api/health` field + a
+Settings render (a feature with its own pipeline risk + test, beyond polish). Left for a
+follow-up; nothing is silently misleading.
+
+Batch 6 complete: Cross-cutting H3–H8 ✅, Specials S1–S6 ✅, Sources ✅, D-4 ✅
+(two polish items explicitly deferred above).
 
 ---
 

@@ -26,7 +26,7 @@ ${ctx}
 
 You will be given a numbered list of items, each with an id. Return one object per item, keyed by its given id. Judge each item independently on its own merits — NOT relative to the others in the batch. For each item return:
 - register: one of "consequential" (it matters / something happened), "take" (an argument or opinion worth hearing), "colour" (a quirk / curiosity), "discovery" (something to find / try).
-- hook: ONE line, register-matched. SPECIFICITY IS THE BAR — name the actual argument, number, or quirk. "Interesting discussion about X" is a failed line. Personal second-person voice is allowed ("your device", "your Sunday"). Max ~22 words. No clickbait, no spoilers (books/film), no diet/calorie framing (fitness).
+- hook: ONE line, register-matched. SPECIFICITY IS THE BAR — name the actual argument, number, or quirk. "Interesting discussion about X" is a failed line. Personal second-person voice is allowed ("your device", "your Sunday"). Max ~22 words. No clickbait, no spoilers (books/film), no diet/calorie framing (fitness). Tone by register (D-4): for **colour** and **discovery** items ONLY, warm the line — a lighter, more inviting register is welcome (curiosity, small delight, the "you'll want to look at this" note). Keep **consequential** and **take** hooks plain, neutral and factual — do not warm hard news.
 - relevance: 0.0–1.0, how relevant to THIS reader's profile (not general importance), consistent with the priorities above. A precise reason to care is the gate; if there is no specific reason this reader should care, score low.
 
 Be terse. Do not editorialise beyond the hook.${steer ? `\n\nReader's editorial guidance: ${steer}` : ""}`;

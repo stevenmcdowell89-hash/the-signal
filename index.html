@@ -610,6 +610,14 @@
     .catch-hook { color: var(--ink-2); font-size: 0.85rem; line-height: 1.45; margin-top: 0.35rem; }
     .edition-brief { color: var(--ink); font-size: 0.92rem; line-height: 1.55; margin: 0.2rem 0 1rem; padding: 0.7rem 0.9rem; border-left: 3px solid var(--coral); background: var(--surface); border-radius: 0 6px 6px 0; }
     .catch-why { color: var(--ink); font-size: 0.86rem; line-height: 1.45; margin-top: 0.35rem; font-style: italic; border-left: 2px solid var(--coral); padding-left: 0.5rem; }
+    /* D-4: per-domain "one thing to know" lead + tappable source list + filter */
+    .domain-lead { color: var(--ink-2); font-size: 0.9rem; line-height: 1.5; margin: 0.1rem 0 0.7rem; padding-left: 0.6rem; border-left: 2px solid var(--gold); }
+    .catch-src.is-tappable { cursor: pointer; text-decoration: underline dotted; }
+    .catch-sources { margin-top: 0.45rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .catch-sources a { font-size: 0.76rem; color: var(--ink-2); border: 1px solid var(--line); border-radius: 6px; padding: 0.12rem 0.5rem; text-decoration: none; }
+    .catch-sources a:hover { border-color: var(--coral); color: var(--coral); }
+    .brief-search { margin: 0.7rem 0 0.2rem; }
+    .brief-group.is-hidden { display: none; }
     /* skim vs understand (D-3): expandable "what's new" hook line */
     .catch-more { background: none; border: none; color: var(--coral); font-size: 0.78rem; cursor: pointer; padding: 0.25rem 0 0; margin-top: 0.1rem; opacity: 0.85; }
     .catch-more:hover { opacity: 1; }
@@ -903,6 +911,7 @@
         <span id="brief-status-text">Loading the brief…</span>
         <button class="brief-refresh" id="brief-refresh" hidden>Refresh</button>
       </div>
+      <input type="search" id="brief-search" class="archive-search brief-search" placeholder="Filter the brief…" aria-label="Filter the brief" hidden>
       <div id="brief-root"></div>
     </section>
       </div><!-- /panel-brief -->
@@ -1487,6 +1496,22 @@
           saveEl.classList.toggle('is-saved', ns); saveEl.textContent = ns ? '★' : '☆';
           if (currentView === 'saved') paint(); // reflect removal in the Saved list
         });
+        // Tap the "◆ N sources" chip to LIST the contributing sources (D-4):
+        // the item's out-links are the feeds that carried it. Toggles a small
+        // list below the card; never navigates or marks the card read.
+        var srcEl = a.querySelector('.catch-src');
+        if (srcEl && (it.links||[]).length){
+          srcEl.classList.add('is-tappable');
+          srcEl.setAttribute('role','button');
+          srcEl.setAttribute('title','Show the sources that carried this');
+          var slist = document.createElement('div'); slist.className='catch-sources'; slist.hidden = true;
+          slist.innerHTML = (it.links||[]).map(function(l){
+            return '<a href="'+esc(l.url)+'" target="_blank" rel="noopener">'+esc(l.label || l.type || 'source')+'</a>';
+          }).join('');
+          a.appendChild(slist);
+          slist.querySelectorAll('a').forEach(function(x){ x.addEventListener('click', function(e){ e.stopPropagation(); }); });
+          srcEl.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); slist.hidden = !slist.hidden; });
+        }
         // Opening the card marks it read → it collapses in place.
         a.addEventListener('click', function(){ markRead(it.id); a.classList.add('is-read'); });
         return a;
@@ -1534,6 +1559,7 @@
           statusText.parentNode.insertBefore(badge, refreshBtn);
         }
         refreshBtn.hidden = false;
+        var bs = document.getElementById('brief-search'); if (bs) bs.hidden = false; // D-4: reveal the filter once we have data
         try {
           var notifyOff = false; try { notifyOff = localStorage.getItem('signal-notify') === 'off'; } catch (_) {}
           if ('setAppBadge' in navigator) {
@@ -1653,7 +1679,31 @@
         fo.textContent = (f.kept||0)+' kept of '+(f.scanned||0)+' scanned · '+(f.sources||0)+' sources'+
           (f.enrichment && !f.enrichment.on ? ' · headlines only ('+(f.enrichment.reason||'')+')' : '');
         root.appendChild(fo);
+        applyBriefFilter(); // D-4: re-apply the text filter after every repaint
       }
+
+      // D-4 client-side search over the brief: filter the visible cards by text.
+      // Hides non-matching .catch/.lead cards and any group left empty, and shows
+      // a small "no matches" note. Runs on input and after each paint().
+      var briefSearchEl = document.getElementById('brief-search');
+      function applyBriefFilter(){
+        var q = briefSearchEl ? (briefSearchEl.value||'').trim().toLowerCase() : '';
+        var old = root.querySelector('.brief-searchempty'); if (old) old.remove();
+        var cards = root.querySelectorAll('.catch, .lead');
+        if (!q){
+          cards.forEach(function(c){ c.classList.remove('is-hidden'); });
+          root.querySelectorAll('.brief-group').forEach(function(g){ g.classList.remove('is-hidden'); });
+          return;
+        }
+        var any = 0;
+        cards.forEach(function(c){ var m = c.textContent.toLowerCase().indexOf(q) !== -1; c.classList.toggle('is-hidden', !m); if (m) any++; });
+        root.querySelectorAll('.brief-group').forEach(function(g){
+          var vis = g.querySelectorAll('.catch:not(.is-hidden), .lead:not(.is-hidden)').length;
+          g.classList.toggle('is-hidden', vis === 0);
+        });
+        if (!any){ var e=document.createElement('div'); e.className='brief-empty brief-searchempty'; e.textContent='No cards match "'+q+'".'; root.appendChild(e); }
+      }
+      if (briefSearchEl) briefSearchEl.addEventListener('input', applyBriefFilter);
 
       // Headlines: the genuinely big stories + Start here + Today & Tonight.
       function renderHeadlines(state){
@@ -1767,6 +1817,11 @@
           any = true;
           var g = group(s.label || DOMAIN_LABELS[s.domain] || s.domain, items.length);
           g.className='brief-group domain-sec';
+          // Per-domain "one thing to know" (D-4): a short lead line for the
+          // section — the section brief if the engine wrote one, else the top
+          // item's why/hook, so each domain opens with its single biggest thing.
+          var dLead = s.brief || (items[0] && (items[0].why || items[0].hook));
+          if (dLead){ var dl=document.createElement('div'); dl.className='domain-lead'; dl.textContent=dLead; g.appendChild(dl); }
           items.forEach(function(it){ g.appendChild(catchEl(it, {})); });
           root.appendChild(g);
         });
@@ -1980,6 +2035,32 @@
         .then(function(r){ return r.ok ? r.json() : null; })
         .then(function(m){ if (m) apply(m); })
         .catch(function(){ /* keep the static HTML fallback */ });
+    })();
+
+    // -------- Archive search (D-4) --------
+    // Filters the manifest-rendered Read archive by text (title/summary/format,
+    // carried on each card's data-search). Revealed only once the archive is
+    // manifest-backed, so it never filters an unrendered static list.
+    (function () {
+      var input = document.getElementById('archive-search');
+      var grid = document.getElementById('read-grid');
+      if (!input || !grid) return;
+      function apply(){
+        var q = (input.value||'').trim().toLowerCase();
+        var lis = grid.querySelectorAll('li');
+        var any = 0;
+        lis.forEach(function(li){
+          var card = li.querySelector('.card');
+          var hay = (card && card.getAttribute('data-search')) || (li.textContent||'').toLowerCase();
+          var m = !q || hay.indexOf(q) !== -1;
+          li.style.display = m ? '' : 'none';
+          if (m) any++;
+        });
+        var old = document.getElementById('archive-search-empty'); if (old) old.remove();
+        if (q && !any){ var e=document.createElement('div'); e.id='archive-search-empty'; e.className='archive-empty'; e.textContent='No issues match "'+input.value+'".'; grid.parentNode.insertBefore(e, grid.nextSibling); }
+      }
+      document.addEventListener('signal:archive-ready', function(){ input.hidden = false; });
+      input.addEventListener('input', apply);
     })();
 
     // -------- Archive tabs --------

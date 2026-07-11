@@ -235,11 +235,22 @@ export async function scoreBatch(db, items, config, now, capBySource = new Map()
     it.age_hours = ageMs / 3.6e6;
     const recency = Math.pow(0.5, ageMs / halfLifeMs); // 1 now → 0.5 at half-life
 
-    // 2) velocity (§3.4): Δscore/Δhr vs the cluster's last logged point.
+    // 2) velocity (§3.4): Δscore/Δhr vs the cluster's last logged point, plus a
+    //    cross-feed BURST proxy (D-4). RSS items have a constant rawScore (RSS
+    //    carries no popularity signal — baseline is flat 0.5), so Δscore velocity
+    //    is ALWAYS 0 for RSS and only discussion sources (HN/Bluesky/Reddit) ever
+    //    register movement. The burst signal fixes that blind spot: how fast NEW
+    //    feeds are picking up the same cluster (Δsource_count/Δhr) is a genuine
+    //    "this is breaking" cue that works for RSS. Weighted ×5 so a couple of
+    //    fresh feeds ≈ a real move; whichever signal is stronger wins.
     const prev = lastPoints.get(it.id);
     if (prev && prev.ts) {
       const dh = Math.max(0.25, (now - prev.ts) / 3.6e6);
-      it.velocity = Math.max(0, (it.rawScore - prev.score) / dh);
+      const scoreVel = Math.max(0, (it.rawScore - prev.score) / dh);
+      const prevSC = prev.source_count || 1;
+      const nowSC = it.source_count || 1;
+      const burstVel = Math.max(0, (nowSC - prevSC)) / dh * 5;
+      it.velocity = Math.max(scoreVel, burstVel);
     } else {
       it.velocity = 0;
     }
@@ -321,7 +332,7 @@ export async function scoreBatch(db, items, config, now, capBySource = new Map()
     // Log a story point only for surfaced catches + discussion items (movement
     // evidence for the weekly + future velocity) — not the whole firehose.
     if (!it.muted && (it.above_fold || DISCUSSION.has(it.source_type))) {
-      storyRows.push({ cluster_id: it.id, ts: now, score: it.rawScore, headline: it.title, domain: it.domain, signal: it.signal_tier });
+      storyRows.push({ cluster_id: it.id, ts: now, score: it.rawScore, headline: it.title, domain: it.domain, signal: it.signal_tier, source_count: it.source_count || 1 });
     }
   }
 

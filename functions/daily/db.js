@@ -89,6 +89,15 @@ export async function initSchema(db) {
   } catch (_) {
     /* column already exists */
   }
+  // RSS velocity burst (D-4): the number of distinct feeds carrying a cluster at
+  // each surfaced point, so the NEXT poll can read cross-feed pickup as a velocity
+  // proxy for RSS (whose rawScore is constant → Δscore velocity is always 0).
+  // Idempotent; getLastStoryPoints degrades gracefully if this ALTER hasn't run.
+  try {
+    await db.prepare(`ALTER TABLE story_log ADD COLUMN source_count INTEGER DEFAULT 1`).run();
+  } catch (_) {
+    /* column already exists */
+  }
 }
 
 // Pull the current in-window item set for scoring/render. Retention ~14 days
@@ -213,8 +222,8 @@ export async function bulkInsertSamples(db, rows) {
 export async function bulkLogStories(db, rows) {
   if (!rows.length) return;
   const stmts = rows.map((r) =>
-    db.prepare(`INSERT INTO story_log (cluster_id, ts, score, headline, domain, signal) VALUES (?,?,?,?,?,?)`)
-      .bind(r.cluster_id, r.ts, r.score, r.headline, r.domain, r.signal || null)
+    db.prepare(`INSERT INTO story_log (cluster_id, ts, score, headline, domain, signal, source_count) VALUES (?,?,?,?,?,?,?)`)
+      .bind(r.cluster_id, r.ts, r.score, r.headline, r.domain, r.signal || null, r.source_count || 1)
   );
   await runChunked(db, stmts);
 }
@@ -261,7 +270,8 @@ export async function getLastStoryPoints(db, beforeTs) {
   try {
     ({ results } = await db
       .prepare(`SELECT s.cluster_id AS cluster_id, s.ts AS ts, s.score AS score,
-                       s.headline AS headline, s.signal AS signal ${join}`)
+                       s.headline AS headline, s.signal AS signal,
+                       s.source_count AS source_count ${join}`)
       .bind(beforeTs)
       .all());
   } catch (_) {
@@ -272,7 +282,10 @@ export async function getLastStoryPoints(db, beforeTs) {
   }
   const map = new Map();
   for (const r of results || [])
-    map.set(r.cluster_id, { ts: r.ts, score: r.score, headline: r.headline || null, signal: r.signal || null });
+    map.set(r.cluster_id, {
+      ts: r.ts, score: r.score, headline: r.headline || null,
+      signal: r.signal || null, source_count: r.source_count || 1,
+    });
   return map;
 }
 
