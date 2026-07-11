@@ -232,6 +232,53 @@ work-item; the weekly consumes it read-only and degrades gracefully when it's em
 - **D-4 polish:** client-side search · per-domain header line · read-time · RSS
   velocity blind-spot note.
 
+### Sources + Reddit scrub ✅ (Part C wired; OAuth path removed)
+**Reddit Data API / OAuth scrub (§Hard constraints) — COMPLETE, grep clean.**
+`grep -rniE 'REDDIT_CLIENT|client_secret|reddit.*oauth|api/v1/access_token' functions/`
+returns **nothing**. Removed from `functions/daily/ingest.js`: the `_redditToken`
+cache, the `redditAppToken(env)` function (read `REDDIT_CLIENT_ID`/`SECRET`, POST
+`reddit.com/api/v1/access_token`), and the entire `oauth.reddit.com/.../hot` +
+`Bearer` fetch branch of `ingestRedditFeed` — leaving the public `.rss` path as the
+sole (and now unconditional) implementation; dropped the now-unused `env` arg from
+`ingestRedditFeed` and its caller. Comments in `ingest.js` / `feeds.js` /
+`pipeline.js` reworded so `.rss`-only + size-tiered rotation reads as the
+**permanent** design, not a pending/temporary workaround. `OPERATIONS.md` already
+carried the correct "no API" framing — left as-is.
+
+**Source expansion (Part C wired into `feeds.js`).** New per-domain totals
+(`STARTER_FEEDS` RSS/HN went 29 → **94**; `STARTER_REDDIT` 34 → **43**;
+`STARTER_BLUESKY` 0 → **4**; `defaultConfig().sources` = **137**):
+
+| domain | rss/hn | reddit | bsky | | domain | rss/hn | reddit | bsky |
+|---|---|---|---|---|---|---|---|---|
+| world | 9 | 0 | 0 | | football | 9 | 4 | 1 |
+| local (NI) | 6 | 2 | 0 | | gaming | 13 | 7 | 1 |
+| tech_devices | 5 | 4 | 0 | | ai_engineering | 9 | 0 | 1 |
+| finance | 6 | 4 | 0 | | books | 5 | 5 | 1 |
+| fitness | 5 | 5 | 0 | | film_tv | 6 | 2 | 0 |
+| history | 4 | 2 | 0 | | golf | 5 | 1 | 0 |
+| lego | 5 | 1 | 0 | | travel | 4 | 3 | 0 |
+| music | 3 | 2 | 0 | | podcasts | 0 | 1 | 0 |
+
+**Bluesky seed** (`STARTER_BLUESKY`, was the single biggest gap — zero): the four
+verified handles — `fabriziorom.bsky.social` (Fabrizio Romano, football, 0.85),
+`wario64.bsky.social` (Wario64, gaming, 0.9), `reactorsff.bsky.social` (Reactor SFF,
+books, 0.5), `simonwillison.net` (AI, 0.7). Ingest validates each and drops
+non-resolving handles.
+
+**Subreddits** added sparingly + all `tier:small` (9 thin-domain fills): r/belfast,
+r/patientgamers, r/Stormlight_Archive, r/printSF, r/trailrunning, r/kettlebell,
+r/kobo, r/UKInvesting, r/Efteling. (r/StarWarsLeaks deliberately **omitted** —
+spoiler/leak risk; r/pcgaming skipped to stay sparing.)
+
+Feeds flagged `conv`/anti-bot in Part C are **added-and-validated** (pipeline drops
+dead feeds gracefully, logs `dead:N`) rather than pre-excluded, incl. Reuters, AP,
+Economist, Belfast Telegraph, 17th Shard, Locus, `starwars.com/news/feed` (may 404 —
+Star Wars News Net remains the working default). Tests: `test-sources.mjs` 897/897;
+D-1/2/3 regressions 12/20/38 all green; 5 new feeds spot-fetched → 200 + valid XML.
+
+The rest of Batch 6 (cross-cutting H3–H8, specials S1–S6, D-4 polish) remains ⬜.
+
 ---
 
 ## Hard constraints being honoured

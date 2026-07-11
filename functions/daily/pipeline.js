@@ -140,8 +140,8 @@ export async function run(env, { trigger } = {}) {
   //    fires every 10 min; each tick refreshes all RSS/HN and re-attempts the
   //    Reddit batch's still-failing subs (≤6), advancing to the next batch after
   //    ~30 min — so a throttled sub gets a few fresh shots at the shared-IP limit
-  //    before we move on, and a full rotation is still ~3h. `env` carries optional
-  //    Reddit OAuth secrets. A MANUAL "Run now" debounces Reddit (skips it if we
+  //    before we move on, and a full rotation is still ~3h. Reddit is public
+  //    per-subreddit `.rss` only (no API). A MANUAL "Run now" debounces Reddit (skips it if we
   //    rolled within the last few minutes) so repeated presses can't add IP
   //    pressure — RSS/HN still refresh and the brief re-renders.
   const isCron = trigger === "cron";

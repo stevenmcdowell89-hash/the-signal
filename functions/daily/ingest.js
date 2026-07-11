@@ -262,39 +262,13 @@ async function ingestBluesky(handle) {
   return out;
 }
 
-// ---- Reddit (public JSON now; OAuth Data API when secrets are set) ----
-// Read-only top/day per subreddit. Works immediately via www.reddit.com/.json;
-// if REDDIT_CLIENT_ID/SECRET are present it uses an app-only token against
-// oauth.reddit.com (the approved Data API path) — same response shape. Links
-// target the comments permalink (§5); the comment count rides on the discussion
-// link so it survives clustering + persistence with no schema change.
-let _redditToken = null; // { token, exp } — cached across the run
-
-async function redditAppToken(env) {
-  const id = env && env.REDDIT_CLIENT_ID;
-  const secret = env && env.REDDIT_CLIENT_SECRET;
-  if (!id || !secret) return null;
-  if (_redditToken && _redditToken.exp > Date.now() + 60000) return _redditToken.token;
-  try {
-    const resp = await fetch("https://www.reddit.com/api/v1/access_token", {
-      method: "POST",
-      headers: {
-        "User-Agent": UA,
-        Authorization: "Basic " + btoa(`${id}:${secret}`),
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: "grant_type=client_credentials",
-    });
-    if (!resp.ok) return null;
-    const data = await resp.json();
-    if (!data.access_token) return null;
-    _redditToken = { token: data.access_token, exp: Date.now() + (data.expires_in || 3600) * 1000 };
-    return _redditToken.token;
-  } catch {
-    return null;
-  }
-}
-
+// ---- Reddit (public per-subreddit .rss ONLY — permanent design) ----
+// Read-only hot feed per subreddit via www.reddit.com/r/<sub>/.rss. Reddit's
+// Data API / OAuth is not available and is not an option — this public `.rss`
+// path plus the size-tiered rotation (see pipeline.js) is the permanent design,
+// not a stopgap. Links target the comments permalink (§5); the comment count
+// rides on the discussion link so it survives clustering + persistence with no
+// schema change.
 function subFromFeed(feed) {
   // Captures a single sub OR a multireddit ("a+b+c"); `+` is part of the path.
   const m = /reddit\.com\/r\/([A-Za-z0-9_+]+)/i.exec(feed.url || "");
@@ -305,70 +279,35 @@ function subFromFeed(feed) {
 // return up to `keep` entries. Hot is Reddit's own upvote+velocity ranking (the
 // right cut for a daily cadence). Each item is routed to ITS OWN subreddit's
 // domain via `domainBySub` (so a pooled small Books sub lands in Books), with
-// `defaultDomain` as fallback. RSS scores by hot position (RSS carries no count);
-// OAuth uses the real upvote+comment counts. `keep` trims the tail.
-async function ingestRedditFeed(subsStr, env, opts) {
+// `defaultDomain` as fallback. Scored by hot position, since the public `.rss`
+// carries no per-item upvote/comment count. `keep` trims the tail.
+async function ingestRedditFeed(subsStr, opts) {
   const {
     keep = 25, sourceId, weight = 0.5,
     domainBySub = {}, weightBySub = {}, defaultDomain = null,
   } = opts || {};
   const domainFor = (s) => domainBySub[(s || "").toLowerCase()] || defaultDomain;
   const weightFor = (s) => weightBySub[(s || "").toLowerCase()] ?? weight;
-  const token = await redditAppToken(env);
   const out = [];
 
-  if (!token) {
-    const xml = await fetchTextRetry(
-      `https://www.reddit.com/r/${subsStr}/.rss?limit=${Math.max(25, keep * 2)}`,
-      "application/atom+xml, application/rss+xml, application/xml, text/xml"
-    );
-    const parsed = parseFeed(xml, { id: sourceId, type: "reddit", domain: defaultDomain, weight, name: sourceId });
-    for (const e of parsed) {
-      if (out.length >= keep) break;
-      const sm = /reddit\.com\/r\/([A-Za-z0-9_]+)\//i.exec(e.url || "");
-      const subName = sm ? sm[1] : (subsStr.split("+")[0]);
-      const domain = domainFor(subName);
-      if (!domain) continue;
-      out.push({
-        ...e,
-        sourceId, sourceType: "reddit", domain, weight: weightFor(subName),
-        summary: "",
-        rawScore: Math.max(1, keep - out.length), // hot position within this feed
-        links: [{ type: "discussion", url: e.url, label: `r/${subName}` }],
-        commentsUrl: e.url,
-      });
-    }
-    return out;
-  }
-
-  // OAuth Data API → hot with real upvote + comment counts.
-  const resp = await fetch(`https://oauth.reddit.com/r/${subsStr}/hot?limit=${Math.max(25, keep * 2)}`, {
-    headers: { "User-Agent": UA, Accept: "application/json", Authorization: `Bearer ${token}` },
-  });
-  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-  const data = await resp.json();
-  for (const child of (data.data && data.data.children) || []) {
+  const xml = await fetchTextRetry(
+    `https://www.reddit.com/r/${subsStr}/.rss?limit=${Math.max(25, keep * 2)}`,
+    "application/atom+xml, application/rss+xml, application/xml, text/xml"
+  );
+  const parsed = parseFeed(xml, { id: sourceId, type: "reddit", domain: defaultDomain, weight, name: sourceId });
+  for (const e of parsed) {
     if (out.length >= keep) break;
-    const p = child && child.data;
-    if (!p || !p.title || p.stickied) continue;
-    const subName = p.subreddit || subsStr.split("+")[0];
+    const sm = /reddit\.com\/r\/([A-Za-z0-9_]+)\//i.exec(e.url || "");
+    const subName = sm ? sm[1] : (subsStr.split("+")[0]);
     const domain = domainFor(subName);
     if (!domain) continue;
-    const permalink = `https://www.reddit.com${p.permalink}`;
-    const comments = p.num_comments || 0;
-    const isSelf = p.is_self || !p.url || /(^|\/\/)([a-z]+\.)?reddit\.com/i.test(p.url);
-    const links = [];
-    if (!isSelf && p.url) links.push({ type: "article", url: p.url, label: `r/${subName}` });
-    links.push({ type: "discussion", url: permalink, label: `r/${subName}`, count: comments });
     out.push({
+      ...e,
       sourceId, sourceType: "reddit", domain, weight: weightFor(subName),
-      title: decodeEntities(p.title),
-      summary: `${p.score || 0} upvotes · ${comments} comments · r/${subName}`,
-      url: isSelf ? permalink : p.url,
-      links,
-      rawScore: (p.score || 0) + comments * 0.5,
-      published: (p.created_utc || Math.floor(Date.now() / 1000)) * 1000,
-      commentsUrl: permalink,
+      summary: "",
+      rawScore: Math.max(1, keep - out.length), // hot position within this feed
+      links: [{ type: "discussion", url: e.url, label: `r/${subName}` }],
+      commentsUrl: e.url,
     });
   }
   return out;
@@ -448,7 +387,7 @@ export async function ingestAll(config, env, onProgress, redditSlice) {
     if (!firstReddit) await sleep(1500);
     firstReddit = false;
     try {
-      const got = await ingestRedditFeed(subFromFeed(feed), env, {
+      const got = await ingestRedditFeed(subFromFeed(feed), {
         keep: KEEP[feed.tier] || KEEP.small, sourceId: feed.id, weight: feed.weight, defaultDomain: feed.domain,
       });
       if (got.length) { entries.push(...got); live.push(feed.id); reasons[feed.id] = "ok"; }
