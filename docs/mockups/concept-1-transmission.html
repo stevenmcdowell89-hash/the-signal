@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Signal — Transmission №016</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F5F0E6;
+    --ink:#16151A;
+    --signal:#FF3B2F;
+    --blue:#243F5C;
+    --muted:#8A8578;
+    --hair:#DDD5C3;
+    --measure:64ch;
+  }
+
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:var(--muted);
+    color:var(--ink);
+    font-family:"Newsreader",Georgia,serif;
+    font-size:19px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+
+  /* The "printed object" — a tablet-portrait page floating on a desk tone */
+  .issue{
+    max-width:800px;
+    margin:0 auto;
+    background:var(--paper);
+    box-shadow:0 1px 0 rgba(0,0,0,.04), 0 24px 60px -24px rgba(0,0,0,.45);
+    overflow:hidden;
+  }
+
+  /* ---------- shared type ---------- */
+  .mono{
+    font-family:"JetBrains Mono",ui-monospace,monospace;
+    text-transform:uppercase;
+    letter-spacing:.16em;
+    font-size:11px;
+    font-weight:500;
+    color:var(--muted);
+  }
+  .serif{font-family:"Instrument Serif",Georgia,serif;font-weight:400;}
+
+  /* ---------- the waveform / frequency rule ---------- */
+  .wave{
+    height:26px;
+    width:100%;
+    color:var(--signal);
+    display:block;
+  }
+  .wave svg{display:block;width:100%;height:100%;}
+  .wave--blue{color:var(--blue);}
+  .wave--ink{color:var(--ink);}
+
+  /* thin frequency tick rule (repeating gradient) */
+  .tickrule{
+    height:12px;
+    background-image:repeating-linear-gradient(90deg,
+      var(--ink) 0, var(--ink) 1px,
+      transparent 1px, transparent 7px);
+    opacity:.55;
+  }
+  .hair{height:1px;background:var(--hair);border:0;margin:0;}
+
+  /* ================= COVER ================= */
+  .cover{
+    padding:26px 40px 30px;
+    position:relative;
+  }
+  .cover__top{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    padding-bottom:12px;
+  }
+  .cover__top .mono{color:var(--ink);opacity:.75;}
+  .cover__top .price{color:var(--signal);}
+
+  .dataline{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:14px 0 6px;
+  }
+  .dataline .dot{color:var(--signal);}
+
+  .masthead{
+    font-family:"Instrument Serif",Georgia,serif;
+    font-weight:400;
+    line-height:.86;
+    letter-spacing:-.02em;
+    font-size:118px;
+    margin:2px 0 0;
+    color:var(--ink);
+  }
+  .masthead em{
+    font-style:italic;
+    color:var(--signal);
+  }
+  .masthead__sub{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-top:8px;
+    border-bottom:2px solid var(--ink);
+    padding-bottom:12px;
+  }
+  .masthead__sub .tag{
+    font-family:"Newsreader",serif;
+    font-style:italic;
+    font-size:20px;
+    color:var(--blue);
+  }
+
+  /* lead + tuner two-column area */
+  .cover__body{
+    display:grid;
+    grid-template-columns:1.55fr .95fr;
+    gap:34px;
+    margin-top:26px;
+  }
+  .lead__eyebrow{margin-bottom:14px;color:var(--signal);}
+  .lead__head{
+    font-family:"Instrument Serif",Georgia,serif;
+    font-weight:400;
+    font-size:47px;
+    line-height:1.02;
+    letter-spacing:-.01em;
+    margin:0;
+  }
+  .lead__head .hl{color:var(--signal);font-style:italic;}
+  .lead__stand{
+    font-style:italic;
+    color:var(--blue);
+    font-size:20px;
+    line-height:1.35;
+    margin-top:18px;
+    max-width:34ch;
+  }
+
+  /* tuner / station list of coverlines */
+  .tuner{
+    border-top:2px solid var(--ink);
+    padding-top:10px;
+  }
+  .tuner__label{
+    display:flex;justify-content:space-between;align-items:baseline;
+    margin-bottom:6px;
+  }
+  .station{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:12px;
+    align-items:baseline;
+    padding:9px 0;
+    border-bottom:1px solid var(--hair);
+  }
+  .station:last-child{border-bottom:0;}
+  .station .freq{
+    font-family:"JetBrains Mono",monospace;
+    font-size:11px;
+    letter-spacing:.06em;
+    color:var(--muted);
+    padding-top:3px;
+  }
+  .station .name{
+    font-family:"Newsreader",serif;
+    font-size:18px;
+    line-height:1.24;
+    color:var(--ink);
+  }
+  .station .name b{font-weight:600;}
+  .station.on .freq{color:var(--signal);}
+  .station.on .name{color:var(--blue);}
+
+  /* oversized folio */
+  .folio{
+    position:absolute;
+    right:34px;
+    bottom:14px;
+    font-family:"Instrument Serif",Georgia,serif;
+    font-size:150px;
+    line-height:.7;
+    color:var(--signal);
+    opacity:.12;
+    letter-spacing:-.04em;
+    pointer-events:none;
+  }
+
+  /* ================= SECTION SCAFFOLD ================= */
+  section{padding:0 40px;}
+  .band{
+    padding:52px 40px 0;
+  }
+  .bandhead{
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+    margin-bottom:6px;
+  }
+  .bandhead .code{color:var(--signal);}
+  .bandhead .code b{color:var(--ink);font-weight:700;}
+  .bandhead .runtime{margin-left:auto;color:var(--muted);}
+
+  /* ================= THE LETTER ================= */
+  .letter{max-width:var(--measure);margin:0 auto;padding-top:22px;padding-bottom:8px;}
+  .letter h2{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:34px;line-height:1.05;margin:0 0 4px;
+  }
+  .letter .kicker{color:var(--blue);font-style:italic;font-size:19px;margin-bottom:22px;}
+  .letter p{margin:0 0 18px;}
+  .letter p.first{text-indent:0;}
+  .letter p.first::first-letter{
+    font-family:"Instrument Serif",serif;
+    float:left;
+    font-size:82px;
+    line-height:.72;
+    padding:8px 12px 0 0;
+    color:var(--signal);
+  }
+  .letter .sig{
+    font-family:"Instrument Serif",serif;
+    font-style:italic;
+    font-size:26px;
+    color:var(--ink);
+    margin-top:26px;
+  }
+  .letter .sigline{margin-top:2px;}
+
+  /* ================= CAUGHT UP ================= */
+  .caughtup{padding-top:20px;}
+  .digest{
+    max-width:var(--measure);
+    margin:14px auto 0;
+    list-style:none;
+    padding:0;
+    counter-reset:d;
+  }
+  .digest li{
+    counter-increment:d;
+    display:grid;
+    grid-template-columns:38px 1fr;
+    gap:16px;
+    align-items:baseline;
+    padding:13px 0;
+    border-bottom:1px solid var(--hair);
+  }
+  .digest li:first-child{border-top:1px solid var(--ink);}
+  .digest li::before{
+    content:counter(d,decimal-leading-zero);
+    font-family:"JetBrains Mono",monospace;
+    font-size:12px;
+    color:var(--signal);
+    letter-spacing:.05em;
+    padding-top:4px;
+  }
+  .digest li p{margin:0;font-size:18px;line-height:1.4;}
+  .digest li b{font-weight:600;color:var(--blue);}
+
+  /* ================= THE TOUCHLINE ================= */
+  .touchline{padding-top:22px;padding-bottom:60px;}
+  .touchline .lead{
+    max-width:var(--measure);
+    margin:14px auto 26px;
+    font-size:20px;
+  }
+  .touchline .lead .drop{color:var(--signal);font-weight:600;}
+  .scores{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:1px;
+    background:var(--hair);
+    border:1px solid var(--hair);
+    max-width:var(--measure);
+    margin:0 auto;
+  }
+  .score{
+    background:var(--paper);
+    padding:20px 22px 22px;
+  }
+  .score:first-child{grid-column:1 / -1;}
+  .score .tag{color:var(--signal);margin-bottom:10px;display:block;}
+  .score h3{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:27px;line-height:1.04;margin:0 0 8px;
+  }
+  .score:first-child h3{font-size:33px;}
+  .score p{margin:0;font-size:17px;line-height:1.42;color:#2c2a30;}
+  .score .num{color:var(--blue);font-weight:600;}
+
+  /* colophon */
+  .colophon{
+    padding:26px 40px 40px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-top:2px solid var(--ink);
+    margin-top:8px;
+  }
+  .colophon .serif{font-size:30px;}
+  .colophon .serif em{font-style:italic;color:var(--signal);}
+
+  /* ---- portrait tablet niceties ---- */
+  @media (max-width:640px){
+    .cover{padding:22px 24px 26px;}
+    .masthead{font-size:78px;}
+    .cover__body{grid-template-columns:1fr;gap:26px;}
+    .lead__head{font-size:38px;}
+    section{padding:0 24px;}
+    .band{padding:44px 24px 0;}
+    .colophon{padding:24px 24px 34px;}
+    .scores{grid-template-columns:1fr;}
+    .score:first-child{grid-column:auto;}
+    .folio{font-size:110px;}
+  }
+</style>
+</head>
+<body>
+<div class="issue">
+
+  <!-- ================= COVER ================= -->
+  <header class="cover">
+    <div class="cover__top">
+      <span class="mono">A Personal Weekly · Received &amp; Tuned</span>
+      <span class="mono price">Sunday Edition</span>
+    </div>
+
+    <div class="wave wave--ink" aria-hidden="true">
+      <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+        <path d="M0 13 H60 l6 -10 6 20 6 -20 6 20 6 -20 6 10 H160 l5 -8 5 16 5 -16 5 16 5 -8 H280 l7 -12 7 24 7 -24 7 24 7 -12 H420 l4 -6 4 12 4 -12 4 12 4 -6 H540 l6 -11 6 22 6 -22 6 22 6 -11 H680 l5 -7 5 14 5 -14 5 14 5 -7 H800"
+          fill="none" stroke="currentColor" stroke-width="2"/>
+      </svg>
+    </div>
+
+    <h1 class="masthead">The <em>Signal</em></h1>
+    <div class="masthead__sub">
+      <span class="tag">tuning in to the week you lived</span>
+      <span class="mono">EST. 2026</span>
+    </div>
+
+    <div class="cover__body">
+      <div class="lead">
+        <div class="mono lead__eyebrow">BAND 01 — THE LEAD TRANSMISSION</div>
+        <h2 class="lead__head">Britain is about to change prime minister — and <span class="hl">not a single ballot</span> will be cast to do it.</h2>
+        <p class="lead__stand">Andy Burnham, Labour's only declared candidate, is on course for No.10. A coronation without a crowning.</p>
+      </div>
+
+      <nav class="tuner" aria-label="In this transmission">
+        <div class="tuner__label">
+          <span class="mono">STATION LIST</span>
+          <span class="mono">№016</span>
+        </div>
+
+        <div class="station on">
+          <span class="freq">98.4</span>
+          <span class="name"><b>Wimbledon's two champions</b></span>
+        </div>
+        <div class="station">
+          <span class="freq">101.2</span>
+          <span class="name">The World Cup, down to the last four</span>
+        </div>
+        <div class="station on">
+          <span class="freq">104.7</span>
+          <span class="name"><b>Silverstone:</b> Leclerc wins at home of speed</span>
+        </div>
+        <div class="station">
+          <span class="freq">106.0</span>
+          <span class="name">Tour de France opens</span>
+        </div>
+        <div class="station on">
+          <span class="freq">88.9</span>
+          <span class="name"><b>The Long Read:</b> the coronation without a crowning</span>
+        </div>
+        <div class="station">
+          <span class="freq">92.3</span>
+          <span class="name">The Travelling</span>
+        </div>
+      </nav>
+    </div>
+
+    <div class="dataline">
+      <span class="mono">TRANSMISSION №016</span>
+      <span class="dot" aria-hidden="true">·</span>
+      <span class="mono">6–12 JUL 2026</span>
+      <span class="dot" aria-hidden="true">·</span>
+      <span class="mono">NORTHERN IRELAND</span>
+      <span class="dot" aria-hidden="true">·</span>
+      <span class="mono">34 MIN · ONE SITTING</span>
+    </div>
+
+    <div class="folio" aria-hidden="true">016</div>
+  </header>
+
+  <div class="wave wave--blue" aria-hidden="true" style="padding:0 40px;">
+    <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+      <path d="M0 13 H40 l5 -9 5 18 5 -18 5 18 5 -9 H120 l7 -13 7 26 7 -26 7 26 7 -13 H260 l4 -6 4 12 4 -12 4 12 4 -6 H360 l6 -11 6 22 6 -22 6 22 6 -11 H500 l5 -8 5 16 5 -16 5 16 5 -8 H620 l7 -13 7 26 7 -26 7 26 7 -13 H800"
+        fill="none" stroke="currentColor" stroke-width="1.5"/>
+    </svg>
+  </div>
+
+  <!-- ================= THE LETTER ================= -->
+  <div class="band">
+    <div class="bandhead">
+      <span class="mono code">BAND 02 — <b>THE LETTER</b></span>
+      <span class="mono runtime">FROM THE EDITOR</span>
+    </div>
+  </div>
+  <section class="letter">
+    <h2>A week that turned quietly.</h2>
+    <p class="kicker">On coronations, champions, and the things that change without a vote.</p>
+    <p class="first">There are weeks that arrive with a bang and weeks that simply <em>tune in</em>, and this was the latter — a low, steady frequency you only notice once it has already changed the station. A country prepares to swap its prime minister with nobody casting a ballot, and somehow the loudest thing all week was the quiet of it.</p>
+    <p>So I went looking for the noise elsewhere and found it on grass and gravel: two Wimbledon champions crowned properly, with a crowd; a World Cup narrowing to its final four; Leclerc winning where speed lives. Coronations, it turns out, come in two kinds this week — the sort with trophies, and the sort with none. I've set them side by side and let you decide which felt more real.</p>
+    <p class="sig">— The Editor</p>
+    <p class="mono sigline">TRANSMITTED SUNDAY · 12 JUL 2026</p>
+  </section>
+
+  <div class="band">
+    <hr class="hair">
+    <div class="tickrule" style="margin-top:22px;" aria-hidden="true"></div>
+  </div>
+
+  <!-- ================= CAUGHT UP ================= -->
+  <div class="band">
+    <div class="bandhead">
+      <span class="mono code">BAND 03 — <b>CAUGHT UP</b></span>
+      <span class="mono runtime">EVERYTHING THAT MOVED, IN EIGHT LINES</span>
+    </div>
+  </div>
+  <section class="caughtup">
+    <ol class="digest">
+      <li><p><b>Westminster.</b> Andy Burnham becomes Labour's only declared candidate, clearing a path to No.10 without a contested vote.</p></li>
+      <li><p><b>SW19.</b> Wimbledon crowns two new champions across a fortnight of long shadows and longer rallies.</p></li>
+      <li><p><b>The World Cup.</b> The field narrows to a last four; the tournament tightens into knockout weather.</p></li>
+      <li><p><b>Silverstone.</b> Charles Leclerc wins the British Grand Prix at the historic home of speed.</p></li>
+      <li><p><b>Le Grand Départ.</b> The Tour de France opens; three weeks of climbing and suffering begin.</p></li>
+      <li><p><b>The economy.</b> Borrowing costs hold as markets read the political handover as continuity, not shock.</p></li>
+      <li><p><b>At home.</b> A settled spell of warm weather across Northern Ireland — the good kind of slow week.</p></li>
+      <li><p><b>Filed under later.</b> The Travelling, and one long read on power passed hand to hand.</p></li>
+    </ol>
+  </section>
+
+  <div class="band">
+    <div class="wave wave--signal wave--ink" aria-hidden="true" style="margin-top:26px;color:var(--signal);">
+      <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+        <path d="M0 13 H70 l6 -11 6 22 6 -22 6 22 6 -11 H180 l5 -9 5 18 5 -18 5 18 5 -9 H300 l8 -14 8 28 8 -28 8 28 8 -14 H460 l4 -7 4 14 4 -14 4 14 4 -7 H580 l6 -11 6 22 6 -22 6 22 6 -11 H720 l5 -8 5 16 5 -16 5 16 5 -8 H800"
+          fill="none" stroke="currentColor" stroke-width="2"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ================= THE TOUCHLINE ================= -->
+  <div class="band">
+    <div class="bandhead">
+      <span class="mono code">BAND 04 — <b>THE TOUCHLINE</b></span>
+      <span class="mono runtime">SPORT · SIGNAL STRONG</span>
+    </div>
+  </div>
+  <section class="touchline">
+    <p class="lead"><span class="drop">Two crownings, one on grass and one on gravel</span> — and a World Cup deciding who gets to dream. If the politics of the week refused to be settled by a vote, sport spent seven days settling everything the hard way: on the scoreboard, in front of a crowd, with no room for a recount.</p>
+
+    <div class="scores">
+      <div class="score">
+        <span class="mono tag">98.4 · WIMBLEDON · THE FINALS</span>
+        <h3>Two champions, crowned properly</h3>
+        <p>A fortnight of long rallies ends with fresh names on both trophies — the rare Wimbledon that felt handed over rather than defended. <span class="num">SW19, complete.</span></p>
+      </div>
+
+      <div class="score">
+        <span class="mono tag">104.7 · F1 · BRITISH GP</span>
+        <h3>Leclerc, at the home of speed</h3>
+        <p>Charles Leclerc takes Silverstone, converting pace into a win where the sport was born. <span class="num">P1.</span></p>
+      </div>
+
+      <div class="score">
+        <span class="mono tag">101.2 · FOOTBALL · WORLD CUP</span>
+        <h3>Down to the last four</h3>
+        <p>The bracket tightens to a semi-final quartet; four nations, one weekend of nerves to come. <span class="num">4 left.</span></p>
+      </div>
+    </div>
+  </section>
+
+  <div class="colophon">
+    <span class="serif">The <em>Signal</em></span>
+    <span class="mono">END OF TRANSMISSION №016 · UNTIL NEXT SUNDAY</span>
+  </div>
+
+</div>
+</body>
+</html>

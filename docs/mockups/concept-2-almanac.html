@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Signal — The Almanac</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Spectral+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F1E7D2;
+    --paper-2:#EDE1C7;
+    --ink:#211C15;
+    --oxblood:#7A2E2A;
+    --gold:#A67C1A;
+    --hair:#D8C7A6;
+    --muted:#847A63;
+    --measure:64ch;
+  }
+
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(120% 90% at 50% -10%, #F6EDDA 0%, var(--paper) 55%, #E9DCC0 100%);
+    color:var(--ink);
+    font-family:"Spectral", Georgia, serif;
+    font-size:19px;
+    line-height:1.62;
+    font-feature-settings:"onum" 1, "pnum" 1;
+    text-rendering:optimizeLegibility;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .page{
+    max-width:800px;
+    margin:0 auto;
+    padding:0 34px 40px;
+  }
+
+  /* ---------- Shared type devices ---------- */
+  .smallcaps{
+    font-family:"Spectral SC", "Spectral", serif;
+    text-transform:uppercase;
+    letter-spacing:.22em;
+    font-size:.66rem;
+    font-weight:600;
+    color:var(--muted);
+  }
+  .oldnum{ font-feature-settings:"onum" 1, "pnum" 1; }
+  .display{ font-family:"Fraunces", Georgia, serif; font-optical-sizing:auto; }
+
+  .fleuron{
+    text-align:center;
+    color:var(--gold);
+    letter-spacing:.4em;
+    font-size:1.05rem;
+    margin:34px 0;
+    user-select:none;
+  }
+  .fleuron::before{ content:"⁂"; }
+
+  /* Section header lockup */
+  .sec-head{ text-align:center; margin:8px 0 26px; }
+  .sec-kicker{
+    display:inline-block;
+    font-family:"Spectral SC","Spectral",serif;
+    text-transform:uppercase;
+    letter-spacing:.3em;
+    font-size:.62rem;
+    color:var(--oxblood);
+    font-weight:600;
+    padding-bottom:7px;
+  }
+  .sec-title{
+    font-family:"Fraunces",serif;
+    font-weight:600;
+    font-size:2.05rem;
+    line-height:1.02;
+    margin:0;
+    letter-spacing:-.01em;
+    font-variation-settings:"SOFT" 40, "WONK" 1;
+  }
+  .sec-title em{ font-style:italic; color:var(--oxblood); }
+  .sec-sub{
+    font-style:italic;
+    color:var(--muted);
+    font-size:.98rem;
+    margin-top:8px;
+  }
+
+  /* ================= COVER ================= */
+  .cover{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    padding-top:26px;
+    position:relative;
+  }
+  /* double-rule frame */
+  .plate{
+    border:1.5px solid var(--ink);
+    padding:22px 22px 26px;
+    position:relative;
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    background:
+      linear-gradient(0deg, rgba(122,46,42,.015), rgba(122,46,42,.015));
+  }
+  .plate::after{
+    content:"";
+    position:absolute; inset:5px;
+    border:0.75px solid var(--gold);
+    pointer-events:none;
+  }
+  .plate-inner{ position:relative; z-index:1; display:flex; flex-direction:column; height:100%; }
+
+  .top-rule{
+    display:flex; justify-content:space-between; align-items:baseline;
+    font-family:"Spectral SC","Spectral",serif;
+    text-transform:uppercase; letter-spacing:.24em;
+    font-size:.6rem; color:var(--muted); font-weight:600;
+    border-bottom:1px solid var(--hair);
+    padding-bottom:9px;
+  }
+
+  .nameplate{ text-align:center; padding:30px 0 14px; }
+  .nameplate .the{
+    display:block;
+    font-family:"Spectral SC","Spectral",serif;
+    letter-spacing:.5em;
+    font-size:.72rem;
+    color:var(--oxblood);
+    font-weight:600;
+    margin-bottom:6px;
+    padding-left:.5em;
+  }
+  .nameplate h1{
+    font-family:"Fraunces",serif;
+    font-weight:600;
+    font-size:5.4rem;
+    line-height:.9;
+    margin:0;
+    letter-spacing:-.02em;
+    font-variation-settings:"SOFT" 60, "WONK" 1, "opsz" 144;
+  }
+  .nameplate h1 span{ color:var(--ink); }
+
+  .lockup{
+    text-align:center;
+    font-family:"Spectral SC","Spectral",serif;
+    text-transform:uppercase;
+    letter-spacing:.28em;
+    font-size:.64rem;
+    color:var(--muted);
+    font-weight:600;
+    margin-top:14px;
+  }
+  .lockup .vol{ color:var(--oxblood); }
+
+  .almanac-header{
+    text-align:center;
+    font-family:"Fraunces",serif;
+    font-style:italic;
+    font-size:1.16rem;
+    color:var(--ink);
+    margin:20px auto 4px;
+    max-width:36ch;
+  }
+  .almanac-header .num{ font-variant-numeric:oldstyle-nums; }
+
+  .cover-rule{
+    display:flex; align-items:center; gap:14px;
+    margin:18px 4px 8px;
+    color:var(--gold);
+  }
+  .cover-rule::before, .cover-rule::after{
+    content:""; height:1px; flex:1; background:var(--hair);
+  }
+  .cover-rule span{
+    font-family:"Spectral SC","Spectral",serif;
+    text-transform:uppercase; letter-spacing:.3em;
+    font-size:.6rem; color:var(--muted); font-weight:600;
+  }
+
+  /* Contents table */
+  .contents{ margin-top:6px; }
+  .entry{
+    display:grid;
+    grid-template-columns:2.4rem 1fr auto;
+    align-items:baseline;
+    gap:14px;
+    padding:9px 2px;
+    border-bottom:1px solid var(--hair);
+  }
+  .entry:first-child{ border-top:1px solid var(--hair); }
+  .entry .no{
+    font-family:"Fraunces",serif;
+    font-weight:500;
+    font-size:1.15rem;
+    color:var(--oxblood);
+    font-variant-numeric:oldstyle-nums;
+    text-align:right;
+  }
+  .entry .ttl{
+    font-family:"Fraunces",serif;
+    font-weight:500;
+    font-size:1.08rem;
+    line-height:1.2;
+    font-variation-settings:"SOFT" 30;
+  }
+  .entry .ttl small{
+    display:block;
+    font-family:"Spectral",serif;
+    font-style:italic;
+    font-weight:400;
+    font-size:.82rem;
+    color:var(--muted);
+    letter-spacing:0;
+    margin-top:1px;
+  }
+  .entry .pg{
+    font-family:"Spectral SC","Spectral",serif;
+    font-size:.62rem;
+    letter-spacing:.16em;
+    color:var(--muted);
+    text-transform:uppercase;
+  }
+
+  .cover-foot{
+    margin-top:auto;
+    display:flex; justify-content:space-between; align-items:baseline;
+    border-top:1px solid var(--ink);
+    padding-top:10px;
+    font-family:"Spectral SC","Spectral",serif;
+    text-transform:uppercase; letter-spacing:.2em;
+    font-size:.58rem; color:var(--muted); font-weight:600;
+  }
+  .cover-foot .read{ color:var(--oxblood); }
+
+  /* ================= LETTER ================= */
+  section{ padding-top:44px; }
+  .band-top{ border-top:2px solid var(--ink); padding-top:0; }
+
+  .letter-body{
+    max-width:var(--measure);
+    margin:0 auto;
+  }
+  .letter-body p{ margin:0 0 1.05em; }
+  .letter-body p:first-of-type{ text-indent:0; }
+  .letter-body p:first-of-type::first-letter{
+    font-family:"Fraunces",serif;
+    font-weight:600;
+    float:left;
+    font-size:4.6rem;
+    line-height:.78;
+    padding:6px 12px 0 0;
+    color:var(--oxblood);
+    font-variation-settings:"SOFT" 50, "WONK" 1;
+  }
+  .letter-body p + p{ text-indent:1.4em; }
+  .signoff{
+    margin-top:1.4em !important;
+    font-style:italic;
+    color:var(--ink);
+  }
+  .signoff .name{
+    font-family:"Fraunces",serif;
+    font-style:italic;
+    font-size:1.25rem;
+    display:block;
+    margin-top:2px;
+    color:var(--oxblood);
+  }
+
+  /* ================= FIGURES ================= */
+  .figures-frame{
+    border:1.5px solid var(--ink);
+    position:relative;
+    background:var(--paper-2);
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 43px, rgba(33,28,21,.04) 43px, rgba(33,28,21,.04) 44px);
+  }
+  .figures-frame::after{
+    content:""; position:absolute; inset:4px; border:.75px solid var(--gold); pointer-events:none;
+  }
+  .fig-caption{
+    text-align:center;
+    font-family:"Spectral SC","Spectral",serif;
+    text-transform:uppercase; letter-spacing:.26em;
+    font-size:.6rem; color:var(--muted); font-weight:600;
+    padding:12px 0 4px;
+    border-bottom:1px solid var(--hair);
+    margin:0 18px;
+  }
+  .fig-row{
+    display:grid;
+    grid-template-columns:1fr auto;
+    align-items:baseline;
+    gap:16px;
+    padding:15px 20px;
+    margin:0 0;
+    border-bottom:1px solid var(--hair);
+    position:relative;
+  }
+  .fig-row:last-child{ border-bottom:0; }
+  .fig-label{ }
+  .fig-label .k{
+    font-family:"Spectral SC","Spectral",serif;
+    text-transform:uppercase; letter-spacing:.16em;
+    font-size:.66rem; color:var(--oxblood); font-weight:600;
+    display:block;
+  }
+  .fig-label .d{
+    font-style:italic; color:var(--muted); font-size:.86rem;
+  }
+  .fig-val{
+    font-family:"Fraunces",serif;
+    font-weight:500;
+    font-size:2.5rem;
+    line-height:.9;
+    text-align:right;
+    font-variant-numeric:oldstyle-nums;
+    letter-spacing:-.01em;
+    font-variation-settings:"SOFT" 20;
+    white-space:nowrap;
+  }
+  .fig-val small{
+    font-size:.9rem;
+    font-style:italic;
+    font-weight:400;
+    color:var(--muted);
+    margin-left:4px;
+  }
+  .fig-val .win{ color:var(--oxblood); }
+  .fig-foot{
+    text-align:center;
+    font-family:"Spectral",serif;
+    font-style:italic;
+    color:var(--muted);
+    font-size:.82rem;
+    padding:12px 0 14px;
+  }
+
+  /* ================= CAUGHT UP ================= */
+  .ledger{ max-width:var(--measure); margin:0 auto; }
+  .ledger-item{
+    display:grid;
+    grid-template-columns:2.2rem 1fr;
+    gap:14px;
+    align-items:baseline;
+    padding:13px 0;
+    border-bottom:1px solid var(--hair);
+  }
+  .ledger-item:first-child{ border-top:1px solid var(--ink); }
+  .ledger-item .ln{
+    font-family:"Fraunces",serif;
+    font-weight:500;
+    font-size:1.05rem;
+    color:var(--gold);
+    font-variant-numeric:oldstyle-nums;
+    text-align:right;
+    padding-top:.1em;
+  }
+  .ledger-item .tx{ }
+  .ledger-item .tx b{
+    font-family:"Fraunces",serif;
+    font-weight:600;
+    font-size:1.02rem;
+    font-variation-settings:"SOFT" 20;
+    color:var(--ink);
+  }
+  .ledger-item .tx .cat{
+    font-family:"Spectral SC","Spectral",serif;
+    text-transform:uppercase;
+    letter-spacing:.14em;
+    font-size:.56rem;
+    color:var(--oxblood);
+    font-weight:600;
+    margin-left:8px;
+    vertical-align:.08em;
+  }
+  .ledger-item .tx span.body{
+    display:block;
+    color:var(--ink);
+    font-size:.97rem;
+    margin-top:2px;
+  }
+
+  .colophon{
+    text-align:center;
+    margin:40px auto 8px;
+    max-width:44ch;
+    color:var(--muted);
+    font-style:italic;
+    font-size:.86rem;
+  }
+  .colophon .mark{
+    font-family:"Fraunces",serif;
+    font-style:normal;
+    letter-spacing:.4em;
+    color:var(--gold);
+    display:block;
+    margin-bottom:8px;
+    font-size:1rem;
+  }
+
+  @media (max-width:420px){
+    .nameplate h1{ font-size:4.1rem; }
+    .page{ padding:0 20px 30px; }
+    .fig-val{ font-size:2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ========================= COVER ========================= -->
+<div class="page cover">
+  <div class="plate">
+    <div class="plate-inner">
+
+      <div class="top-rule">
+        <span>Est. MMXXVI</span>
+        <span>A Weekly Record</span>
+        <span class="oldnum">No. XVI</span>
+      </div>
+
+      <div class="nameplate">
+        <span class="the">The</span>
+        <h1><span>Signal</span></h1>
+      </div>
+
+      <div class="lockup">
+        A Weekly Record · <span class="vol">Vol. I &middot; No. XVI</span>
+      </div>
+
+      <div class="almanac-header display">
+        Being the week of <span class="num">6–12 July, 2026</span>
+      </div>
+
+      <div class="cover-rule"><span>Contents of the Week</span></div>
+
+      <div class="contents">
+        <div class="entry">
+          <div class="no oldnum">I</div>
+          <div class="ttl">A Prime Minister, Unelected<small>Burnham walks to No. 10 without a ballot cast</small></div>
+          <div class="pg">World</div>
+        </div>
+        <div class="entry">
+          <div class="no oldnum">II</div>
+          <div class="ttl">The Weekend Sport Wrote Itself<small>Two champions at Wimbledon; Leclerc at Silverstone</small></div>
+          <div class="pg">Sport</div>
+        </div>
+        <div class="entry">
+          <div class="no oldnum">III</div>
+          <div class="ttl">Four Nations Left Standing<small>The World Cup narrows to its final square</small></div>
+          <div class="pg">Sport</div>
+        </div>
+        <div class="entry">
+          <div class="no oldnum">IV</div>
+          <div class="ttl">The Marathon Block, Week Six<small>31.2 miles logged, and the legs still willing</small></div>
+          <div class="pg">Record</div>
+        </div>
+        <div class="entry">
+          <div class="no oldnum">V</div>
+          <div class="ttl">Notes from the Ledger<small>Rates, rank, and a result worth keeping</small></div>
+          <div class="pg">Figures</div>
+        </div>
+      </div>
+
+      <div class="cover-foot">
+        <span>The Editor's Almanac</span>
+        <span class="read">34 min · one sitting</span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ========================= THE LETTER ========================= -->
+<div class="page">
+  <section class="band-top">
+    <div class="sec-head">
+      <span class="sec-kicker">From the Desk</span>
+      <h2 class="sec-title display">The <em>Letter</em></h2>
+      <div class="sec-sub">Issue Sixteen · Sunday morning</div>
+    </div>
+
+    <div class="letter-body">
+      <p>Some weeks arrive quietly and some, like this one, seem determined to be remembered. On Tuesday Britain changed its prime minister without a single ballot being cast — Andy Burnham walking to No. 10 by arithmetic rather than by vote, and the country waking to a new government it did not choose. It is the sort of thing that will read strangely in the record, and stranger still for how little it disturbed the traffic.</p>
+
+      <p>Then the weekend, as if to restore some order, wrote its own copy. Two new champions lifted plate at Wimbledon; the World Cup narrowed to its final four; and Leclerc, against the odds and the weather, won at Silverstone. I ran through all of it — week six of the block, thirty-one miles that felt, for once, like progress. A good week to keep. So I have kept it here.</p>
+
+      <p class="signoff">Yours, over coffee,<span class="name display">— The Editor</span></p>
+    </div>
+  </section>
+</div>
+
+<div class="page"><div class="fleuron"></div></div>
+
+<!-- ========================= THE WEEK IN FIGURES ========================= -->
+<div class="page">
+  <section>
+    <div class="sec-head">
+      <span class="sec-kicker">The Almanac Data Page</span>
+      <h2 class="sec-title display">The Week in <em>Figures</em></h2>
+      <div class="sec-sub">Being an account of the week, in numbers plainly set</div>
+    </div>
+
+    <div class="figures-frame">
+      <div class="fig-caption">Table I · Datums of the Week</div>
+
+      <div class="fig-row">
+        <div class="fig-label">
+          <span class="k">Distance Run</span>
+          <span class="d">marathon block, week six of sixteen</span>
+        </div>
+        <div class="fig-val oldnum">31.2<small>mi</small></div>
+      </div>
+
+      <div class="fig-row">
+        <div class="fig-label">
+          <span class="k">Juventus</span>
+          <span class="d">home, and held on to the end</span>
+        </div>
+        <div class="fig-val oldnum"><span class="win">2–1</span></div>
+      </div>
+
+      <div class="fig-row">
+        <div class="fig-label">
+          <span class="k">Fantasy Rank</span>
+          <span class="d">overall, and climbing again</span>
+        </div>
+        <div class="fig-val oldnum">412<small>k</small></div>
+      </div>
+
+      <div class="fig-row">
+        <div class="fig-label">
+          <span class="k">Best Easy-Access Rate</span>
+          <span class="d">worth the ten-minute switch</span>
+        </div>
+        <div class="fig-val oldnum">4.75<small>%</small></div>
+      </div>
+
+      <div class="fig-row">
+        <div class="fig-label">
+          <span class="k">Pages Turned</span>
+          <span class="d">of the current volume, before sleep</span>
+        </div>
+        <div class="fig-val oldnum">137</div>
+      </div>
+
+      <div class="fig-foot">Carried forward to No. XVII &middot; totals kept since January.</div>
+    </div>
+  </section>
+</div>
+
+<div class="page"><div class="fleuron"></div></div>
+
+<!-- ========================= CAUGHT UP ========================= -->
+<div class="page">
+  <section>
+    <div class="sec-head">
+      <span class="sec-kicker">The Record</span>
+      <h2 class="sec-title display">Caught <em>Up</em></h2>
+      <div class="sec-sub">The week, briefly noted — in eight lines</div>
+    </div>
+
+    <div class="ledger">
+      <div class="ledger-item">
+        <div class="ln oldnum">1</div>
+        <div class="tx"><b>A handover without a vote.</b><span class="cat">World</span>
+          <span class="body">Andy Burnham enters Downing Street as prime minister, chosen by his party and not the country — the first such transfer in a generation.</span>
+        </div>
+      </div>
+      <div class="ledger-item">
+        <div class="ln oldnum">2</div>
+        <div class="tx"><b>Two champions at SW19.</b><span class="cat">Sport</span>
+          <span class="body">Wimbledon crowns fresh winners across both singles draws; the grass, as ever, rewarding the brave over the seeded.</span>
+        </div>
+      </div>
+      <div class="ledger-item">
+        <div class="ln oldnum">3</div>
+        <div class="tx"><b>Leclerc takes Silverstone.</b><span class="cat">Sport</span>
+          <span class="body">A wet-then-dry gamble on tyres pays off; Ferrari's first British Grand Prix win in longer than anyone cared to admit.</span>
+        </div>
+      </div>
+      <div class="ledger-item">
+        <div class="ln oldnum">4</div>
+        <div class="tx"><b>The World Cup's final four.</b><span class="cat">Sport</span>
+          <span class="body">Four nations remain; the bracket now small enough to fit on the back of a coaster, and argued over accordingly.</span>
+        </div>
+      </div>
+      <div class="ledger-item">
+        <div class="ln oldnum">5</div>
+        <div class="tx"><b>A quiet patch, a better game.</b><span class="cat">Gaming</span>
+          <span class="body">The mid-season update lands: fewer fireworks, more fixes, and a fishing minigame nobody asked for but everyone kept.</span>
+        </div>
+      </div>
+      <div class="ledger-item">
+        <div class="ln oldnum">6</div>
+        <div class="tx"><b>On-device, at last.</b><span class="cat">Tech</span>
+          <span class="body">The new phones run their assistant models locally; the demo worked on stage, which is more than can usually be said.</span>
+        </div>
+      </div>
+      <div class="ledger-item">
+        <div class="ln oldnum">7</div>
+        <div class="tx"><b>A novel finished on the train.</b><span class="cat">Books</span>
+          <span class="body">Four hundred pages that earned their ending — closed on the platform, reluctant to start the next just yet.</span>
+        </div>
+      </div>
+      <div class="ledger-item">
+        <div class="ln oldnum">8</div>
+        <div class="tx"><b>Rates worth the switch.</b><span class="cat">Money</span>
+          <span class="body">Easy-access accounts nudge to 4.75%; ten minutes moved the balance, and the ledger thanks you for it.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="colophon">
+      <span class="mark">⁂</span>
+      The Signal — a weekly record, kept for one reader. Set in Fraunces &amp; Spectral. Vol. I, No. XVI. Filed Sunday, 12 July 2026.
+    </div>
+  </section>
+</div>
+
+</body>
+</html>
