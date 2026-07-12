@@ -5,9 +5,11 @@ need another instance to fix the spec + enforcement and regenerate:
 1. **The weekly** (`signal_weekly_2026-07-12.html`, Issue #16) — **structurally
    wrong**: ~14–16 flat sections in a partially-applied four-movement frame (§1–7).
 2. **The Rewind H1-2026 review** (`signal_rewind_2026-07-12.html`) — **content
-   dreadful**: the same events re-narrated 3–4× across too many overlapping
-   retrospective lenses, PLUS leaked placeholder/spec text, PLUS it fails the ship
-   gate on images yet shipped anyway (§8).
+   dreadful**: its research pool was far too narrow (a 6-month, all-domains review
+   written from ~6 recency-biased events — the **root cause**, §8d), which it then
+   padded by re-narrating those events 3–4× across too many overlapping lenses
+   (§8a); PLUS leaked placeholder/spec text (§8b), PLUS it fails the ship gate on
+   images yet shipped anyway (§8c).
 
 Both share a root cause: **the rebuilt/reactivated formats were never
 generated-and-inspected end-to-end** — only spec-consistency-checked and (for the
@@ -198,7 +200,39 @@ passed its checks while the actual output was wrong. Closing this gap =
 The reader gave up 3 pages in — "it spent 3 pages repeating the same thing over
 and over." Three distinct, confirmed defects:
 
-**8a. Chronic cross-section repetition (the reader's complaint).** The Rewind runs
+**8d. THE ROOT CAUSE — the research pool was far too narrow (fix this first).**
+The repetition in 8a is a *symptom*. The real problem: a 6-month, all-domains
+retrospective was written from a **recency-biased handful of ~6 events**, then
+padded across ~9 lenses. Structural de-dup will NOT fix this — 6 events told once
+each is still a thin half-year review. Why it happened:
+- **The Rewind format spec has no corpus-gathering step.** `formats.md`/`editorial-spec.md`
+  (§ Rewind) specify the *output* (chapters, the Throughline, the Memory Test,
+  8–12k words) in detail but never say **how to assemble the period's material**.
+  The generic research phase (`pre-flight.md` Phase 3) is scoped to *this issue's
+  subject* — fresh web research + fact/image sourcing for a week's content — not to
+  systematically enumerating six months of events across every domain.
+- **So the generator fell back to what's cheap in reach:** the recency-scoped
+  state arrays (`recent_facts`: 12, `ongoing_stories`: 3, `recent_next_week_themes`:
+  4) and a thin fresh pass. Every repeated event in the shipped issue is from the
+  **last few weeks** (Starmer/landslide, the F1 record, the grand slam, the Man
+  City draw) — the tell that it drew from recent memory, not the half-year.
+- **The natural corpus exists and was untouched:** **16 archived weekly issues**
+  (`issues/signal_weekly_2026-04-05.html` → `…07-12.html`, plus `issue-1/2`), each
+  of which already curated that week's biggest events across all domains. Reading
+  those yields *hundreds* of events to curate down from. (The daily's D1 data can't
+  help — it retains only ~14 days; a Rewind cannot lean on the daily→weekly bridge.)
+
+**Fix (do this before the structural de-dup):** add a **Rewind corpus-gathering
+research step** to the format spec (and the Year-in-Review): before planning
+chapters, the researcher **reads every issue published in the period** (enumerate
+`issues/` by date across the window; the archive manifest `archive-manifest.json`
+now lists them with dates), extracts the events/highs/lows per domain into a
+structured period-corpus, and only *then* curates. Gate it: a Rewind whose corpus
+is below some breadth floor (e.g. events spanning <N domains, or <M distinct
+events) fails Phase 3b like an under-sourced Deep Dive. The Memory Test / Highs /
+Lows then draw from a genuinely broad set, and no event needs reusing.
+
+**8a. Chronic cross-section repetition (the reader's complaint — a SYMPTOM of 8d).** The Rewind runs
 ~9 overlapping retrospective lenses — **The Period in Numbers, The Highs, The Lows,
 Beyond the Results, What We Missed, The Memory Test, Picks of the Period, The
 Changing of the Guard, Meanwhile** — and they all draw from the same small pool of
