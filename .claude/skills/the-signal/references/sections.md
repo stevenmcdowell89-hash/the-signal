@@ -3,6 +3,8 @@
 Detailed content rules, voice notes, and research guidance for each section.
 Only read the sections appearing in this issue.
 
+> **Weekly identity note (v8.42 — Transmission).** In the standard weekly, every band wears the one constant **Transmission** identity (warm-cream paper, Instrument Serif + Newsreader + JetBrains Mono, waveform dividers, band-code eyebrows, the single vermilion accent). **Any per-section "background / accent" colour mentioned in a brief below is legacy and does NOT apply to the weekly** — the weekly has no per-section palette tokens (those are special-edition machinery). Each band's markup is the Transmission component named in its brief and in editorial-spec.md § Component Quick Reference; a writer authors only that band's inner content (no `<section>`, no band-head, no divider — the stitcher generates all chrome). The `.sp-*` special vocabulary is forbidden in weeklies. (The Desk / Toolkit / Ledger / Itinerary / Session briefs whose CSS-token notes reference `.ledger-section` etc. describe state-file continuity, not weekly styling.)
+
 ---
 
 ## Cross-cutting principle: Lens, not Filter (v8.19)
