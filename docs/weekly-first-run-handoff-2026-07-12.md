@@ -1,14 +1,22 @@
 # Weekly rebuild — first-run adherence handoff (2026-07-12)
 
-**Purpose.** The first weekly generated against the rebuilt spec
-(`signal_weekly_2026-07-12.html`, skill v8.37/v8.38) came out **structurally
-wrong** — it delivered ~16 reader-visible sections in a partially-applied
-four-movement frame. This document states the **original design intent**, the
-**exact section target**, the **defects observed in the shipped issue**, and the
-**spec ambiguities** that let it happen, so another instance can fix the spec +
-enforcement and regenerate. Read alongside `docs/signal-final-recommendations-2026-07.md`
-(§ STREAM 1) and `.claude/skills/the-signal/references/spec/weekly.md` (L27–64,
-the canonical order).
+**Purpose.** Two issues generated the morning of 2026-07-12 came out badly and
+need another instance to fix the spec + enforcement and regenerate:
+1. **The weekly** (`signal_weekly_2026-07-12.html`, Issue #16) — **structurally
+   wrong**: ~14–16 flat sections in a partially-applied four-movement frame (§1–7).
+2. **The Rewind H1-2026 review** (`signal_rewind_2026-07-12.html`) — **content
+   dreadful**: the same events re-narrated 3–4× across too many overlapping
+   retrospective lenses, PLUS leaked placeholder/spec text, PLUS it fails the ship
+   gate on images yet shipped anyway (§8).
+
+Both share a root cause: **the rebuilt/reactivated formats were never
+generated-and-inspected end-to-end** — only spec-consistency-checked and (for the
+weekly) run through `validate-issue.py` on an *old* issue (§5). This document
+states the **original intent**, the **exact targets**, the **observed defects**,
+and the **spec ambiguities**. Read alongside `docs/signal-final-recommendations-2026-07.md`
+(§ STREAM 1 + STREAM 3) and `.claude/skills/the-signal/references/spec/weekly.md`
+(L27–64, the canonical order) and `references/spec/specials.md` / `formats.md`
+(Rewind).
 
 ---
 
@@ -182,6 +190,67 @@ passed its checks while the actual output was wrong. Closing this gap =
   `--skip-image-urls` ~L806) — add the structural check here.
 - Shipped issue under review: `issues/signal_weekly_2026-07-12.html`.
 - Skill version + changelog: `SKILL.md` L21, `CHANGELOG.md`.
+
+---
+
+## 8. ALSO BROKEN THIS MORNING: the Rewind special (`signal_rewind_2026-07-12.html`)
+
+The reader gave up 3 pages in — "it spent 3 pages repeating the same thing over
+and over." Three distinct, confirmed defects:
+
+**8a. Chronic cross-section repetition (the reader's complaint).** The Rewind runs
+~9 overlapping retrospective lenses — **The Period in Numbers, The Highs, The Lows,
+Beyond the Results, What We Missed, The Memory Test, Picks of the Period, The
+Changing of the Guard, Meanwhile** — and they all draw from the same small pool of
+H1 headline events, so the *same facts* are retold 3–4 times. Measured repeated
+phrases across the one issue:
+- "…less than two years after a landslide…" **×4**
+- "Keir Starmer resigned as prime minister…" **×3**
+- "…the afternoon Manchester City could only draw…" **×3**
+- "no driver in the sport's history had…" **×3**
+- "a first grand slam at the fourth…" **×3**
+Root cause: too many lenses over too few events, and **no cross-section
+de-duplication rule** ("an event told in one lens must not be re-told in another").
+Note: the **theme-clustering gate that could have flagged this was retired
+(deleted) in W-3** — its intent was meant to move into the single holistic quality
+read (§5 of the recommendations), but that read is a manual/prompt step and was
+never exercised on this issue.
+
+**8b. Leaked placeholder + spec text (confirmed in the DOM).** The shipped issue
+contains unfilled template scaffolding and spec instructions as *visible* content:
+- `<h3>Pick title</h3>`
+- `<h3 class="only-one-pick">[Title of the pick]</h3>`
+- `World is always photo-led (default). 1–2 other sections per issue may promote…`
+  (a spec/comment line rendered as body text).
+`validate-issue.py`'s placeholder check did **not** catch any of these tokens.
+
+**8c. It isn't even shippable — but it shipped.** Running the ship gate on it:
+`validate-issue.py --format rewind` **FAILS** (`image-urls-static`: 2 Nintendo
+**page** URLs used as `<img src>`, no image extension). So the issue went live
+without passing its own ship gate (published with `--skip-image-urls`, or the gate
+was bypassed). That is a process failure independent of the content.
+
+**Remediation for the Rewind (next instance):**
+1. **Cut the retrospective lenses down** — pick ~4–5 that each do a *distinct* job
+   (e.g. Numbers, The Highs/Lows as one balanced ledger, The Memory Test, Picks),
+   and add a hard rule: **each event appears in exactly one lens.** The Rewind's
+   job is a *curated* look back, not the same 8 stories through 9 filters.
+2. **Fix the placeholder scaffolding** in the Rewind template/spec (`Pick title`,
+   `[Title of the pick]`) and stop spec/comment text leaking into the body; and
+   **extend `validate-issue.py`'s placeholder check** to catch bracketed `[...]`
+   scaffold tokens and stray spec lines.
+3. **Do not publish on a validator FAIL** — the automation must block, not
+   `--skip-image-urls` its way past a real image failure.
+4. **Reconsider whether Rewind should have auto-fired at all** — Specials batch S1
+   reactivated it (calendar-scheduled) but it was **never generated-and-inspected**
+   (same gap as §5). Until it's fixed + inspected, consider demoting it back to
+   dormant so it doesn't auto-publish a bad issue next window.
+
+Relevant paths: `references/spec/specials.md`, `references/spec/formats.md`,
+`references/spec/triggers.md` (Rewind format + its trigger), the Rewind
+template-parts under `assets/template-parts/`, and `scripts/validate-issue.py`.
+
+---
 
 **One-line summary for the next instance:** the four-movement weekly should render
 **4 movements and ~11–13 navigator sections, with The Desk as ONE nested
