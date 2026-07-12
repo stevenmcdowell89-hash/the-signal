@@ -126,6 +126,33 @@ CSS_MARKER=$(echo "$PLAN_DATA" | grep '^CSS_MARKER=' | cut -d= -f2-)
 JS_MARKER=$(echo "$PLAN_DATA" | grep '^JS_MARKER=' | cut -d= -f2-)
 SCAFFOLD_PARTS=$(echo "$PLAN_DATA" | grep '^SCAFFOLD_PARTS=' | cut -d= -f2-)
 
+# ─────────────────────────────────────────────────────────────────────────────
+# WEEKLY DISPATCH (Transmission identity) — deterministic, skeleton-driven.
+# The standard weekly is assembled by scripts/stitch_weekly.py from the weekly
+# skeleton + writer band-content, with its own light CSS/JS bundle. It shares
+# none of the special/holiday scaffold-concatenation logic below, so we dispatch
+# here — before any special-oriented handling — and exit. Specials fall through.
+# ─────────────────────────────────────────────────────────────────────────────
+if [[ "$FORMAT" == "weekly" ]]; then
+  if [[ -z "$OUT_PATH" ]]; then
+    OUT_PATH="signal_weekly_${DATE}.html"
+  fi
+  echo "=== weekly format → stitch_weekly.py (skeleton-driven) ==="
+  if ! python3 "${SKILL_DIR}/scripts/stitch_weekly.py" \
+    --plan "$PLAN_PATH" \
+    --out "$OUT_PATH" \
+    --build-dir "$BUILD_DIR" \
+    --issue-number "$ISSUE_NUMBER" \
+    --skill-dir "$SKILL_DIR"; then
+    echo "ERROR: weekly stitch failed"
+    exit 1
+  fi
+  echo ""
+  echo "=== DONE ==="
+  echo "  Stitched issue: $OUT_PATH"
+  exit 0
+fi
+
 # Holiday formats (countdown, field_guide/field-guide) MUST NOT ship the legacy
 # default-chrome scaffold parts (01-masthead.html, 03-cover.html, 18-footer.html).
 # Holiday Identity tier 11 styles .hol-masthead / .hol-cover / .hol-footer-row

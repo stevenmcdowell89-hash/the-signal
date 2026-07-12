@@ -864,133 +864,254 @@ def check_issue_in_numbers_stats(html: str, report: Report) -> None:
 
 
 def check_weekly_structure(html: str, fmt: str, report: Report) -> None:
-    """Weekly four-movement structural adherence (SHARED MARKUP CONTRACT,
-    2026-07-12). Weeklies must render as four labelled movements with The Desk
-    collapsed into ONE nested container and Release Radar folded into Screen &
-    Sound. This gate makes those conventions machine-checkable. Weekly-only —
-    early-returns for every other format. Each violation is a hard FAIL.
+    """Weekly four-movement structural adherence (Transmission identity — the
+    2026-07 rebuild). Weeklies must render as four labelled movements with The
+    Desk collapsed into ONE nested department and Release Radar folded into
+    Screen & Sound. Keys on the stable, invisible data-* hooks the Transmission
+    templates emit (data-movement / data-role / data-desk-column / data-station
+    / data-band) rather than display class names, so the gate is decoupled from
+    the CSS. Single source of truth: references/format-skeletons/weekly.json §
+    invariants. Weekly-only; each violation is a hard FAIL.
 
-    Regex/string based like the rest of this validator. Comments are stripped
-    first so the scaffold's commented-out template examples (which contain
-    <section id="...">, movement-band snippets, etc.) never trip the checks.
+    Comments are stripped first so scaffold examples never trip the checks.
     """
     if fmt != "weekly":
         return
 
     clean = strip_html_comments(html)
 
-    def class_tokens(tag: str) -> set[str]:
-        m = re.search(r'\bclass\s*=\s*"([^"]*)"', tag)
-        if not m:
-            m = re.search(r"\bclass\s*=\s*'([^']*)'", tag)
-        return set(m.group(1).split()) if m else set()
+    def data_vals(attr: str) -> list[str]:
+        return [m.group(1).strip() for m in
+                re.finditer(rf'\b{attr}\s*=\s*["\']([^"\']*)["\']', clean)]
 
-    # 1. movement-bands ------------------------------------------------------
+    # 1. four movement bands -------------------------------------------------
     REQUIRED_MOVEMENTS = ["open", "long-read", "rounds", "close"]
-    found_movements: set[str] = set()
-    for tag in re.findall(r'<[a-zA-Z][^>]*>', clean):
-        if "movement-band" not in class_tokens(tag):
-            continue
-        dm = re.search(r'\bdata-movement\s*=\s*"([^"]*)"', tag)
-        if not dm:
-            dm = re.search(r"\bdata-movement\s*=\s*'([^']*)'", tag)
-        if dm:
-            found_movements.add(dm.group(1).strip())
+    found_movements = set(data_vals("data-movement"))
     missing = [m for m in REQUIRED_MOVEMENTS if m not in found_movements]
     if missing:
         report.fail("weekly-structure/movement-bands",
-                    "missing movement band(s): " + ", ".join(missing))
+                    "missing movement band(s): " + ", ".join(missing)
+                    + f" (found: {sorted(found_movements) or 'none'})")
     else:
         report.ok("weekly-structure/movement-bands",
                   "all four movement bands present (open, long-read, rounds, close)")
 
-    # 2. long-read -----------------------------------------------------------
-    long_read = re.findall(r'<section\b[^>]*\bid=["\']long-read["\']', clean)
-    n_lr = len(long_read)
+    # 2. exactly one Long Read ----------------------------------------------
+    roles = data_vals("data-role")
+    n_lr = roles.count("long-read")
     if n_lr == 0:
-        report.fail("weekly-structure/long-read", "no Long Read section (#long-read)")
+        report.fail("weekly-structure/long-read", "no Long Read section (data-role='long-read')")
     elif n_lr > 1:
         report.fail("weekly-structure/long-read",
                     f"{n_lr} Long Read sections; exactly one allowed")
     else:
-        report.ok("weekly-structure/long-read", "exactly one Long Read section (#long-read)")
+        report.ok("weekly-structure/long-read", "exactly one Long Read (data-role='long-read')")
 
-    # 3. desk-container ------------------------------------------------------
+    # 3. The Desk = one nested department -----------------------------------
     desk_failed = False
-
-    # 3a. exactly one <section> with class token the-desk
-    n_desk = sum(
-        1 for t in re.findall(r'<section\b[^>]*>', clean)
-        if "the-desk" in class_tokens(t)
-    )
+    n_desk = roles.count("desk")
     if n_desk == 0:
         report.fail("weekly-structure/desk-container",
-                    "no Desk container (<section class=\"... the-desk\" id=\"desk\">)")
+                    "no Desk department (data-role='desk')")
         desk_failed = True
     elif n_desk > 1:
         report.fail("weekly-structure/desk-container",
-                    f"{n_desk} Desk containers; exactly one <section class=\"the-desk\"> allowed")
+                    f"{n_desk} Desk departments; exactly one allowed")
         desk_failed = True
 
-    # 3b. count .desk-column tokens across the whole doc → must be 1 or 2
-    n_cols = 0
-    for m in re.finditer(r'\bclass\s*=\s*"([^"]*)"', clean):
-        if "desk-column" in m.group(1).split():
-            n_cols += 1
-    for m in re.finditer(r"\bclass\s*=\s*'([^']*)'", clean):
-        if "desk-column" in m.group(1).split():
-            n_cols += 1
+    n_cols = len(re.findall(r'\bdata-desk-column\b', clean))
     if n_cols == 0:
         report.fail("weekly-structure/desk-container", "The Desk has no nested columns")
         desk_failed = True
     elif n_cols >= 3:
         report.fail("weekly-structure/desk-container",
-                    f"The Desk runs {n_cols} columns; cap is 2")
+                    f"The Desk runs {n_cols} columns; cap is 2 "
+                    "(this is the 2026-07-12 'Desk exploded into 3 sections' failure)")
         desk_failed = True
 
-    # 3c. no standalone <section id="ledger|itinerary|session|toolkit">
-    for name in ("ledger", "itinerary", "session", "toolkit"):
-        if re.search(r'<section\b[^>]*\bid=["\']' + name + r'["\']', clean):
+    # a Desk column must never render as its OWN band or nav station
+    band_ids = set(data_vals("data-band"))
+    for name in ("session", "ledger", "itinerary", "toolkit"):
+        if name in band_ids:
             report.fail("weekly-structure/desk-container",
-                        f"Desk column '{name}' rendered as a standalone section; "
-                        f"nest it inside #desk as a .desk-column div")
-            desk_failed = True
-
-    # 3d. no navigator/anchor href to an individual desk column
-    for name in ("ledger", "itinerary", "session", "toolkit"):
-        if re.search(r'href=["\']#' + name + r'["\']', clean):
-            report.fail("weekly-structure/desk-container",
-                        f"Desk column has its own navigator entry (href=\"#{name}\"); "
-                        f"The Desk must be ONE nav card href='#desk'")
+                        f"Desk column '{name}' rendered as its own band (data-band='{name}'); "
+                        "columns must nest inside the one Desk department")
             desk_failed = True
 
     if not desk_failed:
         report.ok("weekly-structure/desk-container",
-                  f"The Desk is one #desk container with {n_cols} nested .desk-column(s), "
-                  "no exploded columns or per-column nav entries")
+                  f"The Desk is one department with {n_cols} nested column(s), "
+                  "no exploded columns")
 
-    # 4. release-radar-fold --------------------------------------------------
-    rr_section = re.search(r'<section\b[^>]*\bid=["\']release-radar["\']', clean)
-    rr_href = re.search(r'href=["\']#release-radar["\']', clean)
-    if rr_section or rr_href:
+    # 4. Release Radar folded into Screen & Sound ---------------------------
+    if "release_radar" in band_ids:
         report.fail("weekly-structure/release-radar-fold",
-                    "Release Radar rendered as its own section/nav entry; "
-                    "fold it inside Screen & Sound")
+                    "Release Radar rendered as its own band (data-band='release_radar'); "
+                    "it must be a rail inside Screen & Sound")
+    elif "release-radar" not in roles:
+        report.warn("weekly-structure/release-radar-fold",
+                    "no Release Radar rail (data-role='release-radar') found inside Screen & Sound")
     else:
-        report.ok("weekly-structure/release-radar-fold",
-                  "Release Radar folded into Screen & Sound (no #release-radar section/nav)")
+        # verify it sits inside the screen_sound band region (between the
+        # screen_sound band marker and the next data-band marker)
+        ss = re.search(r'data-band=["\']screen_sound["\']', clean)
+        rr = re.search(r'data-role=["\']release-radar["\']', clean)
+        inside = False
+        if ss and rr and rr.start() > ss.start():
+            nxt = re.search(r'data-band=["\'][^"\']+["\']', clean[ss.end():])
+            boundary = ss.end() + nxt.start() if nxt else len(clean)
+            inside = rr.start() < boundary
+        if inside:
+            report.ok("weekly-structure/release-radar-fold",
+                      "Release Radar folded inside Screen & Sound")
+        else:
+            report.fail("weekly-structure/release-radar-fold",
+                        "Release Radar rail is not inside the Screen & Sound band")
 
-    # 5. nav-count -----------------------------------------------------------
-    n_nav = sum(
-        1 for t in re.findall(r'<a\b[^>]*>', clean)
-        if "nav-card" in class_tokens(t)
-    )
+    # 5. navigator (tuner station) count ------------------------------------
+    n_nav = len(re.findall(r'\bdata-station\b', clean))
     if n_nav > 13:
         report.fail("weekly-structure/nav-count",
-                    f"{n_nav} navigator cards; target <=13")
+                    f"{n_nav} navigator stations; target <=13")
+    elif n_nav < 4:
+        report.warn("weekly-structure/nav-count",
+                    f"only {n_nav} navigator stations; a weekly usually surfaces 4-13")
     else:
         report.ok("weekly-structure/nav-count",
-                  f"{n_nav} navigator cards (<=13)")
+                  f"{n_nav} navigator stations (4-13)")
+
+    # 6. Caught Up hard cap: <= 8 digest lines ------------------------------
+    dig = re.search(r'<ol\b[^>]*\bclass="[^"]*\bdigest\b[^"]*"[^>]*>(.*?)</ol>',
+                    clean, re.IGNORECASE | re.DOTALL)
+    if dig:
+        n_li = len(re.findall(r'<li\b', dig.group(1)))
+        if n_li > 8:
+            report.fail("weekly-structure/caught-up-cap",
+                        f"Caught Up has {n_li} lines; the hard cap is 8")
+        else:
+            report.ok("weekly-structure/caught-up-cap", f"Caught Up within cap ({n_li}/8 lines)")
+
+
+# Special/holiday CSS + font markers that must NEVER appear in a weekly's
+# injected assets — the weekly wears the constant warm Transmission identity,
+# never the special/holiday costume. See weekly.json § visual_consistency and
+# docs/weekly-visual-identity-groundup-2026-07.md Part 7.4.
+WEEKLY_FORBIDDEN_STYLE_MARKERS = [
+    "sp-chapter-gate", "sp-spread", "sp-marginalia", "hol-masthead", "hol-cover",
+    "hol-half", "is-special", "data-special",
+    "--touchline-bg", "--screen-bg", "--saga-bg", "--shelf-bg", "--listen-bg",
+    "--channel-bg", "--eft-paper", "--bee-paper", "--sp-chapter-ff",
+]
+# Fonts legitimately loaded by a Transmission weekly. Any OTHER Google-Font
+# family linked in the head is a holiday/special decorative font leaking in.
+WEEKLY_ALLOWED_FONTS = {"Instrument Serif", "Newsreader", "JetBrains Mono"}
+
+
+def check_weekly_visual_consistency(html: str, fmt: str, report: Report) -> None:
+    """The weekly must wear the constant warm Transmission identity — never the
+    special/holiday costume (the 'incoherent halfway' the redesign kills). Hard
+    FAIL if a weekly loads special/holiday CSS or fonts, uses .sp-* body
+    components, or ships the special dark hero instead of the weekly masthead.
+    Weekly-only. See weekly.json § visual_consistency.
+    """
+    if fmt != "weekly":
+        return
+
+    # a. injected <style> must not carry special/holiday CSS
+    styles = "\n".join(re.findall(r"<style\b[^>]*>(.*?)</style>", html,
+                                  re.DOTALL | re.IGNORECASE))
+    leaked = sorted({mk for mk in WEEKLY_FORBIDDEN_STYLE_MARKERS if mk in styles})
+    if leaked:
+        report.fail("weekly-visual/no-special-css",
+                    "weekly injected the special/holiday CSS bundle — found markers: "
+                    + ", ".join(leaked)
+                    + ". A weekly must load ONLY assets/css/weekly/*.css.")
+    else:
+        report.ok("weekly-visual/no-special-css",
+                  "no special/holiday CSS markers in the injected stylesheet")
+
+    # b. head fonts limited to the three Transmission faces
+    head = html[:html.lower().find("</head>")] if "</head>" in html.lower() else html
+    fam_found = set()
+    for m in re.finditer(r"family=([^&:\"']+)", head):
+        fam = m.group(1).replace("+", " ").strip()
+        fam_found.add(fam)
+    stray = sorted(f for f in fam_found if f not in WEEKLY_ALLOWED_FONTS)
+    if stray:
+        report.fail("weekly-visual/fonts",
+                    "weekly links non-Transmission font families: " + ", ".join(stray)
+                    + f". Allowed: {sorted(WEEKLY_ALLOWED_FONTS)}.")
+    else:
+        report.ok("weekly-visual/fonts",
+                  f"fonts limited to the Transmission set ({sorted(fam_found) or 'none linked'})")
+
+    # c. no .sp-* body components (mirror of the stitch gate; last line of defence)
+    body = body_text_only(html)
+    ALLOWED_SP = {"sp-chapter-beads", "sp-wipe-layer", "sp-word", "sp-fade"}
+    sp = {}
+    for m in re.finditer(r'class="[^"]*?\b(sp-[a-z][a-z0-9-]*)\b', body, re.IGNORECASE):
+        if m.group(1) not in ALLOWED_SP:
+            sp[m.group(1)] = sp.get(m.group(1), 0) + 1
+    if sp:
+        report.fail("weekly-visual/no-sp-components",
+                    "weekly body uses special .sp-* components: "
+                    + ", ".join(f"{t}×{n}" for t, n in sorted(sp.items())))
+    else:
+        report.ok("weekly-visual/no-sp-components", "no special .sp-* body components")
+
+    # d. weekly masthead, not the special dark hero; and Transmission declared
+    body_tag = find_real_body_tag(html)
+    is_special_body = bool(body_tag and ("is-special" in body_tag[1] or "data-special" in body_tag[1]))
+    has_masthead = bool(re.search(r'class="[^"]*\bmasthead\b', body))
+    has_poster = bool(re.search(r'class="[^"]*\bcover-poster\b', body))
+    if is_special_body or has_poster or not has_masthead:
+        report.fail("weekly-visual/masthead",
+                    "weekly does not use the constant Transmission masthead "
+                    f"(is-special body={is_special_body}, cover-poster={has_poster}, "
+                    f"masthead={has_masthead}). The dark special hero is reserved for specials.")
+    else:
+        report.ok("weekly-visual/masthead", "uses the constant Transmission masthead")
+
+    # e. Transmission declared: .issue wrapper present
+    if 'class="issue"' in body or "class='issue'" in body:
+        report.ok("weekly-visual/transmission", "Transmission .issue wrapper present")
+    else:
+        report.fail("weekly-visual/transmission",
+                    "missing the Transmission .issue page wrapper")
+
+
+# Leaked scaffold / template tokens that must never render as body text
+# (handoff 2026-07-12 §8b — the Rewind shipped 'Pick title' / '[Title of the
+# pick]' / stray spec lines as visible content). Extends the placeholder check.
+SCAFFOLD_LEAK_LITERALS = [
+    "Pick title", "[Title of the pick]", "[Title]", "[Name of", "[Pick",
+    "researcher to confirm", "TODO:", "TKTK", "[headline_hint]", "[why_it_matters]",
+    "lorem ipsum",
+]
+
+
+def check_scaffold_leak(html: str, report: Report) -> None:
+    """Catch unfilled scaffold/template tokens rendered as visible body text —
+    the handoff §8b defect class (Pillar C scaffold detector). DOM-only, so
+    example strings inside comments/style/script don't trip it."""
+    body = body_text_only(html)
+    low = body.lower()
+    found = [lit for lit in SCAFFOLD_LEAK_LITERALS if lit.lower() in low]
+    # generic bracketed template token: [Word ...] up to ~40 chars, but not a
+    # citation like [1] or a real aside like [sic]. Require a leading capital
+    # letter + a space or 'of'/'the' inside — the shape of a scaffold slot.
+    for m in re.finditer(r'\[[A-Z][A-Za-z][^\]]{2,38}\]', body):
+        tok = m.group(0)
+        if tok in found:
+            continue
+        if re.search(r'\b(of|the|title|name|pick|date|insert|your)\b', tok, re.IGNORECASE):
+            found.append(tok)
+    if found:
+        report.fail("scaffold-leak",
+                    "unfilled scaffold/template token(s) rendered as body text: "
+                    + ", ".join(sorted(set(found))[:8]))
+    else:
+        report.ok("scaffold-leak", "no leaked scaffold/template tokens in DOM")
 
 
 def check_length_ceiling(html: str, fmt: str, report: Report) -> None:
@@ -1122,6 +1243,8 @@ def main(argv: list[str]) -> int:
     check_toc_numerals(html, fmt, report)
     check_issue_in_numbers_stats(html, report)
     check_weekly_structure(html, fmt, report)
+    check_weekly_visual_consistency(html, fmt, report)
+    check_scaffold_leak(html, report)
     check_length_ceiling(html, fmt, report)
 
     # Holiday-only checks
