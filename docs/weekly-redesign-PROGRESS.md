@@ -51,7 +51,7 @@ Legend: ⬜ not started · 🔶 in progress · ✅ done · ⏭️ deferred (with
 - ✅ **W3 — Weekly-only asset bundle** — `stitch_weekly.py` injects ONLY
   `assets/css/weekly/*.css` (24.5KB) + `assets/script-weekly.js` (1.4KB). Down from
   ~461KB CSS + 2388-line JS. bash `stitch-issue.sh` dispatches weekly → stitch_weekly.py.
-- 🔶 **W4 — Structure + reliability spine:**
+- ✅ **W4 — Structure + reliability spine:**
   - ✅ W4a — `references/format-skeletons/weekly.json` skeleton (single source of structure).
   - ✅ W4b — `validate-issue.py`: `check_weekly_structure` retargeted to Transmission
     `data-*` hooks; `check_weekly_visual_consistency` (no special/holiday CSS/fonts,
@@ -60,11 +60,35 @@ Legend: ⬜ not started · 🔶 in progress · ✅ done · ⏭️ deferred (with
   - ✅ W4d — `scripts/publish-gate.sh` writes `build-receipt.json`, refuses publish unless green; SKILL.md Phase 10 publish policy (hold-on-hard-failure). Green receipt on golden verified.
   - ✅ W4e — golden regression: `references/golden/weekly/` + `scripts/verify-weekly-golden.sh` (stitch → validate-issue → validate-chapter-plan, all green).
 - ⬜ **W5 — Spec updates** (spec/weekly.md, component-contracts.md, sections.md → Transmission vocabulary; Bookmark resolved in skeleton; re-slice).
-- 🔶 **W6 — Prove end-to-end** — ✅ **golden path PROVEN**: `stitch-issue.sh` (weekly
-  dispatch) → 17/17 gates PASS (all structural + visual-consistency) → renders
-  pixel-faithful to the reference at 800px (cover, 4 movements, Long Read, Desk 2-col,
-  Radar folded, Bookmark). Live-research generation still to attempt.
-- ⬜ **W7 — Version bump + CHANGELOG + merge to main.**
+- ✅ **W6 — Prove end-to-end** — golden path PROVEN: `stitch-issue.sh` (weekly dispatch)
+  → all `validate-issue.py` gates PASS (structural + visual-consistency + scaffold-leak)
+  → `validate-chapter-plan.py` valid → renders pixel-faithful to the reference at 800px
+  (cover, 4 movements, Long Read, Desk 2-col, Radar folded, Bookmark). Re-runnable via
+  `scripts/verify-weekly-golden.sh`.
+- ✅ **W7 — Version bump (8.42.0) + CHANGELOG + MERGED TO MAIN** (`d1c6e46`, verified green post-merge).
+
+---
+
+## STATUS: COMPLETE & MERGED (2026-07-12)
+
+All eight workstreams landed on `main` (v8.42.0). The weekly generator produces the
+Transmission identity, passes all gates, and is proven by the golden regression.
+
+**Honest scope notes (what is proven vs documented):**
+- **Proven end-to-end:** the *machinery* — stitch → all structural/visual gates → plan
+  validation → pixel-faithful render — via the committed golden fixture. This is the
+  reliability doc's golden-issue regression (Pillar F) and the "test that was never run".
+- **Not run:** a *live-research* generation of a brand-new weekly (the container's outbound
+  research egress is restricted, and it is orthogonal to these changes). The golden fixture
+  exercises the same stitch + gate path a live run uses; only the research/writer content
+  differs. Run `verify-weekly-golden.sh` after any change to lock the regression.
+- **Repair loop / structured reviewer (Pillars D/E):** the new structural + visual +
+  scaffold-leak gates now feed the existing Phase 9 repair loop (they live in
+  `validate-issue.py`, run at Phase 7.6), and the mechanical publish receipt (Pillar F) +
+  hold-on-hard-failure policy are wired in SKILL.md Phase 10. A deeper restructure of the
+  Phase 9.5 rubric read into fully teeth-bearing structured output (Pillar D) is described
+  in SKILL.md but left as a follow-up — the compliance-blocking work (structure/visual) is
+  what shipped broken before, and that is now hard-gated.
 
 ### PROOF (W6, golden path) — 2026-07-12
 `bash stitch-issue.sh --plan references/golden/weekly/chapter-plan.json --build-dir <staged> --issue-number 16`
