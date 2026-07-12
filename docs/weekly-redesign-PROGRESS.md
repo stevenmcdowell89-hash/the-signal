@@ -42,17 +42,35 @@ Legend: ⬜ not started · 🔶 in progress · ✅ done · ⏭️ deferred (with
 
 - ⬜ **W0 — Map current pipeline mechanics** (stitcher/validators/templates/spec). *(agent running)*
 - ✅ **W1 — Transmission design system CSS** — `assets/css/weekly/00-transmission.css` (25KB): full reference port + `--ink-2` tokenization + warm-night `prefers-color-scheme: dark` variant. Verified: all component classes present, no special/holiday leakage.
-- ⬜ **W2 — Weekly template-parts rewrite** (cover/masthead, movements/bands, navigator/tuner, all sections).
-- ⬜ **W3 — Weekly-only asset bundle** (stitch-issue.sh / inject-assets.sh: Transmission bundle only, ~150KB).
-- ⬜ **W4 — Structure + reliability spine:**
-  - W4a — `references/format-skeletons/weekly.json` skeleton.
-  - W4b — `validate-issue.py` weekly structural + **visual-consistency** assertions (markup gate).
-  - W4c — `validate-chapter-plan.py` restored to blocking against the skeleton.
-  - W4d — publish receipt (`build-receipt.json`) + mechanical publish gate; bounded repair loop wired in SKILL.md.
-  - W4e — golden-issue regression fixture.
-- ⬜ **W5 — Spec updates** (spec/weekly.md, component-contracts.md, sections.md → Transmission vocabulary; resolve Bookmark vs Shelf; re-slice).
-- ⬜ **W6 — Prove end-to-end** (generate/stitch a real weekly, inspect vs reference, all gates green).
+- ✅ **W2 — Weekly chrome** — *architecture change:* rather than rewrite the old
+  template-parts (03-cover, 04-navigator, 04a-movement-band…), the weekly's chrome
+  (cover/masthead/tuner, the 4 movement dividers, every band-head, colophon, sign-off)
+  is now GENERATED deterministically by `scripts/stitch_weekly.py` from `weekly.json`.
+  The old weekly template-parts are superseded (left in place; specials may still ref
+  some). Writers now produce only per-band inner content.
+- ✅ **W3 — Weekly-only asset bundle** — `stitch_weekly.py` injects ONLY
+  `assets/css/weekly/*.css` (24.5KB) + `assets/script-weekly.js` (1.4KB). Down from
+  ~461KB CSS + 2388-line JS. bash `stitch-issue.sh` dispatches weekly → stitch_weekly.py.
+- 🔶 **W4 — Structure + reliability spine:**
+  - ✅ W4a — `references/format-skeletons/weekly.json` skeleton (single source of structure).
+  - ✅ W4b — `validate-issue.py`: `check_weekly_structure` retargeted to Transmission
+    `data-*` hooks; `check_weekly_visual_consistency` (no special/holiday CSS/fonts,
+    weekly masthead not special hero); `check_scaffold_leak` (handoff §8b).
+  - ⬜ W4c — `validate-chapter-plan.py` weekly branch (blocking vs skeleton).
+  - ⬜ W4d — publish receipt (`build-receipt.json`) + repair loop / structured reviewer wiring in SKILL.md.
+  - 🔶 W4e — golden-issue regression fixture (`references/golden/weekly/` DONE; runner + CI wiring pending).
+- ⬜ **W5 — Spec updates** (spec/weekly.md, component-contracts.md, sections.md → Transmission vocabulary; Bookmark resolved in skeleton; re-slice).
+- 🔶 **W6 — Prove end-to-end** — ✅ **golden path PROVEN**: `stitch-issue.sh` (weekly
+  dispatch) → 17/17 gates PASS (all structural + visual-consistency) → renders
+  pixel-faithful to the reference at 800px (cover, 4 movements, Long Read, Desk 2-col,
+  Radar folded, Bookmark). Live-research generation still to attempt.
 - ⬜ **W7 — Version bump + CHANGELOG + merge to main.**
+
+### PROOF (W6, golden path) — 2026-07-12
+`bash stitch-issue.sh --plan references/golden/weekly/chapter-plan.json --build-dir <staged> --issue-number 16`
+→ `validate-issue.py --format weekly` → **All checks PASS** (1 warn = image-urls skipped,
+expected: the Transmission weekly uses CSS `.plate-box` placeholders, no `<img>`).
+Rendered at 800px via Chromium: identical to `reference-issue-transmission.html`.
 
 ---
 
