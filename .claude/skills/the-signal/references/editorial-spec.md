@@ -44,48 +44,69 @@ Tech-literate professional in Northern Ireland with a 10-year-old son. Does NOT 
 
 Sections are divided into **fixed** (appear every issue, except where noted) and **rotating** (appear on a cadence, selected per issue). Each issue includes the fixed sections plus **2-3 rotating sections**. The Navigator adapts to show only the sections present in that issue. The issue ends with a Colophon (sign-off block) before the Footer — see § End-of-Issue Colophon.
 
-> **Why 2-3 rotating slots (v8.27, was 3-4 in v8.16).** The v8.16 roster grew to 14 rotating sections by *splitting* (The Listen out of The Shelf, The Local out of The Itinerary, plus Brickyard / Saga / Lab / Channel), which made several sections compete for the same content and let one interest flood an issue. v8.27 redesigns the roster around the reader's actual interest-domains — one home per domain — collapsing to **5 rotating sections plus one trigger-driven section**. Fewer sections + fewer slots = less slot-filling pressure and a shorter, less-padded issue, back toward the "good era" size.
+> **Why 2-3 rotating slots (v8.27, was 3-4 in v8.16).** The v8.16 roster grew to 14 rotating sections by *splitting* (The Listen out of the books rail, The Local out of The Itinerary, plus Brickyard / Saga / Lab / Channel), which made several sections compete for the same content and let one interest flood an issue. v8.27 redesigns the roster around the reader's actual interest-domains — one home per domain — collapsing the pool right down (books are **not** in it — they are the fixed Bookmark rail; see below). Fewer sections + fewer slots = less slot-filling pressure and a shorter, less-padded issue, back toward the "good era" size.
+
+### The Transmission identity (v8.39 — the weekly's constant look)
+
+The weekly is **The Transmission**: a single, constant **warm-cream paper object** that never changes costume week to week. It is the reader's Sunday-morning tuner — received and tuned, not staged. The identity is fixed and load-bearing:
+
+- **Palette:** `--paper #F5F0E6` / `--ink #16151A` / signal-vermilion `--signal #FF3B2F` / `--blue #243F5C` (plus `--paper-2 #EFE8D9`, `--muted`, `--hair`). Vermilion is the one accent — used sparingly, per § Accent lockdown.
+- **Type:** **Instrument Serif** (display / masthead / numerals), **Newsreader** (body serif), **JetBrains Mono** (mono eyebrows, codes, labels). No other families.
+- **Furniture:** **waveform-rule dividers** (`.wave` SVG frequency rules, plus the `.tickrule`) between movements and around the Long Read; a **tuner-style cover** whose contents are a **"station list"** (`.tuner` > `.station` coverlines, each with a `.freq` and a name); **band-code section eyebrows** (`BAND NN — TITLE` in mono); an oversized `.folio` numeral; the `.masthead` wordmark ("The *Signal*").
+- **A warm-night dark variant** is the only theme shift — a night reading of the *same* paper object, never a different costume.
+
+**The weekly loads ONLY its own light bundle** — `assets/css/weekly/*.css` and the three Transmission fonts above. It **never** loads the special/holiday CSS layers, the special/holiday decorative fonts, or any `.sp-*` / `.hol-*` component. **The dark, dramatic bound-magazine treatment (`body.is-special`, `.cover-poster`, `.sp-*`, the ~20 per-section palette tokens, sticky-scroll chapter gates, ground alternation) is RESERVED FOR SPECIALS** and is forbidden in a weekly. `validate-issue.py --format weekly`'s visual-consistency gate hard-fails a weekly that ships any special/holiday marker (see `weekly.json` → `visual_consistency`).
 
 ### Four-Movement Architecture (v8.37, W-3 — the spine)
 
-The weekly is organised as **four movements**. The movements are the spine; the branded sections below live *inside* them (identities unchanged — Touchline, Pixel & Byte, Screen & Sound, The Desk, The Threads all keep their names and CSS). The order below is the canonical issue order. **The issue ends on a verb and a human line** — a "Do This Week" and the Colophon's sign-off, not an aphorism.
+The weekly is organised as **four movements**, and each movement holds an ordered set of **bands** (the reader-facing sections). The movements are the spine; the bands live *inside* them. `references/format-skeletons/weekly.json` is the **structure of record** — the movement/band order, band ids, runtimes, requiredness and per-band component are all declared there, and the stitcher, the plan validator, and `validate-issue.py --format weekly` all read it. The order below is the canonical issue order. **The issue ends on a verb and a human line** — a Do This Week and the Colophon's sign-off, not an aphorism.
 
-- **I · THE OPEN** — discharge completeness up front, then hand off.
-  - **The Letter** — the signed editor's letter (§ The Letter). The week's thesis, dots connected across domains.
-  - **The Week, Composed** — a short editor-shaped orientation to the issue: the week arranged into two or three thematic strands (what the issue holds and how it hangs together). It **replaces the old triple on-ramp** (Navigator + Long Shelf + Foreword-as-contents); the Navigator chrome still renders for jump-links, but the *reading* on-ramp is this one composed paragraph, not three overlapping tables of contents. ~80–140 words.
-  - **Caught Up** — a hard-capped **8-line, non-expandable** digest of the week's missable news across domains (§ Caught Up). This is where completeness is discharged: eight lines, then done. Because Caught Up carries the breadth, **no downstream section owes a "safety-net headline" backstop** — the old breadth-safety-net-in-every-section rule is retired (see § Caught Up).
-- **II · THE LONG READ** — exactly **ONE** deep anchor per issue, subject rotating week to week (uses the `08-anchor-piece` slot). This single Long Read is the issue's one considered centre of gravity: it **absorbs the old Saga, Deep-Dive-lite, and evergreen-feature impulses**. There is no second mandated deep anchor anywhere else in the issue — the rounds carry the week's news at whatever depth the material earns, not a forced considered-piece backbone (§ Article Structure).
-- **III · THE ROUNDS** — the week's domains, briskly. **The Touchline** (sport), **Pixel & Byte** (gaming + LEGO), **Screen & Sound** (with Release Radar), a **Bookmark** books rail (the lightweight books shelf — what to read, a few picks with a line each; the deep book piece, when there is one, is the Long Read, not here), and **The Desk** (1–2 service columns, each closing on its "Do This Week" pin). The rounds are rounds — news and picks, not essays.
-- **IV · THE CLOSE** — continuity, then forward, then act, then sign off.
-  - **The Threads** — the continuity engine (§ The Threads): "previously on…" recaps of the named sagas and the reader's life-threads.
-  - **Down the Rabbit Hole** — the signature discovery ritual (recurring sidebar; `references/sections.md`).
-  - **On the Radar** — the forward calendar.
-  - **Do This Week** — the issue's single strongest actionable pin surfaces here as the closing beat (the Desk columns each carry their own; this is the one the reader leaves on).
-  - **Colophon** — Issue in Numbers · Next Week · A Fact · the sign-off line.
+- **I · THE OPEN** (`data-movement="open"`) — discharge completeness up front, then hand off.
+  - **The Letter** (band `the_letter`) — the signed editor's letter (§ The Letter). The week's thesis, dots connected across domains. Component: `.letter`.
+  - **The Week in Numbers** (band `week_in_numbers`) — the compact **personal** ledger of the reader's week (§ The Week in Numbers). Component: `.figures`.
+  - **Caught Up** (band `caught_up`) — a hard-capped **8-line, non-expandable** digest of the week's missable news across domains (§ Caught Up). This is where completeness is discharged: eight lines, then done. Because Caught Up carries the breadth, **no downstream section owes a "safety-net headline" backstop** — the old breadth-safety-net-in-every-section rule is retired (see § Caught Up). Component: `.digest` (`<ol>`, HARD cap 8 `<li>`).
+- **II · THE LONG READ** (`data-movement="long-read"`) — exactly **ONE** deep anchor per issue (band `long_read`, carrying `data-role="long-read"`), subject rotating week to week. This single Long Read is the issue's one considered centre of gravity: it **absorbs the old Saga, Deep-Dive-lite, and evergreen-feature impulses**. There is no second mandated deep anchor anywhere else in the issue — the rounds carry the week's news at whatever depth the material earns, not a forced considered-piece backbone (§ Article Structure). Component: `.lr-title` + `.lr-body`.
+- **III · THE ROUNDS** (`data-movement="rounds"`) — the week's domains, briskly, in this order:
+  - **The Touchline** (`touchline`, sport) — `.lead` + `.scores` + `.items`.
+  - **Pixel & Byte** (`pixel_byte`, gaming + LEGO) — `.items`.
+  - **Screen & Sound** (`screen_sound`, watch & listen) — `.with-rail` = `.items` + the **Release Radar** rail (`<aside class="rail" data-role="release-radar">`). Release Radar is this rail and **never its own band**.
+  - **Bookmark** (`bookmark`) — the fixed lightweight **books rail** every issue (`.picks`): what to read, a few picks with a line each. The deep book piece, when there is one, is the Long Read, not here.
+  - **1–2 rotating** (`rotating_1`, `rotating_2`) — picked from the non-Desk pool (This Week in History, Listening) or the trigger-driven Saga. Component: `.items`.
+  - **The Desk** (`the_desk`) — ONE service department (`data-role="desk"`) holding **1–2 columns** (`.deskcol[data-desk-column]`), each closing on its Do This Week `.pin`. Never 3+ columns; never a column as its own band. Component: `.desk`.
+  - The rounds are rounds — news and picks, not essays.
+- **IV · THE CLOSE** (`data-movement="close"`) — continuity, then forward, then act, then sign off.
+  - **The Threads** (`the_threads`) — the continuity engine (§ The Threads): "previously on…" recaps of the named sagas and the reader's life-threads. Component: `.threads`.
+  - **Down the Rabbit Hole** (`rabbit_hole`) — the signature discovery ritual, when due. Component: `.rabbit`.
+  - **On the Radar** (`on_the_radar`) — the forward calendar. Component: `.radar` (`<ul>`).
+  - **Do This Week** (`do_this_week`) — the issue's single strongest actionable pin surfaces here as the closing beat (the Desk columns each carry their own; this is the one the reader leaves on). Component: `.closepin`.
+  - **Colophon** (`colophon`) — the issue accounted for: four `.endnumbers > .cell`. The stitcher appends the `.colophon` footer + `.signoff-line` sign-off after it.
 
-> **The movements group the existing sections — they are not new sections.** The Long Shelf concept is absorbed by The Week, Composed (its discovery-wildcard value moves into The Letter and the Long Read); the deep-anchor rotation across sections is replaced by the single Long Read. Everything else keeps its identity and moves under the movement it belongs to.
+> **The bands are the sections — the movements just group them.** "The Week, Composed" is retired: its on-ramp job is now done by the tuner cover's **station list** (the deterministic navigator) plus The Letter; the deep-anchor rotation across sections is replaced by the single Long Read. Books are the fixed **Bookmark** rail, never a rotating shelf (see § Fixed vs Rotating). Everything else keeps its identity and moves under the movement it belongs to.
+
+**Chrome vs. content — the writer contract (v8.39).** Everything above the band's inner content is **chrome the stitcher generates deterministically** from `weekly.json`: the tuner cover + station list, the four movement dividers, every band-head (`BAND NN — TITLE` + runtime), the waveform-rule dividers, and the colophon footer + sign-off. **A writer is assigned one band and writes ONLY that band's inner content HTML** — the components named above — to `/tmp/signal-build/chapters/<band_id>.html`. That file has **no `<section>` wrapper, no band-head, and no movement divider**; the stitcher wraps it. The only structural hooks a writer adds inside their content are the two the validators key on: **`data-role="release-radar"`** on the Screen & Sound rail, and **`data-desk-column`** on each Desk column. See § Component Quick Reference for the exact inner markup per band, and `references/golden/weekly/chapters/` for a real example of each.
 
 ### Enforced structural invariants (validate-issue.py --format weekly)
 
-These five structural rules are **HARD-CHECKED by the markup gate**, not soft prose — `scripts/validate-issue.py --format weekly` now FAILs (does not merely warn) on each violation, inside the existing markup-contracts gate (the ledger stays at three gates):
+These structural rules are **HARD-CHECKED by the markup gate**, not soft prose — `scripts/validate-issue.py --format weekly` now FAILs (does not merely warn) on each violation, inside the existing markup-contracts gate (the ledger stays at three gates). They key on the **invisible `data-*` structural hooks** the stitcher emits (declared in `weekly.json` → `structural_hooks` / `invariants`), so the gate is decoupled from display class names:
 
-1. **All FOUR movement bands render** — THE OPEN / THE LONG READ / THE ROUNDS / THE CLOSE. The set of `data-movement` values on `.movement-band` elements must include all of `{open, long-read, rounds, close}`; the check reports which are missing.
-2. **EXACTLY ONE Long Read anchor** — exactly one `<section ... id="long-read">`. Fails on 0 or >1.
-3. **The Desk is ONE section with 1–2 nested columns** — one `<section>` whose class list contains `the-desk`, holding 1 or 2 `class="desk-column"` divs (never 3+, never 0), and **never** columns as top-level navigator entries. Fails if any top-level `<section ... id="ledger|itinerary|session|toolkit">` exists, or any nav-card/anchor `href="#ledger|#itinerary|#session|#toolkit"` exists.
-4. **Release Radar renders INSIDE Screen & Sound** — never as its own section or nav entry. Fails if `<section ... id="release-radar">` exists OR any `href="#release-radar"` exists. (On the Radar, `id="radar"`, is unaffected.)
-5. **Navigator entries ≤ ~13** — count of `class="nav-card"` anchors must not exceed 13.
+1. **All FOUR movements render** — THE OPEN / THE LONG READ / THE ROUNDS / THE CLOSE. The set of `data-movement` values on the `.movement` dividers must equal `{open, long-read, rounds, close}`; the check reports which are missing.
+2. **EXACTLY ONE Long Read anchor** — exactly one element carrying `data-role="long-read"`. Fails on 0 or >1.
+3. **The Desk is ONE nested department** — exactly one `data-role="desk"`, holding **1 or 2** `data-desk-column` elements (never 3+, never 0), and **never** a column as its own band or navigator station. Fails if any band carries `data-band` in `{session, ledger, itinerary, toolkit}`, or any station links to one.
+4. **Release Radar renders INSIDE Screen & Sound** — `data-role="release-radar"` must exist and be a descendant of the `screen_sound` band; it must **never** be its own band (`data-band="release_radar"`) or navigator station. (On the Radar, band `on_the_radar`, is a separate, unaffected section.)
+5. **Navigator ceiling** — the reader-facing navigator entries (`data-station` coverlines on the cover tuner) must be **between 4 and 13**.
+6. **Caught Up cap** — the `.digest` carries at most **8** `<li>` items.
 
-These encode the four-movement intents that shipped broken on the 2026-07-12 first run (two movement bands missing, the Desk exploded into 3 standalone sections, Release Radar as its own section). See `docs/weekly-first-run-handoff-2026-07-12.md`.
+The **visual-consistency gate** (also hard-checked; `weekly.json` → `visual_consistency`) additionally fails a weekly that loads any special/holiday CSS marker or font, uses any `.sp-*` body component, or ships the special dark hero instead of the `.masthead` Transmission wordmark. Together these encode the four-movement + constant-identity intents that shipped broken on the 2026-07-12 first run (two movements missing, the Desk exploded into 3 standalone sections, Release Radar as its own section). See `docs/weekly-first-run-handoff-2026-07-12.md`.
 
 ### Fixed vs Rotating
 
-**Fixed (every issue), grouped by movement (v8.37):**
-- **I · THE OPEN:** Cover, Navigator (jump-link chrome), **The Letter**, **The Week, Composed** (the on-ramp — replaces the Long Shelf; see § The Week, Composed), **The Week in Numbers** (the personal stat strip — see § The Week in Numbers), **Caught Up** (the 8-line completeness digest — see § Caught Up).
-- **II · THE LONG READ:** **The Long Read** — exactly ONE deep anchor, rotating subject (`08-anchor-piece` slot; see § The Long Read).
-- **III · THE ROUNDS:** The Touchline, Pixel & Byte (gaming + LEGO), Screen & Sound (with Release Radar), the **Bookmark** books rail, **The Desk** (1–2 service columns; see § The Desk). *(The World This Week is not a fixed round — world coverage leads in Caught Up and, on weeks it earns the depth, as the Long Read.)*
-- **IV · THE CLOSE:** **The Threads** (the continuity engine — see § The Threads), Down the Rabbit Hole (if due), On the Radar, Do This Week (the closing pin), Colophon, Footer.
+**Fixed (every issue), grouped by movement (v8.39):** (the deterministic cover + tuner station list is chrome the stitcher generates — it is not a band a writer authors.)
+- **I · THE OPEN:** **The Letter** (`the_letter`), **The Week in Numbers** (the personal ledger — see § The Week in Numbers), **Caught Up** (the 8-line completeness digest — see § Caught Up).
+- **II · THE LONG READ:** **The Long Read** (`long_read`, `data-role="long-read"`) — exactly ONE deep anchor, rotating subject (see § The Long Read).
+- **III · THE ROUNDS:** The Touchline, Pixel & Byte (gaming + LEGO), Screen & Sound (with the Release Radar rail), the **Bookmark** books rail, 1–2 rotating bands, **The Desk** (1–2 service columns; see § The Desk). *(The World This Week is not a fixed round — world coverage leads in Caught Up and, on weeks it earns the depth, as the Long Read.)*
+- **IV · THE CLOSE:** **The Threads** (the continuity engine — see § The Threads), Down the Rabbit Hole (if due), On the Radar, Do This Week (the closing pin), Colophon (the stitcher appends the sign-off footer).
 
-The Long Shelf is retired as a section — its on-ramp job passes to The Week, Composed and its wildcards to The Letter / the Long Read. The World This Week is no longer a standalone fixed round: its safety-net breadth lives in Caught Up, its depth (when the week earns it) in the Long Read.
+The old "Long Shelf" / "The Week, Composed" on-ramp is retired — the tuner cover's **station list** now does the navigator job and The Letter carries the orientation. Books are the fixed **Bookmark** rail in THE ROUNDS, never a rotating shelf. The World This Week is no longer a standalone fixed round: its safety-net breadth lives in Caught Up, its depth (when the week earns it) in the Long Read.
 
 > **Yield rather than fill (v8.34).** The "yield when the week is thin, don't pad it to appear" principle applies to **every** fixed section: a fixed section whose week offers only catch-up — the recap the daily already delivered — **yields** that week rather than running a roundup to fill the slot. The mandatory element is the considered piece (§ Article Structure), not the section's mere presence. (For Desk columns the analogue is: run the column only when its domain has real service news, and each column that runs still closes on a "Do This Week" pin.)
 
@@ -112,7 +133,7 @@ The Desk is the restored **service department**: the one place in the issue whos
 - **Good:** "Move your emergency fund to Chase Saver at 4.75% AER — it's the top easy-access rate right now with no intro-bonus cliff."
 - **Bad:** "Consider a high-interest savings account." (no named product, no stated criterion, not do-it-this-week).
 
-One pin per column, always last. Markup: a `.do-this-week` block (see `references/component-contracts.md`). The pin is service, not an aphorism — it is exempt from the one-aphorism-per-issue cap and is *not* the section's Lead.
+One pin per column, always last. Markup: each Desk column (`.deskcol[data-desk-column]`) ends in a `.pin` (`.pinlbl` label + `.act` action line + `.why` rationale); the issue's single strongest pin also repeats as the standalone `.closepin` in Do This Week. The pin is service, not an aphorism — it is exempt from the one-aphorism-per-issue cap and is *not* the section's Lead.
 
 ### The Threads — the continuity engine (v8.36)
 
@@ -124,6 +145,7 @@ One pin per column, always last. Markup: a `.do-this-week` block (see `reference
 - **`ongoing_stories` now feeds ONLY The Threads (v8.37, W-3 — the topic-lock suppression role is dropped).** In v8.36 `ongoing_stories` was dual-use: the Topic-Lock suppression backstop *and* The Threads' data source. W-3 **retires the suppression backstop** (§ Topic Lock — the sliding-window cap and `check-topic-lock.py` are gone). `ongoing_stories` is now a single-purpose, reader-facing asset: The Threads reads it to recap named sagas across all domains. `training_phase` + `upcoming_trips` additionally feed the life-threads. Dropping suppression-by-gate in favour of The Threads' recap is deliberate — a story that keeps recurring is *recapped*, not hidden.
 - **Voice:** situation-report + "previously on" recap tone — factual, compact, each thread a few lines and a link. No new opinion or invented angle; it is a *recap*, not a Lead. It does not carry a "Do This Week" pin (that is the Desk's job).
 - **Placement:** part of the closing movement — after the rounds, near On the Radar (continuity flows naturally into the forward calendar).
+- **Markup:** the `.threads` component — one `.thread` per recap (`.ep` episode tag + `<h3>` + `.prev` "previously" line + a `<p>` "where it stands now, Next: …").
 
 ### The Week in Numbers — the personal stat strip (v8.36)
 
@@ -134,7 +156,7 @@ One pin per column, always last. Markup: a `.do-this-week` block (see `reference
 - **The Juventus result** — the week's Juve scoreline.
 - **One money number** — a single figure from The Ledger's world (a savings rate, an Etsy month, an ISA milestone).
 
-It uses the existing `.stat-bar` / `.stat` component vocabulary (compact, not a full section). 4–5 stats, quietly personal.
+It renders as the Transmission `.figures` component — a `.figures-frame` with a `.fig-caption`, one `.fig-row` per number (`.fig-label` = `.k` key + `.d` description, beside a `.fig-val`), and a `.fig-foot`. 4–5 rows, quietly personal.
 
 > **Distinct from the Colophon's "Issue in Numbers" (v8.36).** The Week in Numbers is about **the reader's week** (his miles, his rank, his team's result). The Colophon's Block 1 "Issue in Numbers" (§ End-of-Issue Colophon) is about **the issue itself** (word count, sections, links, images). **Keep both** — they measure different things; never merge them or let one's stats leak into the other.
 
@@ -182,12 +204,10 @@ The weekly opens on **The Letter**: a signed editor's letter in place of the old
 
 - **Length:** ~120–200 words. It is an *opening movement*, not a full essay — say the thesis, draw two or three threads together, and hand off to the issue.
 - **Voice:** first-person **Editor** voice is explicitly permitted here (see § Key Rules → The Cardinal Rule and Gate 1A: the Editor is visible; the *reader* stays invisible). Sign it off "— The Editor". Never address or describe the reader ("you", "your son", "as a Juventus fan") — that is still a Gate 1A leak.
-- **Markup:** keep the existing `.foreword` block and its drop-cap (the CSS and the navigator anchor are unchanged); The Letter is the same slot, renamed and re-voiced. The navigator card reads "The Letter".
+- **Markup:** the Transmission `.letter` component — `<h2>` title, a `.kicker` line, a drop-cap opener (`<p class="first">`), body paragraphs, then the `.sig` ("— The Editor") + a mono `.sigline` transmitted-date stamp. The band-head chrome and navigator station are generated by the stitcher.
 - One genuine aphorism is allowed across the whole issue (see § Editorial Voice); if you spend it, spend it here or in the Long Read — not as a per-section habit.
 
-### The Week, Composed — the on-ramp (v8.37, W-3)
-
-A short editor-shaped orientation that follows The Letter: the week arranged into **two or three thematic strands** — what the issue holds and how it hangs together — in ~80–140 words. It is the **single reading on-ramp**, replacing the old triple-table-of-contents pile-up (Navigator + Long Shelf + Foreword-as-contents). The Navigator chrome still renders for jump-links; The Week, Composed is the *prose* orientation. It carries the discovery-wildcard flavour the Long Shelf used to (one line can point at something off the beaten track). No new markup required — a titled paragraph block; reuse the `.foreword`-adjacent editorial styling or a plain `.sec-opener`.
+> **"The Week, Composed" is retired (v8.39).** The old triple on-ramp (Navigator + Long Shelf + Foreword-as-contents) collapsed to a single composed paragraph in W-3, and in the Transmission rebuild collapses further: the tuner cover's **station list** is now the deterministic navigator, and The Letter carries the reading orientation. There is no separate "Week, Composed" band — do not author one.
 
 ### Caught Up — the 8-line completeness digest (v8.37, W-3)
 
@@ -196,11 +216,13 @@ A short editor-shaped orientation that follows The Letter: the week arranged int
 - **Hard cap: 8 lines, never more, and non-expandable** — no "…and 6 more", no collapsible, no companion list. If there are more than eight things, the ninth wasn't missable enough. The cap is the point: completeness is a *fixed budget*, not an open drawer.
 - **It replaces the breadth-safety-net-in-every-section rule.** Historically every fixed section's Catch-Up had to carry "one-line safety-net headlines" so demoting a story out of a Lead never dropped it. Caught Up now owns that job for the whole issue: the week's big headlines survive *here*, in one place, up front. **Downstream sections no longer carry safety-net headlines** — the rounds cover their domain's real news at the depth it earns and nothing more (§ Article Structure; the safety-net clause is retired).
 - **Voice:** flat, factual, fast — the anti-essay. No angle, no synthesis (that is the Letter's and the Long Read's job). Each line reads like a wire headline the reader can act on or ignore.
-- **Markup:** a `.caught-up` block — a titled list of ≤8 `<li>` items, each with a link. Renders complete with JS off (no expand affordance exists to break).
+- **Markup:** the `.digest` component — an `<ol class="digest">` of **≤8** `<li>`, each a single `<p><b>Label.</b> …</p>` (a bold domain label + the tight line). HARD cap 8, enforced by the markup gate. Renders complete with JS off (no expand affordance exists to break).
 
 ### The Long Read — the single deep anchor (v8.37, W-3, supersedes the deprecated Anchor-Piece Rotation)
 
-Movement II is **one** deep anchor per issue — the issue's sole considered centrepiece, subject rotating week to week (world one week, a game or a training idea or a book the next). It uses the existing `08-anchor-piece` slot (`.is-anchor` on its `<section>` and its Navigator `.toc-row`), opens with a strong opener, and runs long enough to earn the space (typically 900–1,800 words; longer when the subject genuinely warrants). It **absorbs the old Saga, Deep-Dive-lite, and evergreen-feature impulses** — those are no longer separate deep beats scattered across the issue; the deep work concentrates here. Exactly one runs; there is no second mandated anchor. (The whole-issue Deep Dive special is unaffected — the Long Read is a weekly *movement*, the Deep Dive is a whole-issue interruption.)
+Movement II is **one** deep anchor per issue — the issue's sole considered centrepiece, subject rotating week to week (world one week, a game or a training idea or a book the next). It is the `long_read` band (its section carries `data-role="long-read"`, the hook the "exactly one Long Read" invariant checks), opens with a strong opener, and runs long enough to earn the space (typically 900–1,800 words; longer when the subject genuinely warrants). It **absorbs the old Saga, Deep-Dive-lite, and evergreen-feature impulses** — those are no longer separate deep beats scattered across the issue; the deep work concentrates here. Exactly one runs; there is no second mandated anchor. (The whole-issue Deep Dive special is unaffected — the Long Read is a weekly *movement*, the Deep Dive is a whole-issue interruption.)
+
+- **Markup:** the Transmission long-read vocabulary — a `.lr-title` header (mono eyebrow, `<h2>` with an `<em>` accent, a `.stand` standfirst, a mono `.byline`) followed by `.lr-body` (drop-cap `p.first`, then paragraphs, with `.pullquote`, `.plate-img` captioned images, and an optional `.aside-note` = **The Case Against** counter-argument, all drawn from the body as the material earns them).
 
 ### Synthesis-by-juxtaposition — a prose technique for contested material (v8.38, W-4)
 
@@ -209,7 +231,7 @@ Movement II is **one** deep anchor per issue — the issue's sole considered cen
 - **Attribution is mandatory and load-bearing.** Every excerpt names its source (outlet, analyst, named commentator) and traces to the research bundle as an `opinion` fact with a real `quote` (§ Key Rules → Borrowed angles; RT-22). An unattributed or invented "some argue…" excerpt is a fabrication fail — this technique **only** works with real, citable disagreement.
 - **The excerpts must genuinely conflict.** Two takes that agree, or a strawman set up to be knocked down, defeat the purpose. Choose views that actually diverge (the hawk and the regional analyst; the launch-day rave and the considered pan) so the *gap between them* is the content.
 - **The arrangement is the argument — so order deliberately.** Sequence for the reading you want the *juxtaposition* (not your narration) to produce: e.g. confident claim → the fact that complicates it → the quieter view that reframes both. Do not add a connective sentence telling the reader what to conclude ("what this really shows is…") — that is the hollow-connective-sentence trope and it collapses the technique back into invented thesis.
-- **It is a prose technique, not a new component.** No new markup or CSS: render the excerpts with the existing vocabulary — a short run of attributed `<blockquote>`s, or the `.source-strip` / image-quote pattern — inside Caught Up's context or the Long Read's body. It counts against the ~12-component palette only insofar as it reuses those existing components. If a future issue needs a visually distinct stacked-juxtaposition block, add a contract to `references/component-contracts.md` then — until then it is prose.
+- **It is a prose technique, not a new component.** No new markup or CSS: render the excerpts with the existing Transmission vocabulary — a short run of attributed `<blockquote>`s, or a `.pullquote` with its `.attr` — inside the Long Read's `.lr-body` (or, tightly, as two attributed lines in a Caught Up item). If a future issue needs a visually distinct stacked-juxtaposition block, add a contract to `references/component-contracts.md` then — until then it is prose.
 - **Where it belongs.** Caught Up (a single tight juxtaposition of two attributed lines on the week's most-contested story) and the Long Read (a fuller 3–4-excerpt sequence when the anchor is a genuine dispute). It replaces the retired impulse to write a World section that adjudicated — the magazine arranges the disagreement instead of resolving it.
 
 ## Anchor-Piece Rotation (deprecated v8.15)
@@ -290,8 +312,8 @@ For **any section touching live news** (World, Touchline, Pixel & Byte, Toolkit,
 
 ### Sections exempted from the Lead + Catch-Up shape
 
-- **Cover, Navigator, The Letter, Footer, Colophon** — chrome / framing, single-piece by design. (The Letter is the opening movement; see § The Letter above.)
-- **The Week, Composed** and **Caught Up** (Movement I) — single-piece by design (a composed on-ramp paragraph; an ≤8-line digest). Not Lead/Catch-Up shaped. (These replace the retired Long Shelf.)
+- **The tuner cover + station list, the band-heads, movement dividers, The Letter, the sign-off footer, Colophon** — chrome / framing, single-piece by design. (The Letter is the opening movement; see § The Letter above. The cover, station list, band-heads and dividers are stitcher-generated chrome, not authored bands.)
+- **The Week in Numbers** and **Caught Up** (Movement I) — single-piece by design (a personal `.figures` ledger; an ≤8-line `.digest`). Not Lead/Catch-Up shaped.
 - **The Long Read** (Movement II) — the single deep anchor; it *is* the considered piece, not a section running the Lead/Catch-Up split.
 - **On the Radar** — compact date-grid format. Keep its existing shape (but see § On the Radar update below for the "why it matters" half-line addition).
 
@@ -357,7 +379,7 @@ Each issue includes the **fixed sections** (including **The Desk** with 1–2 se
 
 | Rotating Section | Preferred Slot | Reasoning |
 |---|---|---|
-| The Week in Numbers | Movement I — after The Week, Composed / before Caught Up | A quick personal read-out to open on |
+| The Week in Numbers | Movement I — after The Letter / before Caught Up | A quick personal read-out to open on |
 | **Bookmark** *(fixed books rail — not rotating)* | Between Screen & Sound and The Desk | The lightweight books rail runs every issue; natural flow from entertainment to books |
 | Listening | Between Screen & Sound and The Desk | Pairs with entertainment, breaks before the service desk |
 | **The Desk** *(1–2 service columns)* | Between Screen & Sound / Bookmark and The Threads | The service department sits in the "act on it" cluster before the close |
@@ -372,11 +394,9 @@ Each issue includes the **fixed sections** (including **The Desk** with 1–2 se
 - If two sections share a preferred slot, move one to its alternate position.
 - The read-next connectors chain naturally through whatever sections are present.
 
-**Each rotating section uses the full visual toolkit.** They are not second-class citizens:
-- Every rotating section gets a `.sec-watermark`, section divider (`hr.divider.dv-[name]`), section-label, and a navigator card.
-- Each uses at least 2-3 different component types (see component palette below).
-- Background colours and accent colours are defined in CSS (`--[name]-bg`, `--[name]-accent`).
-- Use `.reveal` animations on key elements.
+> **Band order is fixed by the skeleton (v8.39).** In the Transmission build the movement/band order is deterministic (`weekly.json`), so the placement above is now realised by which skeleton slot a pick fills, not by hand-placing sections: the 1–2 non-Desk rotating picks occupy the **`rotating_1` / `rotating_2`** slots inside THE ROUNDS (between Bookmark and The Desk), the trigger-driven Saga fills a rotating slot when a peg fires, and the stitcher emits every band-head, divider and station-list entry. The planner's job is *selection* (which rotating domains run this week) — placement follows from the slot.
+
+**Every band wears the one constant identity.** Rotating bands are not visually distinct costumes — they render in the same warm Transmission chrome as every other band (band-code eyebrow, waveform dividers, vermilion accent). There are **no per-section background/accent tokens** in the weekly (those `--[name]-bg` / `--[name]-accent` tokens are special-edition machinery, forbidden here). A rotating band's inner content uses the round vocabulary — typically the `.items` list — with at least a couple of distinct component types across the issue so no two consecutive bands read the same.
 
 
 ### Research Scoping
@@ -415,39 +435,43 @@ Search groups for rotating sections are in `references/sections.md`. Only search
 
 ## Component Quick Reference
 
-**The weekly kit is a tight ~12 load-bearing components (v8.37, W-3 — trimmed from ~50).** The sprawling palette was part of what bloated the issue: every extra component invited another slot to fill. The standard weekly now reaches for **these twelve** and no more. No two consecutive sections use the same layout pattern; aim for 8–12 distinct types across the issue.
+**The weekly kit is per-band (v8.39 — the Transmission vocabulary).** The old sprawling `.split-60-40` / `.stat-bar` / `.dyk` / `.also-cards` / `.results-strip` palette is **retired for the weekly** — it belonged to the pre-Transmission chrome. Every band now has **one canonical inner component** (a few carry sub-parts), and a writer produces exactly that inner markup for their band. The stitcher owns everything around it. The reference for exact markup is `docs/mockups/reference-issue-transmission.html`; a working example of every band is in `references/golden/weekly/chapters/`.
 
-| # | Component | Class(es) | When to use |
-|---|---|---|---|
-| 1 | The Angle box | `.angle` | The one sharp claim in a piece that carries a real argument. **Never reprint as a pull-quote (banned voice-tic).** |
-| 2 | Pull quote | `.pull-quote` (+`.centered`, +`.wide`) | 2–3 per issue to break prose. A real quote or a genuinely resonant line — never a minted aphorism, never the Angle box verbatim. |
-| 3 | Stats row | `.stat-bar` > `.stat` > `.stat-num.count-up` | Key numbers for a story (also the base of The Week in Numbers). |
-| 4 | Did You Know | `.dyk` | 3–5 scattered, section-aware colours. |
-| 5 | Split layout | `.split-60-40`, `.split-40-60` | Text beside an image or a sidebar — the default two-column break. |
-| 6 | Image (hero / offset) | `.hero-bleed`, `.img-offset` | Section-opening full-bleed image, or a 60%-width image the text wraps around. Every round wants at least one image. |
-| 7 | Also cards | `.also-cards` > `.also-card` | 2-col card grid for 4+ short items (picks, the Bookmark rail). |
-| 8 | Rating dots | `.rating` > `.dot.filled`/`.dot` | Reviews in Screen & Sound and the Bookmark rail. |
-| 9 | Category dot | `.radar-cat` (+`.film`,`.game`,`.tv`,`.lego`,`.tech`,`.book`,`.music`) | Release Radar and On the Radar rows. |
-| 10 | Results strip | `.results-strip` > `.result-card` | Match results with large scores (Touchline). |
-| 11 | Read-next | `.read-next` | Section-to-section teaser link that chains the movements. |
-| 12 | The case against | `.case-against` > `.ca-label`/`.ca-body` | **The Semafor-style counter-argument callout (v8.37).** Available **where a section carries a real argument** (usually the Long Read, occasionally a round with a genuine thesis): a short, honest "here's the strongest case the other way" box. Not decoration — only where there's a real argument to answer. Section-aware accent. See `references/component-contracts.md`. |
+**Per-band inner content — what the writer produces** (no `<section>`, no band-head, no divider):
 
-**Always-on structural components (not counted in the twelve — they render where their section requires them, not as palette choices):** `.sec-watermark`, `.sec-opener`, `.reveal` (leaf elements only — never on containers), `.count-up`, and the fixed-section components `.foreword` (The Letter), `.caught-up` (Caught Up), `.do-this-week` (each Desk column's closing pin), `.the-threads` (The Threads), `.week-in-numbers` (The Week in Numbers). These are required by their movements and don't compete for palette slots.
+| Band | Component | Inner markup the writer authors |
+|---|---|---|
+| **The Letter** | `.letter` | `<h2>` · `.kicker` · drop-cap `<p class="first">` · body `<p>`s · `.sig` ("— The Editor") · mono `.sigline` date stamp |
+| **The Week in Numbers** | `.figures` | `.figures-frame` > `.fig-caption` + N × `.fig-row` (`.fig-label` = `.k` key + `.d` gloss, beside `.fig-val`; use `<small>` unit and `.win` for a highlight) + `.fig-foot` |
+| **Caught Up** | `.digest` | `<ol class="digest">` of **≤8** `<li><p><b>Label.</b> …</p></li>` (**HARD cap 8**) |
+| **The Long Read** | `.lr-title` + `.lr-body` | `.lr-title` (mono eyebrow · `<h2>` with `<em>` · `.stand` · mono `.byline`) then `.lr-body` (drop-cap `p.first`, paragraphs, `.pullquote` with `.attr`, `.plate-img` = `.plate-box` + `.plate-cap`, optional `.aside-note` = **The Case Against**) |
+| **The Touchline** | `.lead` + `.scores` + `.items` | `.lead` (with a `.drop` opener) · `.scores` > `.score`(`.wide`) cards · `.items` > `li` (mono `.freq` + `<h3>` + `<p>`) |
+| **Pixel & Byte** | `.items` | `.items` > `li` (`.freq` + `<h3>` + `<p>`) |
+| **Screen & Sound** | `.with-rail` | `.with-rail` = `.items` + `<aside class="rail" data-role="release-radar">` (`.rail__label` + N × `.rail-item` with `.when` / `.what`). **Release Radar is this rail — never its own band.** |
+| **Bookmark** | `.picks` | `<ul class="picks">` > `li` (`.spine` + `<h3>` + `.meta` + `<p>`) — a few book picks, a line each |
+| **The Desk** | `.desk` | `.desk` > 1–2 × `.deskcol[data-desk-column]`, each `<h3>` + mono `.sub` + `<p>`s, **closing on a `.pin`** (`.pinlbl` + `.act` + `.why`). ONE department, 1–2 columns, NEVER 3+ |
+| **The Threads** | `.threads` | `.threads` > `.thread` (mono `.ep` + `<h3>` + `.prev` + `<p>` with `<b>Next:</b>`) |
+| **Down the Rabbit Hole** | `.rabbit` | `.rabbit` (mono `.lbl` + `.chain` of `.node` / `.arrow` + a `<p>`) |
+| **On the Radar** | `.radar` | `<ul class="radar">` > `li` (mono `.date` + `.ev` with a `<b>` lead) |
+| **Do This Week** | `.closepin` | `.closepin` (`.pinlbl` + `.act` + `.why`) — ends on a verb + a human line |
+| **Colophon** | `.endnumbers` | `.endnumbers` > 4 × `.cell` (mono `.k` + `.v` with an `<em>` accent) |
 
-**Removed from the weekly kit (v8.37 — no separate graveyard file; recorded here).** These are retired from the *standard weekly* palette (CSS is retained for special editions, which keep their own component lists — nothing is deleted from `assets/css/`): Sidebar (`.sidebar`), Quick takes (`.dual-col`), Compact takes (`.compact-take`), Margin note (`.margin-note`), Big number (`.big-number`), Display stat (`.display-stat`), Mini data viz (`.sparkline`), Card stack (`.card-stack`), Timeline (`.timeline`), Collapsible (`<details.collapsible>`), Image montage (`.img-montage`), Float image (`.img-float-left`), Also list plain (`.also-list`), Watermark-as-choice, Book cards (`.book-card` — fold into image + rating dots), Workout card (`.workout-card`), Year badge (`.year-badge`), Platform badge (`.platform-badge`), Inset divider (`.divider.inset`), Breather band (`.breather`), Also-list tiers (`.tier-*`), Compare panel (`.compare-panel`), Floated sidebar (`.sidebar-float`), Grain overlay (`.grain-overlay`), Chapter chrome (`.chapter-chrome`), Folio watermark (`.folio-watermark`), Pull-break (`.pull-break`), Marginalia (`.marginalia`), Ember period (`.mast-period`). The four **entry-opener variants** (`.entry-stat` / `.entry-quote` / `.entry-bullets` / `.entry-question`) remain available as *openers* (plain prose is the default; use one only when the content genuinely leads with a number / quote / three facts / a live question) but are not counted among the twelve.
+**Structural hooks the writer must include:** `data-role="release-radar"` on the Screen & Sound rail, and `data-desk-column` on each Desk column. These are the only invisible hooks a writer adds; the stitcher supplies the rest (`data-movement`, `data-band`, `data-role="long-read"`, `data-station`).
 
-**Entry patterns are a palette, not a rota (v8.35 — rotation enforcement retired).** The `.entry-stat`, `.entry-quote`, `.entry-bullets`, `.entry-question` and plain-prose openings are available whenever one genuinely fits the material — reach for the one the piece earns, never to satisfy a rotation. The old "no two adjacent articles may open the same way" mandate is **retired**: forcing a different opener each time was a source of the mechanical voice-tic W-1 kills at the source. Plain prose is a first-class opening; use a stat/quote/bullet/question opener only when the content actually leads with a number, a real quote, three facts, or a live question.
+**Shared inline atoms** (used inside the components above, not standalone bands): `.mono` (mono caps eyebrow/label), `.serif` (Instrument Serif display), and the `.wave` / `.tickrule` dividers — but the dividers are **chrome the stitcher places**, never authored inside band content.
 
-**Breather band usage:** place 1-2 breather bands per issue between particularly dense sections. Use light variant between light/warm backgrounds, dark variant between dark backgrounds (Touchline, Screen & Sound, Bookmark). Don't overuse — they're breathing room, not filler.
+**The special `.sp-*` vocabulary is FORBIDDEN in weeklies** (it is the special/holiday bound-magazine kit). So are the retired pre-Transmission weekly classes (`.split-60-40`, `.stat-bar`, `.dyk`, `.also-cards`, `.results-strip`, `.angle`, `.foreword`, `.caught-up`, `.do-this-week`, `.the-threads`, `.week-in-numbers`, `.sec-watermark`, `.nav-card`, `.reveal`, `.count-up`, …). A weekly that ships any of these fails the visual-consistency gate.
 
-**Rotation rule:** no 3+ screen-heights of unbroken prose anywhere. Vary which sections use split layouts, where pull quotes appear, whether history uses timeline or bullets, which also-lists use card variant. Use sidebar-float as an alternative to split layouts. Use compare panels where a natural comparison exists. (Visual variety across the issue is still the goal; article *openings* are no longer on a forced rota — see the entry-pattern note above.)
+**Variety within the constant identity.** The identity is constant, but the reading should not feel monotonous: no 3+ screen-heights of unbroken prose (the Long Read breaks itself with a `.pullquote`, a `.plate-img`, and the `.aside-note`); the rounds alternate between the list vocabulary (`.items`) and the framed vocabularies (`.scores`, `.with-rail`, `.picks`, `.desk`); and the vermilion accent stays rare (§ Accent lockdown).
 
 ---
 
 ## Issue Formats
 
 ### Standard Weekly (default)
-The full Sunday edition. **Target ~6,000–9,000 words (v8.37, W-3 — roughly a 40% cut from the old ~20-30-page issue).** This is a real target, not just guidance: the four-movement spine (one Long Read, brisk rounds, an 8-line Caught Up) is built to land in this band. It is still shaped by *movements and per-piece shape*, not a rigid quota — flex to the news, yield thin rounds rather than padding — but an issue drifting well past ~9k words has reverted to the old two-anchors-everywhere bulk and should be cut back to the spine. The deep length lives in the single Long Read; the rounds stay short. Section order per the four movements above.
+The full Sunday edition, published as **The Transmission** — the weekly's constant identity (see § Section Structure → The Transmission identity). **Target ~6,000–9,000 words (v8.37, W-3 — roughly a 40% cut from the old ~20-30-page issue).** This is a real target, not just guidance: the four-movement spine (one Long Read, brisk rounds, an 8-line Caught Up) is built to land in this band. It is still shaped by *movements and per-piece shape*, not a rigid quota — flex to the news, yield thin rounds rather than padding — but an issue drifting well past ~9k words has reverted to the old two-anchors-everywhere bulk and should be cut back to the spine. The deep length lives in the single Long Read; the rounds stay short. Section order per the four movements above.
+
+**Build model (v8.42 — deterministic stitch).** The weekly is assembled by `scripts/stitch_weekly.py` against the skeleton at `references/format-skeletons/weekly.json` (the structure of record). The stitcher **generates all chrome deterministically** — the tuner cover with its station list, the four movement dividers, every band-head, the waveform-rule dividers, the colophon and the sign-off. **Writers produce only per-band inner content** in the component vocabulary below (§ Component Quick Reference), one band per writer, written to `/tmp/signal-build/chapters/<band_id>.html` with **no `<section>` wrapper, no band-head, no movement divider** — the stitcher owns all of that. The canonical visual/markup target is `docs/mockups/reference-issue-transmission.html`, and the golden fixture at `references/golden/weekly/` is a real valid issue (plan + one inner-content file per band).
 
 ### Visual-density floor (every non-holiday special, v8.22.4)
 

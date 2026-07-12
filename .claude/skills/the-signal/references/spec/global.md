@@ -205,8 +205,8 @@ For **any section touching live news** (World, Touchline, Pixel & Byte, Toolkit,
 
 ### Sections exempted from the Lead + Catch-Up shape
 
-- **Cover, Navigator, The Letter, Footer, Colophon** — chrome / framing, single-piece by design. (The Letter is the opening movement; see § The Letter above.)
-- **The Week, Composed** and **Caught Up** (Movement I) — single-piece by design (a composed on-ramp paragraph; an ≤8-line digest). Not Lead/Catch-Up shaped. (These replace the retired Long Shelf.)
+- **The tuner cover + station list, the band-heads, movement dividers, The Letter, the sign-off footer, Colophon** — chrome / framing, single-piece by design. (The Letter is the opening movement; see § The Letter above. The cover, station list, band-heads and dividers are stitcher-generated chrome, not authored bands.)
+- **The Week in Numbers** and **Caught Up** (Movement I) — single-piece by design (a personal `.figures` ledger; an ≤8-line `.digest`). Not Lead/Catch-Up shaped.
 - **The Long Read** (Movement II) — the single deep anchor; it *is* the considered piece, not a section running the Lead/Catch-Up split.
 - **On the Radar** — compact date-grid format. Keep its existing shape (but see § On the Radar update below for the "why it matters" half-line addition).
 

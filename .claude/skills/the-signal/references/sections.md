@@ -3,6 +3,8 @@
 Detailed content rules, voice notes, and research guidance for each section.
 Only read the sections appearing in this issue.
 
+> **Weekly identity note (v8.42 — Transmission).** In the standard weekly, every band wears the one constant **Transmission** identity (warm-cream paper, Instrument Serif + Newsreader + JetBrains Mono, waveform dividers, band-code eyebrows, the single vermilion accent). **Any per-section "background / accent" colour mentioned in a brief below is legacy and does NOT apply to the weekly** — the weekly has no per-section palette tokens (those are special-edition machinery). Each band's markup is the Transmission component named in its brief and in editorial-spec.md § Component Quick Reference; a writer authors only that band's inner content (no `<section>`, no band-head, no divider — the stitcher generates all chrome). The `.sp-*` special vocabulary is forbidden in weeklies. (The Desk / Toolkit / Ledger / Itinerary / Session briefs whose CSS-token notes reference `.ledger-section` etc. describe state-file continuity, not weekly styling.)
+
 ---
 
 ## Cross-cutting principle: Lens, not Filter (v8.19)
@@ -25,17 +27,17 @@ Applies to **every** section (replaces the old per-section "opinions mandatory /
 
 ---
 
-### Cover
-Masthead, date, issue number, editorial hook headline, 6-10 topic tags. Ambient animation via CSS.
+### Cover *(chrome — stitcher-generated, not a writer band)*
+The Transmission cover: the `.masthead` wordmark ("The *Signal*"), a `.dataline` (transmission №, date range, location, folio, reading time), a lead block (`.lead__eyebrow` band code + `.lead__head` hook + `.lead__stand` standfirst), the oversized `.folio` numeral, and the tuner **station list** (see Navigator). All of it is generated deterministically by `stitch_weekly.py` from the chapter plan's `cover` block and per-band `nav_*` fields — a writer never authors cover markup.
 
-### Navigator
-Visual card grid linking to each section. Top 1-2 cards use `.nav-card.lead` (two-column span with thumbnail). Section icons on each card. 8-14 cards total.
+### Navigator → the tuner "station list" *(chrome — stitcher-generated)*
+The weekly's navigator is the **tuner station list** on the cover: `<nav class="tuner">` > `.station` coverlines, each a mono `.freq` + a `.name` (a few marked `.station.on` for the accented picks), and each carrying `data-station`. It replaces the old card-grid navigator. 4–13 stations (the navigator-ceiling invariant). Entries come from the plan's per-band `nav_coverline_html` / `nav_freq` / `nav_on` fields; the stitcher renders them. No writer authors it.
 
 ### The Letter (replaces the author-less Foreword, v8.35)
-The signed editor's letter that opens the issue. A **named Editor speaking in the first person** ("I") states **the week's thesis** and **connects the dots across domains** — what the week added up to, the threads that rhyme. ~120–200 words, signed "— The Editor". First-person Editor voice is explicitly allowed (the reader stays invisible — never "you"/"your son"/profile callbacks; see Gate 1A's split). It is the opening *movement*, not an essay: say the thesis, draw two or three threads together, hand off to the issue. Keep the `.foreword` markup and its automatic drop-cap; the navigator card reads "The Letter". No "meanwhile" / "elsewhere" filler.
+The signed editor's letter that opens the issue. A **named Editor speaking in the first person** ("I") states **the week's thesis** and **connects the dots across domains** — what the week added up to, the threads that rhyme. ~120–200 words, signed "— The Editor". First-person Editor voice is explicitly allowed (the reader stays invisible — never "you"/"your son"/profile callbacks; see Gate 1A's split). It is the opening *movement*, not an essay: say the thesis, draw two or three threads together, hand off to the issue. Markup: the `.letter` component — `<h2>` + `.kicker` + drop-cap `<p class="first">` + body `<p>`s + `.sig` + mono `.sigline`. Writer authors this inner content only (band `the_letter`); the station list reads "The Letter". No "meanwhile" / "elsewhere" filler.
 
-### The Week in Numbers *(fixed — the personal stat strip, v8.36)*
-A small, compact **personal** stat strip near the top of the issue (after The Letter). A handful of numbers about *the reader's* week — not the news. Uses the existing `.stat-bar` / `.stat` component vocabulary (compact, not a full section; wrap in `.week-in-numbers`).
+### The Week in Numbers *(fixed — the personal ledger, v8.36)*
+A small, compact **personal** stat panel near the top of the issue (after The Letter). A handful of numbers about *the reader's* week — not the news. Markup: the Transmission `.figures` component (band `week_in_numbers`) — a `.figures-frame` with `.fig-caption`, one `.fig-row` per number (`.fig-label` = `.k` + `.d`, beside `.fig-val`), and a `.fig-foot`.
 - **Garmin miles + current training block** (from state `training_phase`) — e.g. "31.2 mi · Base block, wk 6".
 - **FPL rank** — the reader's Fantasy Premier League overall rank (and movement if known).
 - **The Juventus result** — the week's Juve scoreline.
@@ -43,7 +45,9 @@ A small, compact **personal** stat strip near the top of the issue (after The Le
 - 4–5 stats, quietly personal. If a number genuinely isn't available this week, drop that stat rather than inventing it.
 - **Distinct from the Colophon's "Issue in Numbers"** (§ End-of-Issue Colophon in the spec): that block counts *the issue* (words, sections, links, images); this one counts *the reader's week*. Both ship every issue; never merge them.
 
-### The Long Shelf — Worth Your Time
+### The Long Shelf — Worth Your Time *(SPECIAL EDITIONS ONLY — retired from the weekly)*
+> **Not a weekly section.** The Long Shelf is retired from the standard weekly (its on-ramp job is now the tuner cover's station list + The Letter; its books role is the fixed **Bookmark** rail). It survives only inside certain special editions (e.g. the Season Review's closing shelf). Do not schedule it in a weekly.
+
 6-8 recommended reads/listens/watches with linked titles, source, and one-sentence hook. Two-column grid. 2 of 8 items should be genuine wildcards outside the magazine's usual coverage areas. Each item's one-sentence hook should sell the content on its own merit — not explain why it was selected for this reader.
 
 **Wildcard discipline:** 2 of 8 items MUST be wildcards (outside the magazine's usual coverage areas). Mark them with `wildcard: true` in the chapter plan.
@@ -76,8 +80,8 @@ Gaming + LEGO. Warm background, ember accent. **Consumer tech / AI / apps moved 
 - **Scope:** Nintendo Switch 2, Steam Deck / Steam Machine, GeForce Now, high-quality tablet games, **plus generalist** — the biggest game of the year gets covered even if it's not on Switch.
 - **Floor (the section minimum, write it every week):** *what came out this week, plus highlights of the next month* — with **real explainers, never namedrops.** "Namedropped three game releases and moved on" is the exact failure this section exists to prevent: tell the reader what each one is, why it matters, and link it.
 - **Upside on top of the floor (the Lead):** a *new* rumour-with-analysis, or a release genuinely worth playing — the angled Lead that passes the two-factor test. Months-old rumours the reader already knows (the CIRQA-leak failure) don't qualify.
-- **LEGO folds in here** as an occasional "play"-cluster beat (new set announcements, build reviews, retiring sets). Use "Family Picks" sidebars — don't sprinkle "your son will love" through prose.
-- **Catch-Up roundup:** 4+ gaming items, each with what/why/link.
+- **LEGO folds in here** as an occasional "play"-cluster beat (new set announcements, build reviews, retiring sets) — a row in the list, not a sidebar; don't sprinkle "your son will love" through prose.
+- **Markup (band `pixel_byte`):** the `.items` list — `li` rows, each a mono `.freq` + `<h3>` headline + a `<p>` (what it is, why it matters, a `<b>` verdict tag). Real explainers, never namedrops.
 
 **Considered-piece backbone (inverted v8.34):** the considered piece is either an angled gaming Lead (300–500 words) **or** the curated releases-this-week-plus-next-month roundup written with real explainers — a roundup with a named layer (the gaming floor above), authored *as the Lead*, not as bare catch-up. The Catch-Up roundup (new rumours, smaller items) is optional grounding on top. A Companion is optional — only if a second distinct gaming topic genuinely earns a full piece.
 
@@ -90,8 +94,8 @@ The Desk is the restored **service department**: the part of the issue whose job
   - **Good:** *"Move your emergency fund to Chase Saver at 4.75% AER — it's the top easy-access rate right now with no intro-bonus cliff."*
   - **Bad:** *"Consider a high-interest savings account."* (no named product, no criterion, not do-it-this-week).
   - The Session's pin might be a specific session/protocol to run this week; The Itinerary's a specific booking/window to act on; The Toolkit's a specific app/setting to install or change. One pin per column, always the last element.
-- **Markup:** a `.do-this-week` block (see `references/component-contracts.md`). The pin is service, not an aphorism — exempt from the one-aphorism-per-issue cap, and it is *not* the column's Lead.
-- **Placement:** the running columns sit together as the service department, in the "act on it" cluster before The Threads and the close (see § Rotation Mechanics → Placement in the spec).
+- **Markup:** the band is ONE `.desk` (band `the_desk`, `data-role="desk"`) holding **1–2** `.deskcol[data-desk-column]` — each `<h3>` + mono `.sub` + `<p>`s + a closing `.pin` (`.pinlbl` + `.act` action line + `.why` rationale). **NEVER 3+ columns; never a column as its own band or station.** The pin is service, not an aphorism — exempt from the one-aphorism-per-issue cap, and it is *not* the column's Lead. (The issue's single strongest pin repeats as the standalone `.closepin` in Do This Week.)
+- **Placement:** the running columns sit together as the one Desk department in THE ROUNDS (skeleton band `the_desk`), in the "act on it" cluster before The Threads and the close.
 
 ### The Toolkit *(Desk service column — tech; yields strictly, v8.36)*
 Tech & tools: consumer tech, consumer AI, apps, tablet productivity, digital workflows. Light blue-grey background, cyan accent. **A Desk service column (v8.36) — was a fixed-but-yields section; content unchanged. Absorbs the consumer-tech + AI that used to live in Pixel & Byte, alongside its existing apps/productivity beat.** Closes on a **"Do This Week" pin** (see § The Desk).
@@ -133,11 +137,10 @@ Tech & tools: consumer tech, consumer AI, apps, tablet productivity, digital wor
 
 **Flexible space within the section:** Sub-topics expand and contract based on what happened. A Ryder Cup Sunday can take 70% of the section with football condensed to quick results. A LIV-folds week, an Olympic host vote, or an F1 ownership shake-up can do the same. A quiet international break can mean a shorter Touchline overall. The section should never exceed ~30% of the total issue length, but content moves freely within it.
 
-- Sparklines for form, position-change indicators
-- **Serie A ≥ PL** in coverage depth during normal domestic weeks. Cover the whole league — title race, relegation, stories — not just Juve. **Serie A table must show the full table or at minimum top 10 + relegation zone, not just the top 5.** PL table same standard.
+- **Markup (band `touchline`):** a `.lead` (with a `.drop` opener) → a `.scores` grid of `.score`(`.wide`) result cards → an `.items` list (mono `.freq` + `<h3>` + `<p>`) for the secondary stories. Data first, then narrative.
+- **Serie A ≥ PL** in coverage depth during normal domestic weeks. Cover the whole league — title race, relegation, stories — not just Juve. Give the table its due in prose/`.items`; don't reduce the league to the top five.
 - Golf majors and other major sporting events get proper coverage when in season — they can lead the section
 - Football reads like editorial, not match reports — the reader already knows the scores
-- Image montage for match photos
 
 **Considered-piece backbone (v8.27, inverted v8.34):** one considered piece (the most compelling sport story that passes the two-factor test — lead with the angle, never a play-by-play recap of a match the reader watched). The Catch-Up roundup is optional grounding, but **when it runs it must carry the football the reader actually wants** — transfer rumours and confirmations, squad/World-Cup announcements, what's coming up — plus one-line safety-net results for the week's majors. The old failure was spending the whole section on "Arsenal won" and dropping the transfer catch-up entirely. An optional Companion: when the Lead is football, a Companion must be a non-football sport (golf, F1, rugby, tennis, snooker, governance/structural); when the Lead is a Priority-2/3 non-football story, a Companion may be football.
 
@@ -145,23 +148,21 @@ Tech & tools: consumer tech, consumer AI, apps, tablet productivity, digital wor
 Film, TV, streaming, Star Wars (always search). Dark purple background, neon accent.
 - **Culture-desk voice, borrowed takes** (cross-cutting rule): synthesise the views critics actually hold; never invent a verdict.
 - Opinions are mandatory — not press-release summaries
-- Rating dots for reviews
-- Card stack for Quick Reviews
-- Collapsible sections for spoiler content
-- **The Release Radar (mandatory + enforced, v8.30):** 15-20+ items across ALL categories (film, TV, games, LEGO, tech, books, music; **≥4 categories must appear**). Sub-sections: Now Showing, Coming Soon, Leaving Soon, Also Streaming. Category dots for visual scanning. **Items within each sub-section must be in chronological date order** (earliest first for Coming Soon, most recent first for Now Showing/Also Streaming). Each item carries a date and a `status` (`happened`/`upcoming`, reusing the v8.29 tag). It is its own `release_radar` chapter rendered right after Screen & Sound; `validate-chapter-plan.py` hard-fails a weekly that omits it or ships fewer than 15 items / 4 categories. (It used to be unenforced "tail content" and silently dropped — that gap is now closed.)
-- "For the Kids" sidebar when relevant
-- **No overlap with On the Radar** — Release Radar covers product/media releases only
+- **Markup (band `screen_sound`):** the whole band is one `.with-rail` = a main `.items` list (mono `.freq` + `<h3>` + `<p>`) **beside** the Release Radar rail. The verdict/quality signal lives in the prose, not a separate rating widget.
+- **The Release Radar — the rail INSIDE Screen & Sound, NOT its own band (v8.39).** It is `<aside class="rail" data-role="release-radar">` inside the `.with-rail`: a `.rail__label` + N × `.rail-item`, each a `.when` (dated, e.g. "OUT NOW · 11 JUL" / "SOON · 18 JUL") + a `.what` (`<b>`title + `<i>`meta). Keep items in date order. It is **never** its own section or station (the release-radar-inside-screen-sound invariant hard-fails that). The reader wants a scannable dated shortlist here, not an exhaustive 20-item feed — a handful of well-chosen dated items.
+- **No overlap with On the Radar** — Release Radar covers product/media releases only; everything else is On the Radar's `.radar` list.
 
 **Considered-piece backbone (v8.27, inverted v8.34):** one considered piece (a review or culture-critic take that passes the two-factor test) with an **optional** Catch-Up roundup of the week's releases/news (what/why/link) grounding it. The Release Radar is in addition. An optional Companion is forbidden from sharing the Lead's franchise.
 
 **Sub-format: Director's Cut (monthly).** Every 4th standard weekly, the Screen & Sound Lead runs in Director's Cut mode — a 550-750 word essay on a show, film, director, or arc rather than the week's news beat. Voice: culture critic, not news reviewer. Examples: "What Andor Season 2 understood that the prequels didn't" / "Why Severance's pacing is the show's secret weapon" / "The Coen Brothers' grammar of disappointment". Companion remains standard (250-450 words, distinct topic family, may carry the week's main beat the Director's Cut displaced). State file tracks `last_directors_cut_date`; planner-side hard rule `weeks_since_last_directors_cut >= 4`. Tagged in chapter plan as `sub_format: "directors_cut"`. Optionally marked in the rendered section header with `<span class="sub-format-tag">Director's Cut</span>` inside `.section-label`.
 
 ### Bookmark *(fixed — the lightweight books rail)*
-A fixed, lightweight books rail in THE ROUNDS every issue — a few picks with a line each: what to read. Dark brown background, gold accent. It is a rail, not an essay: brisk picks, not a considered piece. **The deep book piece, when there is one, is the Long Read, not here.** It carries **no "Do This Week" pin** — it is discovery, not the service desk.
+**Bookmark IS books — the one books home (v8.39, resolves the Bookmark-vs-Shelf contradiction).** Books are the **fixed `Bookmark` rail every issue** (band `bookmark`), never a rotating "Shelf". A fixed, lightweight books rail in THE ROUNDS — a few picks with a line each: what to read. It is a rail, not an essay: brisk picks, not a considered piece. **The deep book piece, when there is one, is the Long Read, not here.** It carries **no "Do This Week" pin** — it is discovery, not the service desk.
+- **Markup:** the `.picks` component — `<ul class="picks">` > `li`, each a `.spine` + `<h3>` + `.meta` (genre/format line) + a `<p>` on why it's worth reading.
 - **Owns books (primary).** Podcasts, audio drama, and music live in **Listening**; Bookmark may mention a notable music release in passing when Listening isn't running, but the dedicated music read is Listening's.
-- **Catch-up rule:** when Bookmark returns to real named picks after a quiet stretch, research covers the entire period since it last carried books (not just the past 7 days). Check state file for `last_shelf_date`. No good book news or music release should fall through the cracks.
-- **Review like a book column, borrowed takes:** premise, tone, what makes it worth reading — synthesised from real reviews, not invented. **Real, named titles or the rail yields (v8.28)** — never write about empty categories or invent book names; if research found no real books, Bookmark yields this week rather than padding.
-- Books: a few recommendations, book cards with rating dots — a line each. Both epic series AND short fiction. Occasional narrative history (Dan Jones, Tom Holland, Mary Beard).
+- **Catch-up rule:** when Bookmark's picks refresh after a quiet stretch, research covers the entire period since it last carried new books (not just the past 7 days). Check state file for `last_shelf_date`. No good book news should fall through the cracks.
+- **Review like a book column, borrowed takes:** premise, tone, what makes it worth reading — synthesised from real reviews, not invented. **Real, named titles or the rail yields (v8.28)** — never write about empty categories or invent book names; if research found no real books, Bookmark runs fewer picks rather than padding.
+- A few recommendations, a line each. Both epic series AND short fiction. Occasional narrative history (Dan Jones, Tom Holland, Mary Beard).
 - **CRITICAL: No spoilers.** Never reveal plot twists, character deaths, endings for any book. This rule is absolute but invisible — never announce compliance with it.
 - Music: light-touch when Listening isn't running. Synthwave/retrowave or a notable release noted in passing — the deep music read lives in Listening.
 
@@ -242,23 +243,29 @@ Lore deep dives — Star Wars universe, fantasy book worlds, show analysis. Deep
 - Track in state file `the_saga.last_appeared` (for "when did it last run", not for cadence scheduling).
 
 ### The Threads *(fixed — the continuity engine, v8.36)*
-The reader-facing continuity section: the magazine's "previously on…". Built off the state file's `ongoing_stories`, **extended beyond World** to named sagas across all domains, plus the reader's own life-threads. Part of the closing movement, placed just before On the Radar. Warm neutral ground; uses the `.the-threads` > `.thread` markup.
-- **Two kinds of thread:**
-  1. **Named sagas** (`.thread-saga`, from `ongoing_stories`, any domain): an Iran-endgame thread, a Serie A / Antonelli title-run thread, a long-running show arc, a Switch-2-ecosystem thread. Each is a few lines — a "previously on / where it stands now" recap — plus a link.
-  2. **Life-threads** (`.thread-life`): the reader's own ongoing arcs — the marathon build from state `training_phase` ("Week 6 of the block; long run up to 18 miles"), the upcoming trip from state `upcoming_trips` (the Efteling trip). Recapped the same way.
+The reader-facing continuity section: the magazine's "previously on…". Built off the state file's `ongoing_stories`, **extended beyond World** to named sagas across all domains, plus the reader's own life-threads. Part of the closing movement (band `the_threads`), placed just before On the Radar. Markup: the `.threads` component — one `.thread` per recap, each a mono `.ep` episode tag + `<h3>` + a `.prev` "previously" line + a `<p>` for where it stands now (ending on a `<b>Next:</b>` beat).
+- **Two kinds of thread (distinguish by the `.ep` tag, e.g. `SAGA · …` vs `LIFE-THREAD · …`):**
+  1. **Named sagas** (from `ongoing_stories`, any domain): an Iran-endgame thread, a Serie A / Antonelli title-run thread, a long-running show arc, a Switch-2-ecosystem thread. Each is a few lines — a "previously on / where it stands now" recap.
+  2. **Life-threads:** the reader's own ongoing arcs — the marathon build from state `training_phase` ("Week 6 of the block; long run up to 18 miles"), the upcoming trip from state `upcoming_trips` (the Efteling trip). Recapped the same way.
 - **`ongoing_stories` now feeds ONLY The Threads (v8.37, W-3).** In v8.36 it was dual-use (the Topic-Lock suppression backstop *and* The Threads' source). W-3 **retires the suppression backstop** (`check-topic-lock.py` deleted; § Topic Lock in `editorial-spec.md`). `ongoing_stories` is now a single-purpose, reader-facing asset — The Threads reads it to recap named sagas — plus the Colophon "Next Week" note. `training_phase` + `upcoming_trips` additionally feed the life-threads. A recurring story is *recapped here*, not suppressed from a Lead.
 - **Voice:** situation-report + "previously on" recap — factual, compact, each thread a few lines and a link. No invented angle or new opinion; it is a recap, not a Lead, and carries **no "Do This Week" pin** (that is the Desk's job).
 - **Typically 3–6 threads.** Pick the live ones; don't pad. A thread with no genuine development since last issue can be held.
 
 ### On the Radar — Coming Up
-8-10 upcoming items: fixtures, sporting events, local NI events, parkruns, dates to know, personal milestones, deadlines, cultural events. Compact grid with date + event + detail. Category dots.
-- **No overlap with Release Radar.** Product/media releases go in Release Radar. This is for everything else.
+8-10 upcoming items: fixtures, sporting events, local NI events, parkruns, dates to know, personal milestones, deadlines, cultural events. Markup: the `.radar` component (band `on_the_radar`) — `<ul class="radar">` > `li`, each a mono `.date` + an `.ev` (a `<b>` lead + the detail).
+- **No overlap with Release Radar.** Product/media releases go in Release Radar (the rail inside Screen & Sound). This is for everything else.
 - When The Itinerary is absent, parks and travel news can appear here as one-liners.
 
-**Mandatory links + "Why it matters" lines:** Every item links to its canonical source. The 2-3 most important items per issue get a 10–15 word "Why it matters" line below the date+event line.
+**"Why it matters" lines:** the 2-3 most important items per issue fold a 10–15 word "why it matters" clause into the `.ev` line.
 
-### Footer
-Masthead echo, issue info line.
+### Do This Week *(fixed — the closing pin, band `do_this_week`)*
+The issue's single strongest actionable pin, surfaced as the closing beat of THE CLOSE. Markup: the `.closepin` component — `.pinlbl` label + `.act` (the action, a verb-led line) + `.why` (the human rationale). It **ends on a verb and a human line**, never an aphorism. It is the one pin the reader leaves on (the Desk columns each carry their own `.pin`; this repeats the strongest).
+
+### Colophon *(fixed — the issue accounted for, band `colophon`)*
+Markup: the `.endnumbers` component — four `.cell`s, each a mono `.k` label + a `.v` value with an `<em>` accent (issue-in-numbers · reading time · a personal number · next week's tease). The stitcher appends the `.colophon` footer wordmark and the `.signoff-line` sign-off after it.
+
+### Footer *(chrome — the sign-off line, stitcher-generated)*
+The `.colophon` footer + `.signoff-line`: a small waveform rule, the sign-off sentence, and a mono stamp ("SET IN INSTRUMENT SERIF, NEWSREADER & JETBRAINS MONO · FILED …"). Generated by the stitcher, not authored.
 
 ### Topic Families & Recent Leads
 
@@ -274,34 +281,29 @@ The full enumeration lives in `references/chapter-plan-schema.md`. Adding a new 
 
 ---
 
-## Component Palettes for Rotating Sections
+## Component Vocabulary per Band (Transmission weekly)
 
-### Component Palettes for Rotating Sections
+Every weekly band renders in the **one constant Transmission identity** — there are **no per-section background/accent tokens** in the weekly (those `--[name]-bg` / `--[name]-accent` and `.sp-*` tokens are special-edition machinery, forbidden here). Each band has one canonical inner component; a writer produces exactly that inner markup for their assigned band (no `<section>`, no band-head, no divider — the stitcher owns all chrome). See editorial-spec.md § Component Quick Reference for the full table and `references/golden/weekly/chapters/` for worked examples.
 
-| Section | Primary Components | Why |
-|---|---|---|
-| **The Toolkit** *(Desk column — tech)* | `.also-cards` (app/tech picks), `.compact-grid` (2 reviews side by side), `.compare-panel` (product A vs B), `.sidebar-float` ("What it replaces"), `.entry-stat` ("3M downloads"), **`.do-this-week` (closing pin)** | Card-based layout suits app/tech discovery; compare panels for hardware. Every Desk column closes on a `.do-this-week` pin |
-| **Bookmark** | `.book-card` / `.book-grid`, `.card-stack`, `.rating`, `.pull-quote`, `.collapsible` | Fixed lightweight books rail; CSS classes unchanged (`.shelf-section`) |
-| **This Week in History** | `.timeline`, `.year-badge`, `.img-offset`, `.sec-opener` | Already well-defined from weekly version |
-| **Listening** *(podcasts + audio drama + music)* | `.also-cards` (episodes/albums), `.entry-bullets` (show notes / label news), `.rating` (episode/album quality), `.pull-quote` (memorable line) | Cards suit episodic + album recs |
-| **The Ledger** *(Desk column — finance + fintech + side-hustle; was Money)* | `.big-number-row` (ISA allowance, rate, revenue), `.compare-panel` (card/account A vs B), `.stat-bar` (rates/cashback %), `.pull-quote` (editorial take), **`.do-this-week` (closing pin)** | Data-forward; big numbers and compare panels make money scannable. Closes on the `.do-this-week` pin |
-| **The Itinerary** *(Desk column — travel + parks + NI local; was Places)* | `.timeline` (trip/event dates), `.split-60-40` (destination/find + image), `.img-montage` (destination photos), `.dyk` ("Did you know Efteling…"), **`.do-this-week` (closing pin)** | Timeline for trips; images sell destinations. Closes on the `.do-this-week` pin |
-| **The Session** *(Desk column — fitness)* | `.workout-card` (protocol table), `.big-number` (a training stat), `.pull-quote` (a coaching line), `.do-this-week` (closing pin) | Protocol tables + one closing action; closes on the `.do-this-week` pin |
-| **The Saga** *(trigger-driven)* | `.dual-col` (essay layout), `.pull-quote` (memorable lore line), `.collapsible` (spoilers), `.timeline` (multi-show arc) | Essay-shaped; collapsibles isolate spoiler content |
-| **The Threads** *(fixed — continuity)* | `.the-threads` > `.thread` (`.thread-saga` / `.thread-life`), each a recap line + link | "Previously on…" list; no pin (recap, not service) |
-| **The Week in Numbers** *(fixed — personal strip)* | `.week-in-numbers` wrapping `.stat-bar` > `.stat` | Compact personal read-out; reuses the stat vocabulary |
+| Band | Inner component the writer authors |
+|---|---|
+| **The Desk columns** *(Session / Ledger / Itinerary / Toolkit)* | `.deskcol[data-desk-column]` inside the one `.desk` — `<h3>` + mono `.sub` + `<p>`s + closing `.pin` (`.pinlbl` / `.act` / `.why`). 1–2 columns, never 3+ |
+| **Bookmark** *(fixed books rail)* | `.picks` — `li` with `.spine` + `<h3>` + `.meta` + `<p>` |
+| **This Week in History** *(rotating)* | `.items` list (mono `.freq` date + `<h3>` + `<p>`), Wikipedia links in the prose |
+| **Listening** *(rotating — podcasts + audio drama + music)* | `.items` list (episode/album per row, `.freq` + `<h3>` + `<p>`) |
+| **The Saga** *(trigger-driven)* | `.items` list (or, when it earns the depth, it runs as the Long Read instead); spoilers stay out of book content entirely |
+| **The Threads** *(fixed — continuity)* | `.threads` > `.thread` (mono `.ep` + `<h3>` + `.prev` + `<p>` ending on `<b>Next:</b>`) — no pin (recap, not service) |
+| **The Week in Numbers** *(fixed — personal ledger)* | `.figures` > `.figures-frame` (`.fig-caption` + `.fig-row`s + `.fig-foot`) |
 
+### Down the Rabbit Hole *(fixed band in THE CLOSE — the `.rabbit` component, band `rabbit_hole`)*
 
-### Down the Rabbit Hole (recurring sidebar)
-
-A light sidebar that appears every 3-4 weeks, embedded within any section where it fits naturally. Not a standalone section — it's a boxed nudge (use `.sidebar-float` or `.sidebar`) placed inside a fixed or rotating section.
+The signature discovery ritual, now a **fixed band in THE CLOSE** (runs when due), not an embedded sidebar. Markup: the `.rabbit` component — a mono `.lbl` ("YOU LIKE THIS → SO TRY THIS"), a `.chain` of two `.node`s joined by an `.arrow` (`BECAUSE YOU LOVE … → YOU MIGHT FALL INTO …`), then a `<p>` of 80–160 words that hands the reader a genuine adjacent rabbit hole with a couple of starting points named in the prose.
 
 - **Purpose:** "This is something you might be interested in exploring based on your tastes." An adjacent-interest nudge — the kind of thing a good editor would slip in because they know the reader.
-- **Tone:** Curious, not prescriptive. "You like X, so you might find Y interesting" — then a brief intro (50-100 words) with 2-3 links to get started.
+- **Tone:** Curious, not prescriptive. "You like X, so you might fall into Y" — a short, inviting paragraph, ideally rhyming with the week's Long Read.
 - **Examples:** "You're into Malazan — have you tried Lois McMaster Bujold's Vorkosigan Saga?" / "Given your interest in kettlebells and Dan John, the Highland Games community might be worth a look." / "Synthwave fan? The demoscene has similar vibes and a 40-year history."
-- **Not a full section.** No navigator card, no watermark, no dedicated background. It's a sidebar box with a "Down the Rabbit Hole" label, styled to match whichever section hosts it.
-- **Research:** When it's due to appear, one quick search based on the reader's existing interests to find a genuine adjacent rabbit hole. No research needed if nothing surfaces — skip it.
-- **Cadence:** Every 3-4 weeks. Track in state file as `down_the_rabbit_hole` with `last_appeared`.
+- **Research:** When it's due, one quick search based on the reader's existing interests to find a genuine adjacent rabbit hole. If nothing surfaces, the band yields that week.
+- **Cadence:** roughly every 3-4 weeks. Track in state file as `down_the_rabbit_hole` with `last_appeared`.
 
 ### Research Scoping
 

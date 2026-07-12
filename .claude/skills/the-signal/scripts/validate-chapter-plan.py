@@ -186,9 +186,17 @@ class ValidationError(Exception):
     pass
 
 errors = []
+warnings = []
 
 def err(msg):
     errors.append(msg)
+
+def warn(msg):
+    warnings.append(msg)
+
+# Path to the weekly skeleton (SINGLE SOURCE OF TRUTH for weekly structure).
+# scripts/ -> the-signal/ -> references/format-skeletons/weekly.json
+WEEKLY_SKELETON_PATH = Path(__file__).resolve().parent.parent / "references" / "format-skeletons" / "weekly.json"
 
 def require_key(obj, key, path):
     if key not in obj:
@@ -742,6 +750,186 @@ def check_compliance(compliance):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Weekly (Transmission) plan validation — NEW deterministic, skeleton-driven schema
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _load_weekly_skeleton():
+    """Load references/format-skeletons/weekly.json (the weekly SINGLE SOURCE OF TRUTH).
+    Returns the parsed dict, or None (with an error queued) if it can't be read."""
+    try:
+        with open(WEEKLY_SKELETON_PATH, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, json.JSONDecodeError) as e:
+        err(f"[WEEKLY] could not load weekly skeleton at '{WEEKLY_SKELETON_PATH}': {e}")
+        return None
+
+
+def check_weekly_plan(plan):
+    """Blocking validation for the NEW weekly (Transmission) plan shape.
+
+    The weekly was rebuilt around a DETERMINISTIC, skeleton-driven stitcher
+    (scripts/stitch_weekly.py). A weekly plan is therefore MUCH simpler than the
+    legacy chapter-plan schema (which still governs SPECIAL formats): its chapters
+    are band SELECTIONS — each chapter_id must be a band_id in
+    references/format-skeletons/weekly.json — plus cover copy and per-band tuner
+    coverlines. This validator is the Phase-4 gate for that shape; the band set,
+    required bands, cardinalities and nav flags are all DERIVED FROM the skeleton
+    (never hardcoded), so the skeleton stays the single source of truth.
+
+    Rules (hard-fail unless noted as a warning):
+      1. issue_meta: format=='weekly', execution_mode=='parallel', date=YYYY-MM-DD,
+         issue_number is an int.
+      2. cover present with a non-empty lead_head/lead_head_html and standfirst.
+      3. every chapters[].chapter_id is a known band_id in weekly.json.
+      4. chapter_num is a contiguous 1..N sequence (no gaps/dupes).
+      5. every required:true band in the skeleton is present.
+      6. long_read appears exactly once (skeleton cardinality).
+      7. exactly one the_desk; Desk columns must NOT appear as their own chapters.
+      8. release_radar must NOT be its own chapter (it renders inside screen_sound).
+      9. 4–13 chapters carry a nav coverline (warn outside a looser 3–13).
+     10. bands with nav:false SHOULD NOT carry a nav coverline (warn).
+    """
+    skeleton = _load_weekly_skeleton()
+    if skeleton is None:
+        return
+
+    bands_def = skeleton.get("bands", {})
+    if not isinstance(bands_def, dict) or not bands_def:
+        err("[WEEKLY] weekly skeleton has no 'bands' map — cannot validate.")
+        return
+
+    known_ids     = set(bands_def.keys())
+    required_ids  = {bid for bid, d in bands_def.items() if isinstance(d, dict) and d.get("required")}
+    nav_false_ids = {bid for bid, d in bands_def.items() if isinstance(d, dict) and d.get("nav") is False}
+    desk_pool     = set(bands_def.get("the_desk", {}).get("column_pool", []))
+
+    # Bands that must NEVER stand alone as their own chapter: The Desk's nested
+    # columns (session/ledger/itinerary/toolkit) and anything a band `contains`
+    # (e.g. Release Radar lives inside screen_sound). Derived from the skeleton.
+    forbidden_standalone = set()
+    for bid, d in bands_def.items():
+        if not isinstance(d, dict):
+            continue
+        forbidden_standalone |= set(d.get("column_pool", []))
+        forbidden_standalone |= set(d.get("contains", []))
+
+    # ── Rule 1: issue_meta ──
+    meta = plan.get("issue_meta")
+    if not isinstance(meta, dict):
+        err("[WEEKLY] issue_meta must be an object.")
+        meta = {}
+    if meta.get("format") != "weekly":
+        err(f"[WEEKLY] issue_meta.format must be 'weekly' (got {meta.get('format')!r}).")
+    if meta.get("execution_mode") != "parallel":
+        err(f"[WEEKLY] issue_meta.execution_mode must be 'parallel' (got {meta.get('execution_mode')!r}).")
+    d = meta.get("date")
+    if not (isinstance(d, str) and DATE_RE.match(d)):
+        err(f"[WEEKLY] issue_meta.date='{d}' must match YYYY-MM-DD.")
+    if not isinstance(meta.get("issue_number"), int):
+        err(f"[WEEKLY] issue_meta.issue_number must be an integer (got {meta.get('issue_number')!r}).")
+
+    # ── Rule 2: cover ──
+    cover = plan.get("cover")
+    if not isinstance(cover, dict):
+        err("[WEEKLY] plan.cover is missing or not an object (needs lead_head[_html] + standfirst).")
+    else:
+        lead = cover.get("lead_head_html") or cover.get("lead_head")
+        if not (isinstance(lead, str) and lead.strip()):
+            err("[WEEKLY] cover.lead_head or cover.lead_head_html must be a non-empty string.")
+        sf = cover.get("standfirst")
+        if not (isinstance(sf, str) and sf.strip()):
+            err("[WEEKLY] cover.standfirst must be a non-empty string.")
+
+    # ── chapters (rules 3–10) ──
+    chapters = plan.get("chapters")
+    if not isinstance(chapters, list) or not chapters:
+        err("[WEEKLY] plan.chapters must be a non-empty array of band selections.")
+        return
+
+    id_counts = {}
+    nums = []
+    for i, ch in enumerate(chapters):
+        cpath = f"chapters[{i}]"
+        if not isinstance(ch, dict):
+            err(f"[WEEKLY] {cpath} must be an object.")
+            continue
+
+        cid = ch.get("chapter_id")
+        if cid is None:
+            err(f"[WEEKLY] {cpath}: missing required 'chapter_id'.")
+        else:
+            id_counts[cid] = id_counts.get(cid, 0) + 1
+            # Rule 8 + Rule 7: forbidden standalone bands (Release Radar, Desk columns)
+            if cid in forbidden_standalone:
+                if cid in RELEASE_RADAR_CHAPTER_IDS or cid == "release_radar":
+                    err(f"[WEEKLY] {cpath}.chapter_id='{cid}' must NOT be its own chapter — "
+                        f"Release Radar renders inside the screen_sound band (data-role='release-radar'), never as a band.")
+                else:
+                    err(f"[WEEKLY] {cpath}.chapter_id='{cid}' must NOT be its own chapter — "
+                        f"it is a Desk column ({sorted(desk_pool)}); columns nest inside the single the_desk band.")
+            # Rule 3: unknown band id
+            elif cid not in known_ids:
+                err(f"[WEEKLY] {cpath}.chapter_id='{cid}' is not a known weekly band_id in weekly.json "
+                    f"(known: {sorted(known_ids)}).")
+
+        cn = ch.get("chapter_num")
+        if not isinstance(cn, int) or cn < 1:
+            err(f"[WEEKLY] {cpath}.chapter_num={cn!r} must be a positive integer.")
+        else:
+            nums.append(cn)
+
+    # Rule 4: chapter_num contiguous 1..N
+    if nums:
+        n = len(nums)
+        if sorted(nums) != list(range(1, n + 1)):
+            err(f"[WEEKLY] chapter_num values {sorted(nums)} must form a contiguous 1..{n} sequence "
+                f"(no gaps or duplicates).")
+
+    # Duplicate bands: each weekly band appears at most once.
+    dupes = sorted(cid for cid, c in id_counts.items() if c > 1)
+    if dupes:
+        err(f"[WEEKLY] duplicate chapter_id(s): {dupes}. Each weekly band appears at most once.")
+
+    present_set = set(id_counts.keys())
+
+    # Rule 5: every required:true band present
+    missing = sorted(required_ids - present_set)
+    if missing:
+        err(f"[WEEKLY] missing required band(s): {missing}. "
+            f"Every required:true band in weekly.json must appear as a chapter.")
+
+    # Rule 6: long_read cardinality (skeleton-declared, defaults to 1)
+    lr_card = bands_def.get("long_read", {}).get("cardinality", 1)
+    lr_count = id_counts.get("long_read", 0)
+    if lr_count != lr_card:
+        err(f"[WEEKLY] 'long_read' must appear exactly {lr_card} time(s); found {lr_count}.")
+
+    # Rule 7: exactly one the_desk
+    desk_count = id_counts.get("the_desk", 0)
+    if desk_count != 1:
+        err(f"[WEEKLY] exactly one 'the_desk' chapter is required; found {desk_count}. "
+            f"(Desk columns nest inside it — they are never their own bands.)")
+
+    # Rule 9: nav coverline count (WARN only)
+    nav_count = sum(
+        1 for ch in chapters
+        if isinstance(ch, dict) and (ch.get("nav_coverline") or ch.get("nav_coverline_html"))
+    )
+    if nav_count < 3 or nav_count > 13:
+        warn(f"[WEEKLY] {nav_count} chapters carry a nav coverline; the tuner reads best with 4–13 "
+             f"stations (looser bound 3–13).")
+
+    # Rule 10: nav:false bands should not carry a coverline (WARN only)
+    for i, ch in enumerate(chapters):
+        if not isinstance(ch, dict):
+            continue
+        cid = ch.get("chapter_id")
+        if cid in nav_false_ids and (ch.get("nav_coverline") or ch.get("nav_coverline_html")):
+            warn(f"[WEEKLY] chapters[{i}] band '{cid}' has nav:false in the skeleton but carries a nav "
+                 f"coverline — it will not become a tuner station; drop the coverline.")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Main
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -800,26 +988,49 @@ def main():
     assets     = plan.get("assets", {})
     compliance = plan.get("compliance", {})
 
-    if isinstance(issue_meta, dict):
-        check_issue_meta(issue_meta)
+    fmt = issue_meta.get("format") if isinstance(issue_meta, dict) else None
 
-    if isinstance(chapters, list):
-        check_chapters(chapters, issue_meta if isinstance(issue_meta, dict) else {})
+    if fmt == "weekly":
+        # NEW deterministic weekly (Transmission) schema — validated against the
+        # weekly skeleton. The special-oriented old-schema checks (check_chapters'
+        # required_fields backbone, check_discovery_picks, etc.) assume the LEGACY
+        # chapter-plan shape that now governs SPECIAL formats only, so they are
+        # skipped here. issue_meta/assets/compliance blocks are format-agnostic and
+        # still run.
+        if isinstance(issue_meta, dict):
+            check_issue_meta(issue_meta)
+        check_weekly_plan(plan)
+        if isinstance(assets, dict):
+            check_assets(assets)
+        if isinstance(compliance, dict):
+            check_compliance(compliance)
+    else:
+        if isinstance(issue_meta, dict):
+            check_issue_meta(issue_meta)
 
-    if isinstance(assets, dict):
-        check_assets(assets)
+        if isinstance(chapters, list):
+            check_chapters(chapters, issue_meta if isinstance(issue_meta, dict) else {})
 
-    if isinstance(compliance, dict):
-        check_compliance(compliance)
+        if isinstance(assets, dict):
+            check_assets(assets)
 
-    # v8.36 — rotating-section cadence enforcement (old rules 7 & 8) RETIRED.
-    # Domain cadence is now an editorial checklist line, not a planner gate.
+        if isinstance(compliance, dict):
+            check_compliance(compliance)
 
-    # v8.19 — lens-not-filter discovery quota (weekly only)
-    if isinstance(issue_meta, dict):
-        check_discovery_picks(plan, issue_meta)
+        # v8.36 — rotating-section cadence enforcement (old rules 7 & 8) RETIRED.
+        # Domain cadence is now an editorial checklist line, not a planner gate.
+
+        # v8.19 — lens-not-filter discovery quota (weekly only)
+        if isinstance(issue_meta, dict):
+            check_discovery_picks(plan, issue_meta)
 
     # ── Report ──
+    if warnings:
+        print(f"NOTE — {len(warnings)} warning(s) (non-blocking):")
+        for i, w in enumerate(warnings, 1):
+            print(f"  ({i}) {w}")
+        print()
+
     if errors:
         print(f"FAIL — {len(errors)} error(s) found in '{plan_path}':")
         print()
