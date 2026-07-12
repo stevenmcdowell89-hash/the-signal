@@ -41,7 +41,7 @@ So the plan:
 Legend: ⬜ not started · 🔶 in progress · ✅ done · ⏭️ deferred (with note)
 
 - ⬜ **W0 — Map current pipeline mechanics** (stitcher/validators/templates/spec). *(agent running)*
-- ⬜ **W1 — Transmission design system CSS** (token layer + all components + dark variant).
+- ✅ **W1 — Transmission design system CSS** — `assets/css/weekly/00-transmission.css` (25KB): full reference port + `--ink-2` tokenization + warm-night `prefers-color-scheme: dark` variant. Verified: all component classes present, no special/holiday leakage.
 - ⬜ **W2 — Weekly template-parts rewrite** (cover/masthead, movements/bands, navigator/tuner, all sections).
 - ⬜ **W3 — Weekly-only asset bundle** (stitch-issue.sh / inject-assets.sh: Transmission bundle only, ~150KB).
 - ⬜ **W4 — Structure + reliability spine:**
