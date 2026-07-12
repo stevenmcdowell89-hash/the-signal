@@ -25,6 +25,8 @@ This reference defines the exact HTML component patterns for every section in ev
 ```
 **Wrong patterns:** `<section class="cover">`, `cover-tag`, `cover-body`, `cover-kicker`, `cover-sub`, `cover-brand-dot`, `cover-top-bar` — none exist in CSS.
 
+> **For the WEEKLY (Transmission), do NOT hand-write this cover.** `scripts/stitch_weekly.py` GENERATES the Transmission cover — the `.masthead` wordmark, waveform, lead, dataline, and folio — from the plan's `cover` block. A weekly writer never emits cover markup. The markup above is the **special-format** cover only.
+
 ### Navigator
 ```html
 <section class="nav-section" id="nav">
@@ -46,6 +48,8 @@ This reference defines the exact HTML component patterns for every section in ev
 **Color classes:** `world`, `tech`, `shelf`, `screen`, `session`, `history`, `football`. Each applies a left-border accent colour.
 **Wrong patterns:** `nav-card-num`, `nav-card-title`, `nav-card-desc`, `section-label` as navigator heading — none exist or are wrong elements.
 
+> **For the WEEKLY (Transmission), there is no hand-written navigator.** `scripts/stitch_weekly.py` GENERATES the cover **tuner** ("station list") from each chapter's `nav_coverline` / `nav_coverline_html` field — one `.station[data-station]` row per nav band present, in skeleton order. Writers supply only the coverline text in the plan; they never emit `.nav-grid` / `.nav-card` / `.tuner` / `.station` markup. The `.nav-section` / `.nav-card` markup above is the **special-format** navigator only.
+
 ### Footer
 ```html
 <footer class="footer" id="footer">
@@ -55,212 +59,264 @@ This reference defines the exact HTML component patterns for every section in ev
 </footer>
 ```
 
-### Colophon (Standard Weekly — end of issue, before Footer)
+## Standard Weekly (Transmission) — writer band-content contracts
+
+> **Architecture — read this first.** A standard weekly is assembled by `scripts/stitch_weekly.py`, which GENERATES all chrome deterministically from `format-skeletons/weekly.json`: the cover/masthead/tuner, the four movement dividers, every band-head, the colophon bar, and the sign-off. **A weekly writer produces ONLY the inner content of ONE band**, written to `/tmp/signal-build/chapters/<band_id>.html`. That file has **NO `<section>` wrapper, NO band-head, NO movement divider, NO cover** — the stitcher wraps it. Every contract below therefore shows the **INNER markup only**; copy the shape from the golden fixture at `references/golden/weekly/chapters/<band_id>.html` and the reference render at `docs/mockups/reference-issue-transmission.html`.
+>
+> **Mandatory structural hooks** (the validator keys on these, decoupled from display classes):
+> - `data-role="release-radar"` on the Screen & Sound rail `<aside>`.
+> - `data-desk-column` on each Desk column `<div class="deskcol">`.
+>
+> **Forbidden in weeklies:** the special/holiday `.sp-*` and `.hol-*` vocabularies, and the retired weekly classes — `.movement-band`, `.the-desk`, `.desk-column`, `.caught-up` / `.cu-list`, `.week-in-numbers` / `.stat-bar`, `.nav-card`, `.radar-grid` / `.radar-row` / `.radar-cat` / `.radar-platform`, `.do-this-week`, `.thread-recap`, `.section-label`, `.sec-watermark`. **None of these exist in the Transmission stylesheet** (they are superseded for the weekly). Use only the classes named in the contracts below.
+
+### The Letter — `the_letter` (content: `letter`)
+The editor's note. Inner markup only; the stitcher wraps it in `<section class="letter">`.
 ```html
-<section class="colophon" id="colophon">
-  <div class="colophon-mast">The Signal<span>.</span></div>
-  <div class="colophon-sub">Issue in Numbers · Next Week · A Fact</div>
-  <div class="colophon-grid">
-    <div class="colophon-block">
-      <div class="colophon-block-label">Issue in Numbers</div>
-      <ul class="colophon-stats">
-        <li><strong>[N]</strong> words</li>
-        <li><strong>[N]</strong> sections</li>
-        <li><strong>[N]</strong> links</li>
-        <li><strong>[N]</strong> images</li>
-        <!-- If anchor ran: -->
-        <li>Anchor: <strong>[Section Name]</strong></li>
-      </ul>
-    </div>
-    <div class="colophon-block colophon-next">
-      <div class="colophon-block-label">Next Week</div>
-      <p>[1-2 sentences teasing what's coming — tracked story, rotating section due, event on horizon. Editor's note tone.]</p>
-    </div>
-    <div class="colophon-block colophon-fact">
-      <div class="colophon-block-label">A Fact</div>
-      <p>[One curious fact unrelated to this issue's stories. 20-40 words. Verifiable, genuinely interesting.]</p>
-    </div>
-  </div>
-  <div class="colophon-sign">Issue #[N] · [Date] · [Standing tagline]</div>
-</section>
+<h2>[The turn of the week, in one line.]</h2>
+<p class="kicker">[Italic sub-line — the week's throughline.]</p>
+<p class="first">[Opening paragraph. p.first gets the drop-cap automatically — no extra markup for the cap.]</p>
+<p>[One or two more paragraphs.]</p>
+<p class="sig">— The Editor</p>
+<p class="mono sigline">TRANSMITTED SUNDAY · [DD MON YYYY]</p>
 ```
-**Placement:** between On the Radar and the Footer. Single full-width block on paper background. Standard weekly only — special editions already have their own sign-off via Meanwhile.
+Shape: `h2` + `p.kicker`, one `p.first` (drop-cap) then plain `p`s, closing `p.sig` and `p.mono.sigline`.
 
-### Movement bands (Standard Weekly — the four-movement spine, v8.41)
-
-The Standard Weekly is organised as **exactly four movements**, and each opens with a **movement band** — a light, full-width labelled divider placed immediately BEFORE the first section of its movement. **All four must render** (validator-enforced): the set of `data-movement` values across `.movement-band` elements must include `{open, long-read, rounds, close}`; a weekly issue FAILs if any is missing.
-
+### The Week in Numbers — `week_in_numbers` (content: `figures`)
+The personal ledger panel — the reader's week, metered. `.figures` > `.figures-frame` holding a `.fig-caption`, 4–6 `.fig-row`s, and a `.fig-foot`.
 ```html
-<div class="movement-band" data-movement="open" role="separator" aria-label="Movement I — The Open">
-  <span class="mvmt-num">I</span><span class="mvmt-title">The Open</span>
+<div class="figures">
+  <div class="figures-frame">
+    <div class="fig-caption"><span>TABLE I · <b>[PANEL TITLE]</b></span><span>№[NNN]</span></div>
+    <div class="fig-row">
+      <div class="fig-label">
+        <span class="k">[Metric name]</span>
+        <span class="d">[italic gloss — what it means this week]</span>
+      </div>
+      <div class="fig-val">31.2<small>mi</small></div>
+    </div>
+    <!-- 4–6 .fig-row total. Use <small> for the unit; wrap the number in .win for the signal-red highlight -->
+    <div class="fig-foot"><span>[CARRIED FORWARD…]</span><span>[TOTALS SINCE…]</span></div>
+  </div>
 </div>
 ```
 
-The four bands (verbatim `data-movement` / num / title) and their placement:
-
-| `data-movement` | num | title | placed immediately before |
-|---|---|---|---|
-| `open` | I | The Open | The Letter (`#foreword`) |
-| `long-read` | II | The Long Read | the Long Read (`#long-read`) |
-| `rounds` | III | The Rounds | The Touchline (`#football`) |
-| `close` | IV | The Close | The Threads (`#threads`) |
-
-Markup lives in `assets/template-parts/04a-movement-band.html`; CSS in `assets/css/15c-movement-bands.css`.
-
-### The Desk — ONE nested container (Standard Weekly — the service department, v8.41)
-
-The Desk is **ONE `<section class="sec the-desk" id="desk">`** with **1–2 `.desk-column` nested `<div>`s** — never sibling `<section>`s, never 3+ columns. Exactly **ONE navigator card** points at it (`href="#desk"`, label "The Desk"). Individual columns get **no nav card and no top-level `<section>` of their own**: they are nested divs with an optional `data-desk-col` and no `id`. The four columns exploding into 3–4 standalone sections with their own nav cards is exactly the bug this container prevents. The validator FAILs (weekly) on: ≥3 `.desk-column`, 0 columns, any top-level `<section ... id="ledger|itinerary|session|toolkit">`, or any `href="#ledger|#itinerary|#session|#toolkit"` nav anchor.
-
-The Desk groups four service columns — **The Session** (fitness), **The Ledger** (money), **The Itinerary** (travel/parks/NI), **The Toolkit** (tech). Only **1–2 run per issue**, chosen by which domain is most overdue AND has real, actionable service news; a domain with nothing to act on **yields**. Each column keeps its own accent class (`.session-section` / `.ledger-section` / `.itinerary-section` / `.toolkit-section`) for colouring via `--section-accent`, and each **still ends on its `.do-this-week` pin** (see below).
-
+### Caught Up — `caught_up` (content: `digest`, HARD cap 8)
+The completeness digest: `<ol class="digest">` with **≤ 8 `<li>`** — one missable item each, a bolded dateline/label then a flat factual line. The cap is structural: never a ninth `<li>`, never collapsible. Wire-headline register, no synthesis.
 ```html
-<section class="sec the-desk" id="desk">
-  <div class="sec-watermark">Desk</div>
-  <span class="section-label">The Desk</span>
-  <p class="desk-standfirst">[Optional one-line dept standfirst — what to act on this week.]</p>
-
-  <div class="desk-column session-section" data-desk-col="session">
-    <h3 class="desk-col-title">The Session</h3>
-    [column body…]
-    <div class="do-this-week"> … </div>          <!-- mandatory: closes the column -->
-  </div>
-
-  <!-- optionally ONE more .desk-column (1–2 total, never 3+) -->
-
-  <div class="read-next">Up next: <a href="#threads">The Threads <span class="arrow">→</span></a> — [teaser]</div>
-</section>
+<ol class="digest">
+  <li><p><b>[Dateline.]</b> [One tight factual line.]</p></li>
+  <!-- ≤ 8 <li> total — HARD cap -->
+</ol>
 ```
 
-See `assets/template-parts/13a-the-desk.html` for the full column bodies and `assets/css/15c-movement-bands.css` for the `.the-desk` / `.desk-column` CSS.
-
-#### The Desk — "Do This Week" pin (closes every Desk column, v8.36)
-
-The **mandatory closing element of every Desk column** (The Session, The Ledger, The Itinerary, The Toolkit). One concrete do-it-this-week action, the *why* attached, the selection criterion stated (not vibes). One pin per column, always the last child of the column's `.desk-column` div. It inherits the host column's section accent — no per-column CSS needed. Not an aphorism; not the Lead.
-
+### The Long Read — `long_read` (content: `longread`, exactly one per issue)
+The single feature: a `.lr-title` block then a `.lr-body` prose column. Optional inline breaks — `.pullquote`, `.plate-img`, `.aside-note`.
 ```html
-<div class="do-this-week">
-  <span class="dtw-label">Do This Week</span>
-  <p class="dtw-action">[The one concrete action — a named product / protocol / booking.]</p>
-  <p class="dtw-why">[Why this one — the stated criterion, e.g. "top easy-access rate, no intro-bonus cliff".]</p>
+<div class="lr-title">
+  <div class="mono" style="color:var(--signal);">[EYEBROW]</div>
+  <h2>[Headline with an <em>accent</em> word]</h2>
+  <p class="stand">[Standfirst — one or two sentences.]</p>
+  <p class="mono byline">BY THE EDITOR · [PLACE] · [DATE]</p>
+</div>
+<div class="lr-body">
+  <p class="first">[Opening paragraph — auto drop-cap via p.first.]</p>
+  <p>[body…]</p>
+
+  <div class="pullquote">
+    [A resonant line.]
+    <span class="attr">[ATTRIBUTION]</span>
+  </div>
+
+  <p class="noindent">[first paragraph after a break — .noindent suppresses the run-on indent]</p>
+
+  <div class="plate-img">
+    <div class="plate-box"><span class="glyph">[FIG. 01 · PLACEHOLDER LABEL]</span></div>
+    <div class="plate-cap">
+      <span class="mono fig">FIG. 01</span>
+      <span class="txt">[Italic caption.]</span>
+    </div>
+  </div>
+
+  <div class="aside-note">
+    <div class="lbl mono">THE CASE AGAINST · <b>THE OTHER READING</b></div>
+    <h4>[The counter-case, in a line.]</h4>
+    <p>[The strongest honest counter-argument, sourced from real coverage — never a strawman.]</p>
+  </div>
+</div>
+```
+`.aside-note` is the weekly's honest counter-argument device (the old "case against"), used only where there is a real argument to answer — usually here. `.plate-img` is a CSS placeholder: `.plate-box` + `.glyph`, never a bare `<img>`.
+
+### The Touchline — `touchline` (content: `round` — `scores` + `items`)
+Sport. An intro `.lead` (opening with a `.drop` clause), an optional `.scores` grid for the marquee result, then an `.items` list of quick rows.
+```html
+<p class="lead"><span class="drop">[Opening clause]</span> — [the rest of the intro].</p>
+
+<div class="scores">
+  <div class="score wide">
+    <span class="mono tag">[FREQ · COMPETITION · STAGE]</span>
+    <h3>[The headline result]</h3>
+    <p>[One or two lines. <span class="num">[score / verdict]</span>]</p>
+  </div>
+  <!-- plain .score cells pair two-up; .score.wide spans full width -->
+</div>
+
+<ul class="items">
+  <li>
+    <span class="freq">101.2</span>
+    <div>
+      <h3>[Item headline]</h3>
+      <p>[One or two lines. <b>[tag]</b>]</p>
+    </div>
+  </li>
+  <!-- more .items li -->
+</ul>
+```
+
+### Pixel & Byte — `pixel_byte` (content: `round` — `items`)
+Gaming. A plain `.items` list — same row shape as The Touchline's items (`.freq` + `<div><h3>…</h3><p>…</p></div>`).
+```html
+<ul class="items">
+  <li>
+    <span class="freq">110.1</span>
+    <div><h3>[Headline]</h3><p>[One or two lines. <b>[tag]</b>]</p></div>
+  </li>
+  <!-- more li -->
+</ul>
+```
+
+### Screen & Sound — `screen_sound` (content: `round` — `with-rail`; contains Release Radar)
+Watch & listen, with the **Release Radar as its side rail — never its own band**. `.with-rail` holds an `.items` list plus an `<aside class="rail" data-role="release-radar">`. The **`data-role="release-radar"` hook is mandatory** (validator-enforced: the radar must be a descendant here and must never render as its own band or nav station).
+```html
+<div class="with-rail">
+  <ul class="items" style="margin-top:0;">
+    <li>
+      <span class="freq">120.5</span>
+      <div><h3>[Headline]</h3><p>[One or two lines. <b>[tag]</b>]</p></div>
+    </li>
+    <!-- a couple of items -->
+  </ul>
+
+  <aside class="rail" data-role="release-radar" aria-label="Release Radar">
+    <div class="rail__label">
+      <span class="mono t">RELEASE RADAR</span>
+      <span class="mono">DATED</span>
+    </div>
+    <div class="rail-item">
+      <span class="when">[OUT NOW · DD MON]</span>
+      <span class="what"><b>[Title]</b><i>[medium · detail]</i></span>
+    </div>
+    <!-- several .rail-item; dated, chronological -->
+  </aside>
 </div>
 ```
 
-- **`.dtw-action`** — the imperative + the specific named thing ("Move your emergency fund to Chase Saver at 4.75% AER"). Never a hedge ("consider…").
-- **`.dtw-why`** — the criterion that makes *this* the pick. This is what separates the pin from a vibe.
-- Renders with JS off (plain block, section-accent border). No script dependency.
-
-### The Threads — continuity engine (Standard Weekly — fixed, near the close, v8.36)
-
-Reader-facing "previously on…" list built off `ongoing_stories` (+ `training_phase` / `upcoming_trips` for life-threads). Each `.thread` is a recap line or two and a link. No pin (recap, not service).
-
+### Bookmark — `bookmark` (content: `round` — `picks`)
+The fixed books rail every issue. (There is **no** rotating "The Shelf"; the deep book piece, when there is one, is the Long Read.) `<ul class="picks">` of coloured-`.spine` rows.
 ```html
-<section class="sec the-threads" id="threads">
-  <span class="section-label">The Threads</span>
-  <h2>Where things stand</h2>
-  <div class="thread thread-saga">
-    <div class="thread-title">[Saga name — e.g. Iran endgame]</div>
-    <p class="thread-recap">[Previously on / where it stands now — a few lines.] <a href="https://…">Follow it</a></p>
+<ul class="picks">
+  <li>
+    <span class="spine" aria-hidden="true"></span>
+    <div>
+      <h3>[Book / pick title]</h3>
+      <p class="meta">[Genre · shape · note]</p>
+      <p>[Why it's on the nightstand — two or three lines.]</p>
+    </div>
+  </li>
+  <!-- typically 3 picks; spine colour is CSS-assigned by row position -->
+</ul>
+```
+
+### The Desk — `the_desk` (content: `desk`)
+The service department: **ONE** `.desk` container holding **1–2** `.deskcol` columns (drawn from Session / Ledger / Itinerary / Toolkit) — **NEVER 3+**, and never a column as its own band or nav entry. Each column carries the mandatory **`data-desk-column`** hook and **ends on a `.pin`** (its Do-This-Week action).
+```html
+<div class="desk">
+  <div class="deskcol" data-desk-column>
+    <h3>[Department name — e.g. The Session]</h3>
+    <span class="mono sub">[DOMAIN · CONTEXT]</span>
+    <p>[The read — what moved, why it matters. <b>[key number]</b>.]</p>
+    <div class="pin">
+      <div class="pinlbl mono">DO THIS WEEK · <b>[DEPARTMENT]</b></div>
+      <p class="act">[The one concrete, named action — imperative, no hedge.]</p>
+      <p class="why">[The criterion that makes THIS the pick — stated, not vibes.]</p>
+    </div>
   </div>
-  <div class="thread thread-life">
-    <div class="thread-title">[Life-thread — e.g. Marathon build]</div>
-    <p class="thread-recap">[Week 6 of the block; long run up to 18 miles; taper starts in three weeks.] <a href="https://…">…</a></p>
+  <!-- optionally ONE more .deskcol; 1–2 total, never 3+ -->
+</div>
+```
+
+### The Threads — `the_threads` (content: `threads`)
+"Previously on…" continuity (recap, not service — no pin). `.threads` > `.thread` rows: an `.ep` tag, then a title, a `.prev` recap line, and the current-state paragraph.
+```html
+<div class="threads">
+  <div class="thread">
+    <span class="ep">[SAGA · NAME  /  LIFE-THREAD · NAME]</span>
+    <div>
+      <h3>[Thread title]</h3>
+      <p class="prev">Previously: [where it stood].</p>
+      <p>[Where it stands now. <b>Next:</b> [what to watch].]</p>
+    </div>
   </div>
   <!-- typically 3–6 threads -->
-</section>
-```
-
-### The Week in Numbers — personal stat strip (Standard Weekly — fixed, near the top, v8.36)
-
-Compact personal read-out reusing the `.stat-bar` / `.stat` vocabulary, wrapped in `.week-in-numbers`. Distinct from the Colophon's "Issue in Numbers" (that counts the issue; this counts the reader's week).
-
-```html
-<section class="week-in-numbers" id="week-in-numbers" aria-label="The Week in Numbers">
-  <div class="win-label">The Week in Numbers</div>
-  <div class="stat-bar">
-    <div class="stat"><div class="stat-num">31.2</div><div class="stat-label">Garmin miles · base wk 6</div></div>
-    <div class="stat"><div class="stat-num">412k</div><div class="stat-label">FPL rank</div></div>
-    <div class="stat"><div class="stat-num">2–1</div><div class="stat-label">Juventus</div></div>
-    <div class="stat"><div class="stat-num">4.75%</div><div class="stat-label">top easy-access AER</div></div>
-  </div>
-</section>
-```
-
-### Caught Up — the 8-line completeness digest (Standard Weekly — Movement I, v8.37)
-
-The **hard-capped 8-line, non-expandable** news-breadth digest that discharges the week's completeness up front (§ Caught Up). Exactly ≤8 `<li>`, one missable item each — a specific fact + a link. No expand affordance, no "…and more". It renders complete with JS off (a plain list — there is nothing to expand). Caught Up owns the issue's news-breadth floor, so downstream rounds carry no safety-net headlines.
-
-```html
-<section class="caught-up" id="caught-up" aria-label="Caught Up">
-  <div class="cu-label">Caught Up</div>
-  <ul class="cu-list">
-    <li><a href="https://…">[One tight line — a specific fact the reader can act on or ignore.]</a></li>
-    <!-- ≤ 8 items total, never more, never collapsible -->
-  </ul>
-</section>
-```
-
-- **Cap is structural:** 8 `<li>` maximum. If there's a ninth, it wasn't missable enough.
-- **Voice:** flat, factual, fast — wire-headline register. No angle, no synthesis (that's the Letter / Long Read).
-
-### The case against — the Semafor counter-argument callout (Standard Weekly — v8.37)
-
-A short, honest "here's the strongest case the other way" box, available **where a section carries a real argument** — usually the Long Read, occasionally a round with a genuine thesis. Not decoration: only where there's a real argument to answer. It inherits the host section's accent. Never invent the counter-case — it must be a real position that exists in the research (Borrowed angles, our voice).
-
-```html
-<aside class="case-against">
-  <span class="ca-label">The case against</span>
-  <p class="ca-body">[The strongest honest counter-argument, sourced from real coverage — one or two sentences.]</p>
-</aside>
-```
-
-- **`.ca-label`** — the fixed "The case against" eyebrow (accent-coloured, mono-caps).
-- **`.ca-body`** — the counter-argument itself; attributed in spirit (a real position), never a strawman.
-- One per argument at most; renders as a plain bordered block with JS off.
-
-### Release Radar & On the Radar (Standard Weekly — shared `.radar-*` markup)
-
-Both use the same date-grid `.radar-*` vocabulary; they differ in placement, `id`, category set, and what they list. Never duplicate items between them.
-
-- **Release Radar is NOT its own section and has NO navigator card.** It renders **INSIDE Screen & Sound** (`#screen`) as an `<h3>The Release Radar</h3>` heading followed by a `.radar-grid` block (as the canonical `assets/template-parts/12-screen-sound.html` already does). There is no `<section ... id="release-radar">` and no `href="#release-radar"` anywhere — the validator FAILs (weekly) on either. It lists 15-20 upcoming media releases.
-- **On the Radar** keeps its own `<section ... id="radar">` and its own nav card; it lists forward-calendar events.
-
-Release Radar, folded inside `#screen`:
-
-```html
-<!-- …inside <section class="sec screen-section" id="screen"> … -->
-<h3>The Release Radar</h3>
-<div class="radar-grid">
-  <h3 style="margin-top:8px">Now Showing / Just Dropped</h3>
-  <div class="radar-row">
-    <span class="radar-date">11 Jun</span>
-    <div><span class="radar-cat game"></span><strong>Starseeker: Astroneer Expeditions</strong> — Early Access <span class="radar-platform">Steam / Switch 2</span></div>
-  </div>
-  <!-- 15-20 rows; grouped Now Showing / Coming Soon / Leaving Soon; chronological within each -->
 </div>
 ```
 
-On the Radar, its own section:
-
+### Down the Rabbit Hole — `rabbit_hole` (content: `rabbit`)
+The discovery ritual. A framed `.rabbit` block: a `.lbl`, a two-node `.chain` (from what you love → where you fall), then the prose invitation.
 ```html
-<section class="sec radar-section" id="radar">
-  <span class="section-label">On the Radar</span>
-  <h2>What's Coming</h2>
-  <div class="radar-grid">
-    <div class="radar-row">
-      <span class="radar-cat event"></span>
-      <span class="radar-date">18 Jun</span>
-      <a href="https://…">[Event — what's happening]</a>
+<div class="rabbit">
+  <span class="mono lbl">YOU LIKE THIS → SO TRY THIS</span>
+  <div class="chain">
+    <div class="node">
+      <span class="mono cap">BECAUSE YOU LOVE</span>
+      <span class="nm serif">[the known thing]</span>
     </div>
-    <!-- events; the 2-3 most important add a 10-15 word "why it matters" half-line -->
+    <div class="arrow" aria-hidden="true">→</div>
+    <div class="node">
+      <span class="mono cap">YOU MIGHT FALL INTO</span>
+      <span class="nm serif">[the rabbit hole]</span>
+    </div>
   </div>
-</section>
+  <p>[The invitation — one rich paragraph. <em>Italic</em> for emphasis.]</p>
+</div>
 ```
 
-- **`.radar-cat` category modifiers — Release Radar (media):** `film`, `tv`, `game`, `lego`, `tech`, `book`, `music`. **On the Radar (events):** `event`, `football`, plus the sport/event types. ≥4 distinct media categories must appear in Release Radar (validator-enforced).
-- **Row parts:** `.radar-cat` (dot + label) · `.radar-date` · the linked title (`<a href>` — every item links) · optional `.radar-platform`. On the Radar's 2-3 most important rows add a 10-15 word "why it matters" half-line.
-- **Wrong patterns:** `radar-item`, `radar-tag`, `radar-cell` — not in CSS. Use `.radar-row` / `.radar-cat` / `.radar-date` / `.radar-platform` only.
+### On the Radar — `on_the_radar` (content: `radar`)
+The forward calendar (distinct from the Release Radar, which lists media inside Screen & Sound; this lists dated events). `<ul class="radar">` of `.date` + `.ev` rows.
+```html
+<ul class="radar">
+  <li>
+    <span class="date">[MON · DD MON]</span>
+    <span class="ev"><b>[Event]</b> — [why it matters, briefly].</span>
+  </li>
+  <!-- several rows -->
+</ul>
+```
 
-### Anchor Piece (Standard Weekly — every 4th issue)
+### Do This Week — `do_this_week` (content: `closepin`)
+The issue's single strongest action, pinned. One `.closepin`: a label, the action (`.act`, ends on a verb), and the human `.why` line.
+```html
+<div class="closepin">
+  <div class="pinlbl mono">THE STRONGEST ACTION · <b>PIN IT TO THE FRIDGE</b></div>
+  <p class="act">[The one action — imperative, concrete.]</p>
+  <p class="why">[Why this one and why now — a human closing line.]</p>
+</div>
+```
+
+### Colophon — `colophon` (content: `endnumbers`)
+The issue accounted for: an `.endnumbers` grid of exactly **4** `.cell`s. The stitcher renders the colophon bar and sign-off after it — the writer supplies only the four cells.
+```html
+<div class="endnumbers">
+  <div class="cell">
+    <span class="mono k">[LABEL]</span>
+    <span class="v serif">[value with an <em>accent</em> word]</span>
+  </div>
+  <!-- exactly 4 .cell -->
+</div>
+```
+
+### Anchor Piece (SUPERSEDED for the weekly — legacy `.nav-card` vocabulary)
+
+> **Superseded for the Standard Weekly (Transmission).** The `.is-anchor` / `.nav-card` / `.toc-row` / `.sec` vocabulary below does **not** exist in the Transmission stylesheet and is **not** produced by `stitch_weekly.py`. In the rebuilt weekly there is no anchor section and no navigator cards — emphasis comes from the movement/band spine and the Long Read. This block is retained only as historical reference; do not emit it in a weekly.
 
 The anchored section adds `.is-anchor` to its `<section>` and its matching `.toc-row` in the Navigator:
 
