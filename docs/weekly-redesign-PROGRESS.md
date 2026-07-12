@@ -56,9 +56,9 @@ Legend: ⬜ not started · 🔶 in progress · ✅ done · ⏭️ deferred (with
   - ✅ W4b — `validate-issue.py`: `check_weekly_structure` retargeted to Transmission
     `data-*` hooks; `check_weekly_visual_consistency` (no special/holiday CSS/fonts,
     weekly masthead not special hero); `check_scaffold_leak` (handoff §8b).
-  - ⬜ W4c — `validate-chapter-plan.py` weekly branch (blocking vs skeleton).
-  - ⬜ W4d — publish receipt (`build-receipt.json`) + repair loop / structured reviewer wiring in SKILL.md.
-  - 🔶 W4e — golden-issue regression fixture (`references/golden/weekly/` DONE; runner + CI wiring pending).
+  - ✅ W4c — `validate-chapter-plan.py` weekly branch (blocking vs skeleton). Golden passes, broken fails, special path untouched (53/53).
+  - ✅ W4d — `scripts/publish-gate.sh` writes `build-receipt.json`, refuses publish unless green; SKILL.md Phase 10 publish policy (hold-on-hard-failure). Green receipt on golden verified.
+  - ✅ W4e — golden regression: `references/golden/weekly/` + `scripts/verify-weekly-golden.sh` (stitch → validate-issue → validate-chapter-plan, all green).
 - ⬜ **W5 — Spec updates** (spec/weekly.md, component-contracts.md, sections.md → Transmission vocabulary; Bookmark resolved in skeleton; re-slice).
 - 🔶 **W6 — Prove end-to-end** — ✅ **golden path PROVEN**: `stitch-issue.sh` (weekly
   dispatch) → 17/17 gates PASS (all structural + visual-consistency) → renders
