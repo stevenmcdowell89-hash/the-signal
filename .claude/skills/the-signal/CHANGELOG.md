@@ -1,5 +1,51 @@
 # The Signal — Changelog
 
+8.42.0 — **The weekly redesign: "Transmission" identity + deterministic spine +
+  reliability gate** (from `docs/weekly-redesign-HANDOFF.md` and its five reference docs).
+  The weekly had three compounding problems — a malformed four-movement structure, no real
+  quality/structure gate (so nearly every week shipped with some defect), and an incoherent
+  "special edition in disguise" visual (a dark cover, ~20 clashing section palettes, ~460KB of
+  special/holiday CSS injected every week). This rebuild fixes all three together, biased to the
+  magazine's *intent* (a warm, personal, unhurried Sunday paper object), and proves it
+  end-to-end — the test that was never run. Specials are untouched.
+
+  - **Transmission visual identity (the single weekly design system).** New weekly-only
+    stylesheet `assets/css/weekly/00-transmission.css` (~24KB) — true warm cream paper
+    (`#F5F0E6`), warm ink (`#16151A`), one hot vermilion accent (`#FF3B2F`) + signal-blue,
+    Instrument Serif + Newsreader + JetBrains Mono, waveform-rule dividers, a tuner-style cover
+    "station list", band-code section eyebrows, and a **warm-night `prefers-color-scheme: dark`
+    variant**. The ~20 per-section palettes, neon accents, and dark section inversions are gone.
+    Visual target: `docs/mockups/reference-issue-transmission.html`.
+  - **Structure is deterministic, not generated.** `references/format-skeletons/weekly.json` is
+    the single source of truth for the four movements + bands. `scripts/stitch_weekly.py` (the
+    weekly branch of `stitch-issue.sh`) GENERATES all chrome — cover/masthead/tuner, the four
+    movement dividers, every band-head, colophon, sign-off — so the 2026-07-12 failures
+    (movement bands missing, The Desk exploded, Release Radar as its own section) are now
+    **unrepresentable**. Writers produce only per-band inner content.
+  - **A weekly-only light bundle.** The weekly loads ONLY `assets/css/weekly/*.css` +
+    `assets/script-weekly.js` (image-error fallback only; renders complete with JS off). Down
+    from ~460KB CSS + a 2388-line JS bundle. The special/holiday CSS (`assets/css/*.css`) can no
+    longer leak into a weekly.
+  - **Enforced by construction + gate.** `validate-issue.py --format weekly` retargeted to the
+    Transmission `data-*` hooks and hard-checks the four-movement structure, Desk-as-one-2-column
+    department, Release-Radar-inside-Screen, ≤13 nav stations, and Caught Up ≤8; plus a new
+    **`check_weekly_visual_consistency`** (no special/holiday CSS or fonts, no `.sp-*` body
+    components, Transmission masthead not the special hero) and **`check_scaffold_leak`** (handoff
+    §8b). `validate-chapter-plan.py` gains a blocking weekly branch validating the plan against
+    the skeleton.
+  - **Mechanical publish receipt (reliability Pillar F).** `scripts/publish-gate.sh` runs the
+    ship gates on the final artifact, writes `build-receipt.json`, and refuses publish unless
+    green — closing the "shipped despite a failing gate" hole (handoff §8c). Publish policy:
+    green → publish; hard-safety red after repair budget → hold + notify; soft residual →
+    publish on time.
+  - **Golden-issue regression (Pillar F).** `references/golden/weekly/` (a fixed plan + 14
+    band-content files) + `scripts/verify-weekly-golden.sh` stitch a real weekly and assert all
+    gates green. **Proven:** the golden path stitches → passes all `validate-issue.py` gates →
+    renders pixel-faithful to the reference at 800px.
+  - **Spec updated to the Transmission vocabulary** (`editorial-spec.md` → re-sliced `spec/*.md`,
+    `component-contracts.md` § Standard Weekly, `sections.md`), SKILL.md wired (Phase 5/6/7.6/10),
+    and the Bookmark-vs-Shelf contradiction resolved (Bookmark is the fixed books rail).
+
 8.41.0 — Weekly first-run adherence fix (from
   `docs/weekly-first-run-handoff-2026-07-12.md`). The first weekly generated against the
   rebuilt four-movement spec (`signal_weekly_2026-07-12.html`) shipped structurally wrong —
