@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Signal — No. 16</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Archivo:wght@500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --news:#F4F1E7;
+    --ink:#111111;
+    --red:#C81E1E;
+    --hair:#CBC5B7;
+    --muted:#6E685C;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    background:#e7e2d4;
+    color:var(--ink);
+    font-family:"Source Serif 4",Georgia,serif;
+    line-height:1.55;
+    padding:24px 0 64px;
+  }
+  .paper{
+    max-width:800px;
+    margin:0 auto;
+    background:var(--news);
+    background-image:
+      radial-gradient(rgba(110,104,92,.035) 1px, transparent 1.4px);
+    background-size:3px 3px;
+    padding:34px 40px 56px;
+    box-shadow:0 1px 0 rgba(0,0,0,.04),0 24px 60px -28px rgba(30,26,18,.5);
+    border:1px solid #ded8c8;
+  }
+
+  /* ---------- Nameplate ---------- */
+  .plate-top{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    font-family:"Archivo",sans-serif;font-weight:700;
+    font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);
+    padding-bottom:6px;
+  }
+  .plate-top .red{color:var(--red)}
+  .rule-double{border-top:2.5px solid var(--ink);border-bottom:1px solid var(--ink);height:4px}
+  .nameplate{
+    font-family:"Fraunces",serif;font-weight:900;
+    font-size:clamp(58px,15.5vw,120px);
+    line-height:.84;letter-spacing:-.02em;
+    text-align:center;
+    padding:14px 0 10px;
+    font-variation-settings:"opsz" 144;
+  }
+  .dateline{
+    display:flex;justify-content:space-between;align-items:center;
+    font-family:"Archivo",sans-serif;font-weight:600;
+    font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);
+    padding:7px 2px;
+    border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);
+  }
+  .dateline span{white-space:nowrap}
+  .dateline .dot{color:var(--red);padding:0 8px}
+  .dateline .mid{color:var(--muted)}
+
+  /* ---------- Lead ---------- */
+  .lead{padding-top:22px;display:grid;grid-template-columns:1fr;gap:0}
+  .kicker{
+    font-family:"Archivo",sans-serif;font-weight:800;
+    font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--red);
+    margin-bottom:10px;display:flex;align-items:center;gap:10px;
+  }
+  .kicker::after{content:"";flex:1;height:1px;background:var(--hair)}
+  .headline{
+    font-family:"Fraunces",serif;font-weight:900;
+    font-size:clamp(46px,11.8vw,88px);
+    line-height:.9;letter-spacing:-.025em;
+    font-variation-settings:"opsz" 144;
+    margin-bottom:14px;
+  }
+  .headline em{font-style:italic;font-weight:900}
+  .deck{
+    font-family:"Archivo",sans-serif;font-weight:600;
+    font-size:16px;line-height:1.35;color:var(--ink);
+    max-width:52ch;margin-bottom:18px;
+  }
+  .lead-body{
+    columns:2;column-gap:26px;column-rule:1px solid var(--hair);
+    padding-top:16px;border-top:1px solid var(--ink);
+  }
+  .lead-body p{
+    font-size:16px;line-height:1.5;text-align:justify;-webkit-hyphens:auto;hyphens:auto;
+    margin-bottom:10px;
+  }
+  .lead-body p:first-child::first-letter{
+    font-family:"Fraunces",serif;font-weight:900;
+    float:left;font-size:64px;line-height:.72;padding:6px 8px 0 0;color:var(--red);
+  }
+  .byline{
+    font-family:"Archivo",sans-serif;font-weight:700;font-size:10px;
+    letter-spacing:.15em;text-transform:uppercase;color:var(--muted);
+    margin-top:4px;
+  }
+
+  /* ---------- Also inside rail ---------- */
+  .rail{
+    margin-top:26px;border:1.5px solid var(--ink);
+    display:grid;grid-template-columns:1fr;
+  }
+  .rail-head{
+    font-family:"Archivo",sans-serif;font-weight:800;
+    font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+    background:var(--ink);color:var(--news);
+    padding:9px 14px;
+  }
+  .rail-body{display:grid;grid-template-columns:1fr 1fr;gap:0}
+  .rail-item{
+    padding:12px 14px;border-top:1px solid var(--hair);
+  }
+  .rail-item:nth-child(odd){border-right:1px solid var(--hair)}
+  .rail-item .rk{
+    font-family:"Archivo",sans-serif;font-weight:800;font-size:9px;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--red);margin-bottom:4px;
+  }
+  .rail-item .rt{
+    font-family:"Fraunces",serif;font-weight:600;font-size:18px;line-height:1.12;
+  }
+
+  /* ---------- Section divider ---------- */
+  .sec-rule{margin:52px 0 0;border-top:4px solid var(--ink);height:0}
+  .section-label{
+    display:flex;justify-content:space-between;align-items:baseline;
+    padding-top:10px;
+  }
+  .section-label h2{
+    font-family:"Archivo",sans-serif;font-weight:800;
+    font-size:13px;letter-spacing:.28em;text-transform:uppercase;
+  }
+  .section-label .no{
+    font-family:"Archivo",sans-serif;font-weight:600;font-size:10px;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--muted);
+  }
+
+  /* ---------- The Letter ---------- */
+  .letter{padding-top:20px}
+  .letter .lk{
+    font-family:"Archivo",sans-serif;font-weight:800;font-size:11px;
+    letter-spacing:.2em;text-transform:uppercase;color:var(--red);margin-bottom:8px;
+  }
+  .letter h3{
+    font-family:"Fraunces",serif;font-weight:900;font-size:38px;line-height:.98;
+    letter-spacing:-.02em;margin-bottom:12px;
+  }
+  .standfirst{
+    font-family:"Archivo",sans-serif;font-weight:600;font-size:15px;line-height:1.4;
+    color:var(--muted);padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--hair);
+    max-width:56ch;
+  }
+  .letter-body{columns:2;column-gap:26px;column-rule:1px solid var(--hair)}
+  .letter-body p{font-size:16px;line-height:1.52;text-align:justify;margin-bottom:10px;-webkit-hyphens:auto;hyphens:auto}
+  .signoff{
+    font-family:"Fraunces",serif;font-style:italic;font-weight:600;font-size:19px;
+    margin-top:2px;
+  }
+
+  /* ---------- Bulletin ---------- */
+  .bulletin{
+    margin-top:26px;border:2.5px solid var(--ink);padding:0;
+    box-shadow:6px 6px 0 rgba(17,17,17,.12);
+  }
+  .bulletin-head{
+    display:flex;justify-content:space-between;align-items:center;
+    border-bottom:1px solid var(--ink);padding:10px 16px;
+  }
+  .bulletin-head .b1{
+    font-family:"Archivo",sans-serif;font-weight:800;font-size:14px;
+    letter-spacing:.24em;text-transform:uppercase;
+  }
+  .bulletin-head .b2{
+    font-family:"Fraunces",serif;font-style:italic;font-weight:600;font-size:14px;color:var(--muted);
+  }
+  .bulletin ol{list-style:none;padding:6px 16px 12px}
+  .bulletin li{
+    display:flex;gap:12px;padding:7px 0;border-bottom:1px dotted var(--hair);
+    font-size:15px;line-height:1.32;
+  }
+  .bulletin li:last-child{border-bottom:0}
+  .bulletin li .n{
+    font-family:"Archivo",sans-serif;font-weight:800;font-size:12px;color:var(--red);
+    min-width:20px;padding-top:1px;
+  }
+  .bulletin li b{font-weight:600}
+
+  /* ---------- Sport ---------- */
+  .sport{padding-top:20px}
+  .sport-lead .sk{
+    font-family:"Archivo",sans-serif;font-weight:800;font-size:11px;
+    letter-spacing:.2em;text-transform:uppercase;color:var(--red);margin-bottom:8px;
+  }
+  .sport-lead h3{
+    font-family:"Fraunces",serif;font-weight:900;font-size:clamp(34px,8.5vw,58px);
+    line-height:.92;letter-spacing:-.02em;margin-bottom:10px;
+  }
+  .sport-lead .sub{
+    font-family:"Archivo",sans-serif;font-weight:600;font-size:15px;line-height:1.35;
+    color:var(--ink);margin-bottom:12px;max-width:54ch;
+  }
+  .photo{
+    height:150px;border:1px solid var(--ink);margin:6px 0 4px;
+    background:
+      repeating-linear-gradient(135deg,rgba(200,30,30,.10) 0 14px,rgba(200,30,30,0) 14px 28px),
+      linear-gradient(120deg,#dcd6c6,#efeadd);
+    display:flex;align-items:flex-end;
+  }
+  .photo .cap{
+    font-family:"Archivo",sans-serif;font-weight:600;font-size:9.5px;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+    background:var(--news);padding:4px 8px;border-top:1px solid var(--hair);border-right:1px solid var(--hair);
+  }
+  .sport-lead p{font-size:15px;line-height:1.5;text-align:justify;margin-top:10px}
+  .sport-grid{
+    margin-top:20px;padding-top:14px;border-top:2px solid var(--ink);
+    display:grid;grid-template-columns:repeat(3,1fr);gap:0;
+  }
+  .sport-item{padding:0 16px}
+  .sport-item:first-child{padding-left:0}
+  .sport-item:last-child{padding-right:0}
+  .sport-item + .sport-item{border-left:1px solid var(--hair)}
+  .sport-item .ik{
+    font-family:"Archivo",sans-serif;font-weight:800;font-size:9px;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--red);margin-bottom:6px;
+  }
+  .sport-item h4{
+    font-family:"Fraunces",serif;font-weight:900;font-size:19px;line-height:1.02;
+    letter-spacing:-.01em;margin-bottom:6px;
+  }
+  .sport-item p{font-size:13px;line-height:1.4;color:var(--ink)}
+
+  /* ---------- Colophon ---------- */
+  .colophon{
+    margin-top:44px;padding-top:12px;border-top:1px solid var(--ink);
+    display:flex;justify-content:space-between;align-items:center;
+    font-family:"Archivo",sans-serif;font-weight:600;font-size:9.5px;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--muted);
+  }
+  .colophon .red{color:var(--red)}
+
+  @media (max-width:560px){
+    .paper{padding:22px 20px 40px}
+    .lead-body,.letter-body{columns:1}
+    .rail-body{grid-template-columns:1fr}
+    .rail-item:nth-child(odd){border-right:0}
+    .sport-grid{grid-template-columns:1fr}
+    .sport-item{padding:0}
+    .sport-item + .sport-item{border-left:0;border-top:1px solid var(--hair);padding-top:12px;margin-top:12px}
+  }
+</style>
+</head>
+<body>
+<div class="paper">
+
+  <!-- ===== NAMEPLATE ===== -->
+  <header>
+    <div class="plate-top">
+      <span>Established for one reader</span>
+      <span class="red">★ Sunday Edition ★</span>
+      <span>Price: your morning</span>
+    </div>
+    <div class="rule-double"></div>
+    <h1 class="nameplate">The Signal</h1>
+    <div class="dateline">
+      <span>No. 16</span>
+      <span class="mid">Weekend of 6&ndash;12 July 2026</span>
+      <span>34 min<span class="dot">&middot;</span>one sitting</span>
+    </div>
+  </header>
+
+  <!-- ===== LEAD ===== -->
+  <section class="lead">
+    <div class="kicker">The Front Page &middot; Westminster</div>
+    <h1 class="headline">A Coronation,<br><em>No Crowd</em></h1>
+    <p class="deck">Britain is about to change prime minister &mdash; and not a single ballot will be cast to do it.</p>
+    <div class="lead-body">
+      <p>Andy Burnham, Labour&rsquo;s only declared candidate, is on course to walk into Downing Street entirely uncontested &mdash; a handover of the highest office decided not at the ballot box but in the quiet arithmetic of a party with no one left to say no.</p>
+      <p>It is the sort of transfer of power that constitutions permit and democracies rarely relish: legitimate, orderly, and strangely silent. There will be no rosettes, no count read out after midnight, no losing candidate&rsquo;s gracious concession. Only a name, and a date, and a car pulling into a familiar black door.</p>
+      <p>Supporters call it unity. Critics call it a coronation. The country, for now, mostly calls it Tuesday &mdash; and turns the page to the tennis.</p>
+      <div class="byline">Report &middot; The Politics Desk</div>
+    </div>
+  </section>
+
+  <!-- ===== ALSO INSIDE RAIL ===== -->
+  <section class="rail">
+    <div class="rail-head">Also inside this edition</div>
+    <div class="rail-body">
+      <div class="rail-item"><div class="rk">Tennis</div><div class="rt">Wimbledon crowns two new champions</div></div>
+      <div class="rail-item"><div class="rk">Football</div><div class="rt">World Cup down to the last four</div></div>
+      <div class="rail-item"><div class="rk">Formula One</div><div class="rt">Leclerc wins at Silverstone</div></div>
+      <div class="rail-item"><div class="rk">Cycling</div><div class="rt">The Tour de France opens</div></div>
+      <div class="rail-item"><div class="rk">Feature</div><div class="rt">The Long Read</div></div>
+      <div class="rail-item"><div class="rk">Escape</div><div class="rt">The Travelling</div></div>
+    </div>
+  </section>
+
+  <!-- ===== THE LETTER ===== -->
+  <div class="sec-rule"></div>
+  <div class="section-label"><h2>The Leader</h2><span class="no">No. 16 &middot; Comment</span></div>
+  <section class="letter">
+    <div class="lk">From the Editor</div>
+    <h3>A quiet week that wasn&rsquo;t</h3>
+    <p class="standfirst">On coronations without crowds, champions without warning, and the strange comfort of a Sunday that asks nothing of you but attention.</p>
+    <div class="letter-body">
+      <p>I keep coming back to the silence of it. A country changes its prime minister this week and the loudest sound is a tennis ball. There is something almost restful in that &mdash; power moving without a fight &mdash; and something that should keep us awake, too.</p>
+      <p>So I&rsquo;ve set the two side by side. The coronation with no crowd, and the fortnight of crowds that roared: Wimbledon&rsquo;s two first-time champions, a World Cup narrowing to four, a red car winning at home. One story is about consent we forgot to give. The others are about the joy of being surprised.</p>
+      <p>Read them together with your coffee. Notice which one makes you sit up. That, I think, is the week telling you something.</p>
+      <p class="signoff">&mdash; The Editor</p>
+    </div>
+  </section>
+
+  <!-- ===== BULLETIN ===== -->
+  <section class="bulletin">
+    <div class="bulletin-head">
+      <span class="b1">The Bulletin</span>
+      <span class="b2">The week in brief</span>
+    </div>
+    <ol>
+      <li><span class="n">01</span><span><b>Westminster.</b> Burnham stands unopposed; a handover of No. 10 looms with no vote cast.</span></li>
+      <li><span class="n">02</span><span><b>SW19.</b> Wimbledon crowns two brand-new singles champions in a fortnight of firsts.</span></li>
+      <li><span class="n">03</span><span><b>World Cup.</b> The field is down to the last four; the semi-finals are set.</span></li>
+      <li><span class="n">04</span><span><b>Silverstone.</b> Charles Leclerc takes a home-soil win in the British Grand Prix.</span></li>
+      <li><span class="n">05</span><span><b>Grand D&eacute;part.</b> The Tour de France rolls out for three weeks of racing.</span></li>
+      <li><span class="n">06</span><span><b>Markets.</b> A calm, thin summer week; traders half-watching the tennis.</span></li>
+      <li><span class="n">07</span><span><b>Weather.</b> High pressure holds; a proper heatwave settles over the south.</span></li>
+      <li><span class="n">08</span><span><b>Culture.</b> The season&rsquo;s Long Read and The Travelling wait inside.</span></li>
+    </ol>
+  </section>
+
+  <!-- ===== SPORT ===== -->
+  <div class="sec-rule"></div>
+  <div class="section-label"><h2>Sport &mdash; The Touchline</h2><span class="no">Section D</span></div>
+  <section class="sport">
+    <div class="sport-lead">
+      <div class="sk">Tennis &middot; Wimbledon &middot; The Championships</div>
+      <h3>Two new names on the roll of honour</h3>
+      <p class="sub">A fortnight of firsts on the lawns ends with two maiden singles champions and a Centre Court still catching its breath.</p>
+      <div class="photo"><span class="cap">Centre Court &middot; final Sunday</span></div>
+      <p>For once the story wrote itself in fresh ink: no repeat winners, no dynastic procession &mdash; just two players lifting the trophies for the first time, and a crowd delighted to have witnessed the beginning of something rather than the continuation of it.</p>
+    </div>
+    <div class="sport-grid">
+      <div class="sport-item">
+        <div class="ik">Football</div>
+        <h4>Down to the last four</h4>
+        <p>The World Cup narrows to its semi-finals; four nations, ninety minutes, no margin left.</p>
+      </div>
+      <div class="sport-item">
+        <div class="ik">Formula One</div>
+        <h4>Leclerc wins at home&rsquo;s edge</h4>
+        <p>A composed Silverstone drive hands Charles Leclerc victory in the British Grand Prix.</p>
+      </div>
+      <div class="sport-item">
+        <div class="ik">Cycling</div>
+        <h4>The Tour rolls out</h4>
+        <p>Three weeks, one yellow jersey: the Grand D&eacute;part sets the peloton loose across France.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== COLOPHON ===== -->
+  <div class="colophon">
+    <span>The Signal <span class="red">&mdash;</span> A weekly of one</span>
+    <span>Folio No. 16</span>
+    <span>Printed for Sunday morning</span>
+  </div>
+
+</div>
+</body>
+</html>
