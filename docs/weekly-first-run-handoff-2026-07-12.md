@@ -216,21 +216,29 @@ each is still a thin half-year review. Why it happened:
   4) and a thin fresh pass. Every repeated event in the shipped issue is from the
   **last few weeks** (Starmer/landslide, the F1 record, the grand slam, the Man
   City draw) — the tell that it drew from recent memory, not the half-year.
-- **The natural corpus exists and was untouched:** **16 archived weekly issues**
-  (`issues/signal_weekly_2026-04-05.html` → `…07-12.html`, plus `issue-1/2`), each
-  of which already curated that week's biggest events across all domains. Reading
-  those yields *hundreds* of events to curate down from. (The daily's D1 data can't
-  help — it retains only ~14 days; a Rewind cannot lean on the daily→weekly bridge.)
+- **Do NOT "fix" this by re-mining the weeklies.** The 16 archived weeklies are the
+  *in-the-moment* record; aggregating them yields a **recap** of what was already
+  said, in the weekly's in-the-moment framing — not a retrospective. **6 months is
+  a different lens.** The Rewind's job is *hindsight*: what actually defined the
+  half-year, what **stuck vs faded** (things that felt huge in April and evaporated;
+  quiet things that turned out to matter), and the emergent **throughline** you can
+  only see at distance. Re-narrating weekly coverage produces exactly the flat,
+  repetitive "greatest-hits" the reader gave up on. The daily's D1 data can't help
+  either (only ~14 days retained).
 
-**Fix (do this before the structural de-dup):** add a **Rewind corpus-gathering
-research step** to the format spec (and the Year-in-Review): before planning
-chapters, the researcher **reads every issue published in the period** (enumerate
-`issues/` by date across the window; the archive manifest `archive-manifest.json`
-now lists them with dates), extracts the events/highs/lows per domain into a
-structured period-corpus, and only *then* curates. Gate it: a Rewind whose corpus
-is below some breadth floor (e.g. events spanning <N domains, or <M distinct
-events) fails Phase 3b like an under-sourced Deep Dive. The Memory Test / Highs /
-Lows then draw from a genuinely broad set, and no event needs reusing.
+**Fix (do this before the structural de-dup):** give the Rewind its **own research
+mode — a fresh retrospective pass at the 6-month altitude**, specced distinctly
+from the weekly's this-week sourcing. Per domain, research what *defined the period
+with hindsight*: mid-year/half-year retrospectives are abundant and exactly the
+right altitude — "games of 2026 so far", mid-season league assessments, F1
+half-term reports, best-books-of-the-year-so-far, world-news half-year reviews —
+alongside the reader's own tracked interests over the window. Judge **what stuck vs
+what faded**, don't restate the in-the-moment take. Gate it with a **breadth floor
+at Phase 3b** (corpus must span ≥N domains / ≥M distinct events) so an
+under-researched Rewind fails like an under-sourced Deep Dive rather than shipping
+and repeating itself. The weeklies, if consulted at all, are only a light
+memory-jog of the reader's *personal* throughlines (the trip, the training block,
+the title race he was following) — never the corpus to recap.
 
 **8a. Chronic cross-section repetition (the reader's complaint — a SYMPTOM of 8d).** The Rewind runs
 ~9 overlapping retrospective lenses — **The Period in Numbers, The Highs, The Lows,
