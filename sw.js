@@ -16,7 +16,7 @@
  *                 the phone to verify what's actually cached.
  */
 
-const CACHE_VERSION = "v39";
+const CACHE_VERSION = "v40";
 const SHELL_CACHE = `signal-shell-${CACHE_VERSION}`;
 const ISSUE_CACHE = `signal-issues-${CACHE_VERSION}`;
 const IMAGE_CACHE = `signal-images-${CACHE_VERSION}`;
@@ -389,6 +389,14 @@ self.addEventListener("fetch", (event) => {
   }
   if (sameOrigin && url.pathname.startsWith("/assets/cached/")) {
     event.respondWith(cacheFirst(req, IMAGE_CACHE));
+    return;
+  }
+  if (sameOrigin && url.pathname === "/archive-manifest.json") {
+    // Stale-while-revalidate, NOT cache-first: the archive listing drives the
+    // Read/Specials grids, so a new publish must reach returning readers. Pure
+    // cache-first (the old catch-all route) served the stale manifest until the
+    // next CACHE_VERSION bump, hiding freshly published issues from PWA users.
+    event.respondWith(staleWhileRevalidate(req, SHELL_CACHE));
     return;
   }
   if (sameOrigin && (url.pathname === "/" || url.pathname === "/index.html")) {
