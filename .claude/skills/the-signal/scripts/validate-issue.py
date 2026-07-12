@@ -863,6 +863,136 @@ def check_issue_in_numbers_stats(html: str, report: Report) -> None:
         )
 
 
+def check_weekly_structure(html: str, fmt: str, report: Report) -> None:
+    """Weekly four-movement structural adherence (SHARED MARKUP CONTRACT,
+    2026-07-12). Weeklies must render as four labelled movements with The Desk
+    collapsed into ONE nested container and Release Radar folded into Screen &
+    Sound. This gate makes those conventions machine-checkable. Weekly-only —
+    early-returns for every other format. Each violation is a hard FAIL.
+
+    Regex/string based like the rest of this validator. Comments are stripped
+    first so the scaffold's commented-out template examples (which contain
+    <section id="...">, movement-band snippets, etc.) never trip the checks.
+    """
+    if fmt != "weekly":
+        return
+
+    clean = strip_html_comments(html)
+
+    def class_tokens(tag: str) -> set[str]:
+        m = re.search(r'\bclass\s*=\s*"([^"]*)"', tag)
+        if not m:
+            m = re.search(r"\bclass\s*=\s*'([^']*)'", tag)
+        return set(m.group(1).split()) if m else set()
+
+    # 1. movement-bands ------------------------------------------------------
+    REQUIRED_MOVEMENTS = ["open", "long-read", "rounds", "close"]
+    found_movements: set[str] = set()
+    for tag in re.findall(r'<[a-zA-Z][^>]*>', clean):
+        if "movement-band" not in class_tokens(tag):
+            continue
+        dm = re.search(r'\bdata-movement\s*=\s*"([^"]*)"', tag)
+        if not dm:
+            dm = re.search(r"\bdata-movement\s*=\s*'([^']*)'", tag)
+        if dm:
+            found_movements.add(dm.group(1).strip())
+    missing = [m for m in REQUIRED_MOVEMENTS if m not in found_movements]
+    if missing:
+        report.fail("weekly-structure/movement-bands",
+                    "missing movement band(s): " + ", ".join(missing))
+    else:
+        report.ok("weekly-structure/movement-bands",
+                  "all four movement bands present (open, long-read, rounds, close)")
+
+    # 2. long-read -----------------------------------------------------------
+    long_read = re.findall(r'<section\b[^>]*\bid=["\']long-read["\']', clean)
+    n_lr = len(long_read)
+    if n_lr == 0:
+        report.fail("weekly-structure/long-read", "no Long Read section (#long-read)")
+    elif n_lr > 1:
+        report.fail("weekly-structure/long-read",
+                    f"{n_lr} Long Read sections; exactly one allowed")
+    else:
+        report.ok("weekly-structure/long-read", "exactly one Long Read section (#long-read)")
+
+    # 3. desk-container ------------------------------------------------------
+    desk_failed = False
+
+    # 3a. exactly one <section> with class token the-desk
+    n_desk = sum(
+        1 for t in re.findall(r'<section\b[^>]*>', clean)
+        if "the-desk" in class_tokens(t)
+    )
+    if n_desk == 0:
+        report.fail("weekly-structure/desk-container",
+                    "no Desk container (<section class=\"... the-desk\" id=\"desk\">)")
+        desk_failed = True
+    elif n_desk > 1:
+        report.fail("weekly-structure/desk-container",
+                    f"{n_desk} Desk containers; exactly one <section class=\"the-desk\"> allowed")
+        desk_failed = True
+
+    # 3b. count .desk-column tokens across the whole doc → must be 1 or 2
+    n_cols = 0
+    for m in re.finditer(r'\bclass\s*=\s*"([^"]*)"', clean):
+        if "desk-column" in m.group(1).split():
+            n_cols += 1
+    for m in re.finditer(r"\bclass\s*=\s*'([^']*)'", clean):
+        if "desk-column" in m.group(1).split():
+            n_cols += 1
+    if n_cols == 0:
+        report.fail("weekly-structure/desk-container", "The Desk has no nested columns")
+        desk_failed = True
+    elif n_cols >= 3:
+        report.fail("weekly-structure/desk-container",
+                    f"The Desk runs {n_cols} columns; cap is 2")
+        desk_failed = True
+
+    # 3c. no standalone <section id="ledger|itinerary|session|toolkit">
+    for name in ("ledger", "itinerary", "session", "toolkit"):
+        if re.search(r'<section\b[^>]*\bid=["\']' + name + r'["\']', clean):
+            report.fail("weekly-structure/desk-container",
+                        f"Desk column '{name}' rendered as a standalone section; "
+                        f"nest it inside #desk as a .desk-column div")
+            desk_failed = True
+
+    # 3d. no navigator/anchor href to an individual desk column
+    for name in ("ledger", "itinerary", "session", "toolkit"):
+        if re.search(r'href=["\']#' + name + r'["\']', clean):
+            report.fail("weekly-structure/desk-container",
+                        f"Desk column has its own navigator entry (href=\"#{name}\"); "
+                        f"The Desk must be ONE nav card href='#desk'")
+            desk_failed = True
+
+    if not desk_failed:
+        report.ok("weekly-structure/desk-container",
+                  f"The Desk is one #desk container with {n_cols} nested .desk-column(s), "
+                  "no exploded columns or per-column nav entries")
+
+    # 4. release-radar-fold --------------------------------------------------
+    rr_section = re.search(r'<section\b[^>]*\bid=["\']release-radar["\']', clean)
+    rr_href = re.search(r'href=["\']#release-radar["\']', clean)
+    if rr_section or rr_href:
+        report.fail("weekly-structure/release-radar-fold",
+                    "Release Radar rendered as its own section/nav entry; "
+                    "fold it inside Screen & Sound")
+    else:
+        report.ok("weekly-structure/release-radar-fold",
+                  "Release Radar folded into Screen & Sound (no #release-radar section/nav)")
+
+    # 5. nav-count -----------------------------------------------------------
+    n_nav = sum(
+        1 for t in re.findall(r'<a\b[^>]*>', clean)
+        if "nav-card" in class_tokens(t)
+    )
+    if n_nav > 13:
+        report.fail("weekly-structure/nav-count",
+                    f"{n_nav} navigator cards; target <=13")
+    else:
+        report.ok("weekly-structure/nav-count",
+                  f"{n_nav} navigator cards (<=13)")
+
+
 def check_length_ceiling(html: str, fmt: str, report: Report) -> None:
     """Hard per-format word ceiling (v8.39, S6).
 
@@ -991,6 +1121,7 @@ def main(argv: list[str]) -> int:
     check_weekly_navigator(html, fmt, report)
     check_toc_numerals(html, fmt, report)
     check_issue_in_numbers_stats(html, report)
+    check_weekly_structure(html, fmt, report)
     check_length_ceiling(html, fmt, report)
 
     # Holiday-only checks

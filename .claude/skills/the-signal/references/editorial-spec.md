@@ -65,6 +65,18 @@ The weekly is organised as **four movements**. The movements are the spine; the 
 
 > **The movements group the existing sections — they are not new sections.** The Long Shelf concept is absorbed by The Week, Composed (its discovery-wildcard value moves into The Letter and the Long Read); the deep-anchor rotation across sections is replaced by the single Long Read. Everything else keeps its identity and moves under the movement it belongs to.
 
+### Enforced structural invariants (validate-issue.py --format weekly)
+
+These five structural rules are **HARD-CHECKED by the markup gate**, not soft prose — `scripts/validate-issue.py --format weekly` now FAILs (does not merely warn) on each violation, inside the existing markup-contracts gate (the ledger stays at three gates):
+
+1. **All FOUR movement bands render** — THE OPEN / THE LONG READ / THE ROUNDS / THE CLOSE. The set of `data-movement` values on `.movement-band` elements must include all of `{open, long-read, rounds, close}`; the check reports which are missing.
+2. **EXACTLY ONE Long Read anchor** — exactly one `<section ... id="long-read">`. Fails on 0 or >1.
+3. **The Desk is ONE section with 1–2 nested columns** — one `<section>` whose class list contains `the-desk`, holding 1 or 2 `class="desk-column"` divs (never 3+, never 0), and **never** columns as top-level navigator entries. Fails if any top-level `<section ... id="ledger|itinerary|session|toolkit">` exists, or any nav-card/anchor `href="#ledger|#itinerary|#session|#toolkit"` exists.
+4. **Release Radar renders INSIDE Screen & Sound** — never as its own section or nav entry. Fails if `<section ... id="release-radar">` exists OR any `href="#release-radar"` exists. (On the Radar, `id="radar"`, is unaffected.)
+5. **Navigator entries ≤ ~13** — count of `class="nav-card"` anchors must not exceed 13.
+
+These encode the four-movement intents that shipped broken on the 2026-07-12 first run (two movement bands missing, the Desk exploded into 3 standalone sections, Release Radar as its own section). See `docs/weekly-first-run-handoff-2026-07-12.md`.
+
 ### Fixed vs Rotating
 
 **Fixed (every issue), grouped by movement (v8.37):**
@@ -85,7 +97,7 @@ The Long Shelf is retired as a section — its on-ramp job passes to The Week, C
 
 The Session and The Toolkit are **no longer standalone fixed sections** — they are Desk columns alongside The Ledger and The Itinerary. Each Desk column that runs **ends in a "Do This Week" pin** (see § The Desk below): exactly one concrete, do-it-this-week action with the *why* attached and the selection **criteria stated, not vibes**.
 
-**Rotating, non-Desk (cadence-based, pick 1-2 per issue on top of the Desk columns):** The Shelf (books), This Week in History, Listening (podcasts + audio drama + music). These three are *not* service columns and carry no "Do This Week" pin — they are discovery/reflection, not the service desk.
+**Rotating, non-Desk (cadence-based, pick 1-2 per issue on top of the Desk columns):** This Week in History, Listening (podcasts + audio drama + music). These are *not* service columns and carry no "Do This Week" pin — they are discovery/reflection, not the service desk. (Books are no longer a rotating section — they are the fixed **Bookmark** rail in THE ROUNDS every issue; see § THE ROUNDS.)
 
 **Trigger-driven (no cadence timer):** The Saga (lore deep-dive). It does NOT rotate on a clock — it runs only on a *reason*: a live public peg the researcher finds (a finale aired, a new book/season in a series the reader follows released, an author AMA), or a private peg the reader supplies (`currently_reading` / `currently_watching` in state, or a manual "run a Saga on …" trigger). See its brief in `references/sections.md` and the trigger note under § Auto-Triggered Specials.
 
@@ -322,7 +334,6 @@ Each issue includes the **fixed sections** (including **The Desk** with 1–2 se
 
 | Section | Target Cadence | Research Window | Notes |
 |---|---|---|---|
-| The Shelf | Every 2-3 weeks | Since last appearance | Books (primary), narrative history. Catch-up rule: covers full gap |
 | This Week in History | Every 2-3 weeks | Current week | History is date-bound |
 | Listening | Every 3-4 weeks | Since last appearance | Podcasts + audio drama + music (absorbs the old Listen + Channel) |
 
@@ -333,11 +344,11 @@ Each issue includes the **fixed sections** (including **The Desk** with 1–2 se
 ### Selection Rules
 
 1. **Check the state file** (`signal-state.json`) for `rotating_sections` — each entry has `last_appeared` date.
-2. **Pick the most overdue sections first.** If The Shelf last appeared 3 weeks ago and Listening 2 weeks ago, The Shelf has priority. For **Desk columns**, weigh overdue-ness *together with* whether the domain has real, actionable service news this week (§ The Desk).
-3. **Cap at 1-2 non-Desk rotating sections per issue** (on top of the 1–2 Desk columns) to maintain pacing. Rotating sections should be substantive (300-600 words each, except The Shelf which can be longer). The issue's bulk comes from the fixed sections' considered pieces; rotating sections add variety on top, not bulk. Fewer slots is deliberate (v8.27) — it keeps the issue from padding.
+2. **Pick the most overdue sections first.** If This Week in History last appeared 3 weeks ago and Listening 2 weeks ago, History has priority. For **Desk columns**, weigh overdue-ness *together with* whether the domain has real, actionable service news this week (§ The Desk).
+3. **Cap at 1-2 non-Desk rotating sections per issue** (on top of the 1–2 Desk columns) to maintain pacing. Rotating sections should be substantive (300-600 words each). The issue's bulk comes from the fixed sections' considered pieces; rotating sections add variety on top, not bulk. Fewer slots is deliberate (v8.27) — it keeps the issue from padding.
 4. **The Itinerary overrides normal cadence** when a trip is approaching — that Desk column appears every issue or every other issue in the lead-up. Check state file for `upcoming_trips`.
 5. **Don't force it.** If research for a rotating section (or a Desk column) turns up nothing worthwhile, skip it even if it's overdue. The cadence is a guide, not a mandate.
-6. **Each domain at least monthly (editorial checklist, not a gate).** Over any ~4-issue stretch aim for each rotating domain — The Shelf, This Week in History, Listening, and each Desk column (The Session, The Ledger, The Itinerary, The Toolkit) — to appear at least once; this is editorial judgement, not a planner-enforced floor. The old hard-cadence-floor and deficit-promotion validators are **retired (v8.36)** — domain cadence is now this checklist line, not a planner gate. The Threads owns continuity (§ The Threads), so a domain being quiet in the rotation no longer needs a forced-include gate to keep its story alive. The Saga is excluded from the checklist — it is trigger-driven, not on a cadence (see Cadence Table).
+6. **Each domain at least monthly (editorial checklist, not a gate).** Over any ~4-issue stretch aim for each rotating domain — This Week in History, Listening, and each Desk column (The Session, The Ledger, The Itinerary, The Toolkit) — to appear at least once; this is editorial judgement, not a planner-enforced floor. (Books are not on this checklist: they are the fixed **Bookmark** rail that runs every issue, not a rotating domain.) The old hard-cadence-floor and deficit-promotion validators are **retired (v8.36)** — domain cadence is now this checklist line, not a planner gate. The Threads owns continuity (§ The Threads), so a domain being quiet in the rotation no longer needs a forced-include gate to keep its story alive. The Saga is excluded from the checklist — it is trigger-driven, not on a cadence (see Cadence Table).
 7. **Default research window when `last_appeared` is null.** When a rotating section appears for the first time after a state file reset (or first-ever appearance), its research window defaults to "past 4 weeks" — NOT open-ended. Prevents the first appearance of a section from surfacing months-old news (e.g. the Revolut-from-March bug). Override via explicit `initial_research_window_weeks` field in state if the editor wants different.
 
 ### Placement: Interleave, Don't Stack
@@ -347,12 +358,12 @@ Each issue includes the **fixed sections** (including **The Desk** with 1–2 se
 | Rotating Section | Preferred Slot | Reasoning |
 |---|---|---|
 | The Week in Numbers | Movement I — after The Week, Composed / before Caught Up | A quick personal read-out to open on |
-| The Shelf | Between Screen & Sound and The Desk (original position) | Natural flow from entertainment to books |
+| **Bookmark** *(fixed books rail — not rotating)* | Between Screen & Sound and The Desk | The lightweight books rail runs every issue; natural flow from entertainment to books |
 | Listening | Between Screen & Sound and The Desk | Pairs with entertainment, breaks before the service desk |
-| **The Desk** *(1–2 service columns)* | Between Screen & Sound / The Shelf and The Threads | The service department sits in the "act on it" cluster before the close |
+| **The Desk** *(1–2 service columns)* | Between Screen & Sound / Bookmark and The Threads | The service department sits in the "act on it" cluster before the close |
 | This Week in History | Between The Desk and On the Radar (original position) | Reflective close before the forward-looking calendar |
 | The Threads | Between the rounds and On the Radar (part of the close) | Continuity recap flows naturally into the forward calendar |
-| The Saga *(trigger-driven)* | Between Screen & Sound and The Shelf | Sits in the "story" cluster when a peg fires it |
+| The Saga *(trigger-driven)* | Between Screen & Sound and Bookmark | Sits in the "story" cluster when a peg fires it |
 
 **Within The Desk:** the 1–2 running columns sit together as the service department. The Ledger and The Itinerary read well mid-issue as a breather between dense sections; The Session and The Toolkit close the department. Each column ends on its "Do This Week" pin.
 
@@ -427,7 +438,7 @@ Search groups for rotating sections are in `references/sections.md`. Only search
 
 **Entry patterns are a palette, not a rota (v8.35 — rotation enforcement retired).** The `.entry-stat`, `.entry-quote`, `.entry-bullets`, `.entry-question` and plain-prose openings are available whenever one genuinely fits the material — reach for the one the piece earns, never to satisfy a rotation. The old "no two adjacent articles may open the same way" mandate is **retired**: forcing a different opener each time was a source of the mechanical voice-tic W-1 kills at the source. Plain prose is a first-class opening; use a stat/quote/bullet/question opener only when the content actually leads with a number, a real quote, three facts, or a live question.
 
-**Breather band usage:** place 1-2 breather bands per issue between particularly dense sections. Use light variant between light/warm backgrounds, dark variant between dark backgrounds (Touchline, Screen & Sound, Shelf). Don't overuse — they're breathing room, not filler.
+**Breather band usage:** place 1-2 breather bands per issue between particularly dense sections. Use light variant between light/warm backgrounds, dark variant between dark backgrounds (Touchline, Screen & Sound, Bookmark). Don't overuse — they're breathing room, not filler.
 
 **Rotation rule:** no 3+ screen-heights of unbroken prose anywhere. Vary which sections use split layouts, where pull quotes appear, whether history uses timeline or bullets, which also-lists use card variant. Use sidebar-float as an alternative to split layouts. Use compare panels where a natural comparison exists. (Visual variety across the issue is still the goal; article *openings* are no longer on a forced rota — see the entry-pattern note above.)
 
@@ -971,7 +982,7 @@ The Saga (lore deep-dive — worldbuilding essays: Maul's arc across the shows, 
 
 If neither peg is live, The Saga simply doesn't run that week — it is never scheduled to fill a slot.
 
-**Generalised principle: sections that depend on private context are reader-triggerable, not calendar-driven.** The magazine asks for / reads that context rather than guessing. This is the same reason The Session reads `training_phase` and The Itinerary reads `upcoming_trips`; v8.27 extends the pattern to reading/watching (`currently_reading` / `currently_watching`) for The Saga, and lets it inform Shelf and Screen & Sound pegs too.
+**Generalised principle: sections that depend on private context are reader-triggerable, not calendar-driven.** The magazine asks for / reads that context rather than guessing. This is the same reason The Session reads `training_phase` and The Itinerary reads `upcoming_trips`; v8.27 extends the pattern to reading/watching (`currently_reading` / `currently_watching`) for The Saga, and lets it inform Bookmark and Screen & Sound pegs too.
 
 ### Guardrails
 
@@ -1008,7 +1019,7 @@ These are editorial principles. The compliance checklist (Gate 1 + Gate 2) handl
 
 1. **News vacuum on a story everyone else is reading.** If a major story landed this week — war, election upset, regulatory change with broad consumer impact, death of a significant figure, scientific breakthrough — the magazine covers it. Coverage breadth is the magazine's job; the profile only narrows angle, not appetite. A weekly that goes silent on a genuinely big story because "it isn't on the interest list" is broken.
 
-2. **Recommendation drift into reinforcement-only.** Every recommendation section (Shelf, Listen, Workshop, Toolkit, Ledger, Long Game, Wallet, Brickyard, Saga, Lab, Channel) drifts toward "more of what the reader already engages with" unless explicitly counterweighted. The reader has Todoist; the next Toolkit shouldn't be more Todoist. The reader is into Malazan; the next Shelf should include at least one book outside epic fantasy.
+2. **Recommendation drift into reinforcement-only.** Every recommendation section (Bookmark, Listen, Workshop, Toolkit, Ledger, Long Game, Wallet, Brickyard, Saga, Lab, Channel) drifts toward "more of what the reader already engages with" unless explicitly counterweighted. The reader has Todoist; the next Toolkit shouldn't be more Todoist. The reader is into Malazan; the next Bookmark should include at least one book outside epic fantasy.
 
 The structural mechanics that enforce this:
 
@@ -1071,10 +1082,10 @@ The **rounds** carry the week's news at the depth the material earns (§ Article
 - **On the Radar:** Every item must link to its canonical source (Wikipedia, official page, league page). The 2-3 most important items per issue get a "Why it matters" half-line (10-15 words) below the date+event line.
 - **On the Radar ≠ Release Radar** — they complement, never duplicate. On the Radar assumes intelligence — no explaining parkrun, no generic event types.
 - **The Release Radar (mandatory weekly element, v8.30):** the magazine's standing answer to "what's coming out?" — **15-20 upcoming releases across ≥4 of the seven media categories** (film, TV, game, LEGO, tech, book, music), each with a date, a `status` (`upcoming`-weighted, reusing the v8.29 tag), a category dot (`.radar-cat`), and a link. Sub-sections (Now Showing / Coming Soon / Leaving Soon / Also Streaming) order items chronologically. It owns **all** product/media release coverage (On the Radar stays events-only; gaming releases still get their explainer in Pixel & Byte, but the *dated list* lives here). **Enforced:** the planner emits a `release_radar` chapter and `validate-chapter-plan.py` hard-fails a weekly that drops it or ships fewer than 15 items / 4 categories. This existed as prose-only "tail content" and silently vanished from the 1 June test — the gate is the fix.
-- **Music:** lives in **Listening** when it runs (podcasts + audio drama + music), and lightly in The Shelf otherwise; music releases in Release Radar when neither is present.
+- **Music:** lives in **Listening** when it runs (podcasts + audio drama + music), and lightly in Bookmark otherwise; music releases in Release Radar when neither is present.
 - **History:** rotating, pre-WW2 preferred. Images must match the historical event.
 - **The Itinerary (Desk column, was "Places"):** owns all travel/parks/NI local content when present (absorbs the old Itinerary + Local). One-liners in On the Radar when absent. Closes on a "Do This Week" pin.
-- **The Shelf catches up** — research covers the full gap since last appearance. Same catch-up rule for The Toolkit, Listening, The Ledger, The Itinerary on return.
+- **Bookmark catches up** — when it returns to real named titles after yielding, research covers the full gap since the last books rail with picks. Same catch-up rule for The Toolkit, Listening, The Ledger, The Itinerary on return.
 - **No single interest owns the issue.** No one topic gets more than ~one round plus a passing mention — the issue reflects the reader's range, not feed volume. (This is now editorial judgement: the `check-theme-clustering.py` backstop is **retired (v8.37, W-3)** — the four-movement spine, with one Long Read and brisk rounds, removes the structural cause that let fitness/Star-Wars/wearables flood an issue.)
 - **No:** work/enterprise content (unless front-page-of-broadsheet significant), celebrity culture, royal family, generic fitness advice, AI-generated images, fabricated links.
 - **UK / national politics rule (v8.27 — reset to OUT BY DEFAULT).** UK politics is **not an interest area**. It was originally banned as noise; after the council elections went uncovered the intent was to *soften* the ban so the genuinely-big-and-interesting got in — but the spec over-corrected into a politics-chasing engine (the direct cause of the Starmer ×3 run). The correct rule:

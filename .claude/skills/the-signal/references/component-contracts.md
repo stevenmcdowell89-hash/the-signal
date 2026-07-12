@@ -86,9 +86,56 @@ This reference defines the exact HTML component patterns for every section in ev
 ```
 **Placement:** between On the Radar and the Footer. Single full-width block on paper background. Standard weekly only — special editions already have their own sign-off via Meanwhile.
 
-### The Desk — "Do This Week" pin (Standard Weekly — closes every Desk column, v8.36)
+### Movement bands (Standard Weekly — the four-movement spine, v8.41)
 
-The **mandatory closing element of every Desk column** (The Session, The Ledger, The Itinerary, The Toolkit). One concrete do-it-this-week action, the *why* attached, the selection criterion stated (not vibes). One pin per column, always the last child of the column's `<section>`. It inherits the host column's section accent — no per-column CSS needed. Not an aphorism; not the Lead.
+The Standard Weekly is organised as **exactly four movements**, and each opens with a **movement band** — a light, full-width labelled divider placed immediately BEFORE the first section of its movement. **All four must render** (validator-enforced): the set of `data-movement` values across `.movement-band` elements must include `{open, long-read, rounds, close}`; a weekly issue FAILs if any is missing.
+
+```html
+<div class="movement-band" data-movement="open" role="separator" aria-label="Movement I — The Open">
+  <span class="mvmt-num">I</span><span class="mvmt-title">The Open</span>
+</div>
+```
+
+The four bands (verbatim `data-movement` / num / title) and their placement:
+
+| `data-movement` | num | title | placed immediately before |
+|---|---|---|---|
+| `open` | I | The Open | The Letter (`#foreword`) |
+| `long-read` | II | The Long Read | the Long Read (`#long-read`) |
+| `rounds` | III | The Rounds | The Touchline (`#football`) |
+| `close` | IV | The Close | The Threads (`#threads`) |
+
+Markup lives in `assets/template-parts/04a-movement-band.html`; CSS in `assets/css/15c-movement-bands.css`.
+
+### The Desk — ONE nested container (Standard Weekly — the service department, v8.41)
+
+The Desk is **ONE `<section class="sec the-desk" id="desk">`** with **1–2 `.desk-column` nested `<div>`s** — never sibling `<section>`s, never 3+ columns. Exactly **ONE navigator card** points at it (`href="#desk"`, label "The Desk"). Individual columns get **no nav card and no top-level `<section>` of their own**: they are nested divs with an optional `data-desk-col` and no `id`. The four columns exploding into 3–4 standalone sections with their own nav cards is exactly the bug this container prevents. The validator FAILs (weekly) on: ≥3 `.desk-column`, 0 columns, any top-level `<section ... id="ledger|itinerary|session|toolkit">`, or any `href="#ledger|#itinerary|#session|#toolkit"` nav anchor.
+
+The Desk groups four service columns — **The Session** (fitness), **The Ledger** (money), **The Itinerary** (travel/parks/NI), **The Toolkit** (tech). Only **1–2 run per issue**, chosen by which domain is most overdue AND has real, actionable service news; a domain with nothing to act on **yields**. Each column keeps its own accent class (`.session-section` / `.ledger-section` / `.itinerary-section` / `.toolkit-section`) for colouring via `--section-accent`, and each **still ends on its `.do-this-week` pin** (see below).
+
+```html
+<section class="sec the-desk" id="desk">
+  <div class="sec-watermark">Desk</div>
+  <span class="section-label">The Desk</span>
+  <p class="desk-standfirst">[Optional one-line dept standfirst — what to act on this week.]</p>
+
+  <div class="desk-column session-section" data-desk-col="session">
+    <h3 class="desk-col-title">The Session</h3>
+    [column body…]
+    <div class="do-this-week"> … </div>          <!-- mandatory: closes the column -->
+  </div>
+
+  <!-- optionally ONE more .desk-column (1–2 total, never 3+) -->
+
+  <div class="read-next">Up next: <a href="#threads">The Threads <span class="arrow">→</span></a> — [teaser]</div>
+</section>
+```
+
+See `assets/template-parts/13a-the-desk.html` for the full column bodies and `assets/css/15c-movement-bands.css` for the `.the-desk` / `.desk-column` CSS.
+
+#### The Desk — "Do This Week" pin (closes every Desk column, v8.36)
+
+The **mandatory closing element of every Desk column** (The Session, The Ledger, The Itinerary, The Toolkit). One concrete do-it-this-week action, the *why* attached, the selection criterion stated (not vibes). One pin per column, always the last child of the column's `.desk-column` div. It inherits the host column's section accent — no per-column CSS needed. Not an aphorism; not the Lead.
 
 ```html
 <div class="do-this-week">
@@ -172,20 +219,39 @@ A short, honest "here's the strongest case the other way" box, available **where
 
 ### Release Radar & On the Radar (Standard Weekly — shared `.radar-*` markup)
 
-Both use the same date-grid vocabulary; they differ only in `id`, category set, and what they list. **Release Radar (v8.30 — mandatory, its own chapter, rendered right after Screen & Sound)** lists 15-20 upcoming media releases; **On the Radar** lists events. Never duplicate items between them.
+Both use the same date-grid `.radar-*` vocabulary; they differ in placement, `id`, category set, and what they list. Never duplicate items between them.
+
+- **Release Radar is NOT its own section and has NO navigator card.** It renders **INSIDE Screen & Sound** (`#screen`) as an `<h3>The Release Radar</h3>` heading followed by a `.radar-grid` block (as the canonical `assets/template-parts/12-screen-sound.html` already does). There is no `<section ... id="release-radar">` and no `href="#release-radar"` anywhere — the validator FAILs (weekly) on either. It lists 15-20 upcoming media releases.
+- **On the Radar** keeps its own `<section ... id="radar">` and its own nav card; it lists forward-calendar events.
+
+Release Radar, folded inside `#screen`:
 
 ```html
-<section class="sec radar-section" id="release-radar">   <!-- On the Radar uses id="radar" -->
-  <span class="section-label">Release Radar — What's Coming</span>
-  <h2>Out Now &amp; Coming Soon</h2>
+<!-- …inside <section class="sec screen-section" id="screen"> … -->
+<h3>The Release Radar</h3>
+<div class="radar-grid">
+  <h3 style="margin-top:8px">Now Showing / Just Dropped</h3>
+  <div class="radar-row">
+    <span class="radar-date">11 Jun</span>
+    <div><span class="radar-cat game"></span><strong>Starseeker: Astroneer Expeditions</strong> — Early Access <span class="radar-platform">Steam / Switch 2</span></div>
+  </div>
+  <!-- 15-20 rows; grouped Now Showing / Coming Soon / Leaving Soon; chronological within each -->
+</div>
+```
+
+On the Radar, its own section:
+
+```html
+<section class="sec radar-section" id="radar">
+  <span class="section-label">On the Radar</span>
+  <h2>What's Coming</h2>
   <div class="radar-grid">
     <div class="radar-row">
-      <span class="radar-cat game">Game</span>           <!-- category modifier paints the dot -->
-      <span class="radar-date">11 Jun</span>
-      <a href="https://…">Starseeker: Astroneer Expeditions — Early Access</a>
-      <span class="radar-platform">Steam / Switch 2</span>
+      <span class="radar-cat event"></span>
+      <span class="radar-date">18 Jun</span>
+      <a href="https://…">[Event — what's happening]</a>
     </div>
-    <!-- 15-20 rows for Release Radar; chronological within sub-sections -->
+    <!-- events; the 2-3 most important add a 10-15 word "why it matters" half-line -->
   </div>
 </section>
 ```
@@ -253,7 +319,7 @@ The anchored section opens with a stat-led or quote-led opener (see below) and r
 </aside>
 ```
 
-**Usage:** 1-3 per issue across long-form articles. Floats right on desktop, stacks inline on tablet/mobile. Never inside compact tables, also-cards, compare panels, or timelines. Best inside plain prose runs in World, Screen & Sound, The Shelf, or special-edition main stories.
+**Usage:** 1-3 per issue across long-form articles. Floats right on desktop, stacks inline on tablet/mobile. Never inside compact tables, also-cards, compare panels, or timelines. Best inside plain prose runs in World, Screen & Sound, Bookmark, or special-edition main stories.
 
 ### Meanwhile Section (Special Editions Only)
 ```html

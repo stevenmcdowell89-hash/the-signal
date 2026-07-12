@@ -1,5 +1,47 @@
 # The Signal — Changelog
 
+8.41.0 — Weekly first-run adherence fix (from
+  `docs/weekly-first-run-handoff-2026-07-12.md`). The first weekly generated against the
+  rebuilt four-movement spec (`signal_weekly_2026-07-12.html`) shipped structurally wrong —
+  only 2 of 4 movement bands rendered, The Desk exploded into 3 standalone sections, Release
+  Radar ran as its own section, and books came out as the rotating "The Shelf" name. Root
+  cause: the four-movement intents lived as soft prose the generator half-applied, and the
+  books rail was defined twice, contradictorily. This pass resolves the spec ambiguities,
+  makes the structure enforceable, and repairs the shipped issue. Spec (source
+  `editorial-spec.md`) + re-sliced `spec/*.md` + `sections.md` + one validator; no new gates
+  (structural checks fold into the existing markup gate — the ledger stays at three).
+
+  - **Bookmark vs The Shelf resolved.** The books rail is **Bookmark** — a FIXED, lightweight
+    rail in THE ROUNDS every issue (a few picks with a line each; the deep book piece, when
+    there is one, is the Long Read, not here; real named titles or it yields; no "Do This
+    Week" pin). **"The Shelf" is retired** as a rotating non-Desk section: removed from the
+    Rotating-non-Desk list, the Cadence Table, Selection Rules, the monthly-domain checklist,
+    and the Placement table in `editorial-spec.md`; the brief in `sections.md` is retitled and
+    reframed as the fixed Bookmark rail. Internal CSS machinery (`.shelf-section`, `--shelf-*`,
+    `id="shelf"`) is **unchanged** — only the reader-facing name moves to "Bookmark". ("The
+    Long Shelf" — a Season-Review specials component — is a different thing and is untouched.)
+  - **Four-movement structure made enforceable.** `editorial-spec.md` § Section Structure gains
+    an explicit "Enforced structural invariants (validate-issue.py --format weekly)" subsection
+    stating the five rules now HARD-CHECKED (no longer soft prose): (1) all four movement bands
+    render (THE OPEN / THE LONG READ / THE ROUNDS / THE CLOSE); (2) exactly one Long Read anchor;
+    (3) The Desk is one section with 1–2 nested columns (never 3+, never columns as top-level
+    nav entries); (4) Release Radar renders inside Screen & Sound, never as its own section/nav
+    entry; (5) navigator entries ≤ ~13.
+  - **Desk-as-container + Release-Radar-in-Screen&Sound intents documented** as the structural
+    contract (see the shared markup contract): The Desk is ONE `<section>` with columns nested
+    as `<div>`s under a single nav anchor; Release Radar folds inside `#screen`.
+  - **Structural checks added to `validate-issue.py` (markup gate).** A `check_weekly_structure`
+    guarded on `--format weekly` FAILs on each of the five invariants above — the check that
+    would have caught the 2026-07-12 issue automatically (the missing end-to-end test called out
+    in the handoff §5).
+  - **Gate 3 (holistic read) gains a structural guiding question** in Phase 9.5: *are all four
+    movement bands present, and is The Desk a single nested department running 1–2 columns (not
+    exploded into standalone sections)?* — so intent, not just markup, is judged. The ledger
+    stays at three gates.
+  - **The 2026-07-12 issue repaired** to compliance (folded Release Radar into Screen & Sound,
+    collapsed the 3 Desk sections into one nested Desk, dropped the over-cap column, renamed the
+    books rail to Bookmark, added the missing movement bands).
+
 8.40.0 — Reciprocal cross-stream link (H6, from
   `docs/signal-final-recommendations-2026-07.md` § CROSS-CUTTING). The weekly's CLOSE
   movement now points back to the daily Brief, reciprocating the home's front-door

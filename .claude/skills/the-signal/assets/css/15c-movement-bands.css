@@ -1,0 +1,30 @@
+/* ═══════════ v8.41 — MOVEMENT BANDS + THE DESK CONTAINER ═══════════
+   Two structural pieces of the four-movement Standard Weekly:
+   1. Movement bands — the four labelled dividers (I/II/III/IV) that open each
+      movement. All four must render (validator-enforced). See
+      assets/template-parts/04a-movement-band.html.
+   2. The Desk container — The Desk is ONE <section class="sec the-desk"
+      id="desk"> with 1–2 nested .desk-column divs (never sibling sections).
+      See assets/template-parts/13a-the-desk.html.
+   Injected alphabetically by stitch-issue.sh, right after 15b. */
+
+/* ── Movement bands ── */
+.movement-band{display:flex;align-items:baseline;gap:14px;max-width:760px;margin:56px auto 8px;
+  padding:0 24px 10px;border-bottom:2px solid var(--ink,#111119);}
+.movement-band .mvmt-num{font-family:'DM Serif Display',Georgia,serif;font-size:15px;
+  letter-spacing:.04em;color:var(--accent,#E8384F);font-weight:400;line-height:1;}
+.movement-band .mvmt-title{font-family:'DM Sans',system-ui,sans-serif;text-transform:uppercase;
+  letter-spacing:.22em;font-size:12px;font-weight:600;color:var(--ink,#111119);}
+@media(max-width:640px){.movement-band{margin-top:40px;padding-left:16px;padding-right:16px;}}
+
+/* ── The Desk container: nested .desk-column divs ── */
+.the-desk .desk-column{border-left:3px solid var(--section-accent,var(--accent,#E8384F));
+  padding-left:20px;margin:28px 0;}
+.the-desk .desk-column:first-of-type{margin-top:18px;}
+.the-desk .desk-col-title{font-family:'DM Sans',system-ui,sans-serif;text-transform:uppercase;
+  letter-spacing:.14em;font-size:13px;font-weight:700;margin:0 0 10px;color:var(--section-accent,var(--ink,#111119));}
+.the-desk .desk-standfirst{font-style:italic;color:var(--bone,#6b6b73);margin:6px 0 18px;}
+.the-desk .session-section{--section-accent:var(--session-accent,#D4622B);}
+.the-desk .toolkit-section{--section-accent:var(--toolkit-accent,#2b8fd4);}
+.the-desk .ledger-section{--section-accent:var(--ledger-accent,#C08A2E);}
+.the-desk .itinerary-section{--section-accent:var(--itinerary-accent,#D46A5A);}

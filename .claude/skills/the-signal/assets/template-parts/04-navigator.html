@@ -2,6 +2,13 @@
 <section class="nav-section" id="nav">
   <h2>What's Inside</h2>
   <div class="nav-grid">
+    <!-- NAV RULES (Standard Weekly, v8.41):
+         · The Desk is ONE card only — <a href="#desk"> labelled "The Desk".
+           NEVER emit per-column cards (#session / #ledger / #itinerary / #toolkit);
+           those columns are nested divs inside the one Desk section.
+         · NO Release Radar card — Release Radar is folded inside Screen & Sound
+           (#screen); there is no href="#release-radar".
+         · ≤ 13 nav-card anchors total. -->
     <!-- Lead card: spans 2 columns, has thumbnail -->
     <a href="#world" class="nav-card lead world" style="text-decoration:none">
       <div class="nav-card-content">
@@ -38,11 +45,13 @@
         Books</div>
       <h3>[Headline]</h3><p>[Hook]</p><div class="read-time">3 min</div>
     </a>
-    <a href="#session" class="nav-card session" style="text-decoration:none">
+    <!-- THE DESK — ONE card for the whole service department (href="#desk").
+         Do NOT add separate cards for its columns. -->
+    <a href="#desk" class="nav-card session" style="text-decoration:none">
       <div class="nav-card-tag">
         <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6h-2v12h2M18 6h2v12h-2M6 12h12"/><rect x="3" y="8" width="3" height="8" rx="1"/><rect x="18" y="8" width="3" height="8" rx="1"/></svg></span>
-        Fitness</div>
-      <h3>[Headline]</h3><p>[Hook]</p><div class="read-time">4 min</div>
+        The Desk</div>
+      <h3>[Headline — the running column, e.g. "The Session"]</h3><p>[Hook]</p><div class="read-time">4 min</div>
     </a>
     <a href="#history" class="nav-card history" style="text-decoration:none">
       <div class="nav-card-tag">

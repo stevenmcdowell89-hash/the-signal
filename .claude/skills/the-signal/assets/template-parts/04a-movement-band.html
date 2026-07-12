@@ -1,0 +1,37 @@
+<!-- ══════ MOVEMENT BANDS — the four-movement spine (v8.41) ══════
+  The Standard Weekly is organised as EXACTLY FOUR movements. Each movement
+  opens with a light, full-width labelled divider — a "movement band" — placed
+  IMMEDIATELY BEFORE the first section of that movement. All four must render;
+  the validator FAILs (weekly) if any of {open, long-read, rounds, close} is
+  missing. Machine-checkable via the `data-movement` attribute.
+
+  The four bands (verbatim markup — do not invent variants):
+
+  I  · THE OPEN      → placed immediately BEFORE The Letter        (#foreword)
+  II · THE LONG READ → placed immediately BEFORE the Long Read     (#long-read)
+  III· THE ROUNDS    → placed immediately BEFORE The Touchline     (#football)
+  IV · THE CLOSE     → placed immediately BEFORE The Threads       (#threads)
+
+  CSS lives in assets/css/15c-movement-bands.css (injected alphabetically,
+  right after 15b). See references/component-contracts.md § Movement bands.
+-->
+
+<!-- ── Movement I — placed immediately before The Letter (#foreword) ── -->
+<div class="movement-band" data-movement="open" role="separator" aria-label="Movement I — The Open">
+  <span class="mvmt-num">I</span><span class="mvmt-title">The Open</span>
+</div>
+
+<!-- ── Movement II — placed immediately before the Long Read (#long-read) ── -->
+<div class="movement-band" data-movement="long-read" role="separator" aria-label="Movement II — The Long Read">
+  <span class="mvmt-num">II</span><span class="mvmt-title">The Long Read</span>
+</div>
+
+<!-- ── Movement III — placed immediately before The Touchline (#football) ── -->
+<div class="movement-band" data-movement="rounds" role="separator" aria-label="Movement III — The Rounds">
+  <span class="mvmt-num">III</span><span class="mvmt-title">The Rounds</span>
+</div>
+
+<!-- ── Movement IV — placed immediately before The Threads (#threads) ── -->
+<div class="movement-band" data-movement="close" role="separator" aria-label="Movement IV — The Close">
+  <span class="mvmt-num">IV</span><span class="mvmt-title">The Close</span>
+</div>

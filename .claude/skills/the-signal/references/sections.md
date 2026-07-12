@@ -7,7 +7,7 @@ Only read the sections appearing in this issue.
 
 ## Cross-cutting principle: Lens, not Filter (v8.19)
 
-Applies to every recommendation section below (Shelf, Listening, The Ledger, The Itinerary, The Toolkit, Saga, plus Long Shelf and any Companion / Catch-Up picks in fixed sections):
+Applies to every recommendation section below (Bookmark, Listening, The Ledger, The Itinerary, The Toolkit, Saga, plus Long Shelf and any Companion / Catch-Up picks in fixed sections):
 
 - **50/50 Discovery vs. Reinforcement target.** Roughly half the picks reinforce something the reader already engages with; the other half surface something genuinely new. "New" = an app the reader doesn't use, a writer they haven't read, a label/artist they haven't heard of, a training method adjacent to but distinct from their current programme, a corner of personal finance they don't already follow, a podcast they don't subscribe to. Track in the chapter plan; writer self-audits via RT-23.
 - **No drift-to-defaults.** If the last appearance of this section featured a specific brand/app/series (e.g. Todoist, Efteling, Cosmere), the next appearance should NOT default to the same. Anti-repetition rules in state file (`last_toolkit_app` etc.) catch the obvious cases; editorial judgement catches the rest.
@@ -156,12 +156,12 @@ Film, TV, streaming, Star Wars (always search). Dark purple background, neon acc
 
 **Sub-format: Director's Cut (monthly).** Every 4th standard weekly, the Screen & Sound Lead runs in Director's Cut mode — a 550-750 word essay on a show, film, director, or arc rather than the week's news beat. Voice: culture critic, not news reviewer. Examples: "What Andor Season 2 understood that the prequels didn't" / "Why Severance's pacing is the show's secret weapon" / "The Coen Brothers' grammar of disappointment". Companion remains standard (250-450 words, distinct topic family, may carry the week's main beat the Director's Cut displaced). State file tracks `last_directors_cut_date`; planner-side hard rule `weeks_since_last_directors_cut >= 4`. Tagged in chapter plan as `sub_format: "directors_cut"`. Optionally marked in the rendered section header with `<span class="sub-format-tag">Director's Cut</span>` inside `.section-label`.
 
-### The Shelf *(rotating — every 2-3 weeks)*
-Books and music. Dark brown background, gold accent.
-- **Owns books (primary).** Podcasts, audio drama, and music live in **Listening**; The Shelf may mention a notable music release in passing when Listening isn't running, but the dedicated music read is Listening's.
-- **Catch-up rule:** when The Shelf appears, research covers the entire period since it last appeared (not just the past 7 days). Check state file for `last_shelf_date`. No good book news or music release should fall through the cracks.
-- **Review like a book column, borrowed takes:** premise, tone, what makes it worth reading — synthesised from real reviews, not invented. **Real, named titles or the section yields (v8.28)** — never write about empty categories or invent book names; if research found no real books, The Shelf doesn't run this week.
-- Books: features, recommendations, book cards with rating dots. Both epic series AND short fiction. Occasional narrative history (Dan Jones, Tom Holland, Mary Beard).
+### Bookmark *(fixed — the lightweight books rail)*
+A fixed, lightweight books rail in THE ROUNDS every issue — a few picks with a line each: what to read. Dark brown background, gold accent. It is a rail, not an essay: brisk picks, not a considered piece. **The deep book piece, when there is one, is the Long Read, not here.** It carries **no "Do This Week" pin** — it is discovery, not the service desk.
+- **Owns books (primary).** Podcasts, audio drama, and music live in **Listening**; Bookmark may mention a notable music release in passing when Listening isn't running, but the dedicated music read is Listening's.
+- **Catch-up rule:** when Bookmark returns to real named picks after a quiet stretch, research covers the entire period since it last carried books (not just the past 7 days). Check state file for `last_shelf_date`. No good book news or music release should fall through the cracks.
+- **Review like a book column, borrowed takes:** premise, tone, what makes it worth reading — synthesised from real reviews, not invented. **Real, named titles or the rail yields (v8.28)** — never write about empty categories or invent book names; if research found no real books, Bookmark yields this week rather than padding.
+- Books: a few recommendations, book cards with rating dots — a line each. Both epic series AND short fiction. Occasional narrative history (Dan Jones, Tom Holland, Mary Beard).
 - **CRITICAL: No spoilers.** Never reveal plot twists, character deaths, endings for any book. This rule is absolute but invisible — never announce compliance with it.
 - Music: light-touch when Listening isn't running. Synthwave/retrowave or a notable release noted in passing — the deep music read lives in Listening.
 
@@ -172,7 +172,7 @@ Podcasts + audio drama + music. Warm slate background, brass accent.
 - **Episode specificity.** Flag specific new episodes by title and date — never the show in the abstract. "What Went Wrong: 'The Day the Music Industry Sued Its Customers' (released 14 May)" not "What Went Wrong covers tech disasters".
 - **Music:** new synthwave/retrowave releases (album of the period; label news from FiXT / Lakeshore / Aphasia / Lazerdiscs), soundtrack picks (film/game, recent or evergreen), retro-listening (a 70s/80s album having a moment, a reissue worth knowing). **Embed the music itself** — Bandcamp/Spotify/YouTube links, not the article about the music.
 - **Only describe content you can verify.** Don't invent episode content. If you can't confirm what an episode discussed, link it without a content summary.
-- **Audio drama recs cross-reference with The Shelf.** When an audio drama adapts a book also reviewed in The Shelf, cross-link.
+- **Audio drama recs cross-reference with Bookmark.** When an audio drama adapts a book also picked in Bookmark, cross-link.
 - **Catch-up rule:** research window is since Listening last appeared. Track in state file `the_listening.last_appeared`.
 - Good sources: Apple Podcasts Charts (UK/IE), Pocket Casts Discover, Audible originals, BBC Sounds; Bandcamp Daily synthwave tag, RetroSynth, /r/outrun, /r/synthwave, /r/SoundtrackCollection.
 
@@ -227,7 +227,7 @@ Travel, theme parks, and Northern Ireland local. **A Desk service column (v8.36)
 - **Closes on a "Do This Week" pin** (see § The Desk) — a specific, criteria-stated travel action (a booking window opening, a park date to reserve, a specific NI event to go to this week).
 
 ### The Saga *(trigger-driven — NO cadence timer, v8.27)*
-Lore deep dives — Star Wars universe, fantasy book worlds, show analysis. Deep purple background, antique gold accent. The long-form universe-writing read that keeps Screen & Sound current-week and The Shelf focused on what to read next.
+Lore deep dives — Star Wars universe, fantasy book worlds, show analysis. Deep purple background, antique gold accent. The long-form universe-writing read that keeps Screen & Sound current-week and Bookmark focused on what to read next.
 - **Runs on a peg, not a clock.** It is NOT scheduled by cadence and is NOT deficit-promoted. It appears only when there is a *reason*:
   - **Public peg** the researcher finds: a finale aired, a new book/season in a series the reader follows released, an author AMA.
   - **Private peg** the reader supplies: a `currently_reading` / `currently_watching` note in state (the researcher reads it as a peg source), or a manual trigger ("run a Saga on the Cosmere"). The pipeline cannot know what the reader is personally reading/watching — the same boundary that makes Next and Lookahead manual-only.
@@ -281,7 +281,7 @@ The full enumeration lives in `references/chapter-plan-schema.md`. Adding a new 
 | Section | Primary Components | Why |
 |---|---|---|
 | **The Toolkit** *(Desk column — tech)* | `.also-cards` (app/tech picks), `.compact-grid` (2 reviews side by side), `.compare-panel` (product A vs B), `.sidebar-float` ("What it replaces"), `.entry-stat` ("3M downloads"), **`.do-this-week` (closing pin)** | Card-based layout suits app/tech discovery; compare panels for hardware. Every Desk column closes on a `.do-this-week` pin |
-| **The Shelf** | `.book-card` / `.book-grid`, `.card-stack`, `.rating`, `.pull-quote`, `.collapsible` | Already well-defined from weekly version |
+| **Bookmark** | `.book-card` / `.book-grid`, `.card-stack`, `.rating`, `.pull-quote`, `.collapsible` | Fixed lightweight books rail; CSS classes unchanged (`.shelf-section`) |
 | **This Week in History** | `.timeline`, `.year-badge`, `.img-offset`, `.sec-opener` | Already well-defined from weekly version |
 | **Listening** *(podcasts + audio drama + music)* | `.also-cards` (episodes/albums), `.entry-bullets` (show notes / label news), `.rating` (episode/album quality), `.pull-quote` (memorable line) | Cards suit episodic + album recs |
 | **The Ledger** *(Desk column — finance + fintech + side-hustle; was Money)* | `.big-number-row` (ISA allowance, rate, revenue), `.compare-panel` (card/account A vs B), `.stat-bar` (rates/cashback %), `.pull-quote` (editorial take), **`.do-this-week` (closing pin)** | Data-forward; big numbers and compare panels make money scannable. Closes on the `.do-this-week` pin |
@@ -315,7 +315,7 @@ Only research topics for the rotating sections selected for this issue. This sav
 
 Only search the groups for sections appearing in this issue.
 
-**Group R1 — The Shelf:** fantasy/sci-fi book news + r/Fantasy, narrative history (Dan Jones / Tom Holland / Mary Beard), occasional music context when Listening isn't running. Research window: since last Shelf appearance.
+**Group R1 — Bookmark:** fantasy/sci-fi book news + r/Fantasy, narrative history (Dan Jones / Tom Holland / Mary Beard), occasional music context when Listening isn't running. Research window: since Bookmark last carried books.
 
 **Group R2 — This Week in History:** history this week (ancient/medieval preferred). Research window: current week.
 

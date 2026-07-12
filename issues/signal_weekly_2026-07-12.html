@@ -11584,6 +11584,27 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
   opacity: 0.7;
 }
 
+/* ── Movement bands (four-movement spine) ── */
+.movement-band{display:flex;align-items:baseline;gap:14px;max-width:760px;margin:56px auto 8px;
+  padding:0 24px 10px;border-bottom:2px solid var(--ink,#111119);}
+.movement-band .mvmt-num{font-family:'DM Serif Display',Georgia,serif;font-size:15px;
+  letter-spacing:.04em;color:var(--accent,#E8384F);font-weight:400;line-height:1;}
+.movement-band .mvmt-title{font-family:'DM Sans',system-ui,sans-serif;text-transform:uppercase;
+  letter-spacing:.22em;font-size:12px;font-weight:600;color:var(--ink,#111119);}
+@media(max-width:640px){.movement-band{margin-top:40px;padding-left:16px;padding-right:16px;}}
+
+/* ── The Desk (single nested department) ── */
+.the-desk .desk-column{border-left:3px solid var(--section-accent,var(--accent,#E8384F));
+  padding-left:20px;margin:28px 0;}
+.the-desk .desk-column:first-of-type{margin-top:18px;}
+.the-desk .desk-col-title{font-family:'DM Sans',system-ui,sans-serif;text-transform:uppercase;
+  letter-spacing:.14em;font-size:13px;font-weight:700;margin:0 0 10px;color:var(--section-accent,var(--ink,#111119));}
+.the-desk .desk-standfirst{font-style:italic;color:var(--bone,#6b6b73);margin:6px 0 18px;}
+.the-desk .session-section{--section-accent:var(--session-accent,#D4622B);}
+.the-desk .toolkit-section{--section-accent:var(--toolkit-accent,#2b8fd4);}
+.the-desk .ledger-section{--section-accent:var(--ledger-accent,#C08A2E);}
+.the-desk .itinerary-section{--section-accent:var(--itinerary-accent,#D46A5A);}
+
 </style>
 <!-- the-signal:pwa -->
 <link rel="manifest" href="/manifest.json">
@@ -11781,50 +11802,23 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
       <p>Silo and Project Hail Mary against a heavy Music Friday.</p>
       <div class="read-time">4 min</div>
     </a>
-    <!-- Release Radar -->
-    <a href="#release-radar" class="nav-card screen" style="text-decoration:none">
-      <div class="nav-card-tag">
-        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/></svg></span>
-        Release Radar</div>
-      <h3>Out now and coming soon</h3>
-      <p>What's dated across games, screen, music, tech and LEGO.</p>
-      <div class="read-time">3 min</div>
-    </a>
-    <!-- The Shelf -->
+    <!-- Bookmark -->
     <a href="#shelf" class="nav-card shelf" style="text-decoration:none">
       <div class="nav-card-tag">
         <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>
-        The Shelf</div>
+        Bookmark</div>
       <h3>One book to make room for</h3>
       <p>Temi Oh's first-contact drama, and the July shelf around it.</p>
       <div class="read-time">3 min</div>
     </a>
-    <!-- The Session -->
-    <a href="#session" class="nav-card session" style="text-decoration:none">
+    <!-- The Desk -->
+    <a href="#desk" class="nav-card session" style="text-decoration:none">
       <div class="nav-card-tag">
         <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6h-2v12h2M18 6h2v12h-2M6 12h12"/><rect x="3" y="8" width="3" height="8" rx="1"/><rect x="18" y="8" width="3" height="8" rx="1"/></svg></span>
-        The Session</div>
-      <h3>Where lengthened partials earn their place</h3>
-      <p>The 2026 meta-analysis on stretch-focused reps.</p>
-      <div class="read-time">4 min</div>
-    </a>
-    <!-- The Toolkit -->
-    <a href="#toolkit" class="nav-card tech" style="text-decoration:none">
-      <div class="nav-card-tag">
-        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4l-6.6 6.6a2 2 0 0 0 2.8 2.8l6.6-6.6a4 4 0 0 0 5.4-5.4l-2.9 2.9-2.6-2.6 2.7-2.7z"/></svg></span>
-        The Toolkit</div>
-      <h3>A capture tool worth finding</h3>
-      <p>Gemini's Rambler, plus the wearables and foldables ahead.</p>
-      <div class="read-time">4 min</div>
-    </a>
-    <!-- The Itinerary -->
-    <a href="#itinerary" class="nav-card history" style="text-decoration:none">
-      <div class="nav-card-tag">
-        <span class="nav-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
-        The Itinerary</div>
-      <h3>The summer Europe started saying no</h3>
-      <p>Caps, cruise levies and tourist taxes reshape the continent.</p>
-      <div class="read-time">3 min</div>
+        The Desk</div>
+      <h3>Two things worth doing this week</h3>
+      <p>The Session on stretch-focused reps, and The Toolkit on a capture tool worth finding.</p>
+      <div class="read-time">7 min</div>
     </a>
     <!-- The Threads -->
     <a href="#threads" class="nav-card world" style="text-decoration:none">
@@ -11847,6 +11841,9 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
   </div>
 </section>
 
+<div class="movement-band" data-movement="open" role="separator" aria-label="Movement I — The Open">
+  <span class="mvmt-num">I</span><span class="mvmt-title">The Open</span>
+</div>
 <!-- ══════ THE LETTER (opening movement — v8.35) ══════ -->
 <section class="foreword" id="foreword">
   <p>I have spent the week trying to name what connects a prime minister arriving without an election to a fortnight of sport that seemed to script itself, and the honest answer is that both are stories about how little the outcome needed anyone's say-so. Andy Burnham had the backing of 322 of Labour's 403 MPs on the first day nominations opened — a candidate needs 81 to stand, and no one else did. Keir Starmer resigned on 22 June; by the time Parliament returns in September the country will have changed its leader, and the nearest thing to a vote will have been a show of hands nobody chose to contest. It is a strange kind of power that arrives by everyone else stepping aside. And then the sport, which asked nothing of consensus and delivered anyway. Wimbledon crowned a machine defending his title and, the day before, a twenty-one-year-old winning her first — two champions of entirely opposite kinds in the same frame. The World Cup narrowed to its last four with the top four ranked sides all still standing, the tournament for once refusing the upset it usually saves for July. A quiet coronation on one page, an unmissable week on the next. The issue that follows sorts them out; here I only wanted to say that, this week, they rhymed.</p>
@@ -11878,6 +11875,9 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
   </ul>
 </section>
 
+<div class="movement-band" data-movement="long-read" role="separator" aria-label="Movement II — The Long Read">
+  <span class="mvmt-num">II</span><span class="mvmt-title">The Long Read</span>
+</div>
 <!-- ══════ THE LONG READ (Movement II — the single deep anchor) ══════ -->
 <hr class="divider dv-world">
 <section class="sec world-section sec-opener" id="long-read">
@@ -11931,6 +11931,9 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
   <div class="src"><a href="https://en.wikipedia.org/wiki/2026_Labour_Party_leadership_election_(UK)">2026 Labour leadership election</a> · <a href="https://www.aljazeera.com/news/2026/7/9/uk-labour-leadership-nominations-begin-whos-running-and-how-it-works">Al Jazeera</a> · <a href="https://www.washingtonpost.com/world/2026/07/09/andy-burnham-labour-leadership-election-nominations/">The Washington Post</a></div>
 </section>
 
+<div class="movement-band" data-movement="rounds" role="separator" aria-label="Movement III — The Rounds">
+  <span class="mvmt-num">III</span><span class="mvmt-title">The Rounds</span>
+</div>
 <section class="sec touchline-section" id="football">
   <div class="sec-watermark">Touchline</div>
   <span class="section-label">The Touchline</span>
@@ -12067,16 +12070,7 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
     </ul>
   </div>
 
-  <div class="read-next">Up next: <a href="#release-radar">The Release Radar <span class="arrow">→</span></a> — everything dated, at a glance.</div>
-</section>
-
-<!-- ══════ THE RELEASE RADAR ══════ -->
-<section class="sec radar-section" id="release-radar">
-  <span class="section-label">Release Radar — What's Coming</span>
-  <h2>Out Now &amp; Coming Soon</h2>
-  <figure class="fig" style="margin:0 0 18px">
-    <img src="/assets/cached/21f266d46dfe.jpg" alt="Artwork for the upcoming Nintendo Switch 2 games line-up" style="width:100%;height:auto;border-radius:6px">
-  </figure>
+  <h3>The Release Radar</h3>
   <p>Everything with a date, sorted by category. A dot marks the type, the mono figure marks the day, and every title links to its source. Events — fixtures, races, deadlines — sit in On the Radar; this grid is releases only.</p>
 
   <div class="radar-grid">
@@ -12114,12 +12108,14 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
     <div class="radar-row"><span class="radar-date">28 Jul</span><div><span class="radar-cat book"></span><a href="https://reactormag.com/new-fantasy-books-july-2026/"><strong>The Eye of Leviathan — M. A. Carrick</strong></a> — opener of The Sea Beyond epic-fantasy series. <span class="radar-platform">Due</span></div></div>
 
   </div>
+
+  <div class="read-next">Up next: <a href="#shelf">Bookmark <span class="arrow">→</span></a> — one book to make room for.</div>
 </section>
 
 <hr class="divider dv-shelf">
 <section class="sec shelf-section" id="shelf">
   <div class="sec-watermark">Shelf</div>
-  <span class="section-label">The Shelf</span>
+  <span class="section-label">Bookmark</span>
   <h3>Books</h3>
 
   <h3 class="feature-title">The one to make room for: Temi Oh, <em>Not with a Bang</em></h3>
@@ -12153,15 +12149,19 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
     </ul>
   </div>
 
-  <div class="read-next">Up next: <a href="#session">The Session <span class="arrow">→</span></a> — where stretch-focused reps earn their place in a hypertrophy block.</div>
+  <div class="read-next">Up next: <a href="#desk">The Desk <span class="arrow">→</span></a> — two things worth doing this week.</div>
 </section>
 
-<!-- ══════ THE SESSION ══════ -->
+<!-- ══════ THE DESK — single nested department (v8.38 repair) ══════ -->
 <hr class="divider dv-session">
-<section class="sec session-section" id="session">
-  <div class="sec-watermark">Session</div>
-  <span class="section-label" style="color:var(--session-accent)">The Desk — The Session</span>
-  <h2>Training the Stretch</h2>
+<section class="sec the-desk" id="desk">
+  <div class="sec-watermark">Desk</div>
+  <span class="section-label">The Desk</span>
+  <p class="desk-standfirst">Two things worth acting on this week — one for the body, one for the phone.</p>
+
+  <div class="desk-column session-section" data-desk-col="session">
+    <h3 class="desk-col-title">The Session</h3>
+    <h2>Training the Stretch</h2>
 
   <p>Lengthened partials — reps worked only through the bottom, most-stretched portion of a lift — can match or beat full range-of-motion training for muscle growth. A 2026 systematic review and meta-analysis comparing partial reps at long versus short muscle length found the lengthened portion holds its own against full ROM, and where a difference does show up it favours the stretch by roughly <span class="display-stat" style="color:var(--session-accent)">5–15%</span>. The honest qualifier comes straight after: the edge is real but modest, and it earns its place as a finisher and on isolation work — not as a wholesale replacement for training a lift through its full range.</p>
 
@@ -12189,14 +12189,11 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
     <p class="dtw-why">Choose isolation lifts that load the muscle in a deep stretch — overhead triceps extensions, incline curls, calf raises — because that is where the meta-analysis edge actually shows. The compounds stay full-range; a stretch partial there mostly loads the joint, not the muscle.</p>
   </div>
 
-  <div class="read-next">Up next: <a href="#toolkit">The Toolkit <span class="arrow">→</span></a> — a capture tool worth finding, and the wearables news since last time.</div>
-</section>
+  </div>
 
-<hr class="divider dv-toolkit">
-<section class="sec toolkit-section" id="toolkit">
-  <div class="sec-watermark">Toolkit</div>
-  <span class="section-label" style="color:var(--toolkit-accent)">The Desk — The Toolkit</span>
-  <h2>Gemini's Rambler turns thinking aloud into a clean note</h2>
+  <div class="desk-column toolkit-section" data-desk-col="toolkit">
+    <h3 class="desk-col-title">The Toolkit</h3>
+    <h2>Gemini's Rambler turns thinking aloud into a clean note</h2>
 
   <p>Google's Gemini Intelligence has begun rolling out on Android this summer, starting with the latest Galaxy and Pixel phones, and it brings a set of proactive on-device features. One of them is small, specific, and worth finding: <a href="https://blog.google/innovation-and-ai/products/gemini-app/next-evolution-gemini-app/">Rambler</a>. It takes spoken thoughts — the half-formed, doubling-back way people actually talk — and turns them into a concise written message.</p>
 
@@ -12223,46 +12220,14 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
     <p class="dtw-action">Capture one idea with Gemini's Rambler on a Galaxy or Pixel phone — dictate a note that would otherwise be lost, and let it return the tidied version.</p>
     <p class="dtw-why">It is the rare tool that lowers the cost of getting a thought down rather than organising thoughts already written; one real capture is enough to judge whether speaking beats typing.</p>
   </div>
-</section>
-
-<!-- ══════ THE DESK — THE ITINERARY (travel) — v8.36 ══════ -->
-<section class="sec itinerary-section" id="itinerary">
-  <div class="sec-watermark">Itinerary</div>
-  <span class="section-label" style="color:var(--itinerary-accent)">The Desk — The Itinerary</span>
-  <h2>The summer Europe started saying no</h2>
-
-  <figure class="fig">
-    <img src="/assets/cached/0d612127e5c1.jpg" alt="A crowded southern-European tourist street in peak summer season">
-    <figcaption class="fig-caption">The busiest destinations spent 2026 converting open access into metered access. <span class="fig-credit">Time Out</span></figcaption>
-  </figure>
-
-  <p class="dropcap"><span class="lead-in">The pattern this summer</span> is a continent tightening its doors, and the numbers are specific enough to plan around. Southern Europe has turned the 2026 season into an overtourism turning point: Pompeii has capped daily visitors at 20,000, Santorini and Mykonos now charge cruise passengers 20 euros a head in peak season, and Barcelona's stacked tourist levies reach about 4 euros per person per night — rising to roughly 7.50 in five-star hotels. None of these places is closing. Each has simply <a href="https://www.forbes.com/sites/alexledsom/2026/07/07/more-protests-show-the-high-cost-of-overtourism-in-europe/">put a price or a ceiling on the parts that were straining hardest</a>.</p>
-
-  <p>France joined the same push this season. Nice and Cannes began limiting the number of cruise-ship passengers allowed into the towns from summer 2026, one strand of a <a href="https://www.travelandtourworld.com/news/article/f5zwkzuj4jhz/">wider European move toward visitor caps, tourist taxes and reservation systems</a>. The instrument varies by place — a levy here, a headcount there, a timed ticket somewhere else — but the direction is uniform: the marquee sights and the small port towns are metering entry rather than assuming it.</p>
-
-  <div class="sidebar">
-    <div class="sidebar-title">What changed this season</div>
-    <ul>
-      <li><strong>Pompeii</strong> — daily visitors capped at 20,000.</li>
-      <li><strong>Santorini &amp; Mykonos</strong> — 20 euros per cruise passenger in peak season.</li>
-      <li><strong>Barcelona</strong> — stacked levies of about 4 euros per person per night (up to ~7.50 in five-star hotels).</li>
-      <li><strong>Nice &amp; Cannes</strong> — hard limits on cruise-ship passengers entering the towns.</li>
-    </ul>
-  </div>
-
-  <p>For anyone travelling, the practical effect is three small shifts. A tourist levy is now a real line item, charged per night and per head, not a rounding error. A visitor cap means the headline sight can sell out, so the timed ticket has to be booked before arrival rather than at the gate. And a cruise-passenger limit means a day-trip into a port town is no longer guaranteed by simply being on the ship. Individually the sums are modest; together they change how a trip is planned rather than whether it happens.</p>
-
-  <p>The money mostly funds the places under the most pressure, which is why the measures keep spreading rather than reversing. The useful way to read the season is that the busiest corners of Europe have swapped open access for a tollbooth — and the whole skill now is knowing the toll, and any headcount ceiling, before setting out.</p>
-
-  <div class="do-this-week">
-    <span class="dtw-label">Do This Week</span>
-    <p class="dtw-action">Before booking any southern-European city or island for the summer, look up its 2026 tourist levy and any visitor cap or cruise-passenger limit on the destination's official tourism site.</p>
-    <p class="dtw-why">Check the official source rather than a booking aggregator: that is where the current per-night rate (Barcelona ~4 euros, up to ~7.50 in five-star hotels), the day cap (Pompeii at 20,000) and any timed-entry rule are actually published — and each one changes either the cost or the logistics of the trip.</p>
   </div>
 
   <div class="read-next">Up next: <a href="#threads">The Threads <span class="arrow">→</span></a> — where the week's running stories stand tonight.</div>
 </section>
 
+<div class="movement-band" data-movement="close" role="separator" aria-label="Movement IV — The Close">
+  <span class="mvmt-num">IV</span><span class="mvmt-title">The Close</span>
+</div>
 <!-- ══════ THE THREADS — continuity engine (v8.36) ══════
   Recap only — "previously on…". Three ongoing sagas + one life-thread.
   No Do-This-Week pin (recap, not service). Weekly vocabulary only.
@@ -12290,7 +12255,7 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
 
   <div class="thread thread-life reveal">
     <div class="thread-title">The hypertrophy block</div>
-    <p class="thread-recap">Block 3 — hypertrophy at maintenance-to-surplus — got under way on 8 July, straight off the back of a holiday. Week one is in the books; the training focus this week is where stretch-focused work earns its place in the block. <a href="#session">See The Session</a></p>
+    <p class="thread-recap">Block 3 — hypertrophy at maintenance-to-surplus — got under way on 8 July, straight off the back of a holiday. Week one is in the books; the training focus this week is where stretch-focused work earns its place in the block. <a href="#desk">See The Session</a></p>
   </div>
 
   <div class="read-next">Up next: <a href="#rabbit-hole">Down the Rabbit Hole <span class="arrow">→</span></a> — why a muscle is, quite literally, a little mouse.</div>
@@ -12382,8 +12347,8 @@ body.is-special[data-special="field-guide"] .hol-pull--big__cite {
     <div class="colophon-block">
       <div class="colophon-block-label">Issue in Numbers</div>
       <ul class="colophon-stats">
-        <li><strong>7,900</strong> words</li>
-        <li><strong>16</strong> sections</li>
+        <li><strong>6,400</strong> words</li>
+        <li><strong>10</strong> sections</li>
         <li><strong>115</strong> links</li>
         <li><strong>12</strong> images</li>
         <li>Anchor: <strong>The Long Read</strong></li>

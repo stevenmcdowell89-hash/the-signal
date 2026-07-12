@@ -239,7 +239,7 @@ For the Ledger (money) Desk column: scan body for fitness-cluster vocabulary (se
 
 ### 1L / 1M. Rotating cadence floor + deficit promotion — RETIRED (v8.36)
 
-The hard-cadence-floor (old planner rule 7) and deficit-promotion (old planner rule 8) checks are **retired** — `validate-chapter-plan.py` no longer enforces them, and there is no `deficit_override_reason` escape hatch. Replaced by a single **editorial checklist line, not a gate**: *each domain surfaces at least monthly.* Over any ~4-issue stretch, aim for each rotating domain (The Shelf, This Week in History, Listening, and each Desk column — The Session, The Ledger, The Itinerary, The Toolkit) to appear at least once. This is editorial judgement; nothing hard-fails on it. The Threads owns continuity now, so a quiet domain no longer needs a forced-include gate.
+The hard-cadence-floor (old planner rule 7) and deficit-promotion (old planner rule 8) checks are **retired** — `validate-chapter-plan.py` no longer enforces them, and there is no `deficit_override_reason` escape hatch. Replaced by a single **editorial checklist line, not a gate**: *each domain surfaces at least monthly.* Over any ~4-issue stretch, aim for each rotating domain (This Week in History, Listening, and each Desk column — The Session, The Ledger, The Itinerary, The Toolkit) to appear at least once (books surface every issue via the fixed Bookmark rail, so they are not on this rotating-domain checklist). This is editorial judgement; nothing hard-fails on it. The Threads owns continuity now, so a quiet domain no longer needs a forced-include gate.
 
 ### 1F+. Image URL verification chain (v8.13.7+ — UNBREAKABLE)
 
@@ -292,7 +292,7 @@ Only proceed here after Gate 1 passes clean.
 - [ ] On the Radar: 8-10 items, no overlap with Release Radar, specific and non-patronising
 
 ### Rotating Sections & The Desk
-- [ ] 1-2 non-Desk rotating sections (The Shelf, This Week in History, Listening) + 1-2 Desk service columns (The Session, The Ledger, The Itinerary, The Toolkit — each closing on a "Do This Week" pin), per state-file cadence priority + real service news.
+- [ ] Bookmark (the fixed lightweight books rail) runs every issue (yields only when there is no real book news) + 1-2 non-Desk rotating sections (This Week in History, Listening) + 1-2 Desk service columns (The Session, The Ledger, The Itinerary, The Toolkit — each closing on a "Do This Week" pin), per state-file cadence priority + real service news.
 - [ ] The Saga is trigger-driven, NOT scheduled by cadence — present only if a public peg (researcher-found) or private peg (`currently_reading`/`currently_watching` or manual trigger) fired it.
 - [ ] The Toolkit (Desk column, yields strictly) appears only when there's tech news; on return it covers the full gap since last appearance, not just 7 days.
 - [ ] Only selected sections researched — no wasted research
@@ -318,7 +318,7 @@ Only proceed here after Gate 1 passes clean.
 - [ ] **The Letter (opening movement, replaces the Foreword):** a signed, first-person **Editor** letter (~120–200 words) that states the week's thesis and connects threads across domains. First-person Editor voice is correct here; no second-person reader address (Gate 1A). Signed "— The Editor". Keeps `.foreword` markup + drop-cap.
 - [ ] LEGO in Pixel & Byte, not Screen & Sound
 - [ ] History prefers pre-WW2; images match the historical event (no reusing images from other sections)
-- [ ] Music lives in Listening when it runs; light-touch in The Shelf otherwise; music releases still in Release Radar when neither present
+- [ ] Music lives in Listening when it runs; light-touch in Bookmark otherwise; music releases still in Release Radar when neither present
 - [ ] Session: only sourced content, or omitted entirely
 - [ ] Podcast recs are episode-specific: title, date, reason — verified content only
 - [ ] Places owns all travel/parks/NI content when present; On the Radar one-liners when absent

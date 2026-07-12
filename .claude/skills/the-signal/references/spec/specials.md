@@ -174,7 +174,7 @@ The Saga (lore deep-dive — worldbuilding essays: Maul's arc across the shows, 
 
 If neither peg is live, The Saga simply doesn't run that week — it is never scheduled to fill a slot.
 
-**Generalised principle: sections that depend on private context are reader-triggerable, not calendar-driven.** The magazine asks for / reads that context rather than guessing. This is the same reason The Session reads `training_phase` and The Itinerary reads `upcoming_trips`; v8.27 extends the pattern to reading/watching (`currently_reading` / `currently_watching`) for The Saga, and lets it inform Shelf and Screen & Sound pegs too.
+**Generalised principle: sections that depend on private context are reader-triggerable, not calendar-driven.** The magazine asks for / reads that context rather than guessing. This is the same reason The Session reads `training_phase` and The Itinerary reads `upcoming_trips`; v8.27 extends the pattern to reading/watching (`currently_reading` / `currently_watching`) for The Saga, and lets it inform Bookmark and Screen & Sound pegs too.
 
 ### Guardrails
 
