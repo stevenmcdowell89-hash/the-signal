@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Signal — Transmission №016</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F5F0E6;
+    --paper-2:#EFE8D9;
+    --ink:#16151A;
+    --signal:#FF3B2F;
+    --blue:#243F5C;
+    --muted:#8A8578;
+    --hair:#DDD5C3;
+    --measure:64ch;
+  }
+
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:var(--muted);
+    color:var(--ink);
+    font-family:"Newsreader",Georgia,serif;
+    font-size:19px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+
+  /* The "printed object" — a tablet-portrait page floating on a desk tone */
+  .issue{
+    max-width:800px;
+    margin:0 auto;
+    background:var(--paper);
+    box-shadow:0 1px 0 rgba(0,0,0,.04), 0 24px 60px -24px rgba(0,0,0,.45);
+    overflow:hidden;
+  }
+
+  /* ---------- shared type ---------- */
+  .mono{
+    font-family:"JetBrains Mono",ui-monospace,monospace;
+    text-transform:uppercase;
+    letter-spacing:.16em;
+    font-size:11px;
+    font-weight:500;
+    color:var(--muted);
+  }
+  .serif{font-family:"Instrument Serif",Georgia,serif;font-weight:400;}
+
+  /* ---------- the waveform / frequency rule ---------- */
+  .wave{
+    height:26px;
+    width:100%;
+    color:var(--signal);
+    display:block;
+  }
+  .wave svg{display:block;width:100%;height:100%;}
+  .wave--blue{color:var(--blue);}
+  .wave--ink{color:var(--ink);}
+
+  /* thin frequency tick rule (repeating gradient) */
+  .tickrule{
+    height:12px;
+    background-image:repeating-linear-gradient(90deg,
+      var(--ink) 0, var(--ink) 1px,
+      transparent 1px, transparent 7px);
+    opacity:.55;
+  }
+  .hair{height:1px;background:var(--hair);border:0;margin:0;}
+
+  /* ================= COVER ================= */
+  .cover{
+    padding:26px 40px 30px;
+    position:relative;
+  }
+  .cover__top{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    padding-bottom:12px;
+  }
+  .cover__top .mono{color:var(--ink);opacity:.75;}
+  .cover__top .price{color:var(--signal);}
+
+  .dataline{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:12px;
+    padding:14px 0 6px;
+  }
+  .dataline .dot{color:var(--signal);}
+
+  .masthead{
+    font-family:"Instrument Serif",Georgia,serif;
+    font-weight:400;
+    line-height:.86;
+    letter-spacing:-.02em;
+    font-size:118px;
+    margin:2px 0 0;
+    color:var(--ink);
+  }
+  .masthead em{
+    font-style:italic;
+    color:var(--signal);
+  }
+  .masthead__sub{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-top:8px;
+    border-bottom:2px solid var(--ink);
+    padding-bottom:12px;
+  }
+  .masthead__sub .tag{
+    font-family:"Newsreader",serif;
+    font-style:italic;
+    font-size:20px;
+    color:var(--blue);
+  }
+
+  /* lead + tuner two-column area */
+  .cover__body{
+    display:grid;
+    grid-template-columns:1.55fr .95fr;
+    gap:34px;
+    margin-top:26px;
+  }
+  .lead__eyebrow{margin-bottom:14px;color:var(--signal);}
+  .lead__head{
+    font-family:"Instrument Serif",Georgia,serif;
+    font-weight:400;
+    font-size:47px;
+    line-height:1.02;
+    letter-spacing:-.01em;
+    margin:0;
+  }
+  .lead__head .hl{color:var(--signal);font-style:italic;}
+  .lead__stand{
+    font-style:italic;
+    color:var(--blue);
+    font-size:20px;
+    line-height:1.35;
+    margin-top:18px;
+    max-width:34ch;
+  }
+
+  /* tuner / station list of coverlines */
+  .tuner{
+    border-top:2px solid var(--ink);
+    padding-top:10px;
+  }
+  .tuner__label{
+    display:flex;justify-content:space-between;align-items:baseline;
+    margin-bottom:6px;
+  }
+  .station{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:12px;
+    align-items:baseline;
+    padding:9px 0;
+    border-bottom:1px solid var(--hair);
+  }
+  .station:last-child{border-bottom:0;}
+  .station .freq{
+    font-family:"JetBrains Mono",monospace;
+    font-size:11px;
+    letter-spacing:.06em;
+    color:var(--muted);
+    padding-top:3px;
+  }
+  .station .name{
+    font-family:"Newsreader",serif;
+    font-size:18px;
+    line-height:1.24;
+    color:var(--ink);
+  }
+  .station .name b{font-weight:600;}
+  .station.on .freq{color:var(--signal);}
+  .station.on .name{color:var(--blue);}
+
+  /* oversized folio */
+  .folio{
+    position:absolute;
+    right:34px;
+    bottom:14px;
+    font-family:"Instrument Serif",Georgia,serif;
+    font-size:150px;
+    line-height:.7;
+    color:var(--signal);
+    opacity:.12;
+    letter-spacing:-.04em;
+    pointer-events:none;
+  }
+
+  /* ================= MOVEMENT DIVIDER ================= */
+  .movement{
+    padding:56px 40px 8px;
+  }
+  .movement__rule{
+    display:flex;
+    align-items:baseline;
+    gap:16px;
+    border-top:2px solid var(--ink);
+    padding-top:12px;
+  }
+  .movement__no{
+    font-family:"Instrument Serif",serif;
+    font-size:40px;
+    line-height:.8;
+    color:var(--signal);
+  }
+  .movement__name{
+    font-family:"Instrument Serif",serif;
+    font-size:34px;
+    line-height:.9;
+    color:var(--ink);
+  }
+  .movement__meta{margin-left:auto;color:var(--muted);}
+
+  /* ================= SECTION SCAFFOLD ================= */
+  section{padding:0 40px;}
+  .band{
+    padding:52px 40px 0;
+  }
+  .bandhead{
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+    margin-bottom:6px;
+  }
+  .bandhead .code{color:var(--signal);}
+  .bandhead .code b{color:var(--ink);font-weight:700;}
+  .bandhead .runtime{margin-left:auto;color:var(--muted);}
+  /* accent tick — the one section marker */
+  .bandhead::before{
+    content:"";
+    width:9px;height:9px;
+    background:var(--signal);
+    display:inline-block;
+    align-self:center;
+    flex:0 0 auto;
+    transform:translateY(-1px);
+  }
+
+  /* ================= THE LETTER ================= */
+  .letter{max-width:var(--measure);margin:0 auto;padding-top:22px;padding-bottom:8px;}
+  .letter h2{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:34px;line-height:1.05;margin:0 0 4px;
+  }
+  .letter .kicker{color:var(--blue);font-style:italic;font-size:19px;margin-bottom:22px;}
+  .letter p{margin:0 0 18px;}
+  .letter p.first{text-indent:0;}
+  .letter p.first::first-letter{
+    font-family:"Instrument Serif",serif;
+    float:left;
+    font-size:82px;
+    line-height:.72;
+    padding:8px 12px 0 0;
+    color:var(--signal);
+  }
+  .letter .sig{
+    font-family:"Instrument Serif",serif;
+    font-style:italic;
+    font-size:26px;
+    color:var(--ink);
+    margin-top:26px;
+  }
+  .letter .sigline{margin-top:2px;}
+
+  /* ================= THE WEEK IN NUMBERS (ledger data panel) ================= */
+  .figures{max-width:var(--measure);margin:14px auto 0;}
+  .figures-frame{
+    border:1.5px solid var(--ink);
+    position:relative;
+    background:var(--paper-2);
+  }
+  .figures-frame::after{
+    content:""; position:absolute; inset:4px;
+    border:.75px solid var(--signal); opacity:.4; pointer-events:none;
+  }
+  .fig-caption{
+    display:flex;justify-content:space-between;align-items:baseline;
+    font-family:"JetBrains Mono",monospace;
+    text-transform:uppercase; letter-spacing:.16em;
+    font-size:11px; color:var(--muted); font-weight:500;
+    padding:12px 0 10px;
+    border-bottom:1px solid var(--hair);
+    margin:0 20px;
+  }
+  .fig-caption b{color:var(--signal);font-weight:700;}
+  .fig-row{
+    display:grid;
+    grid-template-columns:1fr auto;
+    align-items:baseline;
+    gap:16px;
+    padding:16px 20px;
+    border-bottom:1px solid var(--hair);
+  }
+  .fig-row:last-of-type{border-bottom:0;}
+  .fig-label .k{
+    font-family:"JetBrains Mono",monospace;
+    text-transform:uppercase; letter-spacing:.1em;
+    font-size:12px; color:var(--blue); font-weight:500;
+    display:block;
+  }
+  .fig-label .d{
+    font-style:italic; color:var(--muted); font-size:15px;
+  }
+  .fig-val{
+    font-family:"Instrument Serif",serif;
+    font-size:52px;
+    line-height:.82;
+    text-align:right;
+    letter-spacing:-.01em;
+    white-space:nowrap;
+    color:var(--ink);
+  }
+  .fig-val small{
+    font-size:20px;
+    font-style:italic;
+    font-family:"Newsreader",serif;
+    color:var(--muted);
+    margin-left:3px;
+  }
+  .fig-val .win{color:var(--signal);}
+  .fig-foot{
+    display:flex;justify-content:space-between;align-items:baseline;
+    font-family:"JetBrains Mono",monospace;
+    text-transform:uppercase;letter-spacing:.12em;
+    color:var(--muted);
+    font-size:10.5px;
+    padding:12px 20px 14px;
+    border-top:1px solid var(--hair);
+  }
+
+  /* ================= CAUGHT UP ================= */
+  .caughtup{padding-top:20px;}
+  .digest{
+    max-width:var(--measure);
+    margin:14px auto 0;
+    list-style:none;
+    padding:0;
+    counter-reset:d;
+  }
+  .digest li{
+    counter-increment:d;
+    display:grid;
+    grid-template-columns:38px 1fr;
+    gap:16px;
+    align-items:baseline;
+    padding:13px 0;
+    border-bottom:1px solid var(--hair);
+  }
+  .digest li:first-child{border-top:1px solid var(--ink);}
+  .digest li::before{
+    content:counter(d,decimal-leading-zero);
+    font-family:"JetBrains Mono",monospace;
+    font-size:12px;
+    color:var(--signal);
+    letter-spacing:.05em;
+    padding-top:4px;
+  }
+  .digest li p{margin:0;font-size:18px;line-height:1.4;}
+  .digest li b{font-weight:600;color:var(--blue);}
+
+  /* ================= THE LONG READ ================= */
+  .longread{padding-top:24px;padding-bottom:8px;}
+  .lr-title{
+    max-width:var(--measure);
+    margin:6px auto 0;
+  }
+  .lr-title h2{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:58px;line-height:1.0;letter-spacing:-.015em;
+    margin:14px 0 0;
+  }
+  .lr-title h2 em{font-style:italic;color:var(--signal);}
+  .lr-title .stand{
+    font-style:italic;color:var(--blue);
+    font-size:23px;line-height:1.34;
+    margin:20px 0 0;max-width:44ch;
+  }
+  .lr-title .byline{
+    margin-top:20px;color:var(--muted);
+  }
+  .lr-body{
+    max-width:var(--measure);
+    margin:0 auto;
+    font-size:20px;
+    line-height:1.72;
+  }
+  .lr-body p{margin:0 0 22px;}
+  .lr-body p.first{text-indent:0;}
+  .lr-body p.first::first-letter{
+    font-family:"Instrument Serif",serif;
+    float:left;
+    font-size:96px;
+    line-height:.68;
+    padding:10px 14px 0 0;
+    color:var(--signal);
+  }
+  .lr-body p + p{text-indent:1.4em;}
+  .lr-body p.first, .lr-body p.noindent{text-indent:0;}
+
+  .pullquote{
+    margin:34px 0;
+    padding:6px 0 6px 26px;
+    border-left:3px solid var(--signal);
+    font-family:"Instrument Serif",serif;
+    font-size:34px;
+    line-height:1.14;
+    color:var(--blue);
+    text-indent:0;
+  }
+  .pullquote .attr{
+    display:block;
+    font-family:"JetBrains Mono",monospace;
+    text-transform:uppercase;letter-spacing:.14em;
+    font-size:11px;color:var(--muted);
+    margin-top:14px;
+  }
+
+  /* captioned image placeholder */
+  .plate-img{
+    max-width:var(--measure);
+    margin:30px auto;
+  }
+  .plate-box{
+    aspect-ratio:16/9;
+    border:1px solid var(--hair);
+    background:
+      repeating-linear-gradient(135deg, transparent 0, transparent 13px, rgba(36,63,92,.06) 13px, rgba(36,63,92,.06) 14px),
+      var(--paper-2);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+  }
+  .plate-box::after{
+    content:"";
+    position:absolute;inset:8px;
+    border:1px dashed var(--hair);
+    pointer-events:none;
+  }
+  .plate-box .glyph{
+    font-family:"JetBrains Mono",monospace;
+    text-transform:uppercase;letter-spacing:.2em;
+    font-size:11px;color:var(--muted);
+  }
+  .plate-cap{
+    display:flex;gap:12px;align-items:baseline;
+    margin-top:10px;
+  }
+  .plate-cap .fig{color:var(--signal);flex:0 0 auto;}
+  .plate-cap .txt{font-style:italic;color:var(--muted);font-size:15px;line-height:1.35;}
+
+  /* case-against aside — a warm planner note, ground-disciplined */
+  .aside-note{
+    max-width:var(--measure);
+    margin:34px auto;
+    background:var(--paper-2);
+    border-top:2px solid var(--ink);
+    border-bottom:1px solid var(--hair);
+    padding:18px 22px 20px;
+  }
+  .aside-note .lbl{
+    display:flex;gap:10px;align-items:baseline;
+    color:var(--signal);margin-bottom:10px;
+  }
+  .aside-note .lbl b{color:var(--ink);}
+  .aside-note h4{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:25px;line-height:1.08;margin:0 0 8px;
+  }
+  .aside-note p{margin:0;font-size:17px;line-height:1.5;color:#2c2a30;}
+
+  /* ================= THE ROUNDS — compact rhythm ================= */
+  .round{padding-top:20px;padding-bottom:4px;}
+  .round .lead{
+    max-width:var(--measure);
+    margin:12px auto 22px;
+    font-size:19px;
+  }
+  .round .lead .drop{color:var(--signal);font-weight:600;}
+
+  /* two-column score grid (touchline) */
+  .scores{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:1px;
+    background:var(--hair);
+    border:1px solid var(--hair);
+    max-width:var(--measure);
+    margin:0 auto;
+  }
+  .score{
+    background:var(--paper);
+    padding:20px 22px 22px;
+  }
+  .score.wide{grid-column:1 / -1;}
+  .score .tag{color:var(--signal);margin-bottom:10px;display:block;}
+  .score h3{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:27px;line-height:1.04;margin:0 0 8px;
+  }
+  .score.wide h3{font-size:33px;}
+  .score p{margin:0;font-size:17px;line-height:1.42;color:#2c2a30;}
+  .score .num{color:var(--blue);font-weight:600;}
+
+  /* items list — brisk scannable rows for rounds */
+  .items{
+    max-width:var(--measure);
+    margin:6px auto 0;
+    list-style:none;padding:0;
+  }
+  .items li{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:16px;
+    align-items:baseline;
+    padding:14px 0;
+    border-bottom:1px solid var(--hair);
+  }
+  .items li:first-child{border-top:1px solid var(--ink);}
+  .items .freq{
+    font-family:"JetBrains Mono",monospace;
+    font-size:11px;letter-spacing:.06em;
+    color:var(--signal);padding-top:5px;
+    white-space:nowrap;
+  }
+  .items h3{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:24px;line-height:1.06;margin:0 0 4px;
+  }
+  .items p{margin:0;font-size:16.5px;line-height:1.44;color:#2c2a30;}
+  .items p b{color:var(--blue);font-weight:600;}
+
+  /* section with a side rail (screen & sound / bookmark) */
+  .with-rail{
+    max-width:var(--measure);
+    margin:6px auto 0;
+    display:grid;
+    grid-template-columns:1.5fr .9fr;
+    gap:30px;
+    align-items:start;
+  }
+  .rail{
+    border-top:2px solid var(--ink);
+    padding-top:10px;
+  }
+  .rail__label{
+    display:flex;justify-content:space-between;align-items:baseline;
+    margin-bottom:10px;
+  }
+  .rail__label .t{color:var(--signal);}
+  .rail-item{
+    padding:10px 0;
+    border-bottom:1px solid var(--hair);
+  }
+  .rail-item:last-child{border-bottom:0;}
+  .rail-item .when{
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;letter-spacing:.1em;
+    color:var(--blue);text-transform:uppercase;
+    display:block;margin-bottom:3px;
+  }
+  .rail-item .what{
+    font-family:"Newsreader",serif;
+    font-size:17px;line-height:1.24;
+  }
+  .rail-item .what b{font-weight:600;}
+  .rail-item .what i{font-style:italic;color:var(--muted);font-size:14.5px;display:block;margin-top:1px;}
+
+  /* bookmark picks */
+  .picks{list-style:none;padding:0;margin:6px 0 0;}
+  .picks li{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:16px;
+    padding:14px 0;
+    border-bottom:1px solid var(--hair);
+    align-items:baseline;
+  }
+  .picks li:first-child{border-top:1px solid var(--ink);}
+  .picks .spine{
+    width:8px;align-self:stretch;
+    background:var(--blue);
+    min-height:52px;
+  }
+  .picks li:nth-child(2) .spine{background:var(--signal);}
+  .picks li:nth-child(3) .spine{background:var(--muted);}
+  .picks h3{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:23px;line-height:1.05;margin:0 0 2px;
+  }
+  .picks .meta{color:var(--muted);font-style:italic;font-size:14.5px;margin-bottom:5px;}
+  .picks p{margin:0;font-size:16.5px;line-height:1.42;color:#2c2a30;}
+
+  /* ================= THE DESK — service columns w/ planner pins ================= */
+  .desk{
+    max-width:var(--measure);
+    margin:8px auto 0;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:30px;
+  }
+  .deskcol h3{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:27px;line-height:1.04;margin:0 0 4px;
+    border-top:2px solid var(--ink);padding-top:12px;
+  }
+  .deskcol .sub{color:var(--signal);margin-bottom:12px;display:block;}
+  .deskcol p{margin:0 0 14px;font-size:17px;line-height:1.5;}
+  .deskcol p b{color:var(--blue);font-weight:600;}
+
+  /* the shared planner-note device: "Do This Week" pin */
+  .pin{
+    background:var(--paper-2);
+    border-left:3px solid var(--signal);
+    padding:13px 16px 15px;
+    margin-top:6px;
+  }
+  .pin .pinlbl{
+    display:flex;gap:8px;align-items:center;
+    color:var(--signal);margin-bottom:6px;
+  }
+  .pin .pinlbl::before{
+    content:"";width:7px;height:7px;background:var(--signal);
+    display:inline-block;transform:rotate(45deg);
+  }
+  .pin .pinlbl b{color:var(--ink);}
+  .pin .act{
+    font-family:"Newsreader",serif;
+    font-size:18px;line-height:1.32;font-weight:600;
+    color:var(--ink);margin:0 0 5px;
+  }
+  .pin .why{margin:0;font-size:15px;line-height:1.4;font-style:italic;color:var(--muted);}
+
+  /* ================= THE THREADS ================= */
+  .threads{max-width:var(--measure);margin:14px auto 0;}
+  .thread{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:18px;
+    padding:16px 0;
+    border-bottom:1px solid var(--hair);
+    align-items:baseline;
+  }
+  .thread:first-child{border-top:1px solid var(--ink);}
+  .thread .ep{
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;letter-spacing:.08em;
+    color:var(--signal);text-transform:uppercase;
+    padding-top:5px;white-space:nowrap;
+  }
+  .thread h3{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:24px;line-height:1.06;margin:0 0 4px;
+  }
+  .thread .prev{
+    font-style:italic;color:var(--muted);font-size:15px;
+    margin:0 0 6px;
+  }
+  .thread p{margin:0;font-size:16.5px;line-height:1.44;color:#2c2a30;}
+  .thread p b{color:var(--blue);font-weight:600;}
+
+  /* ================= RABBIT HOLE ================= */
+  .rabbit{
+    max-width:var(--measure);
+    margin:16px auto 0;
+    background:var(--paper-2);
+    border:1.5px solid var(--ink);
+    position:relative;
+    padding:26px 28px 28px;
+  }
+  .rabbit::after{
+    content:"";position:absolute;inset:5px;
+    border:.75px solid var(--signal);opacity:.35;pointer-events:none;
+  }
+  .rabbit .lbl{color:var(--signal);margin-bottom:14px;display:block;}
+  .rabbit .chain{
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    gap:16px;
+    align-items:center;
+    margin-bottom:18px;
+  }
+  .rabbit .node .cap{color:var(--muted);display:block;margin-bottom:4px;}
+  .rabbit .node .nm{
+    font-family:"Instrument Serif",serif;font-size:26px;line-height:1.02;
+  }
+  .rabbit .arrow{
+    font-family:"Instrument Serif",serif;font-style:italic;
+    color:var(--signal);font-size:30px;line-height:1;
+  }
+  .rabbit p{margin:0;font-size:18px;line-height:1.56;}
+  .rabbit p em{font-style:italic;color:var(--blue);}
+
+  /* ================= ON THE RADAR ================= */
+  .radar{max-width:var(--measure);margin:14px auto 0;list-style:none;padding:0;}
+  .radar li{
+    display:grid;
+    grid-template-columns:120px 1fr;
+    gap:18px;
+    padding:13px 0;
+    border-bottom:1px solid var(--hair);
+    align-items:baseline;
+  }
+  .radar li:first-child{border-top:1px solid var(--ink);}
+  .radar .date{
+    font-family:"JetBrains Mono",monospace;
+    font-size:11px;letter-spacing:.06em;color:var(--signal);
+  }
+  .radar .ev{font-size:17px;line-height:1.34;}
+  .radar .ev b{color:var(--blue);font-weight:600;}
+
+  /* closing "do this week" — the strongest single pin */
+  .closepin{
+    max-width:var(--measure);
+    margin:20px auto 0;
+    background:var(--paper-2);
+    border-top:3px solid var(--signal);
+    border-bottom:1px solid var(--hair);
+    padding:22px 26px 24px;
+  }
+  .closepin .pinlbl{display:flex;gap:10px;align-items:baseline;color:var(--signal);margin-bottom:10px;}
+  .closepin .pinlbl b{color:var(--ink);}
+  .closepin .act{
+    font-family:"Instrument Serif",serif;font-size:32px;line-height:1.08;
+    margin:0 0 8px;color:var(--ink);
+  }
+  .closepin .why{margin:0;font-size:17px;line-height:1.46;font-style:italic;color:var(--muted);}
+
+  /* ================= COLOPHON ================= */
+  .endnumbers{
+    max-width:var(--measure);
+    margin:20px auto 0;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:1px;background:var(--hair);border:1px solid var(--hair);
+  }
+  .endnumbers .cell{
+    background:var(--paper);padding:16px 18px;
+  }
+  .endnumbers .cell .k{color:var(--muted);display:block;margin-bottom:4px;}
+  .endnumbers .cell .v{
+    font-family:"Instrument Serif",serif;font-size:30px;line-height:1;color:var(--ink);
+  }
+  .endnumbers .cell .v em{color:var(--signal);font-style:italic;}
+
+  .colophon{
+    padding:26px 40px 20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-top:2px solid var(--ink);
+    margin-top:32px;
+  }
+  .colophon .serif{font-size:30px;}
+  .colophon .serif em{font-style:italic;color:var(--signal);}
+  .signoff-line{
+    padding:6px 40px 44px;
+    text-align:center;
+  }
+  .signoff-line .big{
+    font-family:"Instrument Serif",serif;
+    font-size:30px;line-height:1.16;
+    color:var(--ink);
+    max-width:30ch;margin:14px auto 0;
+  }
+  .signoff-line .big em{font-style:italic;color:var(--signal);}
+  .signoff-line .stamp{margin-top:16px;color:var(--muted);}
+
+  /* ---- portrait tablet niceties ---- */
+  @media (max-width:640px){
+    .cover{padding:22px 24px 26px;}
+    .masthead{font-size:78px;}
+    .cover__body{grid-template-columns:1fr;gap:26px;}
+    .lead__head{font-size:38px;}
+    section{padding:0 24px;}
+    .band{padding:44px 24px 0;}
+    .movement{padding:48px 24px 8px;}
+    .colophon,.signoff-line{padding-left:24px;padding-right:24px;}
+    .scores{grid-template-columns:1fr;}
+    .score.wide{grid-column:auto;}
+    .folio{font-size:110px;}
+    .lr-title h2{font-size:44px;}
+    .with-rail,.desk{grid-template-columns:1fr;gap:26px;}
+    .rabbit .chain{grid-template-columns:1fr;gap:8px;text-align:center;}
+    .rabbit .arrow{transform:rotate(90deg);}
+    .endnumbers{grid-template-columns:1fr;}
+    .radar li{grid-template-columns:1fr;gap:2px;}
+  }
+</style>
+</head>
+<body>
+<div class="issue">
+
+  <!-- ============================================================ -->
+  <!-- MOVEMENT I · THE OPEN                                         -->
+  <!-- ============================================================ -->
+
+  <!-- ================= COVER ================= -->
+  <header class="cover">
+    <div class="cover__top">
+      <span class="mono">A Personal Weekly · Received &amp; Tuned</span>
+      <span class="mono price">Sunday Edition</span>
+    </div>
+
+    <div class="wave wave--ink" aria-hidden="true">
+      <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+        <path d="M0 13 H60 l6 -10 6 20 6 -20 6 20 6 -20 6 10 H160 l5 -8 5 16 5 -16 5 16 5 -8 H280 l7 -12 7 24 7 -24 7 24 7 -12 H420 l4 -6 4 12 4 -12 4 12 4 -6 H540 l6 -11 6 22 6 -22 6 22 6 -11 H680 l5 -7 5 14 5 -14 5 14 5 -7 H800"
+          fill="none" stroke="currentColor" stroke-width="2"/>
+      </svg>
+    </div>
+
+    <h1 class="masthead">The <em>Signal</em></h1>
+    <div class="masthead__sub">
+      <span class="tag">tuning in to the week you lived</span>
+      <span class="mono">EST. 2026</span>
+    </div>
+
+    <div class="cover__body">
+      <div class="lead">
+        <div class="mono lead__eyebrow">BAND 01 — THE LEAD TRANSMISSION</div>
+        <h2 class="lead__head">Britain is about to change prime minister — and <span class="hl">not a single ballot</span> will be cast to do it.</h2>
+        <p class="lead__stand">Andy Burnham, Labour's only declared candidate, is on course for No.10. A coronation without a crowning.</p>
+      </div>
+
+      <nav class="tuner" aria-label="In this transmission">
+        <div class="tuner__label">
+          <span class="mono">STATION LIST</span>
+          <span class="mono">№016</span>
+        </div>
+
+        <div class="station on">
+          <span class="freq">88.9</span>
+          <span class="name"><b>The Long Read:</b> the coronation without a crowning</span>
+        </div>
+        <div class="station">
+          <span class="freq">98.4</span>
+          <span class="name">Wimbledon's two champions</span>
+        </div>
+        <div class="station on">
+          <span class="freq">104.7</span>
+          <span class="name"><b>Silverstone:</b> Leclerc wins at home of speed</span>
+        </div>
+        <div class="station">
+          <span class="freq">106.0</span>
+          <span class="name">Pixel &amp; Byte: Switch 2's summer surprise</span>
+        </div>
+        <div class="station on">
+          <span class="freq">92.3</span>
+          <span class="name"><b>The Desk:</b> week 6 of the marathon block</span>
+        </div>
+        <div class="station">
+          <span class="freq">101.2</span>
+          <span class="name">Down the rabbit hole, and the Efteling countdown</span>
+        </div>
+      </nav>
+    </div>
+
+    <div class="dataline">
+      <span class="mono">TRANSMISSION №016</span>
+      <span class="dot" aria-hidden="true">·</span>
+      <span class="mono">6–12 JUL 2026</span>
+      <span class="dot" aria-hidden="true">·</span>
+      <span class="mono">NORTHERN IRELAND</span>
+      <span class="dot" aria-hidden="true">·</span>
+      <span class="mono">FOLIO 016</span>
+      <span class="dot" aria-hidden="true">·</span>
+      <span class="mono">34 MIN · ONE SITTING</span>
+    </div>
+
+    <div class="folio" aria-hidden="true">016</div>
+  </header>
+
+  <div class="wave wave--blue" aria-hidden="true" style="padding:0 40px;">
+    <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+      <path d="M0 13 H40 l5 -9 5 18 5 -18 5 18 5 -9 H120 l7 -13 7 26 7 -26 7 26 7 -13 H260 l4 -6 4 12 4 -12 4 12 4 -6 H360 l6 -11 6 22 6 -22 6 22 6 -11 H500 l5 -8 5 16 5 -16 5 16 5 -8 H620 l7 -13 7 26 7 -26 7 26 7 -13 H800"
+        fill="none" stroke="currentColor" stroke-width="1.5"/>
+    </svg>
+  </div>
+
+  <!-- ---- movement marker ---- -->
+  <div class="movement">
+    <div class="movement__rule">
+      <span class="movement__no">I</span>
+      <span class="movement__name">The Open</span>
+      <span class="mono movement__meta">LETTER · NUMBERS · DIGEST</span>
+    </div>
+  </div>
+
+  <!-- ================= THE LETTER ================= -->
+  <div class="band">
+    <div class="bandhead">
+      <span class="mono code">BAND 02 — <b>THE LETTER</b></span>
+      <span class="mono runtime">FROM THE EDITOR</span>
+    </div>
+  </div>
+  <section class="letter">
+    <h2>A week that turned quietly.</h2>
+    <p class="kicker">On coronations, champions, and the things that change without a vote.</p>
+    <p class="first">There are weeks that arrive with a bang and weeks that simply <em>tune in</em> — a low, steady frequency you only notice once it has already changed the station. This was the latter. A country prepares to swap its prime minister with nobody casting a ballot, and somehow the loudest thing all week was the quiet of it.</p>
+    <p>So I went looking for noise elsewhere and found it on grass and gravel: two Wimbledon champions crowned in front of a crowd; a World Cup down to four; Leclerc winning where speed was born. Between the headlines I logged week six of the marathon block — thirty-one miles that finally felt like progress — and started counting down to Efteling. Coronations come in two kinds this week: the sort with trophies, and the sort with none. I've set them side by side. Pour the coffee; this one's built for one sitting.</p>
+    <p class="sig">— The Editor</p>
+    <p class="mono sigline">TRANSMITTED SUNDAY · 12 JUL 2026</p>
+  </section>
+
+  <div class="band">
+    <hr class="hair">
+    <div class="tickrule" style="margin-top:22px;" aria-hidden="true"></div>
+  </div>
+
+  <!-- ================= THE WEEK IN NUMBERS ================= -->
+  <div class="band">
+    <div class="bandhead">
+      <span class="mono code">BAND 03 — <b>THE WEEK IN NUMBERS</b></span>
+      <span class="mono runtime">THE LEDGER · SIGNAL METERED</span>
+    </div>
+  </div>
+  <section>
+    <div class="figures">
+      <div class="figures-frame">
+        <div class="fig-caption"><span>TABLE I · <b>DATUMS OF THE WEEK</b></span><span>№016</span></div>
+
+        <div class="fig-row">
+          <div class="fig-label">
+            <span class="k">Distance Run</span>
+            <span class="d">marathon block, week six of sixteen</span>
+          </div>
+          <div class="fig-val">31.2<small>mi</small></div>
+        </div>
+
+        <div class="fig-row">
+          <div class="fig-label">
+            <span class="k">Block Progress</span>
+            <span class="d">legs still willing, mornings still dark</span>
+          </div>
+          <div class="fig-val">wk <span class="win">6</span></div>
+        </div>
+
+        <div class="fig-row">
+          <div class="fig-label">
+            <span class="k">Juventus</span>
+            <span class="d">home, and held on to the end</span>
+          </div>
+          <div class="fig-val"><span class="win">2–1</span></div>
+        </div>
+
+        <div class="fig-row">
+          <div class="fig-label">
+            <span class="k">FPL Rank</span>
+            <span class="d">overall, and climbing again</span>
+          </div>
+          <div class="fig-val">412<small>k</small></div>
+        </div>
+
+        <div class="fig-row">
+          <div class="fig-label">
+            <span class="k">Best Easy-Access Rate</span>
+            <span class="d">worth the ten-minute switch</span>
+          </div>
+          <div class="fig-val">4.75<small>%</small></div>
+        </div>
+
+        <div class="fig-foot"><span>CARRIED FORWARD TO №017</span><span>TOTALS KEPT SINCE JANUARY</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CAUGHT UP ================= -->
+  <div class="band">
+    <div class="bandhead">
+      <span class="mono code">BAND 04 — <b>CAUGHT UP</b></span>
+      <span class="mono runtime">EVERYTHING THAT MOVED, IN EIGHT LINES</span>
+    </div>
+  </div>
+  <section class="caughtup">
+    <ol class="digest">
+      <li><p><b>Westminster.</b> Andy Burnham becomes Labour's only declared candidate, clearing a path to No.10 without a contested vote.</p></li>
+      <li><p><b>SW19.</b> Wimbledon crowns two new champions across a fortnight of long shadows and longer rallies.</p></li>
+      <li><p><b>The World Cup.</b> The field narrows to a last four; the tournament tightens into knockout weather.</p></li>
+      <li><p><b>Silverstone.</b> Charles Leclerc wins the British Grand Prix at the historic home of speed.</p></li>
+      <li><p><b>Le Grand Départ.</b> The Tour de France opens; three weeks of climbing and suffering begin.</p></li>
+      <li><p><b>Pixel &amp; Byte.</b> Nintendo drops a surprise Switch 2 Direct; a beloved indie finally names its date.</p></li>
+      <li><p><b>The ledger.</b> Easy-access rates nudge to 4.75%; ten minutes moves the balance for the better.</p></li>
+      <li><p><b>Filed under later.</b> Week six of the block done, and the Efteling countdown quietly begins.</p></li>
+    </ol>
+  </section>
+
+  <div class="band">
+    <div class="wave wave--ink" aria-hidden="true" style="margin-top:26px;color:var(--signal);">
+      <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+        <path d="M0 13 H70 l6 -11 6 22 6 -22 6 22 6 -11 H180 l5 -9 5 18 5 -18 5 18 5 -9 H300 l8 -14 8 28 8 -28 8 28 8 -14 H460 l4 -7 4 14 4 -14 4 14 4 -7 H580 l6 -11 6 22 6 -22 6 22 6 -11 H720 l5 -8 5 16 5 -16 5 16 5 -8 H800"
+          fill="none" stroke="currentColor" stroke-width="2"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- MOVEMENT II · THE LONG READ                                   -->
+  <!-- ============================================================ -->
+  <div class="movement">
+    <div class="movement__rule">
+      <span class="movement__no">II</span>
+      <span class="movement__name">The Long Read</span>
+      <span class="mono movement__meta">ONE PIECE · SETTLE IN · 12 MIN</span>
+    </div>
+  </div>
+
+  <div class="band">
+    <div class="bandhead">
+      <span class="mono code">BAND 05 — <b>THE LONG READ</b></span>
+      <span class="mono runtime">88.9 · SIGNAL STRONG</span>
+    </div>
+  </div>
+  <section class="longread">
+    <div class="lr-title">
+      <div class="mono" style="color:var(--signal);">POWER, PASSED HAND TO HAND</div>
+      <h2>The coronation <em>without a crowning</em></h2>
+      <p class="stand">Britain is about to change prime minister, and no one will vote to make it happen. How a handover became a formality — and what it costs to win a country without contesting it.</p>
+      <p class="mono byline">BY THE EDITOR · WESTMINSTER · 12 JUL 2026</p>
+    </div>
+
+    <div class="lr-body">
+      <p class="first">There is a particular kind of silence that settles over a country when a decision has already been made. Not the silence of consent, exactly, and not quite the silence of resignation — something in between, the sound of a room realising the vote it expected is not coming. This week Britain sat in that silence. Andy Burnham, mayor of Greater Manchester and, as of Tuesday, the only declared candidate to lead his party, is on a clear path to Downing Street. No ballot will be cast to put him there. No campaign will be run against him. The next prime minister will arrive by arithmetic, and the country will wake to a government it did not choose.</p>
+
+      <p>It is worth being precise about what has and has not happened, because the strangeness lives in the detail. Nothing unconstitutional is under way. British prime ministers are not directly elected; they hold office because they command a majority in the Commons, and parties have always been free to choose their own leaders by their own rules. What has changed is not the mechanism but the theatre around it. For a generation, leadership handovers came dressed in the costume of contest — hustings, ballots of the membership, a fortnight of manifestos posted through letterboxes. This time the costume is simply absent. One name was put forward. No other survived the maths. The machinery that usually manufactures a choice produced, instead, a coronation.</p>
+
+      <p>Burnham himself is not the story, though he will become it soon enough. He is a familiar figure: the man who left Westminster for Manchester, built a reputation on transport and homelessness, and spent years being described as the leader his party might one day want and never quite chose. There is an irony, sharp enough to draw blood, in the fact that the office finally comes to him not through the contest he was so often denied but through its total absence. The prize he could not win in the open has arrived in the quiet.</p>
+
+      <div class="pullquote">
+        The next prime minister will arrive by arithmetic — and the country will wake to a government it did not choose.
+        <span class="attr">TRANSMISSION №016 · THE LONG READ</span>
+      </div>
+
+      <p class="noindent">To understand how the field emptied, you have to read the calendar as much as the politics. Rules on nominations, timing set to avoid a summer contest, a threshold of MPs that only one figure could clear before the window closed — none of it dramatic on its own, all of it decisive together. Party managers will tell you, not unreasonably, that a swift and settled handover is a gift in uncertain times: no bloodletting, no wasted months, no daily briefing war. Continuity, they say, is the responsible choice. And they may be right. But continuity chosen for you is a different thing from continuity you chose, and the difference is the whole of the matter.</p>
+
+      <div class="plate-img">
+        <div class="plate-box"><span class="glyph">FIG. 01 · THE EMPTY DESPATCH BOX</span></div>
+        <div class="plate-cap">
+          <span class="mono fig">FIG. 01</span>
+          <span class="txt">Where a leadership ballot would sit on the calendar, a blank. The handover is scheduled, not contested — the first such transfer of its kind in a generation.</span>
+        </div>
+      </div>
+
+      <p>The markets, for their part, shrugged. Borrowing costs held steady; sterling barely twitched. To the people whose job is to price risk, an uncontested handover reads as the opposite of risk — the known quantity, the steady hand, the absence of surprise. That calm is its own kind of verdict, and not a flattering one for those who believe politics should be argued rather than administered. When the safest thing a country can do is change its leader without a debate, something has quietly gone slack in the muscle that makes democracies feel democratic.</p>
+
+      <p>And yet. It would be too easy, and too English, to mistake the absence of drama for the absence of legitimacy. Burnham will govern with a mandate every bit as real as his predecessor's — the same Commons majority, the same manifesto, the same voters who returned it. He inherits a government, not a blank cheque, and the next election will come for him as it comes for everyone. The coronation is real, but so is the ballot box waiting at the end of it. The question this week leaves behind is quieter and more unsettling than any headline: not whether the handover is allowed, but whether we have grown too comfortable with power that changes hands while we watch, and never ask us anything at all.</p>
+
+      <div class="aside-note">
+        <div class="lbl mono">THE CASE AGAINST · <b>THE OTHER READING</b></div>
+        <h4>Maybe the quiet is the point.</h4>
+        <p>The counter-argument deserves an airing. Contested leadership races are not intrinsically noble — they can be vicious, wasteful, and paralysing, months of a governing party talking only to itself while the country waits. Plenty of democracies transfer power between elections without a public vote and are none the weaker for it. On this reading, the absence of a contest is not a democratic failure but a democratic economy: the party did its job, chose competently, and spared everyone the pantomime. The unease may say less about the handover than about our appetite for spectacle — our sense that a thing must be loud to be legitimate. Perhaps a coronation, done cleanly, is simply governance without the theatre. The discomfort is real; whether it is <em>evidence</em> is the harder question.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="band">
+    <div class="wave wave--blue" aria-hidden="true" style="margin-top:30px;">
+      <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+        <path d="M0 13 H50 l6 -11 6 22 6 -22 6 22 6 -11 H160 l5 -9 5 18 5 -18 5 18 5 -9 H280 l7 -12 7 24 7 -24 7 24 7 -12 H420 l4 -7 4 14 4 -14 4 14 4 -7 H540 l6 -11 6 22 6 -22 6 22 6 -11 H680 l5 -8 5 16 5 -16 5 16 5 -8 H800"
+          fill="none" stroke="currentColor" stroke-width="1.5"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- MOVEMENT III · THE ROUNDS                                     -->
+  <!-- ============================================================ -->
+  <div class="movement">
+    <div class="movement__rule">
+      <span class="movement__no">III</span>
+      <span class="movement__name">The Rounds</span>
+      <span class="mono movement__meta">BRISK · SCANNABLE · FIVE BANDS</span>
+    </div>
+  </div>
+
+  <!-- ================= THE TOUCHLINE ================= -->
+  <div class="band">
+    <div class="bandhead">
+      <span class="mono code">BAND 06 — <b>THE TOUCHLINE</b></span>
+      <span class="mono runtime">SPORT · SIGNAL STRONG</span>
+    </div>
+  </div>
+  <section class="round">
+    <p class="lead"><span class="drop">Two crownings, one on grass and one on gravel</span> — and a World Cup deciding who gets to dream. If the politics of the week refused to be settled by a vote, sport spent seven days settling everything the hard way: on the scoreboard, in front of a crowd, with no room for a recount.</p>
+
+    <div class="scores">
+      <div class="score wide">
+        <span class="mono tag">98.4 · WIMBLEDON · THE FINALS</span>
+        <h3>Two champions, crowned properly</h3>
+        <p>A fortnight of long rallies ends with fresh names on both trophies — the rare Wimbledon that felt handed over rather than defended, decided under a closing roof and a late-evening hush. <span class="num">SW19, complete.</span></p>
+      </div>
+    </div>
+
+    <ul class="items">
+      <li>
+        <span class="freq">101.2</span>
+        <div>
+          <h3>The World Cup, down to the last four</h3>
+          <p>The bracket tightens to a semi-final quartet; four nations, one weekend of nerves to come, and every pub in the country picking a side. <b>4 left.</b></p>
+        </div>
+      </li>
+      <li>
+        <span class="freq">104.7</span>
+        <div>
+          <h3>Leclerc wins at Silverstone</h3>
+          <p>Charles Leclerc converts pace into a home-of-speed win, a wet-then-dry tyre gamble paying off where the sport was born. <b>P1.</b></p>
+        </div>
+      </li>
+      <li>
+        <span class="freq">106.0</span>
+        <div>
+          <h3>The Tour de France opens</h3>
+          <p>Le Grand Départ rolls out; three weeks of climbing and suffering begin, the general classification still a blank page. <b>Stage 1 down.</b></p>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ================= PIXEL & BYTE ================= -->
+  <div class="band">
+    <div class="bandhead">
+      <span class="mono code">BAND 07 — <b>PIXEL &amp; BYTE</b></span>
+      <span class="mono runtime">GAMING · SIGNAL CLEAR</span>
+    </div>
+  </div>
+  <section class="round">
+    <ul class="items">
+      <li>
+        <span class="freq">110.1</span>
+        <div>
+          <h3>A surprise Switch 2 Direct</h3>
+          <p>Nintendo ambushes a quiet Thursday with a 20-minute Direct: a new 2D <b>Metroid</b>, a Switch 2 edition of an old favourite with mouse-controls, and one silent "2026" logo that lit up every forum. No leaks, for once.</p>
+        </div>
+      </li>
+      <li>
+        <span class="freq">112.4</span>
+        <div>
+          <h3>Steam Deck gets its OLED price cut</h3>
+          <p>Valve trims the OLED model ahead of the summer sale and ships a SteamOS update that finally fixes suspend-resume on a handful of stubborn Unreal titles. <b>The backlog trembles.</b></p>
+        </div>
+      </li>
+      <li>
+        <span class="freq">114.8</span>
+        <div>
+          <h3>An indie darling names its date</h3>
+          <p>The cosy farming-and-diving hybrid that's been "coming soon" for two years lands a September window — day one on Switch 2 and Deck Verified at launch, which is the whole ballgame for this desk. <b>Wishlisted, promoted.</b></p>
+        </div>
+      </li>
+      <li>
+        <span class="freq">116.2</span>
+        <div>
+          <h3>Emulation, but official</h3>
+          <p>A beloved GameCube-era RPG resurfaces on the classics service — no remaster, just the original running clean at last. Sometimes preservation is the feature. <b>Play it before it vanishes again.</b></p>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ================= SCREEN & SOUND ================= -->
+  <div class="band">
+    <div class="bandhead">
+      <span class="mono code">BAND 08 — <b>SCREEN &amp; SOUND</b></span>
+      <span class="mono runtime">WATCH &amp; LISTEN · + RELEASE RADAR</span>
+    </div>
+  </div>
+  <section class="round">
+    <div class="with-rail">
+      <ul class="items" style="margin-top:0;">
+        <li>
+          <span class="freq">120.5</span>
+          <div>
+            <h3>A sci-fi show worth the slow burn</h3>
+            <p>The new generation-ship drama trades explosions for dread and long silences; episode three is the one that flips it from "handsome" to "haunting." <b>Watch with the lights low.</b></p>
+          </div>
+        </li>
+        <li>
+          <span class="freq">122.9</span>
+          <div>
+            <h3>Synthwave, but with a pulse</h3>
+            <p>A new release leans past nostalgia into something warmer — analog drift, real bass, a closing track built for a dark motorway at midnight. <b>Perfect long-run fuel.</b></p>
+          </div>
+        </li>
+      </ul>
+
+      <aside class="rail" aria-label="Release Radar">
+        <div class="rail__label">
+          <span class="mono t">RELEASE RADAR</span>
+          <span class="mono">DATED</span>
+        </div>
+        <div class="rail-item">
+          <span class="when">OUT NOW · 11 JUL</span>
+          <span class="what"><b>Neon Meridian</b><i>synthwave LP · 42 min</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">OUT NOW · 09 JUL</span>
+          <span class="what"><b>The Long Dark, S2</b><i>sci-fi drama · weekly</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 18 JUL</span>
+          <span class="what"><b>Hollow Signal</b><i>film · limited run</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 25 JUL</span>
+          <span class="what"><b>Nightdrive II</b><i>EP · pre-save up</i></span>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= BOOKMARK ================= -->
+  <div class="band">
+    <div class="bandhead">
+      <span class="mono code">BAND 09 — <b>BOOKMARK</b></span>
+      <span class="mono runtime">BOOKS · ON THE NIGHTSTAND</span>
+    </div>
+  </div>
+  <section class="round">
+    <ul class="picks">
+      <li>
+        <span class="spine" aria-hidden="true"></span>
+        <div>
+          <h3>A stormlight-scale epic, book one</h3>
+          <p class="meta">Fantasy · doorstopper · start of a series</p>
+          <p>Hard-magic worldbuilding with an actual system you could diagram, and a broken protagonist worth 1,200 pages. If you loved the Cosmere's scale, this is the on-ramp. No spoilers — just start it on a long weekend.</p>
+        </div>
+      </li>
+      <li>
+        <span class="spine" aria-hidden="true"></span>
+        <div>
+          <h3>Malazan-adjacent, but kinder to newcomers</h3>
+          <p class="meta">Fantasy · military · ensemble cast</p>
+          <p>All the grim grandeur and convergence-of-armies sweep, with a narrative that trusts you without drowning you. The kind of book that rewards a notebook. Bring patience; it pays it back.</p>
+        </div>
+      </li>
+      <li>
+        <span class="spine" aria-hidden="true"></span>
+        <div>
+          <h3>A lean sci-fi palate cleanser</h3>
+          <p class="meta">Sci-fi · standalone · one sitting</p>
+          <p>After a thousand-page epic, this 300-page first-contact story is a glass of cold water — one idea, chased to its end, beautifully. Finish it before the next brick lands.</p>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ================= THE DESK ================= -->
+  <div class="band">
+    <div class="bandhead">
+      <span class="mono code">BAND 10 — <b>THE DESK</b></span>
+      <span class="mono runtime">SERVICE · THE SESSION &amp; THE LEDGER</span>
+    </div>
+  </div>
+  <section class="round">
+    <div class="desk">
+      <div class="deskcol">
+        <h3>The Session</h3>
+        <span class="mono sub">FITNESS · MARATHON BLOCK, WK 6</span>
+        <p>Six weeks in, and the block finally stopped feeling like punishment. <b>31.2 miles</b> logged this week, with the first proper long run over ten — legs willing, mornings still dark. The lesson of week six is boring and true: it's the easy runs, held genuinely easy, that make the hard ones possible. Resist the urge to race your own recovery pace.</p>
+        <div class="pin">
+          <div class="pinlbl mono">DO THIS WEEK · <b>THE SESSION</b></div>
+          <p class="act">Run one long run a full minute per mile slower than goal pace.</p>
+          <p class="why">Week seven is where over-eager blocks quietly break. Aerobic base is built in the slow miles — protect them, and the speed keeps.</p>
+        </div>
+      </div>
+
+      <div class="deskcol">
+        <h3>The Ledger</h3>
+        <span class="mono sub">MONEY · RATES &amp; RUNWAY</span>
+        <p>Easy-access savings rates nudged up again this week, with the best paying <b>4.75%</b> — and the newer fintech accounts leading the table. If your emergency fund is still sitting in a legacy account earning half that, the gap is real money over a year, not a rounding error. This is the rare admin task with a genuinely good hourly rate.</p>
+        <div class="pin">
+          <div class="pinlbl mono">DO THIS WEEK · <b>THE LEDGER</b></div>
+          <p class="act">Move the emergency fund to a 4.75% easy-access account.</p>
+          <p class="why">Ten minutes of switching beats most side hustles per hour. Same access, same safety — just paid properly for sitting still.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="band">
+    <div class="wave wave--ink" aria-hidden="true" style="margin-top:30px;color:var(--signal);">
+      <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+        <path d="M0 13 H60 l6 -10 6 20 6 -20 6 20 6 -20 6 10 H170 l5 -8 5 16 5 -16 5 16 5 -8 H290 l7 -12 7 24 7 -24 7 24 7 -12 H430 l4 -6 4 12 4 -12 4 12 4 -6 H550 l6 -11 6 22 6 -22 6 22 6 -11 H690 l5 -7 5 14 5 -14 5 14 5 -7 H800"
+          fill="none" stroke="currentColor" stroke-width="2"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- MOVEMENT IV · THE CLOSE                                       -->
+  <!-- ============================================================ -->
+  <div class="movement">
+    <div class="movement__rule">
+      <span class="movement__no">IV</span>
+      <span class="movement__name">The Close</span>
+      <span class="mono movement__meta">THREADS · RABBIT HOLE · RADAR</span>
+    </div>
+  </div>
+
+  <!-- ================= THE THREADS ================= -->
+  <div class="band">
+    <div class="bandhead">
+      <span class="mono code">BAND 11 — <b>THE THREADS</b></span>
+      <span class="mono runtime">PREVIOUSLY ON · STILL RUNNING</span>
+    </div>
+  </div>
+  <section>
+    <div class="threads">
+      <div class="thread">
+        <span class="ep">SAGA · WESTMINSTER</span>
+        <div>
+          <h3>The handover</h3>
+          <p class="prev">Previously: a leadership field that kept narrowing.</p>
+          <p>This week it closed entirely — Burnham the only name left standing. <b>Next:</b> the walk to No.10, and the first cabinet that nobody voted for. We'll keep the frequency open.</p>
+        </div>
+      </div>
+      <div class="thread">
+        <span class="ep">SAGA · THE WORLD CUP</span>
+        <div>
+          <h3>Down to four</h3>
+          <p class="prev">Previously: a group stage that refused to go to form.</p>
+          <p>Now a semi-final quartet, and one weekend to settle it. <b>Next:</b> the two that reach the final, and whether the tournament finally produces its signature night.</p>
+        </div>
+      </div>
+      <div class="thread">
+        <span class="ep">LIFE-THREAD · THE BLOCK</span>
+        <div>
+          <h3>Marathon build, week 6 of 16</h3>
+          <p class="prev">Previously: five weeks in, and the doubt of a missed long run.</p>
+          <p>Recovered, banked 31.2 miles, and crossed into the double-digit long runs. <b>Next:</b> week seven's step-up, then a cutback — and the small matter of a trip to plan.</p>
+        </div>
+      </div>
+      <div class="thread">
+        <span class="ep">LIFE-THREAD · THE TRAVELLING</span>
+        <div>
+          <h3>Efteling, on the horizon</h3>
+          <p class="prev">Previously: a "maybe" that became a "booked."</p>
+          <p>The Dutch fairy-tale park is on the calendar now, sitting just outside the marathon taper. <b>Next:</b> lock the dates against the long-run schedule so neither one eats the other.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= DOWN THE RABBIT HOLE ================= -->
+  <div class="band">
+    <div class="bandhead">
+      <span class="mono code">BAND 12 — <b>DOWN THE RABBIT HOLE</b></span>
+      <span class="mono runtime">CURIOSITY · SIGNAL FAINT, FOLLOW IT</span>
+    </div>
+  </div>
+  <section>
+    <div class="rabbit">
+      <span class="mono lbl">YOU LIKE THIS → SO TRY THIS</span>
+      <div class="chain">
+        <div class="node">
+          <span class="mono cap">BECAUSE YOU LOVE</span>
+          <span class="nm serif">hard-magic epic fantasy</span>
+        </div>
+        <div class="arrow" aria-hidden="true">→</div>
+        <div class="node">
+          <span class="mono cap">YOU MIGHT FALL INTO</span>
+          <span class="nm serif">the real history of coronations</span>
+        </div>
+      </div>
+      <p>Here's the thread worth pulling this week. You spend your evenings in worlds where power runs on <em>systems</em> — rules you can diagram, magic with a cost, thrones won by law as much as by sword. So here's a rabbit hole that rhymes with the Long Read: the genuinely strange history of how real crowns changed hands <em>without</em> a fight. Look up the "witan" that chose Anglo-Saxon kings before Parliament existed; the Polish–Lithuanian nobles who literally <em>elected</em> their monarchs; the papal conclave, still the most elaborate coronation-by-committee ever devised. Every fantasy succession crisis you've ever read was cribbed from one of these. Start with a single Wikipedia tab, tell yourself it's just the one — and surface an hour later, blinking, with three new tabs and a favourite dead kingdom. That's the good kind of lost.</p>
+    </div>
+  </section>
+
+  <!-- ================= ON THE RADAR ================= -->
+  <div class="band">
+    <div class="bandhead">
+      <span class="mono code">BAND 13 — <b>ON THE RADAR</b></span>
+      <span class="mono runtime">FORWARD CALENDAR · WHAT'S COMING</span>
+    </div>
+  </div>
+  <section>
+    <ul class="radar">
+      <li>
+        <span class="date">MON · 13 JUL</span>
+        <span class="ev"><b>Week 7 long run</b> — the step-up. Slow miles, protected pace.</span>
+      </li>
+      <li>
+        <span class="date">WED · 15 JUL</span>
+        <span class="ev"><b>World Cup semi-finals</b> begin — the last four, one place in the final each.</span>
+      </li>
+      <li>
+        <span class="date">FRI · 18 JUL</span>
+        <span class="ev"><b>Hollow Signal</b> opens — limited run; the sci-fi film worth the trip out.</span>
+      </li>
+      <li>
+        <span class="date">SUN · 20 JUL</span>
+        <span class="ev"><b>World Cup final</b> — the tournament's signature night, or its quiet one.</span>
+      </li>
+      <li>
+        <span class="date">LATE JUL</span>
+        <span class="ev"><b>Efteling dates</b> to be locked against the taper — before the calendar fills.</span>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ================= DO THIS WEEK (closing) ================= -->
+  <div class="band">
+    <div class="bandhead">
+      <span class="mono code">BAND 14 — <b>DO THIS WEEK</b></span>
+      <span class="mono runtime">THE ONE THING · PINNED</span>
+    </div>
+  </div>
+  <section>
+    <div class="closepin">
+      <div class="pinlbl mono">THE STRONGEST ACTION · <b>PIN IT TO THE FRIDGE</b></div>
+      <p class="act">Sit down with the calendar and lock the Efteling dates against the long-run schedule.</p>
+      <p class="why">Everything else this week is small and reversible. This one isn't: get the trip and the taper to agree now, while there's still slack, and future-you runs the marathon rested instead of guilty. Ten minutes, one calendar, both saved.</p>
+    </div>
+  </section>
+
+  <!-- ================= COLOPHON ================= -->
+  <div class="band">
+    <div class="bandhead">
+      <span class="mono code">BAND 15 — <b>COLOPHON</b></span>
+      <span class="mono runtime">THE ISSUE, ACCOUNTED FOR</span>
+    </div>
+  </div>
+  <section>
+    <div class="endnumbers">
+      <div class="cell">
+        <span class="mono k">ISSUE IN NUMBERS</span>
+        <span class="v serif">15 <em>bands</em> · 4 movements</span>
+      </div>
+      <div class="cell">
+        <span class="mono k">READING TIME</span>
+        <span class="v serif">34 <em>min</em> · one sitting</span>
+      </div>
+      <div class="cell">
+        <span class="mono k">MILES BANKED</span>
+        <span class="v serif">31.2 <em>run</em> · wk 6/16</span>
+      </div>
+      <div class="cell">
+        <span class="mono k">NEXT WEEK · №017</span>
+        <span class="v serif">The <em>final</em> four</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="colophon">
+    <span class="serif">The <em>Signal</em></span>
+    <span class="mono">END OF TRANSMISSION №016 · UNTIL NEXT SUNDAY</span>
+  </div>
+
+  <div class="signoff-line">
+    <div class="wave wave--blue" aria-hidden="true" style="max-width:200px;margin:0 auto;">
+      <svg viewBox="0 0 200 26" preserveAspectRatio="none">
+        <path d="M0 13 H30 l5 -9 5 18 5 -18 5 18 5 -9 H90 l6 -11 6 22 6 -22 6 22 6 -11 H150 l5 -8 5 16 5 -16 5 16 5 -8 H200"
+          fill="none" stroke="currentColor" stroke-width="1.5"/>
+      </svg>
+    </div>
+    <p class="big">Now close the tablet, lace the shoes, and go <em>bank the miles</em> — the week will keep until next Sunday.</p>
+    <p class="mono stamp">SET IN INSTRUMENT SERIF, NEWSREADER &amp; JETBRAINS MONO · FILED SUNDAY, 12 JUL 2026 · FOR ONE READER</p>
+  </div>
+
+</div>
+</body>
+</html>
