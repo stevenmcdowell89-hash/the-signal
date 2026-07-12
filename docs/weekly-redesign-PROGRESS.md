@@ -60,3 +60,9 @@ Legend: ⬜ not started · 🔶 in progress · ✅ done · ⏭️ deferred (with
 
 - 2026-07-12 — Read handoff + 5 reference docs + reference issue. Strategy set (above).
   Dispatched W0 mapping agent. Progress doc created.
+- 2026-07-12 — Confirmed weekly currently injects ~461KB CSS (322KB holiday/special) +
+  2388-line JS. **Architecture decision:** weekly CSS lives in its own dir
+  `assets/css/weekly/*.css`; inject-assets.sh selects bundle by `--format` (weekly →
+  `css/weekly/`, else top-level `css/*.css` non-recursive so weekly/ never leaks into a
+  special). Weekly ships a minimal JS (image-error fallback only) — JS-off-complete.
+  Dispatched W1 (CSS) build agent.

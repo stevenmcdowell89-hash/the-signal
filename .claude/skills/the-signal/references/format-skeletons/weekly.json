@@ -1,0 +1,96 @@
+{
+  "$schema_note": "The deterministic structure of a standard weekly (Transmission identity). SINGLE SOURCE OF TRUTH for weekly structure — consumed by validate-chapter-plan.py (Phase 4), stitch-issue.sh (Phase 6, weekly branch), and validate-issue.py --format weekly (Phase 7.6 structural gate). The visual target this encodes is docs/mockups/reference-issue-transmission.html. See docs/weekly-reliability-rebuild-design-2026-07.md Pillar A/B and docs/weekly-first-run-handoff-2026-07-12.md §2.",
+  "format": "weekly",
+  "identity": "transmission",
+  "reading_canvas_px": 800,
+
+  "structural_hooks": {
+    "note": "Invisible data-* attributes the templates emit and the validators key on — so the structural gate is decoupled from display class names. All are lowercase.",
+    "movement": "each movement divider carries data-movement='open|long-read|rounds|close' on its .movement element",
+    "band": "each band-head carries data-band='<band_id>' on its .band element",
+    "long_read": "the single Long Read section carries data-role='long-read'",
+    "desk": "The Desk section carries data-role='desk'; each column carries data-desk-column",
+    "release_radar": "the Release Radar rail inside Screen & Sound carries data-role='release-radar' (never its own band)",
+    "station": "each cover tuner coverline carries data-station (these are the reader-facing navigator entries)"
+  },
+
+  "movements": [
+    {
+      "id": "open",
+      "numeral": "I",
+      "name": "The Open",
+      "meta": "LETTER · NUMBERS · DIGEST",
+      "required": true,
+      "bands": ["the_letter", "week_in_numbers", "caught_up"]
+    },
+    {
+      "id": "long-read",
+      "numeral": "II",
+      "name": "The Long Read",
+      "meta": "ONE PIECE · SETTLE IN",
+      "required": true,
+      "bands": ["long_read"]
+    },
+    {
+      "id": "rounds",
+      "numeral": "III",
+      "name": "The Rounds",
+      "meta": "BRISK · SCANNABLE",
+      "required": true,
+      "bands": ["touchline", "pixel_byte", "screen_sound", "bookmark", "rotating_1", "rotating_2", "the_desk"]
+    },
+    {
+      "id": "close",
+      "numeral": "IV",
+      "name": "The Close",
+      "meta": "THREADS · RABBIT HOLE · RADAR",
+      "required": true,
+      "bands": ["the_threads", "rabbit_hole", "on_the_radar", "do_this_week", "colophon"]
+    }
+  ],
+
+  "bands": {
+    "the_letter":      { "name": "The Letter",         "runtime": "FROM THE EDITOR",                    "required": true,  "nav": true,  "content": "letter",     "component": "letter" },
+    "week_in_numbers": { "name": "The Week in Numbers", "runtime": "THE LEDGER · SIGNAL METERED",        "required": true,  "nav": false, "content": "figures",    "component": "figures" },
+    "caught_up":       { "name": "Caught Up",           "runtime": "EVERYTHING THAT MOVED, IN EIGHT LINES","required": true,"nav": false, "content": "digest",     "component": "digest", "hard_cap": 8 },
+    "long_read":       { "name": "The Long Read",       "runtime": "SIGNAL STRONG",                      "required": true,  "nav": true,  "content": "longread",   "component": "longread", "cardinality": 1 },
+    "touchline":       { "name": "The Touchline",       "runtime": "SPORT",                              "required": false, "nav": true,  "content": "round",      "component": "scores+items" },
+    "pixel_byte":      { "name": "Pixel & Byte",        "runtime": "GAMING",                             "required": false, "nav": true,  "content": "round",      "component": "items" },
+    "screen_sound":    { "name": "Screen & Sound",      "runtime": "WATCH & LISTEN · + RELEASE RADAR",   "required": false, "nav": true,  "content": "round",      "component": "with-rail", "contains": ["release_radar"] },
+    "bookmark":        { "name": "Bookmark",            "runtime": "BOOKS · ON THE NIGHTSTAND",          "required": true,  "nav": true,  "content": "round",      "component": "picks", "note": "The fixed lightweight books rail every issue. This RESOLVES the Bookmark-vs-Shelf spec contradiction: there is NO rotating 'The Shelf' — books are always this Bookmark rail. The deep book piece, when there is one, is the Long Read." },
+    "rotating_1":      { "name": "(rotating)",          "runtime": "",                                   "required": false, "nav": true,  "content": "round",      "component": "items", "rotating_pool": ["this_week_in_history", "listening", "the_saga"], "note": "Pick 1-2 non-Desk rotating sections per issue." },
+    "rotating_2":      { "name": "(rotating)",          "runtime": "",                                   "required": false, "nav": true,  "content": "round",      "component": "items", "rotating_pool": ["this_week_in_history", "listening", "the_saga"] },
+    "the_desk":        { "name": "The Desk",            "runtime": "SERVICE",                            "required": true,  "nav": true,  "content": "desk",       "component": "desk", "columns_min": 1, "columns_max": 2, "column_pool": ["session", "ledger", "itinerary", "toolkit"], "each_column_closes_on": "pin", "note": "ONE band, 1-2 nested columns. NEVER 3+, never a column as its own band/nav entry." },
+    "the_threads":     { "name": "The Threads",         "runtime": "PREVIOUSLY ON · STILL RUNNING",      "required": true,  "nav": true,  "content": "threads",    "component": "threads" },
+    "rabbit_hole":     { "name": "Down the Rabbit Hole","runtime": "CURIOSITY · SIGNAL FAINT, FOLLOW IT","required": false, "nav": true,  "content": "rabbit",     "component": "rabbit", "note": "Signature discovery ritual; runs when due." },
+    "on_the_radar":    { "name": "On the Radar",        "runtime": "FORWARD CALENDAR · WHAT'S COMING",   "required": true,  "nav": true,  "content": "radar",      "component": "radar" },
+    "do_this_week":    { "name": "Do This Week",        "runtime": "THE ONE THING · PINNED",             "required": true,  "nav": false, "content": "closepin",   "component": "closepin", "note": "The issue's single strongest action — ends on a verb + a human line." },
+    "colophon":        { "name": "Colophon",            "runtime": "THE ISSUE, ACCOUNTED FOR",           "required": true,  "nav": false, "content": "colophon",   "component": "endnumbers" }
+  },
+
+  "chrome": {
+    "note": "Deterministic scaffold emitted by the stitcher/templates, not writer content. Band numbers (BAND NN) are assigned sequentially by the stitcher across whatever bands actually render, cover=implicit, movements interleaved.",
+    "cover": { "component": "cover", "contains": ["masthead", "wave", "lead", "tuner", "dataline", "folio"] },
+    "colophon_footer": { "component": "colophon+signoff-line" },
+    "dividers": "waveform SVG rules (.wave) between movements and around the Long Read; a .tickrule inside The Open"
+  },
+
+  "invariants": {
+    "note": "HARD-CHECKED by validate-issue.py --format weekly (inside the markup-contracts gate — the ledger stays at three). Fail = not shippable.",
+    "all_four_movements_present": "the set of data-movement values must equal {open, long-read, rounds, close}",
+    "exactly_one_long_read": "exactly one element with data-role='long-read'",
+    "desk_is_one_nested_department": "exactly one data-role='desk'; it holds 1-2 data-desk-column elements; NO desk column renders as its own band/nav entry (no data-band in {session,ledger,itinerary,toolkit}); fail on 0 or 3+ columns",
+    "release_radar_inside_screen_sound": "data-role='release-radar' must exist and be a descendant of the screen_sound band's section; it must NEVER be its own band (no data-band='release_radar') or nav station",
+    "navigator_ceiling": "reader-facing navigator entries (data-station on cover) must be between 4 and 13",
+    "caught_up_cap": "the digest carries at most 8 <li> items"
+  },
+
+  "visual_consistency": {
+    "note": "Also HARD-CHECKED by validate-issue.py --format weekly — the weekly must wear the constant warm Transmission identity, never the special/holiday costume. See docs/weekly-visual-identity-groundup-2026-07.md Part 7.4.",
+    "must_not_load_special_or_holiday_css": "the injected <style> must NOT contain special/holiday markers (e.g. .sp-chapter-gate, .hol-masthead, .hol-cover, is-special selectors, the ~20 per-section palette tokens like --touchline-bg/--screen-bg/--saga-bg)",
+    "must_not_load_holiday_fonts": "the <head> must NOT link the holiday decorative font families",
+    "must_not_use_sp_body_components": "no .sp-* class in the rendered body",
+    "must_use_weekly_masthead": "the cover uses the .masthead Transmission wordmark, NOT the special dark hero (.cover-poster / body.is-special)",
+    "must_declare_transmission": "the weekly bundle marker is present (a .issue wrapper + the Transmission token --signal)"
+  }
+}
