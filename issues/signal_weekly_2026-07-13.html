@@ -1,0 +1,1569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Signal — Transmission №016</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================================
+   THE SIGNAL — "TRANSMISSION" WEEKLY DESIGN SYSTEM
+   ----------------------------------------------------------------------------
+   The single token layer + every component the weekly issue uses. This is the
+   ONLY stylesheet a weekly loads — it is fully self-contained. No @imports, no
+   per-section palette tokens, no holiday/special (.sp-* / .hol-*) rules.
+
+   PALETTE (light / default)
+     --paper   #F5F0E6  warm paper ground        --signal #FF3B2F  vermilion accent
+     --paper-2 #EFE8D9  second paper stock       --blue   #243F5C  signal blue
+     --ink     #16151A  primary body ink         --muted  #8A8578  pencil grey
+     --ink-2   #2C2A30  secondary body ink       --hair   #DDD5C3  hairline
+
+   FONTS (loaded via <link> in the head template — NOT imported here)
+     Instrument Serif · Newsreader · JetBrains Mono
+
+   DARK VARIANT
+     A warm-night mode is appended at the bottom via
+     @media (prefers-color-scheme: dark). It overrides ONLY the token values
+     (warm charcoal ground, warm off-white text, warm-brown hairlines, lightened
+     accents) plus the desk tone behind the page — "night reading, still paper."
+     Every component reads through the tokens, so no component rules are restated.
+   ============================================================================ */
+
+  :root{
+    --paper:#F5F0E6;
+    --paper-2:#EFE8D9;
+    --ink:#16151A;
+    --ink-2:#2C2A30;
+    --signal:#FF3B2F;
+    --blue:#243F5C;
+    --muted:#8A8578;
+    --hair:#DDD5C3;
+    --measure:64ch;
+  }
+
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:var(--muted);
+    color:var(--ink);
+    font-family:"Newsreader",Georgia,serif;
+    font-size:19px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+
+  /* The "printed object" — a tablet-portrait page floating on a desk tone */
+  .issue{
+    max-width:800px;
+    margin:0 auto;
+    background:var(--paper);
+    box-shadow:0 1px 0 rgba(0,0,0,.04), 0 24px 60px -24px rgba(0,0,0,.45);
+    overflow:hidden;
+  }
+
+  /* ---------- shared type ---------- */
+  .mono{
+    font-family:"JetBrains Mono",ui-monospace,monospace;
+    text-transform:uppercase;
+    letter-spacing:.16em;
+    font-size:11px;
+    font-weight:500;
+    color:var(--muted);
+  }
+  .serif{font-family:"Instrument Serif",Georgia,serif;font-weight:400;}
+
+  /* ---------- the waveform / frequency rule ---------- */
+  .wave{
+    height:26px;
+    width:100%;
+    color:var(--signal);
+    display:block;
+  }
+  .wave svg{display:block;width:100%;height:100%;}
+  .wave--blue{color:var(--blue);}
+  .wave--ink{color:var(--ink);}
+
+  /* thin frequency tick rule (repeating gradient) */
+  .tickrule{
+    height:12px;
+    background-image:repeating-linear-gradient(90deg,
+      var(--ink) 0, var(--ink) 1px,
+      transparent 1px, transparent 7px);
+    opacity:.55;
+  }
+  .hair{height:1px;background:var(--hair);border:0;margin:0;}
+
+  /* ================= COVER ================= */
+  .cover{
+    padding:26px 40px 30px;
+    position:relative;
+  }
+  .cover__top{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    padding-bottom:12px;
+  }
+  .cover__top .mono{color:var(--ink);opacity:.75;}
+  .cover__top .price{color:var(--signal);}
+
+  .dataline{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:12px;
+    padding:14px 0 6px;
+  }
+  .dataline .dot{color:var(--signal);}
+
+  .masthead{
+    font-family:"Instrument Serif",Georgia,serif;
+    font-weight:400;
+    line-height:.86;
+    letter-spacing:-.02em;
+    font-size:118px;
+    margin:2px 0 0;
+    color:var(--ink);
+  }
+  .masthead em{
+    font-style:italic;
+    color:var(--signal);
+  }
+  .masthead__sub{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-top:8px;
+    border-bottom:2px solid var(--ink);
+    padding-bottom:12px;
+  }
+  .masthead__sub .tag{
+    font-family:"Newsreader",serif;
+    font-style:italic;
+    font-size:20px;
+    color:var(--blue);
+  }
+
+  /* lead + tuner two-column area */
+  .cover__body{
+    display:grid;
+    grid-template-columns:1.55fr .95fr;
+    gap:34px;
+    margin-top:26px;
+  }
+  .lead__eyebrow{margin-bottom:14px;color:var(--signal);}
+  .lead__head{
+    font-family:"Instrument Serif",Georgia,serif;
+    font-weight:400;
+    font-size:47px;
+    line-height:1.02;
+    letter-spacing:-.01em;
+    margin:0;
+  }
+  .lead__head .hl{color:var(--signal);font-style:italic;}
+  .lead__stand{
+    font-style:italic;
+    color:var(--blue);
+    font-size:20px;
+    line-height:1.35;
+    margin-top:18px;
+    max-width:34ch;
+  }
+
+  /* tuner / station list of coverlines */
+  .tuner{
+    border-top:2px solid var(--ink);
+    padding-top:10px;
+  }
+  .tuner__label{
+    display:flex;justify-content:space-between;align-items:baseline;
+    margin-bottom:6px;
+  }
+  .station{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:12px;
+    align-items:baseline;
+    padding:9px 0;
+    border-bottom:1px solid var(--hair);
+  }
+  .station:last-child{border-bottom:0;}
+  .station .freq{
+    font-family:"JetBrains Mono",monospace;
+    font-size:11px;
+    letter-spacing:.06em;
+    color:var(--muted);
+    padding-top:3px;
+  }
+  .station .name{
+    font-family:"Newsreader",serif;
+    font-size:18px;
+    line-height:1.24;
+    color:var(--ink);
+  }
+  .station .name b{font-weight:600;}
+  .station.on .freq{color:var(--signal);}
+  .station.on .name{color:var(--blue);}
+
+  /* oversized folio */
+  .folio{
+    position:absolute;
+    right:34px;
+    bottom:14px;
+    font-family:"Instrument Serif",Georgia,serif;
+    font-size:150px;
+    line-height:.7;
+    color:var(--signal);
+    opacity:.12;
+    letter-spacing:-.04em;
+    pointer-events:none;
+  }
+
+  /* ================= MOVEMENT DIVIDER ================= */
+  .movement{
+    padding:56px 40px 8px;
+  }
+  .movement__rule{
+    display:flex;
+    align-items:baseline;
+    gap:16px;
+    border-top:2px solid var(--ink);
+    padding-top:12px;
+  }
+  .movement__no{
+    font-family:"Instrument Serif",serif;
+    font-size:40px;
+    line-height:.8;
+    color:var(--signal);
+  }
+  .movement__name{
+    font-family:"Instrument Serif",serif;
+    font-size:34px;
+    line-height:.9;
+    color:var(--ink);
+  }
+  .movement__meta{margin-left:auto;color:var(--muted);}
+
+  /* ================= SECTION SCAFFOLD ================= */
+  section{padding:0 40px;}
+  .band{
+    padding:52px 40px 0;
+  }
+  .bandhead{
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+    margin-bottom:6px;
+  }
+  .bandhead .code{color:var(--signal);}
+  .bandhead .code b{color:var(--ink);font-weight:700;}
+  .bandhead .runtime{margin-left:auto;color:var(--muted);}
+  /* accent tick — the one section marker */
+  .bandhead::before{
+    content:"";
+    width:9px;height:9px;
+    background:var(--signal);
+    display:inline-block;
+    align-self:center;
+    flex:0 0 auto;
+    transform:translateY(-1px);
+  }
+
+  /* ================= THE LETTER ================= */
+  .letter{max-width:var(--measure);margin:0 auto;padding-top:22px;padding-bottom:8px;}
+  .letter h2{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:34px;line-height:1.05;margin:0 0 4px;
+  }
+  .letter .kicker{color:var(--blue);font-style:italic;font-size:19px;margin-bottom:22px;}
+  .letter p{margin:0 0 18px;}
+  .letter p.first{text-indent:0;}
+  .letter p.first::first-letter{
+    font-family:"Instrument Serif",serif;
+    float:left;
+    font-size:82px;
+    line-height:.72;
+    padding:8px 12px 0 0;
+    color:var(--signal);
+  }
+  .letter .sig{
+    font-family:"Instrument Serif",serif;
+    font-style:italic;
+    font-size:26px;
+    color:var(--ink);
+    margin-top:26px;
+  }
+  .letter .sigline{margin-top:2px;}
+
+  /* ================= THE WEEK IN NUMBERS (ledger data panel) ================= */
+  .figures{max-width:var(--measure);margin:14px auto 0;}
+  .figures-frame{
+    border:1.5px solid var(--ink);
+    position:relative;
+    background:var(--paper-2);
+  }
+  .figures-frame::after{
+    content:""; position:absolute; inset:4px;
+    border:.75px solid var(--signal); opacity:.4; pointer-events:none;
+  }
+  .fig-caption{
+    display:flex;justify-content:space-between;align-items:baseline;
+    font-family:"JetBrains Mono",monospace;
+    text-transform:uppercase; letter-spacing:.16em;
+    font-size:11px; color:var(--muted); font-weight:500;
+    padding:12px 0 10px;
+    border-bottom:1px solid var(--hair);
+    margin:0 20px;
+  }
+  .fig-caption b{color:var(--signal);font-weight:700;}
+  .fig-row{
+    display:grid;
+    grid-template-columns:1fr auto;
+    align-items:baseline;
+    gap:16px;
+    padding:16px 20px;
+    border-bottom:1px solid var(--hair);
+  }
+  .fig-row:last-of-type{border-bottom:0;}
+  .fig-label .k{
+    font-family:"JetBrains Mono",monospace;
+    text-transform:uppercase; letter-spacing:.1em;
+    font-size:12px; color:var(--blue); font-weight:500;
+    display:block;
+  }
+  .fig-label .d{
+    font-style:italic; color:var(--muted); font-size:15px;
+  }
+  .fig-val{
+    font-family:"Instrument Serif",serif;
+    font-size:52px;
+    line-height:.82;
+    text-align:right;
+    letter-spacing:-.01em;
+    white-space:nowrap;
+    color:var(--ink);
+  }
+  .fig-val small{
+    font-size:20px;
+    font-style:italic;
+    font-family:"Newsreader",serif;
+    color:var(--muted);
+    margin-left:3px;
+  }
+  .fig-val .win{color:var(--signal);}
+  .fig-foot{
+    display:flex;justify-content:space-between;align-items:baseline;
+    font-family:"JetBrains Mono",monospace;
+    text-transform:uppercase;letter-spacing:.12em;
+    color:var(--muted);
+    font-size:10.5px;
+    padding:12px 20px 14px;
+    border-top:1px solid var(--hair);
+  }
+
+  /* ================= CAUGHT UP ================= */
+  .caughtup{padding-top:20px;}
+  .digest{
+    max-width:var(--measure);
+    margin:14px auto 0;
+    list-style:none;
+    padding:0;
+    counter-reset:d;
+  }
+  .digest li{
+    counter-increment:d;
+    display:grid;
+    grid-template-columns:38px 1fr;
+    gap:16px;
+    align-items:baseline;
+    padding:13px 0;
+    border-bottom:1px solid var(--hair);
+  }
+  .digest li:first-child{border-top:1px solid var(--ink);}
+  .digest li::before{
+    content:counter(d,decimal-leading-zero);
+    font-family:"JetBrains Mono",monospace;
+    font-size:12px;
+    color:var(--signal);
+    letter-spacing:.05em;
+    padding-top:4px;
+  }
+  .digest li p{margin:0;font-size:18px;line-height:1.4;}
+  .digest li b{font-weight:600;color:var(--blue);}
+
+  /* ================= THE LONG READ ================= */
+  .longread{padding-top:24px;padding-bottom:8px;}
+  .lr-title{
+    max-width:var(--measure);
+    margin:6px auto 0;
+  }
+  .lr-title h2{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:58px;line-height:1.0;letter-spacing:-.015em;
+    margin:14px 0 0;
+  }
+  .lr-title h2 em{font-style:italic;color:var(--signal);}
+  .lr-title .stand{
+    font-style:italic;color:var(--blue);
+    font-size:23px;line-height:1.34;
+    margin:20px 0 0;max-width:44ch;
+  }
+  .lr-title .byline{
+    margin-top:20px;color:var(--muted);
+  }
+  .lr-body{
+    max-width:var(--measure);
+    margin:0 auto;
+    font-size:20px;
+    line-height:1.72;
+  }
+  .lr-body p{margin:0 0 22px;}
+  .lr-body p.first{text-indent:0;}
+  .lr-body p.first::first-letter{
+    font-family:"Instrument Serif",serif;
+    float:left;
+    font-size:96px;
+    line-height:.68;
+    padding:10px 14px 0 0;
+    color:var(--signal);
+  }
+  .lr-body p + p{text-indent:1.4em;}
+  .lr-body p.first, .lr-body p.noindent{text-indent:0;}
+
+  .pullquote{
+    margin:34px 0;
+    padding:6px 0 6px 26px;
+    border-left:3px solid var(--signal);
+    font-family:"Instrument Serif",serif;
+    font-size:34px;
+    line-height:1.14;
+    color:var(--blue);
+    text-indent:0;
+  }
+  .pullquote .attr{
+    display:block;
+    font-family:"JetBrains Mono",monospace;
+    text-transform:uppercase;letter-spacing:.14em;
+    font-size:11px;color:var(--muted);
+    margin-top:14px;
+  }
+
+  /* captioned image placeholder */
+  .plate-img{
+    max-width:var(--measure);
+    margin:30px auto;
+  }
+  .plate-box{
+    aspect-ratio:16/9;
+    border:1px solid var(--hair);
+    background:
+      repeating-linear-gradient(135deg, transparent 0, transparent 13px, rgba(36,63,92,.06) 13px, rgba(36,63,92,.06) 14px),
+      var(--paper-2);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+  }
+  .plate-box::after{
+    content:"";
+    position:absolute;inset:8px;
+    border:1px dashed var(--hair);
+    pointer-events:none;
+  }
+  .plate-box .glyph{
+    font-family:"JetBrains Mono",monospace;
+    text-transform:uppercase;letter-spacing:.2em;
+    font-size:11px;color:var(--muted);
+  }
+  .plate-cap{
+    display:flex;gap:12px;align-items:baseline;
+    margin-top:10px;
+  }
+  .plate-cap .fig{color:var(--signal);flex:0 0 auto;}
+  .plate-cap .txt{font-style:italic;color:var(--muted);font-size:15px;line-height:1.35;}
+
+  /* case-against aside — a warm planner note, ground-disciplined */
+  .aside-note{
+    max-width:var(--measure);
+    margin:34px auto;
+    background:var(--paper-2);
+    border-top:2px solid var(--ink);
+    border-bottom:1px solid var(--hair);
+    padding:18px 22px 20px;
+  }
+  .aside-note .lbl{
+    display:flex;gap:10px;align-items:baseline;
+    color:var(--signal);margin-bottom:10px;
+  }
+  .aside-note .lbl b{color:var(--ink);}
+  .aside-note h4{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:25px;line-height:1.08;margin:0 0 8px;
+  }
+  .aside-note p{margin:0;font-size:17px;line-height:1.5;color:var(--ink-2);}
+
+  /* ================= THE ROUNDS — compact rhythm ================= */
+  .round{padding-top:20px;padding-bottom:4px;}
+  .round .lead{
+    max-width:var(--measure);
+    margin:12px auto 22px;
+    font-size:19px;
+  }
+  .round .lead .drop{color:var(--signal);font-weight:600;}
+
+  /* two-column score grid (touchline) */
+  .scores{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:1px;
+    background:var(--hair);
+    border:1px solid var(--hair);
+    max-width:var(--measure);
+    margin:0 auto;
+  }
+  .score{
+    background:var(--paper);
+    padding:20px 22px 22px;
+  }
+  .score.wide{grid-column:1 / -1;}
+  .score .tag{color:var(--signal);margin-bottom:10px;display:block;}
+  .score h3{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:27px;line-height:1.04;margin:0 0 8px;
+  }
+  .score.wide h3{font-size:33px;}
+  .score p{margin:0;font-size:17px;line-height:1.42;color:var(--ink-2);}
+  .score .num{color:var(--blue);font-weight:600;}
+
+  /* items list — brisk scannable rows for rounds */
+  .items{
+    max-width:var(--measure);
+    margin:6px auto 0;
+    list-style:none;padding:0;
+  }
+  .items li{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:16px;
+    align-items:baseline;
+    padding:14px 0;
+    border-bottom:1px solid var(--hair);
+  }
+  .items li:first-child{border-top:1px solid var(--ink);}
+  .items .freq{
+    font-family:"JetBrains Mono",monospace;
+    font-size:11px;letter-spacing:.06em;
+    color:var(--signal);padding-top:5px;
+    white-space:nowrap;
+  }
+  .items h3{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:24px;line-height:1.06;margin:0 0 4px;
+  }
+  .items p{margin:0;font-size:16.5px;line-height:1.44;color:var(--ink-2);}
+  .items p b{color:var(--blue);font-weight:600;}
+
+  /* section with a side rail (screen & sound / bookmark) */
+  .with-rail{
+    max-width:var(--measure);
+    margin:6px auto 0;
+    display:grid;
+    grid-template-columns:1.5fr .9fr;
+    gap:30px;
+    align-items:start;
+  }
+  .rail{
+    border-top:2px solid var(--ink);
+    padding-top:10px;
+  }
+  .rail__label{
+    display:flex;justify-content:space-between;align-items:baseline;
+    margin-bottom:10px;
+  }
+  .rail__label .t{color:var(--signal);}
+  .rail-item{
+    padding:10px 0;
+    border-bottom:1px solid var(--hair);
+  }
+  .rail-item:last-child{border-bottom:0;}
+  .rail-item .when{
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;letter-spacing:.1em;
+    color:var(--blue);text-transform:uppercase;
+    display:block;margin-bottom:3px;
+  }
+  .rail-item .what{
+    font-family:"Newsreader",serif;
+    font-size:17px;line-height:1.24;
+  }
+  .rail-item .what b{font-weight:600;}
+  .rail-item .what i{font-style:italic;color:var(--muted);font-size:14.5px;display:block;margin-top:1px;}
+
+  /* bookmark picks */
+  .picks{list-style:none;padding:0;margin:6px 0 0;}
+  .picks li{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:16px;
+    padding:14px 0;
+    border-bottom:1px solid var(--hair);
+    align-items:baseline;
+  }
+  .picks li:first-child{border-top:1px solid var(--ink);}
+  .picks .spine{
+    width:8px;align-self:stretch;
+    background:var(--blue);
+    min-height:52px;
+  }
+  .picks li:nth-child(2) .spine{background:var(--signal);}
+  .picks li:nth-child(3) .spine{background:var(--muted);}
+  .picks h3{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:23px;line-height:1.05;margin:0 0 2px;
+  }
+  .picks .meta{color:var(--muted);font-style:italic;font-size:14.5px;margin-bottom:5px;}
+  .picks p{margin:0;font-size:16.5px;line-height:1.42;color:var(--ink-2);}
+
+  /* ================= THE DESK — service columns w/ planner pins ================= */
+  .desk{
+    max-width:var(--measure);
+    margin:8px auto 0;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:30px;
+  }
+  .deskcol h3{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:27px;line-height:1.04;margin:0 0 4px;
+    border-top:2px solid var(--ink);padding-top:12px;
+  }
+  .deskcol .sub{color:var(--signal);margin-bottom:12px;display:block;}
+  .deskcol p{margin:0 0 14px;font-size:17px;line-height:1.5;}
+  .deskcol p b{color:var(--blue);font-weight:600;}
+
+  /* the shared planner-note device: "Do This Week" pin */
+  .pin{
+    background:var(--paper-2);
+    border-left:3px solid var(--signal);
+    padding:13px 16px 15px;
+    margin-top:6px;
+  }
+  .pin .pinlbl{
+    display:flex;gap:8px;align-items:center;
+    color:var(--signal);margin-bottom:6px;
+  }
+  .pin .pinlbl::before{
+    content:"";width:7px;height:7px;background:var(--signal);
+    display:inline-block;transform:rotate(45deg);
+  }
+  .pin .pinlbl b{color:var(--ink);}
+  .pin .act{
+    font-family:"Newsreader",serif;
+    font-size:18px;line-height:1.32;font-weight:600;
+    color:var(--ink);margin:0 0 5px;
+  }
+  .pin .why{margin:0;font-size:15px;line-height:1.4;font-style:italic;color:var(--muted);}
+
+  /* ================= THE THREADS ================= */
+  .threads{max-width:var(--measure);margin:14px auto 0;}
+  .thread{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:18px;
+    padding:16px 0;
+    border-bottom:1px solid var(--hair);
+    align-items:baseline;
+  }
+  .thread:first-child{border-top:1px solid var(--ink);}
+  .thread .ep{
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;letter-spacing:.08em;
+    color:var(--signal);text-transform:uppercase;
+    padding-top:5px;white-space:nowrap;
+  }
+  .thread h3{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:24px;line-height:1.06;margin:0 0 4px;
+  }
+  .thread .prev{
+    font-style:italic;color:var(--muted);font-size:15px;
+    margin:0 0 6px;
+  }
+  .thread p{margin:0;font-size:16.5px;line-height:1.44;color:var(--ink-2);}
+  .thread p b{color:var(--blue);font-weight:600;}
+
+  /* ================= RABBIT HOLE ================= */
+  .rabbit{
+    max-width:var(--measure);
+    margin:16px auto 0;
+    background:var(--paper-2);
+    border:1.5px solid var(--ink);
+    position:relative;
+    padding:26px 28px 28px;
+  }
+  .rabbit::after{
+    content:"";position:absolute;inset:5px;
+    border:.75px solid var(--signal);opacity:.35;pointer-events:none;
+  }
+  .rabbit .lbl{color:var(--signal);margin-bottom:14px;display:block;}
+  .rabbit .chain{
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    gap:16px;
+    align-items:center;
+    margin-bottom:18px;
+  }
+  .rabbit .node .cap{color:var(--muted);display:block;margin-bottom:4px;}
+  .rabbit .node .nm{
+    font-family:"Instrument Serif",serif;font-size:26px;line-height:1.02;
+  }
+  .rabbit .arrow{
+    font-family:"Instrument Serif",serif;font-style:italic;
+    color:var(--signal);font-size:30px;line-height:1;
+  }
+  .rabbit p{margin:0;font-size:18px;line-height:1.56;}
+  .rabbit p em{font-style:italic;color:var(--blue);}
+
+  /* ================= ON THE RADAR ================= */
+  .radar{max-width:var(--measure);margin:14px auto 0;list-style:none;padding:0;}
+  .radar li{
+    display:grid;
+    grid-template-columns:120px 1fr;
+    gap:18px;
+    padding:13px 0;
+    border-bottom:1px solid var(--hair);
+    align-items:baseline;
+  }
+  .radar li:first-child{border-top:1px solid var(--ink);}
+  .radar .date{
+    font-family:"JetBrains Mono",monospace;
+    font-size:11px;letter-spacing:.06em;color:var(--signal);
+  }
+  .radar .ev{font-size:17px;line-height:1.34;}
+  .radar .ev b{color:var(--blue);font-weight:600;}
+
+  /* closing "do this week" — the strongest single pin */
+  .closepin{
+    max-width:var(--measure);
+    margin:20px auto 0;
+    background:var(--paper-2);
+    border-top:3px solid var(--signal);
+    border-bottom:1px solid var(--hair);
+    padding:22px 26px 24px;
+  }
+  .closepin .pinlbl{display:flex;gap:10px;align-items:baseline;color:var(--signal);margin-bottom:10px;}
+  .closepin .pinlbl b{color:var(--ink);}
+  .closepin .act{
+    font-family:"Instrument Serif",serif;font-size:32px;line-height:1.08;
+    margin:0 0 8px;color:var(--ink);
+  }
+  .closepin .why{margin:0;font-size:17px;line-height:1.46;font-style:italic;color:var(--muted);}
+
+  /* ================= COLOPHON ================= */
+  .endnumbers{
+    max-width:var(--measure);
+    margin:20px auto 0;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:1px;background:var(--hair);border:1px solid var(--hair);
+  }
+  .endnumbers .cell{
+    background:var(--paper);padding:16px 18px;
+  }
+  .endnumbers .cell .k{color:var(--muted);display:block;margin-bottom:4px;}
+  .endnumbers .cell .v{
+    font-family:"Instrument Serif",serif;font-size:30px;line-height:1;color:var(--ink);
+  }
+  .endnumbers .cell .v em{color:var(--signal);font-style:italic;}
+
+  .colophon{
+    padding:26px 40px 20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-top:2px solid var(--ink);
+    margin-top:32px;
+  }
+  .colophon .serif{font-size:30px;}
+  .colophon .serif em{font-style:italic;color:var(--signal);}
+  .signoff-line{
+    padding:6px 40px 44px;
+    text-align:center;
+  }
+  .signoff-line .big{
+    font-family:"Instrument Serif",serif;
+    font-size:30px;line-height:1.16;
+    color:var(--ink);
+    max-width:30ch;margin:14px auto 0;
+  }
+  .signoff-line .big em{font-style:italic;color:var(--signal);}
+  .signoff-line .stamp{margin-top:16px;color:var(--muted);}
+
+  /* ---- portrait tablet niceties ---- */
+  @media (max-width:640px){
+    .cover{padding:22px 24px 26px;}
+    .masthead{font-size:78px;}
+    .cover__body{grid-template-columns:1fr;gap:26px;}
+    .lead__head{font-size:38px;}
+    section{padding:0 24px;}
+    .band{padding:44px 24px 0;}
+    .movement{padding:48px 24px 8px;}
+    .colophon,.signoff-line{padding-left:24px;padding-right:24px;}
+    .scores{grid-template-columns:1fr;}
+    .score.wide{grid-column:auto;}
+    .folio{font-size:110px;}
+    .lr-title h2{font-size:44px;}
+    .with-rail,.desk{grid-template-columns:1fr;gap:26px;}
+    .rabbit .chain{grid-template-columns:1fr;gap:8px;text-align:center;}
+    .rabbit .arrow{transform:rotate(90deg);}
+    .endnumbers{grid-template-columns:1fr;}
+    .radar li{grid-template-columns:1fr;gap:2px;}
+  }
+
+  /* ============================================================================
+     WARM-NIGHT DARK VARIANT
+     ----------------------------------------------------------------------------
+     "Night reading, still paper." Overrides ONLY the token values plus the desk
+     tone behind the page. Every component reads through the tokens above, so no
+     component rule is restated here. Warm charcoal ground (never cold/black),
+     warm off-white text, warm-brown hairlines, accents lightened for the ground.
+     ============================================================================ */
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#1A1613;    /* warm charcoal ground */
+      --paper-2:#221D18;  /* slightly lifted second stock */
+      --ink:#ECE4D4;      /* warm off-white primary text */
+      --ink-2:#C9C1B2;    /* muted warm secondary text */
+      --signal:#FF5A47;   /* vermilion, lightened for dark ground */
+      --blue:#93B4D6;     /* signal-blue lightened to read on charcoal */
+      --muted:#9A9484;    /* pencil grey, nudged lighter */
+      --hair:#3A3227;     /* warm-brown hairline */
+    }
+    /* the desk tone behind the floating page (light mode keeps var(--muted)) */
+    body{background:#0F0D0B;}
+    /* soften the drop shadow so it reads as depth, not a black halo, on charcoal */
+    .issue{box-shadow:0 1px 0 rgba(0,0,0,.20), 0 24px 60px -24px rgba(0,0,0,.70);}
+  }
+
+</style>
+</head>
+<body>
+<!-- the-signal:back -->
+<style data-signal-back>
+  .signal-back-to-archive {
+    position: fixed;
+    top: max(0.75rem, env(safe-area-inset-top, 0px));
+    left: max(0.75rem, env(safe-area-inset-left, 0px));
+    z-index: 9999;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.85rem 0.45rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(20, 20, 30, 0.72);
+    color: #fff;
+    font-family: 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    backdrop-filter: saturate(140%) blur(10px);
+    -webkit-backdrop-filter: saturate(140%) blur(10px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.22);
+    transition: transform 0.15s ease, background 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .signal-back-to-archive:hover { background: rgba(20, 20, 30, 0.88); }
+  .signal-back-to-archive:active { transform: scale(0.96); }
+  .signal-back-to-archive svg { display: block; opacity: 0.9; }
+  @media print { .signal-back-to-archive { display: none; } }
+</style>
+<a href="../" class="signal-back-to-archive" aria-label="Back to The Signal archive">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+  <span>The Signal</span>
+</a>
+<!-- /the-signal:back -->
+<div class="issue">
+
+  <!-- ================= COVER ================= -->
+  <header class="cover">
+    <div class="cover__top">
+      <span class="mono">A Personal Weekly · Received &amp; Tuned</span>
+      <span class="mono price">Sunday Edition</span>
+    </div>
+  <div class="wave wave--ink" aria-hidden="true">
+    <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+      <path d="M0 13 H60 l6 -10 6 20 6 -20 6 20 6 -20 6 10 H160 l5 -8 5 16 5 -16 5 16 5 -8 H280 l7 -12 7 24 7 -24 7 24 7 -12 H420 l4 -6 4 12 4 -12 4 12 4 -6 H540 l6 -11 6 22 6 -22 6 22 6 -11 H680 l5 -7 5 14 5 -14 5 14 5 -7 H800" fill="none" stroke="currentColor" stroke-width="2.0"/>
+    </svg>
+  </div>
+
+    <h1 class="masthead">The <em>Signal</em></h1>
+    <div class="masthead__sub">
+      <span class="tag">tuning in to the week you lived</span>
+      <span class="mono">EST. 2026</span>
+    </div>
+
+    <div class="cover__body">
+      <div class="lead">
+        <div class="mono lead__eyebrow">BAND 01 — THE LEAD TRANSMISSION</div>
+        <h2 class="lead__head">Sixty-four years ago this week, a grapefruit of transistors taught the world to <span class="hl">watch itself live</span>.</h2>
+        <p class="lead__stand">Telstar 1 lasted seven months. The signal it opened never closed — and you can still hear it in a synth line and a World Cup beamed from another continent.</p>
+      </div>
+
+      <nav class="tuner" aria-label="In this transmission">
+        <div class="tuner__label">
+          <span class="mono">STATION LIST</span>
+          <span class="mono">№016</span>
+        </div>
+        <div class="station on" data-station>
+          <span class="freq">88.9</span>
+          <span class="name"><b>The Long Read:</b> the night the world went live</span>
+        </div>
+        <div class="station" data-station>
+          <span class="freq">98.4</span>
+          <span class="name">Sinner defends; the Cup's final four</span>
+        </div>
+        <div class="station on" data-station>
+          <span class="freq">104.7</span>
+          <span class="name"><b>Palworld</b> leaves early access at last</span>
+        </div>
+        <div class="station" data-station>
+          <span class="freq">106.0</span>
+          <span class="name">Hard SF on Prime, and new synthwave</span>
+        </div>
+        <div class="station on" data-station>
+          <span class="freq">92.3</span>
+          <span class="name"><b>The Desk:</b> Block 3 begins, and a rate to beat</span>
+        </div>
+        <div class="station" data-station>
+          <span class="freq">101.2</span>
+          <span class="name">Down the rabbit hole to a satellite's B-side</span>
+        </div>
+      </nav>
+    </div>
+
+    <div class="dataline">
+      <span class="mono">TRANSMISSION №016</span>
+      <span class="dot" aria-hidden="true">·</span>
+      <span class="mono">7–13 JUL 2026</span>
+      <span class="dot" aria-hidden="true">·</span>
+      <span class="mono">NORTHERN IRELAND</span>
+      <span class="dot" aria-hidden="true">·</span>
+      <span class="mono">FOLIO 016</span>
+      <span class="dot" aria-hidden="true">·</span>
+      <span class="mono">31 MIN · ONE SITTING</span>
+    </div>
+
+    <div class="folio" aria-hidden="true">016</div>
+  </header>
+
+  <div class="wave wave--blue" aria-hidden="true" style="padding:0 40px;">
+    <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+      <path d="M0 13 H40 l5 -9 5 18 5 -18 5 18 5 -9 H120 l7 -13 7 26 7 -26 7 26 7 -13 H260 l4 -6 4 12 4 -12 4 12 4 -6 H360 l6 -11 6 22 6 -22 6 22 6 -11 H500 l5 -8 5 16 5 -16 5 16 5 -8 H620 l7 -13 7 26 7 -26 7 26 7 -13 H800" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    </svg>
+  </div>
+
+  <!-- MOVEMENT I · THE OPEN -->
+  <div class="movement" data-movement="open">
+    <div class="movement__rule">
+      <span class="movement__no">I</span>
+      <span class="movement__name">The Open</span>
+      <span class="mono movement__meta">LETTER · NUMBERS · DIGEST</span>
+    </div>
+  </div>
+
+  <div class="band" data-band="the_letter">
+    <div class="bandhead">
+      <span class="mono code">BAND 02 — <b>THE LETTER</b></span>
+      <span class="mono runtime">FROM THE EDITOR</span>
+    </div>
+  </div>
+  <section class="letter">
+    <h2>A week of signals received.</h2>
+    <p class="kicker">On a satellite that sang, a Cup played out an ocean away, and the quiet work of tuning back in.</p>
+    <p class="first">Every story that mattered this week arrived from somewhere else. I went looking for a thread and kept pulling the same one: things reaching us across distance, faint or loud, and asking to be received. Sixty-four years ago this week a grapefruit-sized sphere called Telstar rose off Cape Canaveral and, for a few minutes each orbit, taught two continents to watch each other <em>live</em>. It lasted seven months. The habit it started never switched off — and it's the Long Read, because it's the whole magazine in miniature: a signal sent, tuned in, kept.</p>
+    <p>The rest of the week rhymed with it. Jannik Sinner held Centre Court to keep his Wimbledon crown; a World Cup narrowed to a heavyweight last four, with England and Argentina meeting on Wednesday night. The harder transmissions came from the Gulf, where a June ceasefire was declared over and the mediators started shuttling again. And closer in: a week home from Efteling, the marathon block folded away for good, the first proper session of Block 3 logged — the small, unglamorous work of tuning back in to ordinary life. Pour the coffee. This one's built for a single sitting.</p>
+    <p class="sig">— The Editor</p>
+    <p class="mono sigline">TRANSMITTED MONDAY · 13 JUL 2026</p>
+  </section>
+
+  <div class="band" data-band="week_in_numbers">
+    <div class="bandhead">
+      <span class="mono code">BAND 03 — <b>THE WEEK IN NUMBERS</b></span>
+      <span class="mono runtime">THE LEDGER · SIGNAL METERED</span>
+    </div>
+  </div>
+  <section>
+    <div class="figures">
+      <div class="figures-frame">
+        <div class="fig-caption"><span>TABLE I · <b>DATUMS OF THE WEEK</b></span><span>№016</span></div>
+
+        <div class="fig-row">
+          <div class="fig-label">
+            <span class="k">Lifting Sessions</span>
+            <span class="d">Block 3, week one back off holiday</span>
+          </div>
+          <div class="fig-val">3</div>
+        </div>
+
+        <div class="fig-row">
+          <div class="fig-label">
+            <span class="k">Protein Target</span>
+            <span class="d">grams per kilo, maintenance-to-surplus</span>
+          </div>
+          <div class="fig-val">1.8<small>g/kg</small></div>
+        </div>
+
+        <div class="fig-row">
+          <div class="fig-label">
+            <span class="k">Best Easy-Access Rate</span>
+            <span class="d">worth a ten-minute switch</span>
+          </div>
+          <div class="fig-val">4.50<small>%</small></div>
+        </div>
+
+        <div class="fig-row">
+          <div class="fig-label">
+            <span class="k">Yellow-Jersey Gap</span>
+            <span class="d">Pogačar over Vingegaard at the first rest day</span>
+          </div>
+          <div class="fig-val">2:42</div>
+        </div>
+
+        <div class="fig-row">
+          <div class="fig-label">
+            <span class="k">Days Since Efteling</span>
+            <span class="d">back to routine, and the washing done</span>
+          </div>
+          <div class="fig-val">6</div>
+        </div>
+
+        <div class="fig-foot"><span>CARRIED FORWARD TO №017</span><span>TOTALS KEPT SINCE JANUARY</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="band" data-band="caught_up">
+    <div class="bandhead">
+      <span class="mono code">BAND 04 — <b>CAUGHT UP</b></span>
+      <span class="mono runtime">EVERYTHING THAT MOVED, IN EIGHT LINES</span>
+    </div>
+  </div>
+  <section class="caughtup">
+    <ol class="digest">
+      <li><p><b>The Gulf.</b> The United States declares its June ceasefire memorandum with Iran over and imposes fresh sanctions after attacks on shipping in the Strait of Hormuz; Qatari mediators travel to Tehran to try to revive talks.</p></li>
+      <li><p><b>The Levant.</b> Israeli strikes hit southern Lebanon around Nabatieh, killing at least four and straining the truce signed in June.</p></li>
+      <li><p><b>SW19.</b> Jannik Sinner defends his Wimbledon title over Alexander Zverev; Linda Nosková takes the women's crown in an all-Czech final.</p></li>
+      <li><p><b>The World Cup.</b> The tournament narrows to a heavyweight last four — England v Argentina and France v Spain — with the final to come next Sunday.</p></li>
+      <li><p><b>Le Tour.</b> Tadej Pogačar holds yellow at the Tour de France's first rest day, 2:42 clear of Jonas Vingegaard with the mountains still to come.</p></li>
+      <li><p><b>Pixel &amp; Byte.</b> Palworld finally leaves early access at 1.0, and a ground-up remake of Assassin's Creed Black Flag sets sail.</p></li>
+      <li><p><b>The ledger.</b> Easy-access savings hold near 4.5%, and this year's full ISA allowance still stands — the week's quiet ten-minute win.</p></li>
+      <li><p><b>Filed under later.</b> Sixty-four years since Telstar sang across the Atlantic, and a first full week home from Efteling.</p></li>
+    </ol>
+  </section>
+  <div class="wave wave--ink" aria-hidden="true" style="margin-top:26px;color:var(--signal);">
+    <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+      <path d="M0 13 H70 l6 -11 6 22 6 -22 6 22 6 -11 H180 l5 -9 5 18 5 -18 5 18 5 -9 H300 l8 -14 8 28 8 -28 8 28 8 -14 H460 l4 -7 4 14 4 -14 4 14 4 -7 H580 l6 -11 6 22 6 -22 6 22 6 -11 H720 l5 -8 5 16 5 -16 5 16 5 -8 H800" fill="none" stroke="currentColor" stroke-width="2.0"/>
+    </svg>
+  </div>
+
+  <!-- MOVEMENT II · THE LONG READ -->
+  <div class="movement" data-movement="long-read">
+    <div class="movement__rule">
+      <span class="movement__no">II</span>
+      <span class="movement__name">The Long Read</span>
+      <span class="mono movement__meta">ONE PIECE · SETTLE IN</span>
+    </div>
+  </div>
+
+  <div class="band" data-band="long_read">
+    <div class="bandhead">
+      <span class="mono code">BAND 05 — <b>THE LONG READ</b></span>
+      <span class="mono runtime">SIGNAL STRONG</span>
+    </div>
+  </div>
+  <section class="longread" data-role="long-read">
+    <div class="lr-title">
+      <div class="mono" style="color:var(--signal);">SEVEN MONTHS THAT NEVER ENDED</div>
+      <h2>The night the world <em>went live</em></h2>
+      <p class="stand">Sixty-four years ago this week, a beach-ball of transistors was flung into orbit and, for a few minutes, let two continents look each other in the eye. It died before Christmas. The idea it carried has not switched off since.</p>
+      <p class="mono byline">BY THE EDITOR · THE LONG READ · 13 JUL 2026</p>
+    </div>
+
+    <div class="lr-body">
+      <p class="first">On the night of 10 July 1962, in a windowless control room in Andover, Maine, a handful of engineers watched a screen fill with the Statue of Liberty and understood, before anyone said it aloud, that distance had just changed shape. The image had crossed the Atlantic not by cable and not by post but through the sky, bounced off a machine that had been in space for a matter of hours. In Pleumeur-Bodou, on the coast of Brittany, a giant horn antenna under a canvas dome swung to catch the same faint signal, and France saw America live. It was the first time a moving picture had made that crossing in real time. The whole exchange lasted only as long as the satellite stayed in view of both shores — a window of minutes — and then it was gone, over the horizon, and the world went dark again until the next orbit brought it back.</p>
+
+      <p>The machine was called Telstar 1, and it is worth describing plainly, because the plainness is the point. It was a sphere thirty-four and a half inches across, weighing a hundred and seventy-one pounds, its aluminium skin studded with three thousand six hundred solar cells and its insides packed with the still-exotic technology of the transistor. Bell Labs built it. AT&T paid for it, under an agreement with NASA that made Telstar the first privately funded satellite — a piece of the sky bought and launched by a telephone company. It went up on a Delta rocket from Cape Canaveral, and within the same working day it was already doing the thing it had been made to do, relaying television, telephone calls and fax between two continents that had never before spoken face to face at the speed of light.</p>
+
+      <p>What it relayed that first week reads now like a mixtape of a civilisation introducing itself. The Eiffel Tower. A reference to President Kennedy. A clip of a baseball game between the Phillies and the Cubs, sent east so that Europe could watch Americans watch America. Singers, officials, the small ceremonial noises a species makes when it is nervous and proud at once. None of it mattered as content. All of it mattered as proof. The signal was the message: here we are, and now you can see us while it happens.</p>
+
+      <div class="pullquote">
+        The signal was the message. Not what crossed the Atlantic, but that anything could — live, while it happened, with the horizon as the only clock.
+        <span class="attr">TRANSMISSION №016 · THE LONG READ</span>
+      </div>
+
+      <p class="noindent">It is easy, from here, to miss how strange and unfinished this first version of the live planet was. Telstar did not hang motionless over the ocean the way the satellites that carry our lives now do. It orbited low and fast, circling the Earth roughly every two and a half hours, and it could only pass a signal between Maine and Brittany during the brief stretch of each orbit when it happened to be above the curve of the world for both at once. The always-on connection we treat as a law of nature — the permanent, invisible switchboard in the sky — did not yet exist. In 1962 the world could watch itself live only in glimpses, on a timetable set by orbital mechanics, in windows you had to book and wait for. The miracle came with a stopwatch attached.</p>
+
+      <div class="plate-img">
+        <div class="plate-box"><span class="glyph">FIG. 01 · TELSTAR 1, 1962 · A SPHERE THAT SANG</span></div>
+        <div class="plate-cap">
+          <span class="mono fig">FIG. 01</span>
+          <span class="txt">Thirty-four and a half inches, a hundred and seventy-one pounds, three thousand six hundred solar cells. It relayed pictures for minutes at a time, then dropped below the horizon. No image survives of it working; the work was the image.</span>
+        </div>
+      </div>
+
+      <p>Then there is the detail that turns the whole story from triumph into something stranger and sadder. The day before Telstar launched, on 9 July 1962, the United States detonated a nuclear warhead high above the Pacific — the Starfish Prime test, a bomb set off in the edge of space to see what would happen. What happened was that it pumped the upper atmosphere full of charged particles, a belt of radiation that had not been there when Telstar's design was signed off. The satellite flew straight into a hazard its makers had, in effect, created the day before. Over the following months the radiation gnawed at its delicate transistors. By December it was faltering; it failed for good in early 1963, roughly seven months after that first live night. The most world-changing broadcasting device ever built was killed by a bomb fired the day before it was born.</p>
+
+      <p>The hardware, then, was a brief thing. The idea was not — and it leaked out of the engineering almost at once. Within weeks a British producer had turned the satellite into a hit single that sounded like nothing else on the radio, and a straight line runs from that record to the electronic music still made in bedrooms today. But that tune has a story of its own, and it waits at the end of this issue. What matters here is simpler: the satellite lasted seven months, and the habit it started never stopped.</p>
+
+      <p>That is the layer time gives this story. We tell the history of technology as a history of objects that work, and Telstar barely did — a photogenic failure, dead by spring. But the thing it switched on was never the machine. It was the habit of a planet watching itself in real time, and that habit has only deepened. This very week the world did it again without a second thought, a football match beamed live off another continent, the crossing so ordinary now that no one calls it a miracle. The signal I am always chasing in these pages — the meaningful thing that carries across distance and arrives while it still matters — got its first clean transmission on a July night in 1962, from a beach-ball that was already dying. The connection we now take for granted was once a window of minutes, watched by men in a shed in Maine who knew they were seeing the future flicker past before it dropped below the horizon.</p>
+
+      <div class="aside-note">
+        <div class="lbl mono">THE CASE AGAINST · <b>THE OTHER READING</b></div>
+        <h4>Maybe the myth outran the hardware.</h4>
+        <p>Telstar makes a lovely turning point, but history is rarely so tidy, and the case against the legend is strong. Echo 1, a passive reflecting balloon, had already bounced signals across the sky two years earlier. The transatlantic telephone cable had been carrying voices under the ocean since 1956. And Telstar's real successor — the geostationary satellite that actually built the always-on world, hanging fixed above one spot rather than racing round in low orbit — arrived within a year or so, in the shape of Syncom. On this reading, Telstar was not the breakthrough but the photograph of one: the charismatic, well-financed, well-publicised object that a telephone company was delighted to put on the news, standing in for a change that was coming anyway from a dozen directions. The first live picture is a better story than the first workable architecture, and stories are what survive. The honest verdict may be that Telstar mattered most for what it <em>looked like</em> — proof you could see — rather than for what it built. Which, for a device whose entire purpose was to let the world watch itself, is perhaps not a demotion at all.</p>
+      </div>
+    </div>
+  </section>
+  <div class="wave wave--ink" aria-hidden="true" style="margin-top:26px;color:var(--signal);">
+    <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+      <path d="M0 13 H50 l6 -11 6 22 6 -22 6 22 6 -11 H160 l5 -9 5 18 5 -18 5 18 5 -9 H280 l7 -12 7 24 7 -24 7 24 7 -12 H420 l4 -7 4 14 4 -14 4 14 4 -7 H540 l6 -11 6 22 6 -22 6 22 6 -11 H680 l5 -8 5 16 5 -16 5 16 5 -8 H800" fill="none" stroke="currentColor" stroke-width="2.0"/>
+    </svg>
+  </div>
+
+  <!-- MOVEMENT III · THE ROUNDS -->
+  <div class="movement" data-movement="rounds">
+    <div class="movement__rule">
+      <span class="movement__no">III</span>
+      <span class="movement__name">The Rounds</span>
+      <span class="mono movement__meta">BRISK · SCANNABLE</span>
+    </div>
+  </div>
+
+  <div class="band" data-band="touchline">
+    <div class="bandhead">
+      <span class="mono code">BAND 06 — <b>THE TOUCHLINE</b></span>
+      <span class="mono runtime">SPORT</span>
+    </div>
+  </div>
+  <section class="round">
+    <p class="lead"><span class="drop">A signal from across an ocean, settled the hard way</span> — while the week's other verdicts stayed stuck in committee, sport kept doing what it does: deciding things on the scoreboard, in front of a crowd, with no room for a recount. Two Slam winners crowned at Wimbledon, a World Cup down to its last four, and a race leader catching his breath in the Massif Central.</p>
+
+    <div class="scores">
+      <div class="score wide">
+        <span class="mono tag">98.4 · WIMBLEDON · THE FINAL</span>
+        <h3>Sinner keeps the crown</h3>
+        <p>Jannik Sinner beat Alexander Zverev <a href="https://www.olympics.com/en/news/wimbledon-2026-jannik-sinner-alexander-zverev-mens-singles-final-resuls">6-7(7), 7-6(2), 6-3, 6-4</a> to defend his title — a fifth Grand Slam, and only the tenth man in the Open Era to retain the gentlemen's crown. Zverev handed him the compliment straight: "He's still the best player in the world, I do believe that… probably three guys who can challenge him." Sinner returned it, calling Zverev's game one that's "growing and growing." The day before, Linda Nosková took an all-Czech women's final over Karolína Muchová 6-2, 5-7, 6-3 for a first Slam of her own. <span class="num">SW19, retained.</span></p>
+      </div>
+    </div>
+
+    <ul class="items">
+      <li>
+        <span class="freq">101.2</span>
+        <div>
+          <h3>The World Cup, down to a heavyweight last four</h3>
+          <p>France, Spain, England and Argentina came through the quarters — Bellingham a brace in extra time past Norway, Álvarez settling Switzerland at 112'. The <a href="https://www.aljazeera.com/sports/2026/7/12/which-teams-are-in-the-world-cup-semifinals-and-whats-the-match-schedule">semis are set</a>: France v Spain in Dallas on Tuesday, England v Argentina in Atlanta on Wednesday — the tie of the round — before Sunday's final. Tuchel, unimpressed even in victory: "not happy with the performance… sloppy," if "proud" of the result. <b>4 left.</b></p>
+        </div>
+      </li>
+      <li>
+        <span class="freq">104.7</span>
+        <div>
+          <h3>The Tour reaches its first rest day</h3>
+          <p>Mathieu van der Poel took stage nine into Ussel on Saturday, but the <a href="https://www.cyclingnews.com/pro-cycling/racing/tour-de-france-gc-standings-2026/">general classification</a> still reads Tadej Pogačar in yellow, 2:42 up on Jonas Vingegaard as Monday's rest brings the first pause in the mountains. <b>+2:42.</b></p>
+        </div>
+      </li>
+      <li>
+        <span class="freq">106.0</span>
+        <div>
+          <h3>Juventus work the window</h3>
+          <p>Turin made the Jeff Ekhator loan permanent, buying the young striker from Genoa outright for around €16m, and are still circling PSG's Randal Kolo Muani with the market open — a signing done, a chase ongoing. <b>1 in, 1 pending.</b></p>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <div class="band" data-band="pixel_byte">
+    <div class="bandhead">
+      <span class="mono code">BAND 07 — <b>PIXEL &amp; BYTE</b></span>
+      <span class="mono runtime">GAMING</span>
+    </div>
+  </div>
+  <section class="round">
+    <ul class="items">
+      <li>
+        <span class="freq">110.1</span>
+        <div>
+          <h3>Palworld hits 1.0</h3>
+          <p>The "Pokémon-with-guns" survival-crafter finally leaves early access after roughly two and a half years, closing out its story arc and adding fresh gear plus a Wing Pack for aerial traversal. It runs a treat on Steam Deck, and Pocketpair has shepherded a viral hit to a properly finished state — all with a Nintendo lawsuit still hanging over it. <b>Back on the wishlist.</b></p>
+        </div>
+      </li>
+      <li>
+        <span class="freq">112.4</span>
+        <div>
+          <h3>Black Flag, resynced</h3>
+          <p>Assassin's Creed Black Flag Resynced is a ground-up remake of 2013's beloved pirate adventure, rebuilt on the latest Anvil engine and Steam Deck Verified at launch. <b>Set sail again.</b></p>
+        </div>
+      </li>
+      <li>
+        <span class="freq">114.8</span>
+        <div>
+          <h3>The Switch 2 summer keeps filling</h3>
+          <p>Digimon Story: Time Stranger arrives on 10 July as one of six big Switch 2 games landing this month alone. <b>The backlog groans.</b></p>
+        </div>
+      </li>
+      <li>
+        <span class="freq">116.2</span>
+        <div>
+          <h3>Housekeeping that matters</h3>
+          <p>Google's July Pixel update squashes a nasty boot-loop bug across the Pixel 6 through 10, and OpenAI has quietly swapped in GPT-5.5 Instant Mini as the ChatGPT fallback model. <b>Update before you travel.</b></p>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <div class="band" data-band="screen_sound">
+    <div class="bandhead">
+      <span class="mono code">BAND 08 — <b>SCREEN &amp; SOUND</b></span>
+      <span class="mono runtime">WATCH &amp; LISTEN · + RELEASE RADAR</span>
+    </div>
+  </div>
+  <section class="round">
+    <div class="with-rail">
+      <ul class="items" style="margin-top:0;">
+        <li>
+          <span class="freq">120.5</span>
+          <div>
+            <h3>Project Hail Mary lands on Prime</h3>
+            <p>The Andy Weir adaptation — directed by Lord and Miller, with Ryan Gosling — arrived on Prime Video in early July: optimistic, problem-solving hard SF very much in the vein of The Martian. <b>Sunday-evening sci-fi.</b></p>
+          </div>
+        </li>
+        <li>
+          <span class="freq">122.9</span>
+          <div>
+            <h3>A melodic-synthwave supergroup moment</h3>
+            <p>Michael Oakley's "Falling Skyward" (NewRetroWave, 10 July) is co-written with Ollie Wride and carries backing vocals from Dana Jean Phoenix — three of the scene's best voices in one track. <b>Long-run fuel.</b></p>
+          </div>
+        </li>
+      </ul>
+
+      <aside class="rail" data-role="release-radar" aria-label="Release Radar">
+        <div class="rail__label">
+          <span class="mono t">RELEASE RADAR</span>
+          <span class="mono">DATED</span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 16 JUL</span>
+          <span class="what"><b>Moss: The Forgotten Relic</b><i>Switch 2 · action-adventure</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 22 JUL</span>
+          <span class="what"><b>Samsung Galaxy Unpacked</b><i>Z Fold 8 · London</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 23 JUL</span>
+          <span class="what"><b>Final Fantasy X/X-2 HD</b><i>Switch 2 remaster</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 28 JUL</span>
+          <span class="what"><b>Halo: Campaign Evolved</b><i>day one on Game Pass</i></span>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <div class="band" data-band="bookmark">
+    <div class="bandhead">
+      <span class="mono code">BAND 09 — <b>BOOKMARK</b></span>
+      <span class="mono runtime">BOOKS · ON THE NIGHTSTAND</span>
+    </div>
+  </div>
+  <section class="round">
+    <ul class="picks">
+      <li>
+        <span class="spine" aria-hidden="true"></span>
+        <div>
+          <h3>The Eye of the World</h3>
+          <p class="meta">Fantasy · doorstopper · start of a 14-book world</p>
+          <p>Robert Jordan's staggering scale and bottomless lore are exactly the fix for the "lose yourself for months" itch. And there's a neat symmetry for a Cosmere reader: Brandon Sanderson literally finished the series after Jordan's death. No spoilers — just clear a few weekends.</p>
+        </div>
+      </li>
+      <li>
+        <span class="spine" aria-hidden="true"></span>
+        <div>
+          <h3>The Black Company</h3>
+          <p class="meta">Fantasy · military · morally grey</p>
+          <p>Glen Cook's ensemble mercenary fantasy is the book that directly inspired Malazan — the single most on-target pick for a Malazan lover who somehow hasn't read it yet. Grim, lean, and told from the ranks looking up.</p>
+        </div>
+      </li>
+      <li>
+        <span class="spine" aria-hidden="true"></span>
+        <div>
+          <h3>All Systems Red</h3>
+          <p class="meta">Sci-fi · novella · one sitting</p>
+          <p>Martha Wells' first Murderbot Diary is a sardonic, anxious security android that would far rather watch soap operas than talk to humans. A Hugo- and Nebula-winning palate cleanser to slip between the epic bricks.</p>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <div class="band" data-band="the_desk">
+    <div class="bandhead">
+      <span class="mono code">BAND 10 — <b>THE DESK</b></span>
+      <span class="mono runtime">SERVICE</span>
+    </div>
+  </div>
+  <section class="round" data-role="desk">
+    <div class="desk">
+      <div class="deskcol" data-desk-column>
+        <h3>The Session</h3>
+        <span class="mono sub">FITNESS · BLOCK 3, WEEK ONE</span>
+        <p>The marathon is done, the holiday's over, and Block 3 opened on <b>8 July</b> with a different job entirely: build muscle, eating at maintenance to a slight surplus. The temptation in week one is to come out swinging with maximum sets. The volume-landmark model says the opposite — start near your <b>minimum effective volume</b> and climb toward maximum adaptive volume across the block, adding sets week by week. A 2024 <i>Journal of Applied Physiology</i> trial backed this in trained men: progressively increasing weekly sets beat holding volume fixed for hypertrophy.</p>
+        <p>Muscle is hard to build in a deficit, so eat at maintenance to a slight surplus — roughly <b>5–10% over</b> — with 1.6–2.2 g of protein per kilo. And coming off a week of active-recovery holiday, the controlled ramp does double duty: it lets the tissue re-adapt before the hard weeks arrive.</p>
+        <div class="pin">
+          <div class="pinlbl mono">DO THIS WEEK · <b>THE SESSION</b></div>
+          <p class="act">Log your hard sets per muscle this week and start low — about 10–12 per major muscle — then pencil in +2 sets a week from here.</p>
+          <p class="why">Coming off holiday, week one is the floor of the ramp, not a test of the ceiling. The block is built by climbing, not by maxing out cold.</p>
+        </div>
+      </div>
+
+      <div class="deskcol" data-desk-column>
+        <h3>The Ledger</h3>
+        <span class="mono sub">MONEY · RATES &amp; THE ALLOWANCE</span>
+        <p>Cash is still paying properly, if you go looking. As of 10 July the best easy-access rates sit around <b>4.5% AER</b> — Chase at 4.5% unlimited for new customers, Revolut at 5% until 4 December on up to £25k, Cahoot at 5% on up to £3k. On the tax-free side, the top easy-access cash ISAs pay about <b>4.51%</b> (Trading 212, new money) and 4.42% (Chip, on transfers). Legacy accounts paying half that are quietly costing real money over a year.</p>
+        <p>The catch is timing. This year's ISA allowance is <b>£20,000</b>, but MoneySavingExpert reports it is reportedly set to fall to £12,000 from April 2027 — with over-65s keeping the full £20,000. That's reported, not yet legislated, so treat it as a signal rather than settled law.</p>
+        <div class="pin">
+          <div class="pinlbl mono">DO THIS WEEK · <b>THE LEDGER</b></div>
+          <p class="act">Check what your easy-access cash is actually earning; if it's under ~4.5%, move it — and shelter what you can in a top cash ISA while this year's £20k allowance stands.</p>
+          <p class="why">Rates are variable and several carry bonus cliffs, so diarise a review. With the allowance reportedly shrinking from April 2027, tax-free space is worth using now, not later.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div class="wave wave--ink" aria-hidden="true" style="margin-top:26px;color:var(--signal);">
+    <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+      <path d="M0 13 H60 l6 -10 6 20 6 -20 6 20 6 -20 6 10 H160 l5 -8 5 16 5 -16 5 16 5 -8 H280 l7 -12 7 24 7 -24 7 24 7 -12 H420 l4 -6 4 12 4 -12 4 12 4 -6 H540 l6 -11 6 22 6 -22 6 22 6 -11 H680 l5 -7 5 14 5 -14 5 14 5 -7 H800" fill="none" stroke="currentColor" stroke-width="2.0"/>
+    </svg>
+  </div>
+
+  <!-- MOVEMENT IV · THE CLOSE -->
+  <div class="movement" data-movement="close">
+    <div class="movement__rule">
+      <span class="movement__no">IV</span>
+      <span class="movement__name">The Close</span>
+      <span class="mono movement__meta">THREADS · RABBIT HOLE · RADAR</span>
+    </div>
+  </div>
+
+  <div class="band" data-band="the_threads">
+    <div class="bandhead">
+      <span class="mono code">BAND 11 — <b>THE THREADS</b></span>
+      <span class="mono runtime">PREVIOUSLY ON · STILL RUNNING</span>
+    </div>
+  </div>
+  <section>
+    <div class="threads">
+      <div class="thread">
+        <span class="ep">SAGA · THE GULF</span>
+        <div>
+          <h3>The ceasefire that wouldn't set</h3>
+          <p class="prev">Previously: a June memorandum that stopped the shooting without settling anything.</p>
+          <p>This week Washington called the understanding over, sanctions returned after attacks on Hormuz shipping, and satellite images hinted at rebuilding at nuclear sites. <b>Next:</b> whether the Qatari channel reopens talks, or the "all-out defence" rhetoric hardens first. That one is not over.</p>
+        </div>
+      </div>
+      <div class="thread">
+        <span class="ep">SAGA · THE WORLD CUP</span>
+        <div>
+          <h3>Down to four</h3>
+          <p class="prev">Previously: a group stage that refused to go to form.</p>
+          <p>Now a last four with no minnows left — England and Argentina, France and Spain. <b>Next:</b> the two that survive this week's semis, and whether the final gives the tournament its signature night.</p>
+        </div>
+      </div>
+      <div class="thread">
+        <span class="ep">LIFE-THREAD · THE TRAINING</span>
+        <div>
+          <h3>From the road to the rack</h3>
+          <p class="prev">Previously: sixteen weeks of a marathon block, and the race run.</p>
+          <p>The block is folded away and Block 3 has begun — hypertrophy, back under the bar after a week of holiday recovery. <b>Next:</b> the slow ramp of weekly sets, and rediscovering the appetite for the gym after months on the road.</p>
+        </div>
+      </div>
+      <div class="thread">
+        <span class="ep">LIFE-THREAD · THE TRAVELLING</span>
+        <div>
+          <h3>Efteling, in the rear-view</h3>
+          <p class="prev">Previously: a long countdown to the Dutch fairy-tale park and its savannah neighbour.</p>
+          <p>Home a week now, photos backed up and the last of the washing done. <b>Next:</b> a rare open calendar with nothing booked — and the pleasant problem of what to point it at.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="band" data-band="rabbit_hole">
+    <div class="bandhead">
+      <span class="mono code">BAND 12 — <b>DOWN THE RABBIT HOLE</b></span>
+      <span class="mono runtime">CURIOSITY · SIGNAL FAINT, FOLLOW IT</span>
+    </div>
+  </div>
+  <section>
+    <div class="rabbit">
+      <span class="mono lbl">FROM THIS WEEK'S LONG READ → TUMBLE INTO</span>
+      <div class="chain">
+        <div class="node">
+          <span class="mono cap">FROM THIS WEEK'S LONG READ</span>
+          <span class="nm serif">Telstar, the satellite (1962)</span>
+        </div>
+        <div class="arrow" aria-hidden="true">→</div>
+        <div class="node">
+          <span class="mono cap">TUMBLE INTO</span>
+          <span class="nm serif">Telstar, the No.1 that outlived it</span>
+        </div>
+      </div>
+      <p>Within weeks of Telstar 1 going up, the eccentric British producer Joe Meek released an instrumental called "Telstar" — credited to The Tornados — built to sound like a satellite <em>singing</em>. It became the first record by a British group to top the US Billboard Hot 100. He made it not in a plush studio but in a rented flat above a leather-goods shop on Holloway Road, layering tape loops, spring reverb, distortion and a clavioline, an early electronic keyboard. He was a bedroom producer decades before the term existed. Follow his Wikipedia entry and the thread runs straight through the clavioline and the Mellotron, the BBC Radiophonic Workshop, Delia Derbyshire and the <em>Doctor Who</em> theme, the early Moog — right down to the neon-and-Carpenter synthwave still being made today. Open the one tab. Surface an hour later, three tabs deep, with a new favourite dead genius.</p>
+    </div>
+  </section>
+
+  <div class="band" data-band="on_the_radar">
+    <div class="bandhead">
+      <span class="mono code">BAND 13 — <b>ON THE RADAR</b></span>
+      <span class="mono runtime">FORWARD CALENDAR · WHAT&#x27;S COMING</span>
+    </div>
+  </div>
+  <section>
+    <ul class="radar">
+      <li>
+        <span class="date">TUE · 14 JUL</span>
+        <span class="ev"><b>World Cup semi-final</b> — France v Spain in Dallas; the first of the last four.</span>
+      </li>
+      <li>
+        <span class="date">WED · 15 JUL</span>
+        <span class="ev"><b>England v Argentina</b> — the semi with the history; Atlanta, and the tie of the round.</span>
+      </li>
+      <li>
+        <span class="date">THU · 16 JUL</span>
+        <span class="ev"><b>The Open begins</b> — Royal Birkdale hosts the 154th; golf's last major of the year.</span>
+      </li>
+      <li>
+        <span class="date">FRI · 17 JUL</span>
+        <span class="ev"><b>Belgian Grand Prix weekend</b> — F1 back from its break at Spa.</span>
+      </li>
+      <li>
+        <span class="date">SUN · 19 JUL</span>
+        <span class="ev"><b>World Cup final</b> — the tournament's last signal, beamed home from America.</span>
+      </li>
+      <li>
+        <span class="date">WED · 22 JUL</span>
+        <span class="ev"><b>Samsung Unpacked</b> — "A New Shape Unfolds"; the next foldables, from London.</span>
+      </li>
+    </ul>
+  </section>
+
+  <div class="band" data-band="do_this_week">
+    <div class="bandhead">
+      <span class="mono code">BAND 14 — <b>DO THIS WEEK</b></span>
+      <span class="mono runtime">THE ONE THING · PINNED</span>
+    </div>
+  </div>
+  <section>
+    <div class="closepin">
+      <div class="pinlbl mono">THE STRONGEST ACTION · <b>PIN IT TO THE FRIDGE</b></div>
+      <p class="act">Move any easy-access cash still earning under about 4.5%, and put this year's ISA money somewhere tax-free before the allowance shrinks.</p>
+      <p class="why">It is ten unglamorous minutes with a genuinely good hourly rate. Rates are variable and the £20,000 allowance is reportedly smaller from next April, so the tax-free space is worth taking while it's still here. Do the dull admin now, and the rest of summer — next Sunday's final included — can be watched with a clear head.</p>
+    </div>
+  </section>
+
+  <div class="band" data-band="colophon">
+    <div class="bandhead">
+      <span class="mono code">BAND 15 — <b>COLOPHON</b></span>
+      <span class="mono runtime">THE ISSUE, ACCOUNTED FOR</span>
+    </div>
+  </div>
+  <section>
+    <div class="endnumbers">
+      <div class="cell">
+        <span class="mono k">ISSUE IN NUMBERS</span>
+        <span class="v serif">14 <em>bands</em> · 4 movements</span>
+      </div>
+      <div class="cell">
+        <span class="mono k">READING TIME</span>
+        <span class="v serif">31 <em>min</em> · one sitting</span>
+      </div>
+      <div class="cell">
+        <span class="mono k">SINCE TELSTAR</span>
+        <span class="v serif">64 <em>years</em> · still live</span>
+      </div>
+      <div class="cell">
+        <span class="mono k">NEXT WEEK · №017</span>
+        <span class="v serif">The <em>final</em>, and after</span>
+      </div>
+    </div>
+  </section>
+  <div class="wave wave--ink" aria-hidden="true" style="margin-top:30px;color:var(--signal);">
+    <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+      <path d="M0 13 H40 l5 -9 5 18 5 -18 5 18 5 -9 H120 l7 -13 7 26 7 -26 7 26 7 -13 H260 l4 -6 4 12 4 -12 4 12 4 -6 H360 l6 -11 6 22 6 -22 6 22 6 -11 H500 l5 -8 5 16 5 -16 5 16 5 -8 H620 l7 -13 7 26 7 -26 7 26 7 -13 H800" fill="none" stroke="currentColor" stroke-width="2.0"/>
+    </svg>
+  </div>
+
+  <div class="colophon">
+    <span class="serif">The <em>Signal</em></span>
+    <span class="mono">END OF TRANSMISSION №016 · UNTIL NEXT SUNDAY</span>
+  </div>
+
+  <div class="signoff-line">
+  <div class="wave wave--blue" aria-hidden="true" style="max-width:200px;margin:0 auto;">
+    <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+      <path d="M0 13 H50 l6 -11 6 22 6 -22 6 22 6 -11 H160 l5 -9 5 18 5 -18 5 18 5 -9 H280 l7 -12 7 24 7 -24 7 24 7 -12 H420 l4 -7 4 14 4 -14 4 14 4 -7 H540 l6 -11 6 22 6 -22 6 22 6 -11 H680 l5 -8 5 16 5 -16 5 16 5 -8 H800" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    </svg>
+  </div>
+
+    <p class="big">Until next Sunday — the week will <em>keep</em>.</p>
+    <p class="mono stamp">SET IN INSTRUMENT SERIF, NEWSREADER &amp; JETBRAINS MONO · FILED 13 JUL 2026 · FOR ONE READER</p>
+  </div>
+
+</div>
+<script>
+/* The Signal — weekly (Transmission) JavaScript bundle.
+ *
+ * The weekly is a PAPER OBJECT: it renders complete and beautiful with
+ * JavaScript OFF (the paper-and-ink contract). No progress rails, no
+ * scroll-triggered reveals, no motion, no bead rail — the reference issue
+ * (docs/mockups/reference-issue-transmission.html) proves none are needed.
+ *
+ * The ONLY script the weekly ships is a defensive, invisible image-error
+ * fallback: if a fabricated or expired image URL fails to load, hide the
+ * broken <img> (and its caption/figure) so a bad asset never renders a
+ * broken-image icon. This is progressive enhancement — with JS off, a
+ * broken image is the browser's problem, not a layout break, because the
+ * Transmission layout never depends on an image being present.
+ */
+(function () {
+  document.addEventListener(
+    'error',
+    function (e) {
+      var t = e.target;
+      if (!t || t.tagName !== 'IMG') return;
+      t.style.display = 'none';
+      var p = t.parentElement;
+      if (!p) return;
+      var next = t.nextElementSibling;
+      if (next && next.classList && next.classList.contains('plate-cap')) {
+        next.style.display = 'none';
+      }
+      if (p.classList && p.classList.contains('plate-img')) {
+        p.style.display = 'none';
+      }
+      if (p.tagName === 'FIGURE') {
+        p.style.display = 'none';
+      }
+    },
+    true
+  );
+})();
+
+</script>
+</body>
+</html>
