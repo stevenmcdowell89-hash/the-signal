@@ -102,6 +102,17 @@ Rendered at 800px via Chromium: identical to `reference-issue-transmission.html`
 
 - 2026-07-12 — Read handoff + 5 reference docs + reference issue. Strategy set (above).
   Dispatched W0 mapping agent. Progress doc created.
+- 2026-07-13 — **LIVE END-TO-END PROOF.** Generated a real new weekly through the
+  rebuilt pipeline with live web research: Issue #16 "The night the world went live"
+  (Telstar Long Read), dated 2026-07-13. Research fan-out (4 domain researchers, real
+  sourced facts) → skeleton-filled plan → per-band writer subagents → stitch_weekly.py →
+  validate-issue.py (17/17 PASS, structural+visual) + validate-chapter-plan (PASS) →
+  independent holistic quality read (overall **4.0**; both north-star Qs yes) → targeted
+  repair round (de-duped Joe Meek Long-Read/Rabbit-Hole overlap; broke a "beamed from
+  America" tic) → re-verified green. **Published to main** (81d800e): removed the broken
+  signal_weekly_2026-07-12.html + all live references (index frontdoor/hero, manifest,
+  quality log, cover), wired the new issue, updated state. This is the test that was
+  never run before — now run, and green.
 - 2026-07-12 — Confirmed weekly currently injects ~461KB CSS (322KB holiday/special) +
   2388-line JS. **Architecture decision:** weekly CSS lives in its own dir
   `assets/css/weekly/*.css`; inject-assets.sh selects bundle by `--format` (weekly →
