@@ -37,7 +37,7 @@
       "name": "The Rounds",
       "meta": "BRISK · SCANNABLE",
       "required": true,
-      "bands": ["touchline", "pixel_byte", "screen_sound", "bookmark", "rotating_1", "rotating_2", "the_desk"]
+      "bands": ["touchline", "pixel_byte", "screen_sound", "bookmark", "this_week_in_history", "rotating_1", "rotating_2", "the_desk"]
     },
     {
       "id": "close",
@@ -58,6 +58,7 @@
     "pixel_byte":      { "name": "Pixel & Byte",        "runtime": "GAMING",                             "required": false, "nav": true,  "content": "round",      "component": "items" },
     "screen_sound":    { "name": "Screen & Sound",      "runtime": "WATCH & LISTEN · + RELEASE RADAR",   "required": false, "nav": true,  "content": "round",      "component": "with-rail", "contains": ["release_radar"] },
     "bookmark":        { "name": "Bookmark",            "runtime": "BOOKS · ON THE NIGHTSTAND",          "required": true,  "nav": true,  "content": "round",      "component": "picks", "note": "The fixed lightweight books rail every issue. This RESOLVES the Bookmark-vs-Shelf spec contradiction: there is NO rotating 'The Shelf' — books are always this Bookmark rail. The deep book piece, when there is one, is the Long Read." },
+    "this_week_in_history": { "name": "This Week in History", "runtime": "HISTORY · DATED",              "required": false, "nav": true,  "content": "round",      "component": "prose+plate", "note": "A rotating non-Desk section: one genuinely interesting dated anniversary in the issue's week, told in ~400-700 words, usually with a figure. Runs on a 2-3 week cadence." },
     "rotating_1":      { "name": "(rotating)",          "runtime": "",                                   "required": false, "nav": true,  "content": "round",      "component": "items", "rotating_pool": ["this_week_in_history", "listening", "the_saga"], "note": "Pick 1-2 non-Desk rotating sections per issue." },
     "rotating_2":      { "name": "(rotating)",          "runtime": "",                                   "required": false, "nav": true,  "content": "round",      "component": "items", "rotating_pool": ["this_week_in_history", "listening", "the_saga"] },
     "the_desk":        { "name": "The Desk",            "runtime": "SERVICE",                            "required": true,  "nav": true,  "content": "desk",       "component": "desk", "columns_min": 1, "columns_max": 2, "column_pool": ["session", "ledger", "itinerary", "toolkit"], "each_column_closes_on": "pin", "note": "ONE band, 1-2 nested columns. NEVER 3+, never a column as its own band/nav entry." },

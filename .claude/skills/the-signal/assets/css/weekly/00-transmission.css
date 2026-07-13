@@ -443,11 +443,20 @@
     margin-top:14px;
   }
 
-  /* captioned image placeholder */
+  /* captioned image — real <img> or the drawn placeholder box */
   .plate-img{
     max-width:var(--measure);
     margin:30px auto;
   }
+  .plate-img img{
+    display:block;
+    width:100%;
+    height:auto;
+    border:1px solid var(--hair);
+    background:var(--paper-2);
+  }
+  /* a wider "plate" for a section-opening lead image */
+  .plate-img.lead{ margin:8px auto 26px; }
   .plate-box{
     aspect-ratio:16/9;
     border:1px solid var(--hair);
@@ -476,6 +485,12 @@
   }
   .plate-cap .fig{color:var(--signal);flex:0 0 auto;}
   .plate-cap .txt{font-style:italic;color:var(--muted);font-size:15px;line-height:1.35;}
+  .plate-cap .credit{
+    font-family:"JetBrains Mono",monospace;
+    text-transform:uppercase;letter-spacing:.1em;
+    font-size:10px;color:var(--muted);font-style:normal;
+    display:block;margin-top:4px;
+  }
 
   /* case-against aside — a warm planner note, ground-disciplined */
   .aside-note{
