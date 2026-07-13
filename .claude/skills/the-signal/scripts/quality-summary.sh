@@ -46,7 +46,11 @@ if not rows:
     print("No quality scores logged yet.")
     sys.exit(0)
 
-DIMS = ["voice", "density", "structure", "opening", "throughline"]
+# Full dimension list (v8.43). Older rows lack the newer keys (novelty v8.27,
+# length/visual v8.43); the per-dimension loop below skips missing keys, so
+# old and new rows coexist — n varies per dimension.
+DIMS = ["voice", "density", "length", "structure", "opening", "throughline",
+        "novelty", "visual"]
 overalls = [r["overall"] for r in rows if isinstance(r.get("overall"), (int, float))]
 
 print(f"\nThe Signal — editorial quality  ({len(rows)} issue(s)"

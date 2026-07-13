@@ -4,6 +4,14 @@
   "identity": "transmission",
   "reading_canvas_px": 800,
 
+  "word_budget": {
+    "note": "Issue word budget (2026-07-13 quality handoff, A5 + B8). The 6-9k issue target is ALLOCATED PER BAND by the planner, never left to each writer independently: every planned content band gets a target_word_count drawn from its target_words range below, and the allocations must sum to >=6000 (validate-chapter-plan.py hard-fails a weekly plan below that). Aim mid-band — 6,800-7,500 — so a light news week still clears 6,000. 'Length follows the material' governs trimming a GIVEN allocation while writing (a writer landing far under its share flags the planner for more research); it never governs whether to attempt the allocation.",
+    "issue_min": 6000,
+    "issue_target_min": 6800,
+    "issue_target_max": 7500,
+    "issue_max": 9000
+  },
+
   "structural_hooks": {
     "note": "Invisible data-* attributes the templates emit and the validators key on — so the structural gate is decoupled from display class names. All are lowercase.",
     "movement": "each movement divider carries data-movement='open|long-read|rounds|close' on its .movement element",
@@ -50,23 +58,23 @@
   ],
 
   "bands": {
-    "the_letter":      { "name": "The Letter",         "runtime": "FROM THE EDITOR",                    "required": true,  "nav": true,  "content": "letter",     "component": "letter" },
-    "week_in_numbers": { "name": "The Week in Numbers", "runtime": "THE LEDGER · SIGNAL METERED",        "required": true,  "nav": false, "content": "figures",    "component": "figures" },
-    "caught_up":       { "name": "Caught Up",           "runtime": "EVERYTHING THAT MOVED, IN EIGHT LINES","required": true,"nav": false, "content": "digest",     "component": "digest", "hard_cap": 8 },
-    "long_read":       { "name": "The Long Read",       "runtime": "SIGNAL STRONG",                      "required": true,  "nav": true,  "content": "longread",   "component": "longread", "cardinality": 1 },
-    "touchline":       { "name": "The Touchline",       "runtime": "SPORT",                              "required": false, "nav": true,  "content": "round",      "component": "scores+items" },
-    "pixel_byte":      { "name": "Pixel & Byte",        "runtime": "GAMING",                             "required": false, "nav": true,  "content": "round",      "component": "items" },
-    "screen_sound":    { "name": "Screen & Sound",      "runtime": "WATCH & LISTEN · + RELEASE RADAR",   "required": false, "nav": true,  "content": "round",      "component": "with-rail", "contains": ["release_radar"] },
-    "bookmark":        { "name": "Bookmark",            "runtime": "BOOKS · ON THE NIGHTSTAND",          "required": true,  "nav": true,  "content": "round",      "component": "picks", "note": "The fixed lightweight books rail every issue. This RESOLVES the Bookmark-vs-Shelf spec contradiction: there is NO rotating 'The Shelf' — books are always this Bookmark rail. The deep book piece, when there is one, is the Long Read." },
-    "this_week_in_history": { "name": "This Week in History", "runtime": "HISTORY · DATED",              "required": false, "nav": true,  "content": "round",      "component": "prose+plate", "note": "A rotating non-Desk section: one genuinely interesting dated anniversary in the issue's week, told in ~400-700 words, usually with a figure. Runs on a 2-3 week cadence." },
-    "rotating_1":      { "name": "(rotating)",          "runtime": "",                                   "required": false, "nav": true,  "content": "round",      "component": "items", "rotating_pool": ["this_week_in_history", "listening", "the_saga"], "note": "Pick 1-2 non-Desk rotating sections per issue." },
-    "rotating_2":      { "name": "(rotating)",          "runtime": "",                                   "required": false, "nav": true,  "content": "round",      "component": "items", "rotating_pool": ["this_week_in_history", "listening", "the_saga"] },
-    "the_desk":        { "name": "The Desk",            "runtime": "SERVICE",                            "required": true,  "nav": true,  "content": "desk",       "component": "desk", "columns_min": 1, "columns_max": 2, "column_pool": ["session", "ledger", "itinerary", "toolkit"], "each_column_closes_on": "pin", "note": "ONE band, 1-2 nested columns. NEVER 3+, never a column as its own band/nav entry." },
-    "the_threads":     { "name": "The Threads",         "runtime": "PREVIOUSLY ON · STILL RUNNING",      "required": true,  "nav": true,  "content": "threads",    "component": "threads" },
-    "rabbit_hole":     { "name": "Down the Rabbit Hole","runtime": "CURIOSITY · SIGNAL FAINT, FOLLOW IT","required": false, "nav": true,  "content": "rabbit",     "component": "rabbit", "note": "Signature discovery ritual; runs when due." },
-    "on_the_radar":    { "name": "On the Radar",        "runtime": "FORWARD CALENDAR · WHAT'S COMING",   "required": true,  "nav": true,  "content": "radar",      "component": "radar" },
-    "do_this_week":    { "name": "Do This Week",        "runtime": "THE ONE THING · PINNED",             "required": true,  "nav": false, "content": "closepin",   "component": "closepin", "note": "The issue's single strongest action — ends on a verb + a human line." },
-    "colophon":        { "name": "Colophon",            "runtime": "THE ISSUE, ACCOUNTED FOR",           "required": true,  "nav": false, "content": "colophon",   "component": "endnumbers" }
+    "the_letter":      { "name": "The Letter",         "runtime": "FROM THE EDITOR",                    "required": true,  "nav": true,  "content": "letter",     "component": "letter", "target_words": { "min": 120, "max": 200 } },
+    "week_in_numbers": { "name": "The Week in Numbers", "runtime": "THE LEDGER · SIGNAL METERED",        "required": true,  "nav": false, "content": "figures",    "component": "figures", "target_words": { "min": 160, "max": 260 } },
+    "caught_up":       { "name": "Caught Up",           "runtime": "EVERYTHING THAT MOVED, IN EIGHT LINES","required": true,"nav": false, "content": "digest",     "component": "digest", "hard_cap": 8, "target_words": { "min": 200, "max": 280 } },
+    "long_read":       { "name": "The Long Read",       "runtime": "SIGNAL STRONG",                      "required": true,  "nav": true,  "content": "longread",   "component": "longread", "cardinality": 1, "target_words": { "min": 1400, "max": 2000 } },
+    "touchline":       { "name": "The Touchline",       "runtime": "SPORT",                              "required": false, "nav": true,  "content": "round",      "component": "scores+items", "target_words": { "min": 350, "max": 600 } },
+    "pixel_byte":      { "name": "Pixel & Byte",        "runtime": "GAMING",                             "required": false, "nav": true,  "content": "round",      "component": "items", "target_words": { "min": 350, "max": 600 } },
+    "screen_sound":    { "name": "Screen & Sound",      "runtime": "WATCH & LISTEN · + RELEASE RADAR",   "required": false, "nav": true,  "content": "round",      "component": "with-rail", "contains": ["release_radar"], "target_words": { "min": 350, "max": 600 } },
+    "bookmark":        { "name": "Bookmark",            "runtime": "BOOKS · ON THE NIGHTSTAND",          "required": true,  "nav": true,  "content": "round",      "component": "picks", "target_words": { "min": 350, "max": 600 }, "note": "The fixed lightweight books rail every issue. This RESOLVES the Bookmark-vs-Shelf spec contradiction: there is NO rotating 'The Shelf' — books are always this Bookmark rail. The deep book piece, when there is one, is the Long Read. Picks show their book covers (2026-07-13 handoff B6)." },
+    "this_week_in_history": { "name": "This Week in History", "runtime": "HISTORY · DATED",              "required": false, "nav": true,  "content": "round",      "component": "prose+plate", "target_words": { "min": 500, "max": 750 }, "note": "A rotating non-Desk section: one genuinely interesting dated anniversary in the issue's week, told in ~500-750 words, usually with a figure. Runs on a 2-3 week cadence." },
+    "rotating_1":      { "name": "(rotating)",          "runtime": "",                                   "required": false, "nav": true,  "content": "round",      "component": "items", "rotating_pool": ["this_week_in_history", "listening", "the_saga"], "target_words": { "min": 350, "max": 600 }, "note": "Pick 1-2 non-Desk rotating sections per issue." },
+    "rotating_2":      { "name": "(rotating)",          "runtime": "",                                   "required": false, "nav": true,  "content": "round",      "component": "items", "rotating_pool": ["this_week_in_history", "listening", "the_saga"], "target_words": { "min": 350, "max": 600 } },
+    "the_desk":        { "name": "The Desk",            "runtime": "SERVICE",                            "required": true,  "nav": true,  "content": "desk",       "component": "desk", "columns_min": 1, "columns_max": 2, "column_pool": ["session", "ledger", "itinerary", "toolkit"], "each_column_closes_on": "pin", "target_words": { "min": 500, "max": 800 }, "target_words_per_column": { "min": 250, "max": 400 }, "note": "ONE band, 1-2 nested columns. NEVER 3+, never a column as its own band/nav entry. Budget is 250-400 words PER COLUMN — the band range assumes the typical two columns; a single-column week allocates 250-400." },
+    "the_threads":     { "name": "The Threads",         "runtime": "PREVIOUSLY ON · STILL RUNNING",      "required": true,  "nav": true,  "content": "threads",    "component": "threads", "target_words": { "min": 450, "max": 650 } },
+    "rabbit_hole":     { "name": "Down the Rabbit Hole","runtime": "CURIOSITY · SIGNAL FAINT, FOLLOW IT","required": false, "nav": true,  "content": "rabbit",     "component": "rabbit", "target_words": { "min": 450, "max": 700 }, "note": "Signature discovery ritual; runs when due." },
+    "on_the_radar":    { "name": "On the Radar",        "runtime": "FORWARD CALENDAR · WHAT'S COMING",   "required": true,  "nav": true,  "content": "radar",      "component": "radar", "target_words": { "min": 300, "max": 450 } },
+    "do_this_week":    { "name": "Do This Week",        "runtime": "THE ONE THING · PINNED",             "required": true,  "nav": false, "content": "closepin",   "component": "closepin", "target_words": { "min": 60, "max": 120 }, "note": "The issue's single strongest action — ends on a verb + a human line." },
+    "colophon":        { "name": "Colophon",            "runtime": "THE ISSUE, ACCOUNTED FOR",           "required": true,  "nav": false, "content": "colophon",   "component": "endnumbers", "target_words": { "min": 80, "max": 140 } }
   },
 
   "chrome": {
@@ -83,7 +91,8 @@
     "desk_is_one_nested_department": "exactly one data-role='desk'; it holds 1-2 data-desk-column elements; NO desk column renders as its own band/nav entry (no data-band in {session,ledger,itinerary,toolkit}); fail on 0 or 3+ columns",
     "release_radar_inside_screen_sound": "data-role='release-radar' must exist and be a descendant of the screen_sound band's section; it must NEVER be its own band (no data-band='release_radar') or nav station",
     "navigator_ceiling": "reader-facing navigator entries (data-station on cover) must be between 4 and 13",
-    "caught_up_cap": "the digest carries at most 8 <li> items"
+    "caught_up_cap": "the digest carries at most 8 <li> items",
+    "long_read_has_image": "the section carrying data-role='long-read' must contain >=1 real <img> tag — the anchor piece is illustrated; an empty .plate-box glyph placeholder does NOT count (2026-07-13 handoff A2)"
   },
 
   "visual_consistency": {

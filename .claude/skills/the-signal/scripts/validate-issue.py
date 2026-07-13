@@ -59,7 +59,7 @@ KNOWN_FORMATS = {"weekly"} | SPECIAL_FORMATS
 # Sunday with coffee" (Field Guide came in ~15k, a retired Deep Dive ~24k). Caps
 # are HARD maxima sitting well above each format's target band, tuned so every
 # currently-shipping issue passes and only genuine runaways trip. Word count is
-# measured on rendered body text (chrome included) — see check_length_ceiling.
+# measured on rendered body text (chrome included) — see check_length_band.
 # Deep Dive is the flagship and gets the most generous cap; the light
 # recommendation formats get the least. Formats absent from this map are not
 # ceilinged (the check reports OK and moves on — never crashes).
@@ -77,6 +77,36 @@ LENGTH_CEILINGS = {
     "starter-kit":    7500,  # back-compat alias for guide beginner mode
     "next":           7000,  # 3.5-5.5k target
     "shortlist":      6500,  # back-compat alias for guide category mode
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Per-format hard length FLOORS (2026-07-13 quality-consistency handoff, A1).
+# The first Transmission weekly shipped at ~3,960 words against a 6-9k target
+# because no gate had a floor — the ceiling-only check passed a half-length
+# issue silently. The floor sits at the target band's lower bound and mirrors
+# the ceiling: below it is a hard ship FAIL, inside the same markup-contracts
+# gate (no new gate; the ledger stays at three). WEEKLY ONLY for now — adding
+# floors to other formats would retroactively red-flag legacy specials in the
+# archive. Formats absent from this map have no floor (the check reports OK
+# and moves on — never crashes). Measured the same way as the ceiling: rendered
+# body text, chrome included — see check_length_band.
+# ─────────────────────────────────────────────────────────────────────────────
+LENGTH_FLOORS = {
+    "weekly": 6000,  # ~6-9k four-movement target; 3,960-word first run trips it
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Per-format minimum REAL-image counts (2026-07-13 handoff, A2).
+# The first Transmission weekly shipped with ZERO <img> tags and every image
+# gate passed trivially (they all only inspect images that already exist).
+# This is the presence floor: real <img> tags in the rendered body. CSS
+# placeholder plates (.plate-box glyph boxes with no <img>) do NOT count — the
+# floor exists precisely because placeholder boxes were standing in for
+# pictures. Markup-only, so it holds even offline / with --skip-image-urls.
+# WEEKLY ONLY for now; formats absent from this map have no floor.
+# ─────────────────────────────────────────────────────────────────────────────
+MIN_IMAGES = {
+    "weekly": 8,  # §5 A2 recommends 8-10; Issue #16 shipped 4 after hand-fixes
 }
 
 # Literal placeholder strings that must never ship.
@@ -991,6 +1021,28 @@ def check_weekly_structure(html: str, fmt: str, report: Report) -> None:
         else:
             report.ok("weekly-structure/caught-up-cap", f"Caught Up within cap ({n_li}/8 lines)")
 
+    # 7. Long Read carries >=1 real image ------------------------------------
+    # (weekly.json § invariants: long_read_has_image, 2026-07-13 handoff A2.)
+    # The anchor piece must be illustrated: >=1 real <img> inside the section
+    # carrying data-role='long-read'. Empty .plate-box glyph placeholders do
+    # not count. Region delimited the same way as the release-radar fold check:
+    # from the data-role marker to the next data-band marker (or end of doc).
+    if n_lr == 1:
+        lr = re.search(r'data-role=["\']long-read["\']', clean)
+        nxt = re.search(r'data-band=["\'][^"\']+["\']', clean[lr.end():])
+        boundary = lr.end() + nxt.start() if nxt else len(clean)
+        lr_region = clean[lr.end():boundary]
+        n_lr_imgs = len(re.findall(r'<img\b', lr_region, re.IGNORECASE))
+        if n_lr_imgs == 0:
+            report.fail("weekly-structure/long-read-image",
+                        "the Long Read carries no real <img> — the anchor piece "
+                        "must be illustrated (>=1 captioned + credited image; an "
+                        "empty .plate-box glyph placeholder does not count)")
+        else:
+            report.ok("weekly-structure/long-read-image",
+                      f"Long Read carries {n_lr_imgs} real <img> tag(s)")
+    # (n_lr != 1 already hard-failed in check 2 — nothing to measure here.)
+
 
 # Special/holiday CSS + font markers that must NEVER appear in a weekly's
 # injected assets — the weekly wears the constant warm Transmission identity,
@@ -1114,24 +1166,28 @@ def check_scaffold_leak(html: str, report: Report) -> None:
         report.ok("scaffold-leak", "no leaked scaffold/template tokens in DOM")
 
 
-def check_length_ceiling(html: str, fmt: str, report: Report) -> None:
-    """Hard per-format word ceiling (v8.39, S6).
+def check_length_band(html: str, fmt: str, report: Report) -> None:
+    """Hard per-format word band: ceiling (v8.39, S6) + floor (2026-07-13, A1).
 
     'Sunday with coffee' means an issue a person actually finishes. A Field
     Guide that came in ~15k words and a retired Deep Dive at ~24k both broke
-    that contract. This asserts a HARD maximum per format — a ship FAIL, folded
-    into the existing markup/ship gate, not a new script. Formats with no
-    ceiling defined report OK and are skipped (never a crash).
+    that contract — the CEILING catches runaways. The first Transmission weekly
+    then shipped at ~3,960 words against a 6-9k target because nothing pushed
+    back UP — the FLOOR catches thinness. Both are hard ship FAILs folded into
+    the existing markup/ship gate, not a new script. Formats with no ceiling
+    (or no floor — currently everything but the weekly) skip that side with an
+    OK (never a crash).
     """
     ceiling = LENGTH_CEILINGS.get(fmt)
-    if ceiling is None:
-        report.ok("length-ceiling", f"no ceiling defined for format '{fmt}' — skipped")
+    floor = LENGTH_FLOORS.get(fmt)
+    if ceiling is None and floor is None:
+        report.ok("length-band", f"no ceiling or floor defined for format '{fmt}' — skipped")
         return
     # Count words on rendered body text: strip comments/style/script, then tags.
     text = body_text_only(html)
     text = re.sub(r"<[^>]+>", " ", text)
     words = len(text.split())
-    if words > ceiling:
+    if ceiling is not None and words > ceiling:
         report.fail(
             "length-ceiling",
             f"{words:,} words exceeds the {fmt} ceiling of {ceiling:,} — "
@@ -1139,8 +1195,49 @@ def check_length_ceiling(html: str, fmt: str, report: Report) -> None:
             f"(the ceiling sits well above target; overshooting it means bloat, "
             f"not depth). Deep Dive is the flagship and gets the most generous cap.",
         )
-    else:
+    elif ceiling is not None:
         report.ok("length-ceiling", f"{words:,} words within {fmt} ceiling {ceiling:,}")
+    if floor is not None and words < floor:
+        report.fail(
+            "length-floor",
+            f"{words:,} words is under the {fmt} floor of {floor:,} — "
+            f"a half-length issue (the ~3,960-word first-run defect). The 6-9k "
+            f"target must be allocated per band and written to, not yielded away. "
+            f"Do not pad: go back to the planner for more material/research.",
+        )
+    elif floor is not None:
+        report.ok("length-floor", f"{words:,} words clears the {fmt} floor {floor:,}")
+
+
+def check_image_floor(html: str, fmt: str, report: Report) -> None:
+    """Per-format minimum REAL-image count (2026-07-13 handoff, A2).
+
+    Counts actual <img> tags in the rendered issue body. CSS placeholder plates
+    (.plate-box glyph boxes with no <img>) do NOT count — an empty box is not a
+    picture, and the zero-image first run passed every image gate precisely
+    because they all only inspect images that already exist. Markup-only by
+    design: no network, so it runs unconditionally — even offline and even
+    under --skip-image-urls (that flag skips URL *reachability*, not image
+    *presence*). Formats with no floor (currently everything but the weekly)
+    report OK and are skipped. Below floor is a hard ship FAIL.
+    """
+    floor = MIN_IMAGES.get(fmt)
+    if floor is None:
+        report.ok("image-floor", f"no image floor defined for format '{fmt}' — skipped")
+        return
+    body = body_text_only(html)
+    n_imgs = len(re.findall(r"<img\b", body, re.IGNORECASE))
+    if n_imgs < floor:
+        report.fail(
+            "image-floor",
+            f"{n_imgs} real <img> tag(s) in the body — below the {fmt} floor of "
+            f"{floor}. CSS placeholder plates (.plate-box glyph boxes) do not "
+            f"count: place real, captioned + credited images from the research "
+            f"bundle's image_candidates (Long Read and every feature band lead "
+            f"with one). A visually barren issue is not shippable.",
+        )
+    else:
+        report.ok("image-floor", f"{n_imgs} real <img> tag(s) clears the {fmt} floor of {floor}")
 
 
 def check_css_class_sanity(html: str, report: Report) -> None:
@@ -1245,7 +1342,10 @@ def main(argv: list[str]) -> int:
     check_weekly_structure(html, fmt, report)
     check_weekly_visual_consistency(html, fmt, report)
     check_scaffold_leak(html, report)
-    check_length_ceiling(html, fmt, report)
+    check_length_band(html, fmt, report)
+    # Image-presence floor: markup-only, network-free — runs unconditionally,
+    # including under --skip-image-urls and in offline sandboxes (A2).
+    check_image_floor(html, fmt, report)
 
     # Holiday-only checks
     if fmt in HOLIDAY_FORMATS:

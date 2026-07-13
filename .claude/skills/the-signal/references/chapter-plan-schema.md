@@ -4,6 +4,8 @@ The planner subagent writes `/tmp/signal-build/chapter-plan.json`. This file def
 
 The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan that fails validation cannot proceed to Phase 5 (writer subagents).
 
+**2026-07-13 (quality handoff A5/A6) — the weekly word budget is allocated, and bundle images are routed.** A weekly plan's chapters (band selections) each carry a `target_word_count` that is the band's **allocated share** of the issue word budget, drawn from the band's `target_words` range in `references/format-skeletons/weekly.json`; the shares **MUST sum to >= 6,000** (aim 6,800–7,500 — mid-band, per B8) and `issue_meta.word_budget` declares the arithmetic. The planner also **routes** the research bundle's verified `image_candidates` into per-band `images_needed`: the `long_read` MUST carry >= 1 entry (`alt_required: true`), and every feature/round band allocated > 350 words should carry >= 1. `validate-chapter-plan.py` hard-fails a weekly plan whose allocations sum under 6,000 or whose long_read has empty `images_needed`, and warns on a > 350-word round band with none.
+
 **v8.30 — Release Radar is a required, enforced weekly chapter.** Every `weekly` plan MUST include a `release_radar` chapter (rendered immediately after `screen_sound`) carrying a `radar_items` array of **15-20 upcoming-weighted media releases across ≥4 categories** (film/tv/game/lego/tech/book/music). The validator hard-fails a weekly plan that omits it or that ships a thin one. This closes the silent-drop gap that lost release coverage from the 1 June test issue — Release Radar was "tail content" with no schema field and no gate. (On the Radar stays events-only; Release Radar owns product/media releases.)
 
 **v8.34 — considered piece is the backbone (INVERTS the v8.27-v8.28 spine).** A fixed-section chapter must carry a **considered piece** — a `role: "lead"` piece that is a synthesis, a roundup with a named layer, an angle, or a feature — **or** an explicit `yield_reason` string. The `catch_up` roundup is now **optional grounding context**, not a mandatory element: a section with only `catch_up` (no `lead`, no `yield_reason`) **FAILS** — it must yield, because exhaustive recap is the daily brief's job, not the weekly's. A bare Lead with no Catch-Up is fine (the considered piece stands alone). `pieces` holds **0-2 entries** (the considered piece as `lead`, plus an optional `companion`; a companion requires a lead). Word floors stay relaxed *sanity* minimums (lead 150, companion 120) — not targets; length follows the material. Facts in any piece/catch_up item must trace to a researched source (carried as `link_targets`). The clauses below from v8.28/v8.27 — "a section may be pure Catch-Up with no pieces" and "the mandatory second element is the substantive catch_up" — are **superseded by this block**.
@@ -73,6 +75,14 @@ The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan
           "type": "string",
           "enum": ["parallel", "sequential"],
           "description": "How writer subagents are spawned. Derived from format — see mapping below. Must match the format."
+        },
+        "word_budget": {
+          "type": "object",
+          "description": "2026-07-13 handoff A5 — the issue-level word budget the planner is allocating against. For weeklies: target_total drawn from weekly.json word_budget (aim 6,800-7,500; hard floor 6,000; ceiling 9,000), and allocated_total = the sum of every chapter's target_word_count. Declaring it forces the planner to do the arithmetic that was previously skipped — the per-chapter shares are the decomposition of this number, never independent guesses.",
+          "properties": {
+            "target_total": { "type": "integer", "description": "The issue target the planner is aiming at (weekly: 6,800-7,500)." },
+            "allocated_total": { "type": "integer", "description": "Sum of all chapters' target_word_count. Weekly: MUST be >= 6,000 (validator hard-fails below)." }
+          }
         }
       }
     },
@@ -156,7 +166,7 @@ The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan
           "target_word_count": {
             "type": "integer",
             "minimum": 100,
-            "description": "Target word count for this chapter's prose. Guides writer length but is not a hard cap — cut if content doesn't support it."
+            "description": "The chapter's ALLOCATED SHARE of the issue word budget (2026-07-13 handoff A5) — not a soft suggestion. The planner MUST decompose the issue target into per-chapter shares; on a weekly, every planned content band's share is drawn from its `target_words` range in references/format-skeletons/weekly.json, and the shares MUST sum to >= 6,000 (aim 6,800-7,500, mid-band, so a light news week still clears 6,000). validate-chapter-plan.py hard-fails a weekly plan whose allocations sum below 6,000. The share is a commitment to attempt, not a hard cap: 'length follows the material' governs trimming a GIVEN share during writing — a writer landing far under its share flags the planner for more research; it does not ship short."
           },
 
           "dimensions_covered": {
@@ -167,7 +177,7 @@ The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan
 
           "images_needed": {
             "type": "array",
-            "description": "Images the writer should source for this chapter. Role describes what the image should show.",
+            "description": "Images the writer must place in this chapter (2026-07-13 handoff A6 — images are ROUTED by the planner, not left to writer initiative). REQUIRED NON-EMPTY, with at least one alt_required:true entry, for the weekly long_read and EVERY feature/round band (touchline, pixel_byte, screen_sound, bookmark, this_week_in_history, rotating slots); the planner draws each entry's role/source_constraint from the research bundle's image_candidates (verified URLs), so the writer renders a real <img> from the bundle rather than sourcing from scratch. validate-chapter-plan.py hard-fails a weekly whose long_read has an empty images_needed and warns on any round band allocated >350 words with none. May be empty only for structural/typographic bands (letter, figures, digest, threads, radar, closepin, colophon).",
             "items": {
               "type": "object",
               "required": ["role", "source_constraint", "alt_required"],
@@ -245,7 +255,7 @@ The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan
                   "type": "object",
                   "required": ["min", "max"],
                   "properties": {
-                    "min": { "type": "integer", "minimum": 120, "description": "v8.28 sanity floor only (not a target): lead 150, companion 120. Length follows material; don't pad to a number." },
+                    "min": { "type": "integer", "minimum": 120, "description": "2026-07-13 handoff A5: the min is the piece's share of the band's allocated target_words (weekly.json), no longer a bare sanity floor — a round band's pieces should cover its 350-600-word allocation (absolute floors remain lead 150, companion 120). Don't pad beyond the material: a piece landing far under its share flags the planner for more research instead of shipping short." },
                     "max": { "type": "integer", "minimum": 200, "description": "Ceiling. Lead typical 700, can run to 1000+. Companion typical 450, ceiling 600." }
                   },
                   "description": "Word-count band for this piece. Validator rejects Lead with min < 300 or Companion with min < 200."

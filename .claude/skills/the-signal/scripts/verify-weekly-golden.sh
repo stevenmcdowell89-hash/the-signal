@@ -35,7 +35,7 @@ bash "$SKILL_DIR/scripts/stitch-issue.sh" \
   --issue-number 16
 
 echo ""
-echo "--- validate (all gates; images are CSS placeholders so --skip-image-urls) ---"
+echo "--- validate (all gates; golden carries real <img> markup — --skip-image-urls only skips the network HEAD-checks, which can't run in the offline sandbox) ---"
 python3 "$SKILL_DIR/scripts/validate-issue.py" "$OUT" --format weekly --skip-image-urls
 
 echo ""
