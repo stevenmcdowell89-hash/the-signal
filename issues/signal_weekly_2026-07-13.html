@@ -453,11 +453,20 @@
     margin-top:14px;
   }
 
-  /* captioned image placeholder */
+  /* captioned image — real <img> or the drawn placeholder box */
   .plate-img{
     max-width:var(--measure);
     margin:30px auto;
   }
+  .plate-img img{
+    display:block;
+    width:100%;
+    height:auto;
+    border:1px solid var(--hair);
+    background:var(--paper-2);
+  }
+  /* a wider "plate" for a section-opening lead image */
+  .plate-img.lead{ margin:8px auto 26px; }
   .plate-box{
     aspect-ratio:16/9;
     border:1px solid var(--hair);
@@ -486,6 +495,12 @@
   }
   .plate-cap .fig{color:var(--signal);flex:0 0 auto;}
   .plate-cap .txt{font-style:italic;color:var(--muted);font-size:15px;line-height:1.35;}
+  .plate-cap .credit{
+    font-family:"JetBrains Mono",monospace;
+    text-transform:uppercase;letter-spacing:.1em;
+    font-size:10px;color:var(--muted);font-style:normal;
+    display:block;margin-top:4px;
+  }
 
   /* case-against aside — a warm planner note, ground-disciplined */
   .aside-note{
@@ -937,6 +952,10 @@
           <span class="freq">106.0</span>
           <span class="name">Hard SF on Prime, and new synthwave</span>
         </div>
+        <div class="station" data-station>
+          <span class="freq">94.6</span>
+          <span class="name">This week in <b>1877</b>: the first Wimbledon</span>
+        </div>
         <div class="station on" data-station>
           <span class="freq">92.3</span>
           <span class="name"><b>The Desk:</b> Block 3 begins, and a rate to beat</span>
@@ -1022,10 +1041,10 @@
 
         <div class="fig-row">
           <div class="fig-label">
-            <span class="k">Best Easy-Access Rate</span>
-            <span class="d">worth a ten-minute switch</span>
+            <span class="k">Finals Watched</span>
+            <span class="d">Wimbledon, both to the last set</span>
           </div>
-          <div class="fig-val">4.50<small>%</small></div>
+          <div class="fig-val">2</div>
         </div>
 
         <div class="fig-row">
@@ -1063,7 +1082,7 @@
       <li><p><b>The World Cup.</b> The tournament narrows to a heavyweight last four — England v Argentina and France v Spain — with the final to come next Sunday.</p></li>
       <li><p><b>Le Tour.</b> Tadej Pogačar holds yellow at the Tour de France's first rest day, 2:42 clear of Jonas Vingegaard with the mountains still to come.</p></li>
       <li><p><b>Pixel &amp; Byte.</b> Palworld finally leaves early access at 1.0, and a ground-up remake of Assassin's Creed Black Flag sets sail.</p></li>
-      <li><p><b>The ledger.</b> Easy-access savings hold near 4.5%, and this year's full ISA allowance still stands — the week's quiet ten-minute win.</p></li>
+      <li><p><b>The ledger.</b> UK easy-access savings settle around 4.5% as the summer's brief rate war cools — steady numbers in a quiet money week.</p></li>
       <li><p><b>Filed under later.</b> Sixty-four years since Telstar sang across the Atlantic, and a first full week home from Efteling.</p></li>
     </ol>
   </section>
@@ -1099,9 +1118,19 @@
     <div class="lr-body">
       <p class="first">On the night of 10 July 1962, in a windowless control room in Andover, Maine, a handful of engineers watched a screen fill with the Statue of Liberty and understood, before anyone said it aloud, that distance had just changed shape. The image had crossed the Atlantic not by cable and not by post but through the sky, bounced off a machine that had been in space for a matter of hours. In Pleumeur-Bodou, on the coast of Brittany, a giant horn antenna under a canvas dome swung to catch the same faint signal, and France saw America live. It was the first time a moving picture had made that crossing in real time. The whole exchange lasted only as long as the satellite stayed in view of both shores — a window of minutes — and then it was gone, over the horizon, and the world went dark again until the next orbit brought it back.</p>
 
-      <p>The machine was called Telstar 1, and it is worth describing plainly, because the plainness is the point. It was a sphere thirty-four and a half inches across, weighing a hundred and seventy-one pounds, its aluminium skin studded with three thousand six hundred solar cells and its insides packed with the still-exotic technology of the transistor. Bell Labs built it. AT&T paid for it, under an agreement with NASA that made Telstar the first privately funded satellite — a piece of the sky bought and launched by a telephone company. It went up on a Delta rocket from Cape Canaveral, and within the same working day it was already doing the thing it had been made to do, relaying television, telephone calls and fax between two continents that had never before spoken face to face at the speed of light.</p>
+      <p>The machine was called Telstar 1, and it is worth describing plainly, because the plainness is the point. It was a sphere thirty-four and a half inches across, weighing a hundred and seventy-one pounds, its aluminium skin studded with three thousand six hundred solar cells and its insides packed with the still-exotic technology of the transistor. Bell Labs built it. AT&T paid for it, reimbursing NASA for the launch under a formal agreement — an arrangement that made Telstar the first privately financed satellite, a piece of the sky bought and flown by a telephone company. It went up on a Delta rocket from Cape Canaveral, and within the same working day it was already doing the thing it had been made to do, relaying television, telephone calls and fax between two continents that had never before spoken face to face at the speed of light.</p>
 
       <p>What it relayed that first week reads now like a mixtape of a civilisation introducing itself. The Eiffel Tower. A reference to President Kennedy. A clip of a baseball game between the Phillies and the Cubs, sent east so that Europe could watch Americans watch America. Singers, officials, the small ceremonial noises a species makes when it is nervous and proud at once. None of it mattered as content. All of it mattered as proof. The signal was the message: here we are, and now you can see us while it happens.</p>
+
+      <div class="plate-img">
+        <img src="/assets/cached/e1d80d7ae3a7.jpg" alt="The Telstar 1 communications satellite, a small reflective sphere studded with solar cells and antenna ports" loading="lazy">
+        <div class="plate-cap">
+          <span class="mono fig">FIG. 01</span>
+          <span class="txt">Telstar 1, the 1962 sphere that relayed the first live transatlantic television signals.<span class="credit">NASA / AT&amp;T · public domain · Wikimedia Commons</span></span>
+        </div>
+      </div>
+
+      <p>To feel why a nation held its breath over a telephone company's science project, you have to stand in 1962. The Cuban missile crisis was three months away. Kennedy had promised the country the Moon the previous September, and the space race was less a race than a public referendum on which system — American or Soviet — actually worked. The Soviets had reached space first with Sputnik in 1957 and put the first man into orbit in 1961; every American launch since had carried the weight of catching up. Telstar arrived into that mood as a rare piece of good news that anyone could understand. It did not carry a warhead or a cosmonaut. It carried the evening's television, and it let ordinary people on both sides of an ocean watch the same live moment at the same instant. In a decade organised around the fear that the sky had become a place bombs came from, here was a thing in the sky that did the opposite — it made strangers visible to one another. The newspapers of that fortnight caught the shift in tone precisely. Where a satellite launch had until then been read as a move in a military game, Telstar was written up as an event the whole family could gather round, a picture from across the sea rather than a threat from above it. For a few weeks the same technology that everyone feared could end the world was recast as the technology that might, finally, let the world talk to itself.</p>
 
       <div class="pullquote">
         The signal was the message. Not what crossed the Atlantic, but that anything could — live, while it happened, with the horizon as the only clock.
@@ -1110,24 +1139,30 @@
 
       <p class="noindent">It is easy, from here, to miss how strange and unfinished this first version of the live planet was. Telstar did not hang motionless over the ocean the way the satellites that carry our lives now do. It orbited low and fast, circling the Earth roughly every two and a half hours, and it could only pass a signal between Maine and Brittany during the brief stretch of each orbit when it happened to be above the curve of the world for both at once. The always-on connection we treat as a law of nature — the permanent, invisible switchboard in the sky — did not yet exist. In 1962 the world could watch itself live only in glimpses, on a timetable set by orbital mechanics, in windows you had to book and wait for. The miracle came with a stopwatch attached.</p>
 
+      <p>The answer to that problem had already been written down, seventeen years earlier, by a man who had no way to build it. In 1945 the engineer and writer Arthur C. Clarke published a short paper arguing that a satellite placed far enough out — roughly twenty-two thousand miles up — would circle the Earth in exactly one day, and so appear to hang still over a single spot on the ground. Three such stations, he reasoned, could blanket the whole planet in permanent radio contact. It was a beautiful idea with no hardware attached, and it stayed that way for a generation. Telstar was not that idea. Telstar was the cheaper, nearer, low-flying version you could actually launch in 1962 with the rockets that existed — a satellite you had to chase across the sky rather than one that waited patiently overhead. Clarke's vision would be realised only the following year, when a far smaller satellite reached the high orbit he had described and, for the first time, simply stayed put.</p>
+
+      <p>Around all of this ran a quieter contest over who should own the sky once it worked. Telstar was AT&T's, and a private telephone monopoly holding the keys to global broadcasting made Washington uneasy. The argument came to a head the same summer the satellite flew. On 31 August 1962, six weeks after that first live night, Kennedy signed the Communications Satellite Act, which created a new, government-chartered company — Comsat — to own America's share of any international satellite system, deliberately preventing AT&T from turning its head start into a permanent grip. The politics mattered as much as the physics. The question of 1962 was not only whether a planet could watch itself live, but who would hold the switch, and on what terms the rest of the world would be allowed to plug in. The machine settled the first question in an afternoon. The second is, in a sense, still open.</p>
+
+      <p>Then there is the detail that turns the whole story from triumph into something stranger and sadder. The day before Telstar launched, on 9 July 1962, the United States detonated a nuclear warhead high above the Pacific — the Starfish Prime test, a 1.4-megaton bomb set off some two hundred and fifty miles up, at the edge of space, to see what would happen. What happened was that it pumped the upper atmosphere full of charged particles, strengthening a belt of radiation that had not been at that intensity when Telstar's design was signed off. The satellite flew, the very next day, straight into a hazard its own government had helped create hours earlier. Over the following months that radiation gnawed at the delicate transistors Telstar depended on. Its command system began to fail in November; engineers coaxed it back to partial life for a few more weeks, and then it went silent for good in February 1963, roughly seven months after that first live night. One of the most consequential broadcasting devices ever built was, in effect, poisoned by a bomb fired the day before it was born.</p>
+
+      <p>What killed Telstar could not touch the idea, because the idea had already escaped the hardware, and the hardware behind it improved with startling speed. Telstar 2, launched in May 1963, flew in a higher orbit that dodged the worst of the radiation. NASA's own Relay satellites were doing similar work. Then, in July 1963, a small satellite called Syncom 2 reached the high, slow orbit Clarke had described and became the first to hover in step with the Earth's rotation; its successor, Syncom 3, went fully geostationary the following year and carried the 1964 Tokyo Olympics live across the Pacific. By 1965 the first commercial version — Early Bird, the founding satellite of what became the Intelsat network — was parked permanently over the Atlantic, doing continuously what Telstar had only managed in stolen minutes. In the space of three years the racing, short-lived sphere had been made obsolete by machines that simply stayed where you pointed them. Telstar was the proof of concept that its own children rendered quaint.</p>
+
       <div class="plate-img">
-        <div class="plate-box"><span class="glyph">FIG. 01 · TELSTAR 1, 1962 · A SPHERE THAT SANG</span></div>
+        <img src="/assets/cached/df664fac69a2.jpg" alt="A Telstar communications satellite drifting away from the Space Shuttle Discovery's cargo bay above a cloud-covered Earth" loading="lazy">
         <div class="plate-cap">
-          <span class="mono fig">FIG. 01</span>
-          <span class="txt">Thirty-four and a half inches, a hundred and seventy-one pounds, three thousand six hundred solar cells. It relayed pictures for minutes at a time, then dropped below the horizon. No image survives of it working; the work was the image.</span>
+          <span class="mono fig">FIG. 02</span>
+          <span class="txt">A later Telstar deploys from Space Shuttle Discovery in 1984 — the programme, and the name, long outlived the original.<span class="credit">NASA · Johnson Space Center · public domain</span></span>
         </div>
       </div>
 
-      <p>Then there is the detail that turns the whole story from triumph into something stranger and sadder. The day before Telstar launched, on 9 July 1962, the United States detonated a nuclear warhead high above the Pacific — the Starfish Prime test, a bomb set off in the edge of space to see what would happen. What happened was that it pumped the upper atmosphere full of charged particles, a belt of radiation that had not been there when Telstar's design was signed off. The satellite flew straight into a hazard its makers had, in effect, created the day before. Over the following months the radiation gnawed at its delicate transistors. By December it was faltering; it failed for good in early 1963, roughly seven months after that first live night. The most world-changing broadcasting device ever built was killed by a bomb fired the day before it was born.</p>
+      <p>The name outlived the machine in more ways than one. There are still satellites called Telstar in orbit today, sixty years on, run by a company that traces its lineage back to that first sphere; the word became a brand that kept flying long after the original had gone dark. It also became a hit record within weeks of the launch, a British instrumental that turned the sound of the space age into something you could dance to — but that tune has a story worth telling properly, and it waits at the end of this issue. What matters here is that the name attached itself to a feeling as much as to a thing, and the feeling was the sense that the sky had quietly become an address you could reach.</p>
 
-      <p>The hardware, then, was a brief thing. The idea was not — and it leaked out of the engineering almost at once. Within weeks a British producer had turned the satellite into a hit single that sounded like nothing else on the radio, and a straight line runs from that record to the electronic music still made in bedrooms today. But that tune has a story of its own, and it waits at the end of this issue. What matters here is simpler: the satellite lasted seven months, and the habit it started never stopped.</p>
-
-      <p>That is the layer time gives this story. We tell the history of technology as a history of objects that work, and Telstar barely did — a photogenic failure, dead by spring. But the thing it switched on was never the machine. It was the habit of a planet watching itself in real time, and that habit has only deepened. This very week the world did it again without a second thought, a football match beamed live off another continent, the crossing so ordinary now that no one calls it a miracle. The signal I am always chasing in these pages — the meaningful thing that carries across distance and arrives while it still matters — got its first clean transmission on a July night in 1962, from a beach-ball that was already dying. The connection we now take for granted was once a window of minutes, watched by men in a shed in Maine who knew they were seeing the future flicker past before it dropped below the horizon.</p>
+      <p>That is the layer time gives this story. We tell the history of technology as a history of objects that work, and Telstar barely did — a photogenic failure, dead by spring. But the thing it switched on was never the machine. It was the habit of a planet watching itself in real time, and that habit has only deepened until it disappeared into the ordinary. Look up now and there are thousands of satellites overhead, whole constellations of them, holding a live connection so constant that no one thinks to call it live at all. We watch a match played on another continent, join a face on the far side of the world, carry the whole switchboard in a pocket, and none of it registers as a marvel. That flatness, that total lack of wonder, is Telstar's real monument. The permanent, effortless, everywhere connection we now barely notice began as a window of minutes, watched by men in a shed in Maine who knew they were seeing the future flicker past before it dropped below the horizon. They had to wait for the next orbit. We never have to wait at all, and that is exactly how you know they won.</p>
 
       <div class="aside-note">
         <div class="lbl mono">THE CASE AGAINST · <b>THE OTHER READING</b></div>
         <h4>Maybe the myth outran the hardware.</h4>
-        <p>Telstar makes a lovely turning point, but history is rarely so tidy, and the case against the legend is strong. Echo 1, a passive reflecting balloon, had already bounced signals across the sky two years earlier. The transatlantic telephone cable had been carrying voices under the ocean since 1956. And Telstar's real successor — the geostationary satellite that actually built the always-on world, hanging fixed above one spot rather than racing round in low orbit — arrived within a year or so, in the shape of Syncom. On this reading, Telstar was not the breakthrough but the photograph of one: the charismatic, well-financed, well-publicised object that a telephone company was delighted to put on the news, standing in for a change that was coming anyway from a dozen directions. The first live picture is a better story than the first workable architecture, and stories are what survive. The honest verdict may be that Telstar mattered most for what it <em>looked like</em> — proof you could see — rather than for what it built. Which, for a device whose entire purpose was to let the world watch itself, is perhaps not a demotion at all.</p>
+        <p>Telstar makes a lovely turning point, but history is rarely so tidy, and the case against the legend is strong. Echo 1, a passive reflecting balloon, had already bounced signals across the sky two years earlier. The transatlantic telephone cable had been carrying voices under the ocean since 1956. And Telstar's real successor — the geostationary satellite that actually built the always-on world, hanging fixed above one spot rather than racing round in low orbit — arrived within a year, in the shape of Syncom, and was itself outrun by Early Bird inside three. On this reading, Telstar was not the breakthrough but the photograph of one: the charismatic, well-financed, well-publicised object that a telephone company was delighted to put on the news, standing in for a change that was coming anyway from a dozen directions. The first live picture is a better story than the first workable architecture, and stories are what survive. The honest verdict may be that Telstar mattered most for what it <em>looked like</em> — proof you could see — rather than for what it built. Which, for a device whose entire purpose was to let the world watch itself, is perhaps not a demotion at all.</p>
       </div>
     </div>
   </section>
@@ -1153,13 +1188,15 @@
     </div>
   </div>
   <section class="round">
-    <p class="lead"><span class="drop">A signal from across an ocean, settled the hard way</span> — while the week's other verdicts stayed stuck in committee, sport kept doing what it does: deciding things on the scoreboard, in front of a crowd, with no room for a recount. Two Slam winners crowned at Wimbledon, a World Cup down to its last four, and a race leader catching his breath in the Massif Central.</p>
+
+
+    <p class="lead"><span class="drop">A signal from across an ocean, settled the hard way</span> — while the week's other verdicts stayed stuck in committee, sport kept doing what it does: deciding things on the scoreboard, in front of a crowd, with no room for a recount. There is a bluntness to it that I find restful on a Sunday. A tennis final ends when the last ball drops; a knockout tie ends when the whistle goes; a bike race ends at the line, and the standings are the standings. This week gave us two fresh Slam winners at Wimbledon, a men's World Cup narrowed to a heavyweight last four, and the yellow jersey pausing to catch its breath high in the Massif Central before the Alps arrive.</p>
 
     <div class="scores">
       <div class="score wide">
         <span class="mono tag">98.4 · WIMBLEDON · THE FINAL</span>
         <h3>Sinner keeps the crown</h3>
-        <p>Jannik Sinner beat Alexander Zverev <a href="https://www.olympics.com/en/news/wimbledon-2026-jannik-sinner-alexander-zverev-mens-singles-final-resuls">6-7(7), 7-6(2), 6-3, 6-4</a> to defend his title — a fifth Grand Slam, and only the tenth man in the Open Era to retain the gentlemen's crown. Zverev handed him the compliment straight: "He's still the best player in the world, I do believe that… probably three guys who can challenge him." Sinner returned it, calling Zverev's game one that's "growing and growing." The day before, Linda Nosková took an all-Czech women's final over Karolína Muchová 6-2, 5-7, 6-3 for a first Slam of her own. <span class="num">SW19, retained.</span></p>
+        <p>Jannik Sinner beat Alexander Zverev <a href="https://www.olympics.com/en/news/wimbledon-2026-jannik-sinner-alexander-zverev-mens-singles-final-resuls">6-7(7), 7-6(2), 6-3, 6-4</a> to defend his title — a fifth Grand Slam, and only the tenth man in the Open Era to retain the gentlemen's crown. It was not a rout. Zverev took a tight opening set on the tie-break and pushed the second to the same place before Sinner steadied, reeled off the breaker, and never trailed again; from two sets to one up the outcome felt settled long before it was. Zverev handed him the compliment straight afterwards: "He's still the best player in the world, I do believe that… probably three guys who can challenge him." Sinner returned it, calling Zverev's game one that's "growing and growing." The day before, Linda Nosková came through an all-Czech women's final over Karolína Muchová 6-2, 5-7, 6-3 — a first Slam for a player who had never previously gone past a major quarter-final. Two champions in two days, one of them defending, one of them arriving. <span class="num">SW19, retained.</span></p>
       </div>
     </div>
 
@@ -1168,21 +1205,21 @@
         <span class="freq">101.2</span>
         <div>
           <h3>The World Cup, down to a heavyweight last four</h3>
-          <p>France, Spain, England and Argentina came through the quarters — Bellingham a brace in extra time past Norway, Álvarez settling Switzerland at 112'. The <a href="https://www.aljazeera.com/sports/2026/7/12/which-teams-are-in-the-world-cup-semifinals-and-whats-the-match-schedule">semis are set</a>: France v Spain in Dallas on Tuesday, England v Argentina in Atlanta on Wednesday — the tie of the round — before Sunday's final. Tuchel, unimpressed even in victory: "not happy with the performance… sloppy," if "proud" of the result. <b>4 left.</b></p>
+          <p>France, Spain, England and Argentina came through the quarters — Bellingham with a brace in extra time past Norway, Julián Álvarez settling Switzerland at 112'. Not one of the four semi-finalists is a surprise, which is its own kind of drama: the seeds have held, and now the giants have to play each other. The <a href="https://www.aljazeera.com/sports/2026/7/12/which-teams-are-in-the-world-cup-semifinals-and-whats-the-match-schedule">semis are set</a> — France v Spain in Dallas on Tuesday, England v Argentina in Atlanta on Wednesday, the tie of the round — before Sunday's final. Tuchel stayed pointedly unimpressed even in victory: "not happy with the performance… sloppy," if "proud" of the result. Both matches are still UPCOMING as this goes out. <b>4 left.</b></p>
         </div>
       </li>
       <li>
         <span class="freq">104.7</span>
         <div>
           <h3>The Tour reaches its first rest day</h3>
-          <p>Mathieu van der Poel took stage nine into Ussel on Saturday, but the <a href="https://www.cyclingnews.com/pro-cycling/racing/tour-de-france-gc-standings-2026/">general classification</a> still reads Tadej Pogačar in yellow, 2:42 up on Jonas Vingegaard as Monday's rest brings the first pause in the mountains. <b>+2:42.</b></p>
+          <p>Mathieu van der Poel took stage nine into Ussel on Saturday, a rider of the classics reminding the peloton he can still win from a break in July. But the <a href="https://www.cyclingnews.com/pro-cycling/racing/tour-de-france-gc-standings-2026/">general classification</a> reads exactly as billed: Tadej Pogačar in yellow, 2:42 up on Jonas Vingegaard, as Monday's rest brings the first pause of the race. It is a healthy lead rather than a decisive one — the high mountains, where Vingegaard has hurt him before, are still to come. <b>+2:42.</b></p>
         </div>
       </li>
       <li>
         <span class="freq">106.0</span>
         <div>
           <h3>Juventus work the window</h3>
-          <p>Turin made the Jeff Ekhator loan permanent, buying the young striker from Genoa outright for around €16m, and are still circling PSG's Randal Kolo Muani with the market open — a signing done, a chase ongoing. <b>1 in, 1 pending.</b></p>
+          <p>Turin made the Jeff Ekhator loan permanent, buying the young Italian striker from Genoa outright for a reported €16m or so — the club backing a forward it already knows rather than gambling on a name. Meanwhile the pursuit of PSG's Randal Kolo Muani rolls on, a costlier and less certain proposition, with the market open until the end of the month. One deal banked, one still in the air. <b>1 in, 1 pending.</b></p>
         </div>
       </li>
     </ul>
@@ -1195,33 +1232,38 @@
     </div>
   </div>
   <section class="round">
+    <div class="plate-img lead">
+      <img src="/assets/cached/63a71c18c1e3.jpg" alt="Official Palworld key art" loading="lazy">
+      <div class="plate-cap"><span class="mono fig">FIG.</span><span class="txt">Palworld leaves early access at 1.0, two and a half years on.<span class="credit">Pocketpair Inc. · Steam</span></span></div>
+    </div>
+
     <ul class="items">
       <li>
         <span class="freq">110.1</span>
         <div>
           <h3>Palworld hits 1.0</h3>
-          <p>The "Pokémon-with-guns" survival-crafter finally leaves early access after roughly two and a half years, closing out its story arc and adding fresh gear plus a Wing Pack for aerial traversal. It runs a treat on Steam Deck, and Pocketpair has shepherded a viral hit to a properly finished state — all with a Nintendo lawsuit still hanging over it. <b>Back on the wishlist.</b></p>
+          <p>The "Pokémon-with-guns" survival-crafter finally leaves early access after roughly two and a half years, and 1.0 is not a token stamp — it is the largest update in the game's history, a changelog said to run to 27 pages. The map roughly doubles: a set of Paldium-suspended sky islands floats above Palpagos, and a new World Tree endgame region caps the reworked story. There is a Wing Pack for proper aerial traversal (so flight no longer costs you a Pal slot in combat), two new systems in Awakening and Mutation, and dozens of new Pals pushing the roster towards 300. It is free for existing players and runs a treat on Steam Deck. All of this arrives with a Nintendo and Pokémon Company patent suit still live in the background — though the case has gone Pocketpair's way lately, with patent offices in both Japan and the US knocking back key claims, and no injunction granted. A viral hit shepherded to a genuinely finished state. <b>Back on the wishlist.</b></p>
         </div>
       </li>
       <li>
         <span class="freq">112.4</span>
         <div>
           <h3>Black Flag, resynced</h3>
-          <p>Assassin's Creed Black Flag Resynced is a ground-up remake of 2013's beloved pirate adventure, rebuilt on the latest Anvil engine and Steam Deck Verified at launch. <b>Set sail again.</b></p>
+          <p>Assassin's Creed Black Flag Resynced (9 July) is a ground-up remake of 2013's much-loved pirate adventure, rebuilt on the latest Anvil engine with ray-traced lighting and Steam Deck Verified at launch. Fifteen Ubisoft studios worked on it, led by Ubisoft Singapore, and Matt Ryan — Edward Kenway's original voice — returns for new scenes. It sold past two million copies in a single day, which tells you the affection for the original never really faded — Black Flag was always the entry people pointed newcomers towards, the one where the sailing and the shanties outshone the assassinating. New officers for the Jackdaw and extra missions round it out, but the pull is the same as it ever was: a good ship, an open sea, and a horizon to chase. <b>Set sail again.</b></p>
         </div>
       </li>
       <li>
         <span class="freq">114.8</span>
         <div>
           <h3>The Switch 2 summer keeps filling</h3>
-          <p>Digimon Story: Time Stranger arrives on 10 July as one of six big Switch 2 games landing this month alone. <b>The backlog groans.</b></p>
+          <p>Digimon Story: Time Stranger arrived on 10 July on both Switch and Switch 2, and it is one of several heavy hitters landing on the platform this month alone. Reviews have been warm — a time-travel plot reckoned among the strongest the series has told, wrapped around familiar scanning and branching Digivolution. On Switch 2 the smart pick is the 60fps Performance Mode; the 4K Quality Mode looks the part but is dogged by frame-pacing and HDR wrinkles. A fine entry point even for newcomers. <b>The backlog groans.</b></p>
         </div>
       </li>
       <li>
         <span class="freq">116.2</span>
         <div>
           <h3>Housekeeping that matters</h3>
-          <p>Google's July Pixel update squashes a nasty boot-loop bug across the Pixel 6 through 10, and OpenAI has quietly swapped in GPT-5.5 Instant Mini as the ChatGPT fallback model. <b>Update before you travel.</b></p>
+          <p>Google's July Pixel update squashes a nasty boot-loop bug affecting the Pixel 6 through 10 — the kind of fault that can brick a phone at the worst moment, so it is worth installing before you travel. On the software side, OpenAI has quietly swapped in GPT-5.5 Instant Mini as ChatGPT's fallback model, the lightweight tier that catches your query when the flagship is busy. Small changes, but the sort that quietly shape the day. <b>Update before you travel.</b></p>
         </div>
       </li>
     </ul>
@@ -1234,20 +1276,25 @@
     </div>
   </div>
   <section class="round">
+    <div class="plate-img lead">
+      <img src="/assets/cached/5c81e72a0f95.jpg" alt="Official poster for the 2026 film Project Hail Mary" loading="lazy">
+      <div class="plate-cap"><span class="mono fig">FIG.</span><span class="txt">Project Hail Mary reaches Prime Video — optimistic hard SF for a Sunday night.<span class="credit">Amazon MGM Studios · via TMDB</span></span></div>
+    </div>
+
     <div class="with-rail">
       <ul class="items" style="margin-top:0;">
         <li>
           <span class="freq">120.5</span>
           <div>
             <h3>Project Hail Mary lands on Prime</h3>
-            <p>The Andy Weir adaptation — directed by Lord and Miller, with Ryan Gosling — arrived on Prime Video in early July: optimistic, problem-solving hard SF very much in the vein of The Martian. <b>Sunday-evening sci-fi.</b></p>
+            <p>The Andy Weir adaptation — directed by Phil Lord and Christopher Miller, with Ryan Gosling as amnesiac science teacher Ryland Grace — reached Prime Video on 3 July, just 105 days after its cinema run. It is the same brand of optimistic, problem-solving hard SF that made The Martian such good company: one person, a long way from home, working the problem with a pencil and first principles. The reviews backed it up — a 94% critics' score and a box-office haul north of $680m, which made it one of the biggest films of the year. Much of the warmth was aimed at Rocky, the alien Grace meets out there, brought to life on set by puppeteer James Ortiz; the film's best trick is turning a first-contact story into a two-hander about friendship across an impossible gap, proof, as one critic put it, that Gosling "can have chemistry with a rock." Not every notice was a rave — one or two found it a touch familiar — but for a Sunday night it is exactly the sort of hopeful, competent science-fiction that sends you to bed cheerful. <b>Sunday-evening sci-fi.</b></p>
           </div>
         </li>
         <li>
           <span class="freq">122.9</span>
           <div>
             <h3>A melodic-synthwave supergroup moment</h3>
-            <p>Michael Oakley's "Falling Skyward" (NewRetroWave, 10 July) is co-written with Ollie Wride and carries backing vocals from Dana Jean Phoenix — three of the scene's best voices in one track. <b>Long-run fuel.</b></p>
+            <p>Michael Oakley's "Falling Skyward" (NewRetroWave, 10 July) gathers three of the scene's strongest voices into one track: co-written with Ollie Wride, with backing vocals from Dana Jean Phoenix. It opens on arpeggiated, crystalline synths over a club-ready beat before the vocals lift it skyward, exactly the widescreen, heart-on-sleeve register the genre does best. It lands off the back of Oakley's well-received album Prologue from earlier in the summer, a run of form that has him spoken of among the scene's best right now. What sets it apart from the usual all-synth fare is the live playing underneath — layered electric and 12-string guitars give it real body and stop it feeling like a period pastiche. Put it on for the last few kilometres of a long run and it does the job it was built for: chorus arriving right on cue, everything reaching upward. It is only a two-track release, but on this evidence Oakley is writing some of the most confident melodic synthwave going, the kind that sounds enormous in headphones and somehow bigger still in a car at night. <b>Long-run fuel.</b></p>
           </div>
         </li>
       </ul>
@@ -1272,6 +1319,10 @@
         <div class="rail-item">
           <span class="when">SOON · 28 JUL</span>
           <span class="what"><b>Halo: Campaign Evolved</b><i>day one on Game Pass</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 31 JUL</span>
+          <span class="what"><b>Fantastic Four: First Steps</b><i>in cinemas</i></span>
         </div>
       </aside>
     </div>
@@ -1312,9 +1363,25 @@
     </ul>
   </section>
 
+  <div class="band" data-band="this_week_in_history">
+    <div class="bandhead">
+      <span class="mono code">BAND 10 — <b>THIS WEEK IN HISTORY</b></span>
+      <span class="mono runtime">HISTORY · DATED</span>
+    </div>
+  </div>
+  <section class="round">
+    <p class="lead"><span class="drop">It began, as so many great institutions do, with a broken bit of garden machinery.</span> In the summer of 1877 the All England Croquet Club — a genteel outfit on Worple Road in Wimbledon, its lawns kept smooth by a pony-drawn roller — found itself short of the money to mend that roller when it broke. The committee's solution was to add three words to its name, "and Lawn Tennis", and to stage a tournament. Entry was a guinea. Twenty-two men signed up. Nobody in the room can have imagined they were founding anything at all, let alone the oldest tournament in the sport.</p>
+
+    <p>The championship opened on 9 July and then, in a fixture of the English summer that has never quite gone away, it rained. The final was pushed back a few days — partly by the weather, partly by the small matter of Eton playing Harrow at cricket over at Lord's, which no self-respecting gentleman of the period would have dreamt of missing. When play finally resumed on the 19th, the man who walked off with the title was Spencer Gore: twenty-seven years old, a surveyor by trade and a racquets player by instinct, who beat William Marshall in straight sets. Around two hundred spectators paid a shilling each to watch. The winner took twelve guineas and a silver cup; the roller, one assumes, got its repair.</p>
+
+    <p>What matters more than the result is the quiet committee work behind it. A group of enthusiasts, Henry Jones among them, spent that summer fixing the things we now take entirely for granted — the rectangular court, the height of the net, the way the service works. They were, in effect, writing the rules of a game as they went, and they got them close enough to right that we are still playing inside those lines a century and a half later. The game itself moved on faster than its first champion expected. Gore had won by rushing the net and volleying everything back before it could bounce; within a season or two, opponents had worked out the lob, and his brisk style was undone. He was, by all accounts, thoroughly unconvinced that lawn tennis had any future at all. Few men have been so successfully and so publicly wrong.</p>
+
+    <p>Which is the part I keep turning over. The same fortnight of July, the same stubborn grass, the same drizzle interrupting play — and this week Jannik Sinner defended his crown on that very lawn in front of a Centre Court full to the rafters and a broadcast audience scattered clean across the planet. What began as a whip-round to fix a pony roller is now beamed live to every continent at once, the kind of reach that would have seemed pure sorcery to Henry Jones and his net measurements. There is a neat rhyme in it: the reach we now take entirely for granted started here too — with two hundred people, a shilling apiece, and a game its own winner thought would never catch on.</p>
+  </section>
+
   <div class="band" data-band="the_desk">
     <div class="bandhead">
-      <span class="mono code">BAND 10 — <b>THE DESK</b></span>
+      <span class="mono code">BAND 11 — <b>THE DESK</b></span>
       <span class="mono runtime">SERVICE</span>
     </div>
   </div>
@@ -1362,7 +1429,7 @@
 
   <div class="band" data-band="the_threads">
     <div class="bandhead">
-      <span class="mono code">BAND 11 — <b>THE THREADS</b></span>
+      <span class="mono code">BAND 12 — <b>THE THREADS</b></span>
       <span class="mono runtime">PREVIOUSLY ON · STILL RUNNING</span>
     </div>
   </div>
@@ -1405,7 +1472,7 @@
 
   <div class="band" data-band="rabbit_hole">
     <div class="bandhead">
-      <span class="mono code">BAND 12 — <b>DOWN THE RABBIT HOLE</b></span>
+      <span class="mono code">BAND 13 — <b>DOWN THE RABBIT HOLE</b></span>
       <span class="mono runtime">CURIOSITY · SIGNAL FAINT, FOLLOW IT</span>
     </div>
   </div>
@@ -1429,7 +1496,7 @@
 
   <div class="band" data-band="on_the_radar">
     <div class="bandhead">
-      <span class="mono code">BAND 13 — <b>ON THE RADAR</b></span>
+      <span class="mono code">BAND 14 — <b>ON THE RADAR</b></span>
       <span class="mono runtime">FORWARD CALENDAR · WHAT&#x27;S COMING</span>
     </div>
   </div>
@@ -1464,7 +1531,7 @@
 
   <div class="band" data-band="do_this_week">
     <div class="bandhead">
-      <span class="mono code">BAND 14 — <b>DO THIS WEEK</b></span>
+      <span class="mono code">BAND 15 — <b>DO THIS WEEK</b></span>
       <span class="mono runtime">THE ONE THING · PINNED</span>
     </div>
   </div>
@@ -1478,7 +1545,7 @@
 
   <div class="band" data-band="colophon">
     <div class="bandhead">
-      <span class="mono code">BAND 15 — <b>COLOPHON</b></span>
+      <span class="mono code">BAND 16 — <b>COLOPHON</b></span>
       <span class="mono runtime">THE ISSUE, ACCOUNTED FOR</span>
     </div>
   </div>

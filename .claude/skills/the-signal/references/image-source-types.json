@@ -148,7 +148,9 @@
     "cdc.gov": "government",
     "global.unitednations.entermediadb.net": "government",
     "npr-brightspot.s3.amazonaws.com": "news_cdn",
-    "www.loc.gov": "archive"
+    "www.loc.gov": "archive",
+    "shared.fastly.steamstatic.com": "press_kit",
+    "cdn.fastly.steamstatic.com": "press_kit"
   },
   "ambiguous_domains": {
     "live.staticflickr.com": "Direct Flickr image host serves any user. Classify per the Flickr user (whitehouse, number10gov, ukparliament → government). When a researcher cites a live.staticflickr.com URL, the image_candidate entry MUST include an explicit source_type field — the validator cannot infer it from the URL."
