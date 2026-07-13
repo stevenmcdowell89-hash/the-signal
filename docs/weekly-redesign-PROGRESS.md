@@ -102,6 +102,16 @@ Rendered at 800px via Chromium: identical to `reference-issue-transmission.html`
 
 - 2026-07-12 — Read handoff + 5 reference docs + reference issue. Strategy set (above).
   Dispatched W0 mapping agent. Progress doc created.
+- 2026-07-13 — **REVISION (on reader feedback: too lean, no images).** Added real-image
+  support to the weekly design system (`.plate-img img` + credit) and a This Week in
+  History band to the skeleton; sourced 4 verified, source-diverse images (Telstar sphere
+  · Wikimedia; NASA · gov; Palworld · Steam; Project Hail Mary · TMDB), mirrored to
+  `/assets/cached`. Expanded the Long Read to ~2,060 words + fuller rounds + a new
+  Wimbledon-1877 history section → **~6,300 words** (was 3,960; now in the 6–9k target).
+  Fresh quality read **4.2** (voice up to 4). All gates green incl. image-URL + diversity.
+  Pushed to main (20c4995). *(Lesson: "typographic paper object" was an over-read of the
+  mockup's placeholder convention — the weekly should carry real images; the pipeline's
+  image-sourcing/verification/mirroring machinery now runs for weeklies too.)*
 - 2026-07-13 — **LIVE END-TO-END PROOF.** Generated a real new weekly through the
   rebuilt pipeline with live web research: Issue #16 "The night the world went live"
   (Telstar Long Read), dated 2026-07-13. Research fan-out (4 domain researchers, real
