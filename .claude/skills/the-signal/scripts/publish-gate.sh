@@ -59,6 +59,10 @@ run_gate() {          # name  command...
 }
 
 # Gate: structural + markup + visual-consistency + images (validate-issue.py)
+# Runs non-strict deliberately: strictness is no longer load-bearing for
+# imagelessness — the word floor (length-floor) and image-presence floor
+# (image-floor) are hard FAILs that fire regardless of --strict or
+# --skip-image-urls, so a thin/imageless issue goes red on its own.
 run_gate "validate-issue" python3 "$SKILL_DIR/scripts/validate-issue.py" "$HTML" --format "$FMT" $SKIP_IMG
 
 # Gate: image-source diversity (only meaningful when the issue carries <img>)

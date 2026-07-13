@@ -262,6 +262,17 @@ See `references/spec/global.md` § image-integrity → "Image URL verification c
 
 ## GATE 2 — Editorial & Visual Quality
 
+### Flatplan checklist (pre-ship mechanical scan, v8.43 — weekly)
+
+The copy-desk flatplan pass: six counts/lookups, no judgement. Run on the stitched HTML before ship; any miss is a gap to fix, the way a flatplan surfaces an empty page before print.
+
+- [ ] **Image count ≥ 8** across the issue (`grep -c '<img' FILE`).
+- [ ] **Cover image present in the OPEN movement** — not an issue that opens on type alone.
+- [ ] **Every Round >400 words carries ≥1 image.**
+- [ ] **No band under its allocated `target_words` share** (shares live in `references/format-skeletons/weekly.json`; a silent yield is fine, an under-share band is not).
+- [ ] **Caption + credit on every image** (the Gate 1F patterns: `Photo:`/`Still:`/`Credit:`/`via`/`CC`).
+- [ ] **Reader-profile domains covered on rotation** — walk the profile's domains against the issue + recent state; a profile domain must not vanish silently (LEGO was silently dropped in Issue #16 despite being in the reader profile).
+
 ### Closing Colophon
 - [ ] **Closing fact "A Fact" must NOT repeat within 12 weeks.** Read `recent_facts` from state before writing. Never use a topic, era, or angle from the last 12 entries. After generating, append the new fact's short tag (e.g. "Anglo-Zanzibar war", "Roman calendar reform", "longest filibuster") to `recent_facts` and trim to last 12.
 - [ ] **Closing "Next Week" line must NOT repeat phrasing patterns from the last 4 weeks.** Read `recent_next_week_themes` from state before writing. After generating, append a short tag and trim to last 4.

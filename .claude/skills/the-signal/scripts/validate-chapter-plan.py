@@ -112,6 +112,11 @@ FIXED_SECTION_CHAPTER_IDS = {
 # form only.
 LONG_SHELF_CHAPTER_IDS = {"long_shelf", "long-shelf"}
 
+# 2026-07-13 quality handoff (A5) — the weekly word budget is allocated per band by the
+# planner and the per-band target_word_count shares must sum to at least this floor
+# (aim 6,800-7,500, mid-band per B8, so a light news week still clears 6,000).
+WEEKLY_WORD_BUDGET_FLOOR = 6000
+
 # v8.30 — Release Radar (upcoming media releases) is a required weekly chapter.
 RELEASE_RADAR_CHAPTER_IDS = {"release_radar", "release-radar"}
 RELEASE_RADAR_CATEGORIES = {"film", "tv", "game", "lego", "tech", "book", "music"}
@@ -788,6 +793,13 @@ def check_weekly_plan(plan):
       8. release_radar must NOT be its own chapter (it renders inside screen_sound).
       9. 4–13 chapters carry a nav coverline (warn outside a looser 3–13).
      10. bands with nav:false SHOULD NOT carry a nav coverline (warn).
+     11. (2026-07-13 handoff A5) per-band target_word_count allocations across the
+         planned content bands must sum to >= WEEKLY_WORD_BUDGET_FLOOR (6,000);
+         each share is drawn from the band's target_words range in weekly.json.
+     12. (A6) the long_read chapter must carry a non-empty images_needed — the
+         planner routes >= 1 verified bundle image_candidate to the Long Read.
+     13. (A6, WARN) any feature/round band allocated > 350 words with an empty
+         images_needed draws a warning — feature bands should open on an image.
     """
     skeleton = _load_weekly_skeleton()
     if skeleton is None:
@@ -909,6 +921,53 @@ def check_weekly_plan(plan):
     if desk_count != 1:
         err(f"[WEEKLY] exactly one 'the_desk' chapter is required; found {desk_count}. "
             f"(Desk columns nest inside it — they are never their own bands.)")
+
+    # Rule 11 (2026-07-13 handoff A5): the word budget is ALLOCATED per band and must sum.
+    # Every planned content band carries target_word_count = its allocated share of the
+    # issue budget, drawn from the band's target_words range in weekly.json.
+    allocated_total = 0
+    missing_alloc = []
+    for ch in chapters:
+        if not isinstance(ch, dict):
+            continue
+        twc = ch.get("target_word_count")
+        if isinstance(twc, int) and twc > 0:
+            allocated_total += twc
+        else:
+            missing_alloc.append(str(ch.get("chapter_id")))
+    if allocated_total < WEEKLY_WORD_BUDGET_FLOOR:
+        detail = (f" Bands with no target_word_count allocation: {sorted(missing_alloc)}."
+                  if missing_alloc else "")
+        err(f"[WEEKLY-BUDGET] per-band target_word_count allocations sum to {allocated_total}, "
+            f"below the issue floor of {WEEKLY_WORD_BUDGET_FLOOR} (2026-07-13 handoff A5). The planner "
+            f"MUST decompose the 6-9k issue target into per-band shares drawn from each band's "
+            f"target_words range in weekly.json, summing >= {WEEKLY_WORD_BUDGET_FLOOR} "
+            f"(aim 6,800-7,500 — mid-band per B8, never the bare floor).{detail}")
+
+    # Rule 12 (A6): the Long Read ships illustrated — the planner must route images to it.
+    for i, ch in enumerate(chapters):
+        if isinstance(ch, dict) and ch.get("chapter_id") == "long_read":
+            imgs = ch.get("images_needed")
+            if not (isinstance(imgs, list) and len(imgs) > 0):
+                err(f"[WEEKLY-IMAGES] chapters[{i}] 'long_read' has an empty/missing images_needed — "
+                    f"the planner MUST assign >= 1 verified image_candidate from the research bundle "
+                    f"to the Long Read (alt_required: true; role/source_constraint drawn from the "
+                    f"bundle) so the anchor piece ships illustrated (2026-07-13 handoff A6).")
+
+    # Rule 13 (A6, WARN): feature/round bands allocated > 350 words should carry an image.
+    round_band_ids = {bid for bid, d in bands_def.items()
+                      if isinstance(d, dict) and d.get("content") == "round"}
+    for i, ch in enumerate(chapters):
+        if not isinstance(ch, dict):
+            continue
+        cid = ch.get("chapter_id")
+        twc = ch.get("target_word_count")
+        imgs = ch.get("images_needed")
+        if (cid in round_band_ids and isinstance(twc, int) and twc > 350
+                and not (isinstance(imgs, list) and len(imgs) > 0)):
+            warn(f"[WEEKLY-IMAGES] chapters[{i}] '{cid}' is allocated {twc} words but images_needed "
+                 f"is empty — a feature/round band over 350 words should open on an image routed "
+                 f"from the bundle's image_candidates (2026-07-13 handoff A6/B4).")
 
     # Rule 9: nav coverline count (WARN only)
     nav_count = sum(

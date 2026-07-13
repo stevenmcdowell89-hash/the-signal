@@ -10,10 +10,11 @@
 #   echo '<scorer-json>' | bash scripts/log-quality.sh   # JSON on stdin
 #
 # The scorer emits a JSON object with: issue_id, issue_file, title, format,
-# date, writer_model, scorer_model, scores{voice,density,structure,opening,
-# throughline,novelty}, weakest, note. (throughline is null for parallel formats;
-# novelty added v8.27 — `overall` is the mean of all numeric scores, so new
-# dimensions are averaged in automatically.)
+# date, writer_model, scorer_model, scores{voice,density,length,structure,
+# opening,throughline,novelty,visual}, weakest, note. (throughline is null for
+# parallel formats; novelty added v8.27; length + visual added v8.43 —
+# `overall` is the mean of all numeric scores, so new dimensions are averaged
+# in automatically and old rows without them stay valid.)
 #
 # This script injects `ts`, computes `overall` (mean of non-null scores,
 # 1 dp), appends one line to the quality log, and regenerates quality.html.

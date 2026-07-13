@@ -23,8 +23,13 @@ LOG_FILE = os.environ.get("SIGNAL_QUALITY_LOG",
 OUT_FILE = os.environ.get("SIGNAL_QUALITY_PAGE",
                           os.path.join(REPO_ROOT, "quality.html"))
 
-DIMS = [("voice", "Voice"), ("density", "Density"), ("structure", "Structure"),
-        ("opening", "Opening"), ("throughline", "Throughline")]
+# Full dimension list (v8.43). Older log rows lack the newer keys (novelty
+# v8.27, length/visual v8.43) — cell(None) renders those as "—", so
+# already-logged entries keep rendering unchanged.
+DIMS = [("voice", "Voice"), ("density", "Density"), ("length", "Length"),
+        ("structure", "Structure"), ("opening", "Opening"),
+        ("throughline", "Throughline"), ("novelty", "Novelty"),
+        ("visual", "Visual")]
 DIM_KEYS = [k for k, _ in DIMS]
 
 
@@ -234,6 +239,9 @@ def render(rows):
     <span class="score s1">1</span> = the failure the spec warns about).
     <b>Throughline</b> is scored only for sequential formats (Deep Dive, Versus,
     Rewind, Season Review, Next); parallel formats show —.
+    <b>Length</b> (in-band word count), <b>Novelty</b> and <b>Visual</b>
+    (illustration richness) were added after the earliest rows — older issues
+    show — for dimensions that didn't exist when they were scored.
     <b>Overall</b> is the mean of scored dimensions.</p>
 
     <footer>

@@ -22,7 +22,7 @@ For news sections (World This Week especially): **major world stories are covere
 Applies to **every** section (replaces the old per-section "opinions mandatory / culture critic / write as a reviewer" lines — full rule in editorial-spec.md § Borrowed angles, our voice):
 
 - **Confident voice, borrowed opinion — never invented.** Voice a take real commentators hold (found in research) as if it were ours; no citation duty, no robotic "X said Y"; a take you made up is cut. **Not everything needs an angle** — gaming releases, results roundups, evidence explainers are often better as plain facts ("study X found A, Y found B, it leans toward W"); answer any question you pose from the sources.
-- **Length follows the material; facts come from the bundle.** As many words as the substance earns (no padding); state only what research found, and a stated result must have happened by the issue date.
+- **Length follows the material; facts come from the bundle.** As many words as the substance earns (no padding *beyond* the material — but each band writes to its allocated `target_word_count` share of the issue budget; a band far under its share flags the planner for more research rather than shipping short, 2026-07-13 A5); state only what research found, and a stated result must have happened by the issue date.
 - **Reader-profile invisibility holds:** the profile drives *selection*, never the prose (no "since you're into Malazan", "as a runner").
 
 ---
