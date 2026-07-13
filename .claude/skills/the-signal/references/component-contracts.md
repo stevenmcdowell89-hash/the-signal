@@ -130,10 +130,10 @@ The single feature: a `.lr-title` block then a `.lr-body` prose column. Optional
   <p class="noindent">[first paragraph after a break — .noindent suppresses the run-on indent]</p>
 
   <div class="plate-img">
-    <div class="plate-box"><span class="glyph">[FIG. 01 · PLACEHOLDER LABEL]</span></div>
+    <img src="[verified bundle URL or /assets/cached/<hash>.jpg]" alt="[What the picture shows, concretely — a reader with images off must lose nothing]" loading="lazy">
     <div class="plate-cap">
       <span class="mono fig">FIG. 01</span>
-      <span class="txt">[Italic caption.]</span>
+      <span class="txt">[Italic caption — what this is and why it's here.]<span class="credit">[SOURCE · LICENCE — e.g. NASA / AT&amp;T · public domain · Wikimedia Commons]</span></span>
     </div>
   </div>
 
@@ -144,7 +144,37 @@ The single feature: a `.lr-title` block then a `.lr-body` prose column. Optional
   </div>
 </div>
 ```
-`.aside-note` is the weekly's honest counter-argument device (the old "case against"), used only where there is a real argument to answer — usually here. `.plate-img` is a CSS placeholder: `.plate-box` + `.glyph`, never a bare `<img>`.
+`.aside-note` is the weekly's honest counter-argument device (the old "case against"), used only where there is a real argument to answer — usually here. The Long Read MUST carry ≥1 real image plate (validator invariant `long_read_has_image`; the golden carries two) — see the `.plate-img` contract below.
+
+### The image plate — `.plate-img` (the weekly's image component, all bands)
+**A plate is a real `<img>`, captioned and credited.** This is the form the shipped exemplar (`issues/signal_weekly_2026-07-13.html`, 10 worked plates) and the golden fixture use everywhere an image appears — Long Read figures, the issue's cover plate, and the lead image on a Round:
+```html
+<div class="plate-img">
+  <img src="[verified bundle URL or mirrored /assets/cached/<hash>.jpg]" alt="[Meaningful description of the picture]" loading="lazy">
+  <div class="plate-cap">
+    <span class="mono fig">FIG. 01</span>
+    <span class="txt">[Italic caption.]<span class="credit">[SOURCE · LICENCE]</span></span>
+  </div>
+</div>
+```
+Rules:
+- **The `<img>` is mandatory in the plate and always wrapped** — `.plate-img > img`, never a bare `<img>` floating in prose. Every image carries a non-empty, concrete `alt` and `loading="lazy"`.
+- **Every plate is captioned + credited**: `.plate-cap` holds a mono `.fig` tag (`FIG. 01` / `FIG. 02` numbered in the Long Read; a plain `FIG.` on Round lead plates; `COVER` on the cover plate) and an italic `.txt` caption whose last child is a `<span class="credit">` naming source and licence.
+- **Variants:** `.plate-img.lead` is the wider band-opening plate — use it for the issue's cover plate (top of the OPEN movement's first band) and as the opening image of a Round (Touchline, Pixel & Byte, Screen & Sound, This Week in History). A portrait/archival plate may cap its width inline (e.g. `style="max-width:340px;"`).
+- **`src` discipline:** only verified `image_candidates` URLs from the research bundle, or their mirrored `/assets/cached/<hash>.jpg` copies. Direct image files only (`.jpg/.png/.webp` — the static gate fails page-URLs used as images). Never AI-generated, never hotlinked guesses.
+- **Budget:** the weekly hard-fails under 8 real `<img>` tags (`image-floor`), and the Long Read hard-fails with zero (`long_read_has_image`). Bands whose plan carries `images_needed` MUST place them.
+
+**Fallback — the empty `.plate-box` glyph (exceptional).** ONLY when no verified image is available for a slot may a plate ship as the drawn placeholder box:
+```html
+<div class="plate-img">
+  <div class="plate-box"><span class="glyph">FIG. 01 · [LABEL]</span></div>
+  <div class="plate-cap">
+    <span class="mono fig">FIG. 01</span>
+    <span class="txt">[Italic caption.]</span>
+  </div>
+</div>
+```
+An empty `.plate-box` is not a picture: it does **not** count toward the 8-image floor or the Long Read image invariant, and a writer reaching for it on a planned `images_needed` slot must flag the planner for another candidate rather than ship the box silently.
 
 ### The Touchline — `touchline` (content: `round` — `scores` + `items`)
 Sport. An intro `.lead` (opening with a `.drop` clause), an optional `.scores` grid for the marquee result, then an `.items` list of quick rows.
@@ -211,11 +241,12 @@ Watch & listen, with the **Release Radar as its side rail — never its own band
 ```
 
 ### Bookmark — `bookmark` (content: `round` — `picks`)
-The fixed books rail every issue. (There is **no** rotating "The Shelf"; the deep book piece, when there is one, is the Long Read.) `<ul class="picks">` of coloured-`.spine` rows.
+The fixed books rail every issue. (There is **no** rotating "The Shelf"; the deep book piece, when there is one, is the Long Read.) `<ul class="picks">` of coloured-`.spine` rows, **each pick showing its real book jacket** (2026-07-13 handoff B6 — near-mandatory in the genre; sourced like any plate image, e.g. Open Library / publisher jacket art).
 ```html
 <ul class="picks">
   <li>
     <span class="spine" aria-hidden="true"></span>
+    <span class="jacket"><img src="[verified jacket URL or /assets/cached/<hash>.jpg]" alt="Book cover of [Title] by [Author], [what the art shows]" loading="lazy"></span>
     <div>
       <h3>[Book / pick title]</h3>
       <p class="meta">[Genre · shape · note]</p>
@@ -224,7 +255,9 @@ The fixed books rail every issue. (There is **no** rotating "The Shelf"; the dee
   </li>
   <!-- typically 3 picks; spine colour is CSS-assigned by row position -->
 </ul>
+<p class="picks-credit mono">JACKETS · [SOURCE — e.g. OPEN LIBRARY COVERS · PUBLISHER EDITIONS]</p>
 ```
+The closing `.picks-credit` mono line credits the jacket source for the rail in one place (jackets don't take individual `.plate-cap`s).
 
 ### The Desk — `the_desk` (content: `desk`)
 The service department: **ONE** `.desk` container holding **1–2** `.deskcol` columns (drawn from Session / Ledger / Itinerary / Toolkit) — **NEVER 3+**, and never a column as its own band or nav entry. Each column carries the mandatory **`data-desk-column`** hook and **ends on a `.pin`** (its Do-This-Week action).
