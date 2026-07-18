@@ -109,6 +109,47 @@ MIN_IMAGES = {
     "weekly": 8,  # §5 A2 recommends 8-10; Issue #16 shipped 4 after hand-fixes
 }
 
+# ─────────────────────────────────────────────────────────────────────────────
+# NEW-SYSTEM (data-mx) floors — unification spec Laws 3 & 9 (WP-0b).
+#
+# These apply ONLY to issues built on the new furniture core (see is_mx_issue):
+# any issue carrying a data-skin attribute, an --mx-* custom property, or an
+# 'mx-' class token. The legacy archive (hol-*/sp-*/dd- markup, ZERO mx markers)
+# is deliberately NOT re-floored — is_mx_issue returns False for it and the
+# checks fall back to the legacy LENGTH_FLOORS (weekly-only) so no shipped issue
+# is retroactively failed.
+#
+# Law-3 body-copy word floors. attempt #2's 542-word "Season Review" "passed"
+# density on a 2.81-ev/screen claim; the floor makes shortness a hard FAIL.
+# ─────────────────────────────────────────────────────────────────────────────
+MX_LENGTH_FLOORS = {
+    "weekly":        6000,
+    "deep-dive":     8000,
+    "season-review": 6500,
+    "rewind":        7000,
+    "versus":        4500,
+    "guide":         3500,
+    "next":          3000,
+    "countdown":     4500,
+    "field-guide":   6000,
+}
+
+# Law-9 minimum DISTINCT named external voices, rendered as quote-objects.
+# attempt #2 shipped ZERO external voices and two self-quotes. Self-quotes
+# ("THE SIGNAL"/"The Signal") never count and are capped at 1 (see
+# check_voice_minimums). Trip specials → countdown/field-guide (≥6).
+MX_VOICE_FLOORS = {
+    "weekly":        4,
+    "deep-dive":     5,
+    "season-review": 5,
+    "rewind":        3,
+    "countdown":     6,
+    "field-guide":   6,
+    "versus":        3,
+    "guide":         3,
+    "next":          3,
+}
+
 # Literal placeholder strings that must never ship.
 BANNED_PLACEHOLDERS = [
     'src="..."',
@@ -215,6 +256,26 @@ def find_real_body_tag(html: str) -> tuple[int, str] | None:
     abs_start = head_end.end() + body.start()
     line_no = html.count("\n", 0, abs_start) + 1
     return (line_no, body.group(0))
+
+
+def is_mx_issue(html: str) -> bool:
+    """True when the HTML carries new furniture-system markers — a data-skin
+    attribute, an --mx-* custom property, or any class token starting 'mx-'.
+
+    Gates the Law-3 word floors and Law-9 voice minimums so the legacy archive
+    (holiday hol-*, chrome sp-*, deep-dive dd-* markup — with ZERO mx markers)
+    is never retroactively failed. data-skin/--mx- are matched on the full
+    source (they live in attributes/inline CSS); the class scan runs on the DOM
+    body only so an 'mx-' example inside a comment/style block never trips it.
+    """
+    if re.search(r"data-skin\s*=", html, re.IGNORECASE):
+        return True
+    if "--mx-" in html:
+        return True
+    for tok in extract_class_tokens(body_text_only(html)):
+        if tok.startswith("mx-"):
+            return True
+    return False
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1166,6 +1227,141 @@ def check_scaffold_leak(html: str, report: Report) -> None:
         report.ok("scaffold-leak", "no leaked scaffold/template tokens in DOM")
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Check: Law-9 voice minimums (data-mx issues only) — WP-0b.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Attribution shapes that mark a rendered quote-object with a NAMED source.
+#  - data-quote-source="Name"          (explicit source attribute)
+#  - <cite ...>Name</cite>             (semantic citation)
+#  - an em/en-dash attribution line: "— Jane Smith" / "—J. Smith"
+# Quote-object CONTAINERS (.pullquote/.hol-pull/.mx-quote) confirm the presence
+# of quote furniture; the names themselves come from the three patterns above.
+QUOTE_SOURCE_ATTR_RE = re.compile(r'data-quote-source\s*=\s*"([^"]+)"', re.IGNORECASE)
+CITE_RE = re.compile(r"<cite\b[^>]*>(.*?)</cite>", re.IGNORECASE | re.DOTALL)
+# Em/en-dash attribution: a dash then a Capitalised name of 1–4 tokens. Names
+# may carry initials/apostrophes/hyphens (J. Smith, O'Neill, Vaughan-Lee).
+DASH_ATTRIB_RE = re.compile(
+    r"[—–]\s*([A-Z][A-Za-z.'’-]+(?:\s+[A-Z][A-Za-z.'’-]+){0,3})"
+)
+QUOTE_CONTAINER_RE = re.compile(
+    r'class\s*=\s*"[^"]*\b(?:pullquote|hol-pull|mx-quote|mx-postcard-quote)\b',
+    re.IGNORECASE,
+)
+
+
+def _is_self_quote(name: str) -> bool:
+    n = re.sub(r"\s+", " ", name).strip().lower().strip(".")
+    return n in ("the signal", "signal") or "the signal" in n
+
+
+def check_voice_minimums(html: str, fmt: str, report: Report) -> None:
+    """Law-9: minimum DISTINCT named external voices per issue, each rendered
+    as a quote-object. data-mx issues only (legacy archive is not re-floored).
+
+    First-cut MECHANICAL heuristic (refined in WP-6 against real quote-object
+    markup): a "voice" is a distinct named source found via data-quote-source,
+    <cite>, or an em/en-dash attribution line. Self-quotes ("THE SIGNAL") do
+    not count and are capped at 1. Where a count is genuinely ambiguous this
+    check prefers FAIL over a silent pass (spec WP-0b).
+    """
+    floor = MX_VOICE_FLOORS.get(fmt)
+    if floor is None:
+        report.ok("voice-minimums", f"no voice floor defined for format '{fmt}' — skipped")
+        return
+
+    body = body_text_only(html)
+    names: set[str] = set()
+    self_quotes = 0
+
+    def _add(raw: str) -> None:
+        nonlocal self_quotes
+        # A <cite> or attribution capture may still contain nested tags.
+        clean = re.sub(r"<[^>]+>", " ", raw)
+        clean = re.sub(r"\s+", " ", clean).strip().strip(".,;:—–-").strip()
+        if not clean or len(clean) < 2:
+            return
+        if _is_self_quote(clean):
+            self_quotes += 1
+            return
+        names.add(clean.lower())
+
+    for m in QUOTE_SOURCE_ATTR_RE.findall(body):
+        _add(m)
+    for m in CITE_RE.findall(body):
+        _add(m)
+    # Dash-attribution names are only credited when the page actually renders
+    # quote-object containers — otherwise every "— word" dash in prose would
+    # inflate the count. If quote furniture is present, harvest dash names.
+    if QUOTE_CONTAINER_RE.search(body):
+        for m in DASH_ATTRIB_RE.findall(body):
+            _add(m)
+
+    n = len(names)
+    if n < floor:
+        report.fail(
+            "voice-minimums",
+            f"{n} distinct named external voice(s) rendered as quote-objects — "
+            f"below the {fmt} floor of {floor} (Law 9). Self-quotes "
+            f"({self_quotes} found) do not count. A magazine has arguments with "
+            f"named sources, not first-person experience — add verbatim quotes "
+            f"from real, named people, each as a quote-object.",
+        )
+    else:
+        report.ok(
+            "voice-minimums",
+            f"{n} distinct named external voice(s) clears the {fmt} floor of {floor}",
+        )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Check: scaffold / strategy-vocabulary leak greps (F-14) — ALL issues, WP-0b.
+# Leaked scaffolding / internal strategy vocabulary is ALWAYS a defect, so this
+# runs on every issue (not just data-mx). DOM visible-prose only via
+# body_text_only + tag strip, so legit id="ch2-1" anchors and inline CSS never
+# trip it. Patterns anchored tightly to avoid false-firing on real reader copy.
+# ─────────────────────────────────────────────────────────────────────────────
+SCAFFOLD_TOKEN_PATTERNS = [
+    ("issue-number-slot",  re.compile(r"#\[N\]")),
+    ("bracket-N-slot",     re.compile(r"\[N\]")),
+    ("chapter-anchor",     re.compile(r"\bch\d+-\d+\b")),
+    ("viz-slot",           re.compile(r"\bviz_\d+\b")),
+    ("research-bundle",    re.compile(r"research bundle", re.IGNORECASE)),
+    ("tool-credit",        re.compile(r"created with\b.{0,40}?\bcomputer", re.IGNORECASE)),
+    # internal STRATEGY vocabulary that must never reach reader copy
+    ("strategy:furniture-first", re.compile(r"furniture-first", re.IGNORECASE)),
+    ("strategy:furniture-core",  re.compile(r"\bfurniture core\b", re.IGNORECASE)),
+    ("strategy:motif-pack",      re.compile(r"\bmotif pack\b", re.IGNORECASE)),
+    ("strategy:skin-name",       re.compile(r"\b(?:transmission|event|editorial) skin\b", re.IGNORECASE)),
+    ("strategy:kit-name",        re.compile(r"\b(?:dossier|matchday|scorecard) kit\b", re.IGNORECASE)),
+    ("strategy:wp-id",           re.compile(r"\bWP-\d\b", re.IGNORECASE)),
+    # NOTE: the spec lists "phase \d" but a bare match false-fires on legitimate
+    # reader copy ("Phase 1 of the US-backed 20-point plan" ships in a weekly).
+    # Tightened to the internal Phase-0 hygiene phase, which never appears as
+    # real editorial prose. (Deviation documented in the WP-0b report.)
+    ("strategy:phase-0",         re.compile(r"\bphase[\s-]?0\b", re.IGNORECASE)),
+]
+
+
+def check_scaffold_tokens(html: str, report: Report) -> None:
+    body = body_text_only(html)
+    text = re.sub(r"<[^>]+>", " ", body)
+    hits: list[str] = []
+    for label, pat in SCAFFOLD_TOKEN_PATTERNS:
+        m = pat.findall(text)
+        if m:
+            sample = m[0] if isinstance(m[0], str) else str(m[0])
+            hits.append(f"{label} (e.g. '{sample.strip()[:30]}' ×{len(m)})")
+    if hits:
+        report.fail(
+            "scaffold-tokens",
+            "scaffold/strategy vocabulary leaked into visible prose (F-14): "
+            + "; ".join(hits),
+        )
+    else:
+        report.ok("scaffold-tokens", "no scaffold/strategy tokens in visible prose")
+
+
 def check_length_band(html: str, fmt: str, report: Report) -> None:
     """Hard per-format word band: ceiling (v8.39, S6) + floor (2026-07-13, A1).
 
@@ -1180,6 +1376,11 @@ def check_length_band(html: str, fmt: str, report: Report) -> None:
     """
     ceiling = LENGTH_CEILINGS.get(fmt)
     floor = LENGTH_FLOORS.get(fmt)
+    # New-system (data-mx) issues carry the unification Law-3 floors for ALL
+    # formats; legacy issues keep the weekly-only LENGTH_FLOORS. Falls back to
+    # the legacy floor when a format has no MX floor defined.
+    if is_mx_issue(html):
+        floor = MX_LENGTH_FLOORS.get(fmt, floor)
     if ceiling is None and floor is None:
         report.ok("length-band", f"no ceiling or floor defined for format '{fmt}' — skipped")
         return
@@ -1342,7 +1543,14 @@ def main(argv: list[str]) -> int:
     check_weekly_structure(html, fmt, report)
     check_weekly_visual_consistency(html, fmt, report)
     check_scaffold_leak(html, report)
+    check_scaffold_tokens(html, report)   # F-14 scaffold/strategy grep (all issues)
     check_length_band(html, fmt, report)
+    # Law-9 voice minimums — gated on data-mx issues inside the check via
+    # the MX_VOICE_FLOORS map (legacy issues report OK/skip).
+    if is_mx_issue(html):
+        check_voice_minimums(html, fmt, report)
+    else:
+        report.ok("voice-minimums", "legacy (non-data-mx) issue — Law-9 voice floor not applied")
     # Image-presence floor: markup-only, network-free — runs unconditionally,
     # including under --skip-image-urls and in offline sandboxes (A2).
     check_image_floor(html, fmt, report)
