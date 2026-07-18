@@ -1252,6 +1252,55 @@ def check_length_band(html: str, fmt: str, report: Report) -> None:
         report.ok("length-floor", f"{words:,} words clears the {fmt} floor {floor:,}")
 
 
+# design-system-unification §6/§7.5 — rendered events/screen floors (F-1).
+# Keyed by hyphenated format slug (validate-issue.py convention).
+RENDERED_DENSITY_FLOOR = {
+    "weekly": 0.8, "deep-dive": 0.7, "rewind": 0.9, "season-review": 0.9,
+    "versus": 0.8, "guide": 0.8, "next": 0.8,
+    "countdown": 1.0, "field-guide": 1.0,
+}
+# Furniture selectors counted as one designed visual event each (§6 counting rule).
+_MX_EVENT_CLASSES = ("mx-numbers", "mx-ledger", "mx-quote", "mx-cheat", "mx-plate",
+                     "mx-stamp", "mx-marquee", "mx-anchor", "mx-rank", "mx-ticket",
+                     "mx-mail", "mx-pinned", "mx-figure")
+
+
+def check_rendered_density(html: str, fmt: str, report: Report) -> None:
+    """Rendered events/screen density (§7.5, F-1). OPT-IN: only a HARD gate for
+    new-system issues (body carries data-mx); for legacy issues it is
+    informational, so this never breaks the archive. Screens are estimated from
+    word count (words / 250, the §6 plan-time rule) since this stage does not
+    render. Counts furniture objects + captioned <img>/<figure> as events."""
+    body = body_text_only(html)
+    head_end = re.search(r'</head\s*>', html, re.I)
+    body_tag = ""
+    if head_end:
+        m = re.search(r'<body\b[^>]*>', html[head_end.end():], re.I)
+        body_tag = m.group(0) if m else ""
+    new_system = "data-mx" in body_tag
+
+    events = sum(len(re.findall(rf'class="[^"]*\b{cls}\b', body)) for cls in _MX_EVENT_CLASSES)
+    events += len(re.findall(r'<figure\b', body, re.I))          # captioned figures
+    words = len(re.sub(r"<[^>]+>", " ", body).split())
+    screens = max(words / 250.0, 0.5)
+    density = events / screens
+    floor = RENDERED_DENSITY_FLOOR.get(fmt)
+
+    if floor is None:
+        report.ok("rendered-density", f"no density floor for '{fmt}' — skipped")
+        return
+    detail = (f"{density:.2f} events/screen ({events} events / ~{screens:.1f} screens) "
+              f"vs {fmt} floor {floor}")
+    if not new_system:
+        report.ok("rendered-density", f"legacy issue (no data-mx) — {detail} [informational]")
+    elif density < floor:
+        report.fail("rendered-density",
+                    f"{detail} — below the §6 floor (F-1). Add designed visual events "
+                    f"(ledgers, plates, quote-objects, numbers bands) or cut words.")
+    else:
+        report.ok("rendered-density", detail)
+
+
 def check_image_floor(html: str, fmt: str, report: Report) -> None:
     """Per-format minimum REAL-image count (2026-07-13 handoff, A2).
 
@@ -1387,6 +1436,7 @@ def main(argv: list[str]) -> int:
     check_scaffold_leak(html, report)
     check_scaffold_tokens(html, report)
     check_length_band(html, fmt, report)
+    check_rendered_density(html, fmt, report)
     # Image-presence floor: markup-only, network-free — runs unconditionally,
     # including under --skip-image-urls and in offline sandboxes (A2).
     check_image_floor(html, fmt, report)

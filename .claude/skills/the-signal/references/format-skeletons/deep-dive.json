@@ -1,0 +1,40 @@
+{
+  "_doc": "Deep Dive format skeleton (design-system-unification §7.1), modelled on weekly.json. The stitcher owns structure (cover, masthead, act openers, transit, plates, motif token block, colophon); writers fill chapter interiors only. Per-chapter `visual_events` are the closed density vocabulary the planner declares and validate-chapter-plan.py gates (§7.2). Density floor 0.7 events/screen (§6); words/screen max 220.",
+  "format": "deep_dive",
+  "skin": "editorial",
+  "execution_mode": "sequential",
+  "density": { "events_per_screen_floor": 0.7, "words_per_screen_max": 220 },
+  "invariants": {
+    "acts": [1, 3],
+    "max_transit": 1,
+    "no_two_consecutive_same_ground": true,
+    "must_end_with": "cheat_sheet",
+    "measure_ch_max": 68
+  },
+  "structural_hooks": ["data-act", "data-chapter", "data-role=\"transit\""],
+  "visual_events_vocabulary": [
+    "ledger", "ephemera_cluster", "plate_run", "stamp", "pull_object",
+    "numbers_band", "act_break", "marquee", "menu", "cheat_sheet"
+  ],
+  "chapters": [
+    { "chapter_id": "foreword", "role": "opener", "act": 1, "ground": "ink",
+      "target_words": [150, 300], "visual_events": ["numbers_band", "stamp"],
+      "note": "The frame + the issue's headline figures as a numbers band." },
+    { "chapter_id": "act1-ch1", "role": "literary", "act": 1, "ground": "paper",
+      "target_words": [900, 1400], "visual_events": ["ledger", "pull_object"] },
+    { "chapter_id": "act1-ch2", "role": "literary", "act": 1, "ground": "gallery",
+      "target_words": [900, 1400], "visual_events": ["ledger", "ephemera_cluster"] },
+    { "chapter_id": "transit", "role": "transit", "act": 2, "ground": "ink",
+      "target_words": [40, 90], "visual_events": ["act_break"],
+      "note": "The single structural break." },
+    { "chapter_id": "act2-ch1", "role": "literary", "act": 2, "ground": "paper",
+      "target_words": [900, 1400], "visual_events": ["ledger", "pull_object", "plate_run"] },
+    { "chapter_id": "act2-ch2", "role": "literary", "act": 2, "ground": "gallery",
+      "target_words": [900, 1400], "visual_events": ["ledger", "pull_object"] },
+    { "chapter_id": "act3-ch1", "role": "literary", "act": 3, "ground": "paper",
+      "target_words": [800, 1200], "visual_events": ["ledger", "pull_object"] },
+    { "chapter_id": "cheat-sheet", "role": "closer", "act": 3, "ground": "paper",
+      "target_words": [150, 300], "visual_events": ["cheat_sheet"],
+      "note": "Every Deep Dive ends with the at-a-glance cheat-sheet (§6, F-15)." }
+  ]
+}

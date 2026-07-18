@@ -96,6 +96,22 @@ VALID_CHAPTER_TYPES = {
     "closer",
 }
 
+# design-system-unification §7.1/§7.2 — planned-density enforcement (F-1).
+# Per-chapter `visual_events` are a CLOSED vocabulary; the planner declares the
+# designed visual events each chapter carries so density can be gated BEFORE
+# writing, not discovered by the reader.
+VALID_VISUAL_EVENTS = {
+    "ledger", "ephemera_cluster", "plate_run", "stamp", "pull_object",
+    "numbers_band", "act_break", "marquee", "menu", "cheat_sheet",
+}
+# §6 events/screen FLOORS. Planned screens = total target words / 250 (§6 rule).
+DENSITY_FLOOR = {
+    "weekly": 0.8, "deep_dive": 0.7, "rewind": 0.9, "season_review": 0.9,
+    "versus": 0.8, "guide": 0.8, "next": 0.8,
+    "countdown": 1.0, "field_guide": 1.0,
+}
+WORDS_PER_SCREEN = 250
+
 # Round chapter IDs whose piece/catch_up well-formedness is validated (weekly format only).
 # v8.37 (W-3): the mandatory considered-piece backbone is RETIRED — the single Long Read carries
 # the deep work and these rounds carry the week's news at whatever depth the material earns. A round
@@ -1022,6 +1038,56 @@ def _parse_main_args(argv):
     return (plan_path or DEFAULT_PLAN_PATH, state_path)
 
 
+def check_visual_events(chapters, issue_meta):
+    """Planned-density gate (design-system-unification §7.2, F-1).
+
+    Opt-in and back-compatible: if NO chapter declares `visual_events`, this is a
+    no-op (legacy plans are unaffected). Once a plan/skeleton carries them:
+      • every event token must be in the closed VALID_VISUAL_EVENTS vocabulary;
+      • planned density = total events / (total target words / 250) must meet the
+        §6 floor for the format — a HARD fail below it (front-loading can't game
+        it because we also flag any single chapter estimated >3 screens with 0
+        events).
+    """
+    if not isinstance(chapters, list):
+        return
+    declared = [c for c in chapters if isinstance(c, dict) and "visual_events" in c]
+    if not declared:
+        return  # legacy plan — planned-density not declared, nothing to gate
+
+    fmt = (issue_meta or {}).get("format", "")
+    total_events = 0
+    total_words = 0
+    for c in chapters:
+        if not isinstance(c, dict):
+            continue
+        ve = c.get("visual_events", [])
+        if not isinstance(ve, list):
+            err(f"[VISUAL_EVENTS] {c.get('chapter_id','?')}.visual_events must be an array")
+            continue
+        for tok in ve:
+            if tok not in VALID_VISUAL_EVENTS:
+                err(f"[VISUAL_EVENTS] {c.get('chapter_id','?')}: '{tok}' not in "
+                    f"{sorted(VALID_VISUAL_EVENTS)}")
+        words = c.get("target_word_count", 0) or 0
+        screens = words / WORDS_PER_SCREEN
+        # distribution guard: a fat chapter with no designed event is a dead run
+        if screens > 3 and len(ve) == 0:
+            err(f"[DENSITY] {c.get('chapter_id','?')}: ~{screens:.1f} screens with 0 "
+                f"visual events — a 3+-screen bare run (F-1). Add a ledger/plate/etc.")
+        total_events += len(ve)
+        total_words += words
+
+    floor = DENSITY_FLOOR.get(fmt)
+    if floor is not None and total_words > 0:
+        screens = total_words / WORDS_PER_SCREEN
+        density = total_events / screens if screens else 0
+        if density < floor:
+            err(f"[DENSITY] planned density {density:.2f} events/screen "
+                f"({total_events} events / {screens:.1f} screens) < {fmt} floor {floor} "
+                f"(§6). Add designed visual events or cut words.")
+
+
 def main():
     plan_path_str, state_path = _parse_main_args(sys.argv)
     plan_path = Path(plan_path_str)
@@ -1078,6 +1144,7 @@ def main():
 
         if isinstance(chapters, list):
             check_chapters(chapters, issue_meta if isinstance(issue_meta, dict) else {})
+            check_visual_events(chapters, issue_meta if isinstance(issue_meta, dict) else {})
 
         if isinstance(assets, dict):
             check_assets(assets)
@@ -1216,6 +1283,7 @@ def run_inline_tests():
 
             if isinstance(issue_meta, dict): check_issue_meta(issue_meta)
             if isinstance(chapters, list):   check_chapters(chapters, issue_meta if isinstance(issue_meta, dict) else {})
+            if isinstance(chapters, list):   check_visual_events(chapters, issue_meta if isinstance(issue_meta, dict) else {})
             if isinstance(assets, dict):     check_assets(assets)
             if isinstance(compliance, dict): check_compliance(compliance)
             # v8.36 — rotating cadence enforcement retired (old rules 7 & 8)
@@ -1288,6 +1356,35 @@ def run_inline_tests():
     # blueprint retired v8.22 — must no longer validate as a live format.
     retired_blueprint = make_plan(issue_meta={**make_plan()["issue_meta"], "format": "blueprint"})
     run_test("retired blueprint format rejected", retired_blueprint, expect_pass=False)
+
+    # ── §7.2 planned-density (visual_events) cases ──
+    dd_meta = {"format": "deep_dive", "date": "2026-08-16", "topic": "x", "special_id": "dd-2026", "execution_mode": "sequential"}
+    def dd_ch(cid, num, words, events):
+        return {"chapter_id": cid, "chapter_num": num, "chapter_type": "literary",
+                "chapter_title": cid, "chapter_arc": "arc", "ground": "paper", "is_hype": False,
+                "data_venue": None, "target_word_count": words, "images_needed": [],
+                "key_facts": [], "forbidden_topics": [], "cross_refs": [], "visual_events": events}
+    # deep_dive floor 0.7: 3 chapters, 3000 words (=12 screens), need >=8.4 events
+    run_test("deep_dive meets density floor", make_plan(issue_meta=dd_meta, chapters=[
+        dd_ch("a", 1, 1000, ["numbers_band", "ledger", "pull_object"]),
+        dd_ch("b", 2, 1000, ["ledger", "pull_object", "plate_run"]),
+        dd_ch("c", 3, 1000, ["ledger", "pull_object", "cheat_sheet"]),
+    ]), expect_pass=True)
+    run_test("deep_dive below density floor fails", make_plan(issue_meta=dd_meta, chapters=[
+        dd_ch("a", 1, 1500, ["ledger"]), dd_ch("b", 2, 1500, ["pull_object"]),
+    ]), expect_pass=False)
+    run_test("invalid visual_event token fails", make_plan(issue_meta=dd_meta, chapters=[
+        dd_ch("a", 1, 500, ["ledger", "hero_video"]),
+    ]), expect_pass=False)
+    run_test("3+-screen bare run flagged", make_plan(issue_meta=dd_meta, chapters=[
+        dd_ch("a", 1, 900, []),  # ~3.6 screens, 0 events
+    ]), expect_pass=False)
+    # legacy plan with NO visual_events is unaffected (back-compat)
+    run_test("no visual_events declared = no-op", make_plan(issue_meta=dd_meta, chapters=[
+        {"chapter_id": "a", "chapter_num": 1, "chapter_type": "literary", "chapter_title": "a",
+         "chapter_arc": "arc", "ground": "paper", "is_hype": False, "data_venue": None,
+         "target_word_count": 2000, "images_needed": [], "key_facts": [], "forbidden_topics": [], "cross_refs": []},
+    ]), expect_pass=True)
 
     bad_mode = make_plan(issue_meta={**make_plan()["issue_meta"], "execution_mode": "sequential"})
     run_test("execution_mode mismatch (countdown should be parallel)", bad_mode, expect_pass=False)
