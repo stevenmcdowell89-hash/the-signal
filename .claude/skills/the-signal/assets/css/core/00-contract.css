@@ -1,0 +1,168 @@
+/* ============================================================
+   MX FURNITURE CORE · 00 · TOKEN CONTRACT
+   design-system-unification spec §3 (L0) + §4.2
+
+   The ~30-property --mx-* contract every core furniture component reads —
+   and NOTHING else. Skins (L1) alias their own palettes into these; motif
+   packs (L2) re-declare the per-act values inline in the issue. Swap the
+   tokens → the whole kit reskins with zero per-component edits. That is the
+   entire thesis of the unification.
+
+   STAGED, NOT WIRED: this directory is deliberately assets/css/core/ — a
+   subdirectory the live stitchers' non-recursive assets/css/*.css glob does
+   NOT pick up, so nothing here enters a shipped bundle until a per-format
+   manifest opts it in (Phase 3). Publication continuity is protected (§11).
+
+   Craft floor baked in the day the contract is written (§8):
+     • measure cap --mx-measure 68ch (F-9)
+     • type floor 0.72rem, enforced by every component (F-12)
+     • token-level dark variant (F-7)
+     • neutral paper-and-ink defaults — an issue that ships NO motif pack
+       still reads as a restrained editorial magazine, never a theme park.
+   ============================================================ */
+
+/* ---- Neutral default contract (paper-and-ink) --------------------------
+   Scoped to [data-mx] so the core can be dropped onto any issue by adding the
+   attribute to <body> (or a wrapper) without colliding with legacy tokens.
+   A skin re-declares these on its own selector; a motif pack re-declares the
+   per-act subset inline. The defaults below are WCAG-AA safe: ink-on-paper
+   #14141A on #FAFAF8 ≈ 15.8:1; accent #B23A1F on paper ≈ 5.2:1. */
+[data-mx] {
+  /* Palette — act 1 defaults. section[data-act="2"] re-declares the subset. */
+  --mx-paper:      #FAF8F3;   /* page/base ground */
+  --mx-paper-2:    #F1EDE3;   /* raised card ground */
+  --mx-ink:        #17171E;   /* body ink */
+  --mx-ink-deep:   #0B0B12;   /* headings / max contrast */
+  --mx-accent:     #B23A1F;   /* primary accent (AA on paper) */
+  --mx-accent-2:   #9A7B33;   /* secondary accent (brass/gold register) */
+  --mx-support-1:  #1F5B48;   /* tertiary — deep green */
+  --mx-support-2:  #35506E;   /* tertiary — slate blue */
+  --mx-hair:       rgba(23, 23, 30, 0.14);   /* hairline rules */
+  --mx-hair-strong:rgba(23, 23, 30, 0.34);
+
+  /* Reverse palette for dark grounds (covers, verdict slabs, act openers). */
+  --mx-on-dark:    #F6F3EC;
+  --mx-on-dark-mu: rgba(246, 243, 236, 0.72);
+  --mx-hair-on-dark: rgba(246, 243, 236, 0.22);
+
+  /* Six type roles (§4.2). Defaults are safe system stacks so text is fully
+     readable with NO webfont (§4.2: one render must pass with network off).
+     Skins/packs swap the leading family from the whitelist; the fallbacks stay.
+       chunk  — heavy poster display        tall — condensed display
+       script — flowing accent (sparingly)  hand — handwritten caption
+       serif  — body + editorial display    mono — labels/eyebrows/data */
+  --mx-t-chunk:  'Bowlby One', Impact, 'Arial Black', sans-serif;
+  --mx-t-tall:   'Anton', 'Bebas Neue', Impact, sans-serif;
+  --mx-t-script: 'Yellowtail', 'Pacifico', cursive;
+  --mx-t-hand:   'Caveat', 'Kalam', 'Segoe Print', cursive;
+  --mx-t-serif:  'Cormorant Garamond', 'EB Garamond', Georgia, serif;
+  --mx-t-sans:   'DM Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --mx-t-mono:   'JetBrains Mono', 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+
+  /* Art slots (§4.2) — payloads injected by the motif pack, never in-repo CSS.
+     --mx-glyph is fed through mask-image so it inherits currentColor (this
+     single indirection replaces every per-venue rule in legacy layer 33). */
+  --mx-pattern: none;        /* tiled watermark SVG (background-image) */
+  --mx-glyph:   none;        /* stamp/watermark mask (currentColor) */
+  --mx-band:    none;        /* optional edge scene */
+
+  /* Measure + rhythm */
+  --mx-measure:      68ch;   /* body-copy cap (F-9) */
+  --mx-measure-wide: 82ch;   /* spreads, tables, figures */
+  --mx-measure-tight:46ch;   /* asides */
+  --mx-type-floor:   0.72rem;/* mono micro-label floor (F-12) */
+
+  --mx-gap-xs: 0.5rem;
+  --mx-gap-s:  0.85rem;
+  --mx-gap-m:  1.5rem;
+  --mx-gap-l:  2.5rem;
+  --mx-gap-xl: 4rem;
+  --mx-radius: 6px;
+  --mx-shadow-soft: 0 1px 2px rgba(0,0,0,.06), 0 4px 12px rgba(0,0,0,.08);
+  --mx-shadow-mid:  0 4px 16px rgba(0,0,0,.18);
+}
+
+/* ---- Act-2 palette swap ------------------------------------------------
+   The act system (replaces legacy .hol-half--two overrides): a section marked
+   data-act="2" re-declares only the palette subset; a motif pack supplies the
+   real second-act values. Default act-2 is a warmer paper so a pack-less issue
+   still shows a gentle act shift rather than a flat page. */
+[data-mx] [data-act="2"] {
+  --mx-paper:   #F3ECDE;
+  --mx-paper-2: #E9DFCB;
+  --mx-accent:  #8E3A18;
+  --mx-accent-2:#9A6B2B;
+}
+
+/* ---- Token-level dark (F-7) --------------------------------------------
+   Only the palette flips; type roles, measure and slots are unchanged. Skins
+   inherit this automatically because they alias INTO --mx-*. A component never
+   writes a dark rule of its own — it just reads the tokens. */
+@media (prefers-color-scheme: dark) {
+  [data-mx] {
+    --mx-paper:      #14141A;
+    --mx-paper-2:    #1C1C24;
+    --mx-ink:        #ECEAE3;
+    --mx-ink-deep:   #F7F5EF;
+    --mx-accent:     #E8794F;   /* lifted for AA on dark ground */
+    --mx-accent-2:   #D8B36A;
+    --mx-hair:       rgba(236, 234, 227, 0.16);
+    --mx-hair-strong:rgba(236, 234, 227, 0.34);
+  }
+  [data-mx] [data-act="2"] {
+    --mx-paper:   #1A1610;
+    --mx-paper-2: #241E14;
+    --mx-accent:  #E8905A;
+    --mx-accent-2:#D8B36A;
+  }
+}
+:root[data-theme="dark"] [data-mx] { color-scheme: dark; }
+
+/* ---- Base register applied by the core --------------------------------
+   The core sets ground/ink/font on the [data-mx] host so a re-dressed issue
+   inherits paper-and-ink even before any component mounts. Body copy is capped
+   at the measure and never lights up the accent. */
+[data-mx] {
+  background: var(--mx-paper);
+  color: var(--mx-ink);
+  font-family: var(--mx-t-serif);
+  -webkit-font-smoothing: antialiased;
+}
+[data-mx] p { max-width: var(--mx-measure); }
+
+/* ---- Six type-role utilities (whitelist-driven) ------------------------ */
+.mx-t-chunk  { font-family: var(--mx-t-chunk);  }
+.mx-t-tall   { font-family: var(--mx-t-tall);   }
+.mx-t-script { font-family: var(--mx-t-script); }
+.mx-t-hand   { font-family: var(--mx-t-hand);   }
+.mx-t-serif  { font-family: var(--mx-t-serif);  }
+.mx-t-sans   { font-family: var(--mx-t-sans);   }
+.mx-t-mono   { font-family: var(--mx-t-mono);   }
+
+/* Shared eyebrow/caption primitive — every component that needs a mono
+   micro-label reads THIS, so the 0.72rem floor (F-12) is enforced in one place. */
+.mx-eyebrow {
+  font-family: var(--mx-t-mono);
+  font-size: var(--mx-type-floor);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mx-accent);
+  margin: 0;
+}
+
+/* Print (F-7): un-dark, drop nothing structural here — components hide their
+   own chrome. The core just guarantees ink-on-white and avoided page breaks. */
+@media print {
+  [data-mx] { background: #fff !important; color: #111 !important; }
+}
+
+/* Reduced motion (§5): the core declares no animation; this is the backstop so
+   any inherited transition is stilled when the reader asks. */
+@media (prefers-reduced-motion: reduce) {
+  [data-mx] *, [data-mx] *::before, [data-mx] *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

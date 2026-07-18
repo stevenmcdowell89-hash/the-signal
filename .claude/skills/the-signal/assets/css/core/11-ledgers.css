@@ -1,0 +1,96 @@
+/* ============================================================
+   MX FURNITURE CORE · 11 · LEDGERS
+   Facts <dl> rows, ranked entries + rank chips, tier pills, stat/numbers
+   bands, cheat-sheet (F-15). Extracted + de-themed from legacy 36 §12b
+   (hol-wonder__meta), 40 (meal-slot ranked entries + tier pills), 43
+   (stat band), and the CSS-comment-only cheat-sheet. Reads only --mx-*.
+   ============================================================ */
+
+/* Shared block chassis: measure-capped, centred, box-safe. */
+.mx-block { max-width: var(--mx-measure); margin-inline: auto; margin-block: clamp(2rem,5vw,3.5rem); box-sizing: border-box; }
+.mx-block *, .mx-block *::before, .mx-block *::after { box-sizing: border-box; }
+.mx-block--wide { max-width: var(--mx-measure-wide); }
+
+/* ---- Facts ledger — the scannable <dl> ---------------------------------- */
+.mx-ledger {
+  border: 1px solid var(--mx-hair-strong);
+  border-left: 3px solid var(--mx-accent);
+  border-radius: var(--mx-radius);
+  padding: clamp(1.1rem, 2.5vw, 1.6rem) clamp(1.2rem, 3vw, 1.8rem);
+  background: var(--mx-paper-2);
+}
+.mx-ledger__title {
+  font-family: var(--mx-t-mono);
+  font-size: var(--mx-type-floor);
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--mx-ink); margin: 0 0 0.9rem;
+}
+.mx-ledger dl { display: grid; grid-template-columns: minmax(84px, auto) 1fr; gap: 0.6rem 1.1rem; margin: 0; }
+.mx-ledger dt {
+  font-family: var(--mx-t-mono); font-weight: 700;
+  font-size: var(--mx-type-floor); letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--mx-accent); margin: 0; padding-top: 0.15rem;
+}
+.mx-ledger dd { font-family: var(--mx-t-sans); font-size: 0.98rem; line-height: 1.5; color: var(--mx-ink); margin: 0; }
+
+/* ---- Numbers / stat band (43 lineage) ----------------------------------- */
+.mx-numbers {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: clamp(1rem, 3vw, 2rem); padding: clamp(1.5rem, 3vw, 2rem) 0;
+  border-top: 2px solid var(--mx-ink); border-bottom: 2px solid var(--mx-ink);
+}
+.mx-numbers__cell { display: flex; flex-direction: column; gap: 0.35rem; }
+.mx-numbers__fig {
+  font-family: var(--mx-t-serif); font-weight: 700;
+  font-size: clamp(2.4rem, 5vw, 3.4rem); line-height: 0.95; color: var(--mx-ink-deep);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.mx-numbers__lab {
+  font-family: var(--mx-t-mono); font-size: 0.74rem; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--mx-ink); opacity: 0.75;
+}
+
+/* ---- Ranked entries + rank chips + tier pills (40 lineage) --------------- */
+.mx-rank { display: flex; flex-direction: column; gap: 1rem; }
+.mx-rank__row {
+  display: grid; grid-template-columns: auto 1fr auto; gap: 0 1rem; align-items: baseline;
+  padding-bottom: 0.9rem; border-bottom: 1px solid var(--mx-hair);
+}
+.mx-rank__chip {
+  font-family: var(--mx-t-chunk); background: var(--mx-accent); color: var(--mx-paper);
+  font-size: 0.9rem; line-height: 1; min-width: 2.1rem; text-align: center;
+  padding: 0.35rem 0.4rem 0.28rem; border-radius: 3px;
+}
+.mx-rank__title { font-family: var(--mx-t-serif); font-weight: 700; font-size: 1.15rem; color: var(--mx-ink-deep); }
+.mx-rank__note  { font-family: var(--mx-t-sans); font-size: 0.95rem; line-height: 1.5; color: var(--mx-ink); grid-column: 2; }
+.mx-pill {
+  display: inline-block; font-family: var(--mx-t-mono); font-size: var(--mx-type-floor);
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--mx-accent-2);
+  border: 1px solid currentColor; border-radius: 999px; padding: 0.2rem 0.6rem;
+}
+.mx-pill[data-tier="top"]      { color: var(--mx-accent); }
+.mx-pill[data-tier="wildcard"] { color: var(--mx-support-1); }
+
+/* ---- Cheat-sheet (F-15 — instantiated) ---------------------------------- */
+.mx-cheat { border: 2px solid var(--mx-ink); border-radius: 8px; overflow: hidden; background: var(--mx-paper); }
+.mx-cheat__head {
+  font-family: var(--mx-t-mono); font-size: 0.74rem; letter-spacing: 0.2em; text-transform: uppercase;
+  padding: 0.9rem 1.2rem; background: var(--mx-ink); color: var(--mx-paper);
+}
+.mx-cheat table { width: 100%; border-collapse: collapse; }
+.mx-cheat th, .mx-cheat td { text-align: left; padding: 0.7rem 1.2rem; border-top: 1px solid var(--mx-hair); font-size: 0.92rem; vertical-align: baseline; }
+.mx-cheat th { font-family: var(--mx-t-mono); font-size: var(--mx-type-floor); letter-spacing: 0.12em; text-transform: uppercase; color: var(--mx-accent); border-top: none; }
+.mx-cheat td:first-child { font-family: var(--mx-t-serif); font-weight: 700; font-size: 1rem; color: var(--mx-ink-deep); }
+.mx-cheat td.mx-cheat__mono { font-family: var(--mx-t-mono); font-size: 0.8rem; white-space: nowrap; }
+.mx-cheat tbody tr:nth-child(even) { background: var(--mx-paper-2); }
+
+/* ---- Responsive (F-8): stack ledgers, scroll wide tables in-container ---- */
+@media (max-width: 480px) {
+  .mx-block { margin-inline: 1rem; }
+  .mx-numbers { grid-template-columns: repeat(2, 1fr); }
+  .mx-ledger dl { grid-template-columns: 1fr; gap: 0.2rem 0; }
+  .mx-ledger dt { padding-top: 0.6rem; }
+  .mx-cheat { overflow-x: auto; }
+  .mx-cheat table { min-width: 30rem; }
+  .mx-rank__row { grid-template-columns: auto 1fr; }
+}

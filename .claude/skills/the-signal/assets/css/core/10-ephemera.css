@@ -1,0 +1,115 @@
+/* ============================================================
+   MX FURNITURE CORE · 10 · EPHEMERA
+   The framed-object chassis: every ephemera "fiction" is the same skeleton —
+   frame + content window + fastener + hand caption + credit — restyled by the
+   motif pack's kit choice (§4.4). De-themed from legacy 36 §09/§10/§11 + 41.
+   Reads only --mx-*.
+
+   F-6 (accessibility): the framed objects take a REAL <img> child (object-fit:
+   cover) as the primary contract; a role="img" + aria-label element is the
+   documented fallback. No meaningful image is a CSS background here.
+   ============================================================ */
+
+/* ---- Shared framed-object chassis --------------------------------------- */
+.mx-frame {
+  position: relative; background: var(--mx-paper-2);
+  border-radius: 3px; box-shadow: var(--mx-shadow-soft);
+  padding: 0.6rem 0.6rem 0.5rem;
+}
+.mx-frame__img, .mx-frame img {
+  display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover;
+  border-radius: 2px; background: var(--mx-hair);
+}
+.mx-frame__caption {          /* hand caption */
+  font-family: var(--mx-t-hand); font-size: 1.05rem; line-height: 1.2;
+  color: var(--mx-ink); text-align: center; padding: 0.5rem 0.3rem 0.2rem;
+}
+.mx-credit {                  /* credit line — always mono, always at the floor */
+  font-family: var(--mx-t-mono); font-size: var(--mx-type-floor);
+  letter-spacing: 0.06em; color: var(--mx-ink); opacity: 0.7; margin-top: 0.35rem;
+}
+
+/* Fasteners — decorative only, aria-hidden in markup. */
+.mx-tape, .mx-pin, .mx-staple { position: absolute; pointer-events: none; }
+.mx-tape  { top: -10px; left: 50%; width: 74px; height: 22px; transform: translateX(-50%) rotate(-3deg);
+            background: color-mix(in srgb, var(--mx-accent-2) 40%, transparent); }
+.mx-pin   { top: -7px; left: 50%; width: 14px; height: 14px; transform: translateX(-50%);
+            border-radius: 50%; background: var(--mx-accent); box-shadow: 0 1px 2px rgba(0,0,0,.4); }
+
+/* ---- Pinned card (polaroid lineage) ------------------------------------- */
+.mx-pinned { display: inline-block; transform: rotate(-1.5deg); }
+.mx-pinned .mx-frame__img { aspect-ratio: 1 / 1; }
+
+/* ---- Mail card (postcard lineage) — ruled quote strip ------------------- */
+.mx-mail {
+  display: grid; grid-template-columns: 1.1fr 1fr; gap: 0; border-radius: var(--mx-radius);
+  overflow: hidden; box-shadow: var(--mx-shadow-soft); background: var(--mx-paper-2);
+}
+.mx-mail__front img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.mx-mail__back {
+  padding: clamp(1rem,3vw,1.6rem);
+  background: repeating-linear-gradient(var(--mx-paper-2), var(--mx-paper-2) 1.7rem, var(--mx-hair) 1.72rem, var(--mx-paper-2) 1.74rem);
+}
+.mx-mail__msg { font-family: var(--mx-t-serif); font-style: italic; font-size: 1.1rem; line-height: 1.72rem; color: var(--mx-ink-deep); margin: 0; }
+
+/* ---- Quote object (postcard/pull-quote lineage) ------------------------- */
+.mx-quote {
+  border-top: 1px solid var(--mx-hair-strong); border-bottom: 1px solid var(--mx-hair-strong);
+  padding: clamp(1.4rem,3vw,2rem) 0 clamp(1.1rem,2.5vw,1.5rem); position: relative;
+}
+.mx-quote__text {
+  font-family: var(--mx-t-serif); font-style: italic;
+  font-size: clamp(1.35rem, 3vw, 1.75rem); line-height: 1.35;
+  color: var(--mx-ink-deep); margin: 0 0 0.9rem; text-wrap: balance;
+}
+.mx-quote__text::before { content: "\201C"; color: var(--mx-accent); }
+.mx-quote__text::after  { content: "\201D"; color: var(--mx-accent); }
+.mx-quote__source {
+  font-family: var(--mx-t-mono); font-size: 0.74rem; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--mx-ink); opacity: 0.72;
+}
+.mx-quote__source::before { content: "\2014\00a0"; }
+
+/* ---- Stamp seal (36 §11 lineage; --mx-glyph via mask, currentColor) ----- */
+.mx-stamp {
+  display: inline-grid; place-items: center; width: 108px; height: 108px;
+  border: 2px solid currentColor; border-radius: 50%; color: var(--mx-accent);
+  font-family: var(--mx-t-mono); font-size: 0.62rem; letter-spacing: 0.16em;
+  text-transform: uppercase; text-align: center; padding: 10px; line-height: 1.2;
+  transform: rotate(-7deg); position: relative;
+}
+.mx-stamp::before { content: ""; position: absolute; inset: 6px; border: 1px solid currentColor; border-radius: 50%; }
+.mx-stamp b { display: block; font-family: var(--mx-t-serif); font-size: 1.35rem; letter-spacing: 0.02em; line-height: 1; margin: 3px 0; }
+/* Glyph variant: the pack feeds a currentColor SVG through --mx-glyph. */
+.mx-stamp--glyph { color: var(--mx-accent); }
+.mx-stamp--glyph::after {
+  content: ""; position: absolute; inset: 24px;
+  background: currentColor; -webkit-mask: var(--mx-glyph) center/contain no-repeat; mask: var(--mx-glyph) center/contain no-repeat;
+}
+
+/* ---- Ticket stub (41 lineage) ------------------------------------------- */
+.mx-ticket {
+  display: grid; grid-template-columns: 1fr auto; align-items: stretch;
+  border: 1px solid var(--mx-hair-strong); border-radius: var(--mx-radius); overflow: hidden; background: var(--mx-paper-2);
+}
+.mx-ticket__body { padding: clamp(1rem,3vw,1.4rem); }
+.mx-ticket__stub {
+  border-left: 2px dashed var(--mx-hair-strong); padding: 1rem 0.9rem;
+  display: grid; place-items: center; text-align: center; background: var(--mx-paper);
+}
+.mx-ticket__stub .mx-eyebrow { writing-mode: vertical-rl; transform: rotate(180deg); }
+
+/* ---- Framed figure with real <img> + caption (F-6 default) --------------- */
+.mx-figure { margin: 0; }
+.mx-figure img { width: 100%; height: auto; display: block; border-radius: var(--mx-radius); }
+.mx-figure figcaption { font-family: var(--mx-t-mono); font-size: var(--mx-type-floor); letter-spacing: 0.08em; color: var(--mx-ink); opacity: 0.75; margin-top: 0.5rem; }
+
+/* ---- Responsive (F-8) --------------------------------------------------- */
+@media (max-width: 480px) {
+  .mx-mail { grid-template-columns: 1fr; }         /* postcards stack full-width */
+  .mx-mail__front img { aspect-ratio: 3 / 2; }
+  .mx-ticket { grid-template-columns: 1fr; }
+  .mx-ticket__stub { border-left: none; border-top: 2px dashed var(--mx-hair-strong); }
+  .mx-ticket__stub .mx-eyebrow { writing-mode: horizontal-tb; transform: none; }
+  .mx-pinned { transform: none; display: block; }
+}

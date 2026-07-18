@@ -213,7 +213,58 @@ before/after is surfaced so the aesthetic direction can still be redirected chea
 
 ---
 
-## Phases 2–6 — in progress
+## Phase 2 — Furniture-core extraction — 🟡 IN PROGRESS (foundation built + verified, STAGED not wired)
 
-See spec §10 for the phase gates. Phase 2 (furniture-core extraction with neutral `--mx-*`
-names + the overdue doc pruning) is next.
+**Publication-continuity hold (§11):** today is Saturday 18 July; The Signal publishes tomorrow
+(Sunday 19 July). Phase 2 is the first phase that would touch the live skill, so it is being
+built **isolated from the live pipeline** and its live wiring + doc pruning are held until after
+the Sunday boundary. Nothing below ships tomorrow.
+
+### Built + verified so far (all in `assets/css/core/`, a subdirectory the live stitchers'
+non-recursive `assets/css/*.css` glob does NOT pick up — proven: live special bundle still 47
+files, weekly golden byte-identical):
+- **`00-contract.css`** — the full `--mx-*` token contract (§4.2): ~30 properties, six type
+  roles (whitelist stacks with system fallbacks so text is readable network-off), art slots
+  (`--mx-pattern/-glyph/-band`, glyph via `mask-image` currentColor — the single indirection
+  that replaces all legacy per-venue rules), neutral **AA-safe** paper-and-ink defaults, the
+  `data-act="2"` palette swap (replaces `.hol-half--two` overrides), **token-level dark (F-7)**,
+  print, reduced-motion backstop, **68ch measure cap (F-9)**, **0.72rem type floor (F-12)**.
+- **`10-ephemera.css`** — framed-object chassis (pinned card, mail card, quote-object, stamp
+  seal + glyph-mask variant, ticket stub, fasteners, hand-caption, credit, framed figure) with
+  the **real-`<img>` F-6 contract** as primary and `role="img"`+`aria-label` documented.
+- **`11-ledgers.css`** — facts `<dl>`, numbers/stat band, ranked entries + rank chips, tier
+  pills, and the **cheat-sheet (F-15)** — all reading only `--mx-*`.
+
+### Gate evidence so far
+- **Core re-dresses a real editorial issue:** `docs/mockups/phase2/` re-dresses a COPY of the
+  Byzantium Deep Dive **from the core** (`data-mx` on `<body>` + the three core layers inlined,
+  furniture from the issue's own facts). Rendered furniture (numbers band, ledger, quote-object,
+  cheat-sheet) is visually equivalent to the Phase 1 shim, in the core's restrained default
+  accent — screenshots `scratchpad/out/core__*`. This satisfies the editorial half of the Phase 2
+  gate ("a re-dressed editorial special copy renders pixel-plausibly from the core").
+- `verify-weekly-golden.sh` **PASS**; core CSS brace-balanced; core invisible to live bundles.
+
+### Remaining Phase 2 work (lands AFTER Sunday, per §11)
+- Core layers `12-plates.css`, `13-chrome.css` (**one masthead — F-3**, cover incl. poster
+  variant with the F-8 collision fix, kicker, act opener, transit, marquee, countdown grid,
+  drop-cap/fleuron/ribbon), `14-motion.css` (38+39 re-scoped to `[data-motion]` tiers — F-10),
+  `15-responsive.css` (37 generalised; F-8/F-9 fixes).
+- Holiday half of the gate: re-dress a **holiday** copy (Countdown) from the core.
+- Doc pruning (the overdue S7/S8): `pre-flight.md`, `specials.md`, `component-contracts.md`,
+  Gate 1E rewritten to teach ONLY the live system (F-13) — this touches live guidance, so it is
+  explicitly held to the post-Sunday landing.
+- Full §9 pass (dark + reduced-motion + 390px + adversarial) on both re-dressed copies.
+
+### Decisions
+- **`assets/css/core/` chosen as the home now** (its real §3 destination) rather than a throwaway
+  dir, because it is provably outside the live glob — so the built work is already in place for
+  Phase 3's manifest wiring, with zero live-bundle risk in the meantime.
+- Class rename `hol-*` → `mx-*` done at the source in the core (the archive is unaffected — shipped
+  issues carry their CSS inline).
+
+---
+
+## Phases 3–6 — not started
+
+See spec §10. Phase 3 (skins + per-format manifests + bundling) wires the core into the live path
+and is gated on the Phase 2 completion above landing cleanly after the Sunday boundary.

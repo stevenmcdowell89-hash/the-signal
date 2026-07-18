@@ -1,0 +1,29 @@
+/* ============================================================
+   MX CORE — PROTOTYPE BRIDGE (docs/mockups/phase2 only, NOT part of the core)
+   Verifies the furniture core (assets/css/core/*) re-dresses a shipped issue.
+   Contains only prototype scaffolding: (a) neutralise the legacy scroll
+   choreography so §9 frames render complete (previews the §5 JS-off contract),
+   (b) hide the legacy running masthead + redundant corner stamp (F-3/F-8 are
+   rebuilt properly in Phase 3). No furniture rules live here — those are the
+   real core layers.
+   ============================================================ */
+[data-mx] .reveal, [data-mx] [data-reveal], [data-mx] .reveal-group > * {
+  opacity: 1 !important; transform: none !important; filter: none !important; clip-path: none !important;
+}
+[data-mx] .sp-parallax, [data-mx] .sp-parallax-band, [data-mx] .sp-parallax-ready,
+[data-mx] .sp-spine, [data-mx] .tp-spine, [data-mx] .sp-sticky-pin {
+  transform: none !important; position: static !important;
+}
+[data-mx] .mast { display: none !important; }
+[data-mx] .stamp-fixed { display: none !important; }
+
+/* Dark-ground override for the legacy deep-dive prose (its cream is set on
+   body/.mag at high specificity; the CORE tokens already flip, this carries the
+   legacy surface with them so the dark §9 frame is coherent). */
+@media (prefers-color-scheme: dark) {
+  [data-mx].mag, [data-mx] .mag { background: #14141A !important; }
+  [data-mx] { background: #101217 !important; }
+  [data-mx] .chapter, [data-mx] .chapter-body, [data-mx] .foreword,
+  [data-mx] p, [data-mx] li, [data-mx] h1, [data-mx] h2, [data-mx] h3,
+  [data-mx] .chapter-title, [data-mx] .chapter-numeral { color: #ECEAE3 !important; }
+}
