@@ -1,0 +1,363 @@
+/* ============================================================
+   MX PHASE 1 SHIM — furniture-reuse proof on a Deep Dive copy
+   (design-system unification spec §10 Phase 1)
+
+   This is a PROTOTYPE stylesheet, not a shipped layer. It proves the
+   spec's central claim: the holiday "furniture" (ledgers, quote-objects,
+   stamps, numbers bands, cheat-sheets) reads ONLY --hol-* tokens, so
+   swapping those tokens onto the editorial paper-and-ink palette reskins
+   the whole kit with zero per-component edits. Phase 2 does the
+   authoritative extraction with neutral --mx-* names.
+
+   Craft floor baked in per §8 (the day a component is extracted):
+   measure cap 68ch (F-9), type floor 0.72rem (F-12), real <img> contract
+   on framed objects (F-6), token-level dark (F-7), print sheet, 390px.
+   ============================================================ */
+
+/* ---- 1 · TOKEN SHIM — map the --hol-* surface onto editorial tokens ----
+   The ~20-line alias block the spec describes (§3, skin-transmission model),
+   applied here to the deep-dive editorial contract from 23-special-tokens.css.
+   The loud display/script/hand faces are deliberately mapped onto the bookish
+   serif/sans — no Bowlby One, Yellowtail or Caveat — so the kit keeps editorial
+   gravitas and cannot read as a theme-park page (the Phase 1 identity gate). */
+body[data-special="deep-dive"] {
+  --hol-cream:        var(--paper);
+  --hol-cream-deep:   var(--paper-deep);
+  --hol-paper:        var(--paper-warm);
+  --hol-ink:          var(--ink);
+  --hol-ink-deep:     var(--ink-deep);
+  --hol-rose:         var(--accent-ember);
+  --hol-rose-deep:    var(--accent-deep);
+  --hol-ruby:         var(--accent-ember);
+  --hol-ruby-deep:    #B3421F;
+  --hol-brass:        var(--accent-gold);
+  --hol-brass-light:  #D8C08A;
+  --hol-emerald:      var(--accent-teal);
+  --hol-mustard:      var(--accent-gold);
+  --hol-hair:         var(--rule);
+  --hol-hair-strong:  var(--rule-strong);
+
+  /* Six type roles → the editorial three, no decorative faces. */
+  --hol-t-serif:  var(--serif);
+  --hol-t-slab:   var(--serif);
+  --hol-t-body:   var(--sans);
+  --hol-t-mono:   var(--mono);
+  --hol-t-chunk:  var(--sans);
+  --hol-t-tall:   var(--sans);
+  --hol-t-hand:   var(--serif);
+  --hol-t-script: var(--serif);
+
+  /* Furniture-local measure cap — F-9. */
+  --mx-measure: 68ch;
+}
+
+/* Dark variant — F-7. The legacy deep-dive has NO dark mode (its cream ground is
+   set on body/.mag at equal-or-higher specificity), so a token-only furniture
+   dark leaves an incoherent half-dark page. This block therefore darkens the
+   whole prototype ground with prototype-scoped !important overrides — a preview
+   of the Phase 2 core's token-level dark, and a clean dark render for §9. */
+@media (prefers-color-scheme: dark) {
+  body[data-special="deep-dive"] {
+    --hol-cream:      #14161C;
+    --hol-cream-deep: #1B1E26;
+    --hol-paper:      #191C23;
+    --hol-ink:        #ECEAE3;
+    --hol-ink-deep:   #F6F4EE;
+    --hol-hair:       rgba(236, 234, 227, 0.16);
+    --hol-hair-strong:rgba(236, 234, 227, 0.34);
+  }
+  body[data-special="deep-dive"] { background: #101217 !important; }
+  body[data-special="deep-dive"] .mag { background: #14161C !important; }
+  body[data-special="deep-dive"] .mag,
+  body[data-special="deep-dive"] .chapter,
+  body[data-special="deep-dive"] .chapter-body,
+  body[data-special="deep-dive"] .foreword,
+  body[data-special="deep-dive"] p,
+  body[data-special="deep-dive"] li,
+  body[data-special="deep-dive"] h1,
+  body[data-special="deep-dive"] h2,
+  body[data-special="deep-dive"] h3,
+  body[data-special="deep-dive"] .chapter-title,
+  body[data-special="deep-dive"] .chapter-numeral { color: #ECEAE3 !important; }
+  body[data-special="deep-dive"] .mx-block { color: var(--hol-ink); }
+}
+
+/* ---- 1b · FREEZE LEGACY CHOREOGRAPHY (prototype) ----
+   The shipped deep-dive gates content behind scroll-reveal + parallax + sticky
+   pins (`.reveal`, `.sp-parallax*`, `.sp-spine`, `.sp-sticky-pin`), the exact
+   machinery §5/F-10 flags: teleport-scroll leaves blank frames and JS-off
+   leaves content hidden. This block forces every element complete and static,
+   proving the §5 "JS-off renders 100% complete content" contract and giving the
+   rendered review clean frames. Phase 2's core replaces this with opt-in
+   [data-motion] tiers; this override is a prototype-only preview of that. */
+body[data-special="deep-dive"] .reveal,
+body[data-special="deep-dive"] [data-reveal],
+body[data-special="deep-dive"] .reveal-group > * {
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+  clip-path: none !important;
+}
+body[data-special="deep-dive"] .sp-parallax,
+body[data-special="deep-dive"] .sp-parallax-band,
+body[data-special="deep-dive"] .sp-parallax-ready,
+body[data-special="deep-dive"] .sp-spine,
+body[data-special="deep-dive"] .tp-spine,
+body[data-special="deep-dive"] .sp-sticky-pin {
+  transform: none !important;
+  position: static !important;
+}
+
+/* Legacy-chrome cleanups surfaced by the Phase 1 rendered review (fresh-eyes
+   pass). These are shipped-deep-dive chrome bugs, not furniture — the Phase 2/3
+   core (F-3 one masthead, F-8 mobile chrome) fixes them properly; the prototype
+   patches them so the review frames read clean:
+   • the sticky .mast was 86% translucent with a blur, so body text smeared
+     through it on scroll — make it fully opaque;
+   • .stamp-fixed is a faint low-contrast corner roundel, redundant with the
+     legible numbers-band seal and invisible in dark — drop it (commit to one). */
+body[data-special="deep-dive"] .mast { display: none !important; }
+body[data-special="deep-dive"] .stamp-fixed { display: none !important; }
+
+/* ---- 2 · SHARED FURNITURE CHASSIS ---- */
+.mx-block {
+  max-width: var(--mx-measure);
+  margin-inline: auto;
+  margin-block: clamp(2rem, 5vw, 3.5rem);
+  box-sizing: border-box;
+}
+.mx-block * { box-sizing: border-box; }
+.mx-eyebrow {
+  font-family: var(--hol-t-mono);
+  font-size: 0.72rem;           /* F-12 floor */
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--hol-rose);
+  margin: 0 0 0.75rem;
+}
+
+/* ---- 3 · NUMBERS BAND (43-holiday-hype lineage) ---- */
+.mx-numbers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: clamp(1rem, 3vw, 2rem);
+  padding: clamp(1.5rem, 3vw, 2rem) 0;
+  border-top: 2px solid var(--hol-ink);
+  border-bottom: 2px solid var(--hol-ink);
+  text-align: left;
+}
+.mx-numbers__cell { display: flex; flex-direction: column; gap: 0.35rem; }
+.mx-numbers__fig {
+  font-family: var(--hol-t-serif);
+  font-weight: 700;
+  font-size: clamp(2.4rem, 5vw, 3.4rem);
+  line-height: 0.95;
+  color: var(--hol-ink-deep);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.mx-numbers__lab {
+  font-family: var(--hol-t-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--hol-ink);
+  opacity: 0.75;
+}
+
+/* ---- 4 · FACTS LEDGER (hol-wonder__meta lineage) ---- */
+.mx-ledger {
+  border: 1px solid var(--hol-hair-strong);
+  border-left: 3px solid var(--hol-rose);
+  border-radius: 6px;
+  padding: clamp(1.1rem, 2.5vw, 1.6rem) clamp(1.2rem, 3vw, 1.8rem);
+  background: var(--hol-cream-deep);
+}
+.mx-ledger__title {
+  font-family: var(--hol-t-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--hol-ink);
+  margin: 0 0 0.9rem;
+}
+.mx-ledger dl {
+  display: grid;
+  grid-template-columns: minmax(84px, auto) 1fr;
+  gap: 0.6rem 1.1rem;
+  margin: 0;
+}
+.mx-ledger dt {
+  font-family: var(--hol-t-mono);
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--hol-rose);
+  margin: 0;
+  padding-top: 0.15rem;
+}
+.mx-ledger dd {
+  font-family: var(--hol-t-body);
+  font-size: 0.98rem;
+  line-height: 1.5;
+  color: var(--hol-ink);
+  margin: 0;
+}
+
+/* ---- 5 · QUOTE OBJECT (postcard/pull-quote lineage) ---- */
+.mx-quote {
+  border-top: 1px solid var(--hol-hair-strong);
+  border-bottom: 1px solid var(--hol-hair-strong);
+  padding: clamp(1.4rem, 3vw, 2rem) 0 clamp(1.1rem, 2.5vw, 1.5rem);
+  position: relative;
+}
+.mx-quote__text {
+  font-family: var(--hol-t-serif);
+  font-style: italic;
+  font-size: clamp(1.35rem, 3vw, 1.75rem);
+  line-height: 1.35;
+  color: var(--hol-ink-deep);
+  margin: 0 0 0.9rem;
+  text-wrap: balance;
+}
+.mx-quote__text::before { content: "\201C"; color: var(--hol-rose); }
+.mx-quote__text::after  { content: "\201D"; color: var(--hol-rose); }
+.mx-quote__source {
+  font-family: var(--hol-t-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--hol-ink);
+  opacity: 0.72;
+}
+.mx-quote__source::before { content: "\2014\00a0"; }
+
+/* ---- 6 · STAMP SEAL (36 §11 hol-stamp, de-themed) ---- */
+.mx-stamp {
+  display: inline-grid;
+  place-items: center;
+  width: 108px; height: 108px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  color: var(--hol-rose);
+  font-family: var(--hol-t-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 10px;
+  line-height: 1.2;
+  transform: rotate(-7deg);
+  position: relative;
+}
+.mx-stamp::before {
+  content: "";
+  position: absolute; inset: 6px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+}
+.mx-stamp b {
+  display: block;
+  font-family: var(--hol-t-serif);
+  font-size: 1.35rem;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  margin: 3px 0;
+}
+
+/* ---- 7 · CHEAT-SHEET (F-15 — instantiated, was CSS-comment only) ---- */
+.mx-cheat {
+  border: 2px solid var(--hol-ink);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--hol-cream);
+}
+.mx-cheat__head {
+  font-family: var(--hol-t-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.9rem 1.2rem;
+  background: var(--hol-ink);
+  color: var(--hol-cream);
+}
+.mx-cheat table { width: 100%; border-collapse: collapse; }
+.mx-cheat th, .mx-cheat td {
+  text-align: left;
+  padding: 0.7rem 1.2rem;
+  border-top: 1px solid var(--hol-hair);
+  font-size: 0.92rem;
+  vertical-align: baseline;
+}
+.mx-cheat th {
+  font-family: var(--hol-t-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--hol-rose);
+  border-top: none;
+}
+.mx-cheat td:first-child {
+  font-family: var(--hol-t-serif);
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--hol-ink-deep);
+}
+.mx-cheat td.mx-cheat__dates { font-family: var(--hol-t-mono); font-size: 0.8rem; white-space: nowrap; }
+.mx-cheat tbody tr:nth-child(even) { background: var(--hol-cream-deep); }
+
+/* ---- 8 · ACT OPENER numeral plate ---- */
+.mx-act-open {
+  display: flex; align-items: baseline; gap: 1rem;
+  border-bottom: 2px solid var(--hol-ink);
+  padding-bottom: 0.6rem;
+}
+.mx-act-open__num {
+  font-family: var(--hol-t-serif);
+  font-weight: 700;
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  color: var(--hol-rose);
+  line-height: 1;
+}
+.mx-act-open__label {
+  font-family: var(--hol-t-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--hol-ink);
+}
+
+/* ---- 9 · framed figure with REAL <img> (F-6 accessibility contract) ---- */
+.mx-figure { margin: 0; }
+.mx-figure img { width: 100%; height: auto; display: block; border-radius: 6px; }
+.mx-figure figcaption {
+  font-family: var(--hol-t-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--hol-ink);
+  opacity: 0.75;
+  margin-top: 0.5rem;
+}
+
+/* ---- 10 · RESPONSIVE (F-8) ---- */
+@media (max-width: 480px) {
+  .mx-block { margin-inline: 1rem; }
+  .mx-numbers { grid-template-columns: repeat(2, 1fr); }
+  .mx-ledger dl { grid-template-columns: 1fr; gap: 0.2rem 0; }
+  .mx-ledger dt { padding-top: 0.6rem; }
+  .mx-cheat { overflow-x: auto; }
+  .mx-cheat table { min-width: 30rem; }
+}
+
+/* ---- 11 · PRINT (F-7) — un-dark, drop chrome, keep furniture ---- */
+@media print {
+  body[data-special="deep-dive"] { background: #fff; color: #111; }
+  .mx-block { break-inside: avoid; }
+  .mx-stamp { display: none; }
+}
+
+/* ---- 12 · reduced-motion: furniture has no entrance animation of its own,
+   so nothing to disable — but honour the preference explicitly (§5). ---- */
+@media (prefers-reduced-motion: reduce) {
+  .mx-block, .mx-block * { animation: none !important; transition: none !important; }
+}

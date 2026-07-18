@@ -135,7 +135,85 @@ toward the 3-type diversity minimum.
 
 ---
 
-## Phases 1–6 — not started
+## Phase 1 — Token shim / furniture-reuse proof on a Deep Dive copy — ✅ GATE GREEN (2026-07-18)
 
-See spec §10 for the phase gates. Phase 1 (token shim on a Deep Dive copy) is next; it carries
-the single deliberate owner taste-checkpoint before the expensive Phase 2 extraction.
+Contained proof that the holiday "furniture" reads only `--hol-*` tokens, so an editorial
+token alias reskins it into paper-and-ink and lifts a Deep Dive's pacing density — without
+losing content or reading as a theme park.
+
+### What shipped (all under `docs/mockups/phase1/`, prototype-only — never a live path)
+- **`mx-phase1-shim.css`** — the token alias block (`--hol-*` → the editorial
+  `23-special-tokens.css` contract) plus de-scoped ports of the real holiday furniture as
+  neutral `.mx-*` classes: **numbers band, facts ledger, quote-object, stamp seal, cheat-sheet
+  (F-15 — instantiated, previously CSS-comment-only), act-opener, framed figure with a real
+  `<img>` (F-6)**. The loud display/script/hand faces are deliberately aliased onto the bookish
+  serif/sans (no Bowlby One / Yellowtail / Caveat) — the de-theming that keeps editorial
+  gravitas. §8 craft floor baked in the day the components were extracted: 68ch measure (F-9),
+  0.72rem type floor (F-12), token-level dark (F-7), print sheet, 390px stacking (F-8),
+  reduced-motion honoured (§5).
+- **`signal_deep-dive_2026-06-30-redressed.html`** + **`-baseline.html`** — a re-dressed COPY
+  of the Byzantium Deep Dive and a matched baseline. Furniture (10 chapter ledgers, 10
+  quote-objects, a numbers band, an 8-row cheat-sheet) built **only from the issue's own
+  facts** (trust rule — no invention; a subagent extracted verbatim facts/quotes per chapter).
+- Reproducible via `inject_p1.py` + `dd-furniture.json`; reusable render harness persisted at
+  `docs/mockups/tools/{render.mjs,shot_furn.mjs}`.
+
+### Gate evidence (spec §10 Phase 1 gate + §9 protocol)
+- **Rendered density ≥0.7:** measured on the rendered DOM, **0.51 → 0.73 events/screen**
+  (baseline 37 events / 72.8 screens → re-dressed 59 / 81.1). Words/screen 255 → 240. Clears
+  the ≥0.7 floor.
+- **Identity reads paper-and-ink (NOT theme-park):** a fresh-eyes art-director subagent, given
+  the screenshots cold (not told what they "should" be), returned verdict *"restrained,
+  paper-and-ink editorial magazine — NOT loud or theme-park … the bones are good."* Its top-3
+  fixes were applied (see below).
+- **§9 full pass:** cover + scroll-depth + dark-emulation + reduced-motion + 390px mobile
+  captured and **read**. Numbers band, ledger, quote-object, cheat-sheet all render bookish in
+  light and coherent in dark; mobile stacks single-column with **no horizontal page overflow**
+  (docW == winW == 390). Screenshots in scratchpad `out/` (final__*, finalD__*, finalM__*,
+  baseline__*).
+- **Adversarial pass:** fresh-eyes visual QA (above) + the change is CSS/prototype only. Its
+  three findings — (1) sticky masthead 86%-translucent so body text smeared through it,
+  (2) top-left nav/progress collision + a stray glyph, (3) a faint redundant corner stamp —
+  were **all legacy deep-dive chrome**, not furniture; fixed in the prototype by hiding the
+  legacy running `.mast` and the redundant `.stamp-fixed` (keeping one legible seal). The
+  proper fixes are F-3 (one masthead) / F-8 (mobile chrome) in Phases 2–3.
+- **Mandatory cross-phase:** `verify-weekly-golden.sh` **PASS** (byte-identical); chapter-plan
+  `--test` 56/56; re-dressed prototype passes the Phase 0 scaffold-token gate.
+
+### Decisions where the spec was silent
+- **Faithful reuse, not a fresh kit.** The furniture is the *real* holiday components,
+  de-scoped from `body[data-special="countdown"]` and fed the editorial alias — this proves
+  the "~83% universal bucket reads only tokens" claim directly, not by analogy to the mockup.
+- **`mx-*` naming = the sanctioned reuse vocabulary (the Phase 1 "one-line amendment").** The
+  furniture uses `mx-*` class names, which are **not** in `validate-issue.py`'s
+  `WEEKLY_FORBIDDEN_STYLE_MARKERS` (that gate bans `hol-*`/theme tokens on weeklies). So reused
+  furniture never trips the weekly holiday-marker check — no code change needed, recorded here
+  as the amendment. Phase 2 renames `hol-*` → `mx-*` at the source.
+- **Prototype freeze block.** The shim neutralises the legacy scroll-reveal/parallax/sticky
+  machinery so every frame renders complete — a live demonstration of the §5 "JS-off renders
+  100% complete content" contract and a preview of Phase 2's opt-in `[data-motion]` re-scope.
+- **The shim was RELOCATED out of `assets/css/`** the moment it was clear `stitch-issue.sh`
+  globs `assets/css/*.css` into every special bundle — leaving it there would have polluted
+  live issues on the next Sunday run (a publication-continuity violation). It now lives only in
+  `docs/mockups/phase1/` and is inlined into the prototype.
+
+### Known gaps (explicit)
+- Bespoke ledgers/quotes were authored for the 10 content chapters; the mechanical density
+  (0.73) is measured across the whole re-dressed issue. Sufficient for the proof and the gate.
+- Legacy deep-dive chrome (dual `.mast` F-3, corner nav F-8) and its lack of native dark (F-7)
+  are Phase 2/3 deliverables — the prototype patches them, it does not fix the source.
+- Fresh-eyes' fair caution — the legacy teal section-tag fights the coral accent (two accent
+  hues) — is an F-11 (token unification) / F-2 (accents) item for Phases 2–3.
+
+### Owner checkpoint
+Per spec §10, the before/after screenshots (desktop + mobile, light + dark) were sent to the
+owner as the single deliberate taste sign-off. The user's standing instruction ("do the
+remaining phases, sequentially") is taken as authorisation to proceed into Phase 2; the
+before/after is surfaced so the aesthetic direction can still be redirected cheaply.
+
+---
+
+## Phases 2–6 — in progress
+
+See spec §10 for the phase gates. Phase 2 (furniture-core extraction with neutral `--mx-*`
+names + the overdue doc pruning) is next.
