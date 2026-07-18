@@ -19,7 +19,7 @@ not produced.
 
 ---
 
-## WP-0 — GATES FIRST — 🟡 IN PROGRESS (gate pending fresh-verifier run)
+## WP-0 — GATES FIRST — ✅ COMPLETE · GATE GREEN (independent verifier, 2026-07-18)
 
 Tooling before any art. The measurement/verification suite must exist and be proven — against a
 known-good reference AND against retained negative fixtures — before anything can claim green.
@@ -55,18 +55,40 @@ transform/opacity deltas, with a reduced-motion control pass).
 **WP-0(d) — `tools/render.mjs` — ✅ built (commit: harnesses).** Non-curated screenshot set (cover
 + 8 smooth-scroll depths + dark + reduced-motion) at both widths for the Part 5 parity gate.
 
-### In flight (builder subagent)
-- WP-0(b) validator wiring: Law-3 floors + Law-9 voice minimums (data-mx-gated) + scaffold/
-  strategy-vocab greps (universal) + F-16 external-src confirmation, into `validate-issue.py`.
-- WP-0(c) four negative fixtures (stub SR, flat-boxes SR, rewind-scaffold, flat re-dress + dead
-  hotlink) + fixtures README mapping fixture→gate→expected verdict.
-- WP-0(d) evidence-ledger skeleton (`EVIDENCE/wp-0…wp-9/` + README, Part 6 §1).
+**WP-0(b) — validator wiring — ✅.** Into `validate-issue.py`: `is_mx_issue()` detector; Law-3
+`MX_LENGTH_FLOORS` (all 9 formats, data-mx-gated) folded into `check_length_band`; Law-9
+`check_voice_minimums` (data-mx-gated, first-cut heuristic — distinct named external sources via
+`data-quote-source`/`<cite>`/dash-attribution, self-quotes excluded, prefers FAIL on ambiguity);
+`check_scaffold_tokens` (F-14, ALL issues, visible-prose-only). F-16 dead-hotlink detection
+confirmed already covered by `check_image_urls` (no duplication added). `py_compile` clean.
 
-### Gate (NOT YET RUN)
+**WP-0(c) — four negative fixtures — ✅** (`EVIDENCE/negative-fixtures/`): stub SR, flat-boxes SR,
+rewind-scaffold, flat re-dress + dead hotlink; README maps each fixture → gate → expected verdict.
+
+**WP-0(d) — evidence-ledger skeleton — ✅** (`EVIDENCE/README.md` + `wp-0…wp-9/`, Part 6 §1).
+
+### Gate — ✅ GREEN (independent verifier; ledger: `EVIDENCE/wp-0/gate/`)
 *Spec WP-0 gate: every tool runs on the known-good countdown AND every negative fixture with correct
-verdicts, output committed.* Will be run by a **fresh verifier** (builder ≠ gate-runner, Part 6 §3):
-every negative fixture must FAIL; the countdown must pass the mechanical checks; outputs committed to
-`EVIDENCE/wp-0/`. Orchestrator spot-check to follow. **WP-0 is not done until this passes.**
+verdicts, output committed.* Run by a **fresh verifier** (not the builder, Part 6 §3), raw output
+committed to `EVIDENCE/wp-0/gate/`:
+- **countdown** (reference): `measure` desktop **2.113 ev/screen** (≥1.5); `validate-issue.py` exit 0;
+  does NOT trip scaffold-tokens; mx-only checks correctly skip the legacy reference.
+- **stub-season-review**: `length-floor` FAIL (522<6500) + `voice-minimums` FAIL (0<5); measure 0
+  ev/screen — TRUE low density (rendered: 522 words, scrollHeight 1382), not a gamed number.
+- **flat-boxes-season-review**: `voice-minimums` FAIL while `length-floor` **PASSES** (6931≥6500);
+  measure 0 ev/screen, longest-zero-run 19/33 screens (rendered: 6924 words, scrollHeight 16570).
+- **rewind-scaffold-tokens**: `scaffold-tokens` FAIL on `#[N]`/`[N]`/`ch2-1`/`viz_3`/"research
+  bundle"/"furniture-first".
+- **flat-redress-deepdive**: `image-urls` FAIL on the dead hotlink; measure 0.28/0.16 ev/screen.
+- **Render-failure guard:** every fixture's low reading is a TRUE render (non-zero words +
+  scrollHeight) — no load-failure masquerading as 0.
+- **Regressions:** `verify-weekly-golden.sh` exit 0 (orchestrator-run + verifier-run); scaffold/voice
+  checks do NOT false-fire on the clean golden weekly; `validate-chapter-plan.py --test` 53/53.
+- **Eyeball:** flat-boxes screenshot is a genuine stack of hairline-bordered boxes (real F-20 artifact).
+
+**Orchestrator spot-check:** personally ran `verify-weekly-golden.sh` → PASS (the key regression risk);
+reviewed the full `validate-issue.py` diff (floor/voice tables match the spec exactly, patterns tightly
+anchored, data-mx gating protects the archive); accept the verifier's raw evidence. WP-0 gate GREEN.
 
 ### Decisions where the spec was silent
 - **New Law-3 floors and Law-9 voice minimums gate on `data-mx` issues only.** The spec (WP-0b, F-18)
@@ -83,6 +105,12 @@ every negative fixture must FAIL; the countdown must pass the mechanical checks;
 - Motion census reports a high always-on animation count on the countdown even under reduced-motion
   (decorative loops not gated by `prefers-reduced-motion`); the meaningful discriminator is
   `furniture_moved` (3→0). The reduced-motion *gate* is WP-5 scope; census merely needs to function.
+- The negative fixtures, being offline stubs with zero components, also (correctly) trip `back-link`
+  and `special-variety` beyond their targeted gates — additional TRUE failures, documented in the
+  fixtures README so "isolated" is not misread as "sole failure."
+- `measure-issue.mjs` and `validate-issue.py` word counts differ slightly (~1%, different tokenizers,
+  e.g. countdown 7523 vs 7594); both land the same side of every floor/ceiling, so no gate impact.
+  Left as-is; the validator count is authoritative for Law-3, the measure count for density.
 
 ---
 

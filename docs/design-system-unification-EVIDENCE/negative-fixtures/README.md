@@ -21,6 +21,15 @@ floor and Law-9 voice minimum apply — exactly the surface attempt #2 gamed.
 | `rewind-scaffold-tokens.html` | rewind | Scaffold/strategy grep (F-14) | `validate-issue.py` | `scaffold-tokens` FAIL on `#[N]`, `[N]`, `ch2-1`, `viz_3`, "research bundle", "furniture-first" |
 | `flat-redress-deepdive.html` | deep-dive | Density (flat upright boxes); F-16 dead external hotlink | `measure-issue.mjs` + `validate-issue.py` | **0.28/0.16 ev/screen** · `image-urls` FAIL on `https://example.invalid/dead.jpg` |
 
+**On "isolated" (flat-boxes):** this means only that the flat-boxes fixture
+**clears the 6500-word floor** (unlike the stub), so its density/voices failure
+is demonstrated *independently of* the length gate. It is NOT the only check it
+fails: being an offline stub with zero components, every fixture also (correctly)
+trips `back-link` (no injected archive marker) and `special-variety` (0 component
+types). Those are additional TRUE failures, not false positives — they do not
+weaken the targeted gate's fail-provenance. The independent WP-0 gate verifier
+confirmed each targeted gate above fires as its own distinct FAIL.
+
 ## The rule
 
 **If any fixture ever PASSES its targeted gate, the gate has regressed** (SPEC
