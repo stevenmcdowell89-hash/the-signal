@@ -6,7 +6,8 @@
     "government": "Government / public-sector Flickr + media libraries",
     "archive": "Museum / archive direct hosts",
     "news_cdn": "News-agency / publication CDNs (editorial use cleared, or carried from prior published issues)",
-    "wikimedia": "Wikimedia Commons (supplement; capped per thresholds)"
+    "wikimedia": "Wikimedia Commons (supplement; capped per thresholds)",
+    "restricted": "Rights-restricted stock (Getty, Shutterstock, etc.) — NOT a publication source (F-17). Watermarked/licensed comps mislabelled 'press_kit' shipped in the archive. The diversity gates WARN on these and never count them toward source-type diversity; replace with a press_kit / government / archive / news_cdn / wikimedia original before ship."
   },
   "domains": {
     "commons.wikimedia.org": "wikimedia",
@@ -117,8 +118,8 @@
     "i.dailymail.co.uk": "news_cdn",
     "static.theguardian.com": "news_cdn",
     "guardian.com": "news_cdn",
-    "media.gettyimages.com": "press_kit",
-    "image.shutterstock.com": "press_kit",
+    "media.gettyimages.com": "restricted",
+    "image.shutterstock.com": "restricted",
     "images.squarespace-cdn.com": "news_cdn",
     "images.metmuseum.org": "archive",
     "collectionapi.metmuseum.org": "archive",

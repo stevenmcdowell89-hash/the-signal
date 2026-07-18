@@ -50,6 +50,7 @@ The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan
             "season_review",
             "versus",
             "rewind",
+            "guide",
             "starter_kit",
             "shortlist",
             "next",

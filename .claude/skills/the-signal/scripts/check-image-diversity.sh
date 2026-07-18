@@ -77,11 +77,15 @@ def classify(url):
         return netloc, "ambiguous"
     return netloc, "unknown"
 
+# F-17: rights-restricted stock (Getty/Shutterstock) is NOT a publication source
+# and never counts toward source-type diversity — same as unknown/ambiguous.
+NON_DIVERSITY_TYPES = ("unknown", "ambiguous", "restricted")
+
 records = [classify(u) for u in urls]
 total = len(records)
 domains = Counter(d for d, _ in records)
 types_full = Counter(t for _, t in records)
-types_counted = Counter(t for _, t in records if t not in ("unknown", "ambiguous"))
+types_counted = Counter(t for _, t in records if t not in NON_DIVERSITY_TYPES)
 
 # Apply rules
 failures = []
@@ -112,10 +116,21 @@ if wm_pct > thresholds["wikimedia_max_pct"]:
 
 # Rule 3: min source-type diversity
 if len(types_counted) < thresholds["min_distinct_source_types"]:
+    diversity_menu = sorted(k for k in lookup["types"] if k not in NON_DIVERSITY_TYPES)
     failures.append(
         f"Source-type diversity: {len(types_counted)} types ({sorted(types_counted)}) "
         f"< minimum of {thresholds['min_distinct_source_types']}. "
-        f"Menu: {sorted(lookup['types'].keys())}."
+        f"Menu: {diversity_menu}."
+    )
+
+# Restricted (Getty/Shutterstock) → warning, never counts toward diversity (F-17)
+if "restricted" in types_full:
+    restricted_domains = sorted({d for d, t in records if t == "restricted"})
+    warnings.append(
+        f"rights-restricted stock seen: {restricted_domains}. "
+        "Getty / Shutterstock are NOT publication sources (F-17) — they do not count "
+        "toward source-type diversity and should be replaced with an original from a "
+        "press_kit / government / archive / news_cdn source before ship."
     )
 
 # Unknown / ambiguous → warning, not fail

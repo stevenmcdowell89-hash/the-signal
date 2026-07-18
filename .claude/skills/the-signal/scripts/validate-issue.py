@@ -1166,6 +1166,49 @@ def check_scaffold_leak(html: str, report: Report) -> None:
         report.ok("scaffold-leak", "no leaked scaffold/template tokens in DOM")
 
 
+# F-14 — pipeline scaffold tokens that must NEVER render as visible prose. These
+# are the concrete leak classes the 2026-07-18 special-editions audit found
+# shipped in the public archive, each with a hard-fail grep here (design-system
+# unification spec §10 Phase 0, F-14):
+#   • signal_rewind_2026-07-12  — masthead literally read "Issue #[N]".
+#   • signal_deep-dive_2026-05-26 — 30+ "ch2-1"-style chapter IDs narrated in
+#     prose, "viz_3" figure-caption tokens, and "research bundle" credits.
+# Each pattern is matched against VISIBLE PROSE ONLY (comments/style/script and
+# then all tags stripped), so legitimate scaffold anchors (id="ch2-1",
+# href="#ch2-1") and documentation examples inside comments never trip it.
+SCAFFOLD_TOKEN_PATTERNS = [
+    (r'#?\[N\]',        'issue-number placeholder ("#[N]"/"[N]")'),
+    (r'\bch\d+-\d+\b',  'chapter-ID reference in prose ("ch2-1")'),
+    (r'\bviz_\d+',      'research-viz caption token ("viz_3")'),
+    (r'research bundle', '"research bundle" pipeline phrase in prose'),
+    # Tool-credit leak (review Part 5 §1 — countdown-wcq shipped this publicly).
+    # Same scaffold/tool-leak family as F-14; unmistakable and zero legit use.
+    (r'Created with [A-Za-z][A-Za-z ]*Computer', 'tooling credit leak ("Created with … Computer")'),
+]
+
+
+def check_scaffold_tokens(html: str, report: Report) -> None:
+    """F-14 hard gate: leaked pipeline scaffold tokens rendered as reader copy.
+
+    Distinct from check_scaffold_leak (unfilled [Title]-shape template slots):
+    this catches the *production-leakage* classes — internal chapter IDs,
+    viz/research-bundle credits, and the `#[N]` masthead placeholder — that
+    reached readers in the archive because the publish gate did not police them.
+    """
+    text = re.sub(r"<[^>]+>", " ", body_text_only(html))  # visible prose only
+    hits = []
+    for pattern, label in SCAFFOLD_TOKEN_PATTERNS:
+        matches = re.findall(pattern, text, re.IGNORECASE)
+        if matches:
+            hits.append(f"{label} ×{len(matches)}")
+    if hits:
+        report.fail("scaffold-tokens",
+                    "leaked pipeline scaffold token(s) in visible prose (F-14): "
+                    + "; ".join(hits))
+    else:
+        report.ok("scaffold-tokens", "no leaked pipeline scaffold tokens in prose")
+
+
 def check_length_band(html: str, fmt: str, report: Report) -> None:
     """Hard per-format word band: ceiling (v8.39, S6) + floor (2026-07-13, A1).
 
@@ -1342,6 +1385,7 @@ def main(argv: list[str]) -> int:
     check_weekly_structure(html, fmt, report)
     check_weekly_visual_consistency(html, fmt, report)
     check_scaffold_leak(html, report)
+    check_scaffold_tokens(html, report)
     check_length_band(html, fmt, report)
     # Image-presence floor: markup-only, network-free — runs unconditionally,
     # including under --skip-image-urls and in offline sandboxes (A2).

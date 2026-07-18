@@ -46,10 +46,15 @@ VALID_FORMATS = {
     "season_review",
     "versus",
     "rewind",
-    "starter_kit",
-    "blueprint",
-    "shortlist",
+    "guide",         # v8.39 (S4): the merged recommendation format — was missing
+                     # here, so a spec-compliant Guide plan hard-failed the Phase 4
+                     # gate (design-system unification spec §10 Phase 0).
+    "next",          # live recommendation format — recognised by validate-issue.py
+                     # and the schema, but was absent from this validator's vocab.
+    "starter_kit",   # back-compat alias for guide (beginner mode) — archive slug.
+    "shortlist",     # back-compat alias for guide (category mode) — archive slug.
     "field_guide",
+    # blueprint removed — retired v8.22; folded into Deep Dive / the Guide cluster.
 }
 
 # Format → execution_mode mapping (hard rule)
@@ -57,13 +62,17 @@ FORMAT_EXECUTION_MODE = {
     "weekly":        "parallel",
     "countdown":     "parallel",
     "field_guide":   "parallel",
+    "guide":         "parallel",   # merged recommendation format (shortlist +
+                                   # starter_kit, both parallel) → parallel.
     "shortlist":     "parallel",
     "starter_kit":   "parallel",
-    "blueprint":     "parallel",
     "deep_dive":     "sequential",
     "versus":        "sequential",
     "rewind":        "sequential",
     "season_review": "sequential",
+    # 'next' is intentionally unpinned: it is a manual-only, single-lane
+    # progression format that has never carried a fixed execution_mode; a Next
+    # plan may declare either mode. blueprint removed (retired v8.22).
 }
 
 # Formats where is_hype=True is permitted
@@ -246,8 +255,8 @@ def check_issue_meta(meta):
                 err(
                     f"[EXEC_MODE] issue_meta.execution_mode='{mode}' does not match format '{fmt}'. "
                     f"Expected: '{expected}'. "
-                    f"(parallel formats: countdown, field_guide, shortlist, starter_kit, blueprint, weekly; "
-                    f"sequential: deep_dive, versus, rewind, season_review)"
+                    f"(parallel formats: countdown, field_guide, guide, shortlist, starter_kit, weekly; "
+                    f"sequential: deep_dive, versus, rewind, season_review; next is unpinned)"
                 )
 
 
@@ -616,7 +625,7 @@ def check_chapters(chapters, issue_meta):
                     f"Hype modifiers only allowed on: {sorted(HYPE_ALLOWED_FORMATS)}"
                 )
             # (if fmt not in HYPE_ALLOWED_FORMATS but also not banned, allow with no error
-            #  to be permissive for weekly/blueprint/shortlist/starter_kit if planner chooses)
+            #  to be permissive for weekly/guide/shortlist/starter_kit/next if planner chooses)
 
         # 13. v8.27 — fixed-section Lead + Catch-Up shape (weekly format only)
         if fmt == "weekly" and ch_id in FIXED_SECTION_CHAPTER_IDS:
@@ -1246,9 +1255,39 @@ def run_inline_tests():
         }]
     ), expect_pass=True)
 
+    # v8.39 (S4) / unification Phase 0 — the merged recommendation format must
+    # pass Phase 4; it hard-failed the vocab gate before `guide` was added here.
+    run_test("valid guide (parallel)", make_plan(
+        issue_meta={"format": "guide", "date": "2026-08-16", "topic": "Getting into Malazan",
+                    "special_id": "guide-malazan-2026", "execution_mode": "parallel"},
+        chapters=[{
+            "chapter_id": "the-lens", "chapter_num": 1, "chapter_type": "opener",
+            "chapter_title": "The Lens", "chapter_arc": "How we chose", "ground": "paper",
+            "is_hype": False, "data_venue": None, "target_word_count": 600,
+            "images_needed": [], "key_facts": [], "forbidden_topics": [], "cross_refs": []
+        }]
+    ), expect_pass=True)
+
+    # Next is now recognised (was absent from this validator's vocab entirely);
+    # its execution_mode is unpinned, so parallel is accepted.
+    run_test("valid next (unpinned mode)", make_plan(
+        issue_meta={"format": "next", "date": "2026-08-16", "topic": "After Malazan Book 1",
+                    "special_id": "next-malazan-2026", "execution_mode": "parallel"},
+        chapters=[{
+            "chapter_id": "on-ramp", "chapter_num": 1, "chapter_type": "opener",
+            "chapter_title": "The On-Ramp", "chapter_arc": "Where to go next", "ground": "paper",
+            "is_hype": False, "data_venue": None, "target_word_count": 500,
+            "images_needed": [], "key_facts": [], "forbidden_topics": [], "cross_refs": []
+        }]
+    ), expect_pass=True)
+
     # ── INVALID cases ──
     bad_format = make_plan(issue_meta={**make_plan()["issue_meta"], "format": "weekly_special"})
     run_test("invalid format vocab", bad_format, expect_pass=False)
+
+    # blueprint retired v8.22 — must no longer validate as a live format.
+    retired_blueprint = make_plan(issue_meta={**make_plan()["issue_meta"], "format": "blueprint"})
+    run_test("retired blueprint format rejected", retired_blueprint, expect_pass=False)
 
     bad_mode = make_plan(issue_meta={**make_plan()["issue_meta"], "execution_mode": "sequential"})
     run_test("execution_mode mismatch (countdown should be parallel)", bad_mode, expect_pass=False)
