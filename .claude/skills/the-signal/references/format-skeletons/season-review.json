@@ -1,0 +1,14 @@
+{
+  "_doc": "Season Review skeleton (§7.1). Sport/tournament wrap. Event skin, furniture-first (sport is photo-locked → density from furniture, not photos). Density floor 0.9 events/screen; ~2 photos target.",
+  "format": "season-review", "skin": "event", "execution_mode": "sequential",
+  "density": { "events_per_screen_floor": 0.9, "words_per_screen_max": 210, "photo_target": 2 },
+  "invariants": { "acts": [1, 3], "max_transit": 1, "must_end_with": "cheat_sheet" },
+  "visual_events_vocabulary": ["numbers_band","ledger","plate_run","stamp","pull_object","act_break","marquee","menu","cheat_sheet","ephemera_cluster"],
+  "chapters": [
+    {"chapter_id":"open","role":"opener","act":1,"ground":"ink","visual_events":["numbers_band","stamp"]},
+    {"chapter_id":"format","role":"literary","act":1,"ground":"paper","visual_events":["ledger","pull_object"]},
+    {"chapter_id":"road","role":"literary","act":2,"ground":"paper","visual_events":["ledger","plate_run"]},
+    {"chapter_id":"numbers","role":"literary","act":2,"ground":"gallery","visual_events":["numbers_band","ledger"]},
+    {"chapter_id":"verdict","role":"closer","act":3,"ground":"paper","visual_events":["cheat_sheet","pull_object"]}
+  ]
+}

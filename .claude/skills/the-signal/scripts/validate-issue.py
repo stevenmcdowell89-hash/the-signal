@@ -455,6 +455,23 @@ SPECIAL_COMPONENT_GROUPS: dict[str, set[str]] = {
     "week-plan":     {"week-plan"},
     "sk-mistake":    {"sk-mistake"},
     "sk-takeaway":   {"sk-takeaway"},
+    # design-system-unification — the new-system furniture core (§3). A special
+    # built on the core earns its variety from these, not the legacy .sp-* set.
+    "mx-numbers":    {"mx-numbers"},
+    "mx-ledger":     {"mx-ledger"},
+    "mx-quote":      {"mx-quote"},
+    "mx-cheat":      {"mx-cheat"},
+    "mx-plate":      {"mx-plate"},
+    "mx-stamp":      {"mx-stamp"},
+    "mx-rank":       {"mx-rank"},
+    "mx-ticket":     {"mx-ticket"},
+    "mx-marquee":    {"mx-marquee"},
+    "mx-anchor":     {"mx-anchor"},
+    "mx-mail":       {"mx-mail"},
+    "mx-pinned":     {"mx-pinned"},
+    "mx-dropcap":    {"mx-dropcap"},
+    "mx-figure":     {"mx-figure"},
+    "mx-chips":      {"mx-chips", "mx-chip"},
 }
 
 # Enforced floor = (formats.md guidance lower bound) − 1, honoring the old

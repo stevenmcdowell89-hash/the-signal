@@ -124,13 +124,17 @@
    can carry data-mx (so its writers may drop in furniture) with ZERO change to
    its existing ground/type. A wholesale paper-and-ink re-dress is the explicit
    opt-in `data-mx~="page"`, used by issues built entirely on the core. */
-[data-mx~="page"] {
+/* `body[...]` prefix so the page register out-specifies legacy `body.is-special`
+   ground rules that ship in the same bundle (the core is concatenated last, so
+   equal specificity resolves to the core; the body-qualified selector guarantees
+   it also beats element+class legacy rules). */
+body[data-mx~="page"], [data-mx~="page"] {
   background: var(--mx-paper);
   color: var(--mx-ink);
   font-family: var(--mx-t-serif);
   -webkit-font-smoothing: antialiased;
 }
-[data-mx~="page"] p { max-width: var(--mx-measure); }
+body[data-mx~="page"] p { max-width: var(--mx-measure); }
 
 /* ---- Six type-role utilities (whitelist-driven) ------------------------ */
 .mx-t-chunk  { font-family: var(--mx-t-chunk);  }
