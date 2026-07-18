@@ -1,0 +1,20 @@
+  (auto-detected format from <body>: season-review)
+=== validate-issue.py ===
+File:   docs/design-system-unification-EVIDENCE/negative-fixtures/stub-season-review.html
+Format: season-review  Multi-venue: False  Strict: False
+Size:   4,299 chars / 4,301 bytes
+
+[PASS] structure: 37 lines, doctype + </html> + </body> present
+[PASS] placeholders: no banned literal placeholders in DOM
+[PASS] scaffold-leak: no leaked scaffold/template tokens in DOM
+[PASS] scaffold-tokens: no scaffold/strategy tokens in visible prose
+[PASS] length-ceiling: 528 words within season-review ceiling 13,000
+[PASS] image-floor: no image floor defined for format 'season-review' — skipped
+[WARN] css-class-sanity: top-30 classes not referenced in <style>: issue
+[WARN] image-urls: skipped per --skip-image-urls
+[FAIL] back-link: the 'Return to The Signal' archive button is missing or malformed: injection marker '<!-- the-signal:back -->' absent; no <a class="signal-back-to-archive"> anchor in DOM. Re-run scripts/stitch-issue.sh (idempotent) or inject assets/template-parts/back-link.html right after <body>.
+[FAIL] length-floor: 528 words is under the season-review floor of 6,500 — a half-length issue (the ~3,960-word first-run defect). The 6-9k target must be allocated per band and written to, not yielded away. Do not pad: go back to the planner for more material/research.
+[FAIL] voice-minimums: 0 distinct named external voice(s) rendered as quote-objects — below the season-review floor of 5 (Law 9). Self-quotes (0 found) do not count. A magazine has arguments with named sources, not first-person experience — add verbatim quotes from real, named people, each as a quote-object.
+[FAIL] special-variety: season-review deploys only 0 distinct presentational component type(s); floor is 7. Present: (none). A special edition must render with real visual variety — see the 'season-review' kit in references/spec/formats.md and the component list in references/spec/specials.md. Add components from the format's flair kit (e.g. .pick + .pick-stats, .bignum-row, .pullquote, .also-cards, figure.image-quote), not just prose chapters.
+
+4 failure(s) — issue NOT shippable.

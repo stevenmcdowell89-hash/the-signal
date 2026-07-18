@@ -1,0 +1,58 @@
+
+=== INLINE TEST RESULTS ===
+  ✓ [PASS] valid minimal countdown (parallel)
+  ✓ [PASS] valid weekly (parallel)
+  ✓ [PASS] valid deep_dive (sequential)
+  ✓ [PASS] invalid format vocab
+  ✓ [PASS] execution_mode mismatch (countdown should be parallel)
+  ✓ [PASS] chapter_num gap (1,3 not 1,2)
+  ✓ [PASS] duplicate chapter_id
+  ✓ [PASS] cross_refs non-empty in parallel format
+  ✓ [PASS] cross_ref to nonexistent chapter_id
+  ✓ [PASS] invalid ground vocab
+  ✓ [PASS] is_hype=true on literary format (deep_dive)
+  ✓ [PASS] accent_lockdown=false (banned)
+  ✓ [PASS] invalid date format
+  ✓ [PASS] valid weekly with Lead + Companion world + long_shelf wildcards
+  ✓ [PASS] weekly round with no pieces (v8.37 — no backbone required)
+  ✓ [PASS] pieces share topic_family
+  ✓ [PASS] topic_family not in enumeration
+  ✓ [PASS] companion word_count floor below 200
+  ✓ [PASS] long_shelf with <2 wildcards
+  ✓ [PASS] long_shelf with only 5 items
+  ✓ [PASS] countdown chapter without pieces (not bound by Lead+Companion)
+  ✓ [PASS] bare lead (considered piece) passes (v8.34)
+  ✓ [PASS] lead + substantive catch_up passes (no companion)
+  ✓ [PASS] lead + yield_reason passes (section yields)
+  ✓ [PASS] catch_up bare namedrop (no why) fails
+  ✓ [PASS] catch_up item without link fails
+  ✓ [PASS] toolkit fixed section with lead + catch_up passes
+  ✓ [PASS] pure catch_up round with no lead passes (v8.37 — no backbone required)
+  ✓ [PASS] catch_up-only section with yield_reason passes (v8.34)
+  ✓ [PASS] companion without a lead fails (v8.28)
+  ✓ [PASS] tight 150-word lead passes (v8.28 floor relaxed)
+  ✓ [PASS] valid directors_cut on screen_sound
+  ✓ [PASS] directors_cut Lead word floor below 550
+  ✓ [PASS] directors_cut on wrong chapter (world)
+  ✓ [PASS] invalid sub_format value
+  ✓ [PASS] valid closer_look on history
+  ✓ [PASS] closer_look featured_item below 600
+  ✓ [PASS] closer_look forbids also_items
+  ✓ [PASS] closer_look on wrong chapter (screen_sound)
+  ✓ [PASS] featured_item without closer_look sub_format
+  ✓ [PASS] weekly missing discovery_picks
+  ✓ [PASS] weekly with 2 discovery_picks (below floor)
+  ✓ [PASS] discovery_picks rule skipped on countdown
+  ✓ [PASS] discovery_picks entry missing rationale
+  ✓ [PASS] structured key_fact (valid) passes
+  ✓ [PASS] bare-string key_fact still passes (back-compat)
+  ✓ [PASS] structured key_fact missing source_url fails
+  ✓ [PASS] structured key_fact bad status fails
+  ✓ [PASS] opinion key_fact without quote fails
+  ✓ [PASS] weekly missing release_radar fails
+  ✓ [PASS] release_radar <15 items fails
+  ✓ [PASS] release_radar <4 categories fails
+  ✓ [PASS] valid release_radar passes
+
+53/53 tests passed.
+PIPELINE TEST: PASS

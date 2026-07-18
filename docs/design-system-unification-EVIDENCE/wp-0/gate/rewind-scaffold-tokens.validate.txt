@@ -1,0 +1,20 @@
+  (auto-detected format from <body>: rewind)
+=== validate-issue.py ===
+File:   docs/design-system-unification-EVIDENCE/negative-fixtures/rewind-scaffold-tokens.html
+Format: rewind  Multi-venue: False  Strict: False
+Size:   1,871 chars / 1,873 bytes
+
+[PASS] structure: 37 lines, doctype + </html> + </body> present
+[PASS] placeholders: no banned literal placeholders in DOM
+[PASS] scaffold-leak: no leaked scaffold/template tokens in DOM
+[PASS] length-ceiling: 104 words within rewind ceiling 15,000
+[PASS] image-floor: no image floor defined for format 'rewind' — skipped
+[WARN] css-class-sanity: top-30 classes not referenced in <style>: issue
+[WARN] image-urls: skipped per --skip-image-urls
+[FAIL] back-link: the 'Return to The Signal' archive button is missing or malformed: injection marker '<!-- the-signal:back -->' absent; no <a class="signal-back-to-archive"> anchor in DOM. Re-run scripts/stitch-issue.sh (idempotent) or inject assets/template-parts/back-link.html right after <body>.
+[FAIL] scaffold-tokens: scaffold/strategy vocabulary leaked into visible prose (F-14): issue-number-slot (e.g. '#[N]' ×1); bracket-N-slot (e.g. '[N]' ×1); chapter-anchor (e.g. 'ch2-1' ×1); viz-slot (e.g. 'viz_3' ×1); research-bundle (e.g. 'research bundle' ×1); strategy:furniture-first (e.g. 'furniture-first' ×1)
+[FAIL] length-floor: 104 words is under the rewind floor of 7,000 — a half-length issue (the ~3,960-word first-run defect). The 6-9k target must be allocated per band and written to, not yielded away. Do not pad: go back to the planner for more material/research.
+[FAIL] voice-minimums: 0 distinct named external voice(s) rendered as quote-objects — below the rewind floor of 3 (Law 9). Self-quotes (0 found) do not count. A magazine has arguments with named sources, not first-person experience — add verbatim quotes from real, named people, each as a quote-object.
+[FAIL] special-variety: rewind deploys only 0 distinct presentational component type(s); floor is 9. Present: (none). A special edition must render with real visual variety — see the 'rewind' kit in references/spec/formats.md and the component list in references/spec/specials.md. Add components from the format's flair kit (e.g. .pick + .pick-stats, .bignum-row, .pullquote, .also-cards, figure.image-quote), not just prose chapters.
+
+5 failure(s) — issue NOT shippable.

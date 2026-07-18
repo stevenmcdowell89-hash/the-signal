@@ -1,0 +1,24 @@
+  (auto-detected format from <body>: countdown)
+  (auto-detected multi-venue from <body>)
+=== validate-issue.py ===
+File:   issues/signal_countdown_2026-06-14.html
+Format: countdown  Multi-venue: True  Strict: False
+Size:   654,269 chars / 665,417 bytes
+
+[PASS] structure: 15,510 lines, doctype + </html> + </body> present
+[PASS] back-link: 'Return to The Signal' archive button present (marker + anchor → "../")
+[PASS] placeholders: no banned literal placeholders in DOM
+[PASS] scaffold-leak: no leaked scaffold/template tokens in DOM
+[PASS] scaffold-tokens: no scaffold/strategy tokens in visible prose
+[PASS] length-ceiling: 7,594 words within countdown ceiling 11,000
+[PASS] voice-minimums: legacy (non-data-mx) issue — Law-9 voice floor not applied
+[PASS] image-floor: no image floor defined for format 'countdown' — skipped
+[PASS] holiday-activation: <body> at line 11498: <body class="is-special" data-special="countdown" data-multi-venue="true">
+[PASS] holiday-components: .hol-masthead: 4 class variant(s) present (hol-masthead, hol-masthead__badge, hol-masthead__meta, +1 more)
+[PASS] holiday-components: .hol-cover: 10 class variant(s) present (hol-cover, hol-cover--poster, hol-cover__arch, +7 more)
+[PASS] holiday-components: .hol-half: 9 class variant(s) present (hol-half, hol-half--one, hol-half--two, +6 more)
+[PASS] multi-venue: 2 venues: beekse-bergen, efteling
+[WARN] css-class-sanity: top-30 classes not referenced in <style>: hol-polaroid__credit
+[WARN] image-urls: skipped per --skip-image-urls
+
+2 warning(s). PASS.

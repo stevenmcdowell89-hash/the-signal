@@ -1,0 +1,52 @@
+=== weekly golden regression ===
+  fixture: /home/user/the-signal/.claude/skills/the-signal/references/golden/weekly
+--- stitch (via the real bash entrypoint) ---
+=== stitch-issue.sh: reading plan ===
+=== weekly format → stitch_weekly.py (skeleton-driven) ===
+=== weekly stitch OK ===
+  Bands rendered: 15 (+cover)
+  Movements:      open, long-read, rounds, close
+  CSS:            25.0 KB (1 file)
+  JS:             1.4 KB
+  Output:         /tmp/tmp.jEqGWpkDRH/golden-weekly.html (85.1 KB)
+
+=== DONE ===
+  Stitched issue: /tmp/tmp.jEqGWpkDRH/golden-weekly.html
+
+--- validate (all gates; golden carries real <img> markup — --skip-image-urls only skips the network HEAD-checks, which can't run in the offline sandbox) ---
+=== validate-issue.py ===
+File:   /tmp/tmp.jEqGWpkDRH/golden-weekly.html
+Format: weekly  Multi-venue: False  Strict: False
+Size:   86,807 chars / 87,179 bytes
+
+[PASS] structure: 1,658 lines, doctype + </html> + </body> present
+[PASS] back-link: 'Return to The Signal' archive button present (marker + anchor → "../")
+[PASS] placeholders: no banned literal placeholders in DOM
+[PASS] css-class-sanity: top-30 classes all referenced in <style>
+[PASS] weekly-structure/movement-bands: all four movement bands present (open, long-read, rounds, close)
+[PASS] weekly-structure/long-read: exactly one Long Read (data-role='long-read')
+[PASS] weekly-structure/desk-container: The Desk is one department with 2 nested column(s), no exploded columns
+[PASS] weekly-structure/release-radar-fold: Release Radar folded inside Screen & Sound
+[PASS] weekly-structure/nav-count: 7 navigator stations (4-13)
+[PASS] weekly-structure/caught-up-cap: Caught Up within cap (8/8 lines)
+[PASS] weekly-structure/long-read-image: Long Read carries 2 real <img> tag(s)
+[PASS] weekly-visual/no-special-css: no special/holiday CSS markers in the injected stylesheet
+[PASS] weekly-visual/fonts: fonts limited to the Transmission set (['Instrument Serif', 'JetBrains Mono', 'Newsreader'])
+[PASS] weekly-visual/no-sp-components: no special .sp-* body components
+[PASS] weekly-visual/masthead: uses the constant Transmission masthead
+[PASS] weekly-visual/transmission: Transmission .issue wrapper present
+[PASS] scaffold-leak: no leaked scaffold/template tokens in DOM
+[PASS] scaffold-tokens: no scaffold/strategy tokens in visible prose
+[PASS] length-ceiling: 6,391 words within weekly ceiling 11,000
+[PASS] length-floor: 6,391 words clears the weekly floor 6,000
+[PASS] voice-minimums: legacy (non-data-mx) issue — Law-9 voice floor not applied
+[PASS] image-floor: 10 real <img> tag(s) clears the weekly floor of 8
+[WARN] image-urls: skipped per --skip-image-urls
+
+1 warning(s). PASS.
+
+--- validate the golden plan against the skeleton ---
+PASS — '/home/user/the-signal/.claude/skills/the-signal/references/golden/weekly/chapter-plan.json' is valid.
+  Format: weekly  |  Execution: parallel  |  Chapters: 15
+
+=== GOLDEN REGRESSION PASS — the weekly generator produces a valid Transmission issue ===
