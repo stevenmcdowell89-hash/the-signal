@@ -1,0 +1,23 @@
+/* ============================================================
+   MX SKIN · EVENT  (Countdown / Field Guide / trip issues / Season Review-event)
+   The holiday chassis rhythm — halves, act-opener scale, transit, hype density —
+   with the --mx-* contract fed the warmer event palette. Opt-in via
+   body[data-skin="event"]. Motif packs re-declare per-act values inline.
+   ============================================================ */
+body[data-skin="event"] {
+  --mx-paper:#FCF5ED; --mx-paper-2:#F3E9D6; --mx-ink:#1B2244; --mx-ink-deep:#0D1330;
+  --mx-accent:#B25361; --mx-accent-2:#B8893A; --mx-support-1:#1F5B48; --mx-support-2:#79A8C2;
+  --mx-hair:rgba(27,34,68,.16); --mx-hair-strong:rgba(27,34,68,.36);
+  --mx-t-serif:'Cinzel','Playfair Display',serif;
+  --mx-t-sans:'DM Sans','Inter',system-ui,sans-serif;
+  --mx-t-mono:'Space Mono','JetBrains Mono',monospace;
+  --mx-t-chunk:'Bowlby One',Impact,sans-serif; --mx-t-tall:'Anton','Bebas Neue',Impact,sans-serif;
+  --mx-t-script:'Yellowtail','Pacifico',cursive; --mx-t-hand:'Caveat','Kalam',cursive;
+}
+@media (prefers-color-scheme: dark) {
+  body[data-skin="event"] {
+    --mx-paper:#141018; --mx-paper-2:#1E1826; --mx-ink:#F0E9DE; --mx-ink-deep:#FAF4EA;
+    --mx-accent:#D98494; --mx-accent-2:#D9B36A;
+    --mx-hair:rgba(240,233,222,.16); --mx-hair-strong:rgba(240,233,222,.34);
+  }
+}

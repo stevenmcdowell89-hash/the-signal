@@ -64,11 +64,11 @@ for idx in sorted(groups, reverse=True):
     out=out[:idx]+"\n"+"\n".join(groups[idx])+"\n"+out[idx:]
 
 # add data-mx to the real <body>, inline the core before </head>
-out=re.sub(r'(<body\b[^>]*?)>', r'\1 data-mx>', out, count=1)  # first body after replaced doc
+out=re.sub(r'(<body\b[^>]*?)>', r'\1 data-mx="page">', out, count=1)  # first body after replaced doc
 # ensure we tagged the REAL body (after </head>): re-do precisely
 he=re.search(r'</head\s*>',out,re.I)
 tail=out[he.end():]
-tail=re.sub(r'<body\b(?![^>]*data-mx)([^>]*)>', r'<body\1 data-mx>', tail, count=1)
+tail=re.sub(r'<body\b(?![^>]*data-mx)([^>]*)>', r'<body\1 data-mx="page">', tail, count=1)
 out=out[:he.end()]+tail
 style=f'\n<style id="mx-core">\n{core_css}\n</style>\n'
 out=out[:he.start()]+style+out[he.start():]

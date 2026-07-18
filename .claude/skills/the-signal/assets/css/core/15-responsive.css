@@ -6,16 +6,14 @@
    480px rules. Reads only --mx-*.
    ============================================================ */
 
-/* Global: never allow a component to overhang the viewport (F-8). */
-[data-mx] { overflow-x: clip; }
-[data-mx] img, [data-mx] svg, [data-mx] video { max-width: 100%; height: auto; }
+/* Global page hygiene — only on the opt-in full re-dress, so wiring data-mx
+   onto a legacy special is inert for its existing layout (F-8/F-9). */
+[data-mx~="page"] { overflow-x: clip; }
+[data-mx~="page"] img, [data-mx~="page"] svg, [data-mx~="page"] video { max-width: 100%; height: auto; }
+[data-mx~="page"] p, [data-mx~="page"] li, [data-mx~="page"] blockquote { max-width: var(--mx-measure); }
 
-/* Wide content scrolls inside its own container, never the document (§8). */
+/* Furniture-level rules always apply (they only match .mx-* elements). */
 [data-mx] .mx-scroll-x { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-[data-mx] table { max-width: 100%; }
-
-/* Body-copy measure cap enforced globally (F-9). */
-[data-mx] p, [data-mx] li, [data-mx] blockquote { max-width: var(--mx-measure); }
 [data-mx] .mx-block { max-width: min(100% - 2rem, var(--mx-measure)); }
 [data-mx] .mx-block--wide { max-width: min(100% - 2rem, var(--mx-measure-wide)); }
 

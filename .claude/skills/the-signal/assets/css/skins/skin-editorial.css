@@ -1,0 +1,25 @@
+/* ============================================================
+   MX SKIN · EDITORIAL  (Deep Dive / Rewind / Versus / Season Review / Guide /
+   Next / Shortlist / Starter Kit)  — design-system-unification §3 L1
+   Aliases the --mx-* contract onto the calm editorial palette. Opt-in via
+   body[data-skin="editorial"] (F-4: no :not() opt-out chains). Self-contained —
+   supplies values directly so it does not depend on legacy layer 23 shipping.
+   The motif surface is capped at palette-arc + one pattern + one cover gesture.
+   ============================================================ */
+body[data-skin="editorial"] {
+  --mx-paper:#FAFAF8; --mx-paper-2:#F1EFEA; --mx-ink:#111119; --mx-ink-deep:#0A0E17;
+  --mx-accent:#C24B2C; --mx-accent-2:#C9A66B; --mx-support-1:#1A8A7A; --mx-support-2:#35506E;
+  --mx-hair:rgba(17,17,25,.14); --mx-hair-strong:rgba(17,17,25,.34);
+  --mx-t-serif:'Cormorant Garamond','EB Garamond',Georgia,serif;
+  --mx-t-sans:'DM Sans','Inter',system-ui,sans-serif;
+  --mx-t-mono:'JetBrains Mono','IBM Plex Mono',ui-monospace,monospace;
+  --mx-t-chunk:var(--mx-t-sans); --mx-t-tall:var(--mx-t-sans);
+  --mx-t-script:var(--mx-t-serif); --mx-t-hand:var(--mx-t-serif);
+}
+@media (prefers-color-scheme: dark) {
+  body[data-skin="editorial"] {
+    --mx-paper:#14141A; --mx-paper-2:#1C1C24; --mx-ink:#ECEAE3; --mx-ink-deep:#F7F5EF;
+    --mx-accent:#E8794F; --mx-accent-2:#D8B36A;
+    --mx-hair:rgba(236,234,227,.16); --mx-hair-strong:rgba(236,234,227,.34);
+  }
+}

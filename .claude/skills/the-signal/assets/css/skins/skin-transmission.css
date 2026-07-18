@@ -1,0 +1,16 @@
+/* ============================================================
+   MX SKIN · TRANSMISSION  (the weekly)  — design-system-unification §3 L1
+   The weekly is NOT a skin of the holiday chassis: 00-transmission.css stays
+   BYTE-IDENTICAL and owns the weekly's look. This file is ONLY the ~20-line
+   alias block so that, when a weekly carries a core furniture object (Phase 6),
+   that object reads the weekly's own tokens. Opt-in via body[data-skin="transmission"].
+   ============================================================ */
+body[data-skin="transmission"] {
+  --mx-paper:var(--paper,#FAFAF8); --mx-paper-2:var(--paper-deep,#EFEEEA);
+  --mx-ink:var(--ink,#111119); --mx-ink-deep:var(--ink-deep,#0A0E17);
+  --mx-accent:var(--accent,#E8384F); --mx-accent-2:var(--accent-gold,#C9A66B);
+  --mx-hair:var(--rule,rgba(17,17,25,.14)); --mx-hair-strong:var(--rule-strong,rgba(17,17,25,.38));
+  --mx-t-serif:var(--serif,'Cormorant Garamond',Georgia,serif);
+  --mx-t-sans:var(--sans,'DM Sans',system-ui,sans-serif);
+  --mx-t-mono:var(--mono,'JetBrains Mono',monospace);
+}

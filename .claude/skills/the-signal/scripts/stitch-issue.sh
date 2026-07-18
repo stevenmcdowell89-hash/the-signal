@@ -327,12 +327,36 @@ css_marker = assets.get("css_inject_marker", "<!-- INJECT:CSS -->")
 js_marker  = assets.get("js_inject_marker",  "<!-- INJECT:JS -->")
 
 # ── Assemble CSS ──
-if css_dir.is_dir():
+# design-system-unification F-5: per-format manifest replaces the "glob every
+# assets/css/*.css" bundle so a special no longer carries every other format's
+# CSS. references/css-manifests/<format>.txt lists the exact files (relative to
+# assets/css/), in order. SAFETY: any problem reading/resolving the manifest
+# (missing file, unknown format, unreadable) falls back to the full glob — so a
+# broken manifest can never ship a partial bundle, only the (larger) old one.
+_fmt = plan.get("issue_meta", {}).get("format", "").lower().replace("_", "-")
+_manifest = css_dir.parent.parent / "references" / "css-manifests" / f"{_fmt}.txt"
+css_content = None
+css_files_used = 0
+if _manifest.exists():
+    try:
+        wanted = [ln.strip() for ln in _manifest.read_text().splitlines()
+                  if ln.strip() and not ln.strip().startswith("#")]
+        paths = [css_dir / rel for rel in wanted]
+        missing = [p for p in paths if not p.exists()]
+        if missing:
+            raise FileNotFoundError(f"manifest lists missing files: {missing[:3]}")
+        css_content = "\n".join(p.read_text(encoding="utf-8") for p in paths)
+        css_files_used = len(paths)
+        print(f"CSS: per-format manifest {_manifest.name} → {css_files_used} files")
+    except Exception as e:
+        print(f"CSS: manifest {_manifest.name} unusable ({e}); falling back to full glob")
+        css_content = None
+if css_content is None and css_dir.is_dir():
     css_files = sorted(css_dir.glob("*.css"))
     css_blocks = [f.read_text(encoding="utf-8") for f in css_files]
     css_content = "\n".join(css_blocks)
     css_files_used = len(css_files)
-else:
+elif css_content is None:
     # Legacy fallback
     legacy = plan_path.parent.parent / "assets" / "styles.css"
     if legacy.exists():
@@ -505,7 +529,15 @@ issue_meta_early = plan.get("issue_meta", {})
 issue_format_early = issue_meta_early.get("format", "").lower().replace("_", "-")
 HOLIDAY_FORMATS = {"countdown", "field-guide"}
 SPECIAL_FORMATS = {"countdown", "field-guide", "deep-dive", "versus", "rewind",
-                   "season-review", "starter-kit", "shortlist", "next", "lookahead"}
+                   "season-review", "starter-kit", "shortlist", "next", "lookahead",
+                   "guide"}
+# Furniture-core skin per format (design-system-unification §3 L1). Editorial
+# skin is the default for non-event specials; event formats carry the holiday
+# chassis skin. Adding data-mx is inert unless the issue uses .mx-* furniture or
+# opts into data-mx~="page" (the core base register is opt-in), so this changes
+# nothing for existing specials — it only makes the core available.
+MX_SKIN_MAP = {"countdown": "event", "field-guide": "event"}
+def _mx_skin(fmt): return MX_SKIN_MAP.get(fmt, "editorial")
 
 # v8.22.12 — activate body for ALL special formats, not just holiday.
 # The non-holiday v8.21 CSS bundle (23- through 32-) is scoped to
@@ -532,7 +564,8 @@ if issue_format_early in SPECIAL_FORMATS:
     body_abs_start = head_end_match.end() + body_search.start()
     body_abs_end   = head_end_match.end() + body_search.end()
     multi_venue_flag = bool(issue_meta_early.get("multi_venue", False))
-    body_attrs = f'class="is-special" data-special="{issue_format_early}"'
+    body_attrs = (f'class="is-special" data-special="{issue_format_early}"'
+                  f' data-mx data-skin="{_mx_skin(issue_format_early)}"')
     if multi_venue_flag:
         body_attrs += ' data-multi-venue="true"'
     desired_body = f'<body {body_attrs}>'

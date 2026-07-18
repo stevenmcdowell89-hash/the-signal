@@ -118,17 +118,19 @@
 }
 :root[data-theme="dark"] [data-mx] { color-scheme: dark; }
 
-/* ---- Base register applied by the core --------------------------------
-   The core sets ground/ink/font on the [data-mx] host so a re-dressed issue
-   inherits paper-and-ink even before any component mounts. Body copy is capped
-   at the measure and never lights up the accent. */
-[data-mx] {
+/* ---- Base register — OPT-IN full re-dress -----------------------------
+   Merely having [data-mx] only makes the token contract + .mx-* furniture
+   available; it does NOT restyle the host. This is deliberate: a live special
+   can carry data-mx (so its writers may drop in furniture) with ZERO change to
+   its existing ground/type. A wholesale paper-and-ink re-dress is the explicit
+   opt-in `data-mx~="page"`, used by issues built entirely on the core. */
+[data-mx~="page"] {
   background: var(--mx-paper);
   color: var(--mx-ink);
   font-family: var(--mx-t-serif);
   -webkit-font-smoothing: antialiased;
 }
-[data-mx] p { max-width: var(--mx-measure); }
+[data-mx~="page"] p { max-width: var(--mx-measure); }
 
 /* ---- Six type-role utilities (whitelist-driven) ------------------------ */
 .mx-t-chunk  { font-family: var(--mx-t-chunk);  }
