@@ -97,7 +97,9 @@ L2  motif pack           per-issue token block + ≤4 art slots, generated from 
 Class naming: the extraction renames `hol-*` → neutral `mx-*` (or similar) names. Zero archive risk: shipped issues carry their CSS inline. The weekly's holiday-marker bans in `weekly.json.visual_consistency` stay in force and must never fire against core class names — pick names accordingly.
 
 ### 4.2 The `--mx-*` token contract (~30 custom properties)
-Palette: `--mx-paper --mx-ink --mx-accent --mx-accent-2 --mx-support-1 --mx-support-2 --mx-hair` per act (`section[data-act="2"]` re-declares). Type roles (whitelist of ~15 families, embedded/self-hosted): `--mx-t-chunk --mx-t-tall --mx-t-script --mx-t-hand --mx-t-serif --mx-t-mono`. Art slots as custom properties: `--mx-pattern` (tiled watermark SVG), `--mx-glyph` (stamp/watermark, `currentColor`-based, fed via `mask-image: var(--mx-glyph)` — this single indirection replaces all per-venue rules in 33), `--mx-band` (optional edge scene), cover plate via markup injection. Machine checks at plan time: WCAG AA contrast for every act's paper/ink and accent/ground pairs; font whitelist membership; art-slot byte caps; `currentColor` requirement on SVG slots.
+Palette: `--mx-paper --mx-ink --mx-accent --mx-accent-2 --mx-support-1 --mx-support-2 --mx-hair` per act (`section[data-act="2"]` re-declares). Type roles (whitelist of ~15 families): `--mx-t-chunk --mx-t-tall --mx-t-script --mx-t-hand --mx-t-serif --mx-t-mono`. Art slots as custom properties: `--mx-pattern` (tiled watermark SVG), `--mx-glyph` (stamp/watermark, `currentColor`-based, fed via `mask-image: var(--mx-glyph)` — this single indirection replaces all per-venue rules in 33), `--mx-band` (optional edge scene), cover plate via markup injection. Machine checks at plan time: WCAG AA contrast for every act's paper/ink and accent/ground pairs; font whitelist membership; art-slot byte caps; `currentColor` requirement on SVG slots.
+
+**Font delivery — decide in Phase 2, recommendation: self-host.** Whitelisted families should be subsetted woff2 under `assets/fonts/` with `@font-face` in the core, not Google Fonts `<link>`s: the render environment has already demonstrated Google Fonts being blocked at runtime (the reference mockup had to embed fonts as data URIs to survive), the PWA promises offline reading via `sw.js`, and shipped issues should not carry a third-party runtime dependency. Whatever is decided, the §9 protocol must include one render with external network disabled — text must remain fully readable on fallback stacks.
 
 ### 4.3 Motif pack JSON (planner-facing; validated)
 ```json
@@ -147,6 +149,8 @@ Hard rules (each is a gate): `prefers-reduced-motion` honored by every animation
 
 Rules: no more than 4–5 consecutive paragraphs without a designed visual event (figure, ledger, quote-object, ephemera, stat band); body-copy measure ≤ ~68ch; every Deep Dive/Rewind/Next ends with a cheat-sheet. 1.69 was a ceiling that took ~70 press-kit images — never a target outside trips. Sport density is furniture-first (football/golf are photo-locked domains); photo density is for gaming/TV/history/trips.
 
+**Visual-event counting rule (the density gates are unenforceable without one — use this):** a visual event is one of: captioned figure/`<img>`, ephemera object card, ledger/table block, stat band, quote-object (styled blockquote with named source), numbered plate/act opener, self-made chart/diagram, marquee or act-divider band, cheat-sheet. NOT events: drop caps, hairline rules, inline bold, unstyled blockquotes, subheads. Screens = rendered page height ÷ 900px (desktop) as measured in the §9 protocol; planned-density estimate at plan time = target words ÷ 250 per screen. A cluster of 2–3 ephemera in one viewport counts per object, but the ≥1-per-1.5-screens floor is about *distribution* — the validator must also flag any 3+-screen run with zero events, or the average can be gamed by front-loading.
+
 Trust-rule intersection (owner steer, non-negotiable): **the magazine has arguments, not experiences.** Three lanes: EXPERIENCED (sensory/being-there — never first-person; only named verbatim quotes; no invented consensus), ANALYZED (own opinion allowed with working shown), CURATED (selection/reader-fit fully allowed). Every borrowed voice is also furniture (quote-object with named source) — density and trust reinforce. Dedupe: each quote rendered once (twice max), each fact twice max.
 
 ---
@@ -187,6 +191,7 @@ Real `<img>` in ephemera (F-6); WCAG AA contrast enforced per act; type floor 0.
 
 **Phase 1 — Quick win, contained:** token shim proving furniture reuse on a COPY of a shipped Deep Dive (map `--hol-*` surface onto editorial tokens; port ledger, quote-object, stamp, numbers band, cheat-sheet). One-line spec amendment so gates don't flag reused classes.
 *Gate: rendered density on the re-dressed copy ≥0.7; full §9 protocol; identity still reads paper-and-ink (fresh-eyes agent confirms it does NOT read as a theme-park page).*
+*Checkpoint: after this gate passes, SEND THE OWNER the before/after screenshots (desktop + mobile) for a taste sign-off before starting Phase 2. This is the single deliberate human checkpoint in the plan — the extraction is expensive, so the aesthetic direction gets confirmed while changing course is still cheap. Do not accumulate more ask-the-owner moments than this one; everything else is covered by the gates.*
 
 **Phase 2 — Furniture-core extraction + spec pruning (the overdue S7/S8 together, not separately):** build `css/core/` per §3 with neutral names, `--mx-*` contract, F-6/F-9/F-12 fixes baked in; simultaneously prune pre-flight.md, specials.md, component-contracts.md, Gate 1E to teach ONLY the live system.
 *Gate: a re-dressed editorial special copy and a re-dressed holiday copy both render pixel-plausibly from the core (screenshot compare vs originals — layout equivalent, no regressions); docs contain zero references to removed classes (grep list in the phase notes); §9 full pass.*
@@ -198,7 +203,7 @@ Real `<img>` in ephemera (F-6); WCAG AA contrast enforced per act; type floor 0.
 *Gate: a pack swap re-themes the same fixture HTML with ZERO CSS diffs in the repo; contrast/whitelist validators demonstrably reject a deliberately-bad pack; §9 full pass on both packs.*
 
 **Phase 5 — Planned density + deterministic specials:** skeletons with `visual_events`, planned-density validation, `stitch_specials.py`, rendered-density gate, motion re-scope to tiers (F-10) with signature moments.
-*Gate: a full special generated end-to-end through the new pipeline on a test topic hits its §6 floor in the rendered measurement; `Issue #[N]`-class failures unrepresentable (stitcher owns chrome); reduced-motion and JS-off passes; §9 full pass.*
+*Gate: a full special generated end-to-end through the new pipeline on a test topic hits its §6 floor in the rendered measurement; `Issue #[N]`-class failures unrepresentable (stitcher owns chrome); reduced-motion and JS-off passes; **the post-publish toolchain runs cleanly on the new-system artifact** — `scripts/extract-issue-meta.py`, `scripts/build-archive-manifest.py`, `scripts/extract-covers.py`, `scripts/inject-pwa.py`, `scripts/post-publish.sh` — and the archive card, cover thumbnail, and PWA pre-cache entries render correctly (these scripts parse issue DOM/metadata; a new structure can break them silently); §9 full pass.*
 
 **Phase 6 — First live issues + failure-registry closeout:** first real special on the new system, then first weekly carrying core furniture (weekly visual identity unchanged — furniture only). Produce the F-1…F-17 closeout table with evidence links.
 *Gate: shipped artifacts pass §9; the closeout table is complete; every remaining open item is explicitly listed as out-of-scope-with-reason in the progress doc (nothing silently dropped).*
@@ -210,4 +215,42 @@ Real `<img>` in ephemera (F-6); WCAG AA contrast enforced per act; type floor 0.
 - Maintain `docs/design-system-unification-PROGRESS.md`: per phase — what shipped, gate evidence (screenshot filenames, validator output), decisions made where this spec was silent, and an honest "known gaps" list. The owner should never have to discover a gap themselves; if it exists, it's written down.
 - Never mark a phase done with a failing or skipped gate "to keep moving." A skipped gate is a phase failure by definition — the history of this repo (Rewind shipped past a failing image gate; TEST files shipped alongside a weekly) is the cautionary tale.
 - Do not redesign Transmission, do not re-theme editorial gravitas away, do not invent new formats — that's out of scope. Scope is: one furniture core, three skins, motif packs, planned density, and the failure registry closed.
+- **Publication continuity:** The Signal keeps publishing every Sunday while this work happens. The old pipeline stays the live path until a phase FULLY lands; never leave the skill files (`.claude/skills/the-signal/`) mid-refactor across a Sunday boundary, and never let a partially-landed phase be what an unattended Sunday run picks up. If a phase can't land cleanly before a Sunday, it waits.
 - Anti-goals: no new CSS per issue after Phase 4; no component without a contract in component-contracts.md; no doc left describing the old system; no acceptance based on `quality-log.jsonl`.
+
+---
+
+## 12. ORIENTATION APPENDIX — where everything lives (so the autopsy isn't redone)
+
+**Read in this order:** this spec → `docs/special-editions-review-2026-07-18.md` → `docs/mockups/unification-furniture-kit-mockup.html` (in a browser) → the two holiday issues (`issues/signal_countdown_2026-06-14.html`, `issues/signal_field-guide_2026-05-17.html`) rendered, not just read → `scripts/stitch_weekly.py` + `references/format-skeletons/weekly.json` (the deterministic model to replicate) → `scripts/stitch-issue.sh` (the concatenator to replace).
+
+**Component → source location map** (all under `.claude/skills/the-signal/assets/css/`):
+
+| Component | Source | Extraction notes |
+|---|---|---|
+| Token block (20 palette + 8 type tokens) | 36:46–89 | Becomes `00-contract.css` defaults; values → motif packs |
+| Chrome-disable block | 36:91–157 | DELETE — only exists because of full-bundle shipping (F-5) |
+| Masthead band | 36 §02 | Merge with the F-3 resolution — one masthead |
+| Cover stage + collage / poster cover + arch text | 36 §03 / §03b | Poster cover has the F-8 collision — fix during extraction |
+| Countdown grid + flip | 36 §04 | tier2 motion |
+| Kicker strip / half structure + act opener / transit band | 36 §05 / §06–07 / §08 | The act system — `data-act` replaces `.hol-half--two` overrides |
+| Motif watermark layers (`theme-celestial/tracks/heat-haze`) | 36 §06b | Mechanism → `--mx-pattern` slot; payloads → packs |
+| **Polaroid** (tape, captions, tilts) | 36 §09 + 41 variants | The framed-object chassis; add real `<img>` child (F-6) |
+| **Postcard** (ruled quote strip) | 36 §10 + 41 | F-8 mobile stacking fix during extraction |
+| **Stamp/seal roundel** | 36 §11 + 41 | tier2 stamp-slam attaches here |
+| Anchor feature block / wonders zig-zag + meta `<dl>` / unmissable | 36 §12 / §12b / §13 | The ledger-bearing entry systems |
+| Don't-miss chips / marquee / chalkboard menu / meanwhile closer | 36 §14 / §15 / §16 / §17–18 | |
+| Meal-slot ranked entries + tier pills | 40 (~300 lines) | Already double-tokened via local `--slot-*` — the extraction template |
+| Ticket stub, coaster, banner, pull-quote object | 41 | |
+| Stat band, T-minus banner | 43 | |
+| Drop cap, fleuron, margin mark, ribbon tab | 44 | |
+| Responsive/touch layer | 37 | Generalize into `15-responsive.css` |
+| Scroll motion (entrances, parallax, stamp-slam, marquee physics) | 38 (~620 lines) | Re-scope to `[data-motion]` (F-10) |
+| Motion extras + act palette crossfade (`--hm-edge` dial) | 39 | Endpoint colors → act tokens |
+| Venue theming mechanism (ground/accent/watermark/tag) | 33 | The motif-pack runtime prototype; venue enumeration → `data-act`/slots; venue token VALUES live in the countdown issue head (~lines 107–113), not in the skill |
+| Savannah scene / Pieck trees / balloons / venue glyphs | 42, 36 §06b payloads, 33 data-URIs | DISPOSABLE — do not extract |
+| Editorial cover (hard-coded ember = F-2) / editorial masthead (F-3) / format flair incl. dead Lookahead (F-5) | 25 / 28 / 32 | 32 splits: cross-format → core, killer features → skin, Lookahead → deleted |
+| Weekly bundling + writer-vocabulary gate | `stitch_weekly.py:316–319`, `:367` (`_weekly_sp_gate`) | The pattern `stitch_specials.py` replicates |
+| Special bundling glob (the F-5 source) | `stitch-issue.sh:330–334` | Replace with manifests |
+
+**Environment facts the next instance will otherwise rediscover painfully:** Chromium at `/opt/pw-browsers/chromium` (`PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers`, never `playwright install`); issues must be served over HTTP (root-absolute `/assets/cached/` paths break under `file://`); the service worker hijacks same-context navigations — use fresh browser contexts; teleport-scrolling under-triggers reveal observers, so judge blankness only from smooth-scroll captures; outbound fetches go through the proxy and Google Fonts has been observed blocked.

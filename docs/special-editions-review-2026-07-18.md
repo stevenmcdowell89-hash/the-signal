@@ -170,3 +170,24 @@ The Argument, the On-Ramp, the Memory Test, per-round Versus verdicts, honest pr
 ---
 
 **One-paragraph takeaway:** the holiday design system is the best thing The Signal has produced — its pacing density, ephemera, and palette arcs are the model, and the editorial specials need to move toward that bar in their own paper-and-ink idiom. The "content is great, 4.7" story was the system grading its own homework: the real picture is strong openings and (in the deep dives) genuine depth, undermined by repetition-as-filler, scaffold leakage, and a retrospective that forgot its own reader — none of which the self-scorer has ever flagged with a number below 3.
+
+---
+
+## SEQUENCING ADDENDUM (18 July 2026) — the design-system unification goes first
+
+The owner has prioritized the design-system unification (`docs/design-system-unification-SPEC-2026-07-18.md`). That re-sequences this list. **Do not implement a design recommendation from this document directly against the old CSS layers — the unification rewrites them, and double-implementation is how systems diverge.** Status of every recommendation:
+
+**ABSORBED INTO THE UNIFICATION SPEC** (implement only via its phases):
+- #8 copy gate → Spec Phase 0 (F-14). #15 pacing budget → §6 + F-1. #16 cheat-sheet → F-15. #17 data ledgers → core `11-ledgers.css`. #18 palette arcs → motif acts. #19 covers/accents → F-2. #20 holiday fixes → F-8/F-9. #21 mobile fixes → F-8. #22 accessibility/dark/print → F-6/F-7/F-12/§8. #23 CSS bundling + destination params → F-5/F-11 + motif packs. #24 skeleton stitching → Phase 5/F-14. #25 (Guide vocabulary half) → Phase 0. #32 TEST files → Phase 0. #35 spec pruning (S7/S8) → Phase 2 (F-13). #17-from-formats (image-source mislabel, listed as part of rec 3 in the feasibility follow-up) → Phase 0 (F-17).
+
+**DO NOW — INDEPENDENT OF AND UNBLOCKED BY THE UNIFICATION** (mostly time-sensitive; none touch the CSS):
+- #26 populate `upcoming_trips` + non-trip event state — the two strongest triggers are dark today.
+- #27 Season Review litmus — the World Cup final is 19 July; fire it or log the deliberate pass. (If fired, it runs on the OLD system; that's fine — it becomes the unification's before/after benchmark.)
+- Measurement fixes 1–7 (Part 6 §A): human anchor, scorer independence, all-eight-dimensions, defect pre-scan, scale forcing, cost-log honesty. These are needed BEFORE the new system ships so its output is judged honestly — and the unification spec explicitly bans quality-log-based acceptance until they land.
+- Content gates #9–14 (repetition budget, continuity ledger, quote integrity, source-confidence register, tic watchlist, personalisation floor) — editorial rules, zero CSS dependency; every issue shipped meanwhile benefits.
+- #29 cadence bookkeeping (`consecutive_specials_count`, replace-vs-supplement rule) and #33 state cleanup (`deep_dive_schedule`), #34 broken archive covers — small, independent.
+
+**AFTER THE UNIFICATION LANDS** (they'd otherwise be built twice):
+- #25 (running The Guide) — Phase 0 unblocks the plan gate, but run the first Guide on the new system.
+- #28 decision rules and #31 archive numbering/masthead unification — fold the masthead half into Phase 3; the numbering scheme rides the first new-system issues.
+- #30 new formats (After, Year in Numbers, Anniversary) — design them as motif packs + skeletons on the new system from day one; the "After" issue for the next trip is the natural first fully-new-system format. #36 legacy score backfill, #37 first Guide run — after.
