@@ -114,7 +114,21 @@ anchored, data-mx gating protects the archive); accept the verifier's raw eviden
 
 ---
 
-## WP-1 … WP-9 — ⬜ NOT STARTED
+## WP-1 — REFERENCE CAPTURE — ✅ COMPLETE · GATE GREEN (2026-07-18)
+
+Froze the standard for the parity gate. Ledger: `EVIDENCE/references/`.
+- **Baseline metrics** (`*.metrics.json`), desktop ev/screen: countdown **2.113**, field-guide
+  **1.701**, mockup **2.245** — all reproduce the Part-1 "holiday issues are the dense bar"
+  finding; countdown clears the WP-1 ≥1.5 tool-sees-density floor. `measure-issue.mjs` gained
+  `kit-*` selectors for the mockup; countdown re-verified UNCHANGED at 2.113 (no tool regression).
+- **Frozen screenshot packs** — 63 non-curated shots (21 each: cover + 8 smooth-scroll depths ×2
+  widths + dark ×2 + reduced-motion), harness-produced, eyeball-confirmed real designed furniture
+  at both widths. These are the frozen comparison set every parity verifier receives.
+- **Honest note:** the field-guide reference measures a 6-screen longest-zero-event run at desktop
+  (heavy-prose format, 15k words) and 0.915 ev/screen at mobile — an honest measurement of the
+  existing artifact, not a gate on it; Law-2's distribution rule binds the NEW issues we produce.
+
+## WP-2 … WP-9 — 🟡 WP-2 IN PROGRESS
 
 ## FALSE GREENS
 None recorded. (Part 6 §5: any PASS later shown false is logged here — hiding one is the terminal
