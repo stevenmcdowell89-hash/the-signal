@@ -268,10 +268,34 @@ type floor (F-12), real-`<img>` ephemera (F-6), opt-in `data-mx~="page"` full re
   `stitch_weekly.py` — makes F-14 unrepresentable); the `[data-motion]` reveal-observer JS;
   F-16 local-image enforcement; post-publish toolchain verification on a new-system artifact.
 
-## Phase 6 — First live issues + closeout — ⬜ not started
+## Phase 6 — First live issues + closeout — ⬜ NOT STARTED (this is where it goes live)
 
-Depends on Phases 2–5 remainders landing. No new-system issue has shipped; the old pipeline
-remains the live path (unchanged).
+**Correction (owner flagged; spec §0.4 re-read on main).** Earlier notes here called the weekly
+"protected / out of scope / look unchanged." That is the misread the spec explicitly calls out.
+The correct reading of §0.4:
+- (a) Transmission's **identity** (palette, type, 800px chassis, radio conceit) is protected
+  *permanently* — it never becomes an event skin, `00-transmission.css` is never redesigned.
+- (b) During **Phases 0–5** the weekly's rendered output is *frozen* — the byte-identical golden
+  is a **tripwire** so system-building can't break Sunday's issue, NOT "the weekly is exempt."
+- (c) In **Phase 6 the weekly DELIBERATELY gains core furniture** (ledgers, ticket/ephemera,
+  quote-objects, chart cards) via the Transmission alias + skeleton/band changes to reach its §6
+  density budget (0.8–1.0 events/screen); the golden is regenerated **once**, intentionally, as a
+  gated change. *"A weekly that looks identical in density after Phase 6 means the work is NOT done."*
+
+So the unification is **all issues** — weekly included. What was built in Phases 0–5 is the
+system + the frozen-weekly tripwire (correct). What is NOT done is **making it live**: no issue
+yet renders on the new system. That is Phase 6, and it depends on the Phase 2–5 remainders that
+carry the core into what the generator emits:
+- rewrite the writer/planner contracts + skeletons to `.mx-*` furniture (F-13) — turns the
+  bundled-but-unused core into markup the pipeline actually produces;
+- `stitch_specials.py` (deterministic chrome/furniture) so structure can't be malformed;
+- ship the first special on the new system, then densify the weekly (identity intact, golden
+  regenerated once), each through the §9 gate; produce the F-1…F-17 closeout table.
+
+**Honest status of the whole effort:** the design system is built and each piece independently
+verified, but it is **not yet live** — nothing the pipeline publishes renders in it. The old
+pipeline is still the live path. Reaching "live" is the remaining Phase 6 (plus the 2–5 tails
+above), not a flag-flip.
 
 ---
 
