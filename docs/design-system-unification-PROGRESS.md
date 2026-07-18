@@ -327,3 +327,35 @@ completion — the 23–32 editorial rebase (F-4 chain deletion, Lookahead remov
 `stitch_specials.py`, the motion JS, the doc pruning (F-13), and shipping the first new-system
 issue (Phase 6) — remains. Nothing new-system ships until those land with their §9 gates green;
 the old pipeline is the live path throughout.
+
+---
+
+## Phase 5 + 6 (owner override §11) — 🟢 SYSTEM LIVE-CAPABLE; first new-system special GREEN
+
+Per §11 owner override (build now, ship 19 July on the new system, gates decide, old-system
+fallback if red), Phases 5 and 6 executed together.
+
+**`scripts/stitch_specials.py`** — deterministic special stitcher (mirrors `stitch_weekly.py`):
+owns cover, act openers, single transit, chapter heads, motif token block, back-link, colophon;
+writers fill only inner furniture. A per-skin **vocabulary gate** rejects out-of-skin classes
+(verified: a legacy `.sp-*` class fails the build) — F-14 unrepresentable by construction.
+
+**First new-system issue — World Cup Season Review (19 July) — gate evidence:**
+- `publish-gate.sh` **GREEN**; `validate-issue.py` PASS (2 warnings).
+- **Rendered density 2.81 events/screen** vs 0.9 floor, **zero photos** — the "sport hits holiday
+  feel on furniture, not photography" proof. (`scratchpad/out/sr2__*, srf__*, srM__*`.)
+- Legible event-skin render (dark-green/gold matchday, Cinzel/Bowlby); motif pack AA-valid; 390px
+  reflows, wide table scrolls in-container; `extract-issue-meta.py` parses the new DOM.
+- Cross-phase: weekly golden byte-identical; chapter-plan 61/61; motif-pack 7/7.
+
+**Honest caveat:** the artifact is a design/system proof at ~533 words from real tournament-
+*structural* facts (48 teams / 104 matches / 3 hosts) — **no fabricated results** (the final is
+future/unknowable here). A real published issue needs full researched content (the pipeline's
+research phase). What is green is the SYSTEM: plan + content → `stitch_specials.py` → a valid,
+dense, on-brand, gate-passing new-system issue. §11 fallback (full old-system) applies if any gate
+is red at publish.
+
+**Still open:** the weekly densification (Phase 6c — alias + band furniture to 0.8–1.0/screen,
+identity intact, golden regenerated once); editorial 23–32 rebase (F-4 `:not()` delete, Lookahead
+remove, ≤budget slim); dark + reduced-motion sign-off on the shipped artifact; full F-1…F-17
+closeout table.
