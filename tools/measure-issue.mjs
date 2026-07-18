@@ -79,6 +79,11 @@ const EVENT_SELECTORS = [
   '.hol-scorecard', '.mx-ledger', '.mx-scorecard', '.mx-table',
   // cheat-sheet (container = 1 if present, else items count)
   '.keep-digging', '.dd-keep-digging', '.cheat-sheet', '.mx-cheat-sheet', '.kd-item',
+  // de-themed furniture-kit mockup taxonomy (docs/mockups/unification-furniture-kit-mockup.html)
+  // — the visual reference; object-level for cards/plates/quotes/tickets/notes,
+  //   block-level for the stat band / fixtures ledger / memory-test.
+  '.kit-card', '.kit-plate', '.kit-quote', '.kit-note', '.ticket',
+  '.kit-stats', '.fixtures', '.mtest', '.memory',
   // real-image census (dedups under figures/ephemera; standalone captioned img = 1)
   'img', '[role="img"]',
 ];
