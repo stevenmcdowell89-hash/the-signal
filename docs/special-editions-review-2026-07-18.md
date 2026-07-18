@@ -1,3 +1,8 @@
+> **CORRECTION (18 July 2026, post-validation):** Two conclusions below are superseded by independent validation performed the same day.
+> 1. The quality scores quoted from `state/quality-log.jsonl` (e.g. "Rewind 4.7, best-ever"; "specials outscore weeklies") did **not** survive blind independent re-scoring against the repo's own rubric. The self-scoring pipeline is systematically inflated (~+0.4 overall; +1.4 on the Rewind) and structurally untrustworthy (same-model grading, never scores below the repair threshold, omits length/visual dimensions, ignores scaffolding-leak defects).
+> 2. The design assessment under-weighted the holiday-system issues. Rendered browser review ranks the Field Guide and Countdown as the two best-designed issues in the archive; the editorial specials (deep dive, rewind, next) are typographically polished but visually flat (0.37–0.75 visual events per screen vs 1.06–1.69). Three static-analysis mobile claims (.vs-tape, .cheat-sheet, .year-band breakage) were refuted on render — those components never appear in any shipped DOM.
+> The canonical, corrected review was delivered in the session conversation.
+
 # The Signal — Special Editions: Full Review & Recommendations
 
 **Date:** 18 July 2026
