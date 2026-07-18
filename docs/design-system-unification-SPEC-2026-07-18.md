@@ -38,7 +38,7 @@ CSS autopsy of the holiday layers (33, 36–44; 4,931 lines / 198.3 KB total):
 
 Production economics: the Countdown took 22 pipeline calls vs 16–22 for a weekly. Holiday quality was NOT more machine — it was ~70 verified press-kit images (a trips-only luxury), the verification chain (now standard), and discipline already written into the spec but unenforced.
 
-A working proof-of-concept mockup exists demonstrating the de-themed kit in three motifs (Byzantium dossier / weekly Touchline / Rewind scrapbook), built 2026-07-18, screenshot-verified, no photography. Its techniques (token-scoped furniture, act shifts, CSS-drawn objects) are the reference implementation for §4.
+A working proof-of-concept mockup demonstrating the de-themed kit in three motifs (Byzantium dossier / weekly Touchline / Rewind scrapbook) is committed at **`docs/mockups/unification-furniture-kit-mockup.html`** — self-contained (fonts embedded as data URIs, hence ~2.1 MB), screenshot-verified at 1440px and 390px, zero photography. Open it in a browser before writing any core CSS: its techniques (token-scoped furniture, act shifts, CSS-drawn objects — the solidus coin, ticket stub, memory cards — one shared kit restyled per spread by a scoped custom-property block) are the reference implementation for §4. Known shortfalls vs the real holiday issues, so you don't inherit them as targets: it runs ~0.7–1.0 events/screen (not 1.69), has no scroll motion, and spread 2 has unbalanced whitespace under the ticket column that a production pass should fill with another ephemera object.
 
 ---
 
