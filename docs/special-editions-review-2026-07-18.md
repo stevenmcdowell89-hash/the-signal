@@ -1,126 +1,172 @@
-> **CORRECTION (18 July 2026, post-validation):** Two conclusions below are superseded by independent validation performed the same day.
-> 1. The quality scores quoted from `state/quality-log.jsonl` (e.g. "Rewind 4.7, best-ever"; "specials outscore weeklies") did **not** survive blind independent re-scoring against the repo's own rubric. The self-scoring pipeline is systematically inflated (~+0.4 overall; +1.4 on the Rewind) and structurally untrustworthy (same-model grading, never scores below the repair threshold, omits length/visual dimensions, ignores scaffolding-leak defects).
-> 2. The design assessment under-weighted the holiday-system issues. Rendered browser review ranks the Field Guide and Countdown as the two best-designed issues in the archive; the editorial specials (deep dive, rewind, next) are typographically polished but visually flat (0.37–0.75 visual events per screen vs 1.06–1.69). Three static-analysis mobile claims (.vs-tape, .cheat-sheet, .year-band breakage) were refuted on render — those components never appear in any shipped DOM.
-> The canonical, corrected review was delivered in the session conversation.
+# The Signal — Special Editions: Full Review & Recommendations (Corrected, Validated)
 
-# The Signal — Special Editions: Full Review & Recommendations
-
-**Date:** 18 July 2026
-**Scope:** All special-edition formats — spec, published content, design system, operations/triggers, plus external best-practice research. Recommendations only; no code changes made.
-**Method:** Five parallel review streams — (A) spec/documentation layer, (B) content audit of all 15 published special issues, (C) design/CSS system, (D) operations, usage history & triggers, (E) external research on special-issue best practice in magazines, newsletters and personal media.
+**Date:** 18 July 2026 (v2 — supersedes the initial same-day draft, which quoted unvalidated self-reported quality scores and under-weighted the holiday design system)
+**Scope:** All special-edition formats — spec, published content, design system, operations/triggers, external best practice. Recommendations only; no code changes made.
+**Method:** Seven review streams — spec/documentation layer; content audit of all 15 published special issues; static CSS/design-system analysis; a rendered browser review (Chromium, desktop 1440px + mobile 390px, screenshot-verified); a blind independent quality re-scoring against the repo's own rubric; operations/triggers/usage history; and external research on special-issue practice (Economist special reports, Monocle, Wirecutter, NYT 36 Hours, Spotify Wrapped/Feltron, zine and newsletter culture).
 
 ---
 
-## 1. State of play
+## Part 1 — Corrections from validation
 
-**Formats defined (skill v8.42):** Deep Dive, Countdown, Field Guide, Season Review, Versus, Rewind, The Guide (v8.39 merger of Starter Kit + Shortlist), Next, Lookahead (retired, folded into weekly). Two visual systems: the editorial "paper-and-ink" system (CSS 23–32) for non-holiday specials, and the Holiday Identity system (33, 36–44) for Countdown and Field Guide.
+**The quality log cannot be trusted.** Blind re-scoring of seven issues against `quality-rubric.md` (scored first, log opened after) found:
 
-**Shipped to date (14 specials):** Countdown ×3, Deep Dive ×3, Versus ×2, Starter Kit ×2, Shortlist ×1, Field Guide ×1, Next ×1, Rewind ×1. **Never shipped:** Season Review (despite two league titles concluding in May with triggers live) and The Guide (the merged successor format has never run once).
+| Issue | Logged | Independent | Gap |
+|---|---|---|---|
+| Rewind 07-12 | **4.7** | **3.5** | −1.4 |
+| Countdown 06-14 | 4.2 | 4.0 | −0.2 |
+| Field Guide 05-17 | 4.2 | 3.7 | −0.5 |
+| Deep Dive WWI 05-26 | 3.8 | 3.8 | ±0 |
+| Deep Dive Byzantium 06-30 | 4.4 | 4.0 | −0.4 |
+| Next 05-31 | 4.4 | 3.6 | −0.8 |
+| Weekly 07-13 (baseline) | 4.2 | 3.7 | −0.5 |
 
-**Overall verdict:** The current-generation specials are genuinely strong — committed editorial arguments, dense factual texture, distinctive killer components (The Argument, the On-Ramp, the Memory Test, per-round Versus verdicts). The Rewind (2026-07-12) is the best-scoring issue ever logged (4.7), and specials on average outscore weeklies. But the system around them lags the content: the spec layer contradicts itself and still teaches a retired component vocabulary; the live "Guide" format cannot pass its own mandatory pipeline gate; production scaffolding leaks into reader-facing copy; only one format has a truly distinct visual identity; the two strongest calendar triggers are dark because trip state is empty; and cadence guardrails were breached without any bookkeeping noticing.
+- **"Rewind 4.7, best issue ever" — refuted.** Independently it's the *worst special in the sample*: a literal `Issue #[N]` placeholder in the masthead (verified), the same image used twice with contradictory captions, headline facts re-told 4–6× each, and chapters that re-tell events the reader followed live. The 4.7 rests on three 5s plus the silent omission of the visual and length dimensions — for an issue SKILL.md itself records as having "shipped despite a failing image gate."
+- **"Specials outscore weeklies" — collapses to a tie** (independent: specials 3.77 vs weekly 3.70). The logged premium is mostly a density rubber stamp: the self-grader awards density 5 in 11 of 14 rows regardless of repetition.
+- **Why the log is structurally untrustworthy:** the scorer is the same model family as the writer, spawned by the very orchestrator whose run it grades; a score below 3 would force a repair round on that run, and *no live score below 3 has ever been issued*; `log-quality.sh` averages whatever keys arrive (omitting length/visual silently raises the headline) with zero validation; the rubric's mandated monthly blind human anchor has **never happened once**; and the rubric's calibration anchors are drawn from the same issues the log scores — circular. The grader's *prose* notes are often honest; the *numbers* are inflated ~+0.4 overall, +1.3 on density.
+- **"Content is the strongest part" — partly refuted.** True only of the two history deep dives, whose density is genuinely earned. For Countdown, Field Guide, Rewind and Next, content density is exactly where they leak — repetition and restated briefs inflating word counts. The specials' genuinely strongest dimension, measured, is **opening quality** (mean 4.33; two of the rubric's own 5-anchors come from these issues).
 
----
+**Design — corrected.** The static CSS analysis judged architecture, not what's on screen. Rendered review of eight issues produces this ranking:
 
-## 2. Per-format assessment and when to use each
+1. **Field Guide** — best-designed issue in the archive
+2. **Countdown (06-14)** — most fun, warmest, highest visual density; docked only for execution flaws
+3. Weekly 07-13 (Transmission)
+4. Versus Sanguli/Clodia (old generation, cinematic but diluted)
+5. Rewind
+6. Next
+7. Deep Dive Byzantium
+8. Legacy countdown-efteling (competent blog, not a magazine)
 
-### Deep Dive — the flagship. Quality: high (avg 4.27), with leakage problems
-- **Use when:** a single subject deserves full-issue depth — ongoing or open-ended topics. If the subject has *concluded*, that's Season Review; if it's a head-to-head, that's Versus.
-- **Strengths:** real thesis argued through chapters (WWI's systemic-trap frame, Byzantium's anti-Gibbon case), exceptional sourcing, episode-specific "Keep Digging".
-- **Weaknesses:** worst production leakage in the archive (27 instances of internal chapter IDs like "ch1-1" in reader copy in the WWI issue; "research bundle viz_2" captions); methodology self-justification pasted above the fold; internal repetition (the same pull-quote four times); **zero personalisation** — the least personal format despite being the longest; spec/gate conflict on length (spec allows 20–25k with `expanded_scope`, validator hard-fails at 20k).
-
-### Countdown — anticipation engine. Quality: good (4.2) and the best-personalised issue in the archive
-- **Use when:** a trip or major event is 2–3 weeks out. Hype over homework.
-- **Strengths:** the June Efteling/Beekse issue is built entirely around this family's actual trip, with named animals, honest practical flags, and the bookended sleeps-counter.
-- **Weaknesses:** heavy quote recycling (one blogger quoted three times); raw CDN hostnames in photo credits; stencil sentence templates repeated verbatim; fact drift vs the March issue (fairy-tale count, drop height, suite count — contradicting itself within one issue); the superseded March issue contains better exclusive material (park secrets chapter) that was never carried forward.
-
-### Field Guide — pre-trip food guide. Quality: good (4.2)
-- **Use when:** ~6 weeks before a trip. Reference + soul.
-- **Strengths:** deep, useful, well-priced picks; the thematic "Meanwhile" is the best Meanwhile variant in the archive.
-- **Weaknesses:** internal jargon in reader copy ("Frequency convergence" ×3); one quote used five times; a committed TEST build publicly contradicts the published issue on checkable facts (19 vs 30+ venues, 1940s vs 1960, prices, opening hours); product definition contradicts itself across docs ("a Sunday read, not a phone reference" vs "reference-first, scannable on a phone"); visually indistinguishable from Countdown.
-
-### Versus — decision engine. Quality: improved most within the old generation; never run on the new system
-- **Use when:** a genuine two-way decision exists. Must commit to a verdict (conditional splits allowed).
-- **Strengths:** the Sanguli/Clodia issue's Rounds + per-round verdicts + conditional final frame is the format's high-water mark and matches Wirecutter best practice (explicit criteria, visible elimination, one pick).
-- **Weaknesses:** currency chaos in the fitness issue (£/$ mixed incoherently); both issues predate the current pipeline and have no quality scores; strongest visual identity of any format but untested on the current system.
-
-### Rewind — retrospective. Quality: best-ever score (4.7); one structural miss
-- **Use when:** last Sunday of June and December (calendar P1). Panoramic across all interests — single-lane retrospectives are Season Review.
-- **Strengths:** best structure in the archive; "The Memory Test" stakes falsifiable calls for December — the franchise moment is grading them.
-- **Weaknesses:** shipped with a literal `Issue #[N]` placeholder in the masthead; the promised personal ledger (marathon block, the trip, the reader's own half-year) never arrives — and refers to "the reader's clubs" in third person in a one-reader magazine.
-
-### Next — post-completion progression. Quality: strong (4.4); best format-fit for its reader
-- **Use when:** the reader has just finished something specific. Manual-only by design.
-- **Strengths:** precise emotional brief, criteria applied without exceptions, honest exits and a real parental-safeguarding gate.
-- **Weaknesses:** criteria restated in full in every chapter (padding in an anti-padding issue); thin sourcing; no palette identity (shares the default rose accent with Rewind and Shortlist).
-
-### The Guide (Starter Kit + Shortlist merger) — defined but non-functional
-- **Use when (spec):** curated recommendation work — beginner mode (entry point into a topic) or category mode (curated options). P3 rotation pool.
-- **Reality:** live on paper since v8.39, but missing from the chapter-plan validator's vocabulary (a Guide plan **hard-fails the mandatory Phase 4 gate**), missing from the schema enum, has no `data-special` slug, no CSS accent, no variety floor, and is absent from SKILL.md's own pipeline lists. Its two parents shipped only as pre-pipeline legacy issues with zero quality data.
-
-### Season Review — spec'd, never shipped, trigger failing in practice
-- Declared ACTIVE in v8.39, but both obvious May 2026 triggers (Arsenal title, Inter Scudetto) passed un-fired, and docs disagree on whether it's a P1 or P2 trigger. The World Cup final (19 July 2026) is the next live test.
-
-### Lookahead — retired, but the retirement never fully propagated
-- formats.md/triggers.md say RETIRED (v8.39 S2); SKILL.md (v8.42, later) still lists it as a live parallel-mode, manual-only format and advertises it in the frontmatter description; ~300 lines of its CSS (the most-styled format in the flair file) ship inside every special.
+Also corrected: three static-analysis mobile-breakage claims (`.vs-tape`, `.cheat-sheet`, `.year-band`) were **refuted on render** — none of those components exist in any shipped issue's DOM. The `.cheat-sheet` finding inverts: it's a fully designed component sitting in a CSS comment that has *never been instantiated*, in issues that badly need exactly that at-a-glance table.
 
 ---
 
-## 3. Recommendations
+## Part 2 — Why the holiday issues win, in transferable terms
 
-### P0 — Fix before the next special ships
+Measured from screenshots:
 
-1. **Add a pre-publish copy gate for scaffolding tokens.** Reject reader-facing HTML containing: `ch\d-\d` chapter refs, `viz_\d` / "research bundle", `[N]` placeholders, tool credits ("Created with…"), raw CDN hostnames in photo credits, and empty rating/stat boxes. Every shipped instance is a one-line fix; the class of error is what must die — it breaks the handmade-magazine illusion the design works hard to earn.
-2. **Unbreak The Guide end-to-end.** Reconcile the format vocabulary across the four authorities (chapter-plan-schema.md, validate-chapter-plan.py, validate-issue.py, specials.md authoring list): add `guide` and `next` everywhere, delete `blueprint` remnants, define Guide's `data-special` slug, execution mode, variety floor and accent. Today a spec-compliant Guide run cannot pass Phase 4.
-3. **Remove the TEST artifacts from the deployed surface.** `test_signal_field-guide_2026-05-17.html` (repo root) and `issues/TEST-signal_field-guide_2026-05-17.html` are publicly served at guessable URLs and contradict the published issue on checkable facts. Delete or exclude via `.assetsignore`, then reconcile the fact conflicts so one set of numbers survives.
-4. **Populate forward-trigger state.** `upcoming_trips` is empty, so Field Guide and Countdown — the two most reliable P1 triggers — cannot fire at all. Record the next trip(s) now, and add a place for non-trip future events (releases, finales, holidays, birthdays) that Phase 0 reads, so specials stop depending on week-of research luck.
-5. **Resolve the Deep Dive ceiling conflict:** either raise the validator ceiling to 25k or amend the spec's `expanded_scope` rule to stay within 20k — currently the spec permits what the gate fails.
-6. **Season Review litmus test:** if the World Cup final window (19–26 July) passes with no Season Review and no logged decision, fire one manually or demote the format to dormant. Don't leave it "ACTIVE" and 0-for-3 on real triggers.
+| Issue | Visual events / screen | Words / screen |
+|---|---|---|
+| Countdown | **1.69** | 139 |
+| Field Guide | **1.06** | 209 |
+| Rewind | 0.75 | ~230 |
+| Deep Dive | **0.37** | 255 |
 
-### P1 — Content quality (per-format)
+1. **Pacing density.** In the holiday issues you're never more than one viewport from a photo, postcard, badge, stamp or data card. In the deep dive, three of four random scroll positions land on indistinguishable bare text columns; chapters run 3,000–5,000px of unbroken paragraphs. That gap — not any single component — is the felt difference.
+2. **Self-illustrating ephemera.** The countdown has only 4 `<img>` tags but ~65 CSS-composed props: taped polaroids with rotated handwritten captions, ruled postcards, wax stamps, an SVG moon-and-castle cover. The design doesn't depend on external images loading — exactly where Next falls apart (all 10 of its images are dead external hotlinks; Rewind has a text-wrap hole around a dead image).
+3. **A palette *arc*, not a palette.** Night-indigo Efteling act → warm cream, paw-printed Beekse act. Scrolling feels like travelling. The editorial specials hold one paper tone for 60,000+ pixels.
+4. **Facts as furniture.** WHERE/ORDER/TIMING/WALK ledgers, price rows, tier badges (UNMISSABLE/WARM) lift data out of prose into scannable objects — which simultaneously shortens the prose.
+5. **Numbered-entry scaffolding** gives the scroll a pulse and a promise of progress. The editorial specials' roman-numeral gates are the same idea spent once per ~10 screens.
+6. **Quotes as objects** (postcard strips with named sources) rather than inline italics.
+7. **Playfulness in the furniture, discipline in the text.** The field-guide cover mixes four typographic voices — gold script, heavy grotesque, outlined display, the giant wine-red "44" bleeding off the edge — over a strict navy grid, and restacks flawlessly at 390px. Best cover in the archive.
 
-7. **Institute a repetition budget:** any external quote at most twice per issue (body + pull-quote); any single fact at most twice, with the second appearance visibly a reprise. Current worst cases: one quote ×5 (Field Guide), one pull-quote ×4 (WWI Deep Dive), one fact told three times in near-identical words (Byzantium).
-8. **Deep Dive:** convert internal cross-references to reader language ("as the chapter on 1914 showed"); cut methodology self-justification to one committed paragraph; add one personal bridge per issue (the reader's History of Rome / podcast habits are already known to the system — say so); restore named outlets to Meanwhile source labels (the 06-30 issue regressed to bare "Source").
-9. **Rewind:** deliver the promised personal ledger as a full chapter — the training block, the trip, the reader's own half-year, in first/second person, never "the reader's clubs". In December, actually grade July's Memory Test calls — that accountability loop is the format's franchise moment (the Economist's World Ahead runs the same beloved ritual).
-10. **Countdown:** carry forward the superseded March issue's exclusive material (park secrets, Easter eggs) instead of leaving it stranded; settle accommodation facts from the actual booking; add one *actionable* anticipation element per issue (a thing to book, watch or prep) — anticipation research shows active planning amplifies the payoff.
-11. **Versus:** adopt Rounds + per-round verdicts + conditional final frame as the format standard; enforce single-currency comparisons (pick GBP, convert once, footnote the rate); state decision criteria and their weights for this reader *before* the comparison (Wirecutter method).
-12. **Voice tic watchlist:** the house kit ("That is the change X turns on", "worth ~ing" 60+ times, "the question is the good one", "does not make bad X", em-dash as default connective — 470 in one issue) is hardening into self-parody. The voice is good; widen its wardrobe and rotate constructions per issue.
-13. **Source-confidence marking:** carry the weekly's "reported, not yet legislated — treat as a signal" register into specials for any stat without a named source. Precision-shaped orphan stats (NPD 17%, 15.3% flexitarians, "94% of the Dutch population") put the genuinely strong sourcing under suspicion — cut the decimals or cut the stat.
-14. **Create a continuity ledger** — a small facts file per running storyline (UK politics arc, sports standings, trip logistics) checked by every special. It would have caught the phantom "UK general election" (contradicting the by-election/leadership arc in every later issue), the Masters date split, and Pat Jennings being 40 and 41 in the same issue.
+What the editorial specials do better: body typography (measure, leading, drop caps), restraint, bookish gravitas. The fix is pacing and furniture, not identity.
 
-### P2 — Format portfolio: when to use, what's missing
-
-15. **Codify cadence rules** (currently honor-system, breached in May with three specials in seven days and nothing recorded): one special per week max; target 1 special per 4–6 issues; never break the Sunday rhythm — a special either *is* the Sunday issue or supplements it. Actually maintain `consecutive_specials_count`. Decide the 2026-06-14 precedent explicitly (a Countdown replaced the weekly once): e.g. "trip-window Countdown/Field Guide may take the Sunday slot; all other specials supplement."
-16. **Tease specials in advance.** A one-line "next week: the Deep Dive" in the preceding weekly converts an interruption into an anticipated event — the anticipation is part of the value.
-17. **Add the missing decision rules:** Deep Dive vs Versus on a major launch (suggest: head-to-head exists → Versus, otherwise Deep Dive); Guide beginner vs category mode interaction with the P3 "not in last 6 specials" rotation; fix the Season Review tier (P1 vs P2) and the Field Guide/Countdown collision winner (two docs name opposite winners).
-18. **New format — "After" (post-trip/event debrief): the highest-value gap.** The Signal serves anticipation (Countdown, Field Guide) but not return-and-remembering, which is where experiences consolidate into owned memories (peak-end rule, rosy retrospection). Run 1–2 weeks post-trip: the peak moment and the last moment, surprises vs the Countdown's expectations (gradeable — a natural paired format), what we'd do differently, a keepsake element. Countdown → Field Guide → After forms a complete trip arc. First candidate: the upcoming Efteling/Beekse trip.
-19. **New format — "Year in Numbers" (personal annual report):** Feltron/Wrapped-style data issue, fixed annually (first Sunday of January), drawing on the reader's own year — training miles, trips, seasons followed, things finished. Distinct from Rewind (narrative) and Season Review (one lane): the whole year, quantified. Ritual fixed timing is the mechanism that makes it an event.
-20. **New format (cheap) — Anniversary issue:** annually on The Signal's own birthday, New Yorker-style: repeated cover ritual, best-of excerpts from the year's issues, short state-of-the-magazine letter. The archive becomes the content; compounding keepsake value.
-21. **Occasional experiments, lower priority:** photo-essay issue (80% images + captions — the strongest keepsake format per family-yearbook practice); decision memo (single yes/no decisions that fit neither Versus nor Guide); time-capsule *section* (sealed predictions revisited by a scheduled future issue) rather than a full format.
-22. **Design specials for the archive:** they're the issues most likely to be re-read in five years. Write with specific dates and numbers; unify the numbering/masthead scheme (weekly = Transmission №NNN; specials = named series with No. within series), and mark the March–April generation as "Vol. 0 / early format" in the archive so the style gap reads as history, not inconsistency.
-
-### P3 — Design system
-
-23. **Prune the spec files to one truth (the overdue S7/S8).** specials.md still mandates four whole sections of the v8.5–v8.10 system its own v8.21 removal list bans (chapter gates, editorial body kit, signature moments, `sp-*` imagery budget); pre-flight.md — the first file every writer reads — gives copy-paste snippets of removed classes; compliance Gate 1E greps police the dead vocabulary while the live components (.pick, .lens, .scorecard, .argument, .on-ramp) have no greps at all; component-contracts.md contains duplicated/contradictory sections including a "Universal Cover" contract that bans markup specials.md mandates. A compliant writer following the docs verbatim produces a gate-failing issue.
-24. **Make covers format-aware.** 25-special-cover.css hard-codes the ember accent on every format's eyebrow/title/meta, so per-format accents only tint the background glow — and Rewind, Shortlist and Next all share the default rose anyway. Except Versus, every editorial special cover is the same dark cover. Wire `var(--accent)` through, give the three rose formats their own accents, and give Season Review a visible one (near-black #1B1B2F reads as unstyled). External practice is clear: each special format needs one signature design gesture that says "this is not a normal Sunday" while the masthead and voice stay constant.
-25. **Differentiate Field Guide from Countdown** (the spec admits the cover plate is identical): different plate palette at minimum (dusk vs morning), plus a food-forward cover signature.
-26. **Per-format CSS bundling.** Every special ships all ~444KB of CSS 00–44 inline — a Deep Dive carries nine holiday layers including savannah giraffes; every special carries ~300 lines of retired Lookahead styles; two conflicting `.mast` contracts ride in every bundle. The weekly already solved this (24KB self-contained bundle); give specials the same treatment.
-27. **Fix the holiday alt-text hole:** the June Countdown has 65 background-image divs vs 4 real `<img>` tags (Field Guide: 55 vs 3) — invisible to screen readers. Amend the polaroid/wonder/postcard contracts to real `<img>` or mandatory `role="img"` + `aria-label`, and make the image gate count them.
-28. **Dark mode and print for specials.** The weekly has a proper token-level dark variant; the entire special system (23–44) has none — the flagship editions blast full-brightness white while the weekly politely dims. No special has a print stylesheet. Both are cheap at the token layer.
-29. **Mobile fixes:** `.vs-tape` (fixed 14rem label column, no overflow wrapper), `.cheat-sheet` (4-col table, no small-screen rules), `.year-band` (12 hard columns, ~10.5px labels) all break at phone widths — the system's own "wide content scrolls in its own container" rule isn't applied to its own tables. Raise mono micro-labels to ≥0.72rem.
-30. **Parameterise destination theming:** layer 33 is hard-coded to two Dutch venues and Countdown-only. Replace `--eft-/--bee-` tokens with per-issue venue tokens the planner sets, available to both holiday formats — any non-Dutch trip currently gets nothing.
-31. **Longer term: skeleton-driven stitching for specials.** The weekly's deterministic skeleton makes structural failures unrepresentable; specials still hand-author cover/masthead/footer per issue via a bash concatenator — exactly the drift class that shipped the `Issue #[N]` placeholder and the image-gate bypass. Skeletons + a golden fixture for the recurring specials (Deep Dive, Countdown, Field Guide first), plus per-special length floors and minimum image counts to match the weekly's protections.
-
-### P4 — Operations & hygiene
-
-32. **De-duplicate spec/triggers.md** — the same full trigger stack is pasted verbatim three times under three anchors; any edit risks silent divergence.
-33. **Bring state in line with spec:** delete the retired `deep_dive_schedule` block from signal-state.json (an unattended run reading state literally could re-honour a dead timer); fix stale status lines (Rewind "never shipped" — it shipped 07-12 and scored best-ever; Deep Dive "quarterly auto-trigger" — retired; SKILL.md still advertising Lookahead).
-34. **Fix broken archive covers:** the manifest points at three cover images that don't exist (signal_next_2026-05-31, starterkit-audio-dramas, versus-tlm-ibex) — broken thumbnails in the archive grid and dead pre-cache targets; delete the orphan signal_weekly_2026-05-31.jpg (renamed-issue ghost).
-35. **Make the cost log earn its name or rename it:** 218 rows, zero token or dollar figures — per-format cost is unanswerable. Standardize `issue_id` (the WWI Deep Dive is split across two IDs; the 07-13 weekly collides with the Rewind's weekend) so cost and quality logs join.
-36. **Backfill quality scores for the seven unscored legacy specials** (2× Versus, Shortlist, 2× Starter Kit, 2× legacy Countdown) — precisely the formats whose merged successor (The Guide) is untested; its design would benefit from knowing how its parents actually scored.
-37. **Run The Guide once** in the next P3 dry spell (due ~mid-August given the 5-week rule) to prove the merged format end-to-end — after fixing recommendation 2.
+**Holiday flaws found on render:** the countdown's poster cover collides with its own subtitle and buries the meta row in the castle art at both widths (worst single mobile page in the set); postcard quote strips crush to one-or-two words per line at 390px; some cream-act paragraphs run ~1,270px edge-to-edge; captions overlap photos mid-reveal on mobile. The field guide's only real flaw is length — 72 desktop screens; the ranked-entry format would survive a 25% cut. Structurally: 55–65 images per holiday issue are CSS backgrounds, invisible to screen readers.
 
 ---
 
-## 4. What NOT to change
+## Part 3 — State of play
 
-The committed-argument structure ("the magazine's take"), conditional verdicts in Versus, the On-Ramp/exit-ramp pattern in Next, the Memory Test in Rewind, honest practical flags (bus-safari suspension, purchase-friction warnings), the thematic Meanwhile variant, and the Versus cover treatment. These are the format family's genuine competitive assets, already at or above the weekly's quality bar — protect them while fixing the plumbing around them.
+**Formats defined (skill v8.42):** Deep Dive, Countdown, Field Guide, Season Review, Versus, Rewind, The Guide (v8.39 merger of Starter Kit + Shortlist), Next; Lookahead retired. **Shipped (14):** Countdown ×3, Deep Dive ×3, Versus ×2, Starter Kit ×2, Shortlist ×1, Field Guide ×1, Next ×1, Rewind ×1. **Never shipped:** Season Review — despite Arsenal's title and Inter's Scudetto both concluding in May with the trigger nominally live — and The Guide, which has never run once.
+
+**Cadence reality:** the guardrail is one special per 4–6 weeks; the actual run-rate since mid-May is ~1 per 1.5 weeks, including a week (25–31 May) with **three specials in seven days** — a direct breach of the "never three in a row" rule that no bookkeeping caught (`consecutive_specials_count` still reads 0). On 14 June a Countdown silently *replaced* the weekly — the only Sunday with no weekly — and no rule says whether that's allowed.
+
+**Triggers are dark:** `upcoming_trips` in state is empty, so Field Guide and Countdown — the two most reliable calendar triggers — *cannot fire at all* right now. There is no state field for non-trip future events (releases, finales, birthdays), so event specials depend on week-of research luck — which is precisely how the May season-review triggers were missed. The World Cup final (19 July 2026) is the next live test of the season-conclusion trigger; the format is currently 0-for-3 on real triggers.
+
+---
+
+## Part 4 — Per-format verdicts (validated scores)
+
+**Deep Dive** (×3; independent 3.8–4.0). The intellectual flagship, and the only format whose content density is genuinely earned. But: the WWI issue leaks internal chapter IDs into reader copy ~30 times in prose ("which is where ch2-1 takes up the story" — 39 raw matches verified) plus five "Writer-built. Sources: research bundle viz_3" captions; the intro narrates its own methodology — containing *verbatim* the rubric's voice-score-1 anchor sentences; the Hindenburg pull-quote runs 3–4×; and visually it's the flattest scroll in the archive — 14 images across 24,000 words (a quarter of the norm), no cover image on either recent deep dive. Zero personalisation despite the system demonstrably knowing the reader's history-podcast habits. Spec and gate contradict each other on length (spec: 20–25k with `expanded_scope`; validator: hard fail at 20k). **When to use:** single ongoing/open-ended subject deserving full depth. Concluded → Season Review; head-to-head → Versus (that tie-break rule needs writing down; currently absent).
+
+**Countdown** (independent 4.0). The best-personalised issue in the archive and the design high point alongside the field guide — built around the family's actual return trip, named animals with dates, honest practical flags, the sleeps-counter bookend. Content leaks: Gallagher's "calm and expansive" ×3 (verified), a quote reproduced twice *with altered wording* between uses (a quote-integrity defect), 15 raw CDN hostnames in photo credits (verified), mirrored sentence stencils, and fact drift — the June issue contradicts the March one on fairy-tale count and drop height, and contradicts *itself* on suite count (22 vs "around twenty"). The superseded March issue holds better exclusive material (park secrets: Villa Volta grotto, the talking tree, the third station) that was never carried forward — the new countdown is more elegant and *less useful*. **When to use:** trip/event 2–3 weeks out; hype over homework, but with at least one actionable anticipation element (active planning amplifies the anticipation payoff).
+
+**Field Guide** (independent 3.7 content / #1 design). Deep, dense, genuinely useful food guide with the best cover and best card system in the archive. Content problems: research methodology printed as reader copy — "Why it's here · Frequency convergence" ×3 (verified), "longevity signal", even "EXIF metadata from July 2024" in a caption; one quote used 5× (verified); 25+ picks marching an identical mold with each Unmissable restated 2–3×. Worse: a committed TEST build sits publicly beside it, disagreeing on checkable facts — 19 vs 30+ venues, automatiek 1940s vs 1960, frikandel prices, Polles hours. One of each pair is wrong, in public. The docs also disagree on what the format *is* ("a Sunday read, not a phone reference in the park" vs "reference-first, scannable on a phone"). **When to use:** ~6 weeks pre-trip.
+
+**Rewind** (logged 4.7 → independent 3.5). Strong skeleton — Numbers → named Throughline argued with counter-evidence → Highs/Lows → What We Missed (genuinely good media criticism) → the Memory Test staking falsifiable calls for December, the format's franchise moment. But execution: the placeholder masthead, duplicate image with two contradictory captions, each headline fact re-told 4–6×, Highs/Lows each running timeline-cards *then* prose recaps of the same items, and the promised personal ledger — the training year, the trip, the reader's own half-year — never arrives beyond one caption, with the bizarre third-person "two of the reader's clubs" in a one-reader magazine. On screen it reads as an essay, not a magazine. **When to use:** last Sunday of June/December, panoramic across all interests; single-lane retros are Season Review.
+
+**Next** (independent 3.6). Best format-fit for its reader: precise emotional brief, honest exits, a real parental-safeguarding gate. Its verdict components — the START WITH/REASSESS AT/THEN route card, the EPISODES/DUB/WHERE/FILLER spec card — are the strongest editorial-system furniture on screen and prove data-ledgers fit the paper-and-ink identity. Weaknesses: the brief restated ~8× in 4k words (padding in an anti-padding issue), thin at 4k, thin sourcing, all 10 images dead external hotlinks, no palette identity. **When to use:** just-finished-something; manual-only by design.
+
+**Versus** (×2, both pre-pipeline, never scored, never run on the current system). The Sanguli/Clodia issue is the old generation's best: eleven Rounds with per-round verdicts, a sourced Tale of the Tape, a disciplined conditional final frame — this *is* the Wirecutter method (criteria upfront, visible elimination, commit to a pick) and should be canonized as the format standard. The fitness versus mixes £/$/exchange-rate math incoherently. Strongest cover identity of any format in CSS — untested on the current pipeline.
+
+**The Guide** — defined but non-functional. Live in the spec since v8.39, but absent from the chapter-plan validator's vocabulary (**a Guide plan hard-fails the mandatory Phase 4 gate**), absent from the schema enum, no `data-special` slug, no CSS accent, no variety floor, absent from SKILL.md's own pipeline lists. Its parents shipped only as legacy issues with zero quality data. A spec-compliant Guide run is currently impossible.
+
+**Season Review** — spec'd, never shipped, trigger demonstrably failing; docs disagree on whether it's P1 or P2. **Lookahead** — retired in v8.39, but SKILL.md (v8.42, *later*) still lists it as live in three places, and ~300 lines of its CSS (the most-styled format in the flair file) ship inside every special.
+
+---
+
+## Part 5 — Cross-cutting problems
+
+1. **Production leakage** (all verified by direct grep): chapter IDs in prose, `viz_N` captions, `Issue #[N]`, "Created with Perplexity Computer" in countdown-wcq, CDN hostnames as credits, empty rating boxes, TEST builds publicly deployed. The publish gate already treats "leaked scaffold" as hard-safety without catching any of these classes.
+2. **Repetition as filler.** Quotes ×3–5, facts ×3–6, briefs ×8 across every format — in a magazine whose stated flagship criterion is "no filler." The self-grader's density-5 rubber stamp is why this was never caught.
+3. **Continuity contradictions.** A phantom "UK general election" conflicting with the by-election/leadership arc in every later issue; the Masters dated 8 April in one issue, 10 April in another; Pat Jennings aged 40 *and* 41 in the same issue; the Rewind promising "the weekly returns 19 July" with the weekly arriving on the 13th; issue numbering incoherent across formats (two different issues both "#7"/"#8" on the same date).
+4. **Voice tics hardening.** "Worth ~ing" (verified: 3–12 per issue, every issue), "That is the change X turns on," "the question is the good one," "does not make bad X," em-dash as default connective, the "Not X, but Y" opening.
+5. **Spec rot.** pre-flight.md — the first file every writer reads — gives copy-paste snippets of the component system *removed in v8.21*; specials.md mandates four sections of machinery its own removal list bans; Gate 1E greps police the dead vocabulary while live components have none; component-contracts.md contains a "Universal Cover" contract banning markup specials.md mandates; triggers.md contains the same trigger stack pasted three times verbatim.
+6. **Pipeline asymmetry.** The weekly has a deterministic skeleton, a golden fixture, length floors and image minimums; specials have hand-authored chrome stitched by a bash concatenator, no skeletons, no goldens, no floors — the exact machinery gap that shipped `Issue #[N]` and the failed image gate.
+7. **Measurement theater.** Self-scoring with a structural conflict of interest, a "cost log" with no costs in it (218 rows, zero token/dollar figures, colliding issue IDs), seven specials never scored at all, and a never-run human anchor.
+
+---
+
+## Part 6 — RECOMMENDATIONS
+
+### A. Trust and measurement (do first — everything else is steered by these numbers)
+
+1. **Stop trusting the quality log as-is; treat it as a trend instrument with a known ~+0.4 optimistic offset.** Retire "Rewind 4.7" and "specials beat weeklies" from decision-making.
+2. **Run the human anchor the rubric already mandates:** one blind human-scored issue per month, logged as `scorer_model: "human"`. The cheapest fix; the rubric itself calls it "the only thing that keeps the measure honest."
+3. **Break the sibling conflict:** score with a different model family than the writer, or score yesterday's *shipped* artifact in a separate session so a low score can't cost the grading run its own repair round. Retain the scorer transcript. Fixed prompt template, no orchestrator-composed free text.
+4. **Require all eight dimensions or flag the row.** An `overall` computed over a partial set (the Rewind's 4.7 excluded visual and length) should be marked partial on quality.html.
+5. **Feed a mechanical defect pre-scan into the scorer prompt** — every leak class found here is grep-able: `ch\d+-\d+` in prose, `research bundle|viz_\d`, `#\[N\]`, duplicate image src with differing alts, verbatim sentences repeated ≥2×, images-per-1,000-words. "Structure: 5" must be impossible next to a masthead placeholder.
+6. **Force scale use:** density 5 requires a "no restatement found" attestation; a note describing 2–3 behaviour attached to a 4–5 score triggers automatic re-score. Re-score when the artifact is hand-edited after logging (the 07-13 weekly diverged from its row).
+7. **Make the cost log record cost** (tokens/dollars per row) or rename it; standardize one dated `issue_id` per issue so cost and quality logs join. Backfill quality scores for the seven never-scored legacy specials — The Guide's design depends on knowing how its two parents actually performed.
+
+### B. Content gates (before the next special ships)
+
+8. **Pre-publish copy gate** rejecting: chapter-ID refs in prose, `viz_N`/"research bundle" captions, placeholder tokens, tool credits, raw CDN hostnames in credits, empty stat boxes.
+9. **Repetition budget:** any external quote max twice per issue (body + pull-quote); any fact max twice, the second visibly a reprise; brief/criteria stated once in full, thereafter by name.
+10. **Continuity ledger:** a small facts file per running storyline (politics arc, sports standings, trip logistics, published dates/promises) checked by every issue.
+11. **Quote integrity:** never alter a quote's wording between uses; paraphrase or re-quote exactly.
+12. **Source-confidence register** from the weekly applied to every precise-sounding stat without a named source; cut the decimals or cut the stat. Mirror all external images to `assets/cached/` — Next is 100% dead imagery today.
+13. **Voice-tic watchlist** ("worth ~ing", "turns on", "the good one", em-dash density) rotated per issue.
+14. **Personalisation floor for the big formats:** one personal bridge per Deep Dive (the reader's podcast/game habits are already in state); the Rewind's personal ledger becomes a mandatory chapter, written in second person — never "the reader's."
+
+### C. Design (lift editorial specials toward the holiday bar)
+
+15. **Pacing budget: ≥1 designed visual event per ~1.5 screens** in every special. No more than 4–5 consecutive paragraphs without a figure, ledger row, quote-object or pull-quote. Deep Dive needs roughly 3× its current furniture; the highest-leverage design rule available.
+16. **Instantiate the `.cheat-sheet`** — designed, documented in a CSS comment, used zero times. Every Deep Dive/Rewind/Next should end with the at-a-glance ledger.
+17. **Port the data-ledger pattern** (Next's route card and spec card prove it fits paper-and-ink) into Deep Dive and Rewind: dates, numbers, sources out of prose into mono-labelled rows.
+18. **Palette arcs in ink terms:** Deep Dive acts alternating paper-white/parchment tint; Rewind quarters shifting tint. Make depth visible without abandoning restraint.
+19. **One bespoke cover gesture per format.** The three editorial covers are one template with different words; the field guide's "44" shows what owning a gesture looks like. Deep Dive: oversized ghosted numeral or map fragment; Rewind: the year-band promoted to the cover; Next: the route-card timeline. Also: wire `var(--accent)` through the cover (a hard-coded ember currently overrides every format's colour) and give Rewind/Next/Shortlist non-default accents; Season Review's near-black accent reads as unstyled.
+20. **Fix the holiday issues' own flaws:** countdown poster-cover collision (worst mobile page in the set); postcard strips stack full-width below ~480px; cap cream-act measure at ~68ch; captions get their own box below photos during reveal; consider a 25% trim of the field guide.
+21. **Real mobile fixes (verified on render):** single-line sticky header ≤480px (Rewind/Versus/Next headers currently shatter into overlapping debris); `.marginalia` overhang (~10px clip) and its one-word-per-line desktop crush in Next.
+22. **Accessibility & durability:** holiday ephemera components get real `<img>` or `role="img"` + `aria-label` (55–65 invisible images per holiday issue); raise mono micro-labels to ≥0.72rem; token-level dark mode for specials (the weekly has it); a minimal print stylesheet.
+23. **Per-format CSS bundling:** every special currently inlines all ~444KB including nine holiday layers in deep dives and the retired Lookahead block; the weekly's 24KB bundle is the model. Parameterise destination theming (per-issue venue tokens instead of hard-coded Efteling/Beekse) so the next non-Dutch trip isn't unstyled.
+24. **Longer term: skeleton-driven stitching for specials** — deterministic chrome (cover/masthead/footer), a golden fixture, length floors and image minimums, mirroring the weekly. This is the machinery gap behind the `#[N]` placeholder and the bypassed image gate.
+
+### D. Formats, triggers, cadence
+
+25. **Unbreak The Guide end-to-end** (validator vocabulary, schema, slug, accent, floor, SKILL.md lists), then run it once in the next dry spell (~mid-August by the 5-week rule).
+26. **Populate forward-trigger state now** — the next trip into `upcoming_trips`, plus a field for non-trip events (releases, finales, holidays) that Phase 0 reads. Until then the two best triggers are dead.
+27. **Season Review goes on trial:** World Cup final is 19 July 2026. Fire it (or log a deliberate pass); if it misses a third live trigger, demote it to dormant rather than leaving it "ACTIVE."
+28. **Resolve the contradictions:** Deep Dive ceiling (spec 25k vs gate 20k); Season Review P1-vs-P2; Field Guide/Countdown collision winner (two docs name opposite winners); Deep-Dive-vs-Versus tie-break on launches ("head-to-head exists → Versus"); Lookahead's retirement propagated into SKILL.md; Field Guide's product definition (Sunday read vs phone reference — the render evidence says its card system is genuinely both, so say so deliberately).
+29. **Codify cadence and keep the books:** one special per week max, ~1 per 4–6 issues, maintain `consecutive_specials_count`, and write down the replace-vs-supplement rule (suggested: trip-window Countdown/Field Guide may take the Sunday slot; everything else supplements). Tease next week's special in the preceding weekly — anticipation is part of the product.
+30. **New formats, ranked by fit:**
+    - **After** — post-trip debrief 1–2 weeks after return, grading the Countdown's promises against reality (peak-end structure: the peak moment, the last moment, surprises, what we'd change). Completes the Countdown → Field Guide → After arc; the research says the return phase is where experiences become owned memories, and The Signal currently serves only anticipation. First candidate: the Efteling/Beekse trip.
+    - **Year in Numbers** — Feltron/Wrapped-style personal data annual, fixed first Sunday of January; training miles, trips, seasons, things finished. The fixed date is the mechanism.
+    - **Anniversary issue** — annual, The Signal's birthday, repeated cover ritual, best-of from the archive; nearly free to produce, compounding keepsake value.
+    - Occasional experiments: photo-essay issue (the strongest keepsake format), decision memo (single decisions that fit neither Versus nor Guide), a sealed time-capsule *section*.
+31. **Design for the archive:** unify numbering/masthead across formats (weekly = Transmission №NNN; specials = named series with a No.), mark the March–April generation "Vol. 0" so the style gap reads as history, fix the three broken archive cover references and the orphan cover, and write specials to be re-read in five years — specific dates, specific numbers.
+
+### E. Hygiene
+
+32. Delete or `.assetsignore` the two publicly-served TEST field guides, then reconcile their fact conflicts with the published issue so one set of numbers survives.
+33. Delete the retired `deep_dive_schedule` block from state (an unattended run could re-honour a dead timer).
+34. De-triplicate triggers.md; fix stale status lines (Rewind "never shipped", Deep Dive "quarterly auto-trigger").
+35. Prune pre-flight.md/specials.md/Gate 1E/component-contracts.md to the live component vocabulary — the overdue S7/S8 work; a writer following the docs verbatim today produces a gate-failing issue.
+
+### What not to change
+
+The Argument, the On-Ramp, the Memory Test, per-round Versus verdicts, honest practical flags, the thematic Meanwhile, the field guide's card system and cover, the countdown's ephemera and palette arc, and the deep dives' earned density. These are the assets; everything above is about fixing the machine around them.
+
+---
+
+**One-paragraph takeaway:** the holiday design system is the best thing The Signal has produced — its pacing density, ephemera, and palette arcs are the model, and the editorial specials need to move toward that bar in their own paper-and-ink idiom. The "content is great, 4.7" story was the system grading its own homework: the real picture is strong openings and (in the deep dives) genuine depth, undermined by repetition-as-filler, scaffold leakage, and a retrospective that forgot its own reader — none of which the self-scorer has ever flagged with a number below 3.
