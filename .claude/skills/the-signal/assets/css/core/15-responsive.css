@@ -1,0 +1,84 @@
+/* ==========================================================================
+   THE SIGNAL — FURNITURE CORE · 15-responsive.css
+   390px behaviour + the Law-10 craft floor:
+     · single-column stacking at 390px
+     · CHROME RESERVATION (fixed chrome never overlaps content)
+     · TABLE WRAP affordances (tables scroll inside their own box, never
+       truncate mid-word — the measure tool checks for an overflow-x ancestor)
+     · type floors hold at 390px (mono ≥0.72rem, measure ≤68ch)
+   ========================================================================== */
+
+/* ── PAGE SHELL — a comfortable measure column, gutters that never overflow ─*/
+.mx-wrap { max-width:768px; margin:0 auto; padding:0 clamp(18px,5vw,32px); }
+.mx-wrap--wide { max-width:1080px; }
+
+/* ── CHROME RESERVATION (Law 10) ───────────────────────────────────────────
+   The sticky masthead participates in flow, so nothing sits under it. If a
+   host uses a FIXED back-pill instead, reserve a scroll-margin so anchored
+   content is never hidden beneath it. */
+.mx-doc { scroll-padding-top:64px; }
+.mx-doc :target { scroll-margin-top:72px; }
+
+/* ── TABLE WRAP AFFORDANCE (Law 10) ────────────────────────────────────────
+   Wrap every wide data table in .mx-table-wrap so it scrolls inside its box
+   rather than truncating a cell mid-word or forcing a document H-scroll. */
+.mx-table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; margin:28px 0; }
+.mx-table-wrap > table { min-width:520px; width:100%; border-collapse:collapse; }
+.mx-table-wrap::-webkit-scrollbar { height:8px; }
+.mx-table-wrap::-webkit-scrollbar-thumb { background:var(--mx-hair); border-radius:4px; }
+/* a visible affordance hint when the table overflows */
+.mx-table-wrap { position:relative; }
+.mx-data-table th, .mx-data-table td {
+  font-family:var(--mx-t-body); font-size:14px; line-height:1.5;
+  padding:10px 14px; text-align:left; border-bottom:1px solid var(--mx-hair); color:var(--mx-ink);
+  white-space:normal;                       /* NEVER nowrap-clip a data cell */
+  vertical-align:top;
+}
+.mx-data-table thead th {
+  font-family:var(--mx-t-mono); font-size:max(var(--mx-label-min),.72rem); font-weight:700;
+  letter-spacing:.12em; text-transform:uppercase; color:var(--mx-ink-soft);
+  border-bottom:2px solid var(--mx-ink);
+}
+.mx-data-table caption {
+  caption-side:top; text-align:left; margin-bottom:8px;
+  font-family:var(--mx-t-mono); font-size:max(var(--mx-label-min),.72rem);
+  letter-spacing:.16em; text-transform:uppercase; color:var(--mx-accent);
+}
+
+/* ── 390px STACKING ────────────────────────────────────────────────────────*/
+@media (max-width:640px) {
+  .mx-aside, .mx-aside--left { grid-template-columns:1fr; }
+  .mx-anchor { grid-template-columns:1fr; }
+  .mx-shelf { gap:28px; }
+  /* objects keep their tilt but shrink to fit the gutter — no H-scroll */
+  .mx-card, .mx-postcard, .mx-ticket, .mx-scorecard { width:100%; }
+  .mx-cover__title { font-size:clamp(40px,12vw,60px); }
+  .mx-plate__ghost { font-size:clamp(120px,42vw,220px); top:-30px; }
+}
+@media (max-width:400px) {
+  .mx-wrap { padding:0 16px; }
+  /* type floors HOLD at 390px — mono never drops below the Law-8 minimum */
+  .mx-doc { --mx-label-min:0.72rem; }
+  .mx-body { max-width:100%; }
+  .mx-stat-band { grid-template-columns:repeat(2,1fr); }
+}
+
+/* ── DARK-MODE token nudge (token-level; full dark/print is WP-3) ──────────*/
+@media (prefers-color-scheme: dark) {
+  .mx-doc:not([data-force-light]) {
+    --mx-paper:#17161c; --mx-paper-2:#201e26;
+    --mx-ink:#ece8dc; --mx-ink-soft:rgba(236,232,220,.66);
+    --mx-accent:#c9c6bc; --mx-accent-ink:#17161c;
+    --mx-hair:rgba(236,232,220,.24); --mx-ghost:rgba(236,232,220,.07);
+    --mx-card:#f1ede2; --mx-card-window:#e7e2d3; --mx-card-ink:#22201a;
+    --mx-quote-bg:rgba(255,255,255,.04);
+  }
+}
+
+/* ── PRINT — minimal, ink-economical (Law 10 minimal print sheet) ─────────*/
+@media print {
+  .mx-doc { background:#fff; color:#000; }
+  .mx-mast, .mx-backpill, .mx-marquee { display:none; }
+  .mx-card, .mx-postcard, .mx-ticket, .mx-figure, .mx-scorecard { transform:none !important; box-shadow:none !important; }
+  .mx-ground-grain::after, .mx-ground-starfield::before { display:none; }
+}

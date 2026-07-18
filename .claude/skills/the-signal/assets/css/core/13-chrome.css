@@ -1,0 +1,244 @@
+/* ==========================================================================
+   THE SIGNAL — FURNITURE CORE · 13-chrome.css
+   ONE masthead, cover scaffolds (incl. poster), kicker/act-opener, the quote
+   object, SCENE-GROUND utilities, transit band, marquee, countdown grid.
+   Scene grounds are LOAD-BEARING for Law 1: every act needs a ground, never a
+   flat single colour. Grounds are extracted from the holiday SVG scene-grounds
+   and DE-THEMED — driven by currentColor / var(--mx-glyph) / var(--mx-pattern)
+   so a motif pack colours them, and the neutral core still shows texture.
+   ========================================================================== */
+
+/* ── THE ONE MASTHEAD ──────────────────────────────────────────────────────
+   Reserves its own height (Law 10) — it is sticky, so content flows below it;
+   it never overlaps because .mx-doc content starts after it in flow. */
+.mx-mast {
+  position:sticky; top:0; z-index:50;
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  padding:10px clamp(16px,4vw,40px);
+  background:var(--mx-paper); color:var(--mx-ink);
+  border-bottom:1px solid var(--mx-hair);
+  backdrop-filter:saturate(1.1) blur(2px);
+}
+.mx-mast__brand {
+  font-family:var(--mx-t-serif); font-weight:700; font-size:19px; letter-spacing:.01em;
+}
+.mx-mast__brand b { color:var(--mx-accent); }
+.mx-mast__meta {
+  font-family:var(--mx-t-mono); font-size:max(var(--mx-label-min),.72rem);
+  letter-spacing:.2em; text-transform:uppercase; color:var(--mx-ink-soft);
+}
+/* back-pill variant that hides on scroll-down rather than covering content */
+.mx-backpill {
+  position:fixed; top:12px; left:12px; z-index:60;
+  font-family:var(--mx-t-mono); font-size:max(var(--mx-label-min),.72rem);
+  letter-spacing:.14em; text-transform:uppercase;
+  background:var(--mx-accent); color:var(--mx-accent-ink);
+  padding:8px 14px; border-radius:2px; box-shadow:0 6px 16px -6px rgba(0,0,0,.5);
+  transition:transform .3s ease, opacity .3s ease;
+}
+.mx-doc.is-scrolling-down .mx-backpill { transform:translateY(-140%); opacity:0; }
+
+/* ── COVER SCAFFOLDS ───────────────────────────────────────────────────────*/
+.mx-cover {
+  position:relative; min-height:82vh; display:flex; flex-direction:column; justify-content:flex-end;
+  padding:clamp(28px,7vw,80px) clamp(20px,5vw,64px) clamp(40px,7vw,72px);
+  overflow:hidden; color:var(--mx-ink); background:var(--mx-paper);
+}
+.mx-cover__kicker {
+  font-family:var(--mx-t-mono); font-size:max(var(--mx-label-min),.72rem); font-weight:700;
+  letter-spacing:.34em; text-transform:uppercase; color:var(--mx-accent); margin-bottom:18px;
+}
+.mx-cover__title {
+  font-family:var(--mx-t-serif); font-weight:700; font-size:clamp(46px,10vw,120px);
+  line-height:.95; margin:0 0 20px; max-width:16ch; color:var(--mx-ink); position:relative; z-index:2;
+}
+.mx-cover__title em { font-style:italic; color:var(--mx-accent); }
+.mx-cover__dek {
+  font-family:var(--mx-t-serif); font-style:italic; font-size:clamp(19px,2.6vw,28px);
+  line-height:1.4; max-width:44ch; color:var(--mx-ink-soft); position:relative; z-index:2;
+}
+.mx-cover__slogan {
+  margin-top:24px; font-family:var(--mx-t-mono); font-size:max(var(--mx-label-min),.72rem);
+  letter-spacing:.14em; text-transform:uppercase; color:var(--mx-ink); position:relative; z-index:2;
+}
+/* POSTER cover — the giant owned numeral/plate gesture (Law 7) */
+.mx-cover--poster .mx-cover__mega {
+  position:absolute; right:-4vw; top:-2vw; z-index:1;
+  font-family:var(--mx-t-chunk); font-size:clamp(220px,44vw,560px); line-height:.8;
+  color:var(--mx-ghost); pointer-events:none; user-select:none;
+}
+.mx-cover--poster .mx-cover__title { max-width:20ch; }
+
+/* ── ACT OPENER — the transition into a new palette act ───────────────────*/
+.mx-act-open {
+  position:relative; padding:clamp(40px,8vw,90px) 0 clamp(20px,4vw,40px);
+  text-align:center;
+}
+.mx-act-open__eyebrow {
+  font-family:var(--mx-t-mono); font-size:max(var(--mx-label-min),.72rem); font-weight:700;
+  letter-spacing:.3em; text-transform:uppercase; color:var(--mx-accent);
+}
+.mx-act-open__title {
+  font-family:var(--mx-t-serif); font-weight:700; font-size:clamp(32px,6vw,60px);
+  line-height:1; margin:12px 0 0; color:var(--mx-ink);
+}
+
+/* ── QUOTE OBJECT — a named external voice as furniture (Law 6/9) ──────────*/
+.mx-quote {
+  position:relative; margin:40px 0; padding:26px 26px 22px;
+  border-left:6px solid var(--mx-accent); background:var(--mx-quote-bg);
+}
+.mx-quote::before {
+  content:"\201C"; position:absolute; top:-26px; left:14px;
+  font-family:var(--mx-t-serif); font-size:88px; line-height:1; color:var(--mx-accent); opacity:.9;
+}
+.mx-quote blockquote {
+  margin:0; border:none;
+  font-family:var(--mx-t-serif); font-style:italic; font-size:clamp(19px,2.6vw,26px);
+  line-height:1.42; color:var(--mx-ink);
+}
+.mx-quote figcaption, .mx-quote cite {
+  display:block; margin-top:12px; font-style:normal;
+  font-family:var(--mx-t-mono); font-size:max(var(--mx-label-min),.72rem);
+  letter-spacing:.16em; text-transform:uppercase; color:var(--mx-ink-soft);
+}
+.mx-quote figcaption b, .mx-quote cite b { color:var(--mx-accent); font-weight:700; }
+/* postcard-shaped quote (a quote on a mail card) */
+.mx-postcard-quote .mx-postcard__back { font-family:var(--mx-t-serif); font-style:italic; font-size:19px; }
+
+/* ── FIGURE — captioned image object (a Law-2 event; real <img> inside) ────*/
+.mx-figure {
+  position:relative; margin:36px 0; --mx-tilt:-1.2deg;
+  transform:rotate(var(--mx-tilt));
+}
+.mx-figure--flat { --mx-tilt:0deg; transform:none; }
+.mx-figure__frame {
+  position:relative; overflow:hidden; background:var(--mx-card);
+  border:8px solid var(--mx-card); box-shadow:0 30px 46px -22px rgba(0,0,0,.6);
+}
+.mx-figure__frame > img, .mx-figure__frame > [role="img"] { display:block; width:100%; height:auto; }
+.mx-figure figcaption {
+  margin-top:10px; font-family:var(--mx-t-body); font-size:13.5px; line-height:1.5;
+  color:var(--mx-ink-soft); max-width:56ch;
+}
+.mx-figure__credit {
+  display:block; margin-top:4px; font-family:var(--mx-t-mono);
+  font-size:max(var(--mx-label-min),.72rem); letter-spacing:.06em; text-transform:uppercase; opacity:.7;
+}
+.mx-figure--wide { --mx-tilt:0deg; transform:none; }
+.mx-figure--wide .mx-figure__frame { border-width:6px; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   SCENE-GROUND UTILITIES  (Law 1: every act has a ground, never flat colour)
+   Apply to a <section data-act>. Content flows above the background normally.
+   ══════════════════════════════════════════════════════════════════════════*/
+
+/* gradient sky — soft light/atmosphere gradient built from act tokens */
+.mx-ground-gradient-sky {
+  background-color:var(--mx-paper);
+  background-image:
+    radial-gradient(1200px 520px at 82% -8%, var(--mx-glyph, currentColor), transparent 62%),
+    linear-gradient(180deg, color-mix(in srgb, var(--mx-paper) 82%, var(--mx-ink)) 0%, var(--mx-paper) 46%);
+  background-repeat:no-repeat;
+}
+/* the radial tint is faint — cap it via a low-alpha glyph in the theme; neutral fallback: */
+.mx-ground-gradient-sky { --mx-glyph:rgba(120,116,104,.10); }
+
+/* starfield — CSS-only star dots painted by the glyph colour + a few sparkles */
+.mx-ground-starfield {
+  background-color:var(--mx-paper);
+  background-image:
+    radial-gradient(1.6px 1.6px at 20px 30px, var(--mx-glyph, currentColor) 50%, transparent 55%),
+    radial-gradient(1.4px 1.4px at 120px 80px, var(--mx-glyph, currentColor) 50%, transparent 55%),
+    radial-gradient(2px 2px at 210px 40px, var(--mx-glyph, currentColor) 50%, transparent 55%),
+    radial-gradient(1.2px 1.2px at 300px 130px, var(--mx-glyph, currentColor) 50%, transparent 55%),
+    radial-gradient(1.6px 1.6px at 80px 190px, var(--mx-glyph, currentColor) 50%, transparent 55%),
+    radial-gradient(1.3px 1.3px at 260px 220px, var(--mx-glyph, currentColor) 50%, transparent 55%);
+  background-size:340px 260px; background-repeat:repeat;
+  --mx-glyph:color-mix(in srgb, var(--mx-accent) 60%, transparent);
+}
+.mx-ground-starfield::before {          /* two 4-point sparkle glyphs */
+  content:""; position:absolute; inset:0; pointer-events:none; opacity:.5;
+  background-image:
+    radial-gradient(3px 14px at 18% 24%, var(--mx-accent) 40%, transparent 42%),
+    radial-gradient(14px 3px at 18% 24%, var(--mx-accent) 40%, transparent 42%),
+    radial-gradient(2.5px 12px at 74% 62%, var(--mx-accent) 40%, transparent 42%),
+    radial-gradient(12px 2.5px at 74% 62%, var(--mx-accent) 40%, transparent 42%);
+  background-repeat:no-repeat;
+}
+.mx-ground-starfield { position:relative; }
+
+/* pattern field — repeats var(--mx-pattern) as a mask painted with currentColor;
+   neutral fallback is a faint diagonal weave so the ground is never flat. */
+.mx-ground-pattern {
+  position:relative; background-color:var(--mx-paper);
+  background-image:repeating-linear-gradient(45deg,
+      color-mix(in srgb, var(--mx-ink) 5%, transparent) 0 2px, transparent 2px 14px);
+}
+.mx-ground-pattern[style*="--mx-pattern"]::before {
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:var(--mx-glyph, currentColor);
+  -webkit-mask-image:var(--mx-pattern); mask-image:var(--mx-pattern);
+  -webkit-mask-size:120px; mask-size:120px; opacity:.12;
+}
+
+/* grain — fine offset-print noise; neutral, theme-independent, always subtle */
+.mx-ground-grain { position:relative; }
+.mx-ground-grain::after {
+  content:""; position:absolute; inset:0; pointer-events:none; z-index:0; opacity:.5; mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='120' height='120' filter='url(%23n)' opacity='0.28'/></svg>");
+}
+.mx-ground-grain > * { position:relative; z-index:1; }
+
+/* ── TRANSIT BAND — the designed act transition (Law 4), not a colour swap ──*/
+.mx-transit {
+  position:relative; display:grid; place-items:center; text-align:center;
+  padding:clamp(28px,6vw,64px) 0; overflow:hidden;
+  background:var(--mx-band); color:var(--mx-accent-ink);
+}
+.mx-transit__mega {
+  position:absolute; inset:0; display:grid; place-items:center; pointer-events:none;
+  font-family:var(--mx-t-chunk); font-size:clamp(90px,22vw,260px); line-height:1;
+  color:rgba(255,255,255,.10);
+}
+.mx-transit__label {
+  position:relative; z-index:2; font-family:var(--mx-t-mono); font-weight:700;
+  font-size:max(var(--mx-label-min),.72rem); letter-spacing:.3em; text-transform:uppercase;
+}
+.mx-transit__hand { position:relative; z-index:2; font-family:var(--mx-t-hand); font-size:clamp(22px,3vw,34px); margin-top:6px; }
+
+/* ── MARQUEE — scrolling ticker strip (an act divider event) ───────────────*/
+.mx-marquee {
+  overflow:hidden; white-space:nowrap; border-top:2px solid var(--mx-ink); border-bottom:2px solid var(--mx-ink);
+  background:var(--mx-accent); color:var(--mx-accent-ink); padding:8px 0;
+}
+.mx-marquee__track {
+  display:inline-block; padding-left:100%;
+  font-family:var(--mx-t-tall); font-size:20px; letter-spacing:.08em; text-transform:uppercase;
+  animation:mx-marquee 22s linear infinite;
+}
+.mx-marquee__track span { margin:0 28px; }
+@keyframes mx-marquee { to { transform:translateX(-100%); } }
+
+/* ── COUNTDOWN GRID — flip-tile counter (event skin) ──────────────────────*/
+.mx-countdown { text-align:center; margin:28px 0; }
+.mx-countdown__grid { display:inline-flex; gap:12px; }
+.mx-countdown__cell {
+  min-width:74px; background:var(--mx-ink); color:var(--mx-paper);
+  border-radius:4px; padding:12px 10px 10px; box-shadow:0 12px 22px -12px rgba(0,0,0,.6);
+}
+.mx-countdown__num { font-family:var(--mx-t-tall); font-size:44px; line-height:1; }
+.mx-countdown__unit {
+  font-family:var(--mx-t-mono); font-size:max(var(--mx-label-min),.72rem);
+  letter-spacing:.2em; text-transform:uppercase; margin-top:6px; opacity:.75;
+}
+
+/* ── COLOPHON / footer ─────────────────────────────────────────────────────*/
+.mx-colophon {
+  padding:48px 0 64px; font-size:13px; color:var(--mx-ink-soft); border-top:1px solid var(--mx-hair);
+}
+.mx-colophon b {
+  display:block; margin-bottom:12px; color:var(--mx-accent);
+  font-family:var(--mx-t-mono); font-size:max(var(--mx-label-min),.72rem);
+  letter-spacing:.24em; text-transform:uppercase;
+}

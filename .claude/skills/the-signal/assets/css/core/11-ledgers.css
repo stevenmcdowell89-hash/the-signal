@@ -1,0 +1,150 @@
+/* ==========================================================================
+   THE SIGNAL — FURNITURE CORE · 11-ledgers.css
+   Data furniture: facts <dl> rows, ranked entries + rank chips, tier pills,
+   stat bands, cheat-sheet, scorecard. Extracted from the mockup kit-ledger /
+   kit-stats / standings, and holiday 40 (the --slot-* double-token ranked
+   entry) and 43 (stat band).
+
+   The double-token pattern (component-local var aliasing the act token) is the
+   extraction template: a motif pack can retune ONE component without touching
+   the others. Every block here is a Law-2 EVENT (container counts once).
+   ========================================================================== */
+
+/* ── FACTS LEDGER — mono <dl> rows (the WHERE / WHEN / COST move) ──────────*/
+.mx-ledger {
+  --lg-ink:var(--mx-ink); --lg-soft:var(--mx-ink-soft);
+  --lg-accent:var(--mx-accent); --lg-rule:var(--mx-hair);
+  border-top:3px solid var(--lg-ink); border-bottom:1px solid var(--lg-rule);
+  margin:34px 0;
+}
+.mx-ledger__caption {
+  font-family:var(--mx-t-mono); font-size:max(var(--mx-label-min),.72rem);
+  font-weight:700; letter-spacing:.26em; text-transform:uppercase;
+  color:var(--lg-accent); padding:10px 0 9px; border-bottom:1px solid var(--lg-rule);
+}
+.mx-ledger dl { display:grid; grid-template-columns:120px 1fr; margin:0; }
+.mx-ledger dt {
+  font-family:var(--mx-t-mono); font-size:max(var(--mx-label-min),.72rem);
+  font-weight:700; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--lg-soft); padding:12px 12px 12px 0; border-bottom:1px dotted var(--lg-rule);
+}
+.mx-ledger dd {
+  font-family:var(--mx-t-body); font-size:14.5px; line-height:1.55;
+  color:var(--lg-ink); padding:11px 0 12px; margin:0; border-bottom:1px dotted var(--lg-rule);
+}
+.mx-ledger dt:last-of-type, .mx-ledger dd:last-of-type { border-bottom:none; }
+@media (max-width:520px) {
+  .mx-ledger dl { grid-template-columns:1fr; }
+  .mx-ledger dt { padding-bottom:0; border-bottom:none; }
+  .mx-ledger dd { padding-top:4px; }
+}
+
+/* ── STAT BAND — 3-up (2-up on mobile) big numerals ───────────────────────*/
+.mx-stat-band {
+  --sb-ink:var(--mx-ink); --sb-accent:var(--mx-accent); --sb-rule:var(--mx-hair);
+  display:grid; grid-template-columns:repeat(3,1fr);
+  border-top:3px solid var(--sb-ink); border-bottom:3px solid var(--sb-ink); margin:40px 0;
+}
+.mx-stat-band__cell { padding:20px 14px 18px; text-align:center; border-right:1px dotted var(--sb-rule); }
+.mx-stat-band__cell:nth-child(3n) { border-right:none; }
+.mx-stat-band__cell:nth-child(-n+3):not(:nth-last-child(-n+3)) { border-bottom:1px dotted var(--sb-rule); }
+.mx-stat-band__num {
+  font-family:var(--mx-t-serif); font-weight:700; font-size:clamp(30px,4.6vw,44px);
+  line-height:1; color:var(--sb-accent);
+}
+.mx-stat-band__label {
+  font-family:var(--mx-t-mono); font-size:max(var(--mx-label-min),.72rem); font-weight:700;
+  letter-spacing:.16em; text-transform:uppercase; color:var(--sb-ink); margin-top:8px;
+}
+.mx-stat-band__sub { font-size:11.5px; color:var(--mx-ink-soft); margin-top:4px; line-height:1.4; }
+@media (max-width:560px) {
+  .mx-stat-band { grid-template-columns:repeat(2,1fr); }
+  .mx-stat-band__cell { border-right:1px dotted var(--sb-rule)!important; border-bottom:1px dotted var(--sb-rule); }
+  .mx-stat-band__cell:nth-child(2n) { border-right:none!important; }
+  .mx-stat-band__cell:nth-last-child(-n+2) { border-bottom:none; }
+}
+
+/* ── RANKED ENTRIES — rank chip + name + tier pill + micro-facts (holiday 40)*/
+.mx-ranked { list-style:none; margin:34px 0; padding:0; display:grid; gap:16px; }
+.mx-ranked__entry {
+  --re-bg:var(--mx-card); --re-fg:var(--mx-card-ink);
+  --re-border:var(--mx-card-edge); --re-accent:var(--mx-accent);
+  position:relative; background:var(--re-bg); color:var(--re-fg);
+  border:1px solid var(--re-border); border-left:5px solid var(--re-accent);
+  padding:16px 18px 14px; box-shadow:0 12px 22px -14px rgba(0,0,0,.5);
+}
+.mx-ranked__header { display:flex; align-items:center; gap:14px; }
+.mx-ranked__rank {
+  flex:0 0 auto; display:grid; place-items:center; width:40px; height:40px;
+  background:var(--mx-accent); color:var(--mx-accent-ink);
+  font-family:var(--mx-t-mono); font-weight:700; font-size:15px; letter-spacing:.04em; border-radius:2px;
+}
+.mx-ranked__name { font-family:var(--mx-t-serif); font-weight:700; font-size:22px; line-height:1.1; }
+.mx-ranked__tier {
+  margin-left:auto; font-family:var(--mx-t-mono); font-size:max(var(--mx-label-min),.72rem);
+  font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+  padding:5px 10px 4px; border-radius:2px; background:var(--mx-accent-2); color:var(--mx-accent-ink);
+}
+.mx-ranked__tier--hot  { background:#a8432e; color:#fff; }
+.mx-ranked__tier--warm { background:#c9922a; color:#201a10; }
+.mx-ranked__tier--note { background:var(--mx-support-1); color:var(--mx-accent-ink); }
+.mx-ranked__body { font-family:var(--mx-t-body); font-size:14.5px; line-height:1.6; margin-top:8px; color:var(--re-fg); }
+.mx-ranked__facts { display:grid; grid-template-columns:auto 1fr; gap:2px 12px; margin-top:10px; }
+.mx-ranked__facts dt {
+  font-family:var(--mx-t-mono); font-size:max(var(--mx-label-min),.72rem); font-weight:700;
+  letter-spacing:.12em; text-transform:uppercase; color:var(--mx-ink-soft);
+}
+.mx-ranked__facts dd { margin:0; font-size:13px; }
+
+/* ── TIER PILL (standalone) ───────────────────────────────────────────────*/
+.mx-pill {
+  display:inline-block; font-family:var(--mx-t-mono); font-size:max(var(--mx-label-min),.72rem);
+  font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+  padding:5px 10px 4px; border-radius:2px; background:var(--mx-accent); color:var(--mx-accent-ink);
+}
+
+/* ── SCORECARD / STANDINGS — compact mono table object ────────────────────*/
+.mx-scorecard {
+  --sc-ink:var(--mx-card-ink); --sc-accent:var(--mx-accent);
+  width:min(360px,100%); background:var(--mx-card); color:var(--sc-ink);
+  border:1.5px solid var(--sc-ink); box-shadow:5px 5px 0 rgba(0,0,0,.28);
+  transform:rotate(1.1deg); padding:14px 16px 12px;
+}
+.mx-scorecard--flat { transform:none; }
+.mx-scorecard h4 {
+  font-family:var(--mx-t-mono); font-size:max(var(--mx-label-min),.72rem); font-weight:700;
+  letter-spacing:.24em; text-transform:uppercase; color:var(--sc-accent);
+  border-bottom:2px solid var(--sc-ink); padding-bottom:8px; margin:0 0 2px;
+}
+.mx-scorecard table { width:100%; border-collapse:collapse; }
+.mx-scorecard td {
+  font-family:var(--mx-t-mono); font-size:11.5px; padding:8px 0 7px;
+  border-bottom:1px dotted var(--mx-hair); color:var(--sc-ink);
+}
+.mx-scorecard tr:last-child td { border-bottom:none; }
+.mx-scorecard td.mx-pos { width:26px; font-weight:700; color:var(--mx-ink-soft); }
+.mx-scorecard td.mx-gap { text-align:right; font-weight:700; }
+.mx-scorecard tr.mx-lead td { font-weight:700; }
+.mx-scorecard tr.mx-lead td.mx-gap { color:var(--sc-accent); }
+
+/* ── CHEAT-SHEET — labelled quick-reference grid (an event) ───────────────*/
+.mx-cheat-sheet {
+  border:1.5px solid var(--mx-ink); background:var(--mx-card); color:var(--mx-card-ink);
+  box-shadow:0 24px 38px -18px rgba(0,0,0,.5); margin:40px 0 8px;
+}
+.mx-cheat-sheet__head {
+  font-family:var(--mx-t-mono); font-size:max(var(--mx-label-min),.72rem); font-weight:700;
+  letter-spacing:.26em; text-transform:uppercase; text-align:center;
+  background:var(--mx-accent); color:var(--mx-accent-ink); padding:11px 10px 10px;
+}
+.mx-cheat-sheet__cols { display:grid; grid-template-columns:repeat(3,1fr); }
+.mx-cheat-sheet__col { padding:18px; border-right:1px solid var(--mx-hair); }
+.mx-cheat-sheet__col:last-child { border-right:none; }
+.mx-cheat-sheet__col h5 { font-family:var(--mx-t-serif); font-weight:700; font-size:18px; line-height:1.2; margin:0 0 6px; }
+.mx-cheat-sheet__col p { font-size:12.5px; line-height:1.55; color:var(--mx-ink-soft); margin:0 0 12px; }
+.mx-cheat-sheet__col p:last-child { margin-bottom:0; }
+@media (max-width:640px) {
+  .mx-cheat-sheet__cols { grid-template-columns:1fr; }
+  .mx-cheat-sheet__col { border-right:none; border-bottom:1px solid var(--mx-hair); }
+  .mx-cheat-sheet__col:last-child { border-bottom:none; }
+}

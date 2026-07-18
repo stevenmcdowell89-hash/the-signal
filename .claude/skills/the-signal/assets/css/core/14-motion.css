@@ -1,0 +1,61 @@
+/* ==========================================================================
+   THE SIGNAL — FURNITURE CORE · 14-motion.css
+   MOTION SCAFFOLDING ONLY (the full motion system is WP-5). Ships:
+     · tier scaffolding via [data-motion="tier0|tier1|tier2"]
+     · signature-moment hooks (settle / stamp-slam / hairline draw / parallax)
+     · a calm default "settle" on reveal
+     · prefers-reduced-motion honoured by EVERY animation (Law 5)
+   Reveal state is toggled by adding .is-in (a ~10-line IntersectionObserver in
+   the host page adds it; JS-off leaves content fully visible — see the :not(.is-in)
+   guard is scoped so no-JS renders everything). Motion attaches to FURNITURE,
+   never to running text.
+   ========================================================================== */
+
+/* Default: nothing hidden. Reveal hooks only take effect when the doc opts in
+   with [data-motion] AND JS has flagged support with .mx-js on the root, so a
+   JS-off page always shows 100% of content (Law 5). */
+.mx-doc.mx-js[data-motion] .mx-rise,
+.mx-doc.mx-js[data-motion] .mx-settle,
+.mx-doc.mx-js[data-motion] .mx-draw,
+.mx-doc.mx-js[data-motion] .mx-slam {
+  will-change:transform, opacity;
+}
+
+/* ── tier0 — PRINT-STILL (Deep Dive): hairline draw-ins + ghost parallax ──*/
+.mx-doc.mx-js[data-motion="tier0"] .mx-draw { opacity:0; transform:translateY(10px); transition:opacity .7s ease, transform .7s ease; }
+.mx-doc.mx-js[data-motion="tier0"] .mx-draw.is-in { opacity:1; transform:none; }
+.mx-doc.mx-js[data-motion="tier0"] .mx-ledger:not(.is-in) { --draw:0; }
+/* ghost-numeral parallax drift (subtle) */
+.mx-doc.mx-js[data-motion="tier0"] .mx-plate__ghost { transition:transform .1s linear; }
+
+/* ── tier1 — CALM (Weekly/Rewind/Next/Guide): rise + object settle ─────────*/
+.mx-doc.mx-js[data-motion="tier1"] .mx-rise { opacity:0; transform:translateY(24px); transition:opacity .6s ease, transform .6s cubic-bezier(.2,.7,.2,1); }
+.mx-doc.mx-js[data-motion="tier1"] .mx-rise.is-in { opacity:1; transform:none; }
+/* cards "tape down" with a ~1° settle */
+.mx-doc.mx-js[data-motion="tier1"] .mx-settle { transform:rotate(calc(var(--mx-tilt,-2deg) + 3deg)) translateY(14px); opacity:0; transition:transform .55s cubic-bezier(.2,.8,.2,1), opacity .5s ease; }
+.mx-doc.mx-js[data-motion="tier1"] .mx-settle.is-in { transform:rotate(var(--mx-tilt,-2deg)); opacity:1; }
+
+/* ── tier2 — EVENT (trip specials/Season Review): stamp-slam, flips ───────*/
+.mx-doc.mx-js[data-motion="tier2"] .mx-rise { opacity:0; transform:translateY(30px); transition:opacity .5s ease, transform .5s cubic-bezier(.2,.8,.2,1); }
+.mx-doc.mx-js[data-motion="tier2"] .mx-rise.is-in { opacity:1; transform:none; }
+.mx-doc.mx-js[data-motion="tier2"] .mx-slam { opacity:0; transform:rotate(-8deg) scale(1.6); transition:none; }
+.mx-doc.mx-js[data-motion="tier2"] .mx-slam.is-in { animation:mx-stamp-slam .42s cubic-bezier(.2,1.3,.4,1) forwards; }
+@keyframes mx-stamp-slam {
+  0%   { opacity:0; transform:rotate(-8deg) scale(1.6); }
+  70%  { opacity:1; transform:rotate(-8deg) scale(.92); }
+  100% { opacity:1; transform:rotate(-8deg) scale(1); }
+}
+
+/* ── REDUCED MOTION — every animation off, all content shown (Law 5) ───────*/
+@media (prefers-reduced-motion: reduce) {
+  .mx-doc.mx-js[data-motion] .mx-rise,
+  .mx-doc.mx-js[data-motion] .mx-settle,
+  .mx-doc.mx-js[data-motion] .mx-draw,
+  .mx-doc.mx-js[data-motion] .mx-slam {
+    opacity:1 !important; transform:none !important; transition:none !important; animation:none !important;
+    will-change:auto;
+  }
+  .mx-doc.mx-js[data-motion="tier1"] .mx-settle,
+  .mx-doc.mx-js[data-motion="tier2"] .mx-slam { transform:rotate(var(--mx-tilt,-2deg)) !important; }
+  .mx-marquee__track { animation:none !important; }
+}

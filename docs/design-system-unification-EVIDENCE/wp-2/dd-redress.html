@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Signal — Deep Dive re-dressed through the furniture core</title>
+<!-- WP-2 EVIDENCE · a shipped Deep Dive (issues/signal_deep-dive_2026-06-30.html,
+     "The Empire That Outlived Rome") re-expressed entirely as mx- core furniture.
+     Core CSS linked root-absolute, served over HTTP; renders offline. No sp-/hol-. -->
+<link rel="stylesheet" href="/.claude/skills/the-signal/assets/css/core/00-contract.css">
+<link rel="stylesheet" href="/.claude/skills/the-signal/assets/css/core/10-ephemera.css">
+<link rel="stylesheet" href="/.claude/skills/the-signal/assets/css/core/11-ledgers.css">
+<link rel="stylesheet" href="/.claude/skills/the-signal/assets/css/core/12-plates.css">
+<link rel="stylesheet" href="/.claude/skills/the-signal/assets/css/core/13-chrome.css">
+<link rel="stylesheet" href="/.claude/skills/the-signal/assets/css/core/14-motion.css">
+<link rel="stylesheet" href="/.claude/skills/the-signal/assets/css/core/15-responsive.css">
+<style>
+  /* ── EDITORIAL SKIN THEME (Law 11 restraint: paper-and-ink, archival, not
+       theme-park). Stands in for a WP-4 motif pack: retunes the neutral core
+       tokens per act into a parchment → parchment → ink arc. Three acts. ── */
+  [data-act="1"]{                       /* FOUNDATION — warm parchment */
+    --mx-paper:#f4edda; --mx-paper-2:#ede3c8;
+    --mx-ink:#241a10; --mx-ink-soft:#5c4c38;
+    --mx-accent:#7a5a1f; --mx-accent-ink:#f7efdc; --mx-accent-2:#9c7a3a;
+    --mx-hair:rgba(60,42,20,.32); --mx-ghost:rgba(122,90,31,.10);
+    --mx-card:#f4ecd9; --mx-card-window:#efe4c9; --mx-card-ink:#241a10;
+    --mx-tape:rgba(196,168,108,.75); --mx-quote-bg:rgba(122,90,31,.06);
+  }
+  [data-act="2"]{                       /* ENDURANCE — cooler parchment, porphyry accent */
+    --mx-paper:#ece1c4; --mx-paper-2:#e2d5b2;
+    --mx-ink:#2a2013; --mx-ink-soft:#5f5138;
+    --mx-accent:#8c3a2a; --mx-accent-ink:#f6ecd6; --mx-accent-2:#7a5a1f;
+    --mx-hair:rgba(60,45,20,.34); --mx-ghost:rgba(140,58,42,.10);
+    --mx-card:#f2e7cd; --mx-card-window:#e9dcbb; --mx-card-ink:#2a2013;
+    --mx-tape:rgba(160,120,70,.7); --mx-quote-bg:rgba(140,58,42,.06);
+  }
+  [data-act="3"]{                       /* THE FALL & LEGACY — ink night, gold accent */
+    --mx-paper:#1a1622; --mx-paper-2:#241f2e;
+    --mx-ink:#ece5d3; --mx-ink-soft:rgba(236,229,211,.66);
+    --mx-accent:#d9b66a; --mx-accent-ink:#1a1622; --mx-accent-2:#b25361;
+    --mx-hair:rgba(236,229,211,.28); --mx-ghost:rgba(217,182,106,.12);
+    --mx-card:#f5eeda; --mx-card-window:#ece0c1; --mx-card-ink:#221c12;
+    --mx-tape:rgba(217,182,106,.66); --mx-quote-bg:rgba(0,0,0,.28); --mx-stamp:#d9b66a;
+  }
+  .act { padding:clamp(48px,8vw,96px) 0; }
+  .mx-doc { --mx-t-serif:"Cormorant Garamond","Iowan Old Style",Palatino,Georgia,serif; }
+</style>
+</head>
+<body>
+<div class="mx-doc" data-motion="tier0">
+
+  <!-- ONE MASTHEAD (sticky; reserves its own height — never overlaps) -->
+  <header class="mx-mast" data-act="1">
+    <span class="mx-mast__brand">THE <b>SIGNAL</b> · Deep Dive</span>
+    <span class="mx-mast__meta">Byzantium · 330–1453</span>
+  </header>
+
+  <!-- ============================ COVER (poster) ============================ -->
+  <section class="mx-cover mx-cover--poster mx-ground-gradient-sky mx-ground-grain" data-act="1">
+    <div class="mx-cover__mega">1453</div>
+    <div class="mx-wrap">
+      <div class="mx-cover__kicker">The Byzantine Empire · 330–1453</div>
+      <h1 class="mx-cover__title">The Empire That <em>Outlived Rome</em></h1>
+      <p class="mx-cover__dek">Eleven hundred years of the Roman state — spoken in Greek, ruled from Constantinople, and still shaping the world that thought it had ended.</p>
+      <p class="mx-cover__slogan">Roman law · Greek learning · Orthodox faith · the bridge from antiquity to now</p>
+    </div>
+  </section>
+
+  <!-- ===================== ACT I · FOUNDATION ===================== -->
+  <section class="act mx-ground-gradient-sky mx-ground-grain" data-act="1">
+    <div class="mx-wrap">
+
+      <div class="mx-act-open mx-draw">
+        <div class="mx-act-open__eyebrow">Act I</div>
+        <h2 class="mx-act-open__title">Foundation</h2>
+      </div>
+
+      <!-- FOREWORD -->
+      <div class="mx-body mx-body--lede">
+        <p>The Roman Empire did not fall in 476. A Germanic general deposed the last western emperor, and Rome the city slipped out of Roman hands — but the eastern half went on, ruled from Constantinople, surviving the loss of Italy by almost a thousand years. Its people spoke Greek, prayed as Orthodox Christians, and called themselves <strong>Rhomaioi</strong> — Romans.</p>
+        <p>The name "Byzantine" is a later coinage, invented by a German scholar in the sixteenth century after the empire was gone. The span is fixed between two dates: <strong>11 May 330</strong>, when Constantine dedicated New Rome, and <strong>29 May 1453</strong>, when Mehmed II broke the walls and Constantine XI died in the fighting, never found — about eleven hundred years.</p>
+      </div>
+
+      <!-- The magazine's argument, as a quote-object with named source (Law 9) -->
+      <figure class="mx-quote mx-draw">
+        <blockquote>The surprising life of a medieval empire — not the long decline Gibbon left us, but a thousand-year argument for why it survived.</blockquote>
+        <cite>— <b>Judith Herrin</b>, <em>Byzantium: The Surprising Life of a Medieval Empire</em></cite>
+      </figure>
+
+      <!-- CHAPTER IV -->
+      <div class="mx-plate mx-draw">
+        <div class="mx-plate__ghost">IV</div>
+        <span class="mx-plate__no">Chapter IV</span>
+        <h2 class="mx-plate__title">Founding the Second Rome</h2>
+        <p class="mx-plate__dek">A single overstretched state, split, rebuilt around a new eastern capital, and given a Christian creed.</p>
+      </div>
+
+      <div class="mx-body">
+        <p>Diocletian's answer to near-collapse was the Tetrarchy — rule of four, two Augusti each with a junior Caesar — and a reorganisation of the provinces that separated military from civil command. The Tetrarchy did not outlast its founder, but the principle did: the empire was too large for one centre, and governing gravitated east.</p>
+        <p>Constantine drew that logic to its conclusion, building a capital on the site of the old Greek colony of Byzantium. On 11 May 330 he dedicated it as New Rome. The site sat on a triangular promontory where Europe meets Asia — water on three sides, a wall closing the fourth — astride the sea lane between Black Sea and Mediterranean.</p>
+      </div>
+
+      <div class="mx-aside">
+        <div class="mx-body">
+          <p>Religion changed next. Constantine legalised and favoured Christianity, but Theodosius I made it law: in 380, by the Edict of Thessalonica, Nicene Christianity became the official religion. Theodosius was the last man to rule the whole empire alone; on his death in 395 it split permanently between his sons, and the split held.</p>
+          <p>"Byzantine" was coined in 1557 by the humanist Hieronymus Wolf. No emperor, soldier or bishop ever used it; they governed the <strong>Basileia tōn Rhōmaiōn</strong>, the Empire of the Romans.</p>
+        </div>
+        <aside class="mx-card mx-card--right mx-settle">
+          <div class="mx-card__window mx-card__window--wide">
+            <img src="/assets/cached/89eba3c460c7.jpg" alt="A restored section of the Theodosian Walls of Constantinople.">
+          </div>
+          <div class="mx-card__caption">The walls that held a thousand years</div>
+          <span class="mx-card__credit">Theodosian Walls · c. 413</span>
+        </aside>
+      </div>
+
+      <!-- bignum → stat band -->
+      <div class="mx-stat-band mx-draw">
+        <div class="mx-stat-band__cell"><div class="mx-stat-band__num">330</div><div class="mx-stat-band__label">New Rome dedicated</div><div class="mx-stat-band__sub">on the Bosphorus, 11 May</div></div>
+        <div class="mx-stat-band__cell"><div class="mx-stat-band__num">476</div><div class="mx-stat-band__label">The West falls</div><div class="mx-stat-band__sub">the East goes on a thousand years</div></div>
+        <div class="mx-stat-band__cell"><div class="mx-stat-band__num">1,123</div><div class="mx-stat-band__label">Years of empire</div><div class="mx-stat-band__sub">330 to 1453</div></div>
+      </div>
+
+      <div class="mx-body">
+        <p>The land approach was closed under Theodosius II by a line completed around 413 — high inner wall with towers, lower outer wall, a wide moat. When an earthquake threw down stretches in 447 with Attila's Huns in the field, the city rebuilt within months. Sieges broke against them for a thousand years; only in 1453, against gunpowder, did they fail.</p>
+      </div>
+
+      <!-- master timeline (part 1) as a facts ledger -->
+      <div class="mx-ledger mx-draw">
+        <div class="mx-ledger__caption">The Empire of the Romans — a timeline, I</div>
+        <dl>
+          <dt>330</dt><dd>Constantine dedicates Constantinople (11 May)</dd>
+          <dt>380</dt><dd>Christianity made the state religion — Edict of Thessalonica</dd>
+          <dt>395</dt><dd>Empire permanently divided, East and West</dd>
+          <dt>413</dt><dd>Theodosian land walls completed</dd>
+          <dt>476</dt><dd>Fall of the Western Roman Empire; the East endures</dd>
+          <dt>527</dt><dd>Justinian I accedes</dd>
+          <dt>532</dt><dd>Nika riots — some 30,000 dead</dd>
+          <dt>537</dt><dd>Hagia Sophia inaugurated (27 Dec)</dd>
+          <dt>541</dt><dd>Plague of Justinian begins</dd>
+        </dl>
+      </div>
+
+      <!-- CHAPTER V -->
+      <div class="mx-plate mx-draw">
+        <div class="mx-plate__ghost">V</div>
+        <span class="mx-plate__no">Chapter V</span>
+        <h2 class="mx-plate__title">Justinian's Reach</h2>
+        <p class="mx-plate__dek">Thirty-eight years spent trying to make the empire whole Rome again — law, reconquest, and an unequalled church.</p>
+      </div>
+
+      <div class="mx-body">
+        <p>Justinian I ruled 527–565. He did not rule alone: his wife Theodora, a former actress of low birth, sat in council as a full partner. Constantinople's public life ran on chariot racing, and the Blue and Green factions were political forces. In January 532 they joined against the government, taking their chant <strong>Nika</strong> — "win" — into the streets. For days the mob burned the city and acclaimed a rival emperor.</p>
+      </div>
+
+      <div class="mx-aside mx-aside--left">
+        <aside class="mx-card mx-card--left mx-settle">
+          <div class="mx-card__window mx-card__window--wide">
+            <img src="/assets/cached/d33bc9e310bd.jpg" alt="Justinian and his court, mosaic in the Basilica of San Vitale, Ravenna.">
+          </div>
+          <div class="mx-card__caption">Justinian &amp; his court</div>
+          <span class="mx-card__credit">San Vitale, Ravenna · c. 547</span>
+        </aside>
+        <div class="mx-body">
+          <p>Procopius records that Theodora stopped Justinian's flight, telling the council that imperial purple made a fine burial shroud. He stayed; Belisarius and Mundus sealed the Hippodrome exits and put the trapped crowd to the sword — around thirty thousand dead.</p>
+          <p>In 529 Justinian set the jurist Tribonian to fix a thousand years of contradictory Roman law. Over five years the commission produced the <strong>Corpus Juris Civilis</strong> — Codex, Digest, Institutes — turning a library into a book.</p>
+        </div>
+      </div>
+
+      <div class="mx-coaster mx-settle" style="float:right;margin:0 0 18px 24px;">
+        <div class="mx-coaster__value">~30k</div>
+        <div class="mx-coaster__label">dead · Nika · 532</div>
+      </div>
+      <div class="mx-body">
+        <p>Belisarius crossed to North Africa in 533 and within a year destroyed the Vandal kingdom. Italy, held by the Ostrogoths, was harder — the Gothic War dragged on nearly twenty years, finished by the eunuch general Narses. By the mid-550s Italy, Africa, the islands and a strip of Spain were Roman again, and the Mediterranean a Roman sea once more.</p>
+        <p>The old basilica had burned in the Nika riots. Justinian replaced it with Hagia Sophia, setting two scholars — Anthemius of Tralles and Isidore of Miletus — to solve how to put a round dome over a square room. The dome spans roughly thirty-one metres and floats about fifty-five above the floor. It was inaugurated on 27 December 537, under six years after the fire.</p>
+      </div>
+
+      <!-- image-quote: Justinian on Hagia Sophia -->
+      <figure class="mx-quote mx-draw" style="border:none;padding:0;background:none;">
+        <div class="mx-figure__frame" style="margin-bottom:14px;"><img src="/assets/cached/174ef2cfbfea.jpg" alt="Interior dome of Hagia Sophia."></div>
+        <blockquote style="border-left:6px solid var(--mx-accent);padding-left:20px;">Solomon, I have outdone thee.</blockquote>
+        <cite>— <b>Justinian I</b>, on entering the finished Hagia Sophia, as reported by Procopius</cite>
+      </figure>
+
+      <div class="mx-body">
+        <p>The bill came due. In 541 a pandemic reached the empire and struck the capital hard in 542 — the first recorded bubonic plague — gutting manpower and the tax base. The reconquest was over-extended, won on a thin budget and bled by plague. Justinian died in 565 with his realm exhausted; within three years the Lombards took most of Italy. The lesson: the empire would last not by reconquering its past but by adapting to survive without it.</p>
+      </div>
+
+      <figure class="mx-figure mx-figure--wide mx-draw">
+        <div class="mx-figure__frame"><img src="/assets/cached/7781411d4f36.png" alt="Map of the empire at its greatest reconquered extent under Justinian, c. 555."></div>
+        <figcaption>The empire at its greatest reconquered extent under Justinian, c. 555 — Italy, Africa, the islands and a coastal strip of Spain recovered.<span class="mx-figure__credit">via Wikimedia Commons</span></figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- transit band into Act II -->
+  <div class="mx-transit" data-act="2">
+    <div class="mx-transit__mega">VI</div>
+    <div class="mx-transit__label">Act II · Endurance</div>
+    <div class="mx-transit__hand">the shield of Europe</div>
+  </div>
+
+  <!-- ===================== ACT II · ENDURANCE & GOLDEN AGE ===================== -->
+  <section class="act mx-ground-pattern mx-ground-grain" data-act="2">
+    <div class="mx-wrap">
+
+      <!-- CHAPTER VI -->
+      <div class="mx-plate mx-draw">
+        <div class="mx-plate__ghost">VI</div>
+        <span class="mx-plate__no">Chapter VI</span>
+        <h2 class="mx-plate__title">The Shield of Europe</h2>
+        <p class="mx-plate__dek">Nearly destroyed on two fronts in thirty years, the state that emerged had found the form it would keep for life.</p>
+      </div>
+
+      <div class="mx-body">
+        <p>Sasanian Persia under Khosrow II launched a war of conquest; the Avars and Slavs pressed across the Balkans. By the time Heraclius seized the throne in 610, Persian armies had taken Syria, Palestine and Egypt and stood opposite Constantinople. In 614 they carried off the relic believed to be the True Cross — making it a holy war.</p>
+        <p>Rather than defend and wait, Heraclius gambled: taking an army by sea around the enemy and striking into the Persian heartland. By 628 the Persian effort collapsed, Khosrow was dead, and in 630 Heraclius restored the True Cross to Jerusalem — the last victory of the old Roman world.</p>
+      </div>
+
+      <figure class="mx-figure mx-draw">
+        <div class="mx-figure__frame"><img src="/assets/cached/062157ada9e2.jpg" alt="A 12th-century manuscript showing Byzantine ships deploying Greek fire."></div>
+        <figcaption>A 12th-century manuscript (the Madrid Skylitzes) showing Byzantine ships deploying Greek fire.<span class="mx-figure__credit">World History Encyclopedia</span></figcaption>
+      </figure>
+
+      <div class="mx-body">
+        <p>Then, out of the south, Islam. After Muhammad's death in 632 the Arab tribes united and came north into a war-weary, under-garrisoned, religiously divided Roman Levant. At <strong>Yarmouk in 636</strong> they shattered Byzantine power there; Syria, Palestine and Egypt — the breadbasket — were lost permanently within a decade of Heraclius's triumph. The empire was cut roughly in half.</p>
+      </div>
+
+      <div class="mx-stat-band mx-draw">
+        <div class="mx-stat-band__cell"><div class="mx-stat-band__num">636</div><div class="mx-stat-band__label">Yarmouk</div><div class="mx-stat-band__sub">the battle that lost the Roman East</div></div>
+        <div class="mx-stat-band__cell"><div class="mx-stat-band__num">717–18</div><div class="mx-stat-band__label">The great siege</div><div class="mx-stat-band__sub">stopped at the walls of the City</div></div>
+        <div class="mx-stat-band__cell"><div class="mx-stat-band__num">~672</div><div class="mx-stat-band__label">Greek fire</div><div class="mx-stat-band__sub">Kallinikos' guarded monopoly</div></div>
+      </div>
+
+      <div class="mx-body">
+        <p>Under Heraclius, Greek replaced Latin as the language of state; the emperors took the Greek <strong>Basileus</strong>. A Latin Roman empire became a Greek-speaking medieval one — Roman in law, Greek in speech, Orthodox in faith. After Yarmouk the empire could no longer afford a large professional field army. The answer was the <strong>theme</strong>: soldiers settled on the land with estates to farm, owing hereditary military service in return. The land paid for the army directly, and soldiers fighting for their own farms held the line.</p>
+      </div>
+
+      <!-- CHAPTER VII -->
+      <div class="mx-plate mx-draw">
+        <div class="mx-plate__ghost">VII</div>
+        <span class="mx-plate__no">Chapter VII</span>
+        <h2 class="mx-plate__title">The War over Images</h2>
+        <p class="mx-plate__dek">For a century the empire turned its hardest fighting inward — onto whether a Christian could venerate a painted image.</p>
+      </div>
+
+      <div class="mx-body">
+        <p>The argument ran roughly 726 to 843. The iconoclasts charged idolatry; the defence answered that the honour shown an icon passes through it to the person depicted, and — deeper — that once God became man in Christ and was visible, He could be depicted. To refuse was to deny He had truly taken flesh.</p>
+      </div>
+
+      <figure class="mx-quote mx-draw">
+        <blockquote>The honour paid to the image passes to the prototype.</blockquote>
+        <cite>— the settled formula of the Second Council of Nicaea, 787</cite>
+      </figure>
+
+      <div class="mx-aside">
+        <div class="mx-body">
+          <p>Behind the theology sat hard politics: image-breaking expanded imperial authority over the church, and its fiercest opponents were the monks. The image won at last in 843, when the empress Theodora restored the icons for good — commemorated each year as the Sunday of Orthodoxy. The gold-ground panel and the haloed saint became central to Orthodox worship.</p>
+          <p>Meanwhile, on Christmas Day 800, Pope Leo III crowned Charlemagne "Emperor of the Romans." From Constantinople this was plain usurpation — one Roman empire, one emperor — and it pulled the halves of Christendom further apart.</p>
+        </div>
+        <aside class="mx-card mx-card--right mx-settle">
+          <div class="mx-card__window mx-card__window--tall">
+            <img src="/assets/cached/55138b9375d1.jpg" alt="The Fieschi Morgan Staurotheke, a Byzantine reliquary of the True Cross.">
+          </div>
+          <div class="mx-card__caption">A reliquary of the True Cross</div>
+          <span class="mx-card__credit">The Met · early 9th c.</span>
+        </aside>
+      </div>
+
+      <!-- CHAPTER VIII -->
+      <div class="mx-plate mx-draw">
+        <div class="mx-plate__ghost">VIII</div>
+        <span class="mx-plate__no">Chapter VIII</span>
+        <h2 class="mx-plate__title">The Golden Age</h2>
+        <p class="mx-plate__dek">867 to 1025 — classical learning revived, Bulgaria swallowed, Kiev brought into the church, borders at their furthest medieval reach.</p>
+      </div>
+
+      <div class="mx-body">
+        <p>The most lasting achievement of the Macedonian house was not on a battlefield. Educated men of Constantinople went back to ancient Greek literature, copying it into the newer minuscule script and saving a great deal that would otherwise have been lost. A large share of surviving ancient Greek texts survive because of this era — usually called the Macedonian Renaissance.</p>
+      </div>
+
+      <div class="mx-ledger mx-draw">
+        <div class="mx-ledger__caption">The Empire of the Romans — a timeline, II</div>
+        <dl>
+          <dt>636</dt><dd>Battle of Yarmouk; the Levant lost to the Arabs</dd>
+          <dt>717</dt><dd>Arab siege of Constantinople broken with Greek fire (to 718)</dd>
+          <dt>726</dt><dd>Iconoclasm begins under Leo III</dd>
+          <dt>800</dt><dd>Charlemagne crowned rival "Emperor of the Romans"</dd>
+          <dt>843</dt><dd>Triumph of Orthodoxy; icons restored</dd>
+          <dt>988</dt><dd>Conversion of the Rus under Vladimir</dd>
+          <dt>1014</dt><dd>Battle of Kleidion; Basil II the Bulgar-Slayer</dd>
+          <dt>1025</dt><dd>Empire at its medieval territorial apex</dd>
+          <dt>1054</dt><dd>Great Schism splits the East and West churches</dd>
+        </dl>
+      </div>
+
+      <div class="mx-body">
+        <p>Basil II reigned 976–1025. The war with Bulgaria ended at the Battle of Kleidion in 1014; afterward, per medieval accounts, he blinded thousands of prisoners, leaving one man in a hundred with a single eye to lead the rest home — earning the title <strong>Boulgaroktonos</strong>, the Bulgar-Slayer. By his death the Balkan frontier ran along the Danube for the first time in centuries.</p>
+        <p>In 988 Vladimir, prince of Kiev, accepted Byzantine Orthodoxy for himself and his realm, sealed by a marriage alliance. The Rus entered Constantinople's orbit — liturgy, bishops, architecture, writing — drawn into the "Byzantine commonwealth," a choice still visible in Russian and Ukrainian identity.</p>
+      </div>
+
+      <figure class="mx-figure mx-figure--wide mx-draw">
+        <div class="mx-figure__frame"><img src="/assets/cached/435acb8dbb27.png" alt="Map of the empire at its medieval apex under Basil II, c. 1025."></div>
+        <figcaption>The empire at its medieval apex under Basil II, c. 1025.<span class="mx-figure__credit">CC BY-SA via Wikimedia Commons</span></figcaption>
+      </figure>
+
+      <!-- CHAPTER IX -->
+      <div class="mx-plate mx-draw">
+        <div class="mx-plate__ghost">IX</div>
+        <span class="mx-plate__no">Chapter IX</span>
+        <h2 class="mx-plate__title">How the Empire Worked</h2>
+        <p class="mx-plate__dek">At its height the empire ran on a single gold coin — and a literate, salaried state behind it.</p>
+      </div>
+
+      <div class="mx-body">
+        <p>The solidus — later the nomisma — was introduced by Constantine around 312 at 72 coins to the Roman pound of gold, about 4.5 grams of near-pure metal each. That standard held, almost unchanged, for roughly 700 years. Good in a Frankish market, a Bulgar camp, an Egyptian port and a Russian river-town alike, it was "the dollar of the Middle Ages," the trusted reserve currency of medieval Eurasia. A trusted coin is a weapon: merchants traded on better terms, and enemies could be bought off with full-weight gold.</p>
+      </div>
+
+      <div class="mx-stat-band mx-draw">
+        <div class="mx-stat-band__cell"><div class="mx-stat-band__num">~700</div><div class="mx-stat-band__label">Years stable</div><div class="mx-stat-band__sub">the nomisma held its gold</div></div>
+        <div class="mx-stat-band__cell"><div class="mx-stat-band__num">72</div><div class="mx-stat-band__label">Coins / pound</div><div class="mx-stat-band__sub">~4.5g of near-pure gold each</div></div>
+        <div class="mx-stat-band__cell"><div class="mx-stat-band__num">~10%</div><div class="mx-stat-band__label">Kommerkion</div><div class="mx-stat-band__sub">customs duty through the harbours</div></div>
+      </div>
+
+      <figure class="mx-quote mx-draw">
+        <blockquote>The throne itself rose toward the ceiling, the gilded lions roared and the mechanical birds sang — and the awe-struck envoy was meant to carry the report home.</blockquote>
+        <cite>— after <b>Liutprand of Cremona</b>'s account of his embassy to Constantinople</cite>
+      </figure>
+
+      <div class="mx-aside mx-aside--left">
+        <aside class="mx-card mx-card--left mx-settle">
+          <div class="mx-card__window mx-card__window--tall">
+            <img src="/assets/cached/df381586b4eb.jpg" alt="A steelyard counterweight cast as the bust of a Byzantine empress, 400–450.">
+          </div>
+          <div class="mx-card__caption">the face of the state, on a market weight</div>
+          <span class="mx-card__credit">The Met · 400–450</span>
+        </aside>
+        <div class="mx-body">
+          <p>Behind the coin stood a literate, salaried bureaucracy — professional officials paid from the treasury rather than enfeoffed with land — and a tax system that could assess farmland and count households. When western Europe had fallen back on barter, the East still ran on a budget.</p>
+          <p>Where it could, the empire chose to buy, divide and out-manoeuvre rather than fight. It worked because the other tools backed it: subsidies credible because the coin was sound, court titles coveted because the court was the most splendid known. Guarding the emperor stood the Varangian Guard, Norse and Rus fighting men loyal to the man who paid them.</p>
+        </div>
+      </div>
+
+      <figure class="mx-figure mx-figure--wide mx-draw">
+        <div class="mx-figure__frame"><img src="/assets/cached/092326b92cb8.png" alt="Map of Constantinople: the city, its harbours and walls."></div>
+        <figcaption>Constantinople: the city, its harbours and walls. The <strong>Golden Horn</strong> is the sheltered inlet closed in wartime by a great chain; the triple <strong>Theodosian land walls</strong> seal the landward west.<span class="mx-figure__credit">World History Encyclopedia</span></figcaption>
+      </figure>
+
+      <!-- CHAPTER X -->
+      <div class="mx-plate mx-draw">
+        <div class="mx-plate__ghost">X</div>
+        <span class="mx-plate__no">Chapter X</span>
+        <h2 class="mx-plate__title">Emperor and Church</h2>
+        <p class="mx-plate__dek">Faith carried a church and a written language to the Slavic world — and broke, at last, with Rome.</p>
+      </div>
+
+      <div class="mx-body">
+        <p>The emperor summoned the great councils and had a heavy hand in choosing the patriarch, who crowned him in Hagia Sophia. Older accounts called this "Caesaropapism," but the better term is <strong>symphonia</strong> — "harmony," emperor and church as two powers in concord, a constant negotiation.</p>
+        <p>In the 860s two brothers from Thessalonica, Cyril and Methodius, were sent north to preach to the Slavs, who had no written language. Cyril devised a script to capture Slavonic sounds; their disciples refined it into the one named Cyrillic after him. Of everything Byzantium sent into the world, this missionary gift reached furthest and lasted longest.</p>
+      </div>
+
+      <div class="mx-shelf">
+        <figure class="mx-card mx-card--left mx-settle" style="margin:0;">
+          <div class="mx-card__window mx-card__window--tall"><img src="/assets/cached/4e3fbc05ce6d.jpg" alt="Icon of the Mother of God and Infant Christ (Virgin Eleousa), c. 1425–50."></div>
+          <figcaption class="mx-card__caption">Virgin Eleousa</figcaption>
+          <span class="mx-card__credit">Cleveland Museum · c. 1425–50</span>
+        </figure>
+        <figure class="mx-card mx-card--right mx-settle" style="margin:0;">
+          <div class="mx-card__window mx-card__window--tall"><img src="/assets/cached/8c769b11e8db.jpg" alt="The Virgin and Child mosaic in the apse of Hagia Sophia."></div>
+          <figcaption class="mx-card__caption">the apse of Hagia Sophia</figcaption>
+          <span class="mx-card__credit">via World History Encyclopedia</span>
+        </figure>
+      </div>
+
+      <div class="mx-body">
+        <p>East and West had grown up in different languages, widening into disputes of authority. Rome claimed the pope held supreme authority from Saint Peter; the East held the church was governed jointly by the five great patriarchates, the pope first in honour but not master. The West had added to the Creed a clause — the <strong>Filioque</strong> — which the East saw as altering a fixed creed on Rome's own authority.</p>
+        <p>In 1054 a papal delegation found the patriarch unyielding and lost patience. On 16 July, Cardinal Humbert laid a document of excommunication on the high altar of Hagia Sophia; the patriarch excommunicated the legates in return. The gesture crystallised three centuries of drift into the lasting division of Catholic and Orthodox.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- transit band into Act III -->
+  <div class="mx-transit" data-act="3">
+    <div class="mx-transit__mega">XI</div>
+    <div class="mx-transit__label">Act III · The Fall &amp; the Legacy</div>
+    <div class="mx-transit__hand">what it could not survive</div>
+  </div>
+
+  <!-- ===================== ACT III · THE FALL & LEGACY (inverted / night) ===================== -->
+  <section class="act mx-ground-starfield mx-ground-grain" data-act="3">
+    <div class="mx-wrap">
+
+      <!-- CHAPTER XI -->
+      <div class="mx-plate mx-draw">
+        <div class="mx-plate__ghost">XI</div>
+        <span class="mx-plate__no">Chapter XI</span>
+        <h2 class="mx-plate__title">The Wound of 1204</h2>
+        <p class="mx-plate__dek">The 1025 height lost the ground beneath it within two generations — and the heaviest blow was struck by fellow Christians.</p>
+      </div>
+
+      <div class="mx-body">
+        <p>On 26 August 1071, near Manzikert in eastern Anatolia, the Seljuk Turks defeated a Byzantine army and captured the emperor Romanos IV. Not a massacre — the sultan released him within days — but he returned to a court that had disowned him, touching off years of civil war while the Anatolian frontier dissolved. Anatolia was the empire's heartland: its food, much of its tax, its recruiting ground. The empire never fully recovered it.</p>
+      </div>
+
+      <figure class="mx-quote mx-draw">
+        <blockquote>The empire had survived Persians, Arabs, Bulgars and Turks. What it could not survive was its fellow Christians.</blockquote>
+        <cite>— The Signal</cite>
+      </figure>
+
+      <div class="mx-body">
+        <p>To fund its wars the empire had granted Venice, then Genoa, sweeping trade privileges, and the Italians came to dominate Byzantine commerce — prosperous, resented, and after 1054 held in theological contempt. In 1182 an upheaval spilled into a massacre of the city's Latins; in 1185 a Norman army sacked Thessalonica.</p>
+        <p>The Fourth Crusade set out to attack Egypt and never got there. Unable to pay Venice for shipping, the crusaders were leveraged by the aged Doge Enrico Dandolo. In April 1204 they stormed the largest Christian city in the world. Three days of looting followed — nine centuries of treasure stripped, the four bronze horses set over the doors of St Mark's, Hagia Sophia plundered. Niketas Choniates, who lived through it, thought even the Muslims would have been more merciful. Many historians read 1204, not 1453, as the fatal wound.</p>
+      </div>
+
+      <figure class="mx-figure mx-figure--wide mx-draw">
+        <div class="mx-figure__frame"><img src="/assets/cached/ccf6eb6afca0.png" alt="Maps of the Byzantine Empire across its history, c. 520–1204 — the long contraction."></div>
+        <figcaption>The Byzantine Empire across its history, c. 520–1204 — the long contraction. The loss of the Anatolian interior after 1071 and the fragmentation after 1204 are the sharpest stages.<span class="mx-figure__credit">World History Encyclopedia</span></figcaption>
+      </figure>
+
+      <div class="mx-aside">
+        <div class="mx-body">
+          <p>The crusaders founded a Latin Empire in the City; Venice took islands and harbours. The Byzantine state splintered into Greek successor states — Nicaea, Epirus, and Trebizond. Nicaea proved strongest and would retake Constantinople in 1261; Trebizond, smallest and most remote, held out until 1461.</p>
+        </div>
+        <aside class="mx-card mx-card--right mx-settle">
+          <div class="mx-card__window mx-card__window--tall"><img src="/assets/cached/290412f9f90f.jpg" alt="The Jaharis Byzantine Lectionary, an illuminated Gospel book on parchment, c. 1100."></div>
+          <div class="mx-card__caption">portable treasure, carried west in 1204</div>
+          <span class="mx-card__credit">The Met · c. 1100</span>
+        </aside>
+      </div>
+
+      <!-- CHAPTER XII -->
+      <div class="mx-plate mx-draw">
+        <div class="mx-plate__ghost">XII</div>
+        <span class="mx-plate__no">Chapter XII</span>
+        <h2 class="mx-plate__title">Fifty-Five Days</h2>
+        <p class="mx-plate__dek">The restored empire spent its final two centuries managing decline — until the walls met gunpowder.</p>
+      </div>
+
+      <div class="mx-body">
+        <p>In July 1261 a small Nicaean force found the Latin garrison away and walked into Constantinople almost unopposed. Michael VIII Palaiologos entered on foot behind an icon of the Virgin and was crowned a second time in Hagia Sophia. What he recovered was a shadow — poorer, smaller, ringed by enemies, the treasury thin enough that his successors pawned the crown jewels.</p>
+        <p>By the 1430s the emperors understood that only the armed West could save them, at a price their people would not pay. The Union of Florence in 1439 submitted the Orthodox Church to the pope in exchange for aid that never really came. At home it was rejected outright.</p>
+      </div>
+
+      <!-- the named-source pullquote as a postcard-quote object -->
+      <figure class="mx-quote mx-draw">
+        <blockquote>Better the Sultan's turban than the Cardinal's hat.</blockquote>
+        <cite>— a sentiment of the time, by tradition ascribed to <b>Loukas Notaras</b></cite>
+      </figure>
+
+      <div class="mx-aside mx-aside--left">
+        <aside class="mx-card mx-card--left mx-settle">
+          <div class="mx-card__window mx-card__window--tall"><img src="/assets/cached/57bbe292b08d.jpg" alt="Portrait of Mehmed II, 'the Conqueror', after Gentile Bellini."></div>
+          <div class="mx-card__caption">Mehmed II, the Conqueror</div>
+          <span class="mx-card__credit">after Gentile Bellini · r. 1451–1481</span>
+        </aside>
+        <div class="mx-body">
+          <p>In 1451 the twenty-one-year-old Mehmed II came to the Ottoman throne meaning to take the City. His decisive weapon was new: a Hungarian gunsmith named Urban, spurned by an emperor who could not pay him, cast for Mehmed a bombard firing a stone ball of around five hundred kilograms. Over weeks it began to break the thousand-year walls. Unable to force the chain across the Golden Horn, Mehmed had some seventy ships hauled overland by night into the inlet.</p>
+        </div>
+      </div>
+
+      <!-- the siege facts as a scorecard object -->
+      <div class="mx-shelf">
+        <div class="mx-scorecard mx-settle">
+          <h4>The Siege · Spring 1453</h4>
+          <table>
+            <tr class="mx-lead"><td class="mx-pos">·</td><td>Defenders</td><td class="mx-gap">~7,000</td></tr>
+            <tr><td class="mx-pos">·</td><td>Ottoman army</td><td class="mx-gap">80,000+</td></tr>
+            <tr><td class="mx-pos">·</td><td>Urban's stone ball</td><td class="mx-gap">~500 kg</td></tr>
+            <tr><td class="mx-pos">·</td><td>Days of siege</td><td class="mx-gap">55</td></tr>
+            <tr><td class="mx-pos">·</td><td>Years, 330→1453</td><td class="mx-gap">1,123</td></tr>
+          </table>
+        </div>
+        <div class="mx-body" style="max-width:34ch;">
+          <p>Before dawn on 29 May 1453 Mehmed launched his final assault, focused on the broken wall near the gate of St Romanus, where Constantine stood. A small postern was found left open; word spread that the City was taken and resolve broke. The last Roman emperor was killed in the gap in his own walls, and was never found. By afternoon Mehmed rode in and prayed in Hagia Sophia.</p>
+        </div>
+      </div>
+
+      <figure class="mx-figure mx-figure--wide mx-draw">
+        <div class="mx-figure__frame"><img src="/assets/cached/46119e7827ec.jpg" alt="The Siege of Constantinople, 1453 — Ottoman cannon against the Theodosian Walls."></div>
+        <figcaption>The Siege of Constantinople, 1453 — Ottoman cannon against the Theodosian Walls. The great breach opened near the <strong>St Romanus Gate</strong>; the <strong>Golden Horn</strong> boom-chain sealed the harbour until Mehmed bypassed it overland.<span class="mx-figure__credit">World History Encyclopedia</span></figcaption>
+      </figure>
+
+      <div class="mx-ledger mx-draw">
+        <div class="mx-ledger__caption">The Empire of the Romans — a timeline, III</div>
+        <dl>
+          <dt>1071</dt><dd>Manzikert; Anatolia opened to the Seljuks</dd>
+          <dt>1095</dt><dd>Alexios I's appeal triggers the First Crusade</dd>
+          <dt>1204</dt><dd>Fourth Crusade sacks Constantinople</dd>
+          <dt>1261</dt><dd>Michael VIII recovers Constantinople</dd>
+          <dt>1439</dt><dd>Union of Florence (rejected at home)</dd>
+          <dt>1453</dt><dd>Constantinople falls to Mehmed II (29 May)</dd>
+          <dt>1461</dt><dd>Trebizond falls — the last Byzantine state</dd>
+        </dl>
+      </div>
+
+      <!-- CHAPTER XIII -->
+      <div class="mx-plate mx-draw">
+        <div class="mx-plate__ghost">XIII</div>
+        <span class="mx-plate__no">Chapter XIII</span>
+        <h2 class="mx-plate__title">What Byzantium Left Us</h2>
+        <p class="mx-plate__dek">The empire died in 1453 and it is everywhere — the law of half the world, the alphabet of a quarter-billion people, the faith of the Orthodox East.</p>
+      </div>
+
+      <div class="mx-body">
+        <p>Justinian's <strong>Corpus Juris Civilis</strong> was effectively lost in the West for half a millennium, until a complete text of the Digest resurfaced in Italy and, at Bologna, a teacher named Irnerius began lecturing on it — the root of the civil-law tradition that runs forward to the Napoleonic Code and most of continental Europe and Latin America.</p>
+        <p>The script named Cyrillic is used today by an estimated <strong>250 million people and more</strong>. When the City fell, Moscow was the largest Orthodox power left; in 1472 Ivan III married a niece of the last emperor and adopted the double-headed eagle. Out of that grew <strong>Moscow, the Third Rome</strong> — still on the arms of the Russian Federation.</p>
+      </div>
+
+      <div class="mx-stat-band mx-draw">
+        <div class="mx-stat-band__cell"><div class="mx-stat-band__num">250M+</div><div class="mx-stat-band__label">write in Cyrillic today</div></div>
+        <div class="mx-stat-band__cell"><div class="mx-stat-band__num">1,123</div><div class="mx-stat-band__label">years of empire</div></div>
+        <div class="mx-stat-band__cell"><div class="mx-stat-band__num">2020</div><div class="mx-stat-band__label">Hagia Sophia a mosque again</div></div>
+      </div>
+
+      <div class="mx-body">
+        <p>Byzantium kept ancient Greek literature through the centuries the West lost it. The bridge to the Italian Renaissance was literally Greek-speaking scholars and their manuscripts moving west: Manuel Chrysoloras came to Florence around 1397 to teach Greek; Gemistos Plethon lectured on Plato in 1439; Cardinal Bessarion left more than four hundred and eighty Greek manuscripts to Venice. When the City fell, fleeing scholars carried still more into Italy just as the Renaissance caught fire.</p>
+      </div>
+
+      <div class="mx-table-wrap mx-draw">
+        <table class="mx-data-table">
+          <caption>What Byzantium gave the modern world</caption>
+          <thead><tr><th>Legacy</th><th>How it travelled</th><th>Where it lives now</th></tr></thead>
+          <tbody>
+            <tr><td>Roman law</td><td><em>Corpus Juris Civilis</em> rediscovered at Bologna</td><td>Continental civil-law systems; the Napoleonic Code; Latin America</td></tr>
+            <tr><td>Cyrillic alphabet</td><td>Cyril &amp; Methodius and their disciples</td><td>Russian, Serbian, Bulgarian, Ukrainian writing (250M+ users)</td></tr>
+            <tr><td>Greek antiquity</td><td>Émigré scholars carry manuscripts west</td><td>The Renaissance revival of Plato and Greek learning</td></tr>
+            <tr><td>Orthodox Christianity</td><td>Missionary conversion of Slavs and Rus</td><td>The Orthodox world; "Moscow, the Third Rome"</td></tr>
+            <tr><td>The pendentive dome</td><td>Hagia Sophia's engineering</td><td>Ottoman mosques (Sinan) and Orthodox churches worldwide</td></tr>
+            <tr><td>Professional diplomacy</td><td>Ceremony, subsidy, dynastic marriage</td><td>The vocabulary of statecraft; "byzantine" as an adjective</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mx-shelf">
+        <figure class="mx-card mx-card--left mx-settle" style="margin:0;">
+          <div class="mx-card__window mx-card__window--tall"><img src="/assets/cached/a3ce27e863d7.jpg" alt="Portable miniature-mosaic icon of the Virgin Eleousa, early 1300s."></div>
+          <figcaption class="mx-card__caption">a portable gold-ground icon</figcaption>
+          <span class="mx-card__credit">The Met · early 1300s</span>
+        </figure>
+        <figure class="mx-card mx-card--right mx-settle" style="margin:0;">
+          <div class="mx-card__window mx-card__window--wide"><img src="/assets/cached/8e3e5d91ee0f.jpg" alt="Hagia Sophia, Istanbul — Justinian's dome under Ottoman minarets."></div>
+          <figcaption class="mx-card__caption">Justinian's dome, under minarets</figcaption>
+          <span class="mx-card__credit">via World History Encyclopedia</span>
+        </figure>
+      </div>
+
+      <div class="mx-body">
+        <p>For two centuries the standard verdict was dismissal. Edward Gibbon treated the thousand years as a long anticlimax of decay — "the triumph of barbarism and religion." His judgement was brilliant, hugely influential, and wrong. A state does not survive eleven hundred years by decaying but by adapting.</p>
+      </div>
+
+      <div class="mx-table-wrap mx-draw">
+        <table class="mx-data-table">
+          <caption>Two verdicts on Byzantium</caption>
+          <thead><tr><th>Gibbon's verdict (1776)</th><th>The modern reading</th></tr></thead>
+          <tbody>
+            <tr><td>A thousand years of monotonous theocratic decay</td><td>A resilient, adaptive state that survived 1,100 years</td></tr>
+            <tr><td>Derivative of Greece and Rome</td><td>One of history's great creative civilisations (Herrin)</td></tr>
+            <tr><td>A long fall from a Roman golden age</td><td>The bridge that carried Rome and Greek learning to the modern world</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <figure class="mx-quote mx-draw">
+        <blockquote>It was the great survivor, and it was the bridge — and the modern world is standing on the far side of it.</blockquote>
+        <cite>— on the case made by <b>Judith Herrin</b>, <em>Byzantium: The Surprising Life of a Medieval Empire</em></cite>
+      </figure>
+
+      <!-- KEEP DIGGING as a cheat-sheet object -->
+      <div class="mx-plate mx-draw">
+        <div class="mx-plate__ghost">XIV</div>
+        <span class="mx-plate__no">Chapter XIV</span>
+        <h2 class="mx-plate__title">Keep Digging</h2>
+        <p class="mx-plate__dek">Nine places to follow the bridge out — the survivor's story, running on against Gibbon.</p>
+      </div>
+
+      <div class="mx-cheat-sheet mx-draw">
+        <div class="mx-cheat-sheet__head">Follow the bridge · podcasts · TV · games · books</div>
+        <div class="mx-cheat-sheet__cols">
+          <div class="mx-cheat-sheet__col">
+            <h5>Listen</h5>
+            <p><strong>The History of Byzantium</strong> — Ep. 20, The Nika Revolt (532); and Ep. 332, the final siege.</p>
+            <p><strong>Fall of Civilizations</strong> — Ep. 11, "Byzantium: Last of the Romans."</p>
+            <p><strong>In Our Time</strong> — The Plague of Justinian.</p>
+          </div>
+          <div class="mx-cheat-sheet__col">
+            <h5>Watch &amp; Play</h5>
+            <p><strong>Byzantium: A Tale of Three Cities</strong> — Simon Sebag Montefiore's BBC series.</p>
+            <p><strong>Crusader Kings III</strong> — Roads to Power (Byzantine focus).</p>
+            <p><strong>Assassin's Creed Revelations</strong> — Ottoman Constantinople, 1511.</p>
+          </div>
+          <div class="mx-cheat-sheet__col">
+            <h5>Read</h5>
+            <p><strong>Byzantium: The Surprising Life of a Medieval Empire</strong> — Judith Herrin (2007), the revisionist case.</p>
+            <p><strong>Lost to the West</strong> — Lars Brownworth (2009), a brisk popular history.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="mx-colophon" data-act="1">
+    <div class="mx-wrap">
+      <b>The Signal · WP-2 furniture-core re-dress</b>
+      A shipped Deep Dive re-expressed as neutral <code>mx-</code> core furniture: numbered plates, facts ledgers, stat bands, quote-objects with named sources, pinned photo cards (real <code>&lt;img&gt;</code>), a scorecard, a cheat-sheet, and scroll-wrapped data tables — three palette acts, each on its own scene-ground.
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  // ~JS-off shows 100% of content; this only ADDS reveal state (Law 5).
+  (function(){
+    var doc = document.querySelector('.mx-doc');
+    if (!doc) return;
+    doc.classList.add('mx-js');
+    var io = new IntersectionObserver(function(ents){
+      ents.forEach(function(e){ if (e.isIntersecting){ e.target.classList.add('is-in'); io.unobserve(e.target); } });
+    }, { rootMargin:'0px 0px -8% 0px', threshold:0.08 });
+    doc.querySelectorAll('.mx-draw, .mx-settle, .mx-rise, .mx-slam').forEach(function(el){ io.observe(el); });
+    // tier0 ghost-numeral parallax (furniture only; honours reduced-motion)
+    var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduce) {
+      var ghosts = [].slice.call(doc.querySelectorAll('.mx-plate__ghost'));
+      var ticking = false;
+      window.addEventListener('scroll', function(){
+        if (ticking) return; ticking = true;
+        requestAnimationFrame(function(){
+          var vh = window.innerHeight;
+          ghosts.forEach(function(g){
+            var r = g.getBoundingClientRect();
+            var k = (r.top + r.height/2 - vh/2) / vh;   // -0.5..0.5 across viewport
+            g.style.transform = 'translateY(' + (k * -22).toFixed(1) + 'px)';
+          });
+          ticking = false;
+        });
+      }, { passive:true });
+    }
+  })();
+</script>
+</body>
+</html>

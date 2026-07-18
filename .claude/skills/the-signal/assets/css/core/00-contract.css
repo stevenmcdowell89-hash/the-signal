@@ -1,0 +1,132 @@
+/* ==========================================================================
+   THE SIGNAL — FURNITURE CORE · 00-contract.css
+   The token contract + neutral greyscale defaults + the six type roles.
+   Extracted from the holiday layers' universal bucket and DE-THEMED: no venue
+   colour survives here. Real theming (per-act palettes, art) arrives via motif
+   packs in WP-4 — this file ships a neutral, self-sufficient greyscale so the
+   core renders as OBJECTS ON A SURFACE with zero motif applied.
+
+   Neutral class prefix is mx- ONLY (never sp-/hol- — the weekly's forbidden-
+   marker gate must never false-fire on the core).
+   ========================================================================== */
+
+/* ── TYPE ROLES — the six voices (Law 8) ──────────────────────────────────
+   Self-hosted subsetted woff2 arrives in WP-3 under assets/fonts/; until then
+   every role degrades to a robust system stack so the core renders offline
+   (Google Fonts is a proven runtime failure; one gate render runs network-off). */
+:root {
+  --mx-t-chunk:  "Bowlby One", "Arial Black", "Helvetica Neue", Impact, sans-serif; /* heavy poster display */
+  --mx-t-tall:   "Anton", "Bebas Neue", "Oswald", Impact, sans-serif;               /* condensed caps */
+  --mx-t-script: "Yellowtail", "Segoe Script", "Snell Roundhand", cursive;          /* flowing script */
+  --mx-t-hand:   "Caveat", "Segoe Script", "Bradley Hand", "Comic Sans MS", cursive;/* marginalia hand */
+  --mx-t-serif:  "Cormorant Garamond", "Iowan Old Style", "Palatino", Georgia, serif;/* editorial display */
+  --mx-t-mono:   "Space Mono", "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace; /* micro-labels */
+  --mx-t-body:   "DM Sans", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;      /* running text */
+
+  /* ── COLOUR CONTRACT (neutral greyscale defaults) ──────────────────────
+     ~30 custom properties. Motif packs override these per act via
+     section[data-act]; the values below are a deliberately dull greyscale
+     so a coloured render can only come from a real theme, never by accident. */
+  --mx-paper:      #f4f2ec;   /* act surface */
+  --mx-paper-2:    #eceae2;   /* secondary surface (cards windows, insets) */
+  --mx-ink:        #1b1b20;   /* primary text */
+  --mx-ink-soft:   #5b5b64;   /* secondary text / labels */
+  --mx-accent:     #33333b;   /* primary accent (neutral near-black; theme recolours) */
+  --mx-accent-ink: #f6f4ee;   /* text that sits ON the accent */
+  --mx-accent-2:   #6a6a74;   /* secondary accent */
+  --mx-support-1:  #7d7a70;   /* supporting tone 1 */
+  --mx-support-2:  #9a978c;   /* supporting tone 2 */
+  --mx-hair:       rgba(27,27,32,.30);  /* hairline rules / dotted ledgers */
+  --mx-ghost:      rgba(27,27,32,.07);  /* giant ghosted plate numerals */
+
+  /* object-surface tokens (ephemera chassis) */
+  --mx-card:        #f7f4ea;  /* card body */
+  --mx-card-window: #efece0;  /* photo/content window */
+  --mx-card-ink:    #22201a;  /* ink on cards */
+  --mx-card-edge:   rgba(0,0,0,.20);
+  --mx-tape:        rgba(120,116,104,.55);  /* washi tape / fastener */
+  --mx-hand:        var(--mx-accent);        /* hand-note / caption ink */
+  --mx-stamp:       var(--mx-accent);        /* seal ink */
+  --mx-quote-bg:    rgba(0,0,0,.045);
+
+  /* scene-ground art slots (currentColor-driven; theme injects real art) */
+  --mx-glyph:   currentColor;                 /* stamp/spark glyph colour source */
+  --mx-pattern: none;                         /* mask-image url() for pattern grounds */
+  --mx-band:    linear-gradient(90deg, var(--mx-accent), var(--mx-accent-2)); /* transit seam */
+
+  /* Law-8 floors, baked as CSS variables so no component can undershoot */
+  --mx-label-min: 0.72rem;   /* mono micro-label floor */
+  --mx-measure:   66ch;      /* body max-width (≤68ch) */
+  color-scheme: light dark;
+}
+
+/* ── ACT GROUNDS — the traveling arc (Law 4) ──────────────────────────────
+   Even with NO motif pack, three acts give a neutral paper→parchment→ink
+   progression so the scroll never sits on one flat colour. A motif pack
+   overrides these same properties to carry a coloured arc. */
+[data-act="1"] {
+  --mx-paper:#f6f4ee; --mx-paper-2:#efece2;
+  --mx-ink:#1b1b20; --mx-ink-soft:#5b5b64; --mx-hair:rgba(27,27,32,.28);
+  --mx-ghost:rgba(27,27,32,.06);
+}
+[data-act="2"] {
+  --mx-paper:#ece7da; --mx-paper-2:#e3ddcc;
+  --mx-ink:#211d15; --mx-ink-soft:#5f584a; --mx-hair:rgba(33,29,21,.30);
+  --mx-ghost:rgba(33,29,21,.07);
+}
+[data-act="3"] {                        /* inverted act — dark ground, light ink */
+  --mx-paper:#1d1c24; --mx-paper-2:#26242e;
+  --mx-ink:#ece8dc; --mx-ink-soft:rgba(236,232,220,.66);
+  --mx-accent:#c9c6bc; --mx-accent-ink:#1d1c24; --mx-accent-2:#9a978c;
+  --mx-hair:rgba(236,232,220,.28); --mx-ghost:rgba(236,232,220,.08);
+  --mx-card:#f3efe4; --mx-card-window:#e9e4d5; --mx-card-ink:#22201a;
+  --mx-tape:rgba(201,198,188,.5); --mx-quote-bg:rgba(0,0,0,.28);
+}
+
+/* ── RESET + BODY BASELINE ────────────────────────────────────────────────
+   Namespaced under .mx-doc so the core never fights a host page's own reset. */
+.mx-doc *, .mx-doc *::before, .mx-doc *::after { box-sizing:border-box; }
+.mx-doc {
+  margin:0; padding:0;
+  background:var(--mx-paper);
+  color:var(--mx-ink);
+  font-family:var(--mx-t-body);
+  line-height:1.6;
+  overflow-x:hidden;               /* Law 10: no document-level H-scroll */
+  -webkit-text-size-adjust:100%;
+  text-rendering:optimizeLegibility;
+}
+.mx-doc img, .mx-doc svg { max-width:100%; }
+
+/* ── BODY COPY — disciplined measure (Law 8: ≤68ch) ───────────────────────*/
+.mx-body { max-width:var(--mx-measure); }
+.mx-body p {
+  font-family:var(--mx-t-body);
+  font-size:16.5px; line-height:1.68; color:var(--mx-ink);
+  margin:0 0 1.15em;
+}
+.mx-body p:last-child { margin-bottom:0; }
+.mx-body strong { font-weight:700; }
+.mx-body a { color:var(--mx-accent); text-underline-offset:2px; }
+
+/* drop cap — decorative, NOT a Law-2 event */
+.mx-body--lede > p:first-of-type::first-letter {
+  font-family:var(--mx-t-serif); font-weight:700;
+  float:left; font-size:3.4em; line-height:.72;
+  padding:6px 10px 0 0; color:var(--mx-accent);
+}
+
+/* ── KICKER — mono micro-label with a trailing rule ───────────────────────*/
+.mx-kicker {
+  font-family:var(--mx-t-mono); font-size:max(var(--mx-label-min),.72rem);
+  font-weight:700; letter-spacing:.3em; text-transform:uppercase;
+  color:var(--mx-accent); margin-bottom:14px;
+  display:flex; align-items:center; gap:14px;
+}
+.mx-kicker::after { content:""; height:1px; flex:1; background:currentColor; opacity:.35; }
+
+/* every mono micro-label in the core clamps to the Law-8 floor */
+.mx-doc [class*="__label"], .mx-doc [class*="__meta"], .mx-doc [class*="__credit"],
+.mx-doc [class*="__date"], .mx-doc [class*="__caption-mono"] {
+  font-size:max(var(--mx-label-min), .72rem);
+}

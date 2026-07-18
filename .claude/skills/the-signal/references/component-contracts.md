@@ -602,11 +602,11 @@ A literary special (Deep Dive, Versus, Rewind, Season Review) must not be an unb
 | Image-quote | `<figure class="image-quote"><img …><blockquote><p>quote</p><cite>— src</cite></blockquote></figure>` | a portrait with a primary-source line across it |
 | Stat row | `<div class="bignum-row"><div class="bignum"><div class="bignum-value">15,000</div><div class="bignum-label">…</div></div>…</div>` | 2–4 headline numbers |
 | Pull-quote | `<blockquote class="pullquote"><p>…</p><cite>— …</cite></blockquote>` | a resonant line on its own |
-| Parallax band | `<figure class="fig is-wide sp-parallax-band"><div class="sp-band-frame"><img …></div><figcaption>…</figcaption></figure>` | ONE big cinematic SCENE image per issue — sits in a fixed-height slot and pans behind it on scroll |
+| Big cinematic figure | `<figure class="fig is-wide"><img …><figcaption>…</figcaption></figure>` | ONE big full-width SCENE image per issue — a battlefield, a wide cityscape |
 
-**Parallax discipline.** The `.sp-parallax-band` is the *only* element that parallaxes, and it is reserved for **one or two genuinely cinematic full-width SCENE photos/paintings per issue** (a battlefield, an assassination scene, a wide cityscape) — never portraits, busts, coins, maps, charts or diagrams (those stay static and whole, so nothing crops). The `<img>` MUST be wrapped in `<div class="sp-band-frame">` so the caption stays outside the clip. Do not put `.sp-parallax-band` on more than ~2 figures; over-using it makes the issue seasick.
+**Cinematic figures stay whole and static.** Reserve the full-width `.fig.is-wide` for one or two genuinely cinematic SCENE photos/paintings per issue (a battlefield, an assassination scene, a wide cityscape) — never portraits, busts, coins, maps, charts or diagrams (those stay static and whole, so nothing crops). The pre-v8.21 scroll-parallax band was removed with the motion layer; images no longer pan on scroll.
 
-Do **not** use the retired `.sp-spread`/`.sp-rail` three-column layout (the empty left rail wastes space). Marginalia always floats right.
+The retired three-column rail + margin spread layout is gone (the empty left rail wasted space). Use a single-column `.chapter-body`; marginalia always floats right.
 
 ## The Countdown
 
@@ -814,56 +814,9 @@ Every pick in Next includes one `.on-ramp` block. The block renders as a stepped
 </div>
 ```
 
-## The Lookahead
+## The forward-preview format — RETIRED
 
-| Section | Section class | Pattern |
-|---|---|---|
-| Foreword | `sec` (light bg) | Short prose framing the window |
-| The Window in Numbers | `chapter` | `.bignum-row` — total events / don't-miss count / worth-a-look count / skip count |
-| The Calendar | `chapter` | `.calendar` `<ol>` of `.cal-row` entries with `data-verdict`; optional `<li class="cal-week">` dividers between weeks |
-| The Crunch Weeks | `chapter` | One `.crunch-week` callout per dense week — warning chip + `.crunch-list` `<dl>` with tier-coloured Prioritise / Defer / Skip badges |
-| What Else Is Brewing | `chapter` | Brief horizon items without firm dates — `.also-list` style |
-| Meanwhile | `chapter` | See universal pattern above |
-
-### Calendar row contract
-
-```html
-<ol class="calendar">
-  <li class="cal-week">Week of 14 Jun</li>
-  <li class="cal-row" data-verdict="hot">
-    <div class="cal-when">
-      <span class="cal-date">14 Jun</span>
-      <span class="cal-where">Football · PL</span>
-    </div>
-    <div class="cal-body">
-      <h4>Arsenal vs Manchester City — title race decider</h4>
-      <p>Two games left, two points apart. This is the one.</p>
-    </div>
-    <div class="cal-verdict">
-      <span class="cal-verdict-chip">Don't miss</span>
-      <span class="cal-reason">Title decider on the second-to-last weekend.</span>
-    </div>
-  </li>
-</ol>
-```
-
-`data-verdict` must be one of `hot` / `warm` / `wait` / `skip` — the chip glyph (★ / ◉ / ⏱ / ✕), the row's left rail colour, and the row's background tint all paint from this attribute.
-
-### Crunch Week contract
-
-```html
-<aside class="crunch-week">
-  <div class="crunch-header">
-    <span class="crunch-label">Crunch week</span>
-    <h4 class="crunch-when">Week of 14 Jun</h4>
-  </div>
-  <dl class="crunch-list">
-    <dt data-tier="hot">Prioritise</dt><dd>Title decider — can't be re-experienced.</dd>
-    <dt data-tier="wait">Defer</dt><dd>Canadian GP — strong race, no championship stakes.</dd>
-    <dt data-tier="skip">Skip</dt><dd>The Long Walk — sits in "wait for reviews".</dd>
-  </dl>
-</aside>
-```
+The standalone forward-preview / week-ahead format (its dated event-list and dense-week callout components) has been retired and folded into the weekly's Release Radar + On the Radar. Its component contracts are removed from this file. "What's coming up over the next few weeks" is answered by the weekly's radar sections, not by a dedicated issue.
 
 ## The Field Guide
 
@@ -885,7 +838,7 @@ Countdown and Field Guide use a separate visual identity from every other specia
 
 **Activation:** `<body class="is-special" data-special="countdown">` or `data-special="field-guide"`.
 
-**On these two formats, the default chrome above is hidden by tier 36 CSS.** Using `.sp-chapter-gate`, `.sp-spread`, `.sp-pull-break`, `.sp-marginalia`, `.sp-brief`, `.sp-dash`, `.sp-chapter-chrome`, or `.unmissables` / `.unmissable` will produce blank stretches in the rendered output.
+**On these two formats, the default non-holiday chrome above is hidden by tier 36 CSS.** Using the editorial chapter-head, the `.marginalia` gutter aside, the non-holiday `.pick` / `.pullquote` / `.bignum-row` components, or the non-holiday `.unmissables` / `.unmissable` pattern will produce blank stretches in the rendered output — use the `.hol-*` vocabulary below instead.
 
 **The structural shape:** masthead → cover → kicker strip → Half I (`.hol-half--one`) → transit (`.hol-transit`, multi-venue only) → Half II (`.hol-half--two`, multi-venue only) → meanwhile (`.hol-meanwhile`). Single-venue issues drop the transit and Half II, replacing them with 1–2 interior `.hol-marquee` breaks within Half I.
 
@@ -919,9 +872,9 @@ See `references/pre-flight.md` § 3 *Canonical Markup Snippets* → *Holiday iss
 
 ### Anti-patterns (Countdown + Field Guide only)
 
-- `<div class="sp-chapter-gate">` — does not render on holiday issues. Tier 36 hides it.
-- `<aside class="sp-marginalia">` — use `.hol-stamp` or `.hol-polaroid` instead.
-- `<div class="sp-spread">` — holiday issues do not use the three-column spread. Use `.hol-half__inner` plus content components.
+- The non-holiday editorial chapter-head / chrome — does not render on holiday issues. Tier 36 hides it; open holiday halves with the `.hol-half__opener` instead.
+- `<aside class="marginalia">` — use `.hol-stamp` or `.hol-polaroid` instead on holiday issues.
+- The retired three-column spread — holiday issues use `.hol-half__inner` plus content components.
 - `<div class="unmissables">...<div class="unmissable">` — holiday issues use `.hol-unmissable` (one row at a time, alternating sides).
 - `<section data-sp-chapter ...>` — not needed; holiday halves are plain `<section class="hol-half hol-half--one">` and `<section class="hol-half hol-half--two">`.
 - Coral colour anywhere (`#E8384F`, `var(--sp-accent-primary)`) — not used on holiday issues. Use brass (`var(--hol-brass)` or `var(--hol-brass-light)`) for the primary accent role.
@@ -932,7 +885,7 @@ See `references/pre-flight.md` § 3 *Canonical Markup Snippets* → *Holiday iss
 
 ```
 Is the issue a Countdown or Field Guide?
-├── No  → use the default chrome patterns above (sp-chapter-gate, sp-spread, etc).
+├── No  → use the default non-holiday editorial chrome patterns above (chapter-head, pick, pullquote, bignum-row, etc).
 └── Yes → does the trip have 2+ headline venues?
           ├── Yes (e.g. Efteling + Beekse Bergen):
           │   Cover → Kicker → Half I (--one) → Transit → Half II (--two) → Meanwhile

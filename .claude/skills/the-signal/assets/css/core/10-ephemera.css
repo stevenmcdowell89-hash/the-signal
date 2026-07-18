@@ -1,0 +1,224 @@
+/* ==========================================================================
+   THE SIGNAL — FURNITURE CORE · 10-ephemera.css
+   The framed-object chassis: photo/content window + fastener + hand caption +
+   credit. Extracted from holiday §09 polaroid, §10 postcard, §11 stamp,
+   41 ticket/coaster and the de-themed furniture-kit mockup.
+
+   SCENOGRAPHY IS THE DEFAULT, NOT AN OPT-IN (Law 1).
+   Every ephemera object ships TILTED (1–3°) + FASTENED (tape/pin/photo-corner)
+   + SHADOWED the moment you use its class. The ONLY way to get a flat upright
+   rectangle is to add .mx-flat — which is the exception, never the norm. This
+   is the single most important contract in the core: attempt #2 shipped flat
+   boxes and the owner said "it's nothing like that trip countdown."
+
+   IMG CONTRACT (F-6): the photo window is a real <img> (object-fit:cover) OR a
+   role="img"+aria-label element — never a bare CSS box invisible to a screen
+   reader. .mx-card__window styles the frame; put a real <img> inside it.
+   ========================================================================== */
+
+/* ── UNIVERSAL FASTENERS (mix into any object) ────────────────────────────*/
+.mx-tape {                             /* washi-tape strip */
+  position:absolute; top:-11px; left:50%;
+  transform:translateX(-50%) rotate(-3.5deg);
+  width:92px; height:24px;
+  background:var(--mx-tape);
+  border-left:1px dashed rgba(255,255,255,.5);
+  border-right:1px dashed rgba(255,255,255,.5);
+  box-shadow:0 1px 2px rgba(0,0,0,.15);
+  z-index:3;
+}
+.mx-pin {                              /* push-pin dot */
+  position:absolute; top:-8px; left:50%; transform:translateX(-50%);
+  width:16px; height:16px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #fff6, var(--mx-accent) 70%);
+  box-shadow:0 3px 5px rgba(0,0,0,.4); z-index:3;
+}
+.mx-corner {                           /* photo-corner (bottom-right by default) */
+  position:absolute; right:-1px; bottom:-1px; width:26px; height:26px;
+  background:linear-gradient(135deg, transparent 50%, rgba(0,0,0,.22) 50%);
+  z-index:2;
+}
+
+/* ── .mx-card — the polaroid → PINNED CARD (the base object) ───────────────
+   Ships rotate(-2deg) + top tape + drop shadow BY DEFAULT. */
+.mx-card {
+  --mx-tilt:-2deg;
+  position:relative;
+  width:min(320px, 100%);
+  background:var(--mx-card);
+  border:1px solid var(--mx-card-edge);
+  color:var(--mx-card-ink);
+  padding:12px 12px 16px;
+  transform:rotate(var(--mx-tilt));
+  box-shadow:0 22px 34px -16px rgba(0,0,0,.55), 0 2px 0 rgba(0,0,0,.05);
+}
+.mx-card::before {                     /* default fastener: tape (no markup needed) */
+  content:""; position:absolute; top:-10px; left:50%;
+  transform:translateX(-50%) rotate(-3.5deg);
+  width:88px; height:22px; background:var(--mx-tape);
+  border-left:1px dashed rgba(255,255,255,.5);
+  border-right:1px dashed rgba(255,255,255,.5);
+  box-shadow:0 1px 2px rgba(0,0,0,.15); z-index:3;
+}
+.mx-card--right  { --mx-tilt:2.4deg; }
+.mx-card--right::before { transform:translateX(-50%) rotate(4deg); }
+.mx-card--left   { --mx-tilt:-2.6deg; }
+.mx-card--pin::before {                /* swap tape → pin */
+  width:16px; height:16px; border-radius:50%; top:-8px;
+  background:radial-gradient(circle at 35% 30%, #fff8, var(--mx-accent) 72%);
+  border:none; transform:translateX(-50%);
+}
+.mx-flat {                             /* THE ONLY opt-out: upright, unfastened */
+  --mx-tilt:0deg;
+  transform:none; box-shadow:0 8px 20px -12px rgba(0,0,0,.35);
+}
+.mx-flat::before { display:none; }
+
+/* the photo/content WINDOW — holds a real <img> or role="img" */
+.mx-card__window {
+  position:relative; overflow:hidden;
+  border:1px solid rgba(0,0,0,.14);
+  min-height:120px; background:var(--mx-card-window);
+  display:grid; place-items:center;
+}
+.mx-card__window > img,
+.mx-card__window > [role="img"] {
+  display:block; width:100%; height:100%;
+  min-height:inherit; object-fit:cover;
+}
+.mx-card__window--tall { aspect-ratio:3/4; }
+.mx-card__window--wide { aspect-ratio:4/3; }
+.mx-card__caption {                    /* hand-written caption */
+  font-family:var(--mx-t-hand); font-size:21px; line-height:1.15;
+  text-align:center; margin-top:10px; color:var(--mx-card-ink);
+}
+.mx-card__credit {                     /* mono credit line */
+  font-family:var(--mx-t-mono); font-size:max(var(--mx-label-min),.72rem);
+  letter-spacing:.08em; text-transform:uppercase; text-align:center;
+  display:block; margin-top:6px; opacity:.6;
+}
+/* index-card ruling variant (archival card, photo-free) */
+.mx-card--ruled .mx-card__window {
+  place-items:start stretch; text-align:left; padding:14px;
+  background-color:var(--mx-card-window);
+  background-image:
+    linear-gradient(180deg, transparent 0 30px, rgba(150,40,40,.4) 30px 31px, transparent 31px),
+    repeating-linear-gradient(180deg, transparent 0 26px, rgba(40,60,120,.22) 26px 27px);
+}
+.mx-card__typed {
+  font-family:var(--mx-t-mono); font-size:11.5px; line-height:27px; color:var(--mx-card-ink);
+}
+
+/* ── .mx-polaroid — alias of the card with a thick bottom lip (photo-first) ─*/
+.mx-polaroid { --mx-tilt:-1.6deg; padding-bottom:34px; }
+.mx-polaroid .mx-card__window { aspect-ratio:1/1; }
+
+/* ── .mx-postcard — the MAIL CARD (front greeting + handwritten back) ──────*/
+.mx-postcard {
+  --mx-tilt:1.2deg;
+  position:relative; display:grid; grid-template-columns:1fr 1fr;
+  width:min(400px, 100%); min-height:200px;
+  background:var(--mx-card); color:var(--mx-card-ink);
+  border:1px solid var(--mx-card-ink);
+  box-shadow:6px 6px 0 rgba(0,0,0,.30);
+  transform:rotate(var(--mx-tilt));
+}
+.mx-postcard__front {
+  background:var(--mx-accent); color:var(--mx-accent-ink);
+  padding:18px 16px; display:flex; flex-direction:column; justify-content:space-between;
+}
+.mx-postcard__greeting { font-family:var(--mx-t-script); font-size:30px; line-height:.9; }
+.mx-postcard__place {
+  font-family:var(--mx-t-tall); font-size:18px; letter-spacing:.04em; text-transform:uppercase;
+}
+.mx-postcard__back {
+  padding:16px; font-family:var(--mx-t-hand); font-size:18px; line-height:1.28;
+  color:var(--mx-card-ink); border-left:1px dashed var(--mx-card-ink);
+  background-image:repeating-linear-gradient(180deg, transparent 0 22px, rgba(0,0,0,.10) 22px 23px);
+  background-position:0 14px;
+}
+@media (max-width:520px) {
+  .mx-postcard { grid-template-columns:1fr; }
+  .mx-postcard__back { border-left:none; border-top:1px dashed var(--mx-card-ink); }
+}
+
+/* ── .mx-stamp / .mx-seal — circular rubber-stamp roundel ──────────────────*/
+.mx-stamp {
+  display:inline-grid; place-items:center;
+  width:132px; height:132px;
+  border:2px solid currentColor; border-radius:50%;
+  color:var(--mx-stamp);
+  font-family:var(--mx-t-mono); font-size:8px; font-weight:700;
+  letter-spacing:.1em; text-transform:uppercase; text-align:center;
+  padding:20px; line-height:1.4;
+  transform:rotate(-8deg); position:relative; background:transparent;
+}
+.mx-stamp::before { content:""; position:absolute; inset:7px; border:1px solid currentColor; border-radius:50%; opacity:.85; }
+.mx-stamp b {
+  display:block; font-family:var(--mx-t-serif); font-size:26px; font-weight:700;
+  letter-spacing:.04em; line-height:1; margin:4px 0 3px;
+}
+.mx-stamp--sm { width:88px; height:88px; padding:10px; font-size:7px; }
+.mx-stamp--sm b { font-size:16px; }
+
+/* ── .mx-ticket — perforated stub with punch-holes (result / admit-one) ────*/
+.mx-ticket {
+  --mx-tilt:-1.5deg;
+  position:relative; display:grid; grid-template-columns:1fr 96px;
+  width:min(380px, 100%);
+  background:var(--mx-card); color:var(--mx-card-ink);
+  border:1.5px solid var(--mx-card-ink);
+  box-shadow:5px 5px 0 rgba(0,0,0,.28);
+  transform:rotate(var(--mx-tilt));
+}
+.mx-ticket__main { padding:16px 16px 14px; }
+.mx-ticket__event { font-family:var(--mx-t-serif); font-size:24px; line-height:1.05; margin:2px 0 8px; }
+.mx-ticket__meta {
+  font-family:var(--mx-t-mono); font-size:max(var(--mx-label-min),.72rem);
+  font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--mx-ink-soft);
+}
+.mx-ticket__row { display:flex; justify-content:space-between; gap:10px; margin-top:7px; }
+.mx-ticket__stub {
+  border-left:2px dashed var(--mx-card-ink); display:grid; place-items:center; padding:10px 6px;
+  background:repeating-linear-gradient(45deg, transparent 0 6px, rgba(0,0,0,.05) 6px 12px);
+}
+.mx-ticket__punch {
+  position:absolute; right:82px; top:-7px; width:14px; height:14px; border-radius:50%;
+  background:var(--mx-paper); border:1.5px solid var(--mx-card-ink);
+}
+.mx-ticket__punch--b { top:auto; bottom:-7px; }
+
+/* ── .mx-coaster — round beverage coaster (soft, absorbent edge) ───────────*/
+.mx-coaster {
+  --mx-tilt:-3deg;
+  position:relative; width:150px; height:150px; border-radius:50%;
+  background:var(--mx-card); color:var(--mx-card-ink);
+  border:2px solid var(--mx-card-ink);
+  box-shadow:0 16px 26px -12px rgba(0,0,0,.5);
+  display:grid; place-items:center; text-align:center; padding:22px;
+  transform:rotate(var(--mx-tilt));
+}
+.mx-coaster::before { content:""; position:absolute; inset:9px; border:1px dashed var(--mx-card-ink); border-radius:50%; opacity:.5; }
+.mx-coaster__value { font-family:var(--mx-t-serif); font-weight:700; font-size:34px; line-height:1; color:var(--mx-accent); }
+.mx-coaster__label {
+  font-family:var(--mx-t-mono); font-size:max(var(--mx-label-min),.72rem);
+  letter-spacing:.16em; text-transform:uppercase; margin-top:6px;
+}
+
+/* ── SHELVES — arrange loose ephemera as objects on a surface ──────────────*/
+.mx-shelf {                            /* wrapping row, centred, overlapping-friendly */
+  display:flex; flex-wrap:wrap; gap:36px 44px;
+  align-items:flex-start; justify-content:center; margin:52px 0;
+}
+.mx-shelf > * { flex:0 1 auto; }
+.mx-aside {                            /* copy + a floated object beside it */
+  display:grid; grid-template-columns:1fr auto; gap:40px; align-items:start; margin:40px 0;
+}
+.mx-aside--left { grid-template-columns:auto 1fr; }
+@media (max-width:700px) { .mx-aside, .mx-aside--left { grid-template-columns:1fr; } }
+
+/* ── hand-note marginalia (decorative, breaks the grid; NOT a Law-2 event) ─*/
+.mx-note {
+  font-family:var(--mx-t-hand); font-size:clamp(20px,2.6vw,25px); line-height:1.15;
+  color:var(--mx-hand); transform:rotate(-2deg); display:inline-block; max-width:30ch;
+}

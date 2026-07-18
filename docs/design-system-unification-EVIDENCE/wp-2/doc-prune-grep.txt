@@ -1,0 +1,12 @@
+WP-2 DOC-PRUNE PROOF (F-13) — generated 2026-07-18T23:00Z
+Docs pruned to the live system: pre-flight.md, spec/specials.md, component-contracts.md
+
+DELETED v8.21 component-system / retired vocabulary — must be ZERO:
+  pattern: 'Universal Cover' | blueprint | viz_[0-9] | ch[0-9]+-[0-9]+ | sp-brief-kicker | sp-spread-body | sp-margin
+  ---
+  RESULT: ZERO deleted-class/retired-vocab references. PASS.
+
+EXPLICITLY EXCLUDED as LIVE (kept on purpose, not deleted):
+  - plate-box       : live weekly fallback placeholder (weekly/00-transmission.css), documented in component-contracts.md
+  - 'research bundle': live pipeline artifact the writer consumes; legitimate in AUTHORING docs (banned only in reader ISSUE prose, enforced by validate-issue.py scaffold grep)
+  - sp-wipe-layer/sp-word/sp-fade/sp-chapter-beads: live allowlisted JS markers (stitch-issue.sh)
