@@ -19,7 +19,7 @@ def norm(s): return re.sub(r"\s+"," ",re.sub(r"<[^>]+>","",s)).strip().replace("
 doc  = SRC.read_text()
 data = json.loads(DATA.read_text())
 core_css = "\n".join((CORE/f).read_text() for f in
-                     ["00-contract.css","10-ephemera.css","11-ledgers.css"]) + "\n" + BRIDGE.read_text()
+                     sorted(f.name for f in CORE.glob("*.css"))) + "\n" + BRIDGE.read_text()
 
 def numbers_band(items):
     cells="".join(f'<div class="mx-numbers__cell"><span class="mx-numbers__fig">{esc(i["figure"])}</span>'

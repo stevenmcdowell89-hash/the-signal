@@ -1,0 +1,53 @@
+/* ============================================================
+   MX FURNITURE CORE · 14 · MOTION
+   Legacy motion layers 38 + 39 re-scoped from body-locked countdown/field-guide
+   to OPT-IN [data-motion] tiers (F-10, §5). Motion attaches to FURNITURE, never
+   body text. Every tier obeys prefers-reduced-motion and JS-off renders 100%
+   complete (content is visible by default; motion only enhances). Reads --mx-*.
+
+     tier0 print-still  — hairline draw-in, faint ghost-numeral parallax
+     tier1 calm         — rise-on-scroll; object settle; ledger rows tick in
+     tier2 event        — stamp-slam, marquee, flips, act palette crossfade
+
+   Attach with <body data-motion="calm"> (or "event"/"still"). The reveal
+   trigger class .is-in is added by the shared observer script when an element
+   scrolls into view; absent JS, elements are simply already visible.
+   ============================================================ */
+
+/* Default: content complete, no motion (JS-off / tier0 baseline). */
+[data-mx] .mx-reveal { opacity: 1; transform: none; }
+
+/* ---- tier1 calm --------------------------------------------------------- */
+[data-motion="calm"] .mx-reveal,
+[data-motion="event"] .mx-reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s cubic-bezier(.2,.7,.3,1); }
+[data-motion="calm"] .mx-reveal.is-in,
+[data-motion="event"] .mx-reveal.is-in { opacity: 1; transform: none; }
+/* ledger rows tick in sequentially */
+[data-motion="calm"] .mx-ledger.is-in dt,
+[data-motion="calm"] .mx-ledger.is-in dd { animation: mx-tick .5s both; }
+[data-motion="calm"] .mx-ledger.is-in dt:nth-of-type(2) { animation-delay: .08s; }
+[data-motion="calm"] .mx-ledger.is-in dt:nth-of-type(3) { animation-delay: .16s; }
+[data-motion="calm"] .mx-ledger.is-in dt:nth-of-type(4) { animation-delay: .24s; }
+@keyframes mx-tick { from { opacity: 0; transform: translateX(-6px); } to { opacity: 1; transform: none; } }
+
+/* card "tape-down" ~1° settle */
+[data-motion="calm"] .mx-pinned.is-in,
+[data-motion="event"] .mx-pinned.is-in { animation: mx-settle .5s both; }
+@keyframes mx-settle { from { transform: rotate(-4deg) translateY(-6px); } to { transform: rotate(-1.5deg); } }
+
+/* ---- tier2 event -------------------------------------------------------- */
+[data-motion="event"] .mx-stamp.is-in { animation: mx-slam .45s cubic-bezier(.3,1.4,.5,1) both; }
+@keyframes mx-slam { 0% { opacity: 0; transform: rotate(-7deg) scale(2.2); } 70% { opacity: 1; transform: rotate(-7deg) scale(.9); } 100% { transform: rotate(-7deg) scale(1); } }
+[data-motion="event"] .mx-marquee__track { animation: mx-marquee 18s linear infinite; }
+@keyframes mx-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+/* act palette crossfade — generalises the legacy --hm-edge dial (endpoint
+   colours now come from the act tokens, not baked in). */
+[data-motion="event"] [data-act="2"] { transition: background-color 1.2s linear; }
+
+/* ---- Universal hard rules (each a gate) --------------------------------- */
+/* never on running text */
+[data-motion] p, [data-motion] li, [data-motion] .mx-quote__text { animation: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  [data-motion] .mx-reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+  [data-motion] * { animation: none !important; }
+}

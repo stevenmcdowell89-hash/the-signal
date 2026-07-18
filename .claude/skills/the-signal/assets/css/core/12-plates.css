@@ -1,0 +1,40 @@
+/* ============================================================
+   MX FURNITURE CORE · 12 · PLATES
+   Numbered plates, anchor feature blocks, zig-zag entry systems, don't-miss
+   chips. De-themed from legacy 36 §12/§13/§14. Reads only --mx-*.
+   ============================================================ */
+
+/* ---- Numbered plate (the entry marker) ---------------------------------- */
+.mx-plate { display: grid; grid-template-columns: auto 1fr; gap: 1rem 1.4rem; align-items: baseline; }
+.mx-plate__num {
+  font-family: var(--mx-t-serif); font-weight: 700; font-size: clamp(2.4rem, 6vw, 3.6rem);
+  line-height: 0.9; color: var(--mx-accent); font-variant-numeric: lining-nums;
+}
+.mx-plate__title { font-family: var(--mx-t-serif); font-weight: 700; font-size: clamp(1.4rem, 3vw, 2rem); line-height: 1.1; color: var(--mx-ink-deep); margin: 0; }
+.mx-plate__body { grid-column: 2; font-family: var(--mx-t-serif); font-size: 1.06rem; line-height: 1.6; color: var(--mx-ink); }
+
+/* ---- Anchor feature block — photo + card, gentle tilt --------------------- */
+.mx-anchor { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1.2rem, 3vw, 2.2rem); align-items: center; }
+.mx-anchor__media img { width: 100%; height: auto; display: block; border-radius: var(--mx-radius); box-shadow: var(--mx-shadow-mid); }
+.mx-anchor__card { background: var(--mx-paper-2); border-radius: var(--mx-radius); padding: clamp(1.4rem, 3vw, 2rem); box-shadow: var(--mx-shadow-soft); }
+.mx-anchor__card h3 { font-family: var(--mx-t-serif); font-weight: 700; font-size: clamp(1.5rem, 3vw, 2rem); color: var(--mx-ink-deep); margin: 0 0 0.6rem; }
+
+/* ---- Zig-zag entry system (alternating left/right) ----------------------- */
+.mx-zig { display: flex; flex-direction: column; gap: clamp(2rem, 5vw, 3.5rem); }
+.mx-zig > .mx-anchor:nth-child(even) { direction: rtl; }
+.mx-zig > .mx-anchor:nth-child(even) > * { direction: ltr; }
+
+/* ---- Don't-miss chips ---------------------------------------------------- */
+.mx-chips { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.mx-chip {
+  font-family: var(--mx-t-mono); font-size: var(--mx-type-floor); letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--mx-paper); background: var(--mx-accent);
+  border-radius: 999px; padding: 0.35rem 0.8rem;
+}
+.mx-chip[data-tone="2"] { background: var(--mx-accent-2); }
+.mx-chip[data-tone="ghost"] { color: var(--mx-accent); background: transparent; border: 1px solid currentColor; }
+
+@media (max-width: 640px) {
+  .mx-anchor { grid-template-columns: 1fr; }
+  .mx-zig > .mx-anchor:nth-child(even) { direction: ltr; }
+}
