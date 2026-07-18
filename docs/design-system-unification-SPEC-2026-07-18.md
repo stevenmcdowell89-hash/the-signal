@@ -130,6 +130,8 @@ All kits are fictions over the same chassis (frame + content window + fastener +
 
 ---
 
+**SCENOGRAPHY RULE (added 18 July after the first flat-boxes failure):** furniture is objects on a surface, not boxes on a page. The first new-system artifact rendered every component as an upright hairline-bordered rectangle — flat, unrotated, untextured, unlayered — and read as "a load of squares" (owner's words). Mechanically failable requirements: (1) every ephemera object carries >=2 of {rotation (1-3deg), fastener (tape/pin/stamp), shadow or paper texture, scene-ground behind it, overlap with a neighboring element}; (2) every act has a SCENE ground (gradient sky, starfield, pattern field, grain — cf. the countdown's starfield sitting behind plain body text), never a flat single-color fill; (3) at least one object per chapter breaks the column grid (tilted, bleeding, or overlapping); (4) the §9 fresh-eyes reviewer answers one added question verbatim: "objects on a surface, or boxes on a page?" — 'boxes' is a gate FAIL. The reference bar is issues/signal_countdown_2026-06-14.html rendered at 390px: even its plainest text viewport sits on a scene.
+
 ## 5. MOTION GRAMMAR
 
 Motion is a motif-pack field, opt-in, tiered. Attach to furniture, never body text.
