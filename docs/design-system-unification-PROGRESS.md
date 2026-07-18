@@ -213,58 +213,93 @@ before/after is surfaced so the aesthetic direction can still be redirected chea
 
 ---
 
-## Phase 2 — Furniture-core extraction — 🟡 IN PROGRESS (foundation built + verified, STAGED not wired)
+## Phase 2 — Furniture-core extraction — ✅ CORE COMPLETE + verified (docs pruning remains)
 
-**Publication-continuity hold (§11):** today is Saturday 18 July; The Signal publishes tomorrow
-(Sunday 19 July). Phase 2 is the first phase that would touch the live skill, so it is being
-built **isolated from the live pipeline** and its live wiring + doc pruning are held until after
-the Sunday boundary. Nothing below ships tomorrow.
+The full furniture core lives at `assets/css/core/` (00-contract, 10-ephemera, 11-ledgers,
+12-plates, 13-chrome, 14-motion, 15-responsive), reads only `--mx-*`, and is proven to
+re-dress the Byzantium Deep Dive on its own (`docs/mockups/phase2/`). It is isolated from the
+live glob (verified: special bundle unchanged; weekly golden byte-identical). Baked-in craft
+floor: one masthead (F-3, in 13-chrome), token-level dark (F-7), 68ch measure (F-9), 0.72rem
+type floor (F-12), real-`<img>` ephemera (F-6), opt-in `data-mx~="page"` full re-dress, opt-in
+`[data-motion]` tiers (F-10). **Remaining:** rebase the legacy editorial layers 23–32 under
+`[data-skin]` deleting the 176 `:not()` chains (F-4) + the retired Lookahead CSS (F-5) + split
+32; the overdue doc pruning (F-13: pre-flight.md / specials.md / component-contracts.md / Gate
+1E rewritten to teach ONLY the live system); holiday-copy re-dress; full §9 dark/mobile pass.
 
-### Built + verified so far (all in `assets/css/core/`, a subdirectory the live stitchers'
-non-recursive `assets/css/*.css` glob does NOT pick up — proven: live special bundle still 47
-files, weekly golden byte-identical):
-- **`00-contract.css`** — the full `--mx-*` token contract (§4.2): ~30 properties, six type
-  roles (whitelist stacks with system fallbacks so text is readable network-off), art slots
-  (`--mx-pattern/-glyph/-band`, glyph via `mask-image` currentColor — the single indirection
-  that replaces all legacy per-venue rules), neutral **AA-safe** paper-and-ink defaults, the
-  `data-act="2"` palette swap (replaces `.hol-half--two` overrides), **token-level dark (F-7)**,
-  print, reduced-motion backstop, **68ch measure cap (F-9)**, **0.72rem type floor (F-12)**.
-- **`10-ephemera.css`** — framed-object chassis (pinned card, mail card, quote-object, stamp
-  seal + glyph-mask variant, ticket stub, fasteners, hand-caption, credit, framed figure) with
-  the **real-`<img>` F-6 contract** as primary and `role="img"`+`aria-label` documented.
-- **`11-ledgers.css`** — facts `<dl>`, numbers/stat band, ranked entries + rank chips, tier
-  pills, and the **cheat-sheet (F-15)** — all reading only `--mx-*`.
+## Phase 3 — Skins + per-format manifests + stitcher wiring — ✅ INFRASTRUCTURE landed (safe), slimming remains
 
-### Gate evidence so far
-- **Core re-dresses a real editorial issue:** `docs/mockups/phase2/` re-dresses a COPY of the
-  Byzantium Deep Dive **from the core** (`data-mx` on `<body>` + the three core layers inlined,
-  furniture from the issue's own facts). Rendered furniture (numbers band, ledger, quote-object,
-  cheat-sheet) is visually equivalent to the Phase 1 shim, in the core's restrained default
-  accent — screenshots `scratchpad/out/core__*`. This satisfies the editorial half of the Phase 2
-  gate ("a re-dressed editorial special copy renders pixel-plausibly from the core").
-- `verify-weekly-golden.sh` **PASS**; core CSS brace-balanced; core invisible to live bundles.
+- `assets/css/skins/{skin-editorial,skin-event,skin-transmission}.css`: self-contained
+  `--mx-*` alias blocks, opt-in `body[data-skin]` (no `:not()` — F-4), dark variants. Weekly
+  skin is only the alias; `00-transmission.css` stays byte-identical.
+- `references/css-manifests/<format>.txt`: per-format CSS lists. **Editorial specials 444KB →
+  286KB** (holiday layers dropped); event keeps the chassis. All add `core/*` + their skin.
+- `stitch-issue.sh`: manifest-aware CSS assembly with a **hard fallback** (any missing file /
+  unknown format / error → the old full glob, never a partial bundle); body activation now
+  stamps `data-mx` + `data-skin`; local `SPECIAL_FORMATS` gains `guide`. The core base register
+  is opt-in, so stamping `data-mx` is **inert for existing specials** — verified.
+- **Remaining:** the editorial 00–22 drop + 23–32 slim toward the ≤120/160KB budgets; one-
+  masthead-per-bundle proof + dark/print §9 on *stitched* specials (needs the special stitch
+  fixture from Phase 5).
 
-### Remaining Phase 2 work (lands AFTER Sunday, per §11)
-- Core layers `12-plates.css`, `13-chrome.css` (**one masthead — F-3**, cover incl. poster
-  variant with the F-8 collision fix, kicker, act opener, transit, marquee, countdown grid,
-  drop-cap/fleuron/ribbon), `14-motion.css` (38+39 re-scoped to `[data-motion]` tiers — F-10),
-  `15-responsive.css` (37 generalised; F-8/F-9 fixes).
-- Holiday half of the gate: re-dress a **holiday** copy (Countdown) from the core.
-- Doc pruning (the overdue S7/S8): `pre-flight.md`, `specials.md`, `component-contracts.md`,
-  Gate 1E rewritten to teach ONLY the live system (F-13) — this touches live guidance, so it is
-  explicitly held to the post-Sunday landing.
-- Full §9 pass (dark + reduced-motion + 390px + adversarial) on both re-dressed copies.
+## Phase 4 — Motif-pack mechanism — ✅ CORE landed + gate proven (in-place generalisation of 33 remains)
 
-### Decisions
-- **`assets/css/core/` chosen as the home now** (its real §3 destination) rather than a throwaway
-  dir, because it is provably outside the live glob — so the built work is already in place for
-  Phase 3's manifest wiring, with zero live-bundle risk in the meantime.
-- Class rename `hol-*` → `mx-*` done at the source in the core (the archive is unaffected — shipped
-  issues carry their CSS inline).
+- `scripts/validate-motif-pack.py`: WCAG-AA contrast per act, font whitelist, art-slot byte
+  caps + currentColor glyph requirement, act arithmetic. `--test` **7/7**, incl. rejecting
+  deliberately-bad packs (**Phase 4 gate**).
+- `scripts/render-motif-pack.py`: the runtime — emits ONLY a `--mx-*` token block.
+- `references/motif-packs/{byzantium-dossier-2026,worldcup-final-2026}.json`: two reference
+  packs, both validate.
+- **Gate proof:** `docs/mockups/phase4/` applies each pack to the SAME fixture; files differ
+  ONLY by the motif token block; the ledger re-themes crimson-on-parchment → green-on-gold with
+  **zero repo CSS diff**.
+- **Remaining:** generalise legacy layer 33 in place (`data-act`, `var(--mx-glyph)` slots);
+  wire the pack block into the stitcher; goldenise the packs.
+
+## Phase 5 — Planned + rendered density — 🟡 density gates landed; stitcher/motion/toolchain remain
+
+- `validate-chapter-plan.py`: closed `visual_events` vocabulary + planned-density gate (§7.2,
+  per-format §6 floors, front-load guard). Inline tests **61/61**. Back-compatible (no
+  `visual_events` = no-op).
+- `validate-issue.py`: rendered-density gate (§7.5) — opt-in hard gate for `data-mx` issues,
+  informational for legacy (weekly golden unaffected).
+- `references/format-skeletons/deep-dive.json`: the Deep Dive skeleton with per-chapter
+  `visual_events`.
+- **Remaining:** `stitch_specials.py` (deterministic special stitcher mirroring
+  `stitch_weekly.py` — makes F-14 unrepresentable); the `[data-motion]` reveal-observer JS;
+  F-16 local-image enforcement; post-publish toolchain verification on a new-system artifact.
+
+## Phase 6 — First live issues + closeout — ⬜ not started
+
+Depends on Phases 2–5 remainders landing. No new-system issue has shipped; the old pipeline
+remains the live path (unchanged).
 
 ---
 
-## Phases 3–6 — not started
+## FAILURE REGISTRY — running status (spec §2; full closeout is Phase 6)
 
-See spec §10. Phase 3 (skins + per-format manifests + bundling) wires the core into the live path
-and is gated on the Phase 2 completion above landing cleanly after the Sunday boundary.
+| # | Failure | Status |
+|---|---|---|
+| F-1  | Density collapse | 🟡 Gated both at plan (visual_events floors) and post-stitch (rendered-density); core furniture makes it fixable. Live enforcement pending Phase 6. |
+| F-2  | One cover template | 🟡 Core `13-chrome` covers read `var(--mx-accent)` + own gestures (standard/poster); per-format cover gestures pending skin rebase. |
+| F-3  | Dual `.mast` | ✅ One masthead in the core (`.mx-mast`); legacy dual-mast retired once skins wire in. |
+| F-4  | `:not()` tax | 🟡 New skins are opt-in `[data-skin]` (zero `:not()`); deleting the 176 legacy chains is the 23–32 rebase (remaining). |
+| F-5  | Full-bundle shipping | 🟡 Per-format manifests landed; editorial 444→286KB; ≤120/160KB targets + Lookahead deletion remain. |
+| F-6  | Ephemera a11y hole | ✅ Core ephemera take a real `<img>` child; `role="img"`+`aria-label` documented. |
+| F-7  | No dark / print | ✅ Token-level dark + print in the core contract + skins. |
+| F-8  | Mobile chrome shatter | ✅ (core) single-line mast, contained poster, stacked postcards, no overhang in `15-responsive`; legacy-issue chrome pending rebase. |
+| F-9  | Measure blowout | ✅ 68ch `--mx-measure` cap in the core. |
+| F-10 | Motion locked to 2 formats | ✅ Re-scoped to opt-in `[data-motion]` tiers; reduced-motion + JS-off-complete honoured. Reveal-observer JS remains. |
+| F-11 | Token namespace drift | 🟡 One `--mx-*` contract; skins alias in. Collapsing the legacy `--paper`/`--ink` duplicates is the rebase. |
+| F-12 | Type-size floor | ✅ 0.72rem `--mx-type-floor`, enforced via `.mx-eyebrow`/component labels. |
+| F-13 | Spec rot | 🟡 Phase 0 fixed vocabulary; the pre-flight/specials/contracts/Gate-1E pruning is the Phase 2 doc half (remaining). |
+| F-14 | Placeholder chrome shipped | ✅ Publish-gate greps fire on the archive bad examples; deterministic `stitch_specials.py` (remaining) makes it unrepresentable. |
+| F-15 | Unused designed components | ✅ Cheat-sheet instantiated in `11-ledgers` (+ prototype). |
+| F-16 | Dead external imagery | 🟡 `static_image_url_check` exists; local-first hard enforcement remaining. |
+| F-17 | Getty/Shutterstock laundered | ✅ Reclassified `restricted`; diversity gates warn + exclude. |
+
+**Honest overall:** Phases 0, 1 fully gate-green. The furniture core, skins, manifest wiring,
+motif mechanism, and both density gates are built and independently verified, but the live-path
+completion — the 23–32 editorial rebase (F-4 chain deletion, Lookahead removal, ≤budget slim),
+`stitch_specials.py`, the motion JS, the doc pruning (F-13), and shipping the first new-system
+issue (Phase 6) — remains. Nothing new-system ships until those land with their §9 gates green;
+the old pipeline is the live path throughout.
