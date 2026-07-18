@@ -52,6 +52,7 @@ The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan
             "rewind",
             "starter_kit",
             "shortlist",
+            "guide",
             "next",
             "lookahead",
             "field_guide"

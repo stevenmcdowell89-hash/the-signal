@@ -47,9 +47,10 @@ VALID_FORMATS = {
     "versus",
     "rewind",
     "starter_kit",
-    "blueprint",
     "shortlist",
     "field_guide",
+    "guide",
+    "next",
 }
 
 # Format → execution_mode mapping (hard rule)
@@ -59,7 +60,7 @@ FORMAT_EXECUTION_MODE = {
     "field_guide":   "parallel",
     "shortlist":     "parallel",
     "starter_kit":   "parallel",
-    "blueprint":     "parallel",
+    "guide":         "parallel",
     "deep_dive":     "sequential",
     "versus":        "sequential",
     "rewind":        "sequential",
@@ -246,7 +247,7 @@ def check_issue_meta(meta):
                 err(
                     f"[EXEC_MODE] issue_meta.execution_mode='{mode}' does not match format '{fmt}'. "
                     f"Expected: '{expected}'. "
-                    f"(parallel formats: countdown, field_guide, shortlist, starter_kit, blueprint, weekly; "
+                    f"(parallel formats: countdown, field_guide, shortlist, starter_kit, guide, weekly; "
                     f"sequential: deep_dive, versus, rewind, season_review)"
                 )
 
@@ -616,7 +617,7 @@ def check_chapters(chapters, issue_meta):
                     f"Hype modifiers only allowed on: {sorted(HYPE_ALLOWED_FORMATS)}"
                 )
             # (if fmt not in HYPE_ALLOWED_FORMATS but also not banned, allow with no error
-            #  to be permissive for weekly/blueprint/shortlist/starter_kit if planner chooses)
+            #  to be permissive for weekly/guide/shortlist/starter_kit if planner chooses)
 
         # 13. v8.27 — fixed-section Lead + Catch-Up shape (weekly format only)
         if fmt == "weekly" and ch_id in FIXED_SECTION_CHAPTER_IDS:

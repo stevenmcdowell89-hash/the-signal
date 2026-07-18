@@ -81,7 +81,7 @@ records = [classify(u) for u in urls]
 total = len(records)
 domains = Counter(d for d, _ in records)
 types_full = Counter(t for _, t in records)
-types_counted = Counter(t for _, t in records if t not in ("unknown", "ambiguous"))
+types_counted = Counter(t for _, t in records if t not in ("unknown", "ambiguous", "restricted"))
 
 # Apply rules
 failures = []
@@ -131,6 +131,14 @@ if "ambiguous" in types_full:
         f"ambiguous domain(s) seen: {amb_domains}. "
         "Stitched HTML cannot carry the source_type annotation that resolves these — "
         "next time, set source_type explicitly in research-bundle image_candidates."
+    )
+# Restricted (Getty/Shutterstock etc.) → warning, excluded from diversity counting (F-17)
+if "restricted" in types_full:
+    restricted_domains = sorted({d for d, t in records if t == "restricted"})
+    warnings.append(
+        f"restricted/rights-managed source(s) seen: {restricted_domains}. "
+        "Stock agencies (Getty/Shutterstock) are NOT clearable for reuse and do not "
+        "count toward source-type diversity — replace with a clearable source (F-17)."
     )
 
 # Report
