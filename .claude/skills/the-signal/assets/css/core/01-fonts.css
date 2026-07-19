@@ -1,0 +1,79 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   THE SIGNAL · FURNITURE CORE · 01-FONTS
+   Self-hosted subsetted woff2 under /assets/fonts/ (§2.2: Google Fonts links
+   are a proven runtime failure — one gate render runs network-disabled).
+   Only faces referenced by the 00-contract type roles are declared here;
+   additional whitelist families live in assets/fonts/ for motif packs.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* chunk — heavy rounded display */
+@font-face {
+  font-family: "Bowlby One";
+  src: url("/assets/fonts/bowlby-one-latin-400-normal.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+
+/* tall — condensed black display */
+@font-face {
+  font-family: "Anton";
+  src: url("/assets/fonts/anton-latin-400-normal.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+
+/* script — sign-painter connected script */
+@font-face {
+  font-family: "Yellowtail";
+  src: url("/assets/fonts/yellowtail-latin-400-normal.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+
+/* hand — marker hand for captions */
+@font-face {
+  font-family: "Caveat";
+  src: url("/assets/fonts/caveat-latin-400-normal.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Caveat";
+  src: url("/assets/fonts/caveat-latin-700-normal.woff2") format("woff2");
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+
+/* serif — bookish body/display serif */
+@font-face {
+  font-family: "Cormorant Garamond";
+  src: url("/assets/fonts/cormorant-garamond-latin-400-normal.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Cormorant Garamond";
+  src: url("/assets/fonts/cormorant-garamond-latin-400-italic.woff2") format("woff2");
+  font-weight: 400; font-style: italic; font-display: swap;
+}
+@font-face {
+  font-family: "Cormorant Garamond";
+  src: url("/assets/fonts/cormorant-garamond-latin-600-normal.woff2") format("woff2");
+  font-weight: 600; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Cormorant Garamond";
+  src: url("/assets/fonts/cormorant-garamond-latin-700-normal.woff2") format("woff2");
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+
+/* mono — typewriter mono for micro-labels and ledgers */
+@font-face {
+  font-family: "Space Mono";
+  src: url("/assets/fonts/space-mono-latin-400-normal.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Space Mono";
+  src: url("/assets/fonts/space-mono-latin-400-italic.woff2") format("woff2");
+  font-weight: 400; font-style: italic; font-display: swap;
+}
+@font-face {
+  font-family: "Space Mono";
+  src: url("/assets/fonts/space-mono-latin-700-normal.woff2") format("woff2");
+  font-weight: 700; font-style: normal; font-display: swap;
+}
