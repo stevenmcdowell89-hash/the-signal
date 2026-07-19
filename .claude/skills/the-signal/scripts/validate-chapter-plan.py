@@ -39,6 +39,12 @@ from pathlib import Path
 
 DEFAULT_PLAN_PATH = "/tmp/signal-build/chapter-plan.json"
 
+# 2026-07 WP-0 vocabulary reconciliation: `guide` (merged recommendation
+# format, v8.39 S4) and `next` are IN; `blueprint` (retired v8.22) is OUT.
+# shortlist/starter_kit stay as recognised back-compat slugs for the archive.
+# `lookahead` is retired/folded (v8.39 S2) and was never in this validator's
+# vocabulary — a lookahead PLAN stays rejected; only its issue slug survives
+# for archive back-compat (see validate-issue.py).
 VALID_FORMATS = {
     "weekly",
     "deep_dive",
@@ -46,8 +52,9 @@ VALID_FORMATS = {
     "season_review",
     "versus",
     "rewind",
+    "guide",
+    "next",
     "starter_kit",
-    "blueprint",
     "shortlist",
     "field_guide",
 }
@@ -59,11 +66,12 @@ FORMAT_EXECUTION_MODE = {
     "field_guide":   "parallel",
     "shortlist":     "parallel",
     "starter_kit":   "parallel",
-    "blueprint":     "parallel",
+    "guide":         "parallel",   # merged shortlist/starter_kit — list-driven picks are independent
     "deep_dive":     "sequential",
     "versus":        "sequential",
     "rewind":        "sequential",
     "season_review": "sequential",
+    "next":          "sequential",  # picks judged against ch1's Itch; If You Only Try One depends on prior picks
 }
 
 # Formats where is_hype=True is permitted
@@ -246,8 +254,8 @@ def check_issue_meta(meta):
                 err(
                     f"[EXEC_MODE] issue_meta.execution_mode='{mode}' does not match format '{fmt}'. "
                     f"Expected: '{expected}'. "
-                    f"(parallel formats: countdown, field_guide, shortlist, starter_kit, blueprint, weekly; "
-                    f"sequential: deep_dive, versus, rewind, season_review)"
+                    f"(parallel formats: countdown, field_guide, guide, shortlist, starter_kit, weekly; "
+                    f"sequential: deep_dive, versus, rewind, season_review, next)"
                 )
 
 
@@ -616,7 +624,7 @@ def check_chapters(chapters, issue_meta):
                     f"Hype modifiers only allowed on: {sorted(HYPE_ALLOWED_FORMATS)}"
                 )
             # (if fmt not in HYPE_ALLOWED_FORMATS but also not banned, allow with no error
-            #  to be permissive for weekly/blueprint/shortlist/starter_kit if planner chooses)
+            #  to be permissive for weekly/guide/shortlist/starter_kit if planner chooses)
 
         # 13. v8.27 — fixed-section Lead + Catch-Up shape (weekly format only)
         if fmt == "weekly" and ch_id in FIXED_SECTION_CHAPTER_IDS:
@@ -1249,6 +1257,31 @@ def run_inline_tests():
     # ── INVALID cases ──
     bad_format = make_plan(issue_meta={**make_plan()["issue_meta"], "format": "weekly_special"})
     run_test("invalid format vocab", bad_format, expect_pass=False)
+
+    # ── 2026-07 WP-0 vocabulary reconciliation: guide/next in, blueprint out ──
+    retired_blueprint = make_plan(issue_meta={**make_plan()["issue_meta"], "format": "blueprint"})
+    run_test("retired 'blueprint' format rejected (WP-0)", retired_blueprint, expect_pass=False)
+
+    run_test("'guide' format valid (parallel, WP-0)", make_plan(
+        issue_meta={"format": "guide", "date": "2026-06-15", "topic": "starter guide",
+                    "special_id": "guide-2026", "execution_mode": "parallel"}
+    ), expect_pass=True)
+
+    run_test("'next' format valid (sequential, WP-0)", make_plan(
+        issue_meta={"format": "next", "date": "2026-06-15", "topic": "next picks",
+                    "special_id": "next-2026", "execution_mode": "sequential"},
+        chapters=[{
+            "chapter_id": "the-itch", "chapter_num": 1, "chapter_type": "opener",
+            "chapter_title": "The Itch", "chapter_arc": "arc", "ground": "paper",
+            "is_hype": False, "data_venue": None, "target_word_count": 500,
+            "images_needed": [], "key_facts": [], "forbidden_topics": [], "cross_refs": []
+        }]
+    ), expect_pass=True)
+
+    run_test("'next' with parallel execution_mode rejected (WP-0)", make_plan(
+        issue_meta={"format": "next", "date": "2026-06-15", "topic": "next picks",
+                    "special_id": "next-2026", "execution_mode": "parallel"}
+    ), expect_pass=False)
 
     bad_mode = make_plan(issue_meta={**make_plan()["issue_meta"], "execution_mode": "sequential"})
     run_test("execution_mode mismatch (countdown should be parallel)", bad_mode, expect_pass=False)

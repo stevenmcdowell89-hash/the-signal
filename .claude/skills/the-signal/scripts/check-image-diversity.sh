@@ -81,7 +81,10 @@ records = [classify(u) for u in urls]
 total = len(records)
 domains = Counter(d for d, _ in records)
 types_full = Counter(t for _, t in records)
-types_counted = Counter(t for _, t in records if t not in ("unknown", "ambiguous"))
+# F-17 (2026-07 WP-0): 'restricted' (Getty/Shutterstock licensed stock) is a
+# quarantine type — it draws a warning below and never counts toward the
+# source-type diversity minimum, exactly like unknown/ambiguous.
+types_counted = Counter(t for _, t in records if t not in ("unknown", "ambiguous", "restricted"))
 
 # Apply rules
 failures = []
@@ -115,7 +118,19 @@ if len(types_counted) < thresholds["min_distinct_source_types"]:
     failures.append(
         f"Source-type diversity: {len(types_counted)} types ({sorted(types_counted)}) "
         f"< minimum of {thresholds['min_distinct_source_types']}. "
-        f"Menu: {sorted(lookup['types'].keys())}."
+        f"Menu: {sorted(t for t in lookup['types'] if t != 'restricted')} "
+        f"('restricted' is a quarantine type and never counts)."
+    )
+
+# Restricted (F-17): Getty/Shutterstock licensed stock — warn loudly. These
+# were mislabeled press_kit until 2026-07; preview/watermarked stock URLs are
+# not cleared for publication and must be replaced before ship.
+if "restricted" in types_full:
+    restricted_domains = sorted({d for d, t in records if t == "restricted"})
+    warnings.append(
+        f"RESTRICTED source(s) in use (licensed stock — Getty/Shutterstock): {restricted_domains}. "
+        "These are NOT press kits (F-17). Replace with a cleared source; "
+        "restricted images are excluded from source-type diversity counting."
     )
 
 # Unknown / ambiguous → warning, not fail

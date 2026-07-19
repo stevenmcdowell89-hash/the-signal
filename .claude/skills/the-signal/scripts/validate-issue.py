@@ -109,6 +109,119 @@ MIN_IMAGES = {
     "weekly": 8,  # §5 A2 recommends 8-10; Issue #16 shipped 4 after hand-fixes
 }
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Design-system-unification WP-0 (spec 2026-07-18, Part 4 item b).
+#
+# LAW-3 body-copy word FLOORS (Part 1, Law 3) — NEW-SYSTEM issues only.
+# An issue is "new-system" when its real <html> or <body> tag carries a
+# `data-mx` attribute, or the body carries `data-skin` (the furniture-core
+# marker). Old-system archive issues are exempt: retro-failing the archive is
+# not the point of the gate (same reasoning as LENGTH_FLOORS being weekly-only).
+# Measured on VISIBLE PROSE (comments/style/script stripped, then tags) with
+# <figcaption>/<caption> blocks removed; other chrome (nav, masthead, credits)
+# is NOT excluded, so the measured count slightly OVERSTATES body copy — the
+# floor is therefore mildly lenient, never spuriously strict.
+# ─────────────────────────────────────────────────────────────────────────────
+LAW3_WORD_FLOORS = {
+    "weekly":        6000,
+    "deep-dive":     8000,
+    "season-review": 6500,
+    "rewind":        7000,
+    "versus":        4500,
+    "guide":         3500,
+    "shortlist":     3500,   # folded into guide; same floor for back-compat slugs
+    "starter-kit":   3500,
+    "next":          3000,
+    "countdown":     4500,
+    "field-guide":   6000,
+}
+
+# LAW-9 minimum DISTINCT named external voices (Part 1, Law 9) — new-system
+# issues only. A "voice" is a quote-object (blockquote, or an element whose
+# class contains 'quote') carrying a visible attribution that is not
+# THE SIGNAL itself. Self-quotes ("— The Signal") are capped at 1 per issue.
+LAW9_VOICE_FLOORS = {
+    "weekly":        4,
+    "deep-dive":     5,
+    "season-review": 5,
+    "rewind":        3,
+    "countdown":     6,   # trip specials
+    "field-guide":   6,   # trip specials
+    "versus":        3,
+    "guide":         3,
+    "shortlist":     3,
+    "starter-kit":   3,
+    "next":          3,
+}
+
+# F-14 scaffold tokens that must never appear in VISIBLE PROSE. Checked after
+# stripping comments/<style>/<script> and then all tags — so id="ch2-1"
+# anchors, CSS selectors, and commented-out examples can never false-fire.
+F14_SCAFFOLD_PATTERNS = [
+    ("issue-number-placeholder", re.compile(r"(?:Issue\s*)?#\[N\]")),
+    ("chapter-token-narrated",   re.compile(r"\bch\d+-\d+\b")),
+    ("viz-slot-token",           re.compile(r"\bviz_\d\b")),
+    ("research-bundle-phrase",   re.compile(r"\bresearch bundle\b", re.IGNORECASE)),
+]
+
+# Tool-credit leaks (F-14): a shipped page crediting the tool that generated it
+# (the countdown-wcq footer shipped "Created with Perplexity Computer").
+# Deliberately narrow — 'Created with' is case-sensitive and needs a tool name,
+# so prose like "the tension it created with Washington" never fires.
+F14_TOOL_CREDIT_PATTERNS = [
+    re.compile(r"\b(?:Created|Made|Generated|Built)\s+with\s+(?:[A-Z][\w.]*\s+){0,3}Computer\b"),
+    re.compile(r"\bPerplexity\s+Computer\b"),
+    re.compile(r"\b(?:Created|Made|Generated|Built)\s+with\s+(?:Claude|ChatGPT|Gemini|Copilot|Anthropic|OpenAI)\b"),
+]
+
+# Raw CDN hostnames in visible copy (F-14): reader copy credits publications
+# ("Photo: The Guardian"), never asset infrastructure ("cdn.libemaweb.com").
+# Curated to CDN/asset hosts only — publisher domains cited as sources in
+# legacy issues (goal.com, formula1.com, …) are deliberately NOT matched.
+# HARD FAIL on new-system (data-mx) issues; WARN on legacy archive issues,
+# which shipped credit lines like "content.presspage.com" before this gate.
+F14_CDN_HOST_RE = re.compile(
+    r"\b(?:[a-z0-9-]+\.)*("
+    r"cloudfront\.net|akamaihd\.net|staticflickr\.com|b-cdn\.net|imgix\.net|"
+    r"fastly\.net|steamstatic\.com|brightspotcdn\.com|arcpublishing\.com|"
+    r"ctfassets\.net|nflxso\.net|squarespace-cdn\.com|storyblok\.com|"
+    r"bynder\.com|googleusercontent\.com|tmdb\.org|srcdn\.com|cbrimages\.com|"
+    r"colliderimages\.com|s-nbcnews\.com|tosshub\.com|libemaweb\.com|"
+    r"presspage\.com|amazonaws\.com|cdn-si-edu\.com|gettyimages\.com|"
+    r"shutterstock\.com"
+    r")\b"
+    r"|\bcdn\.[a-z0-9][a-z0-9.-]+\.[a-z]{2,}\b"
+    r"|\b(?:media|static|assets|img|images)\.[a-z0-9-]+\.(?:com|net|org|co\.uk|nl|io)\b",
+    re.IGNORECASE,
+)
+
+# F-14 internal STRATEGY VOCABULARY that must never reach reader copy.
+# Same visible-prose scope. Each entry: (label, compiled regex).
+# "skin" and "Phase N" are false-positive-prone in normal prose, so:
+#   - skin only fires in system compounds (event/editorial/transmission skin);
+#   - Phase 1–6 only fires within 120 chars of another strategy term
+#     ("Phase 3 sessions/week" in a training issue must not fire);
+#   - Phase 0 and WP-0..WP-9 always fire (no legitimate prose use).
+F14_STRATEGY_PATTERNS = [
+    ("furniture-first",  re.compile(r"\bfurniture[\s-]first\b", re.IGNORECASE)),
+    ("motif-pack",       re.compile(r"\bmotif packs?\b", re.IGNORECASE)),
+    ("design-system",    re.compile(r"\bdesign systems?\b", re.IGNORECASE)),
+    ("skin-as-system",   re.compile(r"\b(?:event|editorial|transmission) skins?\b", re.IGNORECASE)),
+    ("kit-as-system",    re.compile(
+        r"\b(?:dossier|matchday|broadcast|scrapbook|scorecard|paddock|inventory|cinema|library|logbook) kits?\b",
+        re.IGNORECASE)),
+    ("wp-name",          re.compile(r"\bWP-\d\b")),
+    ("phase-0",          re.compile(r"\bPhase 0\b")),
+    ("ev-per-screen",    re.compile(r"\bev(?:ents)?/screen\b", re.IGNORECASE)),
+    ("publish-gate",     re.compile(r"\bpublish[\s-]gate\b", re.IGNORECASE)),
+    ("parity-gate",      re.compile(r"\bparity[\s-]gate\b", re.IGNORECASE)),
+]
+F14_PHASE_N_RE = re.compile(r"\bPhase [1-6]\b")
+F14_STRATEGY_CONTEXT_RE = re.compile(
+    r"furniture[\s-]first|motif pack|design system|publish[\s-]gate|parity[\s-]gate|\bWP-\d\b",
+    re.IGNORECASE,
+)
+
 # Literal placeholder strings that must never ship.
 BANNED_PLACEHOLDERS = [
     'src="..."',
@@ -1166,6 +1279,288 @@ def check_scaffold_leak(html: str, report: Report) -> None:
         report.ok("scaffold-leak", "no leaked scaffold/template tokens in DOM")
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Design-system-unification WP-0 checks (spec 2026-07-18, Part 4 item b):
+# F-14 scaffold tokens + strategy vocabulary, Law-3 word floors, Law-9 voice
+# minimums, F-16 external-src images.
+# ─────────────────────────────────────────────────────────────────────────────
+
+def visible_prose(html: str, drop_captions: bool = False) -> str:
+    """Return the VISIBLE reader copy of an issue.
+
+    Strip order matters: comments first, then <style>/<script> (via
+    body_text_only — code and commented examples can never fire a prose
+    check), optionally <figcaption>/<caption>, then ALL remaining tags —
+    so attribute values (id="ch2-1", class names, data-*) never fire either.
+    """
+    out = body_text_only(html)
+    if drop_captions:
+        out = re.sub(r"<figcaption\b[^>]*>.*?</figcaption>", " ", out, flags=re.DOTALL | re.IGNORECASE)
+        out = re.sub(r"<caption\b[^>]*>.*?</caption>", " ", out, flags=re.DOTALL | re.IGNORECASE)
+    out = re.sub(r"<[^>]+>", " ", out)
+    return re.sub(r"[ \t]+", " ", out)
+
+
+def is_new_system(html: str) -> bool:
+    """True when the issue is a NEW-SYSTEM (furniture-core) artifact:
+    `data-mx` on the real <html> or <body> tag, or `data-skin` on <body>."""
+    html_tag_m = re.search(r"<html\b[^>]*>", strip_html_comments(html), re.IGNORECASE)
+    html_tag = html_tag_m.group(0) if html_tag_m else ""
+    body = find_real_body_tag(html)
+    body_tag = body[1] if body else ""
+    return bool(
+        re.search(r"\bdata-mx\b", html_tag)
+        or re.search(r"\bdata-mx\b", body_tag)
+        or re.search(r"\bdata-skin\s*=", body_tag)
+    )
+
+
+def resolve_law_format(html: str, fmt: str, path: Path) -> str:
+    """Format slug used for Law-3/Law-9 floor lookup.
+
+    Priority: body data-format attr > resolved --format/data-special fmt >
+    filename slug. Filename matching handles fixtures named e.g.
+    'attempt2-stub-flat-season-review.html' (longest slug wins so
+    'season-review' beats nothing and 'field-guide' beats 'guide')."""
+    body = find_real_body_tag(html)
+    if body:
+        m = re.search(r'data-format\s*=\s*"([^"]+)"', body[1])
+        if m:
+            return normalize_format(m.group(1))
+    if fmt and fmt in (set(LAW3_WORD_FLOORS) | set(LAW9_VOICE_FLOORS)):
+        return fmt
+    name = path.name.lower().replace("_", "-")
+    slugs = sorted(set(LAW3_WORD_FLOORS) | set(LAW9_VOICE_FLOORS), key=len, reverse=True)
+    for slug in slugs:
+        if slug in name:
+            return slug
+    return fmt
+
+
+def _f14_findings(text: str, patterns) -> list[str]:
+    found = []
+    for label, pat in patterns:
+        hits = pat.findall(text)
+        if hits:
+            sample = sorted({h if isinstance(h, str) else h[0] for h in hits})[:4]
+            found.append(f"{label} x{len(hits)} (e.g. {', '.join(repr(s.strip()) for s in sample if s.strip()) or repr(hits[0])})")
+    return found
+
+
+def check_f14_scaffold_tokens(html: str, new_system: bool, report: Report) -> None:
+    """F-14: scaffold/build tokens rendered as visible reader copy.
+
+    Hard-fails on: '#[N]' / 'Issue #[N]' placeholders, chapter tokens
+    (ch2-1) NARRATED in prose, viz-slot tokens (viz_3), the phrase
+    'research bundle', and tool-credit leaks ('Created with … Computer').
+    Raw CDN hostnames in visible copy hard-fail on new-system (data-mx)
+    issues and WARN on legacy archive issues (which shipped credit lines
+    like 'content.presspage.com' before this gate existed).
+    All checks run on visible prose only — anchors like id="ch2-1", CSS,
+    and commented examples cannot fire."""
+    text = visible_prose(html)
+
+    found = _f14_findings(text, F14_SCAFFOLD_PATTERNS)
+    credit_hits = []
+    for pat in F14_TOOL_CREDIT_PATTERNS:
+        credit_hits.extend(m.group(0) for m in pat.finditer(text))
+    if credit_hits:
+        found.append("tool-credit-leak x%d (%s)" % (len(credit_hits), ", ".join(repr(h) for h in sorted(set(credit_hits))[:3])))
+
+    if found:
+        report.fail("f14-scaffold-tokens",
+                    "scaffold/build tokens in VISIBLE reader copy: " + "; ".join(found)
+                    + ". These are pipeline internals (F-14) — a reader must never see them.")
+    else:
+        report.ok("f14-scaffold-tokens", "no scaffold tokens or tool credits in visible prose")
+
+    cdn_hits = sorted({m.group(0).lower() for m in F14_CDN_HOST_RE.finditer(text)})
+    if cdn_hits:
+        detail = ("raw CDN hostname(s) in visible copy: " + ", ".join(cdn_hits[:6])
+                  + (f" (+{len(cdn_hits)-6} more)" if len(cdn_hits) > 6 else "")
+                  + ". Reader copy credits publications/institutions, never asset infrastructure (F-14).")
+        if new_system:
+            report.fail("f14-cdn-hostnames", detail)
+        else:
+            report.warn("f14-cdn-hostnames", detail + " (legacy issue — warning only)")
+    else:
+        report.ok("f14-cdn-hostnames", "no raw CDN hostnames in visible prose")
+
+
+def check_f14_strategy_vocab(html: str, report: Report) -> None:
+    """F-14: internal strategy vocabulary in reader copy.
+
+    'furniture-first', 'motif pack', 'design system', skin/kit names used as
+    system terms, WP-0..WP-9, 'ev/screen', 'publish-gate', 'parity gate' etc.
+    must never appear in what a reader sees. Calibrated for near-zero false
+    positives: bare 'skin' never fires (only event/editorial/transmission
+    compounds); 'Phase 1'..'Phase 6' only fires within 120 chars of another
+    strategy term, so 'Phase 1 of the ceasefire plan' or a training plan's
+    'Phase 3 sessions/week' pass; 'Phase 0' and 'WP-N' always fire."""
+    text = visible_prose(html)
+    found = _f14_findings(text, F14_STRATEGY_PATTERNS)
+
+    for m in F14_PHASE_N_RE.finditer(text):
+        window = text[max(0, m.start() - 120):m.end() + 120]
+        if F14_STRATEGY_CONTEXT_RE.search(window):
+            found.append(f"phase-name ({m.group(0)!r} adjacent to strategy vocabulary)")
+
+    if found:
+        report.fail("f14-strategy-vocab",
+                    "internal strategy vocabulary in VISIBLE reader copy: " + "; ".join(found)
+                    + ". System language (kits/skins/phases/gates) is for builders, never readers (F-14; "
+                    "attempt #2 printed FURNITURE-FIRST in a cover meta).")
+    else:
+        report.ok("f14-strategy-vocab", "no internal strategy vocabulary in visible prose")
+
+
+def check_law3_word_floor(html: str, fmt: str, path: Path, report: Report) -> None:
+    """Law-3 body-copy word floor — NEW-SYSTEM (data-mx) issues only.
+
+    'Density by shortness is a FAIL': attempt #2's 542-word Season Review
+    stub 'passed' density (F-18). Words are counted on visible prose with
+    figcaption/caption blocks excluded; remaining chrome (masthead, nav
+    labels) is NOT excluded, so the count mildly overstates true body copy —
+    the floor errs lenient, never spuriously strict."""
+    law_fmt = resolve_law_format(html, fmt, path)
+    floor = LAW3_WORD_FLOORS.get(law_fmt)
+    if floor is None:
+        report.ok("law3-word-floor", f"no Law-3 floor defined for format '{law_fmt}' — skipped")
+        return
+    words = len(visible_prose(html, drop_captions=True).split())
+    if words < floor:
+        report.fail(
+            "law3-word-floor",
+            f"{words:,} words of visible body copy is under the Law-3 {law_fmt} floor of {floor:,}. "
+            f"An issue below its floor fails regardless of any other metric (F-18: the 542-word "
+            f"Season Review stub). Do not pad — go back for more material.",
+        )
+    else:
+        report.ok("law3-word-floor", f"{words:,} words clears the Law-3 {law_fmt} floor of {floor:,}")
+
+
+# Quote-object detection for Law-9. A quote-object is a <blockquote> or an
+# element whose class contains 'quote'. Attribution is read from <cite>, an
+# attribution/source-classed child, or a trailing em-dash line.
+_BLOCKQUOTE_RE = re.compile(r"<blockquote\b[^>]*>.*?</blockquote>", re.DOTALL | re.IGNORECASE)
+_QUOTE_CLASS_OPEN_RE = re.compile(r"<(?:div|figure|aside|section|p)\b[^>]*class\s*=\s*\"[^\"]*quote[^\"]*\"[^>]*>", re.IGNORECASE)
+_CITE_RE = re.compile(r"<cite\b[^>]*>(.*?)</cite>", re.DOTALL | re.IGNORECASE)
+_ATTR_CLASS_RE = re.compile(
+    r"<[a-z0-9]+\b[^>]*class\s*=\s*\"[^\"]*(?:attribution|quote-source|quote__source|source-line|speaker|byline|iq-credit)[^\"]*\"[^>]*>(.*?)</[a-z0-9]+>",
+    re.DOTALL | re.IGNORECASE)
+_DASH_ATTR_RE = re.compile(r"[—–]\s*([A-Z][^—–<\n]{1,80})")
+
+
+def _quote_regions(body_html: str) -> list[str]:
+    """Return non-overlapping quote-object regions (HTML fragments)."""
+    spans: list[tuple[int, int]] = []
+    for m in _BLOCKQUOTE_RE.finditer(body_html):
+        spans.append((m.start(), m.end()))
+    for m in _QUOTE_CLASS_OPEN_RE.finditer(body_html):
+        # Regex cannot balance tags; take a bounded window after the opener.
+        spans.append((m.start(), min(len(body_html), m.end() + 1200)))
+    spans.sort()
+    merged: list[tuple[int, int]] = []
+    for s, e in spans:
+        if merged and s <= merged[-1][1]:
+            merged[-1] = (merged[-1][0], max(merged[-1][1], e))
+        else:
+            merged.append((s, e))
+    return [body_html[s:e] for s, e in merged]
+
+
+def _extract_attribution(region: str) -> str | None:
+    for rx in (_CITE_RE, _ATTR_CLASS_RE):
+        m = rx.search(region)
+        if m:
+            txt = re.sub(r"<[^>]+>", " ", m.group(1))
+            txt = re.sub(r"\s+", " ", txt).strip(" —–-“”\"'")
+            if txt:
+                return txt
+    flat = re.sub(r"<[^>]+>", " ", region)
+    flat = re.sub(r"\s+", " ", flat)
+    dashes = _DASH_ATTR_RE.findall(flat)
+    if dashes:
+        return dashes[-1].strip(" —–-“”\"'.,")
+    return None
+
+
+def check_law9_voices(html: str, fmt: str, path: Path, report: Report) -> None:
+    """Law-9 named-external-voice minimum — NEW-SYSTEM (data-mx) issues only.
+
+    Counts DISTINCT named voices rendered as quote-objects (blockquote /
+    class*='quote' elements) with a visible attribution that is not THE
+    SIGNAL. Distinctness keys on the attribution's name segment (text before
+    the first comma, casefolded). Self-quotes ('— The Signal') do not count
+    and are capped at 1 per issue. HONESTY NOTE (printed in output): this is
+    a markup-level count — it cannot judge whether a quote is verbatim or
+    its speaker real; that stays a Part-6 human verification duty."""
+    law_fmt = resolve_law_format(html, fmt, path)
+    floor = LAW9_VOICE_FLOORS.get(law_fmt)
+    if floor is None:
+        report.ok("law9-voices", f"no Law-9 voice floor defined for format '{law_fmt}' — skipped")
+        return
+    body = body_text_only(html)
+    regions = _quote_regions(body)
+    voices: dict[str, str] = {}
+    self_renderings = 0
+    unattributed = 0
+    for region in regions:
+        attr = _extract_attribution(region)
+        if not attr:
+            unattributed += 1
+            continue
+        if "the signal" in attr.casefold():
+            self_renderings += 1
+            continue
+        key = attr.split(",")[0].strip().casefold()
+        if key:
+            voices.setdefault(key, attr)
+    n = len(voices)
+    names = ", ".join(sorted(v for v in voices.values()))[:400]
+    counted_note = (
+        f"counted {n} distinct named external voice(s) from {len(regions)} quote-object(s) "
+        f"[{unattributed} unattributed, {self_renderings} self-quote rendering(s)]"
+        + (f": {names}" if names else "")
+        + ". Markup-level count only — attribution text is trusted as written; verbatim accuracy is "
+          "verified elsewhere."
+    )
+    if n < floor:
+        report.fail(
+            "law9-voices",
+            f"{counted_note} — BELOW the Law-9 {law_fmt} floor of {floor}. The magazine has "
+            f"arguments carried by named voices, not unsourced experiences (attempt #2 shipped zero).",
+        )
+    else:
+        report.ok("law9-voices", f"{counted_note} — clears the Law-9 {law_fmt} floor of {floor}")
+    if self_renderings > 1:
+        report.fail(
+            "law9-self-quotes",
+            f"{self_renderings} '— THE SIGNAL' self-quote renderings; the cap is 1 per issue (Law 9).",
+        )
+
+
+def check_external_img_src(html: str, report: Report) -> None:
+    """F-16 — NEW-SYSTEM (data-mx) issues only: every <img> src must be local
+    (/assets/... or relative). The old system hotlinked and shipped 10/10 dead
+    externals on a Next issue; the new system mirrors to assets/cached/ first.
+    Legacy archive issues keep the reachability checks (image-urls) instead."""
+    body = body_text_only(html)
+    offenders = [u for u in IMG_SRC_RE.findall(body)
+                 if u.strip().lower().startswith(("http://", "https://", "//"))]
+    if offenders:
+        uniq = sorted(set(offenders))
+        lines = [f"{len(offenders)} external <img> src(s) — new-system issues must ship local images "
+                 f"(/assets/... or relative), F-16:"]
+        lines += [f"    • {u}" for u in uniq[:12]]
+        if len(uniq) > 12:
+            lines.append(f"    … +{len(uniq)-12} more")
+        report.fail("f16-external-img-src", "\n".join(lines))
+    else:
+        n = len(IMG_SRC_RE.findall(body))
+        report.ok("f16-external-img-src", f"all {n} <img> src(s) local or data:")
+
+
 def check_length_band(html: str, fmt: str, report: Report) -> None:
     """Hard per-format word band: ceiling (v8.39, S6) + floor (2026-07-13, A1).
 
@@ -1343,6 +1738,19 @@ def main(argv: list[str]) -> int:
     check_weekly_visual_consistency(html, fmt, report)
     check_scaffold_leak(html, report)
     check_length_band(html, fmt, report)
+
+    # ── Design-system-unification WP-0 (spec 2026-07-18) ──
+    # F-14 scaffold-token + strategy-vocabulary checks run on EVERY issue
+    # (visible prose only). Law-3 floors, Law-9 voice minimums, and the F-16
+    # local-src rule apply to NEW-SYSTEM issues only (data-mx / data-skin
+    # markers) — old-system archive issues are exempt by design.
+    new_system = is_new_system(html)
+    check_f14_scaffold_tokens(html, new_system, report)
+    check_f14_strategy_vocab(html, report)
+    if new_system:
+        check_law3_word_floor(html, fmt, path, report)
+        check_law9_voices(html, fmt, path, report)
+        check_external_img_src(html, report)
     # Image-presence floor: markup-only, network-free — runs unconditionally,
     # including under --skip-image-urls and in offline sandboxes (A2).
     check_image_floor(html, fmt, report)

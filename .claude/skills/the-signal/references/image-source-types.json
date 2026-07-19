@@ -1,12 +1,13 @@
 {
  "version": 1,
- "_doc": "Lookup table mapping image-source domain → source type, per the 5-type taxonomy in references/spec/global.md image-integrity. Maintained alongside the editorial spec. Add a one-line mapping when a new source appears in research. The validate-research-bundle.py and check-image-diversity.sh scripts both read this file.",
+ "_doc": "Lookup table mapping image-source domain → source type, per the 5-type shippable taxonomy in references/spec/global.md image-integrity plus the 'restricted' quarantine type (F-17, 2026-07 WP-0: Getty/Shutterstock were mislabeled press_kit; restricted sources draw a warning and never count toward diversity). Maintained alongside the editorial spec. Add a one-line mapping when a new source appears in research. The validate-research-bundle.py and check-image-diversity.sh scripts both read this file.",
  "types": {
   "press_kit": "Official press kits and brand CDNs",
   "government": "Government / public-sector Flickr + media libraries",
   "archive": "Museum / archive direct hosts",
   "news_cdn": "News-agency / publication CDNs (editorial use cleared, or carried from prior published issues)",
-  "wikimedia": "Wikimedia Commons (supplement; capped per thresholds)"
+  "wikimedia": "Wikimedia Commons (supplement; capped per thresholds)",
+  "restricted": "Licensed stock agencies (Getty, Shutterstock) — F-17: NOT press kits. Watermarked/preview URLs must never ship; consumers warn on sight and exclude this type from diversity counting."
  },
  "domains": {
   "commons.wikimedia.org": "wikimedia",
@@ -117,8 +118,8 @@
   "i.dailymail.co.uk": "news_cdn",
   "static.theguardian.com": "news_cdn",
   "guardian.com": "news_cdn",
-  "media.gettyimages.com": "press_kit",
-  "image.shutterstock.com": "press_kit",
+  "media.gettyimages.com": "restricted",
+  "image.shutterstock.com": "restricted",
   "images.squarespace-cdn.com": "news_cdn",
   "images.metmuseum.org": "archive",
   "collectionapi.metmuseum.org": "archive",

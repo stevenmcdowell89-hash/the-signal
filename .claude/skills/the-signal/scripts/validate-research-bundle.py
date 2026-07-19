@@ -422,13 +422,24 @@ def main():
                 f"  entry[{i}] ({ctx}): domain {urlparse(url).netloc} not in lookup — classified as 'unknown'.\n"
                 f"    Add to references/image-source-types.json domains map if this is a real recurring source."
             )
+        # F-17 (2026-07 WP-0): Getty/Shutterstock were mislabeled press_kit.
+        # 'restricted' = licensed stock — preview/watermarked URLs are not
+        # cleared for publication. Warn loudly; excluded from the source-type
+        # diversity count below (like unknown/ambiguous).
+        if stype == "restricted":
+            warnings.append(
+                f"  entry[{i}] ({ctx}): RESTRICTED source {urlparse(url).netloc} (licensed stock — "
+                f"Getty/Shutterstock, F-17). Not a press kit; find a cleared replacement. "
+                f"Excluded from source-type diversity counting. URL: {url}"
+            )
 
         valid_entries.append((url, stype, ctx))
 
     # Aggregate validation
     if valid_entries:
         domains = Counter(urlparse(u).netloc for u, _, _ in valid_entries)
-        types = Counter(t for _, t, _ in valid_entries if t not in ("unknown", "ambiguous"))
+        types = Counter(t for _, t, _ in valid_entries
+                        if t not in ("unknown", "ambiguous", "restricted"))  # F-17: restricted never counts
         total = len(valid_entries)
 
         # Rule 1: single-domain cap (RT-5 hard)
@@ -459,7 +470,8 @@ def main():
             failures.append(
                 f"  Source-type diversity: {len(types)} types represented ({sorted(types)}) "
                 f"< minimum of {thresholds['min_distinct_source_types']}.\n"
-                f"    The 5-type menu: {sorted(lookup['types'].keys())}."
+                f"    The shippable menu: {sorted(t for t in lookup['types'] if t != 'restricted')} "
+                f"('restricted' is quarantined stock and never counts, F-17)."
             )
 
         # Rule 4 (v8.13.7): unique-URL minimum. The researcher MUST surface

@@ -50,13 +50,14 @@ The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan
             "season_review",
             "versus",
             "rewind",
+            "guide",
             "starter_kit",
             "shortlist",
             "next",
             "lookahead",
             "field_guide"
           ],
-          "description": "Issue format — closed vocabulary. Use snake_case."
+          "description": "Issue format — closed vocabulary. Use snake_case. 2026-07 WP-0 reconciliation: `guide` is the merged recommendation format (v8.39 S4; `shortlist`/`starter_kit` stay as archive back-compat slugs), `next` is live, `blueprint` is retired (v8.22) and no longer valid. `lookahead` is retired/folded (v8.39 S2) — its slug survives here for the two archived drafts only; do not plan new lookahead issues."
         },
         "date": {
           "type": "string",
@@ -436,8 +437,9 @@ The validator enforces this table. If `execution_mode` does not match the format
 | `weekly` | `parallel` | Sections are independent; no narrative throughline |
 | `countdown` | `parallel` | Hype/list chapters independent by design |
 | `field_guide` | `parallel` | Reference chapters are independent |
-| `shortlist` | `parallel` | List-driven picks are independent |
-| `starter_kit` | `parallel` | Listicle chapters are independent |
+| `guide` | `parallel` | Merged recommendation format (v8.39 S4) — list-driven picks are independent |
+| `shortlist` | `parallel` | Back-compat slug for guide (category mode) — list-driven picks are independent |
+| `starter_kit` | `parallel` | Back-compat slug for guide (beginner mode) — listicle chapters are independent |
 | `lookahead` | `parallel` | Calendar items are independent; The Crunch Weeks chapter aggregates after |
 | `deep_dive` | `sequential` | Literary voice must coalesce across chapters |
 | `versus` | `sequential` | Round verdicts reference prior rounds |
