@@ -42,7 +42,7 @@ Evidence ledger root: `docs/design-system-unification-EVIDENCE/`
 
 ---
 
-## WP-0 — Gates first — BUILD COMPLETE, GATE VERIFICATION RUNNING (2026-07-19)
+## WP-0 — Gates first — ✅ GATE PASS (2026-07-19, independent verifier)
 
 **Shipped:**
 - `tools/measure-issue.mjs` + `tools/render.mjs` + `tools/lib/` (Builder A):
@@ -77,3 +77,10 @@ timeouts; no pgrep-based waits.
 fresh on countdown + stub, revalidates all known-bad/clean files, audits
 evidence docs; verdict to `EVIDENCE/WP-0/gate-verdict.md`. WP-0 is not done
 until that verdict is PASS.
+
+**Gate verdict:** `EVIDENCE/WP-0/gate-verdict.md` — WP-0 GATE: PASS.
+Independent verifier reproduced all 8 validator verdicts, re-ran the harness
+fresh (zero structural divergence), audited 6 screenshots + all three evidence
+docs, ran synthetic negative controls, and proved the pre-WP-0 validator
+false-greened the flat-redress fixture (exit 0 → exit 1 now). One stale
+filename pointer in README-measure.md found and fixed post-verdict.

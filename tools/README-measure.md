@@ -144,7 +144,7 @@ Census rules, in order:
 See each `<name>/metrics.json` (+ `<name>/render/`) for the full audit trail.
 Headline numbers from the final tool version are recorded in the smoke
 summary committed alongside the evidence
-(`docs/design-system-unification-EVIDENCE/WP-0/smoke/SMOKE-RESULTS.md`).
+(`docs/design-system-unification-EVIDENCE/WP-0/smoke/SUMMARY.md`).
 The WP-1 calibration bar — the countdown must measure >= 1.5 events/screen —
 is met at 1440x900. The 542-word stub shows its true word count, its pill
 overlap and its cheat-table truncation; the flat re-dress shows its
