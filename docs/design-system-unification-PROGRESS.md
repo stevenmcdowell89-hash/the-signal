@@ -161,3 +161,29 @@ remediated with desktop reading air in the skin (219.0), fully re-rendered,
 re-scored 12/12 PASS by a fresh verifier (EVIDENCE/WP-3/parity-scorecards.md).
 The gate catching a real 1.2% breach and forcing remediation is the system
 working as designed.
+
+---
+
+## WP-4 — Motif mechanism + packs — ✅ GATE PASS (2026-07-19)
+
+tools/motif/ (validator: CONTRAST-AA/FONT-WHITELIST/ART-BYTE-CAP/
+ACT-ARITHMETIC/CURRENTCOLOR/KIT/MOTION/GRAIN; deterministic renderer with
+goldens); 3 reference packs green (trip-efteling from real venue tokens,
+matchday-worldcup, dossier-byzantium); stitch PACK= integration. Gate:
+pack swap re-themes same fixture, git diff 0 CSS files (orchestrator
+re-verified visually); 4 seeded-bad packs reject with named reasons —
+retained under tools/fixtures/negative/motif/; packed metrics deltas 0.
+Gaps handed to WP-5/6: cover_plate consumer, INJECT marker in scaffold,
+act_map, accent-2 contrast pairs.
+
+## WP-5 — Motion — ✅ GATE PASS (2026-07-19)
+
+mx-motion.js (8.2KB, IO-driven, reduced-motion no-op, no scroll-jack)
+replaces 96KB legacy script on mx path; tier0/1/2 behaviors + signature
+hooks; seam crossfade colors = act tokens. Census: countdown 144/0-reduced,
+DD 46/0; JS-off = JS-on word equality; flat negative gains zero mx
+animations; weekly golden green. Parity (fresh verifier):
+EVIDENCE/WP-5/parity-scorecards.md — BOTH candidates 12/12 PASS; burst
+frames at both widths show mid-reveal→settled; body text pixel-static.
+Orchestrator spot-check: burst-0/burst-1 opened personally — stamp slam
+and polaroid tape-down visibly firing.
