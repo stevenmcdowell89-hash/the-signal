@@ -84,3 +84,23 @@ fresh (zero structural divergence), audited 6 screenshots + all three evidence
 docs, ran synthetic negative controls, and proved the pre-WP-0 validator
 false-greened the flat-redress fixture (exit 0 → exit 1 now). One stale
 filename pointer in README-measure.md found and fixed post-verdict.
+
+---
+
+## WP-1 — Reference capture — ✅ GATE PASS (2026-07-19)
+
+**Shipped:** frozen reference packs at `EVIDENCE/references/{countdown,field-guide,mockup}/`
+(each: metrics.json + cover + 8 depths × both widths + dark render, uncurated
+harness output) + `references/BASELINES.md`.
+
+**Gate (verified by orchestrator, non-builder):** countdown @1440 measures
+1.75 ev/screen ≥ 1.5 floor (review hand-measure 1.69, Δ+0.06); field-guide
+1.46 (Δ+0.40, at stated tolerance edge — tool counts every ranked plate);
+mockup 2.13 becomes its own baseline. Orchestrator opened mockup depth-2
+personally: real render, objects-on-a-surface standard confirmed.
+
+**Incident:** WP-1 builder agent died after finishing all render/measure runs
+but before writing BASELINES.md; orchestrator wrote the summary doc directly
+from the committed metrics (mechanical transcription, no builder judgment
+involved). Packs are FROZEN from this commit; regeneration requires a
+PROGRESS-recorded decision.
