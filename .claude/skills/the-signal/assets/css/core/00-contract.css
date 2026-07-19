@@ -45,6 +45,14 @@
   --mx-hand-ink:    var(--mx-accent-2);      /* handwriting voice colour      */
   --mx-stamp-ink:   var(--mx-accent-2);      /* rubber-stamp / seal colour    */
 
+  /* — chrome surfaces (masthead / footer / transit bands) —
+     Default: ink-on-paper inverted. Under the dark scheme these
+     remap to stay DARK with cream type instead of following the
+     ink/paper flip (WP-2 dark note: the masthead must not read
+     cream over a dark cover act). */
+  --mx-chrome-bg:   var(--mx-ink);
+  --mx-chrome-ink:  var(--mx-paper);
+
   /* — art slots (filled by motif packs; safe empty defaults) — */
   --mx-pattern: none;        /* tiled bg image for .mx-ground-pattern         */
   --mx-glyph:   none;        /* currentColor glyph via mask-image             */
@@ -87,6 +95,9 @@
     --mx-ghost:    rgba(233, 227, 211, 0.07);
     --mx-quote-bg: rgba(0, 0, 0, 0.28);
     --mx-shadow:   rgba(0, 0, 0, 0.85);
+    /* chrome stays dark under the dark scheme (no cream flip) */
+    --mx-chrome-bg:  #100f14;
+    --mx-chrome-ink: #e9e3d3;
   }
 }
 /* Explicit per-page override hooks (viewer toggles / harness) */
@@ -100,6 +111,8 @@
   --mx-ghost:    rgba(233, 227, 211, 0.07);
   --mx-quote-bg: rgba(0, 0, 0, 0.28);
   --mx-shadow:   rgba(0, 0, 0, 0.85);
+  --mx-chrome-bg:  #100f14;
+  --mx-chrome-ink: #e9e3d3;
 }
 
 /* ------------------------------------------------------------

@@ -1,0 +1,371 @@
+/* ============================================================
+   MX SKIN · skin-editorial.css                       (L1, WP-3)
+   THE SIGNAL — editorial skin for Deep Dive / Rewind / Versus /
+   Guide / Next. Bookish gravitas on top of the furniture core:
+   serif body emphasis, restrained ground intensities, and the
+   still-valuable flourishes ported from legacy layers 23–32
+   (roman-numeral gates, drop caps, fleurons, pull quotes,
+   marginalia, source strips, colophon footer) rebased as
+   mx-composable options.
+
+   ACTIVATION
+     <body data-mx data-skin="editorial" data-motion="tier0|tier1">
+   Everything here scopes by [data-skin="editorial"] DESCENT.
+   F-4 CONTRACT: zero :not() scoping in this file — the legacy
+   23–32 layers carried 176 :not() selectors; the skin carries
+   none. Legacy files are untouched (they serve the shipped
+   archive); NEW issues load core + this skin only.
+
+   Law 11: editorial restraint — scenography in paper-and-ink,
+   motif surface capped at palette-arc + one pattern + one cover
+   gesture. Acts still declare their own --mx-* palettes; this
+   file only re-tunes the NEUTRAL defaults and default component
+   registers.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   00 · REGISTER — bookish neutral defaults + serif body voice
+   ------------------------------------------------------------ */
+[data-skin="editorial"] {
+  /* warm archival paper instead of the core's neutral cream */
+  --mx-paper:      #f6f1e4;
+  --mx-ink:        #221d14;
+  --mx-ink-soft:   #6a6151;
+  --mx-accent:     #6d3a4b;              /* porphyry — calm, bookish     */
+  --mx-accent-ink: #f6efdd;
+  --mx-accent-2:   #8a6d3b;              /* old gold                     */
+  --mx-accent-2-ink:#f6efdd;
+  --mx-support-1:  #3f5a52;              /* jade — numerals, seals       */
+  --mx-support-2:  #9a7b3c;              /* brass                        */
+  --mx-hair:       rgba(34, 29, 20, 0.28);
+
+  /* restrained scenography: shallower tilts, quieter grain */
+  --mx-tilt:  -1.1deg;
+  --mx-grain: 0.04;
+  --mx-shadow: rgba(30, 22, 10, 0.38);
+
+  /* NOTE: --mx-t-body is deliberately NOT flipped to the serif.
+     The base voice drives every ch-based measure (--mx-measure,
+     68ch cap): swapping the family re-resolves those units and
+     reflows the whole issue (~+11 screens on the WP-2 DD
+     fixture). Serif body emphasis is applied at the paragraph
+     level below instead — metrics-neutral. */
+}
+/* serif body emphasis — family only. Sizes/line-heights stay
+   core-owned (00-contract + the 15-responsive floors) so the
+   editorial skin never changes density metrics. Pair with the
+   core .mx-body--serif variant for the full serif register. */
+[data-skin="editorial"] .mx-body p { font-family: var(--mx-t-serif); }
+
+/* ------------------------------------------------------------
+   01 · RESTRAINED GROUNDS — ink-and-paper ambience, never loud.
+   The utilities stay ON (Law 1: no flat act grounds); the skin
+   only turns their intensity down.
+   ------------------------------------------------------------ */
+[data-skin="editorial"] .mx-ground-starfield::before { opacity: 0.22; }
+[data-skin="editorial"] .mx-ground-gradient-sky::before { opacity: 0.6; }
+[data-skin="editorial"] .mx-ground-pattern--has-art::before { opacity: 0.12; }
+
+/* ------------------------------------------------------------
+   02 · ROMAN GATE — plate variant ported from the legacy
+   chapter gates (26-special-chapter.css .chapter-numeral).
+   Add .mx-plate--roman to a core plate: the accent chip becomes
+   an oversized italic serif roman numeral; the ghost stays.
+   MARKUP:
+     <header class="mx-plate mx-plate--roman" data-mx-event="plate">
+       <div class="mx-plate__ghost" aria-hidden="true">II</div>
+       <span class="mx-plate__no">II</span>
+       <h2 class="mx-plate__title">Three Ways to Read This Story</h2>
+       <p class="mx-plate__dek">…</p>
+     </header>
+   ------------------------------------------------------------ */
+[data-skin="editorial"] .mx-plate--roman .mx-plate__no {
+  background: none;
+  color: var(--mx-support-1);
+  font-family: var(--mx-t-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(2.4rem, 5vw, 3.6rem);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  padding: 0;
+  border-radius: 0;
+  transform: none;
+  margin-bottom: 10px;
+}
+[data-skin="editorial"] .mx-plate--roman .mx-plate__title {
+  font-weight: 600;
+  letter-spacing: -0.008em;
+  text-wrap: balance;
+}
+[data-skin="editorial"] .mx-plate--roman .mx-plate__title em {
+  color: var(--mx-accent);
+  font-style: italic;
+  font-weight: 500;
+}
+
+/* ------------------------------------------------------------
+   03 · DROP CAP — ported from 29/44. Author opt-in per opening
+   paragraph: <p class="mx-dropcap">… (or on the first p of a
+   chapter body). Sober serif initial in the accent.
+   ------------------------------------------------------------ */
+[data-skin="editorial"] .mx-dropcap::first-letter {
+  float: left;
+  font-family: var(--mx-t-serif);
+  font-weight: 600;
+  font-size: 4.2em;
+  line-height: 0.85;
+  padding: 0.08em 0.14em 0 0;
+  margin-bottom: -0.1em;
+  color: var(--mx-accent);
+}
+
+/* ------------------------------------------------------------
+   04 · FLEURON — ornamental section divider (44-holiday-
+   sprinkles .hol-fleuron, de-themed). Typographic + hairline
+   wings, brass register.
+   MARKUP: <div class="mx-fleuron" aria-hidden="true">
+             <span class="mx-fleuron__glyph">❧</span></div>
+   ------------------------------------------------------------ */
+[data-skin="editorial"] .mx-fleuron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin: 2.5rem auto;
+  max-width: 480px;
+  color: var(--mx-support-2);
+  opacity: 0.85;
+}
+[data-skin="editorial"] .mx-fleuron::before,
+[data-skin="editorial"] .mx-fleuron::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.4;
+}
+[data-skin="editorial"] .mx-fleuron__glyph {
+  flex-shrink: 0;
+  font-family: var(--mx-t-serif);
+  font-style: italic;
+  font-size: 1.3rem;
+  letter-spacing: 0.4em;
+  padding-left: 0.4em; /* recentre the letterspaced glyph run */
+}
+
+/* ornament — the quieter break (29 .sp-ornament): three dots */
+[data-skin="editorial"] .mx-ornament {
+  text-align: center;
+  margin: 2.5rem 0;
+  letter-spacing: 1.1em;
+  padding-left: 1.1em;
+  font-family: var(--mx-t-serif);
+  color: var(--mx-ink-soft);
+  font-size: 1rem;
+}
+[data-skin="editorial"] .mx-ornament::before { content: "\2022 \2022 \2022"; }
+
+/* ------------------------------------------------------------
+   05 · PULL QUOTE — huge centred italic (29 .pullquote). This
+   is display furniture, not a Law-9 voice: named-source quotes
+   still use the core .mx-quote object. No data-mx-event here
+   unless it carries a named source (then mark it "quote").
+   MARKUP:
+     <div class="mx-pull"><p>Balanced huge italic line.</p>
+       <cite>— Named Person · where they said it</cite></div>
+   ------------------------------------------------------------ */
+[data-skin="editorial"] .mx-pull {
+  margin: 2.75rem 0;
+  padding: 2rem 1rem;
+  border-top: 1px solid var(--mx-hair);
+  border-bottom: 1px solid var(--mx-hair);
+  text-align: center;
+  position: relative;
+}
+[data-skin="editorial"] .mx-pull p {
+  font-family: var(--mx-t-serif);
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(1.4rem, 2.6vw, 2.1rem);
+  line-height: 1.25;
+  margin: 0;
+  color: var(--mx-ink);
+  text-wrap: balance;
+}
+[data-skin="editorial"] .mx-pull::before {
+  content: "\201C";
+  position: absolute;
+  top: -0.2em;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--mx-t-serif);
+  font-size: 3rem;
+  color: var(--mx-accent);
+  background: var(--mx-paper);
+  padding: 0 0.4em;
+  line-height: 1;
+}
+[data-skin="editorial"] .mx-pull cite {
+  display: block;
+  margin-top: 0.85rem;
+  font-style: normal;
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));   /* F-12 floor */
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--mx-ink-soft);
+}
+
+/* ------------------------------------------------------------
+   06 · MARGINALIA CHIP — 29 .marginalia, rebased. The legacy
+   gutter float (-10rem margins) caused the F-8 overhang; the
+   skin only floats into the gutter at widths where the wrap
+   demonstrably has one (≥1280px), and the float stays inside
+   it. Everywhere else it renders as an inline aside card.
+   MARKUP:
+     <aside class="mx-margin"><span class="mx-margin__label">
+       As of July 2026</span>Fact line.</aside>
+   ------------------------------------------------------------ */
+[data-skin="editorial"] .mx-margin {
+  margin: 1.25rem 0;
+  padding: 0.85rem 0.95rem 1rem;
+  border-left: 2px solid var(--mx-accent);
+  background: color-mix(in srgb, var(--mx-ink) 4%, var(--mx-paper));
+  font-family: var(--mx-t-body);
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: var(--mx-ink-soft);
+}
+[data-skin="editorial"] .mx-margin__label {
+  display: block;
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));   /* F-12: legacy was 0.65rem */
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--mx-accent);
+  margin-bottom: 0.35rem;
+  font-weight: 700;
+}
+@media (min-width: 1280px) {
+  [data-skin="editorial"] .mx-body .mx-margin {
+    float: right;
+    width: 8.5rem;
+    margin: 0.2rem -8.4rem 1rem 1.25rem;  /* stays inside the ≥9rem gutter */
+  }
+  [data-skin="editorial"] .mx-body .mx-margin--left {
+    float: left;
+    margin: 0.2rem 1.25rem 1rem -8.4rem;
+    border-left: 0;
+    border-right: 2px solid var(--mx-accent);
+  }
+}
+
+/* ------------------------------------------------------------
+   07 · SOURCE STRIP — end-of-chapter citations (29
+   .source-strip). Mono caps at the Law-8 floor.
+   MARKUP: <div class="mx-sources"><strong>Sources</strong>
+     <span>Ostrogorsky 1969</span><span>…</span></div>
+   ------------------------------------------------------------ */
+[data-skin="editorial"] .mx-sources {
+  margin: 2.5rem 0 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--mx-hair);
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));   /* F-12: legacy was 0.7rem */
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--mx-ink-soft);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.25rem;
+}
+[data-skin="editorial"] .mx-sources strong {
+  color: var(--mx-accent);
+  font-weight: 700;
+}
+
+/* ------------------------------------------------------------
+   08 · COLOPHON — bookish sign-off footer (31-special-footer,
+   rebased). Chrome, never event-marked. Use INSTEAD OF a bare
+   .mx-footer on editorial issues (or inside it).
+   MARKUP:
+     <footer class="mx-colophon">
+       <div class="mx-colophon__wordmark">The Signal</div>
+       <div class="mx-colophon__meta"><span>Deep Dive</span>
+         <span>·</span><span>19 July 2026</span></div>
+       <div class="mx-colophon__line">…optional colophon…</div>
+     </footer>
+   ------------------------------------------------------------ */
+[data-skin="editorial"] .mx-colophon {
+  margin-top: clamp(2rem, 6vw, 4rem);
+  padding: clamp(3rem, 6vw, 5rem) clamp(1.25rem, 5vw, 3rem) clamp(4rem, 8vw, 6rem);
+  background: color-mix(in srgb, var(--mx-ink) 4%, var(--mx-paper));
+  border-top: 1px solid var(--mx-hair);
+  display: grid;
+  gap: 0.75rem;
+  justify-items: center;
+  text-align: center;
+  color: var(--mx-ink-soft);
+}
+[data-skin="editorial"] .mx-colophon::before {
+  content: "\2022 \2022 \2022";
+  font-family: var(--mx-t-serif);
+  color: var(--mx-ink-soft);
+  letter-spacing: 1.1em;
+  padding-left: 1.1em;
+  margin-bottom: 1rem;
+}
+[data-skin="editorial"] .mx-colophon__wordmark {
+  font-family: var(--mx-t-serif);
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(1.6rem, 3vw, 2.3rem);
+  color: var(--mx-ink);
+}
+[data-skin="editorial"] .mx-colophon__meta {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.55rem;
+  color: var(--mx-ink-soft);
+}
+[data-skin="editorial"] .mx-colophon__line {
+  font-family: var(--mx-t-serif);
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--mx-ink-soft);
+  margin-top: 0.5rem;
+  max-width: 32rem;
+}
+
+/* ------------------------------------------------------------
+   09 · COMPONENT INFLECTIONS — quiet re-registrations so core
+   furniture reads bookish without any markup change.
+   ------------------------------------------------------------ */
+/* covers: editorial titles read serif, not chunk (Law 7 gesture
+   per format still comes from the issue: ghost numeral, year
+   band, route card…) */
+[data-skin="editorial"] .mx-cover__title {
+  font-family: var(--mx-t-serif);
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: -0.015em;
+  line-height: 0.95;
+}
+[data-skin="editorial"] .mx-cover__outline {
+  -webkit-text-stroke: 1.5px var(--mx-ink);
+}
+/* act openers keep the tall voice but tighter, small-caps meta */
+[data-skin="editorial"] .mx-actopen__title {
+  font-family: var(--mx-t-serif);
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: -0.01em;
+}
+/* ledger captions + quote sources pick up the brass register */
+[data-skin="editorial"] .mx-quote figcaption b { color: var(--mx-accent); }

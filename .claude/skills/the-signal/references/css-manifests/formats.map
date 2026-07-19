@@ -1,0 +1,15 @@
+# format -> css-manifest map for NEW-SYSTEM (data-mx) issues (WP-3).
+# stitch-issue.sh normalises the plan's format (underscores -> hyphens) and
+# looks it up here; <manifest> means references/css-manifests/<manifest>.txt.
+# Legacy formats/issues (no design_system:"mx" in the plan) never consult this
+# file — they keep the shipped glob pipeline untouched.
+#
+# format          manifest   motion-tier-default
+deep-dive         editorial  tier0
+rewind            editorial  tier1
+versus            editorial  tier2
+guide             editorial  tier1
+next              editorial  tier1
+season-review     event      tier2
+countdown         event      tier2
+field-guide       event      tier2

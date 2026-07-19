@@ -1,0 +1,199 @@
+/* ============================================================
+   MX SKIN · skin-event.css                           (L1, WP-3)
+   THE SIGNAL — event skin for trip specials (Countdown, Field
+   Guide) and Season Review. Full holiday-descended treatment,
+   de-themed: the halves rhythm, transit intensity and hype
+   norms of legacy tiers 42/43 carried over as mx-composable
+   options, with louder ground + motion defaults than core.
+
+   ACTIVATION
+     <body data-mx data-skin="event" data-motion="tier2">
+   Everything scopes by [data-skin="event"] descent — zero
+   :not() scoping (F-4). Legacy 33–44 untouched (shipped
+   archive); NEW issues load core + this skin only.
+
+   Law 11: event skin is the loud one. Acts still declare their
+   own --mx-* palettes; this file re-tunes neutral defaults and
+   intensity knobs, and adds the hype furniture.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   00 · REGISTER — louder scenography + motion defaults
+   ------------------------------------------------------------ */
+[data-skin="event"] {
+  /* deeper tilts, visible grain, harder shadows */
+  --mx-tilt:  -2.2deg;
+  --mx-grain: 0.08;
+  --mx-shadow: rgba(12, 8, 2, 0.6);
+
+  /* hype norms: brass-forward supports by default */
+  --mx-support-2: #c9a227;
+
+  /* motion knobs (14-motion reads these): faster marquee,
+     bigger rise travel, harder settle */
+  --mx-m-marquee: 22s;
+  --mx-m-rise: 28px;
+  --mx-m-settle: 1.6deg;
+}
+
+/* ------------------------------------------------------------
+   01 · GROUNDS, LOUDER — the countdown's starfield-behind-
+   plain-body-text is the minimum ambient standard (Law 1).
+   ------------------------------------------------------------ */
+[data-skin="event"] .mx-ground-starfield::before { opacity: 0.6; }
+[data-skin="event"] .mx-ground-gradient-sky::before { opacity: 1; }
+[data-skin="event"] .mx-ground-pattern--has-art::before { opacity: 0.26; }
+
+/* horizon band — the 42-savannah acacia-horizon quality,
+   de-themed: a low support-toned silhouette wash along the
+   bottom of an act. Stack WITH another ground utility.
+   MARKUP: <section data-act="…" class="mx-ground-gradient-sky
+           mx-ground-grain mx-ground-horizon"> */
+[data-skin="event"] .mx-ground-horizon { position: relative; isolation: isolate; }
+[data-skin="event"] .mx-ground-horizon::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 18%;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--mx-support-1) 55%, transparent) 0%,
+    color-mix(in srgb, var(--mx-support-1) 22%, transparent) 55%,
+    transparent 100%);
+}
+
+/* ------------------------------------------------------------
+   02 · HALVES RHYTHM — 42/36's two-half trip structure as a
+   generic rhythm: each half is an act section with generous
+   vertical breath and a painted ground; the transit band is
+   the seam between them. .mx-half composes WITH data-act.
+   MARKUP:
+     <section data-act="night" class="mx-half mx-ground-starfield
+              mx-ground-grain"> <div class="mx-wrap">…</div> </section>
+     <div class="mx-transit" data-mx-event="marquee">…</div>
+     <section data-act="savannah" class="mx-half mx-ground-gradient-sky
+              mx-ground-grain mx-ground-horizon">…</section>
+   ------------------------------------------------------------ */
+[data-skin="event"] .mx-half {
+  padding-top: clamp(56px, 8vw, 110px);
+  padding-bottom: clamp(64px, 9vw, 130px);
+}
+
+/* transit intensity: the seam is a set piece on event issues */
+[data-skin="event"] .mx-transit { min-height: 300px; }
+[data-skin="event"] .mx-transit__mega {
+  color: color-mix(in srgb, var(--mx-chrome-ink, var(--mx-paper)) 12%, transparent);
+}
+[data-skin="event"] .mx-transit__card {
+  padding: 20px 44px;
+  transform: translate(-50%, -50%) rotate(-2deg);
+}
+
+/* ------------------------------------------------------------
+   03 · T-MINUS BANNER — 43 .hol-tminus, de-themed. Chunky
+   countdown anchor strip between chapters.
+   MARKUP:
+     <div class="mx-tminus" data-mx-event="statband">
+       <span class="mx-tminus__label">T-MINUS 16 SLEEPS</span>
+       <span class="mx-tminus__msg">and the savannah is waiting</span>
+     </div>
+   ------------------------------------------------------------ */
+[data-skin="event"] .mx-tminus {
+  max-width: 760px;
+  margin: 2.5rem auto;
+  padding: 1.1rem 1.5rem;
+  background: var(--mx-chrome-bg, var(--mx-ink));
+  color: var(--mx-chrome-ink, var(--mx-paper));
+  border-top: 2px solid var(--mx-support-2);
+  border-bottom: 2px solid var(--mx-support-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  position: relative;
+  transform: rotate(-0.6deg);
+}
+[data-skin="event"] .mx-tminus::before,
+[data-skin="event"] .mx-tminus::after {
+  content: "\2605";
+  font-size: 1.2rem;
+  color: var(--mx-support-2);
+}
+[data-skin="event"] .mx-tminus__label {
+  font-family: var(--mx-t-chunk);
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  color: var(--mx-support-2);
+  letter-spacing: 0.02em;
+  line-height: 1;
+  text-shadow: 3px 3px 0 color-mix(in srgb, var(--mx-accent-2) 55%, transparent);
+}
+[data-skin="event"] .mx-tminus__msg {
+  font-family: var(--mx-t-serif);
+  font-style: italic;
+  font-size: 1.1rem;
+  opacity: 0.92;
+  letter-spacing: 0.01em;
+}
+
+/* ------------------------------------------------------------
+   04 · SPARKLE — 43 .hol-sparkle, de-themed. Inline decorative
+   star anchor; pure type, brass glow. Decorative only.
+   MARKUP: <span class="mx-sparkle" aria-hidden="true"></span>
+   ------------------------------------------------------------ */
+[data-skin="event"] .mx-sparkle {
+  display: inline-block;
+  vertical-align: -0.05em;
+  color: var(--mx-support-2);
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--mx-support-2) 50%, transparent));
+}
+[data-skin="event"] .mx-sparkle::before { content: "\2736"; }
+
+/* ------------------------------------------------------------
+   05 · HYPE NORMS — core furniture defaults step up a register
+   on event issues (43's qualities, no markup change needed).
+   ------------------------------------------------------------ */
+/* stat bands read chunk-numeral loud by default */
+[data-skin="event"] .mx-numbers__num {
+  font-family: var(--mx-t-chunk);
+  letter-spacing: -0.02em;
+}
+/* marquees run bigger and throw a harder support shadow */
+[data-skin="event"] .mx-marquee {
+  font-size: clamp(2.4rem, 7vw, 5rem);
+  padding: 22px 0;
+  box-shadow: 0 10px 0 var(--mx-support-2);
+}
+/* plates default to the loud display register (equivalent of
+   authoring .mx-plate--loud on every plate) */
+[data-skin="event"] .mx-plate__title {
+  font-family: var(--mx-t-chunk);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 0.92;
+}
+[data-skin="event"] .mx-plate__ghost { font-family: var(--mx-t-chunk); }
+/* countdown digits get the glow the reference had — colour only
+   here; any pulse motion belongs to 14-motion/WP-5, gated */
+[data-skin="event"] .mx-countdown__num {
+  text-shadow: 0 0 18px color-mix(in srgb, var(--mx-support-2) 45%, transparent);
+}
+/* don't-miss chips + tier pills lean on the loud accent */
+[data-skin="event"] .mx-tier--hot {
+  box-shadow: 2px 2px 0 color-mix(in srgb, var(--mx-ink) 40%, transparent);
+}
+
+/* ------------------------------------------------------------
+   06 · PHONE — keep the hype legible at 390 (Law 10); floors
+   are re-asserted by core 15-responsive, loaded before skins,
+   so only layout is tuned here.
+   ------------------------------------------------------------ */
+@media (max-width: 560px) {
+  [data-skin="event"] .mx-tminus { transform: none; gap: 0.6rem 1rem; }
+  [data-skin="event"] .mx-half {
+    padding-top: clamp(40px, 10vw, 56px);
+    padding-bottom: clamp(48px, 12vw, 64px);
+  }
+}

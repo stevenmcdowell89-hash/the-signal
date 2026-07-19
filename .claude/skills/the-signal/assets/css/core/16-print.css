@@ -1,0 +1,145 @@
+/* ============================================================
+   MX CORE · 16-print.css
+   Minimal print sheet (Law 10). Grounds off, ink on paper, no
+   fixed chrome, page-break hygiene. Loads in every mx bundle
+   (after 15-responsive, before the skin).
+   ============================================================ */
+@media print {
+
+  /* --------------------------------------------------------
+     00 · INK ON PAPER — force every act to print register.
+     Acts declare their own --mx-* palettes at equal
+     specificity in the issue <style>, so the print remap wins
+     via !important on the custom properties themselves.
+     -------------------------------------------------------- */
+  [data-mx],
+  [data-mx] [data-act] {
+    --mx-paper:      #ffffff !important;
+    --mx-ink:        #141414 !important;
+    --mx-ink-soft:   #454545 !important;
+    --mx-accent:     #2a2a2a !important;
+    --mx-accent-ink: #ffffff !important;
+    --mx-accent-2:   #3a3a3a !important;
+    --mx-accent-2-ink:#ffffff !important;
+    --mx-support-1:  #3a3a3a !important;
+    --mx-support-2:  #555555 !important;
+    --mx-hair:       rgba(0, 0, 0, 0.4) !important;
+    --mx-card:       #ffffff !important;
+    --mx-card-ink:   #141414 !important;
+    --mx-card-edge:  rgba(0, 0, 0, 0.5) !important;
+    --mx-card-window:#f2f2f2 !important;
+    --mx-tape:       rgba(0, 0, 0, 0.12) !important;
+    --mx-ghost:      rgba(0, 0, 0, 0.07) !important;
+    --mx-quote-bg:   rgba(0, 0, 0, 0.04) !important;
+    --mx-shadow:     transparent !important;
+    --mx-hand-ink:   #2a2a2a !important;
+    --mx-stamp-ink:  #2a2a2a !important;
+    --mx-grain:      0 !important;
+    --mx-chrome-bg:  #ffffff !important;
+    --mx-chrome-ink: #141414 !important;
+  }
+
+  /* --------------------------------------------------------
+     01 · GROUNDS OFF — scene layers don't spend toner.
+     -------------------------------------------------------- */
+  [data-mx] .mx-ground-starfield::before,
+  [data-mx] .mx-ground-gradient-sky::before,
+  [data-mx] .mx-ground-pattern::before,
+  [data-mx] .mx-ground-grain::after,
+  [data-mx] .mx-ground-horizon::after { display: none !important; }
+  [data-mx] section[data-act],
+  [data-mx] [data-act],
+  [data-mx] .mx-cover { background: #ffffff !important; }
+
+  /* --------------------------------------------------------
+     02 · NO FIXED CHROME, NO MOTION.
+     -------------------------------------------------------- */
+  [data-mx] .signal-back-to-archive { display: none !important; }
+  [data-mx] *,
+  [data-mx] *::before,
+  [data-mx] *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  /* JS-off/print guarantee: nothing held hidden by the reveal
+     scaffold ever prints blank */
+  [data-mx] .mx-rise,
+  [data-mx] .mx-settle { opacity: 1 !important; transform: none !important; }
+
+  /* objects flatten: no tilt, no drop shadows on paper */
+  [data-mx] .mx-card,
+  [data-mx] .mx-card--mail,
+  [data-mx] .mx-stamp,
+  [data-mx] .mx-ticket,
+  [data-mx] .mx-coaster,
+  [data-mx] .mx-note,
+  [data-mx] .mx-marquee,
+  [data-mx] .mx-tminus,
+  [data-mx] .mx-plate__no {
+    transform: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  [data-mx] .mx-mast,
+  [data-mx] .mx-footer,
+  [data-mx] .mx-transit,
+  [data-mx] .mx-kickerstrip {
+    background: #ffffff !important;
+    color: #141414 !important;
+    border-color: #141414 !important;
+  }
+  /* dark chrome bands read as ruled paper sections instead */
+  [data-mx] .mx-transit { min-height: 0; border-top-width: 2px; border-bottom-width: 2px; }
+  [data-mx] .mx-transit__card {
+    background: #ffffff !important;
+    color: #141414 !important;
+    border-color: #141414 !important;
+  }
+  [data-mx] .mx-transit__name { color: #141414 !important; }
+  [data-mx] .mx-transit__mega { color: rgba(0, 0, 0, 0.08) !important; }
+  /* marquee: static strip, outlined */
+  [data-mx] .mx-marquee {
+    background: #ffffff !important;
+    color: #141414 !important;
+    margin-left: 0;
+    margin-right: 0;
+    width: 100%;
+  }
+  [data-mx] .mx-marquee__track { animation: none !important; }
+
+  /* --------------------------------------------------------
+     03 · PAGE-BREAK HYGIENE — objects never split; openers
+     never orphan from their first content.
+     -------------------------------------------------------- */
+  [data-mx] .mx-card,
+  [data-mx] .mx-card--mail,
+  [data-mx] .mx-ticket,
+  [data-mx] .mx-coaster,
+  [data-mx] .mx-stamp,
+  [data-mx] .mx-quote,
+  [data-mx] .mx-pull,
+  [data-mx] .mx-ledger,
+  [data-mx] .mx-ranked__entry,
+  [data-mx] .mx-numbers,
+  [data-mx] .mx-scorecard,
+  [data-mx] .mx-cheat,
+  [data-mx] .mx-countdown,
+  [data-mx] .mx-anchor,
+  [data-mx] .mx-zig__entry,
+  [data-mx] .mx-dontmiss,
+  [data-mx] .mx-margin,
+  [data-mx] .mx-tminus {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  [data-mx] .mx-plate,
+  [data-mx] .mx-actopen,
+  [data-mx] .mx-kicker,
+  [data-mx] .mx-kickerstrip {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+  [data-mx] .mx-cover { break-after: page; page-break-after: always; }
+  [data-mx] img { max-width: 100% !important; }
+  [data-mx] .mx-body p { orphans: 3; widows: 3; }
+}

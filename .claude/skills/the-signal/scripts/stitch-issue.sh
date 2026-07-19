@@ -108,6 +108,10 @@ print(f"FORMAT={meta['format']}")
 print(f"DATE={meta['date']}")
 print(f"SPECIAL_ID={meta.get('special_id') or ''}")
 print(f"EXECUTION_MODE={meta['execution_mode']}")
+# WP-3: new-system issues declare design_system:"mx" in issue_meta; legacy
+# plans omit it and keep the shipped glob pipeline byte-for-byte.
+print(f"DESIGN_SYSTEM={meta.get('design_system') or 'legacy'}")
+print(f"MOTION={meta.get('motion') or ''}")
 print(f"CSS_MARKER={css_marker}")
 print(f"JS_MARKER={js_marker}")
 print(f"SCAFFOLD_PARTS={','.join(scaffold_parts)}")
@@ -125,6 +129,8 @@ EXECUTION_MODE=$(echo "$PLAN_DATA" | grep '^EXECUTION_MODE=' | cut -d= -f2-)
 CSS_MARKER=$(echo "$PLAN_DATA" | grep '^CSS_MARKER=' | cut -d= -f2-)
 JS_MARKER=$(echo "$PLAN_DATA" | grep '^JS_MARKER=' | cut -d= -f2-)
 SCAFFOLD_PARTS=$(echo "$PLAN_DATA" | grep '^SCAFFOLD_PARTS=' | cut -d= -f2-)
+DESIGN_SYSTEM=$(echo "$PLAN_DATA" | grep '^DESIGN_SYSTEM=' | cut -d= -f2-)
+PLAN_MOTION=$(echo "$PLAN_DATA" | grep '^MOTION=' | cut -d= -f2-)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # WEEKLY DISPATCH (Transmission identity) — deterministic, skeleton-driven.
@@ -153,6 +159,54 @@ if [[ "$FORMAT" == "weekly" ]]; then
   exit 0
 fi
 
+# ─────────────────────────────────────────────────────────────────────────────
+# DATA-MX DISPATCH (design-system unification WP-3) — new-system issues bundle
+# a per-format CSS MANIFEST (core + one skin) instead of the legacy glob
+# (F-5: the glob shipped ~444KB of every-layer CSS into every special).
+# The plan opts in with issue_meta.design_system:"mx"; legacy plans never
+# reach this block and keep the shipped pipeline untouched.
+# ─────────────────────────────────────────────────────────────────────────────
+MX_CSS_MANIFEST=""
+MX_SKIN=""
+MX_MOTION=""
+MX_BUDGET=""
+if [[ "$DESIGN_SYSTEM" == "mx" ]]; then
+  FORMAT_NORM="${FORMAT//_/-}"
+  MAP_FILE="${SKILL_DIR}/references/css-manifests/formats.map"
+  if [[ ! -f "$MAP_FILE" ]]; then
+    echo "ERROR: data-mx issue but formats.map missing: $MAP_FILE"
+    exit 1
+  fi
+  MAP_LINE=$(awk -v f="$FORMAT_NORM" '$1 == f {print $2, $3; exit}' "$MAP_FILE")
+  MX_SKIN="${MAP_LINE%% *}"
+  MX_TIER_DEFAULT="${MAP_LINE##* }"
+  if [[ -z "$MX_SKIN" ]]; then
+    echo "ERROR: format '$FORMAT_NORM' has no entry in references/css-manifests/formats.map"
+    echo "       (data-mx formats: $(awk '!/^#/ && NF {printf "%s ", $1}' "$MAP_FILE"))"
+    exit 1
+  fi
+  MX_CSS_MANIFEST="${SKILL_DIR}/references/css-manifests/${MX_SKIN}.txt"
+  if [[ ! -f "$MX_CSS_MANIFEST" ]]; then
+    echo "ERROR: css manifest not found: $MX_CSS_MANIFEST"
+    exit 1
+  fi
+  MX_MOTION="${PLAN_MOTION:-$MX_TIER_DEFAULT}"
+  case "$MX_SKIN" in
+    editorial) MX_BUDGET=$((120 * 1024)) ;;   # spec §2.1 bundle budgets
+    event)     MX_BUDGET=$((160 * 1024)) ;;
+    *)         MX_BUDGET=$((160 * 1024)) ;;
+  esac
+  # Core supplies ALL chrome (one .mx-mast, cover scaffold, footer) — the
+  # legacy masthead/cover/footer/wax-seal scaffold parts must not ship.
+  ORIGINAL_PARTS="$SCAFFOLD_PARTS"
+  SCAFFOLD_PARTS="00-head-open.html,19-closing.html"
+  echo "  DATA-MX ISSUE — skin=$MX_SKIN motion=$MX_MOTION budget=${MX_BUDGET} bytes"
+  echo "    css manifest:   $(basename "$MX_CSS_MANIFEST")"
+  if [[ "$ORIGINAL_PARTS" != "$SCAFFOLD_PARTS" ]]; then
+    echo "    scaffold parts: forced to head+closing (plan said: $ORIGINAL_PARTS)"
+  fi
+fi
+
 # Holiday formats (countdown, field_guide/field-guide) MUST NOT ship the legacy
 # default-chrome scaffold parts (01-masthead.html, 03-cover.html, 18-footer.html).
 # Holiday Identity tier 11 styles .hol-masthead / .hol-cover / .hol-footer-row
@@ -162,7 +216,7 @@ fi
 # Force scaffold_parts_used to only head + closing on holiday formats regardless
 # of what the planner specified.
 HOLIDAY_FORMATS_RE="^(countdown|field_guide|field-guide)$"
-if [[ "$FORMAT" =~ $HOLIDAY_FORMATS_RE ]]; then
+if [[ "$DESIGN_SYSTEM" != "mx" && "$FORMAT" =~ $HOLIDAY_FORMATS_RE ]]; then
   ORIGINAL_PARTS="$SCAFFOLD_PARTS"
   SCAFFOLD_PARTS="00-head-open.html,19-closing.html"
   if [[ "$ORIGINAL_PARTS" != "$SCAFFOLD_PARTS" ]]; then
@@ -179,7 +233,7 @@ fi
 # specials had no sheet (full-bleed flat paper) and a stray </div>. Inject it
 # right after 00-head-open.html if the plan didn't list it.
 NONHOLIDAY_SPECIAL_RE="^(deep_dive|versus|rewind|season_review|starter_kit|shortlist|next|lookahead)$"
-if [[ "$FORMAT" =~ $NONHOLIDAY_SPECIAL_RE ]]; then
+if [[ "$DESIGN_SYSTEM" != "mx" && "$FORMAT" =~ $NONHOLIDAY_SPECIAL_RE ]]; then
   if [[ ",$SCAFFOLD_PARTS," != *",02-wax-seal.html,"* ]]; then
     if [[ ",$SCAFFOLD_PARTS," == *",00-head-open.html,"* ]]; then
       SCAFFOLD_PARTS="${SCAFFOLD_PARTS/00-head-open.html,/00-head-open.html,02-wax-seal.html,}"
@@ -294,9 +348,12 @@ CHAPTER_IDS_CSV=$(IFS=','; echo "${CHAPTER_IDS_ORDERED[*]}")
 # and reuses the un-overridden list.
 # argv[9] = ISSUE_NUMBER (string, may be empty) — substituted into footer [N]
 # placeholder. Date-range and date substitution computed from plan's meta.date.
+# argv[10..13] = data-mx parameters (WP-3): css-manifest path, skin, motion
+# tier, byte budget. All empty on legacy issues.
 python3 - \
   "$PLAN_PATH" "$CHAPTERS_DIR" "$TEMPLATE_DIR" "$CSS_DIR" "$JS_FILE" \
   "$OUT_PATH" "$CHAPTER_IDS_CSV" "$SCAFFOLD_PARTS" "$ISSUE_NUMBER" \
+  "$MX_CSS_MANIFEST" "$MX_SKIN" "$MX_MOTION" "${MX_BUDGET:-0}" \
   <<'PYEOF'
 
 import sys, json, re
@@ -314,6 +371,11 @@ scaffold_parts_override = sys.argv[8].split(',') if len(sys.argv) > 8 and sys.ar
 # (orchestrator should pass --issue-number; if absent, validate-issue.py will
 # catch the unresolved placeholder).
 issue_number_str = sys.argv[9] if len(sys.argv) > 9 else ""
+# WP-3 data-mx parameters (all empty/0 on legacy issues)
+mx_manifest = sys.argv[10] if len(sys.argv) > 10 and sys.argv[10] else None
+mx_skin     = sys.argv[11] if len(sys.argv) > 11 else ""
+mx_motion   = sys.argv[12] if len(sys.argv) > 12 else ""
+mx_budget   = int(sys.argv[13]) if len(sys.argv) > 13 and sys.argv[13] else 0
 
 with open(plan_path) as f:
     plan = json.load(f)
@@ -327,7 +389,51 @@ css_marker = assets.get("css_inject_marker", "<!-- INJECT:CSS -->")
 js_marker  = assets.get("js_inject_marker",  "<!-- INJECT:JS -->")
 
 # ── Assemble CSS ──
-if css_dir.is_dir():
+# WP-3: data-mx issues bundle ONLY the manifest list (core + one skin) with a
+# hard byte budget and a one-masthead check. Legacy issues keep the glob.
+if mx_manifest:
+    manifest_path = Path(mx_manifest)
+    rel_files = [ln.strip() for ln in manifest_path.read_text(encoding="utf-8").splitlines()
+                 if ln.strip() and not ln.strip().startswith("#")]
+    css_files = [css_dir / rel for rel in rel_files]
+    missing_css = [str(p) for p in css_files if not p.is_file()]
+    if missing_css:
+        print("ERROR: css manifest lists missing file(s):")
+        for p in missing_css:
+            print(f"  MISSING: {p}")
+        sys.exit(1)
+    css_blocks = [f.read_text(encoding="utf-8") for f in css_files]
+    css_content = "\n".join(css_blocks)
+    css_files_used = len(css_files)
+    css_total = len(css_content.encode("utf-8"))
+
+    # ── Bundle budget (spec §2.1: editorial ≤120KB, event ≤160KB) ──
+    print(f"  MX CSS BUNDLE: {css_total:,} bytes from {css_files_used} manifest file(s) "
+          f"(budget {mx_budget:,} bytes — {css_total / mx_budget * 100:.1f}% used)")
+    if css_total > mx_budget:
+        print("")
+        print("═══ MX BUNDLE BUDGET EXCEEDED ═══")
+        print(f"  bundle:  {css_total:,} bytes")
+        print(f"  budget:  {mx_budget:,} bytes ({mx_skin} skin)")
+        print("  Trim the skin/manifest — legacy layers must never be re-added (F-5).")
+        sys.exit(1)
+
+    # ── ONE masthead per bundle (F-3) ──
+    if ".mx-mast" not in css_content:
+        print("ERROR: mx bundle does not define .mx-mast (core/13-chrome.css missing from manifest?)")
+        sys.exit(1)
+    legacy_mast_hits = sorted(set(re.findall(r"\.(?:hol-masthead|mast)(?![\w-])", css_content))
+                              | set(re.findall(r"\.mast-(?:wordmark|meta|format|sep)\b", css_content)))
+    if legacy_mast_hits:
+        print("")
+        print("═══ MX BUNDLE MASTHEAD GATE FAILED (F-3) ═══")
+        print("  A data-mx bundle must carry exactly ONE masthead (core .mx-mast); the")
+        print("  assembled CSS also defines legacy masthead vocabulary:")
+        for tok in legacy_mast_hits:
+            print(f"  • {tok}")
+        print("  A legacy layer (21-chrome / 28-special-masthead / 36-holiday) leaked into the manifest.")
+        sys.exit(1)
+elif css_dir.is_dir():
     css_files = sorted(css_dir.glob("*.css"))
     css_blocks = [f.read_text(encoding="utf-8") for f in css_files]
     css_content = "\n".join(css_blocks)
@@ -507,13 +613,82 @@ HOLIDAY_FORMATS = {"countdown", "field-guide"}
 SPECIAL_FORMATS = {"countdown", "field-guide", "deep-dive", "versus", "rewind",
                    "season-review", "starter-kit", "shortlist", "next", "lookahead"}
 
+# ── DATA-MX ACTIVATION + GATES (WP-3) ─────────────────────────────────────
+# New-system issues bypass ALL legacy activation/gates below: the body is
+# stamped data-mx + data-skin + data-motion (+ data-mx-chrome="pill", since
+# the stitcher injects the back pill further down and core reserves its
+# zone), Google-Fonts links are stripped (spec §2.2: fonts are self-hosted
+# in core/01-fonts.css; the network-disabled gate render must attempt zero
+# external requests), and the chapter markup is checked against the mx
+# vocabulary instead of the legacy sp-*/hol-* systems.
+if mx_manifest:
+    chapter_scan_text = "\n".join(chapter_bodies)
+
+    # legacy vocabulary is UNDEFINED in an mx bundle — it would render unstyled
+    legacy_class_re = re.compile(r'class="[^"]*?\b((?:sp|hol)-[a-z][a-z0-9-]*)\b', re.IGNORECASE)
+    legacy_found = {}
+    for m in legacy_class_re.finditer(chapter_scan_text):
+        tok = m.group(1)
+        legacy_found[tok] = legacy_found.get(tok, 0) + 1
+    if legacy_found:
+        print("")
+        print("═══ MX VOCABULARY GATE FAILED ═══")
+        print("Issue is data-mx but chapter HTML uses legacy special/holiday classes")
+        print("that do not exist in the core+skin bundle (they'd render unstyled):")
+        for tok, count in sorted(legacy_found.items(), key=lambda kv: -kv[1]):
+            print(f"  • {tok} — {count} occurrence(s)")
+        print("Use the mx- component vocabulary: references/core-components.md.")
+        sys.exit(1)
+
+    # structural positives: one masthead, act sections, event census markers
+    mast_count = len(re.findall(r'class="[^"]*\bmx-mast\b', chapter_scan_text))
+    if mast_count != 1:
+        print("")
+        print("═══ MX STRUCTURE GATE FAILED ═══")
+        print(f"Expected exactly ONE .mx-mast in chapter content, found {mast_count} (F-3).")
+        sys.exit(1)
+    if not re.search(r'<section\b[^>]*\bdata-act=', chapter_scan_text):
+        print("")
+        print("═══ MX STRUCTURE GATE FAILED ═══")
+        print("No section[data-act] found — every mx act declares its palette+ground (Law 1/4).")
+        sys.exit(1)
+    if "data-mx-event=" not in chapter_scan_text:
+        print("")
+        print("═══ MX STRUCTURE GATE FAILED ═══")
+        print("No data-mx-event markers found — the Law-2 census has nothing to count.")
+        sys.exit(1)
+
+    # strip remote font links (head scaffold ships Google Fonts for legacy
+    # issues; mx issues self-host via core/01-fonts.css)
+    stripped = re.subn(r'^[^\n]*fonts\.(?:googleapis|gstatic)\.com[^\n]*\n',
+                       '', html, flags=re.MULTILINE)
+    if stripped[1]:
+        html = stripped[0]
+        print(f"  MX FONTS: stripped {stripped[1]} remote font link line(s) — self-hosted woff2 only")
+
+    # stamp the real <body> (same </head>-anchored finder as the legacy path)
+    head_end_match = re.search(r'</head\s*>', html, re.IGNORECASE)
+    if not head_end_match:
+        print("ERROR: No </head> tag found in scaffold — cannot locate real <body>")
+        sys.exit(1)
+    body_search = re.search(r'<body\b[^>]*>', html[head_end_match.end():], re.IGNORECASE)
+    if not body_search:
+        print("ERROR: No <body> tag after </head> — cannot activate data-mx")
+        sys.exit(1)
+    body_abs_start = head_end_match.end() + body_search.start()
+    body_abs_end   = head_end_match.end() + body_search.end()
+    desired_body = (f'<body data-mx data-skin="{mx_skin}" data-motion="{mx_motion}" '
+                    f'data-mx-chrome="pill" data-format="{issue_format_early}">')
+    html = html[:body_abs_start] + desired_body + html[body_abs_end:]
+    print(f"ACTIVATION: rewrote real <body> to data-mx + data-skin={mx_skin} + data-motion={mx_motion}")
+
 # v8.22.12 — activate body for ALL special formats, not just holiday.
 # The non-holiday v8.21 CSS bundle (23- through 32-) is scoped to
 # `body.is-special:not([data-special="countdown"]):not([data-special="field-guide"])`,
 # so without the body activation a deep-dive / versus / rewind / etc renders
 # entirely unstyled (paper background, no chapter chrome, no cover styling).
 # The 24 May 2026 WW1 Deep Dive shipped this way before the gate was added.
-if issue_format_early in SPECIAL_FORMATS:
+if not mx_manifest and issue_format_early in SPECIAL_FORMATS:
     # Activation rewrite — stamp the body tag deterministically.
     #
     # CRITICAL: anchor to </head>. The scaffold (00-head-open.html) contains
@@ -541,7 +716,8 @@ if issue_format_early in SPECIAL_FORMATS:
     print(f"ACTIVATION: rewrote real <body> (after </head>) to is-special + data-special={issue_format_early}{mv_note}")
 
 # Holiday-only gates: banned vocabulary scan, scaffold override, etc.
-if issue_format_early in HOLIDAY_FORMATS:
+# (Never for data-mx issues — their vocabulary gate ran above.)
+if not mx_manifest and issue_format_early in HOLIDAY_FORMATS:
 
     # Build the gate scan target: ONLY the concatenated chapter bodies.
     # Scaffolds (00-head-open.html / 19-closing.html) are clean by spec.
