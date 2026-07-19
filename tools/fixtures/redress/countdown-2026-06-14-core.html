@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Efteling &amp; Beekse Bergen — The Signal Countdown</title>
+<!--
+  WP-2 gate fixture: the 2026-06-14 Countdown re-dressed through the furniture
+  core. Content unchanged; furniture rebuilt on mx- components only. Event
+  skin: starfield night act -> gradient-sky savannah act, trip ephemera,
+  tier2 motion hooks. Reference flaws fixed by construction: pill reservation
+  (data-mx-chrome), global reduced-motion gate, no chrome overlap, real-img
+  ephemera, CDN hostnames scrubbed from credits.
+  Serve from repo root:
+    node tools/render.mjs tools/fixtures/redress/countdown-2026-06-14-core.html --out <dir>
+    node tools/measure-issue.mjs tools/fixtures/redress/countdown-2026-06-14-core.html --out <dir>
+-->
+<link rel="stylesheet" href="/.claude/skills/the-signal/assets/css/core/00-contract.css">
+<link rel="stylesheet" href="/.claude/skills/the-signal/assets/css/core/10-ephemera.css">
+<link rel="stylesheet" href="/.claude/skills/the-signal/assets/css/core/11-ledgers.css">
+<link rel="stylesheet" href="/.claude/skills/the-signal/assets/css/core/12-plates.css">
+<link rel="stylesheet" href="/.claude/skills/the-signal/assets/css/core/13-chrome.css">
+<link rel="stylesheet" href="/.claude/skills/the-signal/assets/css/core/14-motion.css">
+<link rel="stylesheet" href="/.claude/skills/the-signal/assets/css/core/15-responsive.css">
+<style>
+/* ---- per-issue act token blocks · the countdown arc: indigo -> cream ---- */
+/* ACT: night — the floating castle after dark */
+[data-act="night"] {
+  --mx-paper:      #10162e;
+  --mx-ink:        #f2ebd8;
+  --mx-ink-soft:   rgba(242, 235, 216, 0.68);
+  --mx-accent:     #d9b66a;
+  --mx-accent-ink: #10142a;
+  --mx-accent-2:   #b25361;
+  --mx-accent-2-ink:#f5edd9;
+  --mx-support-1:  #1f5b48;
+  --mx-support-2:  #d9b66a;
+  --mx-hair:       rgba(242, 235, 216, 0.3);
+  --mx-ghost:      rgba(217, 182, 106, 0.11);
+  --mx-quote-bg:   rgba(0, 0, 0, 0.3);
+  --mx-shadow:     rgba(0, 0, 0, 0.8);
+  --mx-hand-ink:   #d9b66a;
+  --mx-stamp-ink:  #d9b66a;
+  --mx-grain:      0.08;
+}
+/* ACT: savannah — cream heat-haze over the grass plain */
+[data-act="savannah"] {
+  --mx-paper:      #f0e3c4;
+  --mx-ink:        #26200f;
+  --mx-ink-soft:   rgba(38, 32, 15, 0.64);
+  --mx-accent:     #a35b1e;
+  --mx-accent-ink: #f6efdb;
+  --mx-accent-2:   #56663c;
+  --mx-accent-2-ink:#f2eeda;
+  --mx-support-1:  #56663c;
+  --mx-support-2:  #c9a227;
+  --mx-hair:       rgba(38, 32, 15, 0.32);
+  --mx-ghost:      rgba(163, 91, 30, 0.11);
+  --mx-quote-bg:   rgba(163, 91, 30, 0.07);
+  --mx-shadow:     rgba(58, 40, 10, 0.45);
+  --mx-hand-ink:   #a35b1e;
+  --mx-stamp-ink:  #8a5a1a;
+  --mx-grain:      0.08;
+}
+/* fixture-local layout air */
+.cd-act { padding: 96px 0 140px; }
+.cd-act .mx-body { margin-inline: auto; }
+.cd-act .mx-body p { margin-bottom: 1.3em; }
+.cd-act .mx-kicker { margin-top: 56px; margin-bottom: 24px; }
+.cd-act .mx-plate { margin: 80px 0 48px; }
+.cd-act .mx-actopen { margin-bottom: 64px; }
+.cd-act .mx-anchor { margin: 64px 0; }
+.cd-act .mx-quote { margin: 52px 0; }
+.cd-act .mx-numbers { margin: 56px 0; }
+.cd-act .mx-ledger { margin: 56px 0; }
+.mx-card__window svg { display: block; width: 100%; height: auto; }
+.mx-shelf { margin: 56px 0; gap: 40px; }
+.cd-lede p { font-size: 1.16rem; font-style: italic; }
+</style>
+</head>
+<body data-mx data-motion="tier2" data-mx-chrome="pill" data-format="countdown">
+
+<!-- the-signal:back -->
+<style data-signal-back>
+  .signal-back-to-archive {
+    position: fixed;
+    top: max(0.75rem, env(safe-area-inset-top, 0px));
+    left: max(0.75rem, env(safe-area-inset-left, 0px));
+    z-index: 9999;
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.45rem 0.85rem 0.45rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(20, 20, 30, 0.72); color: #fff;
+    font-family: system-ui, sans-serif;
+    font-size: 0.74rem; font-weight: 600; letter-spacing: 0.12em;
+    text-transform: uppercase; text-decoration: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.22);
+  }
+  @media print { .signal-back-to-archive { display: none; } }
+</style>
+<a href="../" class="signal-back-to-archive" aria-label="Back to The Signal archive">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+  <span>The Signal</span>
+</a>
+<!-- /the-signal:back -->
+
+<header class="mx-mast">
+  <span class="mx-mast__title">The Signal<span class="mx-mast__stop">.</span></span>
+  <span class="mx-mast__badge">The Countdown</span>
+  <span class="mx-mast__meta">T&#8209;minus 16 sleeps · Efteling &amp; Beekse Bergen · 14 June 2026</span>
+</header>
+
+
+<!-- ============ COVER · poster plate, night act, starfield ============ -->
+<section class="mx-cover mx-cover--poster mx-ground-starfield mx-ground-grain" data-act="night">
+  <div class="mx-cover__script-ghost" aria-hidden="true">greetings from</div>
+  <div class="mx-cover__inner">
+    <div class="mx-cover__sig">
+      <span>The Signal<span class="mx-mast__stop">.</span></span>
+      <span>Holiday Specials · Countdown · 14 June 2026</span>
+      <span>Live · ticking to the gates · CEST</span>
+    </div>
+    <span class="mx-cover__overline">greetings from</span>
+    <h1 class="mx-cover__title">Efteling <span class="mx-cover__amp">&amp;</span> <span class="mx-cover__outline">Beekse Bergen</span></h1>
+    <div class="mx-cover__plate" aria-hidden="true">
+      <svg 
+       viewBox="0 0 1200 800"
+       preserveAspectRatio="xMidYMid slice"
+       aria-hidden="true">
+    <defs>
+      <linearGradient id="hol-poster-sky" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"  stop-color="#0d1330"/>
+        <stop offset="60%" stop-color="#1b2244"/>
+        <stop offset="100%" stop-color="#3a1d2f"/>
+      </linearGradient>
+    </defs>
+
+    <!-- Sky base -->
+    <rect width="1200" height="800" fill="url(#hol-poster-sky)"/>
+
+    <!-- Sunburst rays from upper-right -->
+    <g transform="translate(960 200)" opacity="0.18" fill="#d9b66a">
+      <path d="M 0 -360 L 12 0 L -12 0 Z"/>
+      <path d="M 0 -360 L 12 0 L -12 0 Z" transform="rotate(20)"/>
+      <path d="M 0 -360 L 12 0 L -12 0 Z" transform="rotate(40)"/>
+      <path d="M 0 -360 L 12 0 L -12 0 Z" transform="rotate(60)"/>
+      <path d="M 0 -360 L 12 0 L -12 0 Z" transform="rotate(80)"/>
+      <path d="M 0 -360 L 12 0 L -12 0 Z" transform="rotate(100)"/>
+      <path d="M 0 -360 L 12 0 L -12 0 Z" transform="rotate(120)"/>
+      <path d="M 0 -360 L 12 0 L -12 0 Z" transform="rotate(140)"/>
+      <path d="M 0 -360 L 12 0 L -12 0 Z" transform="rotate(160)"/>
+      <path d="M 0 -360 L 12 0 L -12 0 Z" transform="rotate(180)"/>
+      <path d="M 0 -360 L 12 0 L -12 0 Z" transform="rotate(200)"/>
+      <path d="M 0 -360 L 12 0 L -12 0 Z" transform="rotate(220)"/>
+      <path d="M 0 -360 L 12 0 L -12 0 Z" transform="rotate(240)"/>
+      <path d="M 0 -360 L 12 0 L -12 0 Z" transform="rotate(260)"/>
+      <path d="M 0 -360 L 12 0 L -12 0 Z" transform="rotate(280)"/>
+      <path d="M 0 -360 L 12 0 L -12 0 Z" transform="rotate(300)"/>
+      <path d="M 0 -360 L 12 0 L -12 0 Z" transform="rotate(320)"/>
+      <path d="M 0 -360 L 12 0 L -12 0 Z" transform="rotate(340)"/>
+    </g>
+
+    <!-- Moon with face (upper-right) -->
+    <g transform="translate(960 200)">
+      <circle cx="0" cy="0" r="110" fill="#d9b66a"/>
+      <circle cx="-30" cy="-45" r="6" fill="#b8893a"/>
+      <circle cx="34"  cy="-20" r="4" fill="#b8893a"/>
+      <circle cx="20"  cy="45"  r="7" fill="#b8893a"/>
+      <path d="M -28 -10 Q -22 -18 -16 -10" stroke="#0d1330" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M 16 -10 Q 22 -18 28 -10"    stroke="#0d1330" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M -22 22 Q 0 36 22 22"        stroke="#0d1330" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <ellipse cx="-44" cy="14" rx="14" ry="6" fill="#b25361" opacity="0.6"/>
+      <ellipse cx="44"  cy="14" rx="14" ry="6" fill="#b25361" opacity="0.6"/>
+    </g>
+
+    <!-- Scattered round stars -->
+    <g fill="#fcf5ed">
+      <circle cx="80"  cy="80"  r="3"/>
+      <circle cx="180" cy="50"  r="2"/>
+      <circle cx="280" cy="120" r="3"/>
+      <circle cx="380" cy="60"  r="2"/>
+      <circle cx="500" cy="100" r="4"/>
+      <circle cx="620" cy="40"  r="2"/>
+      <circle cx="730" cy="80"  r="3"/>
+      <circle cx="100" cy="240" r="2"/>
+      <circle cx="220" cy="200" r="3"/>
+      <circle cx="340" cy="240" r="2"/>
+      <circle cx="450" cy="220" r="3"/>
+      <circle cx="1100" cy="60" r="3"/>
+      <circle cx="1150" cy="320" r="2"/>
+      <circle cx="1080" cy="380" r="3"/>
+      <circle cx="60"   cy="400" r="2"/>
+    </g>
+
+    <!-- Four-point sparkle stars -->
+    <g fill="#d9b66a">
+      <path d="M 600 180 L 604 170 L 608 180 L 618 184 L 608 188 L 604 198 L 600 188 L 590 184 Z"/>
+      <path d="M 850 70  L 854 60  L 858 70  L 868 74  L 858 78  L 854 88  L 850 78  L 840 74 Z" transform="rotate(15 854 74)"/>
+      <path d="M 200 350 L 204 340 L 208 350 L 218 354 L 208 358 L 204 368 L 200 358 L 190 354 Z" transform="rotate(8 204 354)"/>
+    </g>
+
+    <!-- Distant ridge -->
+    <path d="M 0 590 Q 200 540 400 560 T 800 540 T 1200 560 L 1200 800 L 0 800 Z" fill="#0d1330"/>
+
+    <!-- Offset castle silhouette (BACK plate — misregistration ghost) -->
+    <g fill="#b25361" transform="translate(8 6)" opacity="0.95">
+      <path d="
+        M 280 580 L 280 480
+        L 305 480 L 305 440 L 320 410 L 335 440 L 335 480
+        L 380 480 L 380 430 L 395 380 L 410 360 L 425 380 L 440 430 L 440 480
+        L 510 480 L 510 440 L 525 410 L 540 380 L 555 350 L 570 320 L 580 290 L 590 320 L 605 350 L 620 380 L 635 410 L 650 440 L 650 480
+        L 720 480 L 720 440 L 735 410 L 750 380 L 765 360 L 780 380 L 795 410 L 810 440 L 810 480
+        L 860 480 L 860 440 L 875 410 L 890 380 L 905 360 L 920 380 L 935 410 L 935 480
+        L 970 480 L 970 580 Z"/>
+    </g>
+
+    <!-- Front castle silhouette (cream) -->
+    <g fill="#fcf5ed">
+      <path d="
+        M 280 580 L 280 480
+        L 305 480 L 305 440 L 320 410 L 335 440 L 335 480
+        L 380 480 L 380 430 L 395 380 L 410 360 L 425 380 L 440 430 L 440 480
+        L 510 480 L 510 440 L 525 410 L 540 380 L 555 350 L 570 320 L 580 290 L 590 320 L 605 350 L 620 380 L 635 410 L 650 440 L 650 480
+        L 720 480 L 720 440 L 735 410 L 750 380 L 765 360 L 780 380 L 795 410 L 810 440 L 810 480
+        L 860 480 L 860 440 L 875 410 L 890 380 L 905 360 L 920 380 L 935 410 L 935 480
+        L 970 480 L 970 580 Z"/>
+      <path d="M 410 360 L 410 340 L 432 348 L 410 356 Z" fill="#b25361"/>
+      <path d="M 580 290 L 580 268 L 605 278 L 580 288 Z" fill="#8a1c2b"/>
+      <path d="M 765 360 L 765 340 L 788 348 L 765 356 Z" fill="#1f5b48"/>
+      <path d="M 905 360 L 905 340 L 928 348 L 905 356 Z" fill="#b25361"/>
+    </g>
+
+    <!-- Lit brass castle windows -->
+    <g fill="#d9b66a">
+      <rect x="316" y="498" width="8"  height="14"/>
+      <rect x="394" y="496" width="10" height="16"/>
+      <rect x="416" y="496" width="10" height="16"/>
+      <rect x="540" y="440" width="10" height="14"/>
+      <rect x="558" y="440" width="10" height="14"/>
+      <rect x="576" y="440" width="10" height="14"/>
+      <rect x="540" y="490" width="10" height="14"/>
+      <rect x="558" y="490" width="10" height="14"/>
+      <rect x="576" y="490" width="10" height="14"/>
+      <rect x="746" y="496" width="10" height="14"/>
+      <rect x="764" y="496" width="10" height="14"/>
+      <rect x="884" y="496" width="10" height="14"/>
+      <rect x="902" y="496" width="10" height="14"/>
+      <path d="M 560 580 Q 560 540 580 540 Q 600 540 600 580 Z"/>
+    </g>
+
+    <!-- Floating clouds -->
+    <g fill="#fcf5ed" opacity="0.7">
+      <ellipse cx="160"  cy="450" rx="44" ry="14"/>
+      <ellipse cx="190"  cy="438" rx="32" ry="11"/>
+      <ellipse cx="1050" cy="500" rx="46" ry="14"/>
+      <ellipse cx="1080" cy="488" rx="34" ry="11"/>
+    </g>
+
+    <!-- Water reflection -->
+    <rect y="720" width="1200" height="80" fill="#0d1330"/>
+    <g fill="#1b2244" opacity="0.55">
+      <ellipse cx="600" cy="740" rx="220" ry="6"/>
+      <ellipse cx="600" cy="760" rx="160" ry="4"/>
+    </g>
+
+    <!-- Shoreline trees -->
+    <g fill="#0d1330">
+      <ellipse cx="120"  cy="610" rx="50" ry="22"/>
+      <rect    x="115"   y="600"  width="10" height="20"/>
+      <ellipse cx="1080" cy="615" rx="60" ry="24"/>
+      <rect    x="1075"  y="600"  width="10" height="22"/>
+    </g>
+  </svg>
+    </div>
+    <p class="mx-cover__dek">~ a return ticket, this time with room to stay ~</p>
+    <div class="mx-cover__pills">
+      <span><b>30 Jun</b> · seven nights</span>
+      <span><b>two parks</b> · castle &amp; savannah</span>
+      <span><b>going back</b> · more time this time</span>
+    </div>
+    <div class="mx-countdown" data-mx-event="statband" style="margin: 40px auto 0;">
+      <div class="mx-countdown__grid">
+        <div class="mx-countdown__cell"><span class="mx-countdown__num" data-cd="days">16</span><span class="mx-countdown__unit">Sleeps</span></div>
+        <div class="mx-countdown__cell"><span class="mx-countdown__num" data-cd="hours">00</span><span class="mx-countdown__unit">Hours</span></div>
+        <div class="mx-countdown__cell"><span class="mx-countdown__num" data-cd="mins">00</span><span class="mx-countdown__unit">Minutes</span></div>
+        <div class="mx-countdown__cell"><span class="mx-countdown__num" data-cd="secs">00</span><span class="mx-countdown__unit">Seconds</span></div>
+      </div>
+      <div class="mx-countdown__target">target · tuesday 30 jun 2026 · 09:00 cest · the gates open</div>
+    </div>
+  </div>
+</section>
+
+<div class="mx-kickerstrip">
+  <div class="mx-kickerstrip__inner">
+    <span class="mx-kickerstrip__title">The countdown begins.</span>
+    <span class="mx-kickerstrip__sub">going back, with more time.</span>
+    <span class="mx-kickerstrip__meta">14 jun 2026 · t&#8209;minus 16 days<br>a two-act week</span>
+  </div>
+</div>
+
+
+<section data-act="night" class="cd-act mx-ground-starfield mx-ground-grain">
+<div class="mx-wrap">
+
+<header class="mx-plate" data-mx-event="plate">
+  <div class="mx-plate__ghost" aria-hidden="true">16</div>
+  <span class="mx-plate__no">Foreword</span>
+  <h2 class="mx-plate__title">Efteling &amp; Beekse Bergen, Again</h2>
+  <p class="mx-plate__dek">Sixteen sleeps to a trip taken once before — and the whole point this time is the room to do it properly.</p>
+</header>
+
+<div class="mx-body">
+<p>Efteling &amp; Beekse Bergen is not a first visit. The floating castle in Kaatsheuvel and the savannah park at Hilvarenbeek were both seen once already, on a clock that ran too fast. The castle got a single day. The savannah got four nights. Both ended with a list of things left undone. This is the trip that goes back to finish them.</p>
+<p>The difference is measured in nights. Two of them now sit inside Efteling's gates rather than one rushed daytrip, which turns the park from a sprint into a place worth slowing down in — the evening half of it reachable at last, the early-morning half waiting before the queues arrive. Beekse Bergen gains a night too, five instead of four, the kind of margin that lets a wildlife park stop being a checklist and start being somewhere lived in for a week.</p>
+<p>Returning visitors tend to find Efteling exactly where they left it. <q>The Efteling still breathes that same sense of beautiful, whimsical design as it did when I was little,</q> writes Esther van de Paal — a continuity that rewards a second look rather than punishing it. And the park has not stood entirely still: Hooghmoed, a gold-smeltery drop-tower complex, opened beside Baron 1898 this May, new ground for anyone who was last here before it existed.</p>
+<p>Seven nights, two estates, 30 June to 7 July. The first visit was a reconnaissance. This one is the return — slower, fuller, and finally given the time it always wanted.</p>
+</div>
+
+<article class="mx-anchor" data-mx-event="figure">
+  <div class="mx-anchor__media"><img src="/assets/cached/0f39080e1987.jpg" alt="The Efteling Wonder Hotel rising on its lake like a floating castle, turrets above the water"></div>
+  <div class="mx-anchor__copy">
+    <h3 class="mx-anchor__title">The Whole Trip, in Eleven Figures</h3>
+    <p class="mx-anchor__dek">Two estates, seven nights, one count that runs down to nothing. The numbers do the talking; the prose can sit this one out.</p>
+    <div class="mx-anchor__meta"><span>Photo <b>Efteling Wonder Hotel press / official site</b></span></div>
+  </div>
+  <div class="mx-anchor__badge">the brag sheet</div>
+  <div class="mx-anchor__note">sixteen sleeps and falling</div>
+</article>
+
+<div class="mx-numbers mx-numbers--loud" data-mx-event="statband">
+  <div class="mx-numbers__cell">
+    <span class="mx-numbers__num">16</span>
+    <span class="mx-numbers__label">Sleeps to go</span>
+    <span class="mx-numbers__sub">until 30 June</span>
+  </div>
+  <div class="mx-numbers__cell">
+    <span class="mx-numbers__num">7</span>
+    <span class="mx-numbers__label">Nights booked</span>
+    <span class="mx-numbers__sub">2 castle, 5 savannah</span>
+  </div>
+  <div class="mx-numbers__cell">
+    <span class="mx-numbers__num">1952</span>
+    <span class="mx-numbers__label">Efteling opened</span>
+    <span class="mx-numbers__sub">one of the world's oldest</span>
+  </div>
+  <div class="mx-numbers__cell">
+    <span class="mx-numbers__num">1968</span>
+    <span class="mx-numbers__label">Beekse Bergen opened</span>
+    <span class="mx-numbers__sub">as a lion park</span>
+  </div>
+  <div class="mx-numbers__cell">
+    <span class="mx-numbers__num">30</span>
+    <span class="mx-numbers__label">Walk-through fairy tales</span>
+    <span class="mx-numbers__sub">in the Sprookjesbos</span>
+  </div>
+  <div class="mx-numbers__cell">
+    <span class="mx-numbers__num">22</span>
+    <span class="mx-numbers__label">Themed suites</span>
+    <span class="mx-numbers__sub">at the Wonder Hotel</span>
+  </div>
+  <div class="mx-numbers__cell">
+    <span class="mx-numbers__num">37.5<span style="font-size:.6em">m</span></span>
+    <span class="mx-numbers__label">Baron 1898's drop</span>
+    <span class="mx-numbers__sub">into a mineshaft pit</span>
+  </div>
+  <div class="mx-numbers__cell">
+    <span class="mx-numbers__num">2012</span>
+    <span class="mx-numbers__label">Aquanura opened</span>
+    <span class="mx-numbers__sub">among Europe's largest</span>
+  </div>
+  <div class="mx-numbers__cell">
+    <span class="mx-numbers__num">150<span style="font-size:.6em">+</span></span>
+    <span class="mx-numbers__label">Animal species</span>
+    <span class="mx-numbers__sub">≈1,250 animals</span>
+  </div>
+  <div class="mx-numbers__cell">
+    <span class="mx-numbers__num">120<span style="font-size:.6em">ha</span></span>
+    <span class="mx-numbers__label">Largest park in Benelux</span>
+    <span class="mx-numbers__sub">Safaripark Beekse Bergen</span>
+  </div>
+  <div class="mx-numbers__cell">
+    <span class="mx-numbers__num">3.5<span style="font-size:.6em">km</span></span>
+    <span class="mx-numbers__label">Walking safari</span>
+    <span class="mx-numbers__sub">moats, not fences</span>
+  </div>
+</div>
+
+<div class="mx-body cd-lede">
+<p>Eleven numbers, two halves, one castle on a lake and a savannah behind a moat. Add them up and the answer is the same either way: go back, and give it the time it always deserved.</p>
+</div>
+
+<header class="mx-actopen" data-mx-event="plate">
+  <span class="mx-actopen__no">Part One</span>
+  <h2 class="mx-actopen__title">Efteling</h2>
+  <span class="mx-actopen__hand">the floating castle · opened 1952 · two nights</span>
+</header>
+
+<div class="mx-body">
+<p>Two nights, not one. That is the change the first half of this trip turns on. The last visit gave Efteling a single day, gates to closing, and ran out of daylight before it ran out of park. This time the indigo storybook stays open into the dark.</p>
+<p>Efteling opened in 1952 and is one of the oldest theme parks in the world, and it has never read like its American cousins. The register here is celestial rather than corporate: a moon with a face, a castle that seems to float, fairy tales walked rather than queued. First-timers tend to reach for the same two words. Lydia Storks of the Disney Food Blog landed on "weird and wonderful" and meant both as the highest praise.</p>
+</div>
+
+<div class="mx-shelf">
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/9b96068a59a4.jpg" alt="A crooked gingerbread cottage in Efteling's Sprookjesbos, in the Anton Pieck storybook style."></div>
+  <figcaption class="mx-card__caption">Anton Pieck’s hand all over it — a storybook cottage in the Sprookjesbos.</figcaption>
+  <span class="mx-card__credit">Photo · Richard Poppelaars / About Pixels</span>
+</figure>
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/b923244ee8d4.jpg" alt="Efteling park scenes at Kaatsheuvel."></div>
+  <figcaption class="mx-card__caption">Efteling · Kaatsheuvel — through the gates.</figcaption>
+  <span class="mx-card__credit">Photo · meteorry / Flickr</span>
+</figure>
+
+</div>
+
+<figure class="mx-quote" data-mx-event="quote">
+  <blockquote>As soon as we stepped through the gates we knew we were set to experience a day like no other.</blockquote>
+  <figcaption>— <b>Claire</b> · The Ladybirds’ Adventures</figcaption>
+</figure>
+
+<div class="mx-body">
+<p>What follows in this half is the case for the overnight, the rides worth the queue and the early access, the living world of the Sprookjesbos, and the Wonder Hotel that keeps you inside the gates. Sixteen sleeps out, the floating castle is the first place this countdown lands.</p>
+</div>
+
+<div class="mx-shelf">
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/f5b9f67d2ee7.jpg" alt="The old park at Efteling."></div>
+  <figcaption class="mx-card__caption">Efteling · The Old Park.</figcaption>
+  <span class="mx-card__credit">Photo · meteorry / Flickr</span>
+</figure>
+
+<figure class="mx-card--mail" data-mx-event="ephemera">
+  <div class="mx-mail__front">
+    <span class="mx-mail__greet">Greetings from</span>
+    <span class="mx-mail__place">Efteling</span>
+  </div>
+  <div class="mx-mail__back">“The Efteling still breathes that same sense of beautiful, whimsical design as it did when I was little.” — Esther van de Paal</div>
+</figure>
+
+</div>
+
+<div class="mx-kicker">Efteling · Mood Board · dusk into evening</div>
+
+<div class="mx-shelf" role="group" aria-label="Efteling mood board — four scenes from dusk into evening">
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/07a62695d315.jpg" alt="Aquanura's lakeside fountains lit and rising in the dark at the end of the day"></div>
+  <figcaption class="mx-card__caption">Aquanura after dark — water and light on the Vijver lake, the day’s last act.</figcaption>
+  <span class="mx-card__credit">Photo via Wikimedia Commons (Aquanura by night), CC-BY-SA</span>
+</figure>
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/c728f802eb12.jpg" alt="The lit Symbolica palace exterior glowing against the evening sky"></div>
+  <figcaption class="mx-card__caption">Symbolica’s Palace of Fantasy lit at the blue hour — the storybook front a single day-trip rarely stays late enough to see.</figcaption>
+  <span class="mx-card__credit">Photo · Efteling press / official site</span>
+</figure>
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/ee42d3d46d22.jpg" alt="Inside Symbolica's Botanicum, the trackless dark ride's glasshouse room"></div>
+  <figcaption class="mx-card__caption">Inside Symbolica’s Botanicum — hanging vines under warm lamplight.</figcaption>
+  <span class="mx-card__credit">Photo · Efteling press / official site</span>
+</figure>
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/9c2b2174e1e0.jpg" alt="The Wonder Hotel interior after the gates close"></div>
+  <figcaption class="mx-card__caption">Back at the Wonder Hotel once the gates close — the floating-castle interior that turns a long day into an overnight.</figcaption>
+  <span class="mx-card__credit">Photo · Efteling press kit</span>
+</figure>
+
+<div class="mx-stamp mx-stamp--brass" data-mx-event="ephemera">
+  <span>Efteling</span><b>DUSK</b><span>★ ★ ★</span>
+</div>
+
+</div>
+
+<div class="mx-marquee" data-mx-event="marquee" aria-hidden="true">
+  <div class="mx-marquee__track">
+    <span>Sixteen sleeps</span><span>The gates open at nine</span><span>Two parks, one ticket</span><span>Castle to wild, no car</span>
+    <span>Sixteen sleeps</span><span>The gates open at nine</span><span>Two parks, one ticket</span><span>Castle to wild, no car</span>
+  </div>
+</div>
+
+<header class="mx-plate" data-mx-event="plate">
+  <div class="mx-plate__ghost" aria-hidden="true">2</div>
+  <span class="mx-plate__no">The case for the overnight</span>
+  <h2 class="mx-plate__title">Why Two Nights Changes Efteling</h2>
+  <p class="mx-plate__dek">The park a single day runs out of daylight for.</p>
+</header>
+
+<div class="mx-body">
+<p>Last time, Efteling was one day. Gates at opening, the long walk back to the car park before the lake had even gone dark. A single day is a sprint: you ride what you can, eat on your feet, and leave before the park becomes itself. Two nights at the Wonder Hotel buy back the hours a day-trip never sees — dusk in the Fairytale Forest, the late show on the water, and two slow mornings inside the gates with the crowds still queuing outside.</p>
+<p>The headline is the water. <strong>Aquanura</strong>, opened in 2012 and one of the largest fountain-and-light shows in Europe, plays out on the Vijver lake at the very end of the day — jets, colour and the occasional blast of fire scored to music. It is staged after closing time for most day visitors, which is exactly why it slips off a single-day plan. Stay over and it becomes the obvious last act, watched from the lakeside with nowhere to rush off to afterward.</p>
+</div>
+
+<article class="mx-anchor" data-mx-event="figure">
+  <div class="mx-anchor__media"><img src="/assets/cached/23323077598f.jpg" alt="Danse Macabre key visual — the park's after-dark register."></div>
+  <div class="mx-anchor__copy">
+    <h3 class="mx-anchor__title">The Park After Dark</h3>
+    <p class="mx-anchor__dek">The lit dark rides are a different ride at night. Droomvlucht, a suspended flight through fairy-tale forests since 1993, is reckoned one of the prettiest dark rides anywhere — and prettier still once the daylight has gone out of the park around it.</p>
+    <div class="mx-anchor__meta">
+      <span>Show <b>Aquanura</b></span>
+      <span>Early access <b>30 min</b></span>
+      <span>Photo <b>Efteling press / official site</b></span>
+    </div>
+  </div>
+  <div class="mx-anchor__badge">evening park</div>
+  <div class="mx-anchor__note">stay for the lake</div>
+</article>
+
+<figure class="mx-quote" data-mx-event="quote">
+  <blockquote>The water and occasional blasts of fire set to music was an amazing way to finish our visit.</blockquote>
+  <figcaption>— <b>Claire</b> · The Ladybirds’ Adventures, on Aquanura</figcaption>
+</figure>
+
+<div class="mx-body">
+<p>The overnight also reshapes the mornings. Wonder Hotel guests get a <strong>half-hour head start</strong> into the park before the public each day, so two nights means two unhurried openings — Symbolica or Baron 1898 walked straight onto while the turnstiles outside are still filling. The evenings belong to guests too: when the day crowds drain out, the Sprookjesbos goes quiet and the lit storybook scenes hold the light. A single day spends its dusk in traffic; an overnight spends it inside the gates.</p>
+</div>
+
+<div class="mx-shelf">
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/c546ee7ff34c.jpg" alt="Efteling at dusk"></div>
+  <figcaption class="mx-card__caption">Greetings from Efteling — posted after closing.</figcaption>
+  <span class="mx-card__credit">Photo · meteorry / Flickr</span>
+</figure>
+
+<figure class="mx-card--mail" data-mx-event="ephemera">
+  <div class="mx-mail__front">
+    <span class="mx-mail__greet">Postmarked</span>
+    <span class="mx-mail__place">Droomvlucht</span>
+  </div>
+  <div class="mx-mail__back">“It was a delightful ‘flying’ dark ride through a fairy world, and we found it to be magical.” — Lydia Storks, Disney Food Blog</div>
+</figure>
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/a801aae98a61.jpg" alt="Droomvlucht facade at night"></div>
+  <figcaption class="mx-card__caption">Droomvlucht — ride it after dark.</figcaption>
+  <span class="mx-card__credit">Photo · meteorry / Flickr</span>
+</figure>
+
+</div>
+
+<div class="mx-body">
+<p>None of this needs a schedule. The point of going back with more time is precisely that there is no rush to make: a second morning to revisit a favourite, a late hour to wander the lit forest, and a fountain show that no longer has to be missed for the drive home.</p>
+</div>
+
+<div class="mx-shelf">
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/6aff8bed0463.jpg" alt="The Efteling Wonder Hotel, the floating castle, over its lake."></div>
+  <figcaption class="mx-card__caption">the floating castle — sleep inside the gates, open the park early.</figcaption>
+  <span class="mx-card__credit">Photo · Efteling via Blooloop</span>
+</figure>
+
+</div>
+
+<header class="mx-plate" data-mx-event="plate">
+  <div class="mx-plate__ghost" aria-hidden="true">7</div>
+  <span class="mx-plate__no">Ranked</span>
+  <h2 class="mx-plate__title">Top Attractions, Ranked</h2>
+</header>
+
+<div class="mx-body">
+<p>Seven rides worth the queue, the early access and the second day. The opinions here are borrowed from people who ride for a living; the practical notes are what a single rushed day-trip never had time to learn. Headliners first, then the dark rides that reward a second pass &mdash; and below them, an honest chart of what the coasters actually do.</p>
+</div>
+
+<div class="mx-zig">
+  <article class="mx-zig__entry" data-mx-event="figure">
+    <div class="mx-zig__media"><img src="/assets/cached/1237d17f0e8b.jpg" alt="Baron 1898, Efteling's B&amp;M dive coaster, climbing its vertical lift above the mineshaft."></div>
+    <div class="mx-zig__card">
+      <div class="mx-zig__head">
+        <span class="mx-rank"></span>
+        <h3 class="mx-zig__title">Baron 1898</h3>
+      </div>
+      <p class="mx-zig__quote"><em>&ldquo;Baron 1898 is about as close to a perfect roller coaster as I've yet encountered.&rdquo;</em> &mdash; Benjiramon, Along for the Ride</p>
+      <dl class="mx-zig__meta">
+        <dt>Where</dt><dd>The B&amp;M dive coaster of 2015. The signature holding brake &mdash; &ldquo;the summit dangles you over a misty pit,&rdquo; writes Heartline Coaster &mdash; suspends the train before a 37.5 m plunge into an excavated mineshaft.</dd>
+        <dt>Why</dt><dd>Short and very popular: ride it first thing in the half-hour hotel head start, or take the single-rider line. Hooghmoed, the new free-fall drop towers, opened right beside it on 1 May 2026.</dd>
+      </dl>
+      <span class="mx-card__credit">Photo · Efteling press / official site</span>
+    </div>
+  </article>
+  <article class="mx-zig__entry" data-mx-event="figure">
+    <div class="mx-zig__media"><img src="/assets/cached/5b9ea08c49e7.jpg" alt="The lit Throne Room (Koningszaal) inside Symbolica, the Palace of Fantasy."></div>
+    <div class="mx-zig__card">
+      <div class="mx-zig__head">
+        <span class="mx-rank"></span>
+        <h3 class="mx-zig__title">Symbolica</h3>
+      </div>
+      <p class="mx-zig__quote"><em>&ldquo;Symbolica is one of the greatest dark rides I ever experienced.&rdquo;</em> &mdash; Le Parcorama</p>
+      <dl class="mx-zig__meta">
+        <dt>Where</dt><dd>The Palace of Fantasy, an ETF trackless dark ride from 2017 that runs three different routes &mdash; Music, Treasure and Heroes.</dd>
+        <dt>Why</dt><dd>The point is to ride it more than once and catch the routes you missed &mdash; the Throne Room and the Botanicum land differently each pass. Two days makes that easy where a single day never did.</dd>
+      </dl>
+      <span class="mx-card__credit">Photo · Efteling press / official site</span>
+    </div>
+  </article>
+  <article class="mx-zig__entry" data-mx-event="figure">
+    <div class="mx-zig__media"><img src="/assets/cached/4c99ac270b45.jpg" alt="Joris en de Draak, the duelling Water and Fire wooden coaster tracks racing side by side."></div>
+    <div class="mx-zig__card">
+      <div class="mx-zig__head">
+        <span class="mx-rank"></span>
+        <h3 class="mx-zig__title">Joris en de Draak</h3>
+      </div>
+      <p class="mx-zig__quote"><em>&ldquo;Easily one of the most enjoyable wooden coasters I've been on to date &mdash; a great ride in a great location.&rdquo;</em> &mdash; Benjiramon, Along for the Ride</p>
+      <dl class="mx-zig__meta">
+        <dt>Where</dt><dd>A GCI duelling wooden coaster from 2010: Water and Fire trains race the same hills.</dd>
+        <dt>Why</dt><dd>Either side is fun &mdash; pick whichever queue is loading next, then come back for the other.</dd>
+      </dl>
+      <span class="mx-card__credit">Photo · Efteling press / official site</span>
+    </div>
+  </article>
+  <article class="mx-zig__entry" data-mx-event="figure">
+    <div class="mx-zig__media"><img src="/assets/cached/330e4c5a33f5.jpg" alt="De Vliegende Hollander, the ghost-ship water coaster, mid-splash."></div>
+    <div class="mx-zig__card">
+      <div class="mx-zig__head">
+        <span class="mx-rank"></span>
+        <h3 class="mx-zig__title">De Vliegende Hollander</h3>
+      </div>
+      <p class="mx-zig__quote"><em>&ldquo;A pretty good water coaster that's also a fantastic dark ride.&rdquo;</em> &mdash; Coaster101</p>
+      <dl class="mx-zig__meta">
+        <dt>Where</dt><dd>The 2007 hybrid that tells the Flying Dutchman legend &mdash; an indoor ghost-ship dark ride before the splashdown.</dd>
+        <dt>Why</dt><dd>The themed queue is part of the show, so don't skip-line past it. Expect to get a little wet.</dd>
+      </dl>
+      <span class="mx-card__credit">Photo · Efteling press / official site</span>
+    </div>
+  </article>
+  <article class="mx-zig__entry" data-mx-event="figure">
+    <div class="mx-zig__media"><img src="/assets/cached/cb74db5b90c7.jpg" alt="The Gothic exterior of Danse Macabre, the motion-stage dark ride built on the former Spookslot site."></div>
+    <div class="mx-zig__card">
+      <div class="mx-zig__head">
+        <span class="mx-rank"></span>
+        <h3 class="mx-zig__title">Danse Macabre</h3>
+      </div>
+      <p class="mx-zig__quote"><em>&ldquo;Never a straight answer with me &mdash; but I am very glad it exists.&rdquo;</em> &mdash; Jordan, Cupcakes and Coasters</p>
+      <dl class="mx-zig__meta">
+        <dt>Where</dt><dd>A motion-stage dark ride &mdash; not a coaster &mdash; built on Intamin's rotating, tilting Dynamic Motion Stage and scored to Saint-Sa&euml;ns. It opened on 31 October 2024 on the old Spookslot site.</dd>
+        <dt>Why</dt><dd>A marquee headliner that simply didn't exist on the last visit &mdash; the floor moves under you while the music plays. Expect queues; go early or late.</dd>
+      </dl>
+      <span class="mx-card__credit">Photo · Efteling press / official site</span>
+    </div>
+  </article>
+  <article class="mx-zig__entry" data-mx-event="figure">
+    <div class="mx-zig__media"><img src="/assets/cached/3b3b8ec0f67d.jpg" alt="Efteling's Fata Morgana, the Arabian palace boat dark ride, lit over the water at dusk."></div>
+    <div class="mx-zig__card">
+      <div class="mx-zig__head">
+        <span class="mx-rank"></span>
+        <h3 class="mx-zig__title">Fata Morgana</h3>
+      </div>
+      <p class="mx-zig__quote"><em>&ldquo;An enthralling and unique attraction &mdash; it runs very efficiently, but more importantly it's enthralling.&rdquo;</em> &mdash; Benjiramon, Along for the Ride</p>
+      <dl class="mx-zig__meta">
+        <dt>Where</dt><dd>An Intamin boat dark ride drifting through an Arabian &lsquo;Forbidden City', running since 1986.</dd>
+        <dt>Why</dt><dd>Often a walk-on later in the day, and a fine escape from heat or rain.</dd>
+      </dl>
+      <span class="mx-card__credit">Photo · Efteling press / official site</span>
+    </div>
+  </article>
+  <article class="mx-zig__entry" data-mx-event="figure">
+    <div class="mx-zig__media"><img src="/assets/cached/52d07fb4e4c4.jpg" alt="The fairy-tale castle facade of Droomvlucht, Efteling's suspended dark ride, lit at night."></div>
+    <div class="mx-zig__card">
+      <div class="mx-zig__head">
+        <span class="mx-rank"></span>
+        <h3 class="mx-zig__title">Droomvlucht</h3>
+      </div>
+      <p class="mx-zig__quote"><em>&ldquo;One of the prettiest rides I've ever been on, and definitely worth a look.&rdquo;</em> &mdash; Benjiramon, Along for the Ride</p>
+      <dl class="mx-zig__meta">
+        <dt>Where</dt><dd>A suspended fairy-tale dark ride from 1993 that drifts over forests and ends in a gentle drop.</dd>
+        <dt>Why</dt><dd>Ride it after dark for the most atmospheric version &mdash; an overnight-only luxury a single day runs out of daylight for.</dd>
+      </dl>
+      <span class="mx-card__credit">Photo · Efteling press / official site</span>
+    </div>
+  </article>
+</div>
+
+<figure class="mx-card mx-card--wide mx-card--pin" data-mx-event="chart">
+  <div class="mx-card__window" role="img" aria-label="Grouped bar chart comparing above-ground height and drop in metres for four Efteling coasters. Baron 1898: 30 m height, 37.5 m drop. Python: 29 m height, 22 m drop. Joris en de Draak: 22.1 m height, 22.1 m drop. Vogel Rok: 20 m height, 19 m drop.">
+    <svg aria-hidden="true" viewBox="0 0 640 360">
+      <title id="cdv-title">Efteling coasters: structure height versus drop</title>
+      <desc id="cdv-desc">Grouped bar chart comparing above-ground height and drop in metres for four Efteling coasters. Baron 1898: 30 m height, 37.5 m drop. Python: 29 m height, 22 m drop. Joris en de Draak: 22.1 m height, 22.1 m drop. Vogel Rok: 20 m height, 19 m drop.</desc>
+
+      <!-- y-axis gridlines and labels (0 to 40 m, plot area y 40-300, x 70-600) -->
+      <g stroke="#9a8f7a" stroke-width="1" opacity="0.5">
+        <line x1="70" y1="300" x2="600" y2="300"></line>
+        <line x1="70" y1="235" x2="600" y2="235"></line>
+        <line x1="70" y1="170" x2="600" y2="170"></line>
+        <line x1="70" y1="105" x2="600" y2="105"></line>
+        <line x1="70" y1="40"  x2="600" y2="40"></line>
+      </g>
+      <g fill="#6b6151" font-size="12" text-anchor="end">
+        <text x="60" y="304">0</text>
+        <text x="60" y="239">10</text>
+        <text x="60" y="174">20</text>
+        <text x="60" y="109">30</text>
+        <text x="60" y="44">40</text>
+      </g>
+      <!-- axis lines -->
+      <line x1="70" y1="40" x2="70" y2="300" stroke="#6b6151" stroke-width="1.5"></line>
+      <text x="20" y="170" fill="#6b6151" font-size="12" text-anchor="middle" transform="rotate(-90 20 170)">metres</text>
+
+      <!-- 6.5 px per metre. bars: height = value*6.5, top = 300 - value*6.5 -->
+      <!-- Baron 1898: centre 132 -->
+      <rect x="103" y="105"   width="29" height="195"   fill="#8a6d3b"></rect>
+      <rect x="133" y="56.25" width="29" height="243.75" fill="#caa75a"></rect>
+      <!-- Python: centre 264 -->
+      <rect x="235" y="111.5" width="29" height="188.5" fill="#8a6d3b"></rect>
+      <rect x="265" y="157"   width="29" height="143"   fill="#caa75a"></rect>
+      <!-- Joris: centre 396 -->
+      <rect x="367" y="156.4" width="29" height="143.6" fill="#8a6d3b"></rect>
+      <rect x="397" y="156.4" width="29" height="143.6" fill="#caa75a"></rect>
+      <!-- Vogel Rok: centre 528 -->
+      <rect x="499" y="170"   width="29" height="130"   fill="#8a6d3b"></rect>
+      <rect x="529" y="176.5" width="29" height="123.5" fill="#caa75a"></rect>
+
+      <!-- value labels -->
+      <g fill="#3a342a" font-size="11" text-anchor="middle">
+        <text x="117.5" y="98">30</text>
+        <text x="147.5" y="49">37.5</text>
+        <text x="249.5" y="104">29</text>
+        <text x="279.5" y="150">22</text>
+        <text x="381.5" y="149">22.1</text>
+        <text x="411.5" y="149">22.1</text>
+        <text x="513.5" y="163">20</text>
+        <text x="543.5" y="169">19</text>
+      </g>
+
+      <!-- x-axis category labels -->
+      <g fill="#3a342a" font-size="12" text-anchor="middle">
+        <text x="132" y="320">Baron 1898</text>
+        <text x="264" y="320">Python</text>
+        <text x="396" y="320">Joris en de Draak</text>
+        <text x="528" y="320">Vogel Rok</text>
+      </g>
+
+      <!-- legend -->
+      <g font-size="12" fill="#3a342a">
+        <rect x="190" y="338" width="14" height="12" fill="#8a6d3b"></rect>
+        <text x="210" y="348">Height above ground</text>
+        <rect x="380" y="338" width="14" height="12" fill="#caa75a"></rect>
+        <text x="400" y="348">Drop</text>
+      </g>
+    </svg>
+  </div>
+  <figcaption class="mx-card__caption">Height vs drop, in metres, for Efteling’s four coasters with both figures published. Baron 1898 is the outlier: its 37.5 m drop exceeds its 30 m structure because the track dives into an excavated pit.</figcaption>
+  <span class="mx-card__credit">Figures · RCDB and Wikipedia</span>
+</figure>
+
+<header class="mx-plate" data-mx-event="plate">
+  <div class="mx-plate__ghost" aria-hidden="true">❦</div>
+  <span class="mx-plate__no">Lore &amp; Legend</span>
+  <h2 class="mx-plate__title">A Universe You Can Step Into</h2>
+</header>
+
+<div class="mx-body cd-lede">
+<p>Most theme parks build rides and hang a theme on them afterwards. Efteling did it the other way round. Before there was a single coaster, there was a wood — the Sprookjesbos, the Fairytale Forest — and everything the park has become since has grown out of those trees. Walking in is less like arriving at an attraction than stepping inside a book someone has been writing for seventy years.</p>
+</div>
+
+<article class="mx-anchor" data-mx-event="figure">
+  <div class="mx-anchor__media"><img src="/assets/cached/0cb317da66d4.jpg" alt="A storybook scene in Efteling's Sprookjesbos (Fairytale Forest), with carved buildings and animatronic figures set among the trees"></div>
+  <div class="mx-anchor__copy">
+    <h3 class="mx-anchor__title">The Forest Came First</h3>
+    <p class="mx-anchor__dek">The Sprookjesbos has been the heart of the park since 1952, holding around thirty walk-through fairy tales tucked among the trees — and it still sets the rule the whole place obeys.</p>
+    <div class="mx-anchor__meta">
+      <span>Where it begins <b>Sprookjesbos, est. 1952</b></span>
+      <span>What’s in there <b>~30 walk-through tales</b></span>
+    </div>
+  </div>
+  <div class="mx-anchor__badge">step inside</div>
+  <div class="mx-anchor__note">the forest sets the rule</div>
+</article>
+
+<div class="mx-body">
+<p>The look is not an accident, and it is not borrowed. It belongs almost entirely to one man. The illustrator Anton Pieck drew the forest's crooked roofs, its gnarled timbers and its impossible little cottages, and the park has spent decades refusing to let go of that hand. Sleeping Beauty lies behind a hedge of real thorns. A red-cloaked girl meets a wolf in a clearing. The Six Servants and the Talking Parrot mutter to passers-by. Nothing is sleek; everything looks slightly older than it can possibly be, as if the buildings had been weathering there since long before anyone bought a ticket. One returning visitor sums up the trick neatly — that it is "a beautiful large area with magical fairy tales character and mini buildings complete with animatronics around every corner."</p>
+</div>
+
+<figure class="mx-quote" data-mx-event="quote">
+  <blockquote>De Efteling ademt sprookjes en fantasie. The Efteling breathes fairy tales and fantasy.</blockquote>
+  <figcaption>— <b>Bart Drost</b> · Uitmetkinderen.nl</figcaption>
+</figure>
+
+<div class="mx-body">
+<p>What keeps it from feeling like a museum is that the world talks back. Holle Bolle Gijs sits where the paths meet — a round, ever-hungry figure who happens to be a working litter bin. Drop a wrapper in and a voice booms up from inside: "Papier hier!" — paper here, more please. Children spend whole afternoons feeding him, and that is the point. The bins are not bins disguised as a character; they are a character who is genuinely glad of your rubbish. The estate is dense with these small living encounters, each one a tiny piece of the same fiction, none of them a queue.</p>
+</div>
+
+<div class="mx-shelf">
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/4ce934f4d0b2.jpg" alt="Holle Bolle Gijs, Efteling's round open-mouthed paper-eating character, set in a stone alcove."></div>
+  <figcaption class="mx-card__caption">Holle Bolle Gijs — “Papier hier!” The litter-bin that thanks you for your rubbish.</figcaption>
+  <span class="mx-card__credit">Photo · Simon P / Flickr</span>
+</figure>
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/490ac4d10fb0.jpg" alt="Pardoes, Efteling's purple wizard-jester mascot, posing with young visitors."></div>
+  <figcaption class="mx-card__caption">Pardoes, the wizard-jester who presides over the park’s Fabula mythology.</figcaption>
+  <span class="mx-card__credit">Photo via Flickr</span>
+</figure>
+
+</div>
+
+<div class="mx-body">
+<p>Threading the whole thing together is Pardoes, the park's wizard-jester, a purple sprite who turns up on signage, in shows and in the lore as a kind of master of ceremonies for the magic. He belongs to Efteling's wider invented mythology, the Fabula universe, in which the rides are not standalone thrills but chapters of one long story — the dreamflight, the flying Dutchman, the dragon-slaying Joris — each set somewhere on the same map. You do not need to know any of it to enjoy a day here. But the longer you stay, and the more of the park you read, the more it resolves into a single coherent place rather than a collection of machines.</p>
+<p>That is the difference a return trip exposes. A single day buys the headline rides. A second day, with the evening still ahead, lets the world settle into focus — the lit cottages, the muttering animatronics, the hungry bin, the sense that you have walked into something that was complete before you got there and will carry on long after you leave.</p>
+</div>
+
+<header class="mx-plate" data-mx-event="plate">
+  <div class="mx-plate__ghost" aria-hidden="true">124</div>
+  <span class="mx-plate__no">Accommodation</span>
+  <h2 class="mx-plate__title">A Castle You Sleep Inside</h2>
+  <p class="mx-plate__dek">There is a hotel that looks like it floated up out of the lake and decided to stay. The Efteling Wonder Hotel opened in 1992 as the park’s first place to sleep over, closed in January 2025 for a ground-floor overhaul, and reopened that April rebranded as the Wonder Hotel — 124 rooms over eight floors, and a new identity built around one nightly piece of theatre.</p>
+</header>
+
+<article class="mx-anchor" data-mx-event="figure">
+  <div class="mx-anchor__media"><img src="/assets/cached/89d2b930adf6.jpg" alt="The Efteling Wonder Hotel exterior — a turreted hotel styled as a castle that appears to float above the water at the edge of the park."></div>
+  <div class="mx-anchor__copy">
+    <h3 class="mx-anchor__title">The Floating Castle, Rebranded</h3>
+    <p class="mx-anchor__dek">The Wonder Hotel reads as a castle set down on the water — the floating-castle exterior issued with the 2025 rebrand.</p>
+    <div class="mx-anchor__meta"><span>Photo <b>Efteling press kit</b></span></div>
+  </div>
+  <div class="mx-anchor__badge">sleep inside the gates</div>
+  <div class="mx-anchor__note">DroomStoom in the lobby — the bedtime story you check in for</div>
+</article>
+
+<div class="mx-body">
+<p>Each evening the lobby gathers for DroomStoom, a "dream steam" story told under the hotel's central tower as the day winds down. It is the cue that the theming does not stop at the park gates; here it follows you to the pillow. Staying inside the estate means the fairytale is the building, not just the day out.</p>
+</div>
+
+<div class="mx-shelf">
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/69f5f4c087e9.jpg" alt="The renovated Wonder Hotel lobby: navy reception desks, wood panelling and a coffered ceiling."></div>
+  <figcaption class="mx-card__caption">The renovated Wonder Hotel lobby, where DroomStoom is told each evening under the central tower.</figcaption>
+  <span class="mx-card__credit">Image · Efteling (press)</span>
+</figure>
+
+</div>
+
+<div class="mx-kicker">Rooms, and a category kept secret</div>
+
+<div class="mx-body">
+<p>Two kinds of room cover most of the floors. Premium Rooms sleep three, four or five at around 29 square metres — the practical, well-themed default. Above them sit the non-themed Luxury Suites, roomier at about 53 square metres for five, with a separate sitting area. Then there is the part everyone books for: the <strong>themed suites</strong>, a category of around twenty individually decorated rooms, each dressed after an Efteling ride or fairytale. The range runs from Droomvlucht and Fata Morgana through Pardoes, Raveleijn and Roodkapje to Sprookjesboom and the Koningssuite, with newer themes added through 2025 and 2026. Which one you wake up in is a surprise — part of the booking, and not for spoiling here.</p>
+</div>
+
+<div class="mx-shelf" role="group" aria-label="Inside the Wonder Hotel">
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/f0e8e1135e6b.jpg" alt="The interior of Saga Restaurant & Bar at the Wonder Hotel — a warmly lit dining room themed to the park's fairytales."></div>
+  <figcaption class="mx-card__caption">Restaurant Saga, the hotel’s flagship dining room.</figcaption>
+  <span class="mx-card__credit">Photo · Efteling Wonder Hotel press / official site</span>
+</figure>
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/0c31f16a8ab5.jpg" alt="A themed-suite bedroom at the Wonder Hotel, decorated after one of the park's attractions."></div>
+  <figcaption class="mx-card__caption">One of the themed-suite range — a category example, not the booked suite.</figcaption>
+  <span class="mx-card__credit">Photo · Efteling Wonder Hotel press / official site</span>
+</figure>
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/012e67e29bb8.jpg" alt="The sitting area of a standard non-themed Luxury Suite at the Wonder Hotel."></div>
+  <figcaption class="mx-card__caption">The sitting area of a standard Luxury Suite — a non-themed room.</figcaption>
+  <span class="mx-card__credit">Photo · Efteling Wonder Hotel press / official site</span>
+</figure>
+
+</div>
+
+<div class="mx-kicker">Restaurant Saga, and what the stay includes</div>
+
+<div class="mx-body">
+<p>Dining now centres on Restaurant Saga — the Saga Restaurant &amp; Bar that anchors the renovated ground floor, themed to the park's fairytales and reading its menu out "by chapters". Breakfast there is included with the room, which matters more than it sounds on a morning when the gates are about to open. There is one thing the hotel deliberately does not have: a pool. Guests who want a swim use the Badhuys at neighbouring Bosrijk rather than anything on-site, so the Wonder Hotel keeps its focus on the castle, the story and the dining.</p>
+</div>
+
+<div class="mx-kicker">Why the inside wins</div>
+
+<div class="mx-body">
+<p>The real case for sleeping inside the gates is time. Hotel guests get a <strong>half-hour head start</strong> into the park before public opening, through an exclusive side entrance that empties straight into the park near Vogel Rok — what one Efteling guide calls simply "the shortest and easiest path to get into the park at the start of the day". Thirty minutes ahead of the crowd at Baron 1898 or Symbolica is thirty minutes a day-tripper never gets. The other half of the case is the evening: when the day-visitors file out, the Sprookjesbos lanterns are still lit, Aquanura plays out over the lake, and the walk back to the room runs through the park rather than away from it. Two nights buys both ends of the day a single ticket leaves on the table.</p>
+</div>
+
+</div>
+</section>
+
+<div class="mx-transit" data-mx-event="marquee">
+  <div class="mx-transit__side mx-transit__side--left">
+    <div class="mx-transit__mega" aria-hidden="true">EFTELING</div>
+    <div class="mx-transit__label">
+      <span class="mx-transit__hand">the floating castle</span>
+      <span class="mx-transit__name">Efteling</span>
+    </div>
+  </div>
+  <div class="mx-transit__center"><div class="mx-transit__card">fairytale → savannah<br>Castle to wild · no car</div></div>
+  <div class="mx-transit__side mx-transit__side--right">
+    <div class="mx-transit__mega" aria-hidden="true">SAFARI</div>
+    <div class="mx-transit__label">
+      <span class="mx-transit__hand">the wide savannah</span>
+      <span class="mx-transit__name">Beekse Bergen</span>
+    </div>
+  </div>
+</div>
+
+<section data-act="savannah" class="cd-act mx-ground-gradient-sky">
+<div class="mx-ground-pattern mx-ground-grain">
+<div class="mx-wrap">
+
+<figure class="mx-quote" data-mx-event="quote">
+  <blockquote>From Schiphol it is a train and a short taxi — and after that, no road at all. Two nights end under the floating castle; five begin over the grass plains. The whole week stays inside the gates: storybook turrets give way to giraffes on the horizon without a car key ever leaving a pocket. The drawbridge lifts behind, the savannah opens ahead, and the only thing changing is the view.</blockquote>
+  <figcaption>— The Signal</figcaption>
+</figure>
+
+<header class="mx-actopen" data-mx-event="plate">
+  <span class="mx-actopen__no">Part Two</span>
+  <h2 class="mx-actopen__title">Beekse Bergen</h2>
+  <span class="mx-actopen__hand">the open savannah · largest wildlife park in the Benelux · five nights</span>
+</header>
+
+<div class="mx-body">
+<p>Five nights, not four. That is the change the second half of this trip turns on. Last time the savannah got four nights; this time it gets a fifth, and the difference is whole mornings spent doing nothing but watching. Where Efteling crowds its wonders together, Beekse Bergen lets the days spread out.</p>
+<p>The park opened on 1 June 1968 as the drive-through Lion Park Beekse Bergen and took its present name in 1974. It is now the largest wildlife park in the Benelux, and the register could not be further from a theme park's. The pace is slower, the horizons longer, the animals close enough to set the clock by. Chloe Gallagher of The Travel Mum put the contrast plainly.</p>
+</div>
+
+<figure class="mx-quote" data-mx-event="quote">
+  <blockquote>Unlike busy, overstimulating theme parks, Beekse Bergen feels calm and expansive.</blockquote>
+  <figcaption>— <b>Chloe Gallagher</b> · The Travel Mum</figcaption>
+</figure>
+
+<div class="mx-shelf">
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/4368e4885957.jpg" alt="Beekse Bergen at Hilvarenbeek"></div>
+  <figcaption class="mx-card__caption">Beekse Bergen · Hilvarenbeek.</figcaption>
+  <span class="mx-card__credit">Photo · Beekse Bergen</span>
+</figure>
+
+<figure class="mx-card--mail" data-mx-event="ephemera">
+  <div class="mx-mail__front">
+    <span class="mx-mail__greet">Greetings from</span>
+    <span class="mx-mail__place">The Lodges</span>
+  </div>
+  <div class="mx-mail__back">“A safari view really is the most enchanting thing about the resort.” — The Bayliss family, Little Clogs Holidays</div>
+</figure>
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/8619f4f84325.jpg" alt="The lodges at the Beekse Bergen Safari Resort"></div>
+  <figcaption class="mx-card__caption">Beekse Bergen · The Lodges.</figcaption>
+  <span class="mx-card__credit">Photo · Safari Resort Beekse Bergen</span>
+</figure>
+
+</div>
+
+<div class="mx-body">
+<p>What follows in this half is the whole estate, all of it car-free: the safari walked and sailed, the conservation stories behind the names on the savannah, and the Safari Resort that puts the grass plain outside the window. Sixteen sleeps out, the wild is where this countdown ends.</p>
+</div>
+
+<div class="mx-kicker">Beekse Bergen · Mood Board · what five nights on the savannah look like</div>
+
+<div class="mx-shelf" role="group" aria-label="Beekse Bergen mood board — six scenes from the safari and the lake">
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/5eb6a0326278.jpg" alt="Giraffes standing on the open grass plain of the safari park"></div>
+  <figcaption class="mx-card__caption">Giraffes out on the open plain — the first impression the savannah gives, animals at distance with the fences out of sight.</figcaption>
+  <span class="mx-card__credit">Photo via Wikimedia Commons, CC-BY 2.5</span>
+</figure>
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/5ae5f7d51cb9.jpg" alt="A safari boat on the water at sunset, golden light across the lake"></div>
+  <figcaption class="mx-card__caption">The boat safari at last light — Livingstone or Stanley gliding the water between the Safari and Kongo restaurants.</figcaption>
+  <span class="mx-card__credit">Photo · Beekse Bergen / Libema press</span>
+</figure>
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/3ea1b1dd56ea.jpg" alt="Lions lying close together in the grass, seen at close range"></div>
+  <figcaption class="mx-card__caption">Lions at rest in the grass — close enough to count whiskers across a moat on the 3.5 km walking route.</figcaption>
+  <span class="mx-card__credit">Photo · Beekse Bergen / Libema press</span>
+</figure>
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/69b99539c477.jpg" alt="Elephants standing at their enclosure beside the walking path"></div>
+  <figcaption class="mx-card__caption">Elephants on the walking safari — one of the set-piece stops where the path draws right up to the enclosure.</figcaption>
+  <span class="mx-card__credit">Photo · Beekse Bergen / Libema press</span>
+</figure>
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/18330dbe253e.jpg" alt="A sandy beach running down to Lake Beekse Bergen with swimmers in the water"></div>
+  <figcaption class="mx-card__caption">Speelland’s beach on Lake Beekse Bergen — the Victoriameer shoreline that turns five nights into more than safari.</figcaption>
+  <span class="mx-card__credit">Photo · Beekse Bergen / Libema press</span>
+</figure>
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/9ba178465418.jpg" alt="Giraffes towering at close range over the walking-safari path"></div>
+  <figcaption class="mx-card__caption">Giraffes at arm’s reach on the walking route — the same animals from the plain, now towering over the path.</figcaption>
+  <span class="mx-card__credit">Photo · Beekse Bergen / Libema press</span>
+</figure>
+
+<div class="mx-stamp" data-mx-event="ephemera">
+  <span>Beekse Bergen</span><b>SAVANNAH</b><span>★ ★ ★</span>
+</div>
+
+</div>
+
+<header class="mx-plate" data-mx-event="plate">
+  <div class="mx-plate__ghost" aria-hidden="true">4</div>
+  <span class="mx-plate__no">The whole estate</span>
+  <h2 class="mx-plate__title">More Than Driving Round the Animals</h2>
+  <p class="mx-plate__dek">One estate, four parts, five nights — and not a car needed for any of it.</p>
+</header>
+
+<article class="mx-anchor" data-mx-event="figure">
+  <div class="mx-anchor__media"><img src="/assets/cached/99617e1b7d7d.jpg" alt="A safari bus painted in savannah colours moving along a wooded track through the park in summer"></div>
+  <div class="mx-anchor__copy">
+    <h3 class="mx-anchor__title">Far More Than the Drive</h3>
+    <p class="mx-anchor__dek">Four parts ring Lake Beekse Bergen, and the Attractions Pass that comes with the stay throws every gate open, unlimited, for the whole five nights.</p>
+    <div class="mx-anchor__meta"><span>Photo <b>Beekse Bergen / Libema press</b></span></div>
+  </div>
+  <div class="mx-anchor__badge">five nights, one pass</div>
+  <div class="mx-anchor__note">the ranger-driven bus, winding through summer woodland</div>
+</article>
+
+<div class="mx-body">
+<p>The shorthand for Beekse Bergen is a car crawling past lions, but that is the one mode this trip skips. The estate is a great deal larger than its drive-through reputation — four parts gathered around one lake, the Victoriameer, and a Safari Resort stay hands you the lot. Resort guests get unlimited free access to the Safaripark and to Speelland for the entire stay, with further day attractions folded into the Attractions Pass. Five nights turns that from a ticket into a rhythm.</p>
+<p>Start with the safari, because it does not need a car to work. The walking safari runs roughly 3.5 km past lions, elephants, giraffes and pelicans, moats standing in for fences wherever the sightlines allow. The boat safari sails the two ranger-narrated vessels, <em>Livingstone</em> and <em>Stanley</em>, between the restaurants on a thirty-minute loop past the rhino plain. The bus safari adds the guided, hands-on version — furs and horns passed down the aisle. Walked and sailed, the whole park is reachable on foot and on water, no key required.</p>
+</div>
+
+<div class="mx-shelf">
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/ff81002a7ea6.jpg" alt="The open savannah at Beekse Bergen"></div>
+  <figcaption class="mx-card__caption">Beekse Bergen · The Savannah.</figcaption>
+  <span class="mx-card__credit">Photo · Beekse Bergen</span>
+</figure>
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/0d3a6715f193.jpg" alt="A safari bus painted in savannah colours"></div>
+  <figcaption class="mx-card__caption">the safari buses, painted for adventure.</figcaption>
+  <span class="mx-card__credit">Photo · Beekse Bergen</span>
+</figure>
+
+</div>
+
+<figure class="mx-quote" data-mx-event="quote">
+  <blockquote>We got so close to the giraffes and zebras it was amazing... it was hard to tear ourselves away.</blockquote>
+  <figcaption>— <b>Jane</b> · on the walking safari</figcaption>
+</figure>
+
+<div class="mx-body">
+<p>Then there is the half that has nothing to do with animals at all. Speelland sits across the lake — a family adventure and water-play park aimed at children up to around twelve, all slides, splash decks and climbing. Its newest piece, Speelland Indoor, opened in December 2024: a 2,000 m² tropical indoor play world with room for up to 600, and the wet-weather card the estate never used to hold. A rained-off afternoon now has somewhere warm to go.</p>
+</div>
+
+<div class="mx-shelf">
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/05bb7439ef5d.jpg" alt="A render of Speelland Indoor, the tropical indoor play world at Beekse Bergen."></div>
+  <figcaption class="mx-card__caption">Speelland Indoor — the 2,000 m² tropical play world that opened in December 2024.</figcaption>
+  <span class="mx-card__credit">Render · Safaripark Beekse Bergen</span>
+</figure>
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/4f0988a7da15.jpg" alt="Families swimming in the bright indoor pool hall at the Safari Resort"></div>
+  <figcaption class="mx-card__caption">Maji Springs at the Safari Resort — the indoor pool the days fold back into, water-play with the animals still next door.</figcaption>
+  <span class="mx-card__credit">Photo · Beekse Bergen / Libema press</span>
+</figure>
+
+</div>
+
+<div class="mx-body">
+<p>Lastly the lake and the Resort itself, which is no mere place to sleep between outings. The Victoriameer carries beaches; the lodges look out over the grass plain. Across five nights the four parts stop being a list to tick and start being a place to settle into — a savannah to walk one morning, water to splash through the next, a boat at dusk, a beach in between.</p>
+</div>
+
+<div class="mx-shelf">
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/64d86a4b4eb0.jpg" alt="A safari bus painted in savannah colours at Beekse Bergen"></div>
+  <figcaption class="mx-card__caption">“The safari buses are an experience in itself. Painted in ‘safari’ colors only looking at them gives you a sense of adventure.” — Lisa, FlipFlop Globetrotters</figcaption>
+  <span class="mx-card__credit">Photo · Beekse Bergen</span>
+</figure>
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/14f6816f494a.jpg" alt="A Savanne Lodge with its private terrace looking out over the grass plain at the Safari Resort"></div>
+  <figcaption class="mx-card__caption">A Savanne Lodge terrace, the grass plain at the foot of the garden — the view five nights are built to slow down for.</figcaption>
+  <span class="mx-card__credit">Photo · Beekse Bergen Safari Resort official booking media</span>
+</figure>
+
+<div class="mx-stamp" data-mx-event="ephemera">
+  <span>Four parts</span><b>ONE PASS</b><span>★ ★ ★</span>
+</div>
+
+</div>
+
+<header class="mx-plate" data-mx-event="plate">
+  <div class="mx-plate__ghost" aria-hidden="true">6</div>
+  <span class="mx-plate__no">Ranked</span>
+  <h2 class="mx-plate__title">The Safari, Ranked</h2>
+</header>
+
+<div class="mx-body">
+<p>Six encounters worth the trip, built on the three car-free ways round the park &mdash; walking, boat and bus. No engine, no windscreen, just the moat between you and the lions. Last time was four nights; five gives the savannah room to slow down, and the ranking below leans on the modes that never need a car key.</p>
+</div>
+
+<div class="mx-zig">
+  <article class="mx-zig__entry" data-mx-event="figure">
+    <div class="mx-zig__media"><img src="/assets/cached/a763c68e149f.jpg" alt="Pelicans gathered beside the self-guided walking-safari path at Safaripark Beekse Bergen."></div>
+    <div class="mx-zig__card">
+      <div class="mx-zig__head">
+        <span class="mx-rank"></span>
+        <h3 class="mx-zig__title">The walking safari</h3>
+      </div>
+      <p class="mx-zig__quote"><em>&ldquo;Trenches or moats are used in place of fences where possible, so you get a direct, uninterrupted view of the animals &mdash; they seem really close.&rdquo;</em> &mdash; Natalie Smith, Frugal Mum</p>
+      <dl class="mx-zig__meta">
+        <dt>Where</dt><dd>A self-guided 3.5 km route past lions, elephants, giraffes, penguins, ring-tailed lemurs and pelicans &mdash; the dependable, do-it-on-your-own-clock backbone of a car-free visit.</dd>
+        <dt>Why</dt><dd>Map your own loop; playgrounds and adventure paths break it up, and the moats hold the wide, fence-free views the photographs promise. Walk it early, before the heat sends the cats to the shade.</dd>
+      </dl>
+      <span class="mx-card__credit">Photo · Beekse Bergen / Libema press</span>
+    </div>
+  </article>
+  <article class="mx-zig__entry" data-mx-event="figure">
+    <div class="mx-zig__media"><img src="/assets/cached/4818d3821e4e.jpg" alt="The boat-safari vessel Stanley passing under a bridge on the water at Safaripark Beekse Bergen."></div>
+    <div class="mx-zig__card">
+      <div class="mx-zig__head">
+        <span class="mx-rank"></span>
+        <h3 class="mx-zig__title">The boat safari</h3>
+      </div>
+      <p class="mx-zig__quote"><em>&ldquo;We were so excited to see a cheetah drinking at the water's edge as we sailed past &mdash; it really added to the African safari feeling.&rdquo;</em> &mdash; Natalie Smith, Frugal Mum</p>
+      <dl class="mx-zig__meta">
+        <dt>Where</dt><dd>A 30-minute ranger-narrated cruise on the two boats, <em>Livingstone</em> and <em>Stanley</em>, past white rhinos, hidden cheetahs, an island of yaks and sunbathing lemurs.</dd>
+        <dt>Why</dt><dd>It doubles as transport, carrying you the length of the park to the Kongo Restaurant and back &mdash; the rescue for footsore afternoons. High water can close it, so check on the day.</dd>
+      </dl>
+      <span class="mx-card__credit">Photo · Beekse Bergen / Libema press</span>
+    </div>
+  </article>
+  <article class="mx-zig__entry" data-mx-event="figure">
+    <div class="mx-zig__media"><img src="/assets/cached/655a587cdeee.jpg" alt="A bus-safari ranger holding an educational horn and sensory props at Safaripark Beekse Bergen."></div>
+    <div class="mx-zig__card">
+      <div class="mx-zig__head">
+        <span class="mx-rank"></span>
+        <h3 class="mx-zig__title">The bus safari</h3>
+      </div>
+      <p class="mx-zig__quote"><em>&ldquo;The ranger will even let you touch and smell things, like animal hides and poo.&rdquo;</em> &mdash; Lisa, FlipFlop Globetrotters</p>
+      <dl class="mx-zig__meta">
+        <dt>Where</dt><dd>The signature ranger experience: 45 minutes past zebras, Bactrian camels, rhinos, cheetahs, giraffes, Cape buffalo and lions, with furs and other sensory objects passed round the bus.</dd>
+        <dt>Why</dt><dd>It is the hands-on heart of the park, the one mode where a ranger does the spotting for you &mdash; but the regular bus safari is suspended until 1 October 2026 and may be group-booking only during the trip window. Walking and boat are the safe bets; treat the bus as a bonus to confirm, not a fixture.</dd>
+      </dl>
+      <span class="mx-card__credit">Photo · Beekse Bergen / Libema press</span>
+    </div>
+  </article>
+  <article class="mx-zig__entry" data-mx-event="figure">
+    <div class="mx-zig__media"><img src="/assets/cached/41e65bcfcfd1.jpg" alt="A white rhino on the rhino plain at Safaripark Beekse Bergen, mirrored in the water, seen from the boat safari."></div>
+    <div class="mx-zig__card">
+      <div class="mx-zig__head">
+        <span class="mx-rank"></span>
+        <h3 class="mx-zig__title">The rhino plain, from the water</h3>
+      </div>
+      <p class="mx-zig__quote"><em>&ldquo;You get to spot animals in and along the water, and the ranger on board tells you all about them.&rdquo;</em> &mdash; Lisa, FlipFlop Globetrotters</p>
+      <dl class="mx-zig__meta">
+        <dt>Where</dt><dd>White rhinos grazing the open plain, mirrored in the lake &mdash; the boat's stand-out tableau, and a sight the walking route never frames quite this way.</dd>
+        <dt>Why</dt><dd>Sit on the side facing the plain; ask the ranger which bank to watch before you cast off.</dd>
+      </dl>
+      <span class="mx-card__credit">Photo · Beekse Bergen / Libema press</span>
+    </div>
+  </article>
+  <article class="mx-zig__entry" data-mx-event="figure">
+    <div class="mx-zig__media"><img src="/assets/cached/b47ac505cadf.jpg" alt="Waterbuck and wildebeest on the grassland at Safaripark Beekse Bergen, seen from the safari route."></div>
+    <div class="mx-zig__card">
+      <div class="mx-zig__head">
+        <span class="mx-rank"></span>
+        <h3 class="mx-zig__title">Waterbuck and wildebeest on the plain</h3>
+      </div>
+      <p class="mx-zig__quote"><em>&ldquo;The walking safari was fantastic &mdash; you can see pretty much every animal you can think of!&rdquo;</em> &mdash; Natalie Smith, Frugal Mum</p>
+      <dl class="mx-zig__meta">
+        <dt>Where</dt><dd>The mixed grazing herds &mdash; waterbuck, wildebeest and zebra sharing one open horizon &mdash; that fill the long views between the headline predators.</dd>
+        <dt>Why</dt><dd>Slow down here. The quiet stretches of plain are where the park stops reading like a zoo and starts reading like a savannah.</dd>
+      </dl>
+      <span class="mx-card__credit">Photo · Beekse Bergen / Libema press</span>
+    </div>
+  </article>
+  <article class="mx-zig__entry" data-mx-event="figure">
+    <div class="mx-zig__media"><img src="/assets/cached/c07ada0b7059.jpg" alt="A male lion at close range at Safaripark Beekse Bergen."></div>
+    <div class="mx-zig__card">
+      <div class="mx-zig__head">
+        <span class="mx-rank"></span>
+        <h3 class="mx-zig__title">Lions at close range</h3>
+      </div>
+      <p class="mx-zig__quote"><em>&ldquo;We were based near the lions, which was amazing &mdash; loud at times, but not scary.&rdquo;</em> &mdash; The Hoddell family, Little Clogs Holidays</p>
+      <dl class="mx-zig__meta">
+        <dt>Where</dt><dd>Lions resting metres away across a moat on the walking route &mdash; the close-up that no windscreen improves on.</dd>
+        <dt>Why</dt><dd>They are most active early and late; midday heat sends the pride to the shade. Time this stretch for the cool of the morning.</dd>
+      </dl>
+    </div>
+  </article>
+</div>
+
+<div class="mx-marquee" data-mx-event="marquee" aria-hidden="true">
+  <div class="mx-marquee__track">
+    <span>Walk it early</span><span>Boat at last light</span><span>Moats, not fences</span><span>Livingstone &amp; Stanley</span>
+    <span>Walk it early</span><span>Boat at last light</span><span>Moats, not fences</span><span>Livingstone &amp; Stanley</span>
+  </div>
+</div>
+
+<header class="mx-plate" data-mx-event="plate">
+  <div class="mx-plate__ghost" aria-hidden="true">EEP</div>
+  <span class="mx-plate__no">Born on the savannah</span>
+  <h2 class="mx-plate__title">The line that keeps going</h2>
+</header>
+
+<div class="mx-body">
+<p>Behind the grass plains and the boat that drifts past them, Beekse Bergen does the unglamorous, long-game work of keeping rare animals alive as a population, not a single lucky birth. The park coordinates two European breeding programmes — the EEP for the Southern African cheetah and the one for the Southern white rhino — and runs recovery work for species including Pere David's deer and the Przewalski's horse inside the wider EAZA framework. The names that come out of that work are the point. So are the dates.</p>
+</div>
+
+<article class="mx-anchor" data-mx-event="figure">
+  <div class="mx-anchor__media"><img src="/assets/cached/91c29b4e94df.jpg" alt="Two cheetah cubs born at Safaripark Beekse Bergen in February 2024"></div>
+  <div class="mx-anchor__copy">
+    <h3 class="mx-anchor__title">The cheetah line</h3>
+    <p class="mx-anchor__dek">A female brought from France in late 2023 gave birth on 11 February 2024. Three cubs; two survived. That is how a healthy European population is built — one careful pairing at a time.</p>
+    <div class="mx-anchor__meta">
+      <span>Programme <b>EEP — Southern African cheetah</b></span>
+      <span>Born <b>11 February 2024</b></span>
+      <span>Photo <b>Beekse Bergen via DutchNews.nl</b></span>
+    </div>
+  </div>
+  <div class="mx-anchor__badge">welpjes</div>
+  <div class="mx-anchor__note">one careful pairing at a time</div>
+</article>
+
+<div class="mx-body">
+<p>Cheetahs are notoriously hard to breed in human care, which is why the matching matters more than the mating. The curator who oversees the programme, Lars Versteege, frames it as genetics first and sentiment never.</p>
+</div>
+
+<figure class="mx-quote" data-mx-event="quote">
+  <blockquote>We think it’s important to match genetically healthy cheetahs so we can have a healthy population in European zoos.</blockquote>
+  <figcaption>— <b>Lars Versteege</b> · curator, via DutchNews</figcaption>
+</figure>
+
+<div class="mx-body">
+<p>The rhino plain tells the same story in a heavier animal. A Southern white rhino calf — a male named Ravy, forty kilos at birth — arrived to a first-time mother, Sofie. White rhinos are not a tidy success anywhere; a calf raised well by an inexperienced mother is its own small triumph, and the park holds the studbook responsibility for the species across European collections. Ravy is the kind of birth that justifies the moats and the patience.</p>
+</div>
+
+<div class="mx-shelf">
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/2cfd483b001c.jpg" alt="A Southern white rhinoceros on the savannah at Safaripark Beekse Bergen."></div>
+  <figcaption class="mx-card__caption">A Southern white rhino on the plain — Beekse Bergen holds the European studbook for the species.</figcaption>
+  <span class="mx-card__credit">Photo · Safaripark Beekse Bergen</span>
+</figure>
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/0770a6ad16e7.jpg" alt="An African painted dog, Lycaon pictus, with a mottled coat and large rounded ears."></div>
+  <figcaption class="mx-card__caption">An African painted dog — <i>Lycaon pictus</i>, the species behind Imani’s line (illustrative).</figcaption>
+  <span class="mx-card__credit">Photo · Derek Keats / Flickr, CC BY</span>
+</figure>
+
+</div>
+
+<div class="mx-body">
+<p>The longest thread runs through the African painted dogs — Lycaon pictus, down to a few thousand across the wild. In January 2022 a litter of pups was born to mother Imani and father Julius. Imani was no newcomer to the place: she was herself born here in 2013, in a litter of twelve, to a grandmother named Tuli. Three generations of one of the planet's most endangered carnivores, raised on the same patch of Brabant. Her keeper, Mariska Vermij-Van Dijk, kept the report plain.</p>
+</div>
+
+<figure class="mx-quote" data-mx-event="quote">
+  <blockquote>Both the puppies and mother Imani are doing well. Imani is an experienced mother and takes very good care of her offspring.</blockquote>
+  <figcaption>— <b>Mariska Vermij-Van Dijk</b> · keeper, via Omroep Brabant</figcaption>
+</figure>
+
+<div class="mx-body">
+<p>The giraffes keep the ledger ticking over too — three Nubian calves born in January 2025, a species the wider programme is quietly trying to claw back. None of this is staged for the boat. The cheetahs the rangers point out as you sail past the rhino plain are the same animals the studbooks track by name and number, and the cubs of February 2024 are the reason the pointing still has something to point at.</p>
+</div>
+
+<div class="mx-shelf">
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/4c88a06e8b34.jpg" alt="A giraffe at Safaripark Beekse Bergen against a blue sky."></div>
+  <figcaption class="mx-card__caption">A Beekse Bergen giraffe — the Nubian programme quietly adding calves to the herd.</figcaption>
+  <span class="mx-card__credit">Photo · John Riper / Flickr</span>
+</figure>
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/9f6d8a0b41fe.jpg" alt="A cheetah at Safaripark Beekse Bergen"></div>
+  <figcaption class="mx-card__caption">A Beekse Bergen cheetah, the EEP’s long game made visible.</figcaption>
+  <span class="mx-card__credit">Photo via DutchNews.nl</span>
+</figure>
+
+</div>
+
+<div class="mx-body">
+<p>Read together, the cheetah cubs, Ravy, Imani's pups and the giraffe calves are not exhibits that happen to breed. They are the breeding programme, walking around. It is the serious counterweight to a week of fairy tales next door — a place where the storytelling is true, the dates are real, and the animals have names.</p>
+</div>
+
+<header class="mx-plate" data-mx-event="plate">
+  <div class="mx-plate__ghost" aria-hidden="true">5</div>
+  <span class="mx-plate__no">Five nights</span>
+  <h2 class="mx-plate__title">Safari Resort — Sleeping over the savannah</h2>
+</header>
+
+<div class="mx-body">
+<p>Most wildlife parks send you home at closing time. Beekse Bergen lets you stay the night inside the fence line, and that single fact reorganises the whole trip. Five nights at the Safari Resort means the savannah is not a day out but a view from the bed — and the animals that took an hour to reach by boat are grazing on the other side of the glass while the kettle boils. This is the return-trip draw, the reason a second visit runs to five nights instead of four.</p>
+</div>
+
+<article class="mx-anchor" data-mx-event="figure">
+  <div class="mx-anchor__media"><img src="/assets/cached/426f25eda1f8.jpg" alt="A Savanne Lodge at the Safari Resort with lions on the grass plain beyond"></div>
+  <div class="mx-anchor__copy">
+    <h3 class="mx-anchor__title">The Savanne Lodges</h3>
+    <p class="mx-anchor__dek">The six-person Savanne Lodge and the larger eight-person Savanne Lodge Plus look straight out over the Serengeti, Masai Mara, Ngorongoro plains or the Simbara lion plain. From a private terrace you watch giraffes, zebras, ostriches, camels, antelope and rhinos go about their day — and some lodges have a giraffe feeding station built in beside them.</p>
+    <div class="mx-anchor__meta">
+      <span>Stay <b>5 nights</b></span>
+      <span>View <b>savannah</b></span>
+      <span>Photo <b>Beekse Bergen / Libema press</b></span>
+    </div>
+  </div>
+  <div class="mx-anchor__badge">animals from your terrace</div>
+  <div class="mx-anchor__note">the return-trip draw</div>
+</article>
+
+<div class="mx-body">
+<p>The lodge range runs wider than that. There are safari tents and kid lodges, group lodges for a crowd, two treehouses tucked into the planting, and hotel rooms over in Hogon House for anyone who wants a serviced stay rather than self-catering. But it is the lodges with the plain at the foot of the garden that returning guests remember. Reviewers keep landing on the same point.</p>
+</div>
+
+<div class="mx-shelf">
+
+<figure class="mx-card--mail" data-mx-event="ephemera">
+  <div class="mx-mail__front">
+    <span class="mx-mail__greet">Greetings from</span>
+    <span class="mx-mail__place">The Savannah</span>
+  </div>
+  <div class="mx-mail__back">“We enjoyed wine in the garden of our lodge overlooking the savannah... then down to the campfire — perfect holiday vibes.” — The Pugh family, Little Clogs Holidays</div>
+</figure>
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/eb5aa3be3530.jpg" alt="The savannah plain at Beekse Bergen"></div>
+  <figcaption class="mx-card__caption">the plain at the foot of the garden.</figcaption>
+  <span class="mx-card__credit">Photo · Beekse Bergen</span>
+</figure>
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/215b91d5a6ee.jpg" alt="Inside a Savanne Lodge: beds and the big window over the plain"></div>
+  <figcaption class="mx-card__caption">inside a savanne lodge — beds and the big window.</figcaption>
+  <span class="mx-card__credit">Photo · Beekse Bergen Safari Resort official booking media</span>
+</figure>
+
+</div>
+
+<div class="mx-body">
+<p>Dining lives in Karibu Town, the resort's own small village, so a car never enters the picture. <strong>Restaurant Moto</strong> is the centrepiece — an African-style grill and buffet whose windows look out over the Serengeti, so dinner comes with the same animals you watched from the lodge. Around it sit the Baobab Café for daytime snacks, a Market for groceries and takeaway when a lodge night calls for cooking in, and the <strong>Pamoja Lounge</strong>, a bar with bowling lanes for the slow end of the evening. Pizza delivery reaches the lodges too. Over in the Safari Hotel's Hogon House, the Nommos and Amma restaurants round out the choice without anyone leaving the estate.</p>
+</div>
+
+<div class="mx-ledger" data-mx-event="ledger">
+  <div class="mx-ledger__caption">Karibu Town · Dinner without leaving the fence</div>
+  <dl>
+    <dt>Restaurant Moto</dt><dd>African grill &amp; buffet over the Serengeti</dd>
+    <dt>Baobab Café</dt><dd>daytime snacks</dd>
+    <dt>Pamoja Lounge</dt><dd>bar &amp; bowling</dd>
+    <dt>The Market</dt><dd>groceries, takeaway &amp; pizza to the lodge</dd>
+    <dt>Also</dt><dd>Hogon House (Safari Hotel) adds Nommos &amp; Amma.</dd>
+  </dl>
+</div>
+
+<div class="mx-shelf">
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/b0ced54b732c.jpg" alt="The grill at Restaurant Moto"></div>
+  <figcaption class="mx-card__caption">the grill at restaurant moto.</figcaption>
+  <span class="mx-card__credit">Photo · Beekse Bergen / Libema press</span>
+</figure>
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/a3be2e330b61.jpg" alt="One of the two treehouses at the Safari Resort"></div>
+  <figcaption class="mx-card__caption">one of the two treehouses.</figcaption>
+  <span class="mx-card__credit">Photo · Beekse Bergen / Libema press</span>
+</figure>
+
+</div>
+
+<div class="mx-body">
+<p>For the hours the animals are asleep, <strong>Maji Springs</strong> is the resort's indoor pool complex: a lap pool, a relaxation pool, children's water slides and rapids, and a toddler paddling pool, all under cover for whatever the Brabant sky does in early July. It is the dependable wet-weather pivot a five-night stay needs.</p>
+<p>What seals the case for staying on for the full five nights is what the stay includes. Every Safari Resort booking carries <strong>unlimited free access to Safaripark Beekse Bergen and Speelland for the whole stay</strong>, with further day attractions reachable on the Attractions Pass. Check-in is a digital PIN, so the gate is yours from arrival. That changes the maths entirely: the walking safari and the boat are not a single ticketed day to ration but a route you can wander out to before breakfast and again after the crowds thin, five days running, paying nothing more.</p>
+</div>
+
+<div class="mx-shelf">
+
+<div class="mx-stamp" data-mx-event="ephemera">
+  <span>Included · all 5 nights</span><b>PARK + POOL</b><span>Safaripark + Speelland</span>
+</div>
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/9fdcee4f4ae4.jpg" alt="The bunk room of a Savanne Lodge Plus"></div>
+  <figcaption class="mx-card__caption">savanne lodge plus — bunk room.</figcaption>
+  <span class="mx-card__credit">Photo · Beekse Bergen Safari Resort official booking media</span>
+</figure>
+
+</div>
+
+<div class="mx-body">
+<p>Stack it up and the onsite stay wins on its own terms. The view is the headline; the calm is the texture. As one returning family put it, opening the terrace doors on arrival, "the rhinos were out tussling and playing." Five mornings of that, with the park gate already paid for, is the whole argument for sleeping over the savannah.</p>
+</div>
+
+<header class="mx-plate" data-mx-event="plate">
+  <div class="mx-plate__ghost" aria-hidden="true">5</div>
+  <span class="mx-plate__no">The last stretch</span>
+  <h2 class="mx-plate__title">Five Moments Worth the Trip</h2>
+</header>
+
+<div class="mx-body">
+<p>Not attractions &mdash; moments. Five specific things to look forward to across the two estates, the ones worth counting down the last sixteen sleeps for. Two from the floating castle, three from the savannah, every one of them borrowed from people who have already been.</p>
+</div>
+
+<div class="mx-zig">
+  <article class="mx-zig__entry" data-mx-event="figure">
+    <div class="mx-zig__media"><img src="/assets/cached/889d257bf7ff.jpg" alt="A boat drifting through the lamplit Arabian bazaar scenes of Efteling's Fata Morgana dark ride."></div>
+    <div class="mx-zig__card">
+      <div class="mx-zig__head">
+        <span class="mx-rank"></span>
+        <h3 class="mx-zig__title">Drifting into the bazaar on Fata Morgana</h3>
+      </div>
+      <p class="mx-zig__quote"><em>&ldquo;An enthralling and unique attraction.&rdquo;</em> &mdash; Benjiramon, Along for the Ride</p>
+      <dl class="mx-zig__meta">
+        <dt>The moment</dt><dd>The boat slides out of the daylight and the Forbidden City of a thousand and one scenes opens up around it &mdash; spice market, palace, dungeon, all under warm lamplight. A decades-old ride that still runs like clockwork, and lands harder the second day when the queue has gone.</dd>
+      </dl>
+      <span class="mx-card__credit">Photo · Efteling press / official site &mdash; Fata Morgana, the Arabian boat dark ride.</span>
+    </div>
+  </article>
+  <article class="mx-zig__entry" data-mx-event="figure">
+    <div class="mx-zig__media"><img src="/assets/cached/717362d03fbe.jpg" alt="The made beds of a Wonder Hotel suite, a category example of the room range rather than a specific themed suite."></div>
+    <div class="mx-zig__card">
+      <div class="mx-zig__head">
+        <span class="mx-rank"></span>
+        <h3 class="mx-zig__title">Opening the door to a suite nobody has described</h3>
+      </div>
+      <p class="mx-zig__quote"><em>Twenty-two themed suites, each one dressed after a different attraction or fairytale.</em></p>
+      <dl class="mx-zig__meta">
+        <dt>The moment</dt><dd>The Wonder Hotel keeps a range of themed suites, decorated after the park's stories &mdash; and which one waits at the end of the corridor stays unknown until the key turns. The first sight of the room is the surprise, deliberately left unspoiled here.</dd>
+      </dl>
+      <span class="mx-card__credit">Photo · Efteling Wonder Hotel press / official site &mdash; one of the themed-suite range, a category example only.</span>
+    </div>
+  </article>
+  <article class="mx-zig__entry" data-mx-event="figure">
+    <div class="mx-zig__media"><img src="/assets/cached/ff4b2a59b9aa.jpg" alt="The Wave Rider water attraction at Speelland Beekse Bergen, water sliding over its sloped surface."></div>
+    <div class="mx-zig__card">
+      <div class="mx-zig__head">
+        <span class="mx-rank"></span>
+        <h3 class="mx-zig__title">A warm afternoon off-duty at the Wave Rider</h3>
+      </div>
+      <p class="mx-zig__quote"><em>The estate is more than the animals &mdash; Safaripark, Speelland, the resort and the lake.</em></p>
+      <dl class="mx-zig__meta">
+        <dt>The moment</dt><dd>The hour the safari steps aside for water. Speelland's Wave Rider sits across the lake from the lions, free with the resort stay, and the five nights make room for a soft afternoon that a single safari day would never spare.</dd>
+      </dl>
+      <span class="mx-card__credit">Photo · Beekse Bergen / Libema press &mdash; the Speelland Wave Rider water attraction.</span>
+    </div>
+  </article>
+  <article class="mx-zig__entry" data-mx-event="figure">
+    <div class="mx-zig__media"><img src="/assets/cached/450f6430f714.jpg" alt="Ring-tailed lemurs beside the self-guided walking-safari path at Beekse Bergen."></div>
+    <div class="mx-zig__card">
+      <div class="mx-zig__head">
+        <span class="mx-rank"></span>
+        <h3 class="mx-zig__title">Meeting the ring-tailed lemurs on foot</h3>
+      </div>
+      <p class="mx-zig__quote"><em>&ldquo;Unlike busy, overstimulating theme parks, Beekse Bergen feels calm and expansive.&rdquo;</em> &mdash; Chloe Gallagher, The Travel Mum</p>
+      <dl class="mx-zig__meta">
+        <dt>The moment</dt><dd>Somewhere on the 3.5 km walking route, a stretch where ring-tailed lemurs sit out in the open beside the path, moats doing the work fences usually do. No glass, no car, no hurry &mdash; the close, quiet encounter the walking safari is built for.</dd>
+      </dl>
+      <span class="mx-card__credit">Photo · Beekse Bergen / Libema press &mdash; ring-tailed lemurs along the walking-safari route.</span>
+    </div>
+  </article>
+</div>
+
+<article class="mx-anchor" data-mx-event="figure">
+  <div class="mx-anchor__media"><img src="/assets/cached/56f2d27c4034.jpg" alt="A family on a Safari Resort lodge terrace as giraffes pass on the savannah plain."></div>
+  <div class="mx-anchor__copy">
+    <h3 class="mx-anchor__title">05 · Coffee on the terrace as the giraffes pass</h3>
+    <p class="mx-anchor__dek">The last moment needs no ride and no photograph — only a Savanne Lodge and an early start. The whole point of sleeping over the savannah is the view from the terrace before the park has properly woken: the long-necked silhouettes drifting the fence line while the coffee is still hot, animals at calm, close range from your own door.</p>
+    <div class="mx-anchor__meta"><span>Photo <b>Safari Resort Beekse Bergen</b></span></div>
+  </div>
+  <div class="mx-anchor__badge">no queue</div>
+  <div class="mx-anchor__note">five nights, one of them for the boat at sunset</div>
+</article>
+
+<figure class="mx-quote" data-mx-event="quote">
+  <blockquote>Imagine sipping your morning coffee while giraffes stroll by just metres away.</blockquote>
+  <figcaption>— <b>Chloe Gallagher</b> · The Travel Mum</figcaption>
+</figure>
+
+<header class="mx-plate" data-mx-event="plate">
+  <div class="mx-plate__ghost" aria-hidden="true">T−16</div>
+  <span class="mx-plate__no">Coda</span>
+  <h2 class="mx-plate__title">Before You Go</h2>
+</header>
+
+<div class="mx-body">
+<p>The homework, demoted to a coda — because a Countdown is about wanting to be there, not about spreadsheets. A handful of things worth knowing before the gates open, kept deliberately short. The whole week is onsite and car-free: Schiphol by train, a taxi to the first set of gates, and after that everything lives inside the two estates.</p>
+</div>
+
+<aside class="mx-dontmiss" data-mx-event="cheatsheet">
+  <span class="mx-dontmiss__kicker">good to know</span>
+  <h3 class="mx-dontmiss__title">Five things the brochures bury</h3>
+  <ol class="mx-dontmiss__list">
+    <li>Wonder Hotel guests step into the park <strong>thirty minutes</strong> before the public, through an exclusive side entrance that opens straight in near Vogel Rok — the quietest the park ever gets.</li>
+    <li>At Beekse Bergen the <strong>boat safari is also transport</strong>: Livingstone and Stanley run between the Safari Restaurant and the Kongo Restaurant, so the ride to the far end doubles as a thirty-minute cruise past the rhino plain.</li>
+    <li>A Safari Resort stay includes <strong>unlimited free access</strong> to both the Safaripark and Speelland for the entire visit — no day-by-day ticketing to think about.</li>
+    <li>Where it can, the Safaripark replaces fences with <strong>moats</strong>, which is why the walking route gives lions and giraffes at uninterrupted, close range.</li>
+    <li>The two boats are named for explorers, never for a bird — <strong>Livingstone and Stanley</strong>, if you want to know which one you boarded.</li>
+  </ol>
+</aside>
+
+<div class="mx-shelf">
+<figure class="mx-card mx-card--ruled mx-card--wide" data-mx-event="ephemera">
+  <div class="mx-card__window"><div class="mx-typed"><b>WEATHER:</b> Think range, not forecast. Late June and early July in North Brabant swing from warm, dry spells climbing into the high twenties and beyond, to cooler, thundery days hovering around 19&nbsp;°C. The two ends can sit within the same week. Past roughly 28&nbsp;°C the big cats and the elephants withdraw into shade and the ride queues lengthen, so the heat rewards early mornings and tips the balance toward the shaded boat safari and the indoor dark rides.</div></div>
+  <figcaption class="mx-card__caption">the forecast card · North Brabant, late June</figcaption>
+  <span class="mx-card__credit">Index card · The Signal archive</span>
+</figure>
+</div>
+
+<div class="mx-body">
+<p><strong>One flag for the trip window.</strong> The regular bus safari is suspended until <strong>1 October 2026</strong> and is taking group bookings only — which means it may not run for individual visitors across late June and early July. That leaves the <strong>walking safari and the boat safari</strong> as the dependable car-free ways round the park, and they cover it comfortably between them. Worth confirming the bus status nearer the date in case the schedule shifts.</p>
+<p>Otherwise the logistics end here. Two estates, seven nights, no car, and a count still running down. Sixteen sleeps.</p>
+</div>
+
+<header class="mx-plate" data-mx-event="plate">
+  <div class="mx-plate__ghost" aria-hidden="true">✸</div>
+  <span class="mx-plate__no">Meanwhile</span>
+  <h2 class="mx-plate__title">The chorus that already went</h2>
+</header>
+
+<div class="mx-body">
+<p>Two parks, seven nights, one castle and one savannah &mdash; and a whole chorus of people who have already made the trip. The Deacon family did both in a single run and called it &ldquo;magical, quiet (compared to a UK August!) and the kids adored every second.&rdquo; The countdown, for once, agrees with everyone.</p>
+</div>
+
+<div class="mx-shelf" role="group" aria-label="Postcards from people who already made the trip">
+
+<figure class="mx-card--mail" data-mx-event="ephemera">
+  <div class="mx-mail__front">
+    <span class="mx-mail__greet">Greetings from</span>
+    <span class="mx-mail__place">Efteling</span>
+  </div>
+  <div class="mx-mail__back">“So weird and wonderful, and we had no criticisms whatsoever.” — Lydia Storks, Disney Food Blog</div>
+</figure>
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/685f559d3b77.jpg" alt="Postcard scene from Efteling"></div>
+  <figcaption class="mx-card__caption">Efteling, as they saw it.</figcaption>
+  <span class="mx-card__credit">Photo · meteorry / Flickr</span>
+</figure>
+
+<figure class="mx-card--mail" data-mx-event="ephemera">
+  <div class="mx-mail__front">
+    <span class="mx-mail__greet">Greetings from</span>
+    <span class="mx-mail__place">Efteling</span>
+  </div>
+  <div class="mx-mail__back">“Pure escapism, which is probably why I loved it.” — Jessica Ruth Gibson, The Travelista</div>
+</figure>
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/5bb03bcfee6e.jpg" alt="Postcard scene from Efteling"></div>
+  <figcaption class="mx-card__caption">Efteling, as they saw it.</figcaption>
+  <span class="mx-card__credit">Photo · meteorry / Flickr</span>
+</figure>
+
+<figure class="mx-card--mail" data-mx-event="ephemera">
+  <div class="mx-mail__front">
+    <span class="mx-mail__greet">Greetings from</span>
+    <span class="mx-mail__place">Beekse Bergen</span>
+  </div>
+  <div class="mx-mail__back">“Sipping your morning coffee while giraffes stroll by just metres away.” — Chloe Gallagher, The Travel Mum</div>
+</figure>
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/5731d0d657db.jpg" alt="Postcard scene from Beekse Bergen"></div>
+  <figcaption class="mx-card__caption">Beekse Bergen, as they saw it.</figcaption>
+  <span class="mx-card__credit">Photo · Beekse Bergen</span>
+</figure>
+
+<figure class="mx-card--mail" data-mx-event="ephemera">
+  <div class="mx-mail__front">
+    <span class="mx-mail__greet">Greetings from</span>
+    <span class="mx-mail__place">Beekse Bergen</span>
+  </div>
+  <div class="mx-mail__back">“A cheetah drinking at the water’s edge as we sailed past.” — Natalie Smith, Frugal Mum</div>
+</figure>
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/ece106cce244.jpg" alt="Postcard scene from Beekse Bergen"></div>
+  <figcaption class="mx-card__caption">Beekse Bergen, as they saw it.</figcaption>
+  <span class="mx-card__credit">Photo · R. Kroenert / Flickr</span>
+</figure>
+
+<figure class="mx-card--mail" data-mx-event="ephemera">
+  <div class="mx-mail__front">
+    <span class="mx-mail__greet">Greetings from</span>
+    <span class="mx-mail__place">Beekse Bergen</span>
+  </div>
+  <div class="mx-mail__back">“A safari view really is the most enchanting thing about the resort.” — The Bayliss family, Little Clogs Holidays</div>
+</figure>
+
+<figure class="mx-card" data-mx-event="figure">
+  <div class="mx-card__window"><img src="/assets/cached/64e79531e2eb.jpg" alt="Postcard scene from Beekse Bergen"></div>
+  <figcaption class="mx-card__caption">Beekse Bergen, as they saw it.</figcaption>
+  <span class="mx-card__credit">Photo · Safari Resort Beekse Bergen</span>
+</figure>
+
+</div>
+
+<div class="mx-countdown" data-mx-event="statband" style="margin: 64px auto 0;">
+  <div class="mx-countdown__grid">
+    <div class="mx-countdown__cell"><span class="mx-countdown__num" data-cd="days">16</span><span class="mx-countdown__unit">Sleeps</span></div>
+    <div class="mx-countdown__cell"><span class="mx-countdown__num" data-cd="hours">00</span><span class="mx-countdown__unit">Hours</span></div>
+    <div class="mx-countdown__cell"><span class="mx-countdown__num" data-cd="mins">00</span><span class="mx-countdown__unit">Minutes</span></div>
+    <div class="mx-countdown__cell"><span class="mx-countdown__num" data-cd="secs">00</span><span class="mx-countdown__unit">Seconds</span></div>
+  </div>
+  <div class="mx-countdown__target">the issue opened on this beat · it closes on it too · tue 30 jun 2026 · 09:00 cest</div>
+</div>
+
+</div>
+</div>
+</section>
+
+<footer class="mx-footer">
+  <b>The Signal · The Countdown — Efteling &amp; Beekse Bergen · Holiday Specials · 14 June 2026</b>
+  <p>“Sixteen sleeps, and counting.” Two estates, seven nights, no car — Efteling &amp; Beekse Bergen, 30 Jun – 7 Jul.</p>
+</footer>
+
+</body>
+</html>

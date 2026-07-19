@@ -584,6 +584,42 @@ SPECIAL_VARIETY_FLOOR: dict[str, int] = {
 }
 
 
+# New-system (data-mx) pages carry the Law-2 closed-list census vocabulary as
+# data-mx-event markers (9 types total: figure, ephemera, ledger, statband,
+# quote, plate, chart, marquee, cheatsheet). The legacy floors (7–9) are scaled
+# against ~15 legacy component groups; against a 9-type vocabulary the
+# equivalent floors are:
+MX_VARIETY_FLOOR: dict[str, int] = {
+    "deep-dive": 6, "rewind": 6, "starter-kit": 6, "guide": 6,
+    "season-review": 5, "shortlist": 5, "versus": 5, "lookahead": 5, "next": 5,
+    # data-mx holiday formats get variety here in lieu of the legacy hol- check:
+    "countdown": 6, "field-guide": 6,
+}
+
+
+def check_mx_component_variety(html: str, fmt: str, report: Report) -> None:
+    """special-variety for data-mx pages: count distinct data-mx-event types."""
+    floor = MX_VARIETY_FLOOR.get(fmt)
+    if floor is None:
+        return  # weekly / unknown — not gated here
+    types = set(re.findall(r'data-mx-event\s*=\s*"([a-z-]+)"', body_text_only(html)))
+    n = len(types)
+    if n < floor:
+        report.fail(
+            "special-variety",
+            f"{fmt} (data-mx) deploys only {n} distinct data-mx-event type(s); "
+            f"floor is {floor}. Present: {', '.join(sorted(types)) or '(none)'}. "
+            f"A special must render with real visual variety — see "
+            f"references/core-components.md for the component catalog.",
+        )
+    else:
+        report.ok(
+            "special-variety",
+            f"{fmt} (data-mx): {n} distinct event type(s) (floor {floor}) — "
+            + ", ".join(sorted(types)),
+        )
+
+
 def check_special_component_variety(html: str, fmt: str, report: Report) -> None:
     """Hard-fail a non-holiday special that deploys too few distinct
     presentational component types — the rule that stops a plain-page Deep Dive
@@ -1703,10 +1739,14 @@ def main(argv: list[str]) -> int:
     body_tag = body_match.group() if body_match else ""
     if not fmt:
         ds = re.search(r'data-special="([^"]+)"', body_tag)
+        # data-mx pages declare their format via data-format (core convention)
+        df = re.search(r'data-format="([^"]+)"', body_tag)
         if ds:
             fmt = normalize_format(ds.group(1))
+        elif df:
+            fmt = normalize_format(df.group(1))
         else:
-            # Fallback for weekly: no data-special on body
+            # Fallback for weekly: no data-special/data-format on body
             fmt = "weekly"
         print(f"  (auto-detected format from <body>: {fmt})")
     if not multi_venue and 'data-multi-venue="true"' in body_tag:
@@ -1755,16 +1795,21 @@ def main(argv: list[str]) -> int:
     # including under --skip-image-urls and in offline sandboxes (A2).
     check_image_floor(html, fmt, report)
 
-    # Holiday-only checks
-    if fmt in HOLIDAY_FORMATS:
+    # Holiday-only checks — LEGACY pages only. A data-mx page is built on the
+    # unified core (no hol-/is-special vocabulary by design, F-13); it gets the
+    # mx variety gate below instead, and its structure is gated by the rendered
+    # measure/parity suite (tools/measure-issue.mjs + Part-5 gate).
+    if fmt in HOLIDAY_FORMATS and not new_system:
         check_holiday_activation(html, fmt, multi_venue, report)
         check_holiday_components(html, report)
         if multi_venue:
             check_multi_venue(html, report)
 
-    # Non-holiday special component-variety gate (parallel to the holiday
-    # component gate; holiday formats keep their own check above).
-    if fmt in SPECIAL_FORMATS and fmt not in HOLIDAY_FORMATS:
+    # Component-variety gate: mx vocabulary for data-mx pages (incl. holiday
+    # formats), legacy class-group vocabulary for old-system specials.
+    if new_system:
+        check_mx_component_variety(html, fmt, report)
+    elif fmt in SPECIAL_FORMATS and fmt not in HOLIDAY_FORMATS:
         check_special_component_variety(html, fmt, report)
 
     # Image URL static check — runs ALWAYS, even in restricted environments.
