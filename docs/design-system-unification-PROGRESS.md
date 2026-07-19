@@ -42,13 +42,38 @@ Evidence ledger root: `docs/design-system-unification-EVIDENCE/`
 
 ---
 
-## WP-0 — Gates first — IN PROGRESS (2026-07-19)
+## WP-0 — Gates first — BUILD COMPLETE, GATE VERIFICATION RUNNING (2026-07-19)
 
-- Builder A (measurement harness: `tools/measure-issue.mjs`, `tools/render.mjs`,
-  smoke runs) — running.
-- Builder B (validate-issue.py wiring: F-14 scaffold + strategy vocab, Law-3
-  floors, Law-9 voices, F-16; phase-0 hygiene: TEST files, F-17
-  image-source-types, format vocabulary) — running.
-- Gate: pending. Will be run by a fresh verifier subagent (never the builders),
-  with negative-fixture verdicts committed under
-  `docs/design-system-unification-EVIDENCE/WP-0/`.
+**Shipped:**
+- `tools/measure-issue.mjs` + `tools/render.mjs` + `tools/lib/` (Builder A):
+  HTTP-served, SW-blocked, both viewports, smooth-scroll; Law-2 event census
+  (heuristic selector map + `[data-mx-event]` support); distribution,
+  chrome-overlap, h-scroll (real-scroll test, not scrollWidth inflation),
+  mid-word truncation, motion + reduced-motion census. Docs:
+  `tools/README-measure.md`.
+- `validate-issue.py` extensions (Builder B): F-14 scaffold + strategy
+  vocabulary (visible prose only), Law-3 floors / Law-9 voices / F-16 for
+  `data-mx` issues; hygiene: TEST files deleted, F-17 `restricted` type,
+  guide/next/blueprint vocabulary reconciled.
+- Negative fixtures staged; smoke sweep committed:
+  `docs/design-system-unification-EVIDENCE/WP-0/smoke/SUMMARY.md` +
+  `validator-calibration.md`.
+
+**Notable true findings on the references (kept, not suppressed):**
+- Countdown violates reduced-motion: `hol-shimmer` heat-haze ungated (3 els).
+- Countdown/field-guide chrome-overlap FAILs echo review-documented flaws.
+
+**Orchestrator spot-check:** smoke screenshots opened personally — real
+renders; stub's fixed-pill overlap visible at 390/depth-2. Recorded in the
+WP-0(a,d) commit message.
+
+**Incidents (process, not evidence):** Builder A repeatedly stalled by
+parking work in background waits (68 min lost); orchestrator watcher bug
+(`pgrep -f` matching its own command line) hid sweep completion for ~2.5 h.
+Mitigation now standing: subagents run measurement in foreground with long
+timeouts; no pgrep-based waits.
+
+**Gate:** independent verifier (non-builder) running — re-executes tools
+fresh on countdown + stub, revalidates all known-bad/clean files, audits
+evidence docs; verdict to `EVIDENCE/WP-0/gate-verdict.md`. WP-0 is not done
+until that verdict is PASS.
