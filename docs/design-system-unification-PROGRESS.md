@@ -144,3 +144,34 @@ in the WP-3 dark pass.
 **Owner checkpoint #1:** packet committed at `EVIDENCE/WP-2/checkpoint-1/`
 (before = shipped DD renders; after = parity candidate). Proceeding per
 standing decision #2; retroactive sign-off requested in the final report.
+
+---
+
+## WP-2 — Furniture core — ✅ GATE PASS (2026-07-19)
+
+Core css (7 files + 01-fonts, 79KB+fonts), scenography-as-default, kitchen-sink
+proof, core-components.md catalog; F-13 doc prune (zero dead-class refs,
+grep list in EVIDENCE/WP-2/doc-prune-report.md); re-dress fixtures DD+countdown
+(verbatim copy, validator green); parity gate 12/12 PASS on DD re-dress
+(EVIDENCE/WP-2/parity-scorecard-dd.md); orchestrator spot-check recorded;
+owner checkpoint #1 packet committed (EVIDENCE/WP-2/checkpoint-1/) — proceeding
+per standing decision #2, retroactive sign-off requested in final report.
+Self-hosted fonts pulled forward from WP-3 (npm/fontsource; Google Fonts
+blocked as spec warned). Validator gates made data-mx-aware (mx variety,
+legacy holiday checks skipped on mx pages, data-format autodetect) with full
+Part-6 §4 recalibration: negatives still fail, cleans still pass.
+
+## WP-3 — Skins + bundling + dark/print — ✅ GATE PASS (2026-07-19)
+
+Editorial/event/transmission skins (zero :not(), F-8/F-12 fixed in ports),
+manifest bundling in stitch-issue.sh (budgets hard-fail: editorial 102.4KB/120,
+event 96.5KB/160; one-masthead enforced; legacy glob untouched — archive
+pipeline verified working), chrome tokens (dark stays dark), 16-print.css,
+network-disabled render zero external requests, weekly golden byte-identical
+throughout. Parity gate: event candidate 12/12 PASS first try (judged better
+than frozen original on craft; tier2 moments pending WP-5 as scoped);
+editorial candidate FAILED first scoring on words/screen 222.7>220 —
+remediated with desktop reading air in the skin (219.0), fully re-rendered,
+re-scored 12/12 PASS by a fresh verifier (EVIDENCE/WP-3/parity-scorecards.md).
+The gate catching a real 1.2% breach and forcing remediation is the system
+working as designed.
