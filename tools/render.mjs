@@ -54,7 +54,9 @@ async function shootWidth(browser, target, vp, outDir, manifest) {
     const y = Math.round((maxScroll * i) / 7);
     depths.push(y);
     await page.evaluate((top) => window.scrollTo({ top, behavior: 'auto' }), y);
-    await page.waitForTimeout(450);
+    // 3000ms: pages re-run reveal-on-scroll after teleport jumps with a ~2.6s
+    // safety force-reveal; 450ms produced blank frames (WP-1 anomaly #1).
+    await page.waitForTimeout(3000);
     await page.screenshot({ path: path.join(dir, `depth-${i}.png`) });
   }
 

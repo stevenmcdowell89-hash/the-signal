@@ -104,3 +104,11 @@ but before writing BASELINES.md; orchestrator wrote the summary doc directly
 from the committed metrics (mechanical transcription, no builder judgment
 involved). Packs are FROZEN from this commit; regeneration requires a
 PROGRESS-recorded decision.
+
+**WP-1 addendum (regeneration decision):** WP-1 builder completed after all and
+found 10/48 depth PNGs blank (render.mjs 450ms settle vs ~2.6s page reveal
+safety-net). Orchestrator raised settle to 3000ms and regenerated all three
+reference render packs + the stub fixture pack once; zero blanks remain
+(<20KB census), previously-blank frame visually confirmed real. Recorded in
+BASELINES.md. Builder also replaced the orchestrator's minimal BASELINES.md
+with its fuller version (numbers identical) — kept.
