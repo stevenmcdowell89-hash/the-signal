@@ -176,12 +176,12 @@ extract_heading  "$OUT_DIR/global/02b-topic-lock.md" "Topic Lock: Recent Leads &
 # v8.15 — Per-section discipline rules (Toolkit / Session / Long Game ↔ Session boundary)
 extract_heading  "$OUT_DIR/global/02c-per-section-discipline.md" "Per-section discipline rules"
 extract_heading  "$OUT_DIR/global/03-visual-design.md" "Visual Design"
-extract_h3       "$OUT_DIR/global/04-markup-contracts.md" "Markup contracts (v8.10.3 — hard rule)"
+extract_h3       "$OUT_DIR/global/04-markup-contracts.md" "Markup contracts (v8.21 system — hard rule)"
 extract_h3_multi "$OUT_DIR/global/05-image-integrity.md" \
   "Image-caption integrity (v8.10.3 — hard rule)" \
   "Image URL verification chain (v8.13.7+) — UNBREAKABLE RULE"
-extract_h3       "$OUT_DIR/global/06-ground-discipline.md" "Ground discipline (v8.4 — hard rule)"
-extract_h3       "$OUT_DIR/global/07-accent-lockdown.md"   "Accent lockdown (v8.4 — hard rule)"
+extract_h3       "$OUT_DIR/global/06-ground-discipline.md" "Ground discipline (v8.21 system)"
+extract_h3       "$OUT_DIR/global/07-accent-lockdown.md"   "Accent lockdown (v8.21 system)"
 extract_h3_multi "$OUT_DIR/global/08-stat-budget.md" \
   "Stat budget (v8.4 — hard cap per issue)" \
   "Held-attention moment (format-agnostic)" \
@@ -207,14 +207,13 @@ extract_h3_multi "$OUT_DIR/specials/02-cover.md" \
   "Component list"
 extract_heading  "$OUT_DIR/specials/03-meanwhile.md" "Auto-Triggered Specials"
 extract_h3       "$OUT_DIR/specials/04-chapter-gate.md" \
-  "Chapter gate (MANDATORY for every chapter on every special edition — v8.5, sticky scroll model)"
+  "Chapter gate — RETIRED (v8.21)"
 extract_h3       "$OUT_DIR/specials/05-imagery-budget.md" \
   "Imagery budget — MANDATORY for loud special editions"
-extract_h3_multi "$OUT_DIR/specials/06-editorial-body-kit.md" \
-  "Editorial body kit — MANDATORY rules for loud special editions" \
-  "Editorial motion layer (tier 5.5) — MANDATORY for loud special editions"
+extract_h3       "$OUT_DIR/specials/06-editorial-body-kit.md" \
+  "Editorial body kit — RETIRED (v8.21)"
 extract_h3       "$OUT_DIR/specials/07-signature-moments.md" \
-  "Signature moments — ONE per format (mandatory)"
+  "Signature moments — RETIRED (v8.21)"
 extract_h3       "$OUT_DIR/specials/08-chapter-transitions.md" \
   "Chapter transitions + ambient (format-agnostic)"
 # 09-multi-venue and 13-holiday-identity: synthetic / from holiday-identity H2
@@ -242,78 +241,25 @@ written=$(( written + 1 ))
 echo "  wrote: $OUT_DIR/specials/09-multi-venue.md (synthetic — no clean H2/H3 anchor)"
 
 cat > "$OUT_DIR/specials/10-hype-chapter-visuals.md" <<'HYPE'
-# Hype-Chapter Visuals (v8.9.1)
+# Hype-Chapter Visuals — RETIRED (v8.21 / v8.12)
 
-> See `formats/countdown.md` for the full hype-chapter spec. This file is a cross-format summary.
-
-**Hype-chapter visuals** are opt-in CSS modifiers (`32-hype-variants.css`) that dial back default special-edition chrome on chapters where excitement — not literary depth — is the job.
-
-## When to use hype modifiers
-
-Apply on:
-- Countdown hype chapters: Top Attractions, Accommodation, Mood Board, Five Moments Worth the Trip, By the Numbers (when image-led)
-- Field Guide: The Opening, The Unmissables
-
-**Never apply on literary formats:** Deep Dive, Versus, Rewind, Season Review — these keep full default chrome.
-
-## The four modifiers
-
-1. **`.sp-chapter-gate.is-hype`** — compact gate: 60vh track (vs 110vh), 40vh hold (vs 100vh), layers solid by progress 0.08 (vs 0.20)
-2. **`[data-sp-chapter].is-hype`** — re-permits coral on `.sp-number`, `.sp-number-huge`, `.sp-kicker`, `.sp-brief-kicker`, `.unmissables .sp-datum-value`, `.why-its-here`. All global lockdown elements unchanged.
-3. **`.sp-ground-gallery`** — neutral slate ground (#1A1E27) for image-first chapters (Mood Board primary, optionally Field Guide Opening). NOT pitch black.
-4. **`.unmissables` / `.unmissable`** — Field Guide Unmissables pattern: 6-10 full-width editorial beats, each = hero image + sensory prose + "Why It's Here" coral kicker + mono `<dl>` practical footer. Drop-cap forbidden on picks.
+The pre-v8.21 hype-chapter modifier system was deleted with the rest of the old special-edition chrome; its CSS file no longer exists. Hype register on Countdown / Field Guide is now carried entirely by the Holiday Identity layer (`.hol-*` components + `.theme-*` ambients — see § holiday-identity) and by the hype components in `43-holiday-hype.css` / `44-holiday-sprinkles.css`. Literary formats (Deep Dive, Versus, Rewind, Season Review) use the v8.21 editorial kit with no hype variants. Superseded by the unified core — see `references/core-components.md`.
 HYPE
 written=$(( written + 1 ))
 echo "  wrote: $OUT_DIR/specials/10-hype-chapter-visuals.md (synthetic)"
 
 cat > "$OUT_DIR/specials/11-readability-locks.md" <<'LOCKS'
-# Readability Locks (v8.10.3)
+# Readability Locks — RETIRED (v8.21)
 
-**CSS layer:** `34-readability-locks.css` (Tier 10, runs last in cascade).
-
-Some self-painting components lose identity when nested inside `[data-sp-chapter]` because Tier 7's ground-discipline lockdown is over-aggressive. This layer re-locks each component to a fixed background+text pair regardless of the chapter ground above it.
-
-| Component | Lock |
-|---|---|
-| `.sp-marginalia` | Always cream-bg + ink-text |
-| `.sp-pull-break` | Always dark-bg + bone-text |
-| `.sp-pullquote-huge` text | Set explicitly per chapter ground |
-
-**Why this matters for writers:** if you use these components in the markup (which you should, per pre-flight.md), the CSS will handle contrast automatically. You do NOT need to add inline styles or ground overrides. Just use the canonical markup and the lock layer handles it.
-
-**Markup contracts (Gate 1E):** the lockdown only works when markup matches the contract. See `global/04-markup-contracts.md` and `references/pre-flight.md` § Canonical markup snippets.
+The pre-v8.21 readability-lock CSS layer was deleted with the old chrome; its CSS file no longer exists. In the live v8.21 editorial system, each self-painting component locks its own text colour in its own rules — use the canonical markup from `references/component-contracts.md` (Gate 1E) and contrast is handled; never add inline styles or ground overrides. Superseded by the unified core — see `references/core-components.md`.
 LOCKS
 written=$(( written + 1 ))
 echo "  wrote: $OUT_DIR/specials/11-readability-locks.md (synthetic)"
 
 cat > "$OUT_DIR/specials/12-portrait-spread.md" <<'SPREAD'
-# Portrait Spread — Hybrid Layout (v8.7.2)
+# Portrait Spread — RETIRED (v8.21)
 
-**CSS:** `26-special-editorial.css`. The three-column `.sp-spread` layout adapts at ≤980px.
-
-## Portrait behaviour
-
-At ≤ 980px, `.sp-spread` becomes `display: flow-root; position: relative`.
-
-- **Rail** (`.sp-rail`): `position: absolute; top:0; bottom:0; left:0; width: 60/44px` — runs full spread height as decorative chapter-side chrome.
-- **Margin aside** (`.sp-margin`): reparented via the portrait-spread-reparenter IIFE in `script.js` to be first child of `.sp-spread-body`; floats right (190/128px) with `shape-outside: margin-box`. Body is `flow-root` with left padding (78/58px) to clear the rail. Prose flows around the margin and reclaims full reading width once it ends.
-- **Ink grounds**: the margin paints a solid paper-tinted background so ink-on-paper text stays legible.
-
-## Markup contract
-
-```html
-<div class="sp-spread">
-  <div class="sp-rail" aria-hidden="true"></div>
-  <aside class="sp-margin">
-    <!-- marginalia content -->
-  </aside>
-  <div class="sp-spread-body">
-    <!-- prose, drop cap on first <p> -->
-  </div>
-</div>
-```
-
-**Never stack:** portrait is the canonical read. The three-column desktop layout is a bonus, not the target.
+The pre-v8.21 three-column spread layout was deleted in the v8.21 redesign; no current CSS or JS implements it. Chapters are a single measured column (`.chapter-body`, 36rem) with `.is-wide` / `.is-fullbleed` breakouts; `.marginalia` floats into the right gutter and falls back inline at narrow widths (see the Component list in § cover). Superseded by the unified core — see `references/core-components.md`.
 SPREAD
 written=$(( written + 1 ))
 echo "  wrote: $OUT_DIR/specials/12-portrait-spread.md (synthetic)"
@@ -405,7 +351,7 @@ file per subdir (subdirs are removed in the consolidation stage):
 
 - `global.md` — Identity, Key Rules, Visual Design, Markup Contracts, Image Integrity, Ground Discipline, Accent Lockdown, Stat Budget
 - `weekly.md` — Standard Weekly overview + Section Structure + Rotation Mechanics + Anchor-Piece + Search Checklist + Component Reference
-- `specials.md` — Content-first contract + Authoring + Component list + Auto-Triggered Specials + Chapter Gate + Imagery Budget + Editorial Body Kit + Signature Moments + Chapter Transitions + Multi-venue + Hype Variants + Readability Locks + Portrait Spread + Holiday Identity
+- `specials.md` — Content-first contract + Authoring + Component list + Auto-Triggered Specials + Imagery Budget + Chapter Beads ambient + Multi-venue + Holiday Identity (plus retirement stubs for the deleted pre-v8.21 chrome: chapter gate, body kit, signature moments, hype variants, readability locks, portrait spread)
 - `formats.md` — One H2 per format: Standard Weekly, Deep Dive, Countdown, Season Review, Versus, Rewind, Guide (merged; Starter Kit + Shortlist folded in, retained for reference), Next, Lookahead (retired/folded), Field Guide
 - `triggers.md` — Priority 1/2/3 trigger logic + Guardrails + Search Checklist
 

@@ -648,7 +648,7 @@ A short chapter (200-400 words) sitting between the Foreword and the body, namin
   1. **Photography / archival imagery** — paintings, photos, posters, props, screenshots
   2. **Maps** — geographical (campaigns, contagion spread, trade routes, network of influence) or schematic
   3. **Timelines** — vertical or horizontal, dated events with annotations. **Mandatory for biographical or chronological Deep Dives.**
-  4. **Charts / graphs** — time series, comparisons, distributions, against real sourced data. Use `.sp-dash` and `.sp-number-huge` family components; SVG line/bar charts inline.
+  4. **Charts / graphs** — time series, comparisons, distributions, against real sourced data. Use `.bignum-row` stat callouts and inline SVG line/bar charts.
   5. **Diagrams** — explanatory schematics. How an MBS chain worked, how a tariff transmits through supply chains, the imperial governance structure. **Mandatory for technical / economic Deep Dives.**
   6. **Comparison tables** — head-to-head data, multi-row multi-column
   7. **Quote panels** — primary-source quotes treated as visual elements (not inline prose), with attribution and source links
@@ -667,14 +667,7 @@ Pre-event build-up. **5,000-7,000 words, 18-25 pages.** Manual trigger: "Run a C
 
 **Hype over homework — the defining principle.** A Countdown exists to build anticipation, not to plan the trip. Logistics are compressed into a short coda near the end; the issue's weight sits in the chapters that make the reader *want to go*: the ranked attractions, the accommodation, the mood board, the moments worth the trip. If a chapter reads as a checklist or a how-to, it's in the wrong format — send that content to a Field Guide instead.
 
-**Hype-chapter visuals — opt-in modifiers (v8.9.1).** The default special-edition chrome (full-viewport chapter gate, coral accent lockdown, paper/ink grounds) is tuned for literary formats like Deep Dive and Rewind. On hype chapters it dampens the exact pages that should amplify. Four opt-in modifiers exist in `32-hype-variants.css` to dial the chrome back where excitement is the job. Use on Countdown hype chapters (Top Attractions, Accommodation, Mood Board, Five Moments Worth the Trip, and By the Numbers when image-led) and on Field Guide's The Opening + The Unmissables. Never use on literary chapters — Deep Dive, Rewind, Season Review, Versus keep the full default chrome.
-
-- **`.sp-chapter-gate.is-hype`** — compact gate variant. Same markup, same four text layers; track collapses to 60vh (was 110vh), sticky hold to 40vh (was 100vh), all layers fully revealed by progress 0.08 (was 0.20). The gate still announces the chapter; it no longer dwells.
-- **`[data-sp-chapter].is-hype`** — attribute on the chapter wrapper that narrowly re-permits coral on `.sp-number`, `.sp-number-huge`, `.sp-kicker`, `.sp-brief-kicker`, `.unmissables .sp-datum-value`, and `.why-its-here`. Everything else (pull-quotes, briefs, dashboard strong, spread h2, eyebrow) stays demoted per the global accent lockdown. Coral stays rare — just not absent on the elements meant to shout.
-- **`.sp-ground-gallery`** — third ground type alongside paper and ink. Neutral slate (#1A1E27), not pitch. Legal only on image-first chapters: Mood Board (primary use), Field Guide's The Opening when run image-led, optional for Five Moments Worth the Trip when the moment images are the point. Full-bleed image walls read as photography on a gallery wall instead of captioned content in a magazine spread.
-- **`.unmissables` / `.unmissable`** — Field Guide Unmissables pattern. 6–10 picks, each a full-width editorial beat (NOT a card grid). Per pick: hero image with captioned credit rule, **factual write-up** (what it is, what's good about it, what to order — anchored in attributed quotes from reviewers/diners/bloggers, never invented sensory description), “Why It's Here” coral kicker line, practical footer strip (price / booking / timing / walk) as a mono `<dl>` under a muted rule. Practical detail lives INSIDE the pick — that's the 45/55 Field Guide rule made structural. Drop-cap forbidden on picks (reserved for chapter openings).
-
-**When to apply them.** If a chapter's primary job is anticipation and it opens with imagery or a count-up stat, it's hype — add `.is-hype` to both the `sp-chapter-gate` and the chapter wrapper, and consider `.sp-ground-gallery` if the chapter is image-first. If the chapter's primary job is reflection or argument, it's literary — leave all four modifiers off. When in doubt, default to literary; the chrome is expensive-looking and holds up on its own. The modifiers are cheap to add and free to remove.
+**Hype register (holiday identity).** The pre-v8.21 hype-chapter modifier system is retired. Countdown renders under the Holiday Identity layer (see `spec/specials.md` § holiday-identity): hype is carried by the `.hol-*` vocabulary — unmissable/wonders rows, marquees, the T-MINUS banner and Trip-in-Numbers band (`43-holiday-hype.css`), polaroid collages, and the `.theme-*` ambient layers. Literary formats (Deep Dive, Versus, Rewind, Season Review) keep the restrained v8.21 editorial chrome throughout.
 
 **Visuals-first or cut.** Every chapter in a Countdown must be able to carry its own imagery. Minimums by chapter type:
 - **Narrative chapters** (Event in Depth, Top Attractions, Accommodation, Watch/Read/Play, Five Moments Worth the Trip): 3+ real, well-credited images — cut or reshape the chapter if it can't hit this.
@@ -687,18 +680,18 @@ All images must be real and credited (official venue media, Wikimedia, reputable
 **Equal hype weight for multi-venue trips.** When a trip has two or more headline venues, every venue gets equal hype weight across the issue — but the *shape* of the hype can differ to match what each venue actually is. A theme park earns a "Top 5 Attractions" chapter; a safari resort earns "Top 5 Animal Encounters" or "The Safari, Ranked" — same job, different shape. The test is not "did I mirror the structure" but **"did I give both places equal hype weight and equal visual presence?"** Measured mechanically: total words per venue and total images per venue across the issue must sit within a 60/40 split. If one venue genuinely warrants a chapter the other doesn't (e.g. one has 70 years of history worth a chapter, the other doesn't), the other venue gets an extra chapter of equivalent weight elsewhere to rebalance. Never 8 chapters on venue A and a single history paragraph on venue B.
 
 **Multi-venue destination theming (v8.10).** When a Countdown covers two or more headline venues, opt into per-venue theming so the reader's eye registers "a different place" the moment they hit a different chapter — without the issue fragmenting into two designs glued together. Activated by adding `data-multi-venue="true"` to `<body>` alongside the standard `data-special="countdown"`, then tagging each venue chapter section with `data-venue="efteling"` or `data-venue="beekse-bergen"` (use kebab-case venue identifiers). Defined in `33-countdown-destinations.css`. What the layer changes:
-- **Per-venue ground.** `.sp-ground-paper` and `.sp-ground-ink` adopt the venue's paper/ink tokens (`--eft-paper` / `--eft-ink` / `--bee-paper` / `--bee-ink`). Cream + plum for Efteling; warm sand + dark earth for Beekse Bergen.
-- **Per-venue accent.** Demoted secondary accents (kicker, brief-kicker, datum value, eyebrow, dashboard strong, pull-quote cite, spread h2 marker) repaint with the venue accent (`--eft-accent` antique gold, `--bee-accent` terracotta). Coral primary stays exclusive to gate numeral / D-day badge / progress bar; venue accents replace slate/bone, never primary.
-- **Decorative venue glyph.** A faint mask-image watermark sits in the bottom-right of each venue chapter — a twisting vine + crown finial for Efteling, a giraffe silhouette (PhyloPic CC0) for Beekse Bergen. 0.06 opacity on paper, 0.08 on ink. `pointer-events: none`. No stacking-context changes — sticky pin, page-fold, chapter beads all unaffected.
-- **Inline venue tag.** Authors can drop `<span class="sp-venue-tag">Efteling</span>` or `<span class="sp-venue-tag">Beekse Bergen</span>` inside a chapter (e.g. above the kicker on the chapter's first spread) for a tiny pill that labels the venue inline, painted in the venue accent.
+- **Per-venue palette.** Venue token sets (`--eft-*`: cream + plum + antique gold; `--bee-*`: warm sand + dark earth + terracotta) repaint grounds and small chrome inside any section tagged `data-venue="…"`. They compose with the holiday halves — tier 36 loads later in the cascade and wins any conflict (see § holiday-identity).
+- **Per-venue accent.** Kickers, labels, and datum chrome inside a venue chapter repaint with the venue accent (`--eft-accent` antique gold, `--bee-accent` terracotta).
+- **Decorative venue glyph.** A faint mask-image watermark sits in the bottom-right of each venue chapter — a twisting vine + crown finial for Efteling, a giraffe silhouette (PhyloPic CC0) for Beekse Bergen. 0.06 opacity on paper tones, 0.08 on dark. `pointer-events: none`; chapter beads unaffected.
+- **Inline venue tag.** Authors can drop `<span class="sp-venue-tag">Efteling</span>` or `<span class="sp-venue-tag">Beekse Bergen</span>` inside a chapter for a tiny pill that labels the venue inline, painted in the venue accent.
 
-The layer is purely additive: removing `data-multi-venue="true"` strips all theming and the issue renders identically to a single-venue Countdown. Wax seal stays giraffe-facing-right and standard rotation — one seal per issue, by design. Hype-variant chapters (`.is-hype`) keep their coral re-permission untouched; venue accent only fires on non-hype venue chapters where the global lockdown would otherwise apply. Galleries (`.sp-ground-gallery`) stay neutral slate and are explicitly preserved. Reduced-motion users get the same static glyph with no transitions. Cascade order matters: `33-countdown-destinations.css` must load AFTER `32-hype-variants.css` (alphabetical sort enforces this).
+The layer is purely additive: removing `data-multi-venue="true"` strips all theming and the issue renders identically to a single-venue Countdown. Wax seal stays giraffe-facing-right and standard rotation — one seal per issue, by design. Reduced-motion users get the same static glyph with no transitions. `validate-issue.py` requires ≥2 distinct `data-venue` values on a multi-venue issue.
 
-**Top Attractions (or equivalent) — mandatory when a venue has headline draws.** A ranked 5–7 item chapter with opinion. Each item: one strong image (ideally `.sp-scroll-image` or `.sp-image-quote`), a short take on *why* it's worth the queue / the early morning / the detour, and a one-line practical note (best time, height requirement, fast-pass eligibility, feeding times, whatever applies). Scales to multi-venue trips as parallel ranked chapters (one per venue), each with 5–7 items. For non-theme-park venues, reshape the chapter to fit: "Top 5 Animal Encounters," "The Safari, Ranked," "Five Corners of the Resort," "The Stages, Ranked" — whatever the venue is actually *about*. If the venue has no obvious ranking surface, skip this chapter for that venue and rebalance with an extra chapter elsewhere.
+**Top Attractions (or equivalent) — mandatory when a venue has headline draws.** A ranked 5–7 item chapter with opinion. Each item: one strong image (a `.hol-wonders` or `.hol-unmissable` row carries image + take + practical strip as one unit), a short take on *why* it's worth the queue / the early morning / the detour, and a one-line practical note (best time, height requirement, fast-pass eligibility, feeding times, whatever applies). Scales to multi-venue trips as parallel ranked chapters (one per venue), each with 5–7 items. For non-theme-park venues, reshape the chapter to fit: "Top 5 Animal Encounters," "The Safari, Ranked," "Five Corners of the Resort," "The Stages, Ranked" — whatever the venue is actually *about*. If the venue has no obvious ranking surface, skip this chapter for that venue and rebalance with an extra chapter elsewhere.
 
-**Mood Board — mandatory.** A dense visual-only chapter: 8–12 images arranged in `.sp-image-strip`, `.sp-gallery`, or an image montage component. Captions only, no prose block. Pure atmosphere — what a week there actually *looks* like. For multi-venue trips, either split the board 50/50 between venues (labelled sub-sections within one chapter) or run two separate Mood Boards (one per venue). Never one board that skews to the more photogenic site.
+**Mood Board — mandatory.** A dense visual-only chapter: 8–12 images arranged as a polaroid montage (`.hol-polaroid` clusters at varied rotations, hand-script captions). Captions only, no prose block. Pure atmosphere — what a week there actually *looks* like. For multi-venue trips, either split the board 50/50 between venues (labelled sub-sections within one chapter) or run two separate Mood Boards (one per venue). Never one board that skews to the more photogenic site.
 
-**By the Numbers — a chapter, not just a stat block.** "The trip in eleven figures — before the prose starts." Uses `.sp-dash` plus one or two `.sp-number-huge` count-ups. Every venue represented in the numbers. Reads as hype because every stat is a brag: acres, coaster counts, animals, nights booked, miles from home, expected step count. Place early — right after Foreword — as the hype opener.
+**By the Numbers — a chapter, not just a stat block.** "The trip in eleven figures — before the prose starts." Uses the Trip-in-Numbers band (`.hol-trip-numbers`, `43-holiday-hype.css`) plus one or two big-numeral count-ups. Every venue represented in the numbers. Reads as hype because every stat is a brag: acres, coaster counts, animals, nights booked, miles from home, expected step count. Place early — right after Foreword — as the hype opener.
 
 **Five Moments Worth the Trip — mandatory, third-person editorial voice.** A short chapter (~400–600 words) naming five specific *moments* (not attractions — moments) the reader should anticipate, with one image per moment. Written in the magazine's standard third-person voice, never first-person (no "I" or "we" — that breaks the reader-profile invisibility rule). Each moment is specific and opinionated: "The first sight of the Fairytale Forest at dusk, when the lanterns come on." "Breakfast on the safari resort terrace while the giraffes walk past the fence." For multi-venue trips, at least two moments from each venue. No all-one-venue lists.
 
@@ -710,9 +703,9 @@ The layer is purely additive: removing `data-multi-venue="true"` strips all them
 
 **Logistics demoted to a coda.** The old standalone Logistics chapter is gone. Essential logistics (flights, parking, transfers, what-to-pack, currency, timezone, anything genuinely practical) are compressed into the "Before You Go" coda near the end of the issue, merged with Surprising Facts. Cap: ~400 words of logistics content total. Anything longer is either planning (belongs in a Field Guide) or filler (cut it). Logistics are homework; homework does not lead a Countdown.
 
-**Accommodation chapter — mandatory when the reader has booked a hotel/lodge/resort.** A trip is judged at least as much by where you sleep as where you go during the day. If the reader has named the accommodation in their request or in conversation, the Countdown MUST include a dedicated accommodation chapter (positioned mid-issue, after Top Attractions and before Mood Board per the canonical order). Cover for each property: rooms (configurations, capacity, what makes them distinct), dining options on-site (every restaurant + bar + grab-and-go, with what to expect), facilities and activities included in the stay (pool, kids' club, animal encounters, water play, themed evening events), what's near it on-foot, and — critically — what makes it worth the premium over staying off-site. Multiple properties get parallel treatment: same structure for each, then a short "choosing between them" or "the order in which you'll see them" beat. **This chapter leans heavily visual** — hotels are some of the most photogenic content in the issue. Aim for 4–6 images per property: exterior/setting, room interior, signature dining space, signature facility/activity. Use `.sp-scroll-image`, `.sp-inline-figure`, and `.sp-gallery` aggressively here. Source from official property sites, the parent group's media library, well-credited Flickr/Wikimedia uploads, and reputable review blogs with image rights. Never AI-generated.
+**Accommodation chapter — mandatory when the reader has booked a hotel/lodge/resort.** A trip is judged at least as much by where you sleep as where you go during the day. If the reader has named the accommodation in their request or in conversation, the Countdown MUST include a dedicated accommodation chapter (positioned mid-issue, after Top Attractions and before Mood Board per the canonical order). Cover for each property: rooms (configurations, capacity, what makes them distinct), dining options on-site (every restaurant + bar + grab-and-go, with what to expect), facilities and activities included in the stay (pool, kids' club, animal encounters, water play, themed evening events), what's near it on-foot, and — critically — what makes it worth the premium over staying off-site. Multiple properties get parallel treatment: same structure for each, then a short "choosing between them" or "the order in which you'll see them" beat. **This chapter leans heavily visual** — hotels are some of the most photogenic content in the issue. Aim for 4–6 images per property: exterior/setting, room interior, signature dining space, signature facility/activity. Use rotated polaroids (`.hol-polaroid`), anchor features (`.hol-anchor`), and dense photo clusters aggressively here. Source from official property sites, the parent group's media library, well-credited Flickr/Wikimedia uploads, and reputable review blogs with image rights. Never AI-generated.
 
-**A diptych or transition section is NOT an accommodation chapter.** A chapter labelled with a hotel/resort name in its gate (e.g. "WONDER HOTEL") must contain actual coverage of that property — rooms, dining, facilities, images — not a two-park contrast or a short pivot paragraph. If research on the named accommodation is thin, either (a) do more research before committing to the chapter, or (b) relabel the chapter to what it actually covers ("Two Temperaments", "Between the Parks") and move the accommodation coverage into a properly named chapter later. Never ship a chapter whose title writes a cheque the body can't cash — the gate is a promise to the reader. Mandatory minimum for an accommodation chapter: 400–600 words per property, at least 4 images per property, and at least one `.sp-gallery` or `.sp-image-strip`. If you can't hit the minimum, it isn't an accommodation chapter.
+**A diptych or transition section is NOT an accommodation chapter.** A chapter labelled with a hotel/resort name in its gate (e.g. "WONDER HOTEL") must contain actual coverage of that property — rooms, dining, facilities, images — not a two-park contrast or a short pivot paragraph. If research on the named accommodation is thin, either (a) do more research before committing to the chapter, or (b) relabel the chapter to what it actually covers ("Two Temperaments", "Between the Parks") and move the accommodation coverage into a properly named chapter later. Never ship a chapter whose title writes a cheque the body can't cash — the gate is a promise to the reader. Mandatory minimum for an accommodation chapter: 400–600 words per property, at least 4 images per property, and at least one dense multi-image cluster (polaroid group or `.hol-wonders` rows). If you can't hit the minimum, it isn't an accommodation chapter.
 
 **Source diversity — beyond the official channels.** A Countdown's job is to make the reader feel the place. Official sites alone produce a sanitised, corporate-feeling issue. Research must draw from a mix: official venue/resort sites and menus for the source-of-truth facts; **plus** TripAdvisor/Google review threads, travel blogs (DFBguide, TravelMamas, themed-entertainment blogs, family-travel and solo-travel blogs alike), Reddit communities (r/Efteling, r/themeparks, r/solotravel, destination-specific subs), YouTube vlogs and food-tour videos, Instagram and TikTok location tags, and Dutch/regional-language sources where the trip warrants it. The reader's gut sense of "what's it actually like" comes from the unofficial layer; the official layer is just the spine. Cross-reference across at least three source types per major chapter. If everything in a chapter traces back to one website, the chapter is under-researched.
 
@@ -721,9 +714,9 @@ The layer is purely additive: removing `data-multi-venue="true"` strips all them
 **Research the whole estate, not the headline.** Many venues are larger than their marquee feature, and default searches will only surface the marquee. Beekse Bergen is a safari park *and* a Speelland adventure/water-play area (nearly the same size) *and* the Safari Resort hotel (with its own restaurants, pools, bowling, themed facilities) *and* Lake Beekse Bergen (beaches, water sports). Center Parcs is lodges *and* the Subtropical Swimming Paradise *and* the activity programme *and* the restaurant village. Disneyland Paris is two parks *and* Disney Village *and* the hotel estate. Before writing any chapter about a venue, map the full estate: read the official site's site-map / "what's on" / "things to do" pages in full, not just the first landing page. List every zone, every restaurant, every activity, every facility. Coverage must reflect what the venue actually *is*, not what its name suggests. A Beekse Bergen chapter that only covers "you can drive round the animals" is structurally wrong, regardless of word count. Rule of thumb: if you can summarise a venue's estate in one sentence, you haven't researched it yet.
 
 **Imagery rule for travel Countdowns.** A reader preparing for a holiday wants to *see* the place, not just read its history. Travel Countdowns must show, not just tell. Apply on top of the standard tier-4 imagery budget:
-- **Every chapter that describes a venue, room, ride, restaurant, animal experience, or pool** carries at least 2 images (hero + detail) and ideally a `.sp-gallery` or `.sp-image-strip` if more are available.
+- **Every chapter that describes a venue, room, ride, restaurant, animal experience, or pool** carries at least 2 images (hero + detail) and ideally a multi-image cluster if more are available.
 - **Across the whole issue, target 25–40 images** — most travel Countdowns will skew to the upper end. Hotels alone should contribute 8–12.
-- **Caption every image** with a one-line `.sp-caption-strip` or `<figcaption>` saying what the reader is looking at, where it is, and the credit. “Exterior of the X hotel at dusk” beats no caption every time — the reader is orienting themselves.
+- **Caption every image** with a `<figcaption>` (`.fig-caption` + `.fig-credit` on editorial specials; `.hol-polaroid__caption` on holiday ephemera) saying what the reader is looking at, where it is, and the credit. “Exterior of the X hotel at dusk” beats no caption every time — the reader is orienting themselves.
 - **Mix establishing shots with detail shots.** Don't show only wide exteriors; show the room, the breakfast spread, the kid feeding a giraffe from the window. Detail shots sell the place more than vistas do.
 - **Sources, in order of preference, but cast a wide net.** Start with Wikimedia, official press kits, and credited Flickr — theme parks and resort groups (Efteling/Libema/Disney/Universal/Center Parcs/etc.) maintain extensive press image libraries that are free to use editorially with credit. **Then go beyond the official channels.** Well-shot traveller photography from travel blogs, Reddit photo threads (r/Efteling, r/themeparks, r/solotravel etc.), Flickr's wider pool, Instagram posts with clear credit, and forum trip reports are all in scope — they often capture detail (queue energy, food on a real plate, a room actually lived in) that press kits never will. The bar is quality and credit, not source pedigree: only use images that are sharp, well-composed, and large enough to render at the layout's native size; always credit the photographer/blog/handle + licence or permission basis. **Never AI-generated, never uncredited stock filler.**
 
@@ -1151,7 +1144,7 @@ The **rounds** carry the week's news at the depth the material earns (§ Article
 
 **Cover height rule (all formats):** `.cover` must fill the full viewport on first load — no next-section chrome (chapter gate, first headline, ground colour) should peek up from below the fold. Implementation: `min-height: 100vh; min-height: 100dvh; box-sizing: border-box` on the base rule, and the same full-height on the mobile override at `@media (max-width: 720px)`. **Do not regress to `82vh` / `72vh`** — those were from an earlier pre-tablet version and leave the cover shorter than a modern phone or tablet viewport. `100dvh` ensures the cover stretches to the full window whether the mobile URL bar is shown or hidden. The scroll-cue inside the cover foot is the reader's sole cue to keep scrolling; nothing from the next section should compete with it. If you add a new component inside `.cover`, use `grid-row: auto` and let the existing `auto 1fr auto` track layout anchor it — don't set a fixed cover height that shorter than the viewport.
 
-**Tablet ground-level gutter rule (special editions):** `.sp-ground-paper` and `.sp-ground-ink` chapter wrappers are full-bleed by design — the background tone reaches the viewport edge. Their CONTENT is given a horizontal gutter on tablet and mobile by `26-special-editorial.css` (28px tablet / 20px mobile, with `env(safe-area-inset-*)` floors). When you add a NEW component inside a chapter that should also be full-bleed (like `.sp-pull-break`, `.sp-folio`, `.sp-gallery`, `.sp-image-strip`, `.sp-scroll-image.is-fullbleed`), you MUST add it to the `:not(...)` exemption list in that media query — otherwise it'll inherit the gutter and look misaligned against the other full-bleed components.
+**Tablet gutter rule (special editions):** full-bleed chrome (the dark cover, verdict slabs, `.is-fullbleed` figures) reaches the viewport edge while chapter content keeps a horizontal gutter on tablet and mobile — this is handled by the live special CSS automatically. Never add per-component inline padding or margin overrides to "fix" gutters; if a new full-bleed component misaligns, fix it in the CSS layer, not the markup.
 
 **Navigator:** every format that has a navigator uses `04-navigator.html` — a card grid with a lead-card thumbnail. Specials that want an in-issue contents page do it through the chapter-numeral structure inside `<section class="chapter">`, not a separate template. (The former `04-navigator-toc.html` TOC variant was deleted in v8.22.11 — no current format used it, and writers reaching for it on weeklies was the May 17 / May 24 2026 bug.)
 
@@ -1173,7 +1166,7 @@ Every non-holiday special edition obeys these rules. Holiday specials (Countdown
   - *Visual* — Versus, Rewind, Season Review, Shortlist, Next, Lookahead. Same baseline plus format-specific components (`.vs-tape` / `.vs-pair` / `.vs-verdict`, `.year-band` / `.rewind-cards` / `.memory-test`, `.rating` / `.scoreboard` / `.milestones`, `.tier-band` / `.pick`, `.on-ramp` / `.only-one`, `.calendar` / `.cal-verdict` / `.crunch-week`) for clear differentiation.
 
 ### Authoring a special edition
-1. On `<body>`, add `is-special` and `data-special="<format>"` where format is one of: `countdown`, `rewind`, `versus`, `season-review`, `deep-dive`, `starter-kit`, `shortlist`, `next`, `lookahead`, `field-guide`.
+1. On `<body>`, add `is-special` and `data-special="<format>"` where format is one of: `countdown`, `rewind`, `versus`, `season-review`, `deep-dive`, `guide`, `starter-kit`, `shortlist`, `next`, `lookahead`, `field-guide`. (2026-07 WP-0 vocabulary reconciliation: `guide` is the merged recommendation format — v8.39 S4 — with `starter-kit`/`shortlist` kept as archive back-compat slugs; `blueprint` is retired — v8.22 — and must not be used; `lookahead` is retired/folded — v8.39 S2 — its slug survives only for the two archived drafts.)
 2. **For Countdown only:** add `data-dday-start="N"` on `<body>` where N is the number of days between the issue date (today, when generating) and the event. The D-day badge displays this authored value statically — a magazine issue is a snapshot and the badge must agree with the prose, forever. Compute N at generation time as `(trip_date - today)` in days. The Countdown auto-trigger fires 2-3 weeks before a trip, so N is typically 14-21. If generating a prototype or back-dated issue, use the fictional issue-date reference. (Optional: also add `data-trip-date="YYYY-MM-DD"` for human reference, but it does NOT drive a live countdown at runtime.) The previous scroll-scrubbing pattern (`data-dday-start` + `data-dday-end` interpolated by scroll percentage) has been removed — a scroll-driven countdown is nonsensical.
 3. Include the components from the component list below as appropriate for the format. Each component has a documented HTML contract in `component-contracts.md` (or inline in the CSS).
 4. Inject assets with `scripts/inject-assets.sh` as normal.
@@ -1260,31 +1253,27 @@ A cover that omits the slogan block or runs `.cover-foot` with only one child re
 - `.week-plan` vertical timeline — the killer feature. Seven `.wp-day` items with badged day-marks (Day N / Mon) on the left of an accent rail, body on the right.
 
 **What was removed (v8.21 redesign):**
-- All scroll motion (`.sp-parallax`, `.sp-stagger`, `.sp-wipe`, `.sp-curtain`)
-- Pre-roll splash (`.sp-splash`), ticker masthead (`.mast-ticker`), rotated format badge (`.sp-format-badge`)
-- Signature moments (`.sp-sig-*`), chapter gates (sticky-scroll model), hype variants
-- Old editorial breakouts (`.sp-manifesto`, `.sp-bignum`, `.sp-gallery`, `.sp-diptych`, `.sp-marquee`)
-- The Blueprint format (retired in v8.22 — never used after 6+ specials, planning use cases absorbed by Deep Dive and Shortlist)
-- These components/formats are no longer in the CSS bundle for non-holiday specials. Don't reference them in new issues. They remain in already-published issues since their CSS is inlined at generation time.
+- The entire pre-v8.21 special-edition chrome: all scroll motion, the pre-roll splash, the ticker masthead, the rotated format badge, the per-format signature moments, the sticky-scroll chapter gates, the hype variants, the three-column spread layout, and the old editorial breakout components.
+- The Blueprint format (retired in v8.22 — never used after 6+ specials, planning use cases absorbed by Deep Dive and Shortlist).
+- None of that vocabulary is in the CSS bundle for non-holiday specials any more. Use ONLY the component list above — a class that isn't in this list, `component-contracts.md`, or the current CSS does not exist, and inventing one is a Gate-2 markup failure. Already-published issues keep rendering because their CSS is inlined at generation time; never copy component markup from a pre-v8.21 archive issue.
 
 ### Imagery budget — MANDATORY for loud special editions
 
-A Countdown / Versus / Rewind issue **must not** have entire sections that are walls of text. The previous pattern (front-loaded imagery in the opening then plain prose for the rest) is banned. Apply the following rule at generation time:
+A Versus / Rewind / Season Review issue **must not** have entire chapters that are walls of text. The previous pattern (front-loaded imagery in the opening then plain prose for the rest) is banned. (Holiday formats — Countdown, Field Guide — carry their own, higher image budgets in § Holiday Identity and the format specs.) Apply the following rule at generation time, using the LIVE v8.21 component kit only:
 
-**Every major body section (Foreword excepted) must include at least ONE of:**
-- A `.sp-scroll-image`, `.sp-inline-figure`, `.sp-image-quote`, or `.sp-image-strip` (imagery)
-- A `.sp-number-block`, `.sp-pullquote-huge`, `.sp-bignum`, or `.sp-chapter-number` (high-impact typographic component)
-- A `.sp-gallery` or `.sp-diptych` (multi-image layout)
+**Every chapter (Foreword excepted) must include at least ONE of:**
+- Imagery: `figure.fig` (with `.is-wide` / `.is-fullbleed` / `.is-half` as fits) or `figure.image-quote`
+- A high-impact typographic component: `.pullquote`, `.bignum` / `.bignum-row`, or an inline `.sp-number` stat
+- A rich container: `.pick` (+ `.pick-stats`) or an `.also-cards` grid
 
 **In addition, across the whole issue:**
-- At least **2 sections** use a multi-image component (gallery, diptych, or image-strip)
-- At least **3 sections** use `.sp-scroll-image` or `.sp-inline-figure` for embedded imagery
-- At least **2 sections** use `.sp-pullquote-huge` to break up prose
-- Long prose sections (>500 words) include `.sp-kicker` on h3/h4 headings
-- Long prose sections include at least one `.sp-marginalia` or inline `.sp-number` callout
-- Section transitions alternate between `.sp-wipe` and `.sp-curtain` for rhythm variety — don't use the same transition twice in a row
+- At least **3 chapters** carry embedded imagery (`figure.fig` or `figure.image-quote`)
+- At least **2 chapters** use `.pullquote` to break up prose
+- At most 1–2 figures carry `.sp-parallax-band` (the single cinematic scene image — see the parallax discipline in `component-contracts.md`)
+- Long prose chapters (>500 words) include `.sp-kicker` sub-headings
+- Long prose chapters include at least one `.marginalia` aside or inline `.sp-number` callout
 
-These are minimums — more is fine. Research images for EVERY major section, not just the cover topic.
+These are minimums — more is fine; `validate-issue.py`'s `special-variety` gate hard-fails a special that deploys too few distinct component types. Research images for EVERY major chapter, not just the cover topic.
 
 ### Image-caption integrity (v8.10.3 — hard rule)
 
@@ -1303,7 +1292,7 @@ Wikimedia Commons URLs encode their subject in the filename: `Sirmione_007.JPG` 
 If the only image you can find for a chapter on Venue A's safari park is a stock photo of a giraffe with no Venue-A context, the caption must say `A reticulated giraffe — illustrative` not `Giraffes at Venue A's drive-through enclosure`. Captions must be honest about what the photograph shows, not aspirational about what it represents. Where a generic image is unavoidable, flag it as illustrative; where it isn't unavoidable, find a specific image instead (see §Image specificity check in compliance checklist).
 
 **5. Every image carries a credit line.**
-The credit lives inside the `<figcaption>` (or `.sp-caption-strip`) and names the photographer / source publication / Wikimedia author. Reused official press kits cite the venue (`Photo: Efteling press kit`). Wikimedia images cite the Commons author + license (`Photo: Velvet, CC-BY-SA 4.0 via Wikimedia Commons`). YouTube stills cite the channel (`Still: TheCoasterFanatics, YouTube`). No credit = the image cannot ship.
+The credit lives inside the `<figcaption>` (`.fig-credit` span on editorial specials) and names the photographer / source publication / Wikimedia author. Reused official press kits cite the venue (`Photo: Efteling press kit`). Wikimedia images cite the Commons author + license (`Photo: Velvet, CC-BY-SA 4.0 via Wikimedia Commons`). YouTube stills cite the channel (`Still: TheCoasterFanatics, YouTube`). No credit = the image cannot ship.
 
 ### Image URL verification chain (v8.13.7+) — UNBREAKABLE RULE
 
@@ -1354,304 +1343,116 @@ A claim the researcher can't source is dropped; an event still in the future at 
 
 Each layer alone is bypassable; together they make "future event written as done" and "name pinned to words nobody said" structurally hard to ship. Adding a new prose-trust defect class means adding a layer here — not a new standalone script.
 
-**Editorial body kit (tier 5 — magazine-spread structure):**
-- `.sp-ground-paper` / `.sp-ground-ink` — alternating-ground wrapper for chapters. Apply to each major section so chapters alternate between paper (cream) and ink (deep) grounds. The shift of value on scroll IS the transition between chapters; no bridge component needed when alternating. Variants: `.sp-ground-warm` (warm cream), `.sp-ground-tint` (rose-tinted paper), `.sp-ground-deep` (pitch black).
-- `.sp-chapter-chrome` — thin top bar inside every chapter: `<span class="sp-roman">III</span><span class="sp-hair"></span><span class="sp-chapter-name">…</span><span class="sp-chapter-slug">…</span>`. Mandatory at the top of every chapter on a special edition. Anchors the bound-magazine feel.
-- `.sp-folio` — giant background numeral behind chapter content (300-700px, ~5% opacity). Position with `.sp-folio-tl/-tr/-bl` variants. Place inside a chapter wrapper that has its own positioning context.
-- `.sp-spread` with `.sp-rail` + `.sp-spread-body` + `.sp-margin` — three-column feature-spread pattern. Narrow ink rail (oversized italic numeral, vertical spine label, act/section name) | body prose with proper drop cap and § section marks | tinted right margin column carrying marginalia and datums. Mandatory for any chapter ≥800 words. Collapses to single column ≤980px.
-  - Inside `.sp-margin`: use `.sp-margin-kicker`, `.sp-margin-quote` (with `.sp-margin-attrib`), and one or more `.sp-datum` (each containing `.sp-datum-n` + `.sp-datum-l`).
-- `.sp-brief` — sidebar card with thick accent left rule. `<div class="sp-brief"><p class="sp-brief-kicker">…</p><h4 class="sp-brief-h">…</h4><p>…</p><p class="sp-brief-byline">…</p></div>`.
-- `.sp-hero-quote` — bordered card with oversized translucent “ peeking above the top edge. `.sp-hero-quote-q` for the quote, `.sp-hero-quote-at` for attribution.
-- `.sp-dash` — stat dashboard band: 3-4 `.sp-dash-cell`s, soft tinted background, oversized italic numerals (`.sp-dash-n`) + mono labels (`.sp-dash-l`) + accent kickers (`.sp-dash-hint`). Use this instead of italicised stat lists.
-- `.sp-timeline` — editorial two-column timeline. Each `.sp-tl-row` contains `.sp-tl-when` (large italic date with optional `.sp-tl-tag`) and `.sp-tl-what` (with `<strong>` lede + serif body, accent dot on rule). Perfect for day-by-day plans.
-- `.sp-pull-break` — full-bleed dark band with two giant translucent quote marks in opposite corners and centred pull (`.sp-pull` + `.sp-pull-attrib`). Much more dramatic than a normal pull quote; use 1-2 per issue.
-- `.sp-bridger` — three-column interlude inside a section: numeral marker (`.sp-bridger-side` with `.sp-bridger-num`) | prose (`.sp-bridger-main`) | sidebar/quote (`.sp-bridger-aside`). Sits on warm-cream ground, breaks body rhythm.
-- `.sp-caption-strip` — richer photo caption with hairline rule + `.sp-cap-loc` mono location chip on the right.
-- `.sp-signoff` — italic display sigil with hairline accent rule, marking the end of a chapter.
-- `.sp-eyebrow` — tiny mono kicker in accent colour, used above any major heading or component title.
+### Editorial body kit — RETIRED (v8.21)
 
-### Editorial body kit — MANDATORY rules for loud special editions
+The pre-v8.21 "editorial body kit" (tier-5 spread structure) and its tier-5.5 motion layer were deleted in the v8.21 paper-and-ink redesign; none of that vocabulary exists in the current CSS bundle. Chapter structure is now the `.chapter` / `.chapter-head` / `.chapter-body` contract in the Component list above, and the non-holiday system ships with no scroll-driven motion. Superseded by the unified core — see `references/core-components.md`.
 
-The tier-4 imagery budget addresses *what's in* each chapter. The tier-5 editorial body kit addresses *how each chapter is structured*. Both apply.
+### Signature moments — RETIRED (v8.21)
 
-**Per-chapter:**
-- Every chapter wrapper carries `.sp-ground-paper` or `.sp-ground-ink`. Chapters alternate ground value — never two paper chapters in a row, never two ink chapters in a row. The shift IS the transition; this replaces the need for a `.sp-wipe` or `.sp-curtain` between alternating-ground chapters (use those between same-ground chapters or for rhythm variety only).
-- Every chapter opens with a `.sp-chapter-chrome` strip carrying its roman numeral, name, and slug.
-- Every chapter contains at least one `.sp-folio` watermark for typographic depth.
-- Any chapter ≥800 words MUST use a `.sp-spread` layout (rail + body + margin). Shorter chapters may use a single-column body but still need at least one `.sp-brief`, `.sp-hero-quote`, or `.sp-dash` mid-prose.
-- Every chapter ends with a `.sp-signoff` line.
-
-**Across the issue:**
-- At least 1 `.sp-pull-break` for a major rhythm break (typically between the second and third chapter)
-- At least 1 `.sp-bridger` interlude inside a long chapter
-- At least 1 `.sp-dash` instead of an italicised list of stats anywhere stats are presented
-- Section headings inside `.sp-spread-body` use the `§` section mark automatically (built into the CSS)
-- First paragraph of each `.sp-spread-body` gets a 110px italic accent drop cap automatically (built into the CSS) — do not manually wrap the first letter
-
-### Editorial motion layer (tier 5.5) — MANDATORY for loud special editions
-
-The tier-5 body kit gives the magazine its structure. The tier-5.5 motion layer (in `28-special-motion-editorial.css` + matching JS controllers in `assets/script.js`) gives it kinetic life. Inspired by adapted motion vocabulary from landonorris.com (wipe-band reveals, scroll drift, staggered entries) — translated into editorial idiom. **Most of it is automatic** — applied by the JS controllers on scroll. A few patterns require explicit class application.
-
-**Automatic — no markup changes required:**
-- `.sp-folio` watermarks drift ±60px on scroll (subtle parallax, via `--sp-folio-y`)
-- `.sp-chapter-chrome` opens with a sequenced wipe (numeral → hair → name → slug, staggered)
-- `.sp-dash-cell`s stagger in 90ms apart
-- `.sp-tl-row`s stagger in down the timeline
-- `.sp-hero-quote` lifts in with the corner glyph drifting in opposite direction
-- `.sp-brief` slides in with its accent rule scaling vertically from 0
-- `.sp-pull-break` corner quote marks scale in from opposite corners
-- `.sp-bridger` three columns enter staggered
-- `.sp-spread` rail and margin slide in from opposite sides as body fades up
-- `.sp-spread-body` first letter (drop cap) pops in with a slight scale
-- `.sp-signoff` scale-in finale
-- `.sp-caption-strip` hairline rule draws across
-- All in-prose `<a>` links get an underline-draw on hover (background-size 0% → 100%)
-- Native `scroll-behavior: smooth` on the document
-- Ground-seam accent hairline appears between alternating-ground chapters
-- Paper-bg components (`.sp-brief`, `.sp-hero-quote`, `.sp-bridger`, `.sp-margin`) automatically lock to ink text colour even when nested in `.sp-ground-ink` chapters (readability lock — no need to add `.sp-island` manually)
-
-**Explicit class application — REQUIRED on loud specials:**
-- **`.sp-band`** is THE signature move (the Lando wipe-band reveal). Every chapter chrome's `.sp-eyebrow` and `.sp-chapter-name` MUST carry `.sp-band`. Every `.sp-signoff` label MUST carry `.sp-band`. Every standalone `.sp-eyebrow` kicker above a major component title gets `.sp-band`. The JS auto-wraps the inner text into `.sp-band-t` on the first observation.
-- **`.sp-band sp-band-thin`** — lighter underline-sweep variant. Apply to dashboard `.sp-dash-hint` kickers and caption-strip eyebrows where you want the sweep without hiding the text.
-- **`.sp-spine`** — decorative inline SVG hairline that draws itself in (`stroke-dashoffset` animation) when scrolled into view. Add 1-2 per long chapter inside the `.sp-margin` column or `.sp-rail` to add typographic depth without weight. Pattern: `<svg class="sp-spine" viewBox="0 0 2 200"><path d="M1 0 V200" /></svg>` (or a curve). Lives decoratively in the margins, never near body text.
-
-**Reduced-motion:** All tier-5.5 motion is wrapped in a `@media (prefers-reduced-motion: reduce)` kill switch — animations collapse to instant, transforms reset, decorative drift disabled. Content-readable state always reachable without motion.
-
-### Signature moments — ONE per format (mandatory)
-
-Each special edition format has exactly one signature moment — a single visual element readers will remember and describe to someone else. They are not interchangeable. Including a Countdown's hourglass in a Versus issue would dilute both. Use the prescribed component for the format and no other.
-
-| Format | Component | Where it lives | Required content hook |
-|---|---|---|---|
-| Countdown | `.sp-sand-clock` | Cover, below masthead | `data-total="<days>" data-remaining="<days>"` on the wrapper |
-| Rewind | `.sp-memory-wall` | Fixed right gutter (desktop), strip above sections (mobile) | One `<div class="mw-cell" data-item-id="…" style="background-image:url(…)">` per item; each prose section gets `data-reveals="id1,id2"` |
-| Versus | `.sp-fault-line` | Sticky vertical line spanning all comparison sections | `data-max-shift="90"` on the line; each paragraph in the comparison `<p data-lean="-2"…+2>`; verdict element `data-verdict="a"\|"b"` |
-| Season Review | `.sp-form-tape` | Top of the issue + repeated at top of each chapter | Each chapter `<section data-results="W,W,D,L,W" data-result-from="0">…</section>`; tape pre-renders one `.ft-pill` per fixture |
-| Deep Dive | `.sp-thread-pull` | Fixed left margin (desktops ≥ 1100px only) | Wrapper element `[data-tp-track]` defines the scroll range; markers `<g class="tp-marker" data-at="0.42">…</g>` inside the SVG carry concept-tag text |
-| Starter Kit | `.sp-cold-start` | Cover/opener, gates the prose | One word, split into `<span class="cs-letter">K</span>` per letter. Wrap the rest of the issue in `.sp-cs-after` |
-| Shortlist | `.sp-deck-reveal` | Mid-issue picks block | A `.sp-deck` with one `.dk-card` per pick (#1 first / on top); scroll triggers `<div data-deck-step="1">…</div>` peel cards |
-| Field Guide | `.sp-pinboard` | Cover/opener (sticky 100vh) | A `.sp-pinboard` with `.pb-stage` background image + `.pb-pin`/`.pb-label` pairs (`--x:38%; --y:52%`); prose sections referring to a pin add `data-pin-id="<id>"` to trigger pulse |
-
-**Authoring rules:**
-- Pick the right one for the format. One per issue. Don't mix.
-- Always provide the data hook listed above; without it, the component renders inert (which is the safe fallback).
-- All nine moments degrade gracefully under `prefers-reduced-motion` and on missing JS.
-- **Mobile gating:** `sp-thread-pull` hides below 1100px; `sp-memory-wall` collapses to a horizontal strip below 900px; everything else adapts.
-- **No content sacrificed.** If the moment doesn't fit the issue's content shape (e.g. a Versus issue with no clear A/B paragraphs), skip the moment rather than force the structure.
+The per-format signature-moment components were deleted in the v8.21 redesign and are not in the current CSS bundle. Format differentiation now comes from the per-format flair kits in the Component list above (and, for Countdown / Field Guide, the Holiday Identity layer). Superseded by the unified core — see `references/core-components.md`.
 
 ### Chapter transitions + ambient (format-agnostic)
 
-These components compose with the existing `.sp-wipe`, `.sp-curtain`, ground alternation, and chrome — they are punctuation, not replacements. Available to every special edition format.
+The pre-v8.21 transition components (stat curtains, page folds, wipes) were deleted in the v8.21 redesign; chapter rhythm on non-holiday specials now comes from the chapter chrome itself (`.chapter-head`, grounds, `.sp-ornament` breaks). One ambient component survives:
 
-**Transitions (use sparingly — these create a deliberate reading pause):**
+- **`.sp-chapter-beads`** — fixed right-gutter bead strip, one per chapter, with within-chapter progress connector (CSS `19-chapter-beads.css`, JS controller in `assets/script.js`). Special editions only — the Transmission weekly ships its own light chrome and does not load this bundle. Markup: a single `<aside class="sp-chapter-beads" aria-hidden="true"></aside>` near the end of `<body>` (already included in `template-parts/19-closing.html`). **Title resolution:** first `<h2>` text → section `id` (title-cased) → `Chapter N`. **Mobile (≤ 820px):** collapses to a thin vertical line with no labels. Click a bead to scroll to that chapter. Reduced-motion: beads stay, active state only.
 
-- **`.sp-stat-curtain`** — full-viewport overlay rises with one hero stat or epigraph, then retracts. Use at **most twice per issue** at moments where a hard pause is editorially earned (chapter break before the centrepiece, before the verdict). Markup: `<div class="sp-stat-curtain" id="sc-1"><p class="scu-stat">23,400</p><p class="scu-caption">Roller-coaster runs in 2025</p></div>` plus a trigger `<div data-curtain-for="sc-1"></div>` placed at the chapter end where it should fire.
-- **`.sp-page-fold`** — bottom 40vh folds upward via 3D rotateX. Use **only at paper↔ink chapter handoffs** to dramatise the ground swap. Markup: wrap the boundary in `<div class="sp-page-fold-wrap"><div class="sp-page-fold" style="--sp-ground-prev: var(--sp-paper);"></div><div class="sp-page-fold-shadow"></div></div>`. Set `--sp-ground-prev` to the outgoing chapter's ground colour token. Maximum 2 per issue.
+### Chapter gate — RETIRED (v8.21)
 
-**Ambient (these run continuously and become part of the issue's atmosphere):**
+The v8.5 sticky-scroll chapter gate (the full-viewport black panel that opened every chapter) was deleted in the v8.21 redesign along with the rest of the pre-v8.21 chrome; it exists in no current CSS, and no current format opens chapters with a gate. Chapter breaks on non-holiday specials are now carried by the `.chapter-head` chrome (numeral + title) in the Component list above; holiday issues carry structure with halves and the transit (§ Holiday Identity). Canonical chapter orders and narrative-arc guidance live per-format in `references/spec/formats.md`. Superseded by the unified core — see `references/core-components.md`.
 
-- **`.sp-chapter-beads`** — fixed right-gutter bead strip, one per chapter, with within-chapter progress connector. **Universal: works on standard weekly AND every special edition.** Markup: a single `<aside class="sp-chapter-beads" aria-hidden="true"></aside>` near the end of `<body>` (already included in `template-parts/19-closing.html`). **Chapter discovery order:** (1) elements with `[data-sp-chapter]` — typical for specials; (2) fallback to `.mag > section.sec` — used by every standard-weekly section. **Title resolution:** `[data-sp-chapter-title]` → first `<h2>` text → section `id` (title-cased) → `Chapter N`. Accent colour auto-cascades: `--sp-accent` on specials, `--accent` on standards. **Mobile (≤ 820px):** collapses to a thin vertical line with no labels. Click a bead to scroll to that chapter.
-- **`.sp-horizon`** — bottom-edge strip bleeds the next chapter's ground colour upward as within-chapter progress nears 100%. Markup: a single `<div class="sp-horizon" aria-hidden="true"></div>` near the end of `<body>`. Each chapter element must carry `data-sp-chapter` AND `data-sp-ground-color="#hex"` so the next chapter's colour is known.
+### Ground discipline (v8.21 system)
 
-**Authoring contract for ambient:**
-- Both ambient components share the same per-chapter progress calculation (one rAF loop, zero duplicated work). Adding `.sp-horizon` for free if you've already added `.sp-chapter-beads`.
-- Both require chapters to be marked with `data-sp-chapter` on the section root and `data-sp-chapter-title` for tooltips (specials). **Standard editions need no mark-up** — beads auto-discover from `<section class="sec">`. `data-sp-ground-color` is required only if you use `.sp-horizon` (special editions only).
-- Reduced-motion: beads stay (active state only, no fill animation); horizon collapses to a static 2vh strip near chapter end.
+**The format CSS owns the grounds; components never paint ad-hoc backgrounds.**
 
-### Chapter gate (MANDATORY for every chapter on every special edition — v8.5, sticky scroll model)
+- The v8.21 editorial system paints its own grounds: the dark `.cover`, the paper chapter body, and the dark verdict/close slabs some flair components bring (`.vs-verdict`, `.only-one`, `figure.image-quote`). Writers never set `background:` inline on chapters or components.
+- **Emphasis comes from weight, hairlines, and typography** — not colour inversion. A component reads as itself because of its rules, kickers, and type, not because its background differs from the prose around it.
+- Self-painting components in the current kit lock their own text colour in the CSS — use the canonical markup and contrast is handled; never add inline colour overrides.
+- (History: the pre-v8.21 per-chapter alternating-ground system and its lock layer were deleted in the v8.21 redesign. Holiday issues have their own ground rules — see § Holiday Identity and pre-flight RT-14.)
 
-**The chapter gate is the single most important element in a special edition.** It is the digital equivalent of turning a page in a real magazine — a viewport-locking moment that unambiguously says *"a new chapter starts here"*. It is the permanent, unmissable signal the reader can spot at any scroll speed.
+### Markup contracts (v8.21 system — hard rule)
 
-**Mandatory on:** every `[data-sp-chapter]` in every special edition. If a chapter does not open with `.sp-chapter-gate`, the issue fails Gate 2.
+The special-edition CSS targets specific tag + class combinations. When a generator invents an alternative — a `<div>` where the contract says `<blockquote>`, an unfamiliar class on a child element — the styling rule misses and the component renders without its identity. Subagent-invented markup has been the single largest source of contrast bugs across v8.x. The contract is closed: **a class that isn't in the Component list (§ Special editions), `component-contracts.md`, or the current CSS does not exist.**
 
-**Structure:**
-```
-<aside class="sp-chapter-gate"
-       data-chapter-num="V"
-       data-chapter-title="BEEKSE BERGEN"
-       data-chapter-arc="Act III — the wild">
-  <p class="scg-deck">Five days inside Europe's largest safari park, and a hotel where the lions wake you up.</p>
-</aside>
-```
-Place the gate **immediately before** the chapter section's opening `<section data-sp-chapter="…">` tag. The controller auto-builds the black panel and drives the scroll-progress reveal.
-
-**How it behaves (v8.5 sticky scroll model):**
-- The gate is a 160vh scroll track containing a `position: sticky` full-bleed black panel (`#0A0E17`) that locks to the viewport for ~1 screen-height of scroll.
-- As the reader scrolls *through* the gate, a `--scg-progress` CSS variable runs 0 → 1. The four text layers are revealed in sequence:
-  - **0.10 → 0.30** arc label fades in
-  - **0.25 → 0.55** Roman numeral scales + fades in (coral)
-  - **0.45 → 0.70** chapter title fades in (reserved typeface)
-  - **0.65 → 0.88** deck line fades in (italic, on the black)
-- When scroll passes the end of the track, the panel unsticks and the next chapter is revealed underneath.
-- **No cream "breath" zones before or after.** The previous chapter butts straight up against the black cover; the next chapter appears straight out of it. The pause is *time* (scroll-hold), not *whitespace*.
-- **Reduced-motion / no-JS fallback:** panel collapses to a static full-bleed black band (~52vh) with all four text layers fully visible. No sticky, no progress driver. Same visual anchor, no motion.
-
-**Four text layers, all live inside the black panel (v8.5):**
-1. **Arc label** — italic, small, muted bone (e.g. "Act III — the wild")
-2. **Roman numeral** — display size (72–180px), coral, reserved typeface
-3. **Chapter title** — medium, letter-spaced caps, bone, reserved typeface
-4. **Deck line** — italic, dim bone, one sentence (mandatory)
-
-**Three elements reserved exclusively for the gate (never used elsewhere):**
-1. The **full-bleed black panel** (`.scg-strip`). If you see one, it means "new chapter". Nothing else in the magazine uses this.
-2. The **chapter-title typeface** (`var(--sp-chapter-ff)` — Space Grotesk). Banned from pull-quotes, kickers, stats, sidebars, covers, navigators.
-3. **Display-size Roman numerals** (72–180px). The wax seal's small ornamental numeral is the only other Roman numeral permitted.
-
-**Required attributes:**
-- `data-chapter-num` — Roman numeral (I, II, III…). Required.
-- `data-chapter-title` — chapter name in CAPS (e.g. `BEEKSE BERGEN`). Required.
-- `data-chapter-arc` — the narrative-arc label. Required on Countdown, Deep Dive, Rewind, Season Review, Next. Optional on Versus / Starter Kit / Shortlist / Lookahead / Field Guide.
-- `<p class="scg-deck">…</p>` — **mandatory one-line deck**. A sentence that tells the reader *what this chapter will do for them*. Not a subtitle, not a description — a promise. See deck-writing rules below.
-
-**The deck line — what makes it good:**
-- One sentence. Italic. Max ~20 words.
-- Answers: *"why should I read this chapter?"* not *"what is this chapter?"*
-- Concrete, not abstract. "Five days inside Europe's largest safari park" > "An overview of our stay".
-- Never restates the chapter title.
-
-**Examples (good):**
-- *By the Numbers* → "The trip in eleven figures — before the prose starts."
-- *Logistics* → "Everything you need to stop thinking about once you land."
-- *Facts & Folklore* → "The stories the locals tell, and the ones the guidebooks don't."
-- *Wonder Hotel* → "Sleeping inside the fairy tale — what two nights in room 312 is really like."
-- *Mood Board* → "Five images that tell you what a week here actually looks like."
-
-**Narrative-arc labels (required on long-form specials):**
-- **Countdown** (typically 9–11 chapters): Act I (hype setup — By the Numbers, Event in Depth) → Act II (centrepiece hype — Top Attractions, Accommodation, Mood Board) → Act III (softer hype — What to Watch/Read/Play, Five Moments Worth the Trip) → Coda (Before You Go: compressed logistics + surprising facts + On the Radar)
-- **Deep Dive** (8–10 chapters): Premise → Evidence I → Evidence II → Counterargument → Verdict
-- **Rewind** (chronological): Year-by-year or phase-by-phase labels
-- **Season Review**: Opening Acts → Mid-Season → Finale → Verdict
-Map every chapter to its arc beat and put the label in `data-chapter-arc`. This is how the reader keeps orientation through ten chapters.
-
-### Ground discipline (v8.4 — hard rule)
-
-**The chapter owns the ground. Components inside a chapter inherit it.**
-
-- `sp-ground-paper` and `sp-ground-ink` belong on `[data-sp-chapter]` wrappers only.
-- **No pull-quote, brief box, sidebar, stat panel, or island component may flip to the opposite ground inside its chapter.** A pull-quote inside an ink chapter lives on ink. A brief inside a paper chapter lives on paper. Previously, components painted their own cream/ink backgrounds, fragmenting the chapter into a patchwork of boxes that hid the actual chapter-break. This is now banned.
-- **Emphasis comes from weight, hairlines, and typography** — not colour inversion. A brief reads as a brief because of its left rule and its kicker, not because its background colour differs from the prose around it.
-- **Enforced in CSS**: `31-chapter-gate.css` neutralises `sp-ground-paper`/`sp-ground-ink` on every common component class when nested inside `[data-sp-chapter]`. The only full-bleed component still allowed to paint its own ground is `.sp-pull-break`.
-- **Force ground alternation across the issue.** Adjacent chapters must not share a ground. If the running order would produce paper→paper or ink→ink neighbours, either reorder the chapters or flip one. Same-ground neighbours make the chapter break invisible even with a gate.
-- **Readability Lock Principle (v8.10.3).** Any component that paints its own background MUST also lock its own text colour in the same rule. The chapter ground cascades a `color` value into every nested element; if a self-painting component (cream card, dark band, tinted sidebar) leaves text colour to inherit, the cascade lands bone-text on a cream card or ink-text on a near-black band. Components covered by the v8.10.3 lock layer (`34-readability-locks.css`): `.sp-marginalia` is always cream-bg + ink-text; `.sp-pull-break` is always dark-bg + bone-text; `.sp-pullquote-huge` paints text colour explicitly per chapter ground. Any new self-painting component you add to the kit MUST update this layer in the same commit. Every newly-introduced component goes through the question: "Does this paint its own background? If yes, does it also lock its own text colour?" If the answer to the second question is no, the component is broken and must not ship.
-
-### Markup contracts (v8.10.3 — hard rule)
-
-The special-edition CSS targets specific tag + class combinations. When a generator invents an alternative — `<div>` instead of `<blockquote>`, an unfamiliar class on a child element — the styling rule misses, the readability lock misses with it, and the component renders without its identity. Subagent-invented markup has been the single largest source of contrast bugs across v8.x. The contract below is closed: anything outside the canonical column is banned, full stop.
-
-| Component | Canonical markup | BANNED alternates |
+| Component | Canonical markup | Notes |
 |---|---|---|
-| Marginalia | `<aside class="sp-marginalia" data-side="right"><span class="sp-marginalia-label">…</span><p>…</p></aside>` | `<div class="sp-marginalia">…</div>`; any child `<p class="sp-marg-kicker">` (must be `<span class="sp-marginalia-label">`); any child `<p class="sp-marg-label">`; nesting a marginalia inside another marginalia |
-| Pullquote (huge) | `<blockquote class="sp-pullquote-huge"><p>…</p><cite>…</cite></blockquote>` | `<div class="sp-pullquote-huge">`; child `<p class="sp-pq-quote">` (must be plain `<p>`); child `<p class="sp-pq-attrib">` or `<span class="sp-pq-attrib">` (must be `<cite>`); `<blockquote>` without `class="sp-pullquote-huge"` outside an `<aside>` |
-| Pull-break | `<div class="sp-pull-break-wrap sp-ground-deep"><div class="sp-pull-break"><p class="sp-pull">…</p><p class="sp-pull-attrib">…</p></div></div>` | `<blockquote class="sp-pull-break">`; nesting `.sp-pull-break` directly inside a chapter section without the `.sp-pull-break-wrap`; `.sp-pull` rendered as `<h2>` or `<h3>` instead of `<p class="sp-pull">`; missing `.sp-pull-attrib` (every pull-break must be attributed) |
-| Pullquote attribution (inside huge pullquote) | `<cite>— Source name</cite>` | `<p class="sp-pq-attrib">`; `<span class="sp-pq-attrib">`; `<footer>`; bare `<em>` |
-| Brief sidebar | `<div class="sp-brief"><p class="sp-brief-kicker">…</p><h4 class="sp-brief-h">…</h4><p>…</p><p class="sp-brief-byline">…</p></div>` | `<aside class="sp-brief">`; missing `.sp-brief-kicker`; `<h3>` or `<h2>` for the heading (must be `<h4>`) |
-| Hero quote | `<div class="sp-hero-quote"><p class="sp-hero-quote-q">…</p><p class="sp-hero-quote-at">…</p></div>` | `<blockquote class="sp-hero-quote">`; child `<cite>` (must be `<p class="sp-hero-quote-at">` for the typography rule to land) |
-| Chapter chrome | `<div class="sp-chapter-chrome"><span class="sp-roman">III</span><span class="sp-hair"></span><span class="sp-chapter-name">…</span><span class="sp-chapter-slug">…</span></div>` | `<header class="sp-chapter-chrome">`; missing `.sp-hair` (the hairline rule between numeral and name); `.sp-chapter-name` rendered as `<h2>` or `<h3>` |
+| Pull quote | `<blockquote class="pullquote"><p>…</p><cite>— …</cite></blockquote>` | attribution is `<cite>`, never a classed `<p>` |
+| Marginalia | `<aside class="marginalia"><span class="m-label">…</span><p>…</p></aside>` | floats into the right gutter; `.is-left` to flip; never nested |
+| Figure | `<figure class="fig"><img …><figcaption class="fig-caption">… <span class="fig-credit">…</span></figcaption></figure>` | modifiers `.is-wide` / `.is-fullbleed` / `.is-half` (+ `.is-left`) |
+| Image-quote | `<figure class="image-quote"><img …><blockquote><p>…</p><cite>— …</cite></blockquote></figure>` | darkened photo + overlaid quote |
+| Stat callout | `<div class="bignum"><div class="bignum-value">…</div><div class="bignum-label">…</div></div>` (2–4 inside `.bignum-row`) | never italicised stat lists |
+| Pick | `<article class="pick"><figure class="fig pick-img-fig"><img class="pick-img" …>…</figure><div class="pick-body">…</div></article>` | image always figure-wrapped, never bare |
 
-**Why this is hard rule, not best practice.** Each row in this table corresponds to a CSS selector that targets the canonical structure precisely. The styling does not fall back gracefully if you swap `<div>` for `<blockquote>` or `<p>` for `<span>`: the readability lock misses, the chapter ground cascades through, and you get a contrast bug or worse, a component that looks fine on paper grounds and breaks on ink (or vice versa). The contract is enforced by Gate 1E (mechanical grep scan) — every banned alternate must return zero matches before an issue ships.
+Full per-format contract tables (with every child class) live in `references/component-contracts.md` — that file is the authority; when it and prose disagree, it wins.
 
-**For new components.** Adding a new editorial component to the kit means updating three places in the same commit: (1) the CSS, (2) this table, (3) the Gate 1E grep recipe in `compliance-checklist.md`. A component without a contract entry cannot ship.
+**For new components.** Adding a new editorial component to the kit means updating three places in the same commit: (1) the CSS, (2) `component-contracts.md`, (3) the Gate 1E notes in `compliance-checklist.md`. A component without a contract entry cannot ship.
 
-### Accent lockdown (v8.4 — hard rule)
+### Accent lockdown (v8.21 system)
 
-Coral (`--sp-accent-primary`, `#E8384F`) is now reserved for three things and three things only:
-1. The Roman numeral inside `.sp-chapter-gate`
-2. The Countdown D-day badge
-3. The page progress bar
+Each non-holiday special format carries its own accent, set as `--accent` on `body[data-special="…"]` by `23-special-tokens.css`. The rules:
 
-Everywhere coral was previously used (masthead accent underline, datum values, `sp-number` count-ups, kickers, pull-break corner quotes, brief accent rules, `sp-dash-cell strong`, spread-body `h2`, eyebrow, etc.) is demoted to a **secondary accent** scoped by chapter ground:
-- Inside paper chapters → `--sp-accent-secondary` (muted slate, `#64697B`)
-- Inside ink chapters → `--sp-accent-secondary-ink` (bone, `#C9C2B5`)
+1. **Never hard-code an accent colour inline.** No `style="color:#…"` on kickers, stats, or headings — the cascade paints `.sp-kicker`, `.sp-number`, `<em>` in `.cover-title`, tier bands, and verdict chrome from the format token. (Gate 3 greps for inline accent overrides.)
+2. **Accent is for signal, not decoration.** It marks structure (kickers, numerals, tier marks, verdict furniture) — body prose stays ink.
+3. Holiday issues use the brass/ruby holiday palette from tier 36; the editorial accents don't apply there (see § Holiday Identity).
 
-This means: when a reader flicks past a block of coral, it can only mean "new chapter" (or "days remaining" / progress chrome). They stop trusting coral as decoration.
-
+(History: the pre-v8.21 coral-reservation system was deleted with the chapter gates in the v8.21 redesign.)
 ### Stat budget (v8.4 — hard cap per issue)
 
 Too many stat blocks flatten into noise. Hard cap for every special edition:
 
 | Block type | Max per issue |
 |---|---|
-| `sp-stat-curtain` (full-viewport, hero) | **1** |
-| `sp-dash` (dashboard grid) | **1** |
-| `sp-number` / `sp-number-huge` (inline count-ups) | **6 combined** |
-| `sp-datum` (marginalia stat) | **4** |
-| **TOTAL stat-heavy blocks** | **≤ 12** |
+| `.bignum-row` (stat band) | **2** |
+| standalone `.bignum` outside a row | **2** |
+| inline `.sp-number` count-ups | **6** |
+| **TOTAL stat-heavy blocks** | **≤ 10** |
 
 If a draft exceeds the cap, cut the weakest blocks. Rule of thumb: any stat that appears more than once across the issue (same number in curtain + count-up + datum) loses all punch — keep the version with the most editorial weight, cut the others. Prose should carry most of the numbers; stat blocks are reserved for the handful that genuinely deserve a pause.
 
 ### Held-attention moment (format-agnostic)
 
-- **`.sp-sticky-pin`** — a single image or pull-quote that pins to the side of the column for ~1.5 viewports of scroll while the prose continues past, then releases. A thin accent rule on the card grows as a within-section progress indicator. Use for a character portrait during an interview (watches the reader), or a pull-quote that lingers while the argument unfolds around it. Variants: `sp-sticky-pin--portrait` (image, default right-float), `sp-sticky-pin--quote` (left-border pull quote), `sp-sticky-pin--left` (flip to left margin). Markup:
-  ```
-  <aside class="sp-sticky-pin sp-sticky-pin--portrait">
-    <div class="spin-inner">
-      <img src="…" alt="…">
-      <figcaption class="spin-cap">…</figcaption>
-      <div class="spin-rule" aria-hidden="true"></div>
-    </div>
-  </aside>
-  ```
-  **Rules (enforced):**
-  1. **Max one per issue.** If multiple `.sp-sticky-pin` elements exist, JS keeps the first and demotes the rest to inline figures.
-  2. **Never** in a section that already uses `.sp-parallax` or `.sp-scroll-image` — they solve overlapping problems.
-  3. Only inside a host section with **≥ 150vh of prose** — otherwise the stick is imperceptible.
-  4. **Mobile (≤ 820px):** collapses to a normal inline figure; no stick (sticky on tablet causes vertigo).
-  5. Best uses: a single character portrait during an interview, or a pull-quote that watches over an unfolding argument. Never a decorative stock photo.
+The pre-v8.21 held-attention components (sticky pins, scroll-pinned quotes) were deleted in the v8.21 redesign; no current CSS implements them. The one sanctioned held-attention device in the live system is the parallax scene band — `figure.fig.is-wide.sp-parallax-band` with its `.sp-band-frame` wrapper (max ~2 per issue; see the parallax discipline in `component-contracts.md`). Richer held-attention moments return with the unified core's motion tiers — see `references/core-components.md`.
 
 ### Issue accent
 Each format maps to a palette variable. **Non-holiday formats (v8.21 system, see `assets/css/32-special-format-flair.css`):** deep-dive → ember, starter-kit → bone-soft, versus → rose + ember (two-side), rewind → rose, season-review → deep, shortlist → rose, next → rose + ember, lookahead → rose. **Holiday formats retain their legacy `--issue-accent` mapping:** countdown → rose, field-guide → itinerary-accent.
 
 ### Chrome positioning ground rules
-Fixed chrome elements must not overlap. Current occupation:
-- Masthead: `top: 0` full-width, `z-index: 50`
-- Wax-stamp seal: `top: 76px; right: 28px; z-index: 45`
-- Format badge (special): `top: 76px; right: 28px` range — rotated, lower z-index
-- D-day badge (countdown): `top: 88px; left: 18px; z-index: 46` — kept on the LEFT to avoid seal collision
+Fixed chrome elements must not overlap. Current occupation (v8.21 system):
+- Masthead (`.mast`): `top: 0` full-width
+- "Return to The Signal" back-link pill: fixed top-left (injected by `stitch-issue.sh`)
+- Wax-stamp seal: below the masthead, right side
+- D-day badge (Countdown): below the masthead, LEFT side — kept left to avoid seal collision
 - Back-to-top: `bottom: 28px; right: 28px`
-- Chapter beads (ambient): `right: 14px; top: 50%` — collapses to `right: 6px` and thin line on tablet/mobile
-- Memory wall (Rewind only): `top: 84px; right: 18px` — collapses to a horizontal section-header strip below 900px
-- Horizon (ambient): `bottom: 0` full-width, height driven by within-chapter progress, `z-index: 2`
-- Stat curtain (transition, transient): `inset: 0` full-viewport, `z-index: 30`, only visible while rising/retracting
-- Sticky pin (held attention, inline): `position: sticky; top: masthead + 24px; z-index: 3` — flows with column, never fixed to viewport edge
+- Progress bar: viewport top edge, above the masthead
+- Chapter beads (ambient, specials): `right: 14px; top: 50%` — collapses to a thin line on tablet/mobile
 If adding a new fixed element, claim a free corner or offset vertically from the masthead.
 
 ---
 
 ### Visual features — auto-apply guarantee (v8.7.3)
 
-Every visual feature hardened between v8.0 and v8.7 fires automatically on every future special edition once you've done the three structural things listed in §Authoring a special edition. This table is the canonical answer to *"will X show up on the next Countdown/Deep Dive/Versus without me having to ask?"*.
+The live visual chrome fires automatically on every future special edition once the structural basics from §Authoring a special edition are in place. This table is the canonical answer to *"will X show up on the next special without me having to ask?"*.
 
 | Feature | How it fires | What you must author |
 |---|---|---|
-| Splash pre-roll | CSS + JS auto-inject | Nothing — rendered if `<body class="is-special">` |
-| Masthead ticker | CSS + JS auto | Nothing |
-| Format badge (◆ rotated) | CSS auto from `[data-special]` | Nothing |
+| Persistent masthead (`.mast`) | CSS auto on `body.is-special` | Nothing |
+| "Return to The Signal" back-link pill | Injected by `stitch-issue.sh` (idempotent) | Nothing |
 | D-day badge (Countdown) | CSS + JS auto | `data-dday-start="N"` on `<body>` |
-| Alternating paper/ink grounds | CSS auto from `sp-ground-paper` / `sp-ground-ink` | One class per chapter wrapper |
-| Full-bleed ground gutter (tablet/phone) | CSS @media auto | Nothing — enforced by `26-special-editorial.css` |
-| Chapter chrome (roman + hair + name + slug) | CSS auto; reveals staggered | Markup once per chapter |
-| Chapter gate (sticky black panel, 4-layer reveal) | CSS + JS auto (sticky scroll + rAF progress loop) | `<aside class="sp-chapter-gate" data-chapter-num data-chapter-title data-chapter-arc>` + `.scg-deck` line |
-| Giant folio watermark | CSS auto; parallax on scroll via `--sp-folio-y` | `.sp-folio` div inside chapter |
-| 3-column spread (rail + body + margin) | CSS auto; rail stretches full spread via `position: absolute` (v8.7.2); margin floats right, reclaims prose width when its content ends (v8.7.1) | `.sp-spread > .sp-rail + .sp-spread-body + .sp-margin` markup — reparenter IIFE handles mobile portrait |
-| Drop cap (110px italic accent) | CSS auto on `.sp-spread-body > p:first-of-type` | Nothing — don't wrap the first letter manually |
-| § section mark on inner headings | CSS `::before` auto | Nothing |
-| Paper/ink text-colour lock on islands | CSS auto on `.sp-brief`, `.sp-hero-quote`, `.sp-bridger`, `.sp-margin` | Nothing — islands always read correctly against any ground |
-| Ink-ground margin = paper-tinted card (v8.7.2) | CSS auto on `.sp-ground-ink .sp-margin` | Nothing |
-| `.sp-band` wipe-reveal on kickers + chapter names + signoffs | JS auto-wraps inner text into `.sp-band-t` | Apply `.sp-band` class where required |
-| Count-up stats (`.sp-number`, `.sp-bignum`, `.sp-datum-n`) | JS IntersectionObserver auto | `data-to="<N>"` on the element |
-| Chapter beads (right-gutter ambient) | JS auto-discovers `[data-sp-chapter]` | One `<aside class="sp-chapter-beads">` in `<body>` |
-| Horizon (next-ground bleed ambient) | JS auto-reads `data-sp-ground-color` | One `<div class="sp-horizon">` in `<body>` + `data-sp-ground-color` on each chapter |
-| Stat curtain (transition) | CSS + JS auto-fires from trigger | `.sp-stat-curtain` + `data-curtain-for="id"` trigger — max 2 per issue |
-| Page fold (3D transition at ground swap) | CSS auto | `.sp-page-fold-wrap` between chapters — max 2 per issue |
-| Signature moment (per-format) | CSS + JS auto from `[data-special]` | Format-specific markup from the signature-moment table |
+| Chapter chrome (numeral + title) | CSS auto | `.chapter-head` markup once per chapter |
+| Drop cap | CSS auto | `.has-dropcap` on `.chapter-body`, or `<p class="lede">` |
+| Count-up stats | JS IntersectionObserver auto | `data-to="<N>"` on `.sp-number` |
+| Parallax scene band | JS + CSS auto | `figure.fig.is-wide.sp-parallax-band` with `.sp-band-frame`-wrapped `<img>` |
+| Reveal-on-scroll utilities | JS auto (progressive enhancement; JS-off renders complete) | Nothing |
+| Chapter beads (right-gutter ambient) | JS auto-discovers chapters | One `<aside class="sp-chapter-beads">` in `<body>` (in the `19-closing.html` scaffold) |
 | Wax seal + progress bar + back-to-top | CSS + JS auto | Nothing |
-| Full-viewport cover (v8.7.3) | CSS auto via `min-height: 100dvh` | Nothing — works on tablet and phone |
-| Accent lockdown (coral reserved for gate/D-day/progress only) | CSS auto via token cascade | Nothing — demoted secondary accent fills everywhere else |
-| Imagery/stat budget enforcement | Author-side checklist | Gate 2 of compliance checklist; not enforced in code |
+| Full-viewport cover | CSS auto via `min-height: 100dvh` | Nothing |
+| Per-format accent | CSS auto from `[data-special]` token | Nothing — never hard-code accent colours |
+| Holiday identity (Countdown / Field Guide) | CSS tiers 33 + 36–44 auto from `[data-special]` | The `.hol-*` markup per § Holiday Identity |
+| Imagery/stat budget enforcement | Author-side checklist + `validate-issue.py` `special-variety` floor | Gate 2 of compliance checklist |
 
-**What this means for future issues:** when a Countdown / Versus / Rewind / Deep Dive / etc. is generated in four weeks' time, the author does not need to re-request any of the above. They fire automatically provided (1) `<body class="mag-body is-special" data-special="...">`, (2) every chapter wrapper carries `data-sp-chapter` + alternating `sp-ground-paper` / `sp-ground-ink`, and (3) every chapter is preceded by a `.sp-chapter-gate`. Anything requiring author markup is a class contract, not a CSS request — it's documented in the Feature column with the minimum markup.
+**What this means for future issues:** the author does not need to re-request any of the above. They fire automatically provided (1) `<body class="is-special" data-special="...">` is set, and (2) chapters use the canonical `.chapter` / `.chapter-head` / `.chapter-body` markup from `component-contracts.md`.
 
-**What is NOT auto-applied and requires editorial judgement each time:** imagery density (budget is a minimum, not a ceiling), accommodation-chapter depth, word counts per chapter, the choice of signature moment for the format, placement of `.sp-pull-break` / `.sp-bridger` / `.sp-dash` interludes, and the editorial arc labels (`data-chapter-arc`). These are content decisions the editor makes during generation, not mechanical features.
+**What is NOT auto-applied and requires editorial judgement each time:** imagery density (budget is a minimum, not a ceiling), accommodation-chapter depth, word counts per chapter, placement of `.pullquote` / `.bignum-row` / `figure.fig` interludes, and the chapter running order. These are content decisions the editor makes during generation, not mechanical features.
 
 ---
 

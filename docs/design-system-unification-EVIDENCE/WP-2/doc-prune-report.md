@@ -1,0 +1,151 @@
+# WP-2 — F-13 doc prune report (spec rot)
+
+**Date:** 2026-07-19 · **Branch:** `claude/design-system-unification-orchestrate-fauubj` · **Builder:** WP-2 doc-prune agent (not the verifier)
+**Scope (SPEC WP-2):** prune `pre-flight.md` / `spec/specials.md` / `component-contracts.md` / Gate-1E to the live system only. Gate item: *docs contain zero deleted-class references; grep list committed.*
+
+## 0. What "dead" means here (definitions used)
+
+- **Tier 1 — deleted v8.21 system (the F-13 target):** the pre-v8.21 special-edition chrome, deleted in the v8.21 paper-and-ink redesign. These classes have **no styling definitions in any current CSS**; the only surviving textual traces are legacy *hide/compat* selectors in `33-countdown-destinations.css` / `36-holiday-identity.css` and inert legacy drivers in `assets/script.js` (which no-op because no current markup carries the classes). No shipped current-format issue's *markup* uses them (verified against the issue archive — the identical per-issue hit counts came from the inlined CSS bundle, not from markup). **Gate: zero references in the pruned docs.**
+- **Tier 2 — legacy-but-present (old weekly, CSS 00–22):** classes like `.nav-card`, `.split-60-40`, `.dyk`, `.sec`, `cover-noise` still *exist* in CSS files 00–22 (which the F-5 full-bundle glob still ships into specials), but **no current format's markup is authored with them** (weekly = generated Transmission; editorial specials = 23–32 vocabulary; holiday = 36–44). These were removed **as teaching** but are *not* on the strict deleted-class grep list, and one deliberate exception remains: the v8.42 "Forbidden in weeklies" ban-list in `component-contracts.md` § Standard Weekly names retired weekly classes *as banned* — that is live enforcement documentation (mirrors `validate-issue.py check_weekly_visual_consistency`), kept on purpose.
+
+## 1. Per-doc inventory (what each doc taught → verdict)
+
+### 1a. `references/pre-flight.md` (915 → 673 lines)
+
+| Section | Taught | Cross-check vs today | Action |
+|---|---|---|---|
+| RT-1, RT-2, RT-4, RT-5, RT-6 | editorial rules (leaks, taste, prices, image diversity, fabrication) | live pipeline rules | KEPT verbatim |
+| RT-3 coral lockdown | `--sp-accent-primary` reservation for `.sp-chapter-gate` numeral / D-day / progress; `.is-hype` exceptions (`.sp-number-huge`, `.sp-brief-kicker`, `.unmissables .sp-datum-value`, `.why-its-here`) | gates/hype variants deleted v8.21; token exists but reservation system gone | STUB (live rule kept: no inline accent colours; core pointer) |
+| RT-7 banned alternates | `.sp-pullquote-huge`/`.sp-pq-*`, `.sp-marginalia`/`.sp-marg-*`, `.sp-pull-break`, `.sp-brief*`, `.sp-hero-quote`, `.sp-chapter-chrome`/`.sp-hair` | none defined in current CSS | REWRITTEN — rule survives ("never invent markup"), list replaced by pointer to `component-contracts.md` |
+| RT-8 gate attributes | `.sp-chapter-gate` + `scg-*` + `data-chapter-*` | deleted v8.21 | STUB |
+| RT-9 drop-cap on hype picks | `.unmissables`, `.sp-spread-body` | deleted | REWRITTEN to live drop-cap rule (`.has-dropcap`/`.lede`, `.hol-dropcap`, `p.first`) |
+| RT-10 pull-break wrap | `.sp-pull-break-wrap`/`.sp-pull` | deleted | STUB (live `.pullquote` shape shown) |
+| RT-11 marginalia in spread | `.sp-spread > .sp-margin` | deleted | REWRITTEN to live `.marginalia`/`.m-label` rule |
+| RT-12 hype modifiers | `.is-hype`, `.sp-ground-gallery` | deleted | STUB (register boundary survives as holiday-vs-editorial) |
+| RT-13 holiday vocab | swap table enumerating 8 dead `sp-*` classes → `.hol-*` | `.hol-*` live (36–44); enforcement mechanized in `stitch-issue.sh` banned-vocab scan | REWRITTEN — hol-* teaching + halves/transit rules kept; dead-class swap table removed (the stitcher gate owns the token list) |
+| RT-14–RT-17 | `.hol-half--two` savannah, venue/half, image URL chain, `.theme-*`, `hol-tminus/trip-numbers/…` | all present in 36/41/43/44 + validators | KEPT verbatim |
+| RT-18–RT-23 | editorial substance/link/sub-format/bundle-facts/lens rules | live | KEPT (RT-20/21's `.section-label` sub-format-tag note updated — no section-label chrome in Transmission) |
+| §3 snippets | 8 dead snippets (pullquote-huge, marginalia-in-spread, pull-break, chapter gate + hype variant, `.unmissables`, `.sp-brief`, `.sp-dash`, `.sp-spread`) + holiday scaffold | dead vs live | dead 8 REMOVED; live editorial snippets added (`.pullquote`, `.marginalia`, `figure.fig`); **holiday scaffold kept in full** (component-contracts § Full snippets points here) |
+| §4 self-audit | RT-7a–h/RT-8/RT-13 dead-class greps | mechanized in stitcher/validator | REWRITTEN — live greps kept (RT-1, RT-3 inline-accent, RT-13b/13c hol-half/transit, RT-6) |
+| §5 lookup chain | stale paths (`spec/global/04-…`, `spec/formats/<f>.md`, `spec/specials/`) | spec/ is consolidated flat files | FIXED paths |
+
+### 1b. `references/spec/specials.md` (687 → 493 lines) — GENERATED FILE
+
+**Key finding:** `spec/specials.md` is generated by `scripts/slice-spec.sh` from `references/editorial-spec.md` (header-anchored) plus four synthetic heredoc blocks inside the script. Pruning the generated file alone would be reverted on the next slice run, so the prune was made **in the sources** and the file regenerated. One prior hand-edit (the 2026-07 WP-0 vocabulary-reconciliation sentence, present only in the generated file) was ported back into `editorial-spec.md` so nothing is lost on regeneration.
+
+| Anchor | Taught | Verdict |
+|---|---|---|
+| `overview`, `cover` (authoring + component list) | the LIVE v8.21 editorial kit (`.mast`, `.cover*`, `.chapter*`, `.sp-kicker`, `.pullquote`, `.marginalia`, `.bignum*`, `.fig`, `.image-quote`, `.pick`, `.also-cards`, `.meanwhile-list`, `.sp-footer*`, per-format flair `vs-*`/`year-band`/`memory-test`/`scorecards`/`lens`/`tier-band`/`cheat-sheet`/`on-ramp`/`only-one`/`calendar`/`crunch-*`/`argument`/`keep-digging`/`essentials`/`week-plan`) — all verified present in CSS 23–32 and enforced by `validate-issue.py` `SPECIAL_COMPONENT_GROUPS` | KEPT; "What was removed (v8.21)" note de-enumerated (history kept, class names dropped) |
+| `meanwhile` (auto-trigger logic) | pipeline/scout rules | KEPT verbatim |
+| `chapter-gate` | `.sp-chapter-gate` sticky-scroll model as "MANDATORY" | **deleted system** (the same file's own v8.21 note said gates were removed — the definitive spec-rot exhibit) → RETIRED stub; heading renamed, slicer anchor updated |
+| `imagery-budget` | `.sp-scroll-image`/`.sp-gallery`/`.sp-diptych`/`.sp-pullquote-huge`/`.sp-wipe`/`.sp-curtain` budgets | budget principle live, vocabulary dead → REWRITTEN in live vocabulary (`fig`/`image-quote`/`pullquote`/`bignum-row`/`pick`/`also-cards`/`sp-parallax-band`) + `special-variety` gate pointer |
+| `editorial-body-kit` (+ motion layer) | `.sp-ground-*`, `.sp-chapter-chrome`, `.sp-folio`, `.sp-spread`, `.sp-brief`, `.sp-hero-quote`, `.sp-dash`, `.sp-signoff`, `.sp-pull-break`, `.sp-bridger`, `.sp-band`, `.sp-spine`, `28-special-motion-editorial.css` | none exist → RETIRED stub + core pointer |
+| `signature-moments` | `.sp-sand-clock`…`.sp-pinboard` (8 components) | none exist → RETIRED stub + core pointer |
+| `chapter-transitions` | `.sp-stat-curtain`, `.sp-page-fold`, `.sp-chapter-beads`, `.sp-horizon` | beads LIVE (19-chapter-beads.css + 19-closing scaffold + shipped markup); rest dead → REWRITTEN beads-only |
+| `multi-venue` | data-multi-venue + tiers 33/36 | live → KEPT |
+| `hype-chapter-visuals` (synthetic) | `32-hype-variants.css` modifiers | file doesn't exist → RETIRED stub in slice-spec.sh |
+| `readability-locks` (synthetic) | `34-readability-locks.css` | file doesn't exist → RETIRED stub (Gate-1E pointer redirected to component-contracts.md) |
+| `portrait-spread` (synthetic) | `26-special-editorial.css` `.sp-spread` portrait | file/classes don't exist → RETIRED stub |
+| `holiday-identity` | `.hol-*` map, halves/transit, type roles, v8.13 upgrades, `.hol-wonders`, `.theme-*`, poster cover | all verified in 33/36–44 → KEPT |
+
+### 1c. `references/component-contracts.md` (941 → 825 lines)
+
+| Block | Taught | Cross-check | Action |
+|---|---|---|---|
+| Universal Cover | `cover-noise`/`cover-grain`/`cover-issue`/`cover-brand`/`cover-headline` + a "wrong patterns" line claiming live classes (`cover-body`!) don't exist | pre-v8.21 scaffold; shipped current specials use `.cover-meta`/`.cover-body`/`.cover-foot` (verified in `signal_deep-dive_2026-06-30.html`) | REPLACED with live v8.21/v8.24 cover contract |
+| Universal Navigator | `.nav-section`/`.nav-grid`/`.nav-card` | zero occurrences in any current-format markup; weekly tuner is generated | REPLACED with "no hand-written navigator" note |
+| Universal Footer | `.footer`/`.footer-brand`/`.footer-issue` | current specials ship `.sp-footer*` (verified) | REPLACED with `.sp-footer` contract |
+| Standard Weekly (Transmission) §§ | full live band contracts + forbidden-list | v8.42 current | KEPT verbatim (incl. the deliberate retired-class ban-list) |
+| Anchor Piece legacy block | `.is-anchor`/`.nav-card`/`.toc-row`/`.sec` "historical reference" | not in Transmission CSS/stitcher | DELETED |
+| Section Opener Variants | `.opener-lead`/`.stat-unit` | old weekly | DELETED |
+| Drop-cap/Lead-in | `.dropcap`/`.lead-in` | old weekly; live systems differ | REPLACED with live per-system drop-cap note |
+| Margin Note | `.margin-note` | old weekly (15/20 CSS), unused by current formats | REPLACED with live `.marginalia` contract |
+| Meanwhile | `sec world-section` + `.sec-watermark`/`.section-label`/`.also` | shipped current form is `section.meanwhile` > `.chapter-head` + `.meanwhile-list` (verified in `signal_rewind_2026-07-12.html`) | REPLACED with live form |
+| Key Container Rules | `.card-stack`/`.split-60-40`/`.dual-col`/`.timeline`/`.compare-panel` | old weekly containers, unused by current formats | REWRITTEN around `.pick`/`.also-cards`/`.bignum-row`/`fig` |
+| Old Starter Kit sec-table + The Aside | `sec`-based patterns | superseded by the chapter-based Starter Kit table (kept) | DELETED |
+| Shortlist / Deep Dive / Season Review / Starter Kit / Rewind / Next tables + contracts | `chapter`-based live kit | CSS 26/29/32 + validator groups | KEPT (duplicate empty "## The Rewind" heading removed; `foreword` row classes fixed; retired-`.sp-spread` mention de-named) |
+| Countdown / Field Guide sec-tables | `sec`-based patterns for holiday formats | holiday formats render under tier 36 — these patterns would render blank | REPLACED with pointers to § Holiday Identity + `spec/formats.md` |
+| Lookahead | live CSS but retired format (v8.39 S2) | archive-only | KEPT with an explicit RETIRED-format banner |
+| Holiday Identity | `.hol-*` index + anti-patterns enumerating 8 dead classes + decision tree naming `sp-chapter-gate` | hol-* live; enumeration replaced by stitcher-gate reference | KEPT, anti-patterns/decision-tree de-enumerated |
+
+### 1d. Gate-1E in `references/compliance-checklist.md` (459 → 447 lines; only §1E + its internals touched)
+
+- **Was:** ~20 greps against the deleted `sp-*` alternate-markup list (`sp-pullquote-huge`, `sp-pq-*`, `sp-marg-*`, `sp-pull-break`, `sp-brief-h`, `sp-hero-quote`, `sp-chapter-chrome`/`sp-hair` chrome-vs-hair balance) + a holiday block; closing paragraph pointed at the (dead) editorial-spec markup-contracts table.
+- **Now:** live contract statement (authority = `component-contracts.md` + `spec/specials.md` § cover) · explicit deference to the mechanized gates (`validate-issue.py` structural/holiday/`special-variety`; `stitch-issue.sh` holiday banned-vocabulary scan + weekly `.sp-*` gate) · manual backstops in live vocabulary (class-inventory spot-check; `.pullquote` must be `<blockquote>`; `.marginalia` must be `<aside>`; the full holiday structural block — `hol-half ≥1`, `hol-cover`, `hol-meanwhile`, transit-count rule, whole-issue coral ban). Gate name **"1E" preserved** — SKILL.md (Phases 7, retirement notes) and `spec/README.md` reference it by name.
+- Deliberately kept: the `--sp-accent-primary`/`E8384F` grep patterns (the *token* exists in live CSS `00-tokens.css`/tier 36; the grep bans its use in holiday issues/inline styles — that is a live check, not dead teaching).
+
+## 2. The dead-reference grep list (the exact patterns — the committed gate list)
+
+Tier-1 deleted-system tokens; the gate requires **zero hits** in the four pruned docs (and now also holds across the whole spec source + all slices):
+
+```
+sp-chapter-gate|sp-chapter-gate-track|scg-arc|scg-numeral|scg-deck|scg-strip|scg-title|data-sp-chapter|sp-spread|sp-rail|sp-spread-body|sp-margin\b|sp-marginalia|sp-marg-kicker|sp-marg-label|sp-pull-break|sp-pull\b|sp-pull-attrib|sp-pullquote-huge|sp-pq-quote|sp-pq-attrib|sp-brief|sp-hero-quote|sp-dash|sp-chapter-chrome|sp-hair|sp-roman|sp-chapter-name|sp-chapter-slug|sp-chapter-ff|sp-folio|sp-signoff|sp-bridger|sp-island|sp-caption-strip|sp-timeline|sp-tl-|sp-datum|sp-ground-|why-its-here|is-hype|sp-number-huge|sp-wipe|sp-curtain|sp-stagger|sp-splash|sp-sig-|sp-stat-curtain|scu-stat|scu-caption|sp-page-fold|sp-horizon|sp-sticky-pin|spin-inner|spin-cap|spin-rule|sp-spine|sp-band-t\b|sp-band-thin|sp-scroll-image|sp-inline-figure|sp-image-quote|sp-image-strip|sp-number-block|sp-bignum|sp-chapter-number|sp-gallery|sp-diptych|sp-manifesto|sp-marquee|sp-format-badge|mast-ticker|sp-sand-clock|sp-memory-wall|sp-fault-line|sp-form-tape|sp-thread-pull|sp-cold-start|sp-deck-reveal|sp-pinboard|sp-cs-after|cs-letter|mw-cell|ft-pill|tp-marker|dk-card|sp-deck\b|pb-stage|pb-pin|pb-label|34-readability-locks|26-special-editorial|28-special-motion-editorial|31-chapter-gate|32-hype-variants
+```
+
+Notes on pattern scope:
+- `sp-band-t\b|sp-band-thin` (not bare `sp-band`) because `.sp-band-frame` is LIVE (the v8.24 `.sp-parallax-band` wrapper in `24-special-base.css`). Similarly excluded as LIVE: `sp-kicker`, `sp-ornament`, `sp-number`, `sp-eyebrow`, `sp-footer*`, `sp-chapter-beads`, `sp-parallax-band`/`sp-parallax`/`sp-rise`/`sp-fade` (24), `sp-venue-tag` (33), `--sp-accent-primary` (token in 00/36).
+- Bare `.unmissables`/`.unmissable` (non-`hol-`) verified absent as class teaching via a separate lookbehind grep (`(?<!hol-)unmissable` against `class=` contexts) — plain-English uses of the word remain, the class does not.
+
+### 2a. Gate result (all values are grep -cE counts; run 2026-07-19)
+
+| File | Tier-1 hits |
+|---|---|
+| `references/pre-flight.md` | **0** |
+| `references/spec/specials.md` | **0** |
+| `references/component-contracts.md` | **0** |
+| `references/compliance-checklist.md` | **0** |
+| `references/editorial-spec.md` (source of specials.md) | **0** |
+| `references/spec/global.md`, `formats.md`, `weekly.md`, `triggers.md`, `README.md` | **0** each |
+
+## 3. Before → after line counts
+
+| File | Before | After |
+|---|---|---|
+| `references/pre-flight.md` | 915 | 673 |
+| `references/spec/specials.md` (generated) | 687 | 493 |
+| `references/component-contracts.md` | 941 | 825 |
+| `references/compliance-checklist.md` | 459 | 447 |
+| `references/editorial-spec.md` (source) | 1,852 | 1,653 |
+| `references/spec/global.md` (regenerated) | 528 | 475 |
+| `references/spec/formats.md` (regenerated) | 537 | 530 |
+| `scripts/slice-spec.sh` | 465 | 411 |
+
+Net: −1,224 / +347 lines across 9 files (git diffstat).
+
+## 4. Kept-alive and why (the judgment calls)
+
+1. **The whole v8.21 editorial component list + per-format flair tables** — live CSS 23–32; `validate-issue.py`'s `SPECIAL_COMPONENT_GROUPS`/`SPECIAL_VARIETY_FLOOR` enforce exactly this vocabulary and its error messages point writers at these docs.
+2. **`.sp-chapter-beads`** — defined in `19-chapter-beads.css`, shipped in `template-parts/19-closing.html`, present in shipped editorial-special markup. Kept (specials-only; the "works on the weekly" claim was corrected — Transmission doesn't load this bundle).
+3. **`.sp-parallax-band` / `.sp-band-frame` / `sp-rise` / `sp-fade` / `sp-eyebrow` / `sp-kicker` / `sp-ornament` / `sp-number` / `sp-footer*`** — all defined in live 24/26/29/31 layers; NOT confused with the same-prefixed dead classes.
+4. **Holiday Identity in full** (`.hol-*`, `.theme-*`, `hol-wonders`, poster cover, meal-slot, hype band) — layers 33, 36–44 live; the pre-flight §3 holiday scaffold is kept intact because `component-contracts.md` § Full snippets points to it.
+5. **Gate-1E as a named gate** — SKILL.md and `spec/README.md` reference "Gate 1E"/"1E markup greps" by name; the heading and gate identity are preserved, contents modernized.
+6. **The v8.42 "Forbidden in weeklies" retired-class list** (component-contracts § Standard Weekly) — retired class names appearing *as an explicit ban-list* backing a live validator check. Deliberate Tier-2 exception.
+7. **`--sp-accent-primary` / `#E8384F` grep patterns** in Gate-1E/Gate-3/pre-flight §4 — the token is live; the greps ban misuse. Kept.
+8. **Lookahead contracts** — format retired (v8.39 S2) but CSS lives in 32 and two archived drafts use it; kept behind an explicit RETIRED banner.
+9. **RT numbering (RT-1…RT-23) stable** — RT-5/RT-13/RT-16/RT-22 are referenced by name from SKILL.md, `stitch-issue.sh`, and validators; retired RTs became stubs rather than renumbering.
+10. **Stat-budget / chrome-positioning / auto-apply sections** — concepts live; rewritten onto live components rather than deleted (the caps are author-side judgment, not validator-enforced — noted as such).
+
+## 5. Scope decisions beyond the four named targets (Law 12 disclosure)
+
+`spec/specials.md` is *generated* from `editorial-spec.md`, so pruning it durably required editing the source + `slice-spec.sh` (renamed heading anchors; the three dead synthetic blocks; the README heredoc). While in the source file, the same deleted-system teachings sat in H3s that slice into **`spec/global.md`** (markup-contracts, ground-discipline, accent-lockdown, the misplaced tier-5 body-kit list inside image-integrity, stat-budget/held-attention/auto-apply) and **`spec/formats.md` § countdown** (hype-variant modifiers, `.sp-dash`/`.sp-gallery`/`.sp-image-strip` chapter guidance). Leaving those would have kept actively-read writer/planner docs (SKILL.md Phases 4–5 route every writer through markup-contracts/ground-discipline/accent-lockdown) teaching the deleted system, and Gate-1E/pre-flight pointers would have pointed at rot. I judged these in-scope for F-13 (same source file, same deleted system, same failure class) and pruned them to the live system. If the orchestrator reads WP-2's doc scope strictly as the four files, treat this as a flagged extension — every change is in this branch's diff and none touches CSS, issues/, tools/, or validate-*.py.
+
+Explicitly NOT touched (constraints): any `assets/css/**` file, `issues/*.html`, `tools/**`, `validate-*.py`, SKILL.md, CHANGELOG.md.
+
+## 6. Verification outputs
+
+1. **Zero-hit gate grep** — §2a table above: 0 across all four targets + the full spec source/slice set.
+2. **Slicer round-trip** — `bash scripts/slice-spec.sh` runs clean (exit 0, all anchors found — the extractor hard-fails on a missing heading, so the renamed anchors are proven consistent); re-running is idempotent (second run produces byte-identical slices). Before any source edits, a scratch regeneration confirmed spec/ was in sync with the source except the one WP-0 hand-edit, which was ported back (no content lost).
+3. **`verify-weekly-golden.sh`** — full pass: `=== GOLDEN REGRESSION PASS — the weekly generator produces a valid Transmission issue ===` (stitch → all validate-issue gates green, 6,391 words, image floor 10/8, scaffold/vocab gates green).
+4. **`publish-gate.sh` dry paths** (`--skip-image-urls`, receipts in scratchpad):
+   - `signal_deep-dive_2026-06-30.html --format deep-dive` → **GREEN**; notably `special-variety: 11 distinct component type(s) (floor 9) — argument, bignum, dropcap, figure, image-quote, keep-digging, kicker, marginalia, +3 more` — i.e. the shipped live issue exercises exactly the vocabulary the pruned docs now teach.
+   - `signal_countdown_2026-06-14.html --format countdown` → **GREEN** (holiday activation/component gates pass).
+5. **`bash -n scripts/slice-spec.sh`** — syntax OK.
+6. Cross-reference integrity checks: `stitch-issue.sh` error text points at pre-flight RT-13 + specials.md § holiday-identity (both exist); `component-contracts.md` § Full snippets → pre-flight § 3 holiday scaffold (kept); SKILL.md "Gate 1E" references (heading kept); `spec/README.md` regenerated consistently.
+
+## 7. Known remaining rot (honest, out of this WP's reach)
+
+- **`assets/script.js`** still carries inert drivers for the deleted system (`.sp-chapter-gate` builder, `.sp-marginalia`/`.sp-dash` revealers, ~2,388 lines) — they no-op on current markup. JS pruning was not in WP-2's doc scope and is covered by the WP-3 bundling work.
+- **`33-countdown-destinations.css` / `36-holiday-identity.css`** retain legacy compat/hide selectors for dead classes (they are the *reason* the hide-rules exist). CSS is explicitly out of my scope (core builder owns CSS).
+- **`compliance-checklist.md` outside §1E** retains some stale weekly-era notes (e.g. Gate-2 "Technical" items about `.reveal`, navigator cards, `.league-table`, the old `.mast` duplicate-masthead check — mixed live/legacy for archive-era specials) and Gate-1G's `.is-anchor` sketch names a class the Transmission stylesheet doesn't define (the Long Read invariant is enforced differently by `validate-issue.py`). Only Gate-1E was in scope; flagged for the WP-9 closeout or a follow-up pass.
+- **`spec/formats.md`** format sections beyond Countdown were only spot-pruned (Countdown was the one teaching the deleted chrome); a full formats.md review (e.g. Field Guide's prose references to old patterns) is recommended at WP-6 when skeletons land.
+- `references/core-components.md` (pointed to by the supersession stubs) is shipped separately by the core builder and is present (untracked) in this worktree at the time of writing, so the pointers resolve; this prune deliberately wrote no new-system content of its own ("do not write speculative new-system docs").

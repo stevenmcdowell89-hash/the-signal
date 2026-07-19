@@ -51,7 +51,7 @@ file per subdir (subdirs are removed in the consolidation stage):
 
 - `global.md` — Identity, Key Rules, Visual Design, Markup Contracts, Image Integrity, Ground Discipline, Accent Lockdown, Stat Budget
 - `weekly.md` — Standard Weekly overview + Section Structure + Rotation Mechanics + Anchor-Piece + Search Checklist + Component Reference
-- `specials.md` — Content-first contract + Authoring + Component list + Auto-Triggered Specials + Chapter Gate + Imagery Budget + Editorial Body Kit + Signature Moments + Chapter Transitions + Multi-venue + Hype Variants + Readability Locks + Portrait Spread + Holiday Identity
+- `specials.md` — Content-first contract + Authoring + Component list + Auto-Triggered Specials + Imagery Budget + Chapter Beads ambient + Multi-venue + Holiday Identity (plus retirement stubs for the deleted pre-v8.21 chrome: chapter gate, body kit, signature moments, hype variants, readability locks, portrait spread)
 - `formats.md` — One H2 per format: Standard Weekly, Deep Dive, Countdown, Season Review, Versus, Rewind, Guide (merged; Starter Kit + Shortlist folded in, retained for reference), Next, Lookahead (retired/folded), Field Guide
 - `triggers.md` — Priority 1/2/3 trigger logic + Guardrails + Search Checklist
 

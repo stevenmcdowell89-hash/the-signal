@@ -94,47 +94,35 @@ Gate 1A splits into two halves. **1A(i)** keeps the *reader* invisible. **1A(ii)
 
 ### 1E. Markup contract compliance (special editions only)
 
-The special-edition CSS targets specific tag + class combinations. Banned alternates bypass the readability locks and produce contrast bugs (bone-on-cream cards, ink-on-dark bands). Run every command below against the rendered HTML before delivery; **every command must return `0`**. Any non-zero result is a hard fail — fix the markup before proceeding to Gate 2.
+The special-edition CSS targets specific tag + class combinations; invented or off-contract markup renders unstyled or with the wrong contrast. The canonical contracts live in `references/component-contracts.md` (per-format tables — the authority) and `references/spec/specials.md` § cover (component list). **A class that appears in neither place nor in the current CSS does not exist.**
 
-Replace `FILE` with the issue's HTML path.
+Most of this gate is mechanized — read the exit codes, don't re-derive:
+
+- **`validate-issue.py`** — structural well-formedness, holiday activation + component checks, and the non-holiday **`special-variety`** floor (distinct live component types: ≥9 for deep-dive/rewind/starter-kit, ≥7 for versus/season-review/shortlist/lookahead/next).
+- **`stitch-issue.sh`** — the holiday **banned-vocabulary scan** (hard-fails legacy pre-v8.21 chrome class tokens in Countdown / Field Guide chapter HTML, and requires ≥1 `.hol-half`) and the **weekly gate** (no `.sp-*` special vocabulary in a Transmission weekly).
+
+Manual backstops — run against the rendered HTML before delivery; every command must return the expected value. Replace `FILE` with the issue's HTML path.
 
 ```bash
-# Pullquote (huge) — must be <blockquote>, never <div>
-grep -c '<div class="sp-pullquote-huge"' FILE     # expect 0
-grep -c 'class="sp-pq-quote"' FILE                # expect 0  (use plain <p>)
-grep -c 'class="sp-pq-attrib"' FILE               # expect 0  (use <cite>)
+# Class inventory spot-check (all specials): every class must be documented
+# in component-contracts.md / spec/specials.md § cover or present in the CSS.
+grep -oE 'class="[^"]+"' FILE | tr ' ' '\n' | sort -u | tail -40
+# expect: only documented vocabulary — investigate anything unfamiliar
 
-# Marginalia — label must be <span class="sp-marginalia-label">
-grep -c 'class="sp-marg-kicker"' FILE             # expect 0
-grep -c 'class="sp-marg-label"' FILE              # expect 0
-grep -c '<div class="sp-marginalia"' FILE         # expect 0  (use <aside>)
+# Pull quote shape (non-holiday): blockquote + <p> + <cite>
+grep -c '<blockquote class="pullquote"' FILE   # expect ≥1 on literary specials
+grep -c '<div class="pullquote"' FILE          # expect 0 (must be <blockquote>)
 
-# Pull-break — must be <div class="sp-pull-break">, wrapped in .sp-pull-break-wrap
-grep -c '<blockquote class="sp-pull-break"' FILE  # expect 0
-grep -c '<h[1-6][^>]*class="sp-pull"' FILE        # expect 0  (use <p class="sp-pull">)
+# Marginalia shape (non-holiday): aside + .m-label; never nested
+grep -c '<div class="marginalia"' FILE         # expect 0 (must be <aside>)
 
-# Brief sidebar — must use <h4>, not <h2>/<h3>
-grep -cE '<h[123][^>]*class="sp-brief-h"' FILE    # expect 0
-grep -c '<aside class="sp-brief"' FILE            # expect 0  (use <div>)
-
-# Hero quote — attribution must be <p class="sp-hero-quote-at">
-grep -c '<blockquote class="sp-hero-quote"' FILE  # expect 0
-
-# Chapter chrome — every chrome must contain the .sp-hair separator
-# (count of chromes minus count of hairs must be 0)
-chrome=$(grep -c 'class="sp-chapter-chrome"' FILE)
-hair=$(grep -c 'class="sp-hair"' FILE)
-[ "$chrome" -eq "$hair" ] || echo "FAIL: $chrome chromes, $hair hairs"
-
-# Holiday Identity (v8.12) — Countdown + Field Guide only
+# Holiday Identity (v8.12) — Countdown + Field Guide only.
 # These checks fire when data-special="countdown" or "field-guide".
-# Determine format:
 format=$(grep -oE 'data-special="[a-z-]+"' FILE | head -1 | sed 's/.*"\(.*\)"/\1/')
 
 if [ "$format" = "countdown" ] || [ "$format" = "field-guide" ]; then
-  # No default-chrome markup on holiday issues
-  grep -cE 'class="sp-chapter-gate|class="sp-spread|class="sp-pull-break|class="sp-marginalia|class="sp-brief|class="sp-dash|class="sp-chapter-chrome|class="unmissables|class="unmissable[ "]' FILE
-  # expect 0
+  # Legacy-chrome scan is mechanized in stitch-issue.sh (banned-vocabulary
+  # scan) — confirm the stitcher ran green rather than re-grepping here.
 
   # At least one .hol-half present
   hol_half=$(grep -c 'class="hol-half ' FILE)
@@ -159,9 +147,9 @@ if [ "$format" = "countdown" ] || [ "$format" = "field-guide" ]; then
 fi
 ```
 
-For each row in the canonical markup table (editorial-spec.md §Markup contracts), the corresponding banned alternate column maps to one or more of the greps above. If you add a new editorial component, you must add its banned-alternates greps here in the same commit.
+If you add a new editorial component, you must add its contract to `component-contracts.md` and its banned-alternates greps here in the same commit.
 
-**Why this is Gate 1, not Gate 2:** banned markup is mechanically detectable from the text alone, and it is the single largest historical source of contrast bugs (one v8.10.x issue had eight marginalia, six pull-breaks, and five pullquotes — every one rendered with the wrong contrast because the markup was wrong). It belongs with fabrication and staleness in the hard-fail tier.
+**Why this is Gate 1, not Gate 2:** off-contract markup is mechanically detectable from the text alone, and it is the single largest historical source of contrast bugs (one v8.10.x issue had nineteen components rendered with the wrong contrast because the markup was wrong). It belongs with fabrication and staleness in the hard-fail tier.
 
 ### 1F. Image-caption integrity (mechanical scan)
 

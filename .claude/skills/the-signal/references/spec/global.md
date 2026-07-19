@@ -266,7 +266,7 @@ Rotating sections use their existing single-feature shape — they don't need Le
 
 **Cover height rule (all formats):** `.cover` must fill the full viewport on first load — no next-section chrome (chapter gate, first headline, ground colour) should peek up from below the fold. Implementation: `min-height: 100vh; min-height: 100dvh; box-sizing: border-box` on the base rule, and the same full-height on the mobile override at `@media (max-width: 720px)`. **Do not regress to `82vh` / `72vh`** — those were from an earlier pre-tablet version and leave the cover shorter than a modern phone or tablet viewport. `100dvh` ensures the cover stretches to the full window whether the mobile URL bar is shown or hidden. The scroll-cue inside the cover foot is the reader's sole cue to keep scrolling; nothing from the next section should compete with it. If you add a new component inside `.cover`, use `grid-row: auto` and let the existing `auto 1fr auto` track layout anchor it — don't set a fixed cover height that shorter than the viewport.
 
-**Tablet ground-level gutter rule (special editions):** `.sp-ground-paper` and `.sp-ground-ink` chapter wrappers are full-bleed by design — the background tone reaches the viewport edge. Their CONTENT is given a horizontal gutter on tablet and mobile by `26-special-editorial.css` (28px tablet / 20px mobile, with `env(safe-area-inset-*)` floors). When you add a NEW component inside a chapter that should also be full-bleed (like `.sp-pull-break`, `.sp-folio`, `.sp-gallery`, `.sp-image-strip`, `.sp-scroll-image.is-fullbleed`), you MUST add it to the `:not(...)` exemption list in that media query — otherwise it'll inherit the gutter and look misaligned against the other full-bleed components.
+**Tablet gutter rule (special editions):** full-bleed chrome (the dark cover, verdict slabs, `.is-fullbleed` figures) reaches the viewport edge while chapter content keeps a horizontal gutter on tablet and mobile — this is handled by the live special CSS automatically. Never add per-component inline padding or margin overrides to "fix" gutters; if a new full-bleed component misaligns, fix it in the CSS layer, not the markup.
 
 **Navigator:** every format that has a navigator uses `04-navigator.html` — a card grid with a lead-card thumbnail. Specials that want an in-issue contents page do it through the chapter-numeral structure inside `<section class="chapter">`, not a separate template. (The former `04-navigator-toc.html` TOC variant was deleted in v8.22.11 — no current format used it, and writers reaching for it on weeklies was the May 17 / May 24 2026 bug.)
 
@@ -278,23 +278,22 @@ Rotating sections use their existing single-feature shape — they don't need Le
 
 ## markup-contracts
 
-### Markup contracts (v8.10.3 — hard rule)
+### Markup contracts (v8.21 system — hard rule)
 
-The special-edition CSS targets specific tag + class combinations. When a generator invents an alternative — `<div>` instead of `<blockquote>`, an unfamiliar class on a child element — the styling rule misses, the readability lock misses with it, and the component renders without its identity. Subagent-invented markup has been the single largest source of contrast bugs across v8.x. The contract below is closed: anything outside the canonical column is banned, full stop.
+The special-edition CSS targets specific tag + class combinations. When a generator invents an alternative — a `<div>` where the contract says `<blockquote>`, an unfamiliar class on a child element — the styling rule misses and the component renders without its identity. Subagent-invented markup has been the single largest source of contrast bugs across v8.x. The contract is closed: **a class that isn't in the Component list (§ Special editions), `component-contracts.md`, or the current CSS does not exist.**
 
-| Component | Canonical markup | BANNED alternates |
+| Component | Canonical markup | Notes |
 |---|---|---|
-| Marginalia | `<aside class="sp-marginalia" data-side="right"><span class="sp-marginalia-label">…</span><p>…</p></aside>` | `<div class="sp-marginalia">…</div>`; any child `<p class="sp-marg-kicker">` (must be `<span class="sp-marginalia-label">`); any child `<p class="sp-marg-label">`; nesting a marginalia inside another marginalia |
-| Pullquote (huge) | `<blockquote class="sp-pullquote-huge"><p>…</p><cite>…</cite></blockquote>` | `<div class="sp-pullquote-huge">`; child `<p class="sp-pq-quote">` (must be plain `<p>`); child `<p class="sp-pq-attrib">` or `<span class="sp-pq-attrib">` (must be `<cite>`); `<blockquote>` without `class="sp-pullquote-huge"` outside an `<aside>` |
-| Pull-break | `<div class="sp-pull-break-wrap sp-ground-deep"><div class="sp-pull-break"><p class="sp-pull">…</p><p class="sp-pull-attrib">…</p></div></div>` | `<blockquote class="sp-pull-break">`; nesting `.sp-pull-break` directly inside a chapter section without the `.sp-pull-break-wrap`; `.sp-pull` rendered as `<h2>` or `<h3>` instead of `<p class="sp-pull">`; missing `.sp-pull-attrib` (every pull-break must be attributed) |
-| Pullquote attribution (inside huge pullquote) | `<cite>— Source name</cite>` | `<p class="sp-pq-attrib">`; `<span class="sp-pq-attrib">`; `<footer>`; bare `<em>` |
-| Brief sidebar | `<div class="sp-brief"><p class="sp-brief-kicker">…</p><h4 class="sp-brief-h">…</h4><p>…</p><p class="sp-brief-byline">…</p></div>` | `<aside class="sp-brief">`; missing `.sp-brief-kicker`; `<h3>` or `<h2>` for the heading (must be `<h4>`) |
-| Hero quote | `<div class="sp-hero-quote"><p class="sp-hero-quote-q">…</p><p class="sp-hero-quote-at">…</p></div>` | `<blockquote class="sp-hero-quote">`; child `<cite>` (must be `<p class="sp-hero-quote-at">` for the typography rule to land) |
-| Chapter chrome | `<div class="sp-chapter-chrome"><span class="sp-roman">III</span><span class="sp-hair"></span><span class="sp-chapter-name">…</span><span class="sp-chapter-slug">…</span></div>` | `<header class="sp-chapter-chrome">`; missing `.sp-hair` (the hairline rule between numeral and name); `.sp-chapter-name` rendered as `<h2>` or `<h3>` |
+| Pull quote | `<blockquote class="pullquote"><p>…</p><cite>— …</cite></blockquote>` | attribution is `<cite>`, never a classed `<p>` |
+| Marginalia | `<aside class="marginalia"><span class="m-label">…</span><p>…</p></aside>` | floats into the right gutter; `.is-left` to flip; never nested |
+| Figure | `<figure class="fig"><img …><figcaption class="fig-caption">… <span class="fig-credit">…</span></figcaption></figure>` | modifiers `.is-wide` / `.is-fullbleed` / `.is-half` (+ `.is-left`) |
+| Image-quote | `<figure class="image-quote"><img …><blockquote><p>…</p><cite>— …</cite></blockquote></figure>` | darkened photo + overlaid quote |
+| Stat callout | `<div class="bignum"><div class="bignum-value">…</div><div class="bignum-label">…</div></div>` (2–4 inside `.bignum-row`) | never italicised stat lists |
+| Pick | `<article class="pick"><figure class="fig pick-img-fig"><img class="pick-img" …>…</figure><div class="pick-body">…</div></article>` | image always figure-wrapped, never bare |
 
-**Why this is hard rule, not best practice.** Each row in this table corresponds to a CSS selector that targets the canonical structure precisely. The styling does not fall back gracefully if you swap `<div>` for `<blockquote>` or `<p>` for `<span>`: the readability lock misses, the chapter ground cascades through, and you get a contrast bug or worse, a component that looks fine on paper grounds and breaks on ink (or vice versa). The contract is enforced by Gate 1E (mechanical grep scan) — every banned alternate must return zero matches before an issue ships.
+Full per-format contract tables (with every child class) live in `references/component-contracts.md` — that file is the authority; when it and prose disagree, it wins.
 
-**For new components.** Adding a new editorial component to the kit means updating three places in the same commit: (1) the CSS, (2) this table, (3) the Gate 1E grep recipe in `compliance-checklist.md`. A component without a contract entry cannot ship.
+**For new components.** Adding a new editorial component to the kit means updating three places in the same commit: (1) the CSS, (2) `component-contracts.md`, (3) the Gate 1E notes in `compliance-checklist.md`. A component without a contract entry cannot ship.
 
 
 
@@ -319,7 +318,7 @@ Wikimedia Commons URLs encode their subject in the filename: `Sirmione_007.JPG` 
 If the only image you can find for a chapter on Venue A's safari park is a stock photo of a giraffe with no Venue-A context, the caption must say `A reticulated giraffe — illustrative` not `Giraffes at Venue A's drive-through enclosure`. Captions must be honest about what the photograph shows, not aspirational about what it represents. Where a generic image is unavoidable, flag it as illustrative; where it isn't unavoidable, find a specific image instead (see §Image specificity check in compliance checklist).
 
 **5. Every image carries a credit line.**
-The credit lives inside the `<figcaption>` (or `.sp-caption-strip`) and names the photographer / source publication / Wikimedia author. Reused official press kits cite the venue (`Photo: Efteling press kit`). Wikimedia images cite the Commons author + license (`Photo: Velvet, CC-BY-SA 4.0 via Wikimedia Commons`). YouTube stills cite the channel (`Still: TheCoasterFanatics, YouTube`). No credit = the image cannot ship.
+The credit lives inside the `<figcaption>` (`.fig-credit` span on editorial specials) and names the photographer / source publication / Wikimedia author. Reused official press kits cite the venue (`Photo: Efteling press kit`). Wikimedia images cite the Commons author + license (`Photo: Velvet, CC-BY-SA 4.0 via Wikimedia Commons`). YouTube stills cite the channel (`Still: TheCoasterFanatics, YouTube`). No credit = the image cannot ship.
 
 
 ### Image URL verification chain (v8.13.7+) — UNBREAKABLE RULE
@@ -371,22 +370,6 @@ A claim the researcher can't source is dropped; an event still in the future at 
 
 Each layer alone is bypassable; together they make "future event written as done" and "name pinned to words nobody said" structurally hard to ship. Adding a new prose-trust defect class means adding a layer here — not a new standalone script.
 
-**Editorial body kit (tier 5 — magazine-spread structure):**
-- `.sp-ground-paper` / `.sp-ground-ink` — alternating-ground wrapper for chapters. Apply to each major section so chapters alternate between paper (cream) and ink (deep) grounds. The shift of value on scroll IS the transition between chapters; no bridge component needed when alternating. Variants: `.sp-ground-warm` (warm cream), `.sp-ground-tint` (rose-tinted paper), `.sp-ground-deep` (pitch black).
-- `.sp-chapter-chrome` — thin top bar inside every chapter: `<span class="sp-roman">III</span><span class="sp-hair"></span><span class="sp-chapter-name">…</span><span class="sp-chapter-slug">…</span>`. Mandatory at the top of every chapter on a special edition. Anchors the bound-magazine feel.
-- `.sp-folio` — giant background numeral behind chapter content (300-700px, ~5% opacity). Position with `.sp-folio-tl/-tr/-bl` variants. Place inside a chapter wrapper that has its own positioning context.
-- `.sp-spread` with `.sp-rail` + `.sp-spread-body` + `.sp-margin` — three-column feature-spread pattern. Narrow ink rail (oversized italic numeral, vertical spine label, act/section name) | body prose with proper drop cap and § section marks | tinted right margin column carrying marginalia and datums. Mandatory for any chapter ≥800 words. Collapses to single column ≤980px.
-  - Inside `.sp-margin`: use `.sp-margin-kicker`, `.sp-margin-quote` (with `.sp-margin-attrib`), and one or more `.sp-datum` (each containing `.sp-datum-n` + `.sp-datum-l`).
-- `.sp-brief` — sidebar card with thick accent left rule. `<div class="sp-brief"><p class="sp-brief-kicker">…</p><h4 class="sp-brief-h">…</h4><p>…</p><p class="sp-brief-byline">…</p></div>`.
-- `.sp-hero-quote` — bordered card with oversized translucent “ peeking above the top edge. `.sp-hero-quote-q` for the quote, `.sp-hero-quote-at` for attribution.
-- `.sp-dash` — stat dashboard band: 3-4 `.sp-dash-cell`s, soft tinted background, oversized italic numerals (`.sp-dash-n`) + mono labels (`.sp-dash-l`) + accent kickers (`.sp-dash-hint`). Use this instead of italicised stat lists.
-- `.sp-timeline` — editorial two-column timeline. Each `.sp-tl-row` contains `.sp-tl-when` (large italic date with optional `.sp-tl-tag`) and `.sp-tl-what` (with `<strong>` lede + serif body, accent dot on rule). Perfect for day-by-day plans.
-- `.sp-pull-break` — full-bleed dark band with two giant translucent quote marks in opposite corners and centred pull (`.sp-pull` + `.sp-pull-attrib`). Much more dramatic than a normal pull quote; use 1-2 per issue.
-- `.sp-bridger` — three-column interlude inside a section: numeral marker (`.sp-bridger-side` with `.sp-bridger-num`) | prose (`.sp-bridger-main`) | sidebar/quote (`.sp-bridger-aside`). Sits on warm-cream ground, breaks body rhythm.
-- `.sp-caption-strip` — richer photo caption with hairline rule + `.sp-cap-loc` mono location chip on the right.
-- `.sp-signoff` — italic display sigil with hairline accent rule, marking the end of a chapter.
-- `.sp-eyebrow` — tiny mono kicker in accent colour, used above any major heading or component title.
-
 
 
 
@@ -394,16 +377,14 @@ Each layer alone is bypassable; together they make "future event written as done
 
 ## ground-discipline
 
-### Ground discipline (v8.4 — hard rule)
+### Ground discipline (v8.21 system)
 
-**The chapter owns the ground. Components inside a chapter inherit it.**
+**The format CSS owns the grounds; components never paint ad-hoc backgrounds.**
 
-- `sp-ground-paper` and `sp-ground-ink` belong on `[data-sp-chapter]` wrappers only.
-- **No pull-quote, brief box, sidebar, stat panel, or island component may flip to the opposite ground inside its chapter.** A pull-quote inside an ink chapter lives on ink. A brief inside a paper chapter lives on paper. Previously, components painted their own cream/ink backgrounds, fragmenting the chapter into a patchwork of boxes that hid the actual chapter-break. This is now banned.
-- **Emphasis comes from weight, hairlines, and typography** — not colour inversion. A brief reads as a brief because of its left rule and its kicker, not because its background colour differs from the prose around it.
-- **Enforced in CSS**: `31-chapter-gate.css` neutralises `sp-ground-paper`/`sp-ground-ink` on every common component class when nested inside `[data-sp-chapter]`. The only full-bleed component still allowed to paint its own ground is `.sp-pull-break`.
-- **Force ground alternation across the issue.** Adjacent chapters must not share a ground. If the running order would produce paper→paper or ink→ink neighbours, either reorder the chapters or flip one. Same-ground neighbours make the chapter break invisible even with a gate.
-- **Readability Lock Principle (v8.10.3).** Any component that paints its own background MUST also lock its own text colour in the same rule. The chapter ground cascades a `color` value into every nested element; if a self-painting component (cream card, dark band, tinted sidebar) leaves text colour to inherit, the cascade lands bone-text on a cream card or ink-text on a near-black band. Components covered by the v8.10.3 lock layer (`34-readability-locks.css`): `.sp-marginalia` is always cream-bg + ink-text; `.sp-pull-break` is always dark-bg + bone-text; `.sp-pullquote-huge` paints text colour explicitly per chapter ground. Any new self-painting component you add to the kit MUST update this layer in the same commit. Every newly-introduced component goes through the question: "Does this paint its own background? If yes, does it also lock its own text colour?" If the answer to the second question is no, the component is broken and must not ship.
+- The v8.21 editorial system paints its own grounds: the dark `.cover`, the paper chapter body, and the dark verdict/close slabs some flair components bring (`.vs-verdict`, `.only-one`, `figure.image-quote`). Writers never set `background:` inline on chapters or components.
+- **Emphasis comes from weight, hairlines, and typography** — not colour inversion. A component reads as itself because of its rules, kickers, and type, not because its background differs from the prose around it.
+- Self-painting components in the current kit lock their own text colour in the CSS — use the canonical markup and contrast is handled; never add inline colour overrides.
+- (History: the pre-v8.21 per-chapter alternating-ground system and its lock layer were deleted in the v8.21 redesign. Holiday issues have their own ground rules — see § Holiday Identity and pre-flight RT-14.)
 
 
 
@@ -411,19 +392,15 @@ Each layer alone is bypassable; together they make "future event written as done
 
 ## accent-lockdown
 
-### Accent lockdown (v8.4 — hard rule)
+### Accent lockdown (v8.21 system)
 
-Coral (`--sp-accent-primary`, `#E8384F`) is now reserved for three things and three things only:
-1. The Roman numeral inside `.sp-chapter-gate`
-2. The Countdown D-day badge
-3. The page progress bar
+Each non-holiday special format carries its own accent, set as `--accent` on `body[data-special="…"]` by `23-special-tokens.css`. The rules:
 
-Everywhere coral was previously used (masthead accent underline, datum values, `sp-number` count-ups, kickers, pull-break corner quotes, brief accent rules, `sp-dash-cell strong`, spread-body `h2`, eyebrow, etc.) is demoted to a **secondary accent** scoped by chapter ground:
-- Inside paper chapters → `--sp-accent-secondary` (muted slate, `#64697B`)
-- Inside ink chapters → `--sp-accent-secondary-ink` (bone, `#C9C2B5`)
+1. **Never hard-code an accent colour inline.** No `style="color:#…"` on kickers, stats, or headings — the cascade paints `.sp-kicker`, `.sp-number`, `<em>` in `.cover-title`, tier bands, and verdict chrome from the format token. (Gate 3 greps for inline accent overrides.)
+2. **Accent is for signal, not decoration.** It marks structure (kickers, numerals, tier marks, verdict furniture) — body prose stays ink.
+3. Holiday issues use the brass/ruby holiday palette from tier 36; the editorial accents don't apply there (see § Holiday Identity).
 
-This means: when a reader flicks past a block of coral, it can only mean "new chapter" (or "days remaining" / progress chrome). They stop trusting coral as decoration.
-
+(History: the pre-v8.21 coral-reservation system was deleted with the chapter gates in the v8.21 redesign.)
 
 
 ---
@@ -436,33 +413,17 @@ Too many stat blocks flatten into noise. Hard cap for every special edition:
 
 | Block type | Max per issue |
 |---|---|
-| `sp-stat-curtain` (full-viewport, hero) | **1** |
-| `sp-dash` (dashboard grid) | **1** |
-| `sp-number` / `sp-number-huge` (inline count-ups) | **6 combined** |
-| `sp-datum` (marginalia stat) | **4** |
-| **TOTAL stat-heavy blocks** | **≤ 12** |
+| `.bignum-row` (stat band) | **2** |
+| standalone `.bignum` outside a row | **2** |
+| inline `.sp-number` count-ups | **6** |
+| **TOTAL stat-heavy blocks** | **≤ 10** |
 
 If a draft exceeds the cap, cut the weakest blocks. Rule of thumb: any stat that appears more than once across the issue (same number in curtain + count-up + datum) loses all punch — keep the version with the most editorial weight, cut the others. Prose should carry most of the numbers; stat blocks are reserved for the handful that genuinely deserve a pause.
 
 
 ### Held-attention moment (format-agnostic)
 
-- **`.sp-sticky-pin`** — a single image or pull-quote that pins to the side of the column for ~1.5 viewports of scroll while the prose continues past, then releases. A thin accent rule on the card grows as a within-section progress indicator. Use for a character portrait during an interview (watches the reader), or a pull-quote that lingers while the argument unfolds around it. Variants: `sp-sticky-pin--portrait` (image, default right-float), `sp-sticky-pin--quote` (left-border pull quote), `sp-sticky-pin--left` (flip to left margin). Markup:
-  ```
-  <aside class="sp-sticky-pin sp-sticky-pin--portrait">
-    <div class="spin-inner">
-      <img src="…" alt="…">
-      <figcaption class="spin-cap">…</figcaption>
-      <div class="spin-rule" aria-hidden="true"></div>
-    </div>
-  </aside>
-  ```
-  **Rules (enforced):**
-  1. **Max one per issue.** If multiple `.sp-sticky-pin` elements exist, JS keeps the first and demotes the rest to inline figures.
-  2. **Never** in a section that already uses `.sp-parallax` or `.sp-scroll-image` — they solve overlapping problems.
-  3. Only inside a host section with **≥ 150vh of prose** — otherwise the stick is imperceptible.
-  4. **Mobile (≤ 820px):** collapses to a normal inline figure; no stick (sticky on tablet causes vertigo).
-  5. Best uses: a single character portrait during an interview, or a pull-quote that watches over an unfolding argument. Never a decorative stock photo.
+The pre-v8.21 held-attention components (sticky pins, scroll-pinned quotes) were deleted in the v8.21 redesign; no current CSS implements them. The one sanctioned held-attention device in the live system is the parallax scene band — `figure.fig.is-wide.sp-parallax-band` with its `.sp-band-frame` wrapper (max ~2 per issue; see the parallax discipline in `component-contracts.md`). Richer held-attention moments return with the unified core's motion tiers — see `references/core-components.md`.
 
 
 ### Issue accent
@@ -470,17 +431,14 @@ Each format maps to a palette variable. **Non-holiday formats (v8.21 system, see
 
 
 ### Chrome positioning ground rules
-Fixed chrome elements must not overlap. Current occupation:
-- Masthead: `top: 0` full-width, `z-index: 50`
-- Wax-stamp seal: `top: 76px; right: 28px; z-index: 45`
-- Format badge (special): `top: 76px; right: 28px` range — rotated, lower z-index
-- D-day badge (countdown): `top: 88px; left: 18px; z-index: 46` — kept on the LEFT to avoid seal collision
+Fixed chrome elements must not overlap. Current occupation (v8.21 system):
+- Masthead (`.mast`): `top: 0` full-width
+- "Return to The Signal" back-link pill: fixed top-left (injected by `stitch-issue.sh`)
+- Wax-stamp seal: below the masthead, right side
+- D-day badge (Countdown): below the masthead, LEFT side — kept left to avoid seal collision
 - Back-to-top: `bottom: 28px; right: 28px`
-- Chapter beads (ambient): `right: 14px; top: 50%` — collapses to `right: 6px` and thin line on tablet/mobile
-- Memory wall (Rewind only): `top: 84px; right: 18px` — collapses to a horizontal section-header strip below 900px
-- Horizon (ambient): `bottom: 0` full-width, height driven by within-chapter progress, `z-index: 2`
-- Stat curtain (transition, transient): `inset: 0` full-viewport, `z-index: 30`, only visible while rising/retracting
-- Sticky pin (held attention, inline): `position: sticky; top: masthead + 24px; z-index: 3` — flows with column, never fixed to viewport edge
+- Progress bar: viewport top edge, above the masthead
+- Chapter beads (ambient, specials): `right: 14px; top: 50%` — collapses to a thin line on tablet/mobile
 If adding a new fixed element, claim a free corner or offset vertically from the masthead.
 
 ---
@@ -488,39 +446,28 @@ If adding a new fixed element, claim a free corner or offset vertically from the
 
 ### Visual features — auto-apply guarantee (v8.7.3)
 
-Every visual feature hardened between v8.0 and v8.7 fires automatically on every future special edition once you've done the three structural things listed in §Authoring a special edition. This table is the canonical answer to *"will X show up on the next Countdown/Deep Dive/Versus without me having to ask?"*.
+The live visual chrome fires automatically on every future special edition once the structural basics from §Authoring a special edition are in place. This table is the canonical answer to *"will X show up on the next special without me having to ask?"*.
 
 | Feature | How it fires | What you must author |
 |---|---|---|
-| Splash pre-roll | CSS + JS auto-inject | Nothing — rendered if `<body class="is-special">` |
-| Masthead ticker | CSS + JS auto | Nothing |
-| Format badge (◆ rotated) | CSS auto from `[data-special]` | Nothing |
+| Persistent masthead (`.mast`) | CSS auto on `body.is-special` | Nothing |
+| "Return to The Signal" back-link pill | Injected by `stitch-issue.sh` (idempotent) | Nothing |
 | D-day badge (Countdown) | CSS + JS auto | `data-dday-start="N"` on `<body>` |
-| Alternating paper/ink grounds | CSS auto from `sp-ground-paper` / `sp-ground-ink` | One class per chapter wrapper |
-| Full-bleed ground gutter (tablet/phone) | CSS @media auto | Nothing — enforced by `26-special-editorial.css` |
-| Chapter chrome (roman + hair + name + slug) | CSS auto; reveals staggered | Markup once per chapter |
-| Chapter gate (sticky black panel, 4-layer reveal) | CSS + JS auto (sticky scroll + rAF progress loop) | `<aside class="sp-chapter-gate" data-chapter-num data-chapter-title data-chapter-arc>` + `.scg-deck` line |
-| Giant folio watermark | CSS auto; parallax on scroll via `--sp-folio-y` | `.sp-folio` div inside chapter |
-| 3-column spread (rail + body + margin) | CSS auto; rail stretches full spread via `position: absolute` (v8.7.2); margin floats right, reclaims prose width when its content ends (v8.7.1) | `.sp-spread > .sp-rail + .sp-spread-body + .sp-margin` markup — reparenter IIFE handles mobile portrait |
-| Drop cap (110px italic accent) | CSS auto on `.sp-spread-body > p:first-of-type` | Nothing — don't wrap the first letter manually |
-| § section mark on inner headings | CSS `::before` auto | Nothing |
-| Paper/ink text-colour lock on islands | CSS auto on `.sp-brief`, `.sp-hero-quote`, `.sp-bridger`, `.sp-margin` | Nothing — islands always read correctly against any ground |
-| Ink-ground margin = paper-tinted card (v8.7.2) | CSS auto on `.sp-ground-ink .sp-margin` | Nothing |
-| `.sp-band` wipe-reveal on kickers + chapter names + signoffs | JS auto-wraps inner text into `.sp-band-t` | Apply `.sp-band` class where required |
-| Count-up stats (`.sp-number`, `.sp-bignum`, `.sp-datum-n`) | JS IntersectionObserver auto | `data-to="<N>"` on the element |
-| Chapter beads (right-gutter ambient) | JS auto-discovers `[data-sp-chapter]` | One `<aside class="sp-chapter-beads">` in `<body>` |
-| Horizon (next-ground bleed ambient) | JS auto-reads `data-sp-ground-color` | One `<div class="sp-horizon">` in `<body>` + `data-sp-ground-color` on each chapter |
-| Stat curtain (transition) | CSS + JS auto-fires from trigger | `.sp-stat-curtain` + `data-curtain-for="id"` trigger — max 2 per issue |
-| Page fold (3D transition at ground swap) | CSS auto | `.sp-page-fold-wrap` between chapters — max 2 per issue |
-| Signature moment (per-format) | CSS + JS auto from `[data-special]` | Format-specific markup from the signature-moment table |
+| Chapter chrome (numeral + title) | CSS auto | `.chapter-head` markup once per chapter |
+| Drop cap | CSS auto | `.has-dropcap` on `.chapter-body`, or `<p class="lede">` |
+| Count-up stats | JS IntersectionObserver auto | `data-to="<N>"` on `.sp-number` |
+| Parallax scene band | JS + CSS auto | `figure.fig.is-wide.sp-parallax-band` with `.sp-band-frame`-wrapped `<img>` |
+| Reveal-on-scroll utilities | JS auto (progressive enhancement; JS-off renders complete) | Nothing |
+| Chapter beads (right-gutter ambient) | JS auto-discovers chapters | One `<aside class="sp-chapter-beads">` in `<body>` (in the `19-closing.html` scaffold) |
 | Wax seal + progress bar + back-to-top | CSS + JS auto | Nothing |
-| Full-viewport cover (v8.7.3) | CSS auto via `min-height: 100dvh` | Nothing — works on tablet and phone |
-| Accent lockdown (coral reserved for gate/D-day/progress only) | CSS auto via token cascade | Nothing — demoted secondary accent fills everywhere else |
-| Imagery/stat budget enforcement | Author-side checklist | Gate 2 of compliance checklist; not enforced in code |
+| Full-viewport cover | CSS auto via `min-height: 100dvh` | Nothing |
+| Per-format accent | CSS auto from `[data-special]` token | Nothing — never hard-code accent colours |
+| Holiday identity (Countdown / Field Guide) | CSS tiers 33 + 36–44 auto from `[data-special]` | The `.hol-*` markup per § Holiday Identity |
+| Imagery/stat budget enforcement | Author-side checklist + `validate-issue.py` `special-variety` floor | Gate 2 of compliance checklist |
 
-**What this means for future issues:** when a Countdown / Versus / Rewind / Deep Dive / etc. is generated in four weeks' time, the author does not need to re-request any of the above. They fire automatically provided (1) `<body class="mag-body is-special" data-special="...">`, (2) every chapter wrapper carries `data-sp-chapter` + alternating `sp-ground-paper` / `sp-ground-ink`, and (3) every chapter is preceded by a `.sp-chapter-gate`. Anything requiring author markup is a class contract, not a CSS request — it's documented in the Feature column with the minimum markup.
+**What this means for future issues:** the author does not need to re-request any of the above. They fire automatically provided (1) `<body class="is-special" data-special="...">` is set, and (2) chapters use the canonical `.chapter` / `.chapter-head` / `.chapter-body` markup from `component-contracts.md`.
 
-**What is NOT auto-applied and requires editorial judgement each time:** imagery density (budget is a minimum, not a ceiling), accommodation-chapter depth, word counts per chapter, the choice of signature moment for the format, placement of `.sp-pull-break` / `.sp-bridger` / `.sp-dash` interludes, and the editorial arc labels (`data-chapter-arc`). These are content decisions the editor makes during generation, not mechanical features.
+**What is NOT auto-applied and requires editorial judgement each time:** imagery density (budget is a minimum, not a ceiling), accommodation-chapter depth, word counts per chapter, placement of `.pullquote` / `.bignum-row` / `figure.fig` interludes, and the chapter running order. These are content decisions the editor makes during generation, not mechanical features.
 
 ---
 

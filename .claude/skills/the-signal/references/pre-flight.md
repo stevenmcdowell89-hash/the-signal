@@ -8,11 +8,11 @@
 
 This file catches the ~12 regression patterns that have appeared in past issues. Read it once, check your chapter against it, and your chapter passes Gate 1 without rework. It is not a summary of the full editorial spec — it is a targeted hit list of the most common failures.
 
-**If you need more detail:** editorial-spec.md (full spec) → compliance-checklist.md (gate greps) → references/spec/global/ (sliced rules by topic).
+**If you need more detail:** editorial-spec.md (full spec) → compliance-checklist.md (gate greps) → references/spec/*.md (sliced rules by topic) → references/component-contracts.md (canonical markup).
 
 ---
 
-## 2. Twelve Regression Triggers
+## 2. Regression Triggers
 
 Each trigger: what it looks like, why it's banned, what to do instead.
 
@@ -58,21 +58,11 @@ Each trigger: what it looks like, why it's banned, what to do instead.
 
 ---
 
-### RT-3: Coral Accent Lockdown Violation
+### RT-3: Coral Accent Lockdown — RETIRED rule, live core (v8.21)
 
-**What it looks like:**
-- A pull-quote with coral text or border
-- A brief sidebar with coral kicker
-- A dashboard (`sp-dash`) with coral `strong` elements
-- An eyebrow label in coral
-- A spread `h2` with coral marker
-- Any use of `color: var(--sp-accent-primary)` or `color: #E8384F` outside the allowed list
+The v8.4 coral-reservation system (gate numerals, D-day badge, progress bar) was deleted with the pre-v8.21 chrome. The live rule is simpler and still hard:
 
-**Why banned (v8.4 hard rule):** Coral is reserved for three things ONLY: (1) the Roman numeral inside `.sp-chapter-gate`, (2) the Countdown D-day badge, (3) the page progress bar. When coral appears elsewhere, it loses all meaning as a chapter-break signal.
-
-**Allowed exceptions (hype chapters only):** `.sp-number`, `.sp-number-huge`, `.sp-kicker`, `.sp-brief-kicker`, `.unmissables .sp-datum-value`, `.why-its-here` — but ONLY on `[data-sp-chapter].is-hype` chapters, and NEVER on literary formats (Deep Dive, Versus, Rewind, Season Review).
-
-**Instead:** Everywhere coral was previously used, the CSS automatically uses `--sp-accent-secondary` (muted slate on paper, bone on ink). You don't need to set it — just don't override with coral.
+**Never set accent colours inline.** Each special format's accent is painted by the CSS from `body[data-special]` tokens (`23-special-tokens.css`); holiday issues use the brass/ruby holiday palette (tier 36). Any `style="color:#…"` accent override in markup is a Gate-3 failure — just use the canonical classes and the cascade does the rest. Superseded by the unified core — see `references/core-components.md`.
 
 ---
 
@@ -117,138 +107,41 @@ Each trigger: what it looks like, why it's banned, what to do instead.
 
 ---
 
-### RT-7: Banned Alternate Markup
+### RT-7: Invented / Alternate Markup
 
-**What it looks like (all are banned):**
+The old banned-alternates list here covered the deleted pre-v8.21 component system; the underlying rule is permanent and still the single largest historical source of contrast bugs:
 
-```html
-<!-- BANNED pullquote -->
-<div class="sp-pullquote-huge">...</div>
-<p class="sp-pq-quote">...</p>
-<p class="sp-pq-attrib">...</p>
-
-<!-- BANNED marginalia -->
-<div class="sp-marginalia">...</div>
-<p class="sp-marg-kicker">...</p>
-<p class="sp-marg-label">...</p>
-
-<!-- BANNED pull-break -->
-<blockquote class="sp-pull-break">...</blockquote>
-<h2 class="sp-pull">...</h2>
-
-<!-- BANNED brief sidebar -->
-<aside class="sp-brief">...</aside>
-<h3 class="sp-brief-h">...</h3>
-
-<!-- BANNED hero quote -->
-<blockquote class="sp-hero-quote">...</blockquote>
-
-<!-- BANNED chapter chrome -->
-<header class="sp-chapter-chrome">...</header>
-<!-- (also: missing .sp-hair inside chapter chrome) -->
-```
-
-**Why banned:** The CSS targets specific tag + class combinations. Wrong tags bypass the readability locks and produce contrast bugs — bone-on-cream cards, ink-on-dark bands. This has been the single largest source of v8.x regressions.
-
-**Instead:** Use only the canonical markup in § 3 below.
+**The CSS targets exact tag + class combinations. Never invent markup.** Use ONLY the canonical contracts in `references/component-contracts.md` (per-format tables — the authority) and the component list in `references/spec/specials.md` § cover. If a class isn't documented there or present in the current CSS, it does not exist. Weekly issues use the Transmission vocabulary only (`component-contracts.md` § Standard Weekly — `stitch_weekly.py` and `validate-issue.py` reject anything else); holiday issues use `.hol-*` only (RT-13 — `stitch-issue.sh` blocks legacy chrome tokens mechanically).
 
 ---
 
-### RT-8: Missing Chapter-Gate Data Attributes
+### RT-8: Chapter-Gate Attributes — RETIRED (v8.21)
 
-**What it looks like:**
-```html
-<!-- MISSING required attributes -->
-<aside class="sp-chapter-gate">...</aside>
-<section data-sp-chapter>...</section>
-```
-
-**Why banned:** The chapter gate JS driver reads `data-chapter-num`, `data-chapter-title`, and `data-chapter-arc` to build the sticky scroll panel. Missing any of them produces a blank black viewport on scroll.
-
-**Instead:** Every chapter gate and chapter wrapper must carry the full attribute set:
-```html
-<aside class="sp-chapter-gate" data-chapter-num="II"
-      data-chapter-title="Top Attractions"
-      data-chapter-arc="The rides worth your day">
-  <div class="scg-arc">Visual Highlights</div>
-  <div class="scg-numeral">II</div>
-  <div class="scg-title">Top Attractions</div>
-  <div class="scg-deck">The rides worth your day</div>
-</aside>
-<section data-sp-chapter data-chapter-num="2"
-         data-chapter-title="Top Attractions"
-         data-chapter-arc="The rides worth your day"
-         class="sp-ground-paper">
-```
+Chapter gates were deleted in the v8.21 redesign; no current format opens chapters with a gate or its data attributes. Chapters open with the `.chapter-head` chrome (`component-contracts.md`); holiday issues use halves + the transit (RT-13). Superseded by the unified core — see `references/core-components.md`.
 
 ---
 
-### RT-9: Drop-Cap on Hype Picks (Forbidden)
+### RT-9: Drop-Cap Misuse (updated v8.21)
 
-**What it looks like:**
-- A drop-cap (large first letter) on the first paragraph of a pick inside `.unmissables`
-- `::first-letter` styling on any `.unmissable` prose block
-
-**Why banned:** Drop-caps are for literary spreads only — the first letter of body text inside `.sp-spread-body > p:first-of-type`. They are CSS-automated there. On hype picks they look like a formatting bug and break the visual rhythm.
-
-**Instead:** Hype pick prose opens normally. Let the hero image + `.why-its-here` kicker do the visual work.
+Drop caps belong to chapter openings ONLY — `.chapter-body.has-dropcap` or `<p class="lede">` on editorial specials, `.hol-dropcap` on holiday issues, `p.first` on the weekly. Never put a drop cap (or `::first-letter` styling) on list items, ranked entries, or picks — there it reads as a formatting bug and breaks the visual rhythm. Let the pick's image and kicker do the visual work.
 
 ---
 
-### RT-10: Broken Pull-Break Wrap
+### RT-10: Pull-Break Wrap — RETIRED (v8.21)
 
-**What it looks like:**
-```html
-<!-- BROKEN: pull-break outside its wrapper -->
-<section data-sp-chapter ...>
-  <div class="sp-spread">...</div>
-  <div class="sp-pull-break">...</div>  <!-- WRONG -->
-</section>
-```
-
-**Why banned:** `.sp-pull-break` must be nested inside `.sp-pull-break-wrap`. The wrapper is what provides the full-bleed dark background. A bare `.sp-pull-break` renders without the backdrop, producing floating text on the chapter ground.
-
-**Instead:**
-```html
-<div class="sp-pull-break-wrap sp-ground-deep">
-  <div class="sp-pull-break">
-    <p class="sp-pull">The quote text here</p>
-    <p class="sp-pull-attrib">— Attribution</p>
-  </div>
-</div>
-```
+The pull-break component was deleted in the v8.21 redesign. The live pull quote is `<blockquote class="pullquote"><p>…</p><cite>— …</cite></blockquote>` — no wrapper element, no ground class. Superseded by the unified core — see `references/core-components.md`.
 
 ---
 
-### RT-11: Marginalia Outside `.sp-spread`
+### RT-11: Marginalia Placement (updated v8.21)
 
-**What it looks like:**
-```html
-<!-- WRONG: marginalia outside the spread -->
-<section data-sp-chapter ...>
-  <aside class="sp-marginalia">...</aside>
-  <p>Prose continues...</p>
-</section>
-```
-
-**Why banned:** Marginalia (`<aside class="sp-marginalia">`) is only legal inside the three-column spread (`.sp-spread`). The CSS uses a descendant selector that only fires within the spread context. Outside it, the component has no layout anchor and collapses unpredictably.
-
-**Instead:** Either place the marginalia inside a `.sp-spread > .sp-margin` element, or use a `.sp-brief` sidebar instead.
+The old spread-scoped rule targeted the deleted three-column layout. Live rule: `<aside class="marginalia"><span class="m-label">…</span><p>…</p></aside>` may sit anywhere inside `.chapter-body` — it floats into the right gutter (add `.is-left` to flip) and falls back inline at narrow widths. Never nest one marginalia inside another, and never use it on holiday issues (reach for `.hol-stamp` or `.hol-polaroid` there).
 
 ---
 
-### RT-12: Hype Modifiers on Literary Formats
+### RT-12: Hype Chrome on Literary Formats — RETIRED mechanism, live boundary (v8.21)
 
-**What it looks like:**
-- `class="sp-chapter-gate is-hype"` on a Deep Dive chapter
-- `[data-sp-chapter].is-hype` on a Versus chapter
-- `.sp-ground-gallery` used in a Rewind or Season Review
-
-**Why banned:** Hype modifiers (`.is-hype`, `.sp-ground-gallery`, `.unmissables`) exist specifically for Countdown and Field Guide. Literary formats (Deep Dive, Versus, Rewind, Season Review) rely on the full default chrome — the extended chapter gate, the full coral lockdown, the paper/ink rhythm — for their voice. Hype chrome on a literary chapter breaks the tonal contract.
-
-**Instead:** Reserve all hype modifiers strictly for:
-- Countdown: Top Attractions, Accommodation, Mood Board, Five Moments, By the Numbers (image-led)
-- Field Guide: The Opening, The Unmissables
+The per-chapter hype-modifier system was deleted with the pre-v8.21 chrome, but the register boundary survives structurally: Countdown and Field Guide render under the Holiday Identity layer (RT-13); Deep Dive, Versus, Rewind, and Season Review use the restrained v8.21 editorial chrome. There are no hype switches to apply any more — using holiday `.hol-*` components on a literary format (or editorial chrome on a holiday issue) is the modern form of this failure.
 
 ---
 
@@ -257,27 +150,12 @@ Each trigger: what it looks like, why it's banned, what to do instead.
 **Applies only to:** `data-special="countdown"` and `data-special="field-guide"` issues. On every other format, ignore this trigger entirely.
 
 **What it looks like:**
-- A Countdown or Field Guide issue using `.sp-chapter-gate`, `.sp-spread`, `.sp-pull-break`, `.sp-marginalia`, `.sp-brief`, `.sp-dash`, or `.sp-chapter-chrome`
-- A Countdown or Field Guide issue without any `.hol-*` components
-- A Countdown or Field Guide issue with `.unmissables` / `.unmissable` (default chrome) instead of `.hol-unmissable`
-- A Countdown or Field Guide issue using paper/ink grounds (`.sp-ground-paper`, `.sp-ground-ink`) on the body or on chapter wrappers
+- A Countdown or Field Guide chapter written in the editorial-special vocabulary (`.chapter` / `.chapter-head`, `.pullquote`, `.marginalia`, `figure.fig`) or in any legacy pre-v8.21 chrome class — instead of the `.hol-*` vocabulary.
+- A holiday issue with no `.hol-*` components at all, or missing the `.hol-half` structural unit.
 
-**Why banned:** v8.12 introduced a separate visual identity for Countdown and Field Guide (tier 36, `36-holiday-identity.css`). The two formats no longer use the default chapter-gate / spread / paper-ink-ground / coral-lockdown system. Instead they use the holiday vocabulary: `.hol-cover`, `.hol-half`, `.hol-transit`, `.hol-anchor`, `.hol-unmissable`, `.hol-polaroid`, `.hol-postcard`, `.hol-stamp`, `.hol-marquee`, `.hol-dont-miss`, `.hol-chalkboard`, `.hol-meanwhile`, `.hol-subscribe`. Default chrome markup is **hidden** on these issues by tier 36 — a chapter built with default markup would render as a blank stretch.
+**Why banned:** Countdown and Field Guide render under the Holiday Identity layer (tier 36, `36-holiday-identity.css`). Non-holiday chrome is hidden or unstyled on these issues — a chapter built with it renders as a blank stretch. This is enforced mechanically: `stitch-issue.sh`'s banned-vocabulary scan hard-fails holiday chapter HTML containing legacy chrome class tokens, and requires at least one `.hol-half`.
 
-**Instead:** Use the holiday vocabulary throughout. See `references/spec/specials.md` § holiday-identity for the full component map and `§ 3. Canonical Markup Snippets` below for the snippets. Key swaps:
-
-| If you'd reach for… | Use instead (holiday issue) |
-|---|---|
-| `.sp-chapter-gate` | nothing — holiday issues have no chapter gates |
-| `.sp-spread` body | `.hol-half__inner` plus content components |
-| `.sp-pull-break` | `.hol-marquee` or `.hol-dont-miss` |
-| `.sp-marginalia` | `.hol-stamp` or `.hol-polaroid` |
-| `.sp-brief` | `.hol-anchor` (for a feature) or `.hol-postcard` (for a small aside) |
-| `.sp-dash` | `.hol-countdown` (live grid) or inline big numbers within `.hol-anchor__meta` |
-| `.unmissables` / `.unmissable` | `.hol-unmissable` (alternating left/right rotated photo + parchment card) |
-| `.sp-ground-paper` | nothing on the wrapper; cream grounds happen inside specific components |
-| `.sp-ground-ink` | nothing on the wrapper; indigo is Half I's default ground |
-| `.sp-ground-gallery` | not legal on holiday issues |
+**Instead:** use the holiday vocabulary throughout: `.hol-cover`, `.hol-half`, `.hol-transit`, `.hol-anchor`, `.hol-unmissable` / `.hol-wonders`, `.hol-polaroid`, `.hol-postcard`, `.hol-stamp`, `.hol-marquee`, `.hol-dont-miss`, `.hol-chalkboard`, `.hol-meanwhile`, `.hol-subscribe`. See `references/spec/specials.md` § holiday-identity for the full component map and `§ 3. Canonical Markup Snippets` below for the snippets.
 
 **Halves and the transit:** every multi-venue holiday issue uses exactly TWO halves (`.hol-half--one`, `.hol-half--two`) separated by exactly ONE `.hol-transit`. Single-venue issues use ONE `.hol-half--one` with one or two `.hol-marquee` interior breaks. Adding extra transits, omitting the transit on a multi-venue issue, or stacking halves of the same type is a hard fail.
 
@@ -473,7 +351,7 @@ If your Screen & Sound chapter plan has `sub_format: "directors_cut"`:
 3. Voice for the Lead: culture critic essayist. Not "what dropped this week".
 4. Cite where appropriate (link to the show / film, link to interviews if quoted, link to other essays you're responding to).
 5. After publish, update state file `last_directors_cut_date`.
-6. Optionally mark the section header visually with `<span class="sub-format-tag">Director's Cut</span>` inside the `.section-label`.
+6. Optionally note the sub-format in the band's intro line (the Transmission weekly has no section-label chrome; a plain italic tag in the lead sentence is enough).
 
 ### RT-21: A Closer Look mode discipline (v8.17)
 
@@ -483,7 +361,7 @@ If your This Week in History chapter plan has `sub_format: "closer_look"`:
 3. Strong pre-WW2 preference — this format is ideal for ancient/medieval/early modern.
 4. Voice: narrative historian — tell the story, ground it in specifics, surface what's surprising. Not encyclopedic.
 5. After publish, update state file `last_closer_look_date`.
-6. Optionally mark the section header visually with `<span class="sub-format-tag">A Closer Look</span>` inside the `.section-label`.
+6. Optionally note the sub-format in the band's intro line (the Transmission weekly has no section-label chrome; a plain italic tag in the lead sentence is enough).
 
 ### RT-22: Bundle-only facts (v8.18.1) — hard rule
 
@@ -528,118 +406,32 @@ For the issue-level Discovery Quota (>= 3 picks per weekly issue): the planner i
 
 Copy-paste these directly. Do not invent alternates.
 
-### Pullquote (`.sp-pullquote-huge`)
+### Editorial specials (non-holiday) — the v8.21 kit
+
+Full per-format contract tables live in `references/component-contracts.md` — that file is the authority; copy shapes from there for `.pick`, `.also-cards`, `.bignum-row`, format flair (`.vs-*`, `.year-band`, `.scorecards`, `.lens`, `.on-ramp`, …). The three most-used baseline snippets:
+
+**Pull quote:**
 ```html
-<blockquote class="sp-pullquote-huge">
+<blockquote class="pullquote">
   <p>The quote text goes here — pull the most resonant line from the chapter.</p>
   <cite>— Source attribution or chapter context</cite>
 </blockquote>
 ```
 
-### Marginalia (inside `.sp-spread` only)
+**Marginalia (floats right; add `.is-left` to flip):**
 ```html
-<aside class="sp-marginalia" data-side="right">
-  <span class="sp-marginalia-label">Context Note</span>
+<aside class="marginalia">
+  <span class="m-label">Context Note</span>
   <p>The marginalia body text. A datum, a brief aside, or a quoted fragment.</p>
 </aside>
 ```
 
-### Pull-Break
+**Figure (modifiers: `.is-wide` / `.is-fullbleed` / `.is-half` + `.is-left`):**
 ```html
-<div class="sp-pull-break-wrap sp-ground-deep">
-  <div class="sp-pull-break">
-    <p class="sp-pull">The key sentence from this chapter — the line worth repeating.</p>
-    <p class="sp-pull-attrib">— Attribution or context</p>
-  </div>
-</div>
-```
-
-### Chapter Gate + Section (full attribute set)
-```html
-<!-- Gate must PRECEDE the section -->
-<aside class="sp-chapter-gate" data-chapter-num="III"
-      data-chapter-title="Five Moments Worth the Trip"
-      data-chapter-arc="The memories you'll carry home">
-  <div class="scg-arc">Signature Moments</div>
-  <div class="scg-numeral">III</div>
-  <div class="scg-title">Five Moments Worth the Trip</div>
-  <div class="scg-deck">The memories you'll carry home</div>
-</aside>
-
-<section data-sp-chapter data-chapter-num="3"
-         data-chapter-title="Five Moments Worth the Trip"
-         data-chapter-arc="The memories you'll carry home"
-         class="sp-ground-ink">
-  <!-- chapter content -->
-</section>
-```
-
-**Hype variant** (Countdown / Field Guide only — never literary):
-```html
-<aside class="sp-chapter-gate is-hype" data-chapter-num="II" ...>...</aside>
-<section data-sp-chapter class="sp-ground-paper is-hype" ...>...</section>
-```
-
-### Unmissables (Field Guide — 6–10 picks)
-```html
-<div class="unmissables">
-  <div class="unmissable">
-    <figure>
-      <img src="https://..." alt="Descriptive alt text">
-      <figcaption>What it shows. Credit: Source / License.</figcaption>
-    </figure>
-    <p>Sensory prose (sourced or factual — no invented flavours). Two to four sentences covering the character of this pick.</p>
-    <p class="why-its-here">Why It's Here — one sentence with the sourced reason this pick made the list (frequency / hidden gem / cultural significance / structural uniqueness / theming).</p>
-    <dl>
-      <dt>Price</dt><dd>€X per person / included with entry</dd>
-      <dt>Booking</dt><dd>Walk-in or advance required</dd>
-      <dt>Timing</dt><dd>Best time to visit</dd>
-      <dt>Walk</dt><dd>Distance from nearest gate / station</dd>
-    </dl>
-  </div>
-  <!-- repeat for each pick -->
-</div>
-```
-
-### Brief Sidebar
-```html
-<div class="sp-brief">
-  <p class="sp-brief-kicker">Sidebar label — CONTEXT / ASIDE / NOTE</p>
-  <h4 class="sp-brief-h">Brief sidebar heading</h4>
-  <p>The sidebar body. Factual, concise, 40-80 words.</p>
-  <p class="sp-brief-byline">Source or attribution if needed</p>
-</div>
-```
-
-### Stat Dashboard (`sp-dash`)
-```html
-<div class="sp-dash">
-  <div class="sp-dash-cell">
-    <span class="sp-dash-label">Label</span>
-    <span class="sp-number" data-to="42">42</span>
-    <span class="sp-dash-unit">unit</span>
-  </div>
-  <!-- max 6 cells; max 1 sp-dash per issue -->
-</div>
-```
-
-### Three-Column Spread (`.sp-spread`)
-```html
-<div class="sp-spread">
-  <div class="sp-rail" aria-hidden="true"></div>
-  <aside class="sp-margin">
-    <!-- Marginalia, datum blocks, or small aside content -->
-    <aside class="sp-marginalia" data-side="right">
-      <span class="sp-marginalia-label">Aside</span>
-      <p>Marginalia content.</p>
-    </aside>
-  </aside>
-  <div class="sp-spread-body">
-    <!-- Drop-cap auto-applied to p:first-of-type — do NOT wrap manually -->
-    <p>Opening paragraph of the chapter's literary body...</p>
-    <p>Subsequent paragraphs continue here.</p>
-  </div>
-</div>
+<figure class="fig is-wide">
+  <img src="https://..." alt="Descriptive alt text" loading="lazy">
+  <figcaption class="fig-caption">What it shows. <span class="fig-credit">Credit: Source / License.</span></figcaption>
+</figure>
 ```
 
 ---
@@ -838,51 +630,21 @@ Double the phrase list so the loop is seamless.
 
 ## 4. Self-Audit Checklist
 
-Run these greps against your chapter HTML before submitting. Every command should return the expected value.
+Run these greps against your chapter HTML before submitting. Every command should return the expected value. (The heaviest markup checks are mechanized: `stitch-issue.sh` hard-fails legacy chrome tokens in holiday chapters and any `.sp-*` vocabulary in weekly chapters; `validate-issue.py` enforces structure, image URLs, and the non-holiday `special-variety` component floor. These greps are your fast pre-submit pass.)
 
 ```bash
-# RT-7a: No banned pullquote div
-grep -c '<div class="sp-pullquote-huge"' chapter.html           # expect: 0
-
-# RT-7b: No banned pullquote child classes
-grep -c 'class="sp-pq-quote"' chapter.html                      # expect: 0
-grep -c 'class="sp-pq-attrib"' chapter.html                     # expect: 0
-
-# RT-7c: No banned marginalia div
-grep -c '<div class="sp-marginalia"' chapter.html               # expect: 0
-
-# RT-7d: No banned marginalia label classes
-grep -c 'class="sp-marg-kicker"' chapter.html                   # expect: 0
-grep -c 'class="sp-marg-label"' chapter.html                    # expect: 0
-
-# RT-7e: No banned pull-break blockquote
-grep -c '<blockquote class="sp-pull-break"' chapter.html        # expect: 0
-
-# RT-7f: No banned brief sidebar aside
-grep -c '<aside class="sp-brief"' chapter.html                  # expect: 0
-
-# RT-7g: No banned brief heading level
-grep -cE '<h[123][^>]*class="sp-brief-h"' chapter.html          # expect: 0
-
-# RT-7h: No banned hero quote blockquote
-grep -c '<blockquote class="sp-hero-quote"' chapter.html        # expect: 0
-
 # RT-1: No reader-profile leak phrases
 grep -iE 'your (son|kids|10.year.old|partner|tablet|watch)|you.ll love|perfect for (your|you)|since you|as a.*fan|spoiler.free' chapter.html
 # expect: no output
 
-# RT-8: Chapter gate has all required attributes
-grep 'sp-chapter-gate' chapter.html | grep -v 'data-chapter-num'
-# expect: no output (every gate must have data-chapter-num)
+# RT-3: No inline accent colours (the cascade owns accents)
+grep -oE 'style="[^"]*color[^"]*"' chapter.html
+# expect: no accent-colour overrides (empty is ideal)
 
-# RT-3: No coral outside allowed elements
-grep -E 'color.*E8384F|color.*sp-accent-primary' chapter.html
-# expect: no output (CSS handles accent; never set coral inline)
-
-# RT-13 (holiday only — Countdown / Field Guide):
-# No default-chrome markup. Run only when data-special="countdown" or "field-guide".
-grep -cE 'class="sp-chapter-gate|class="sp-spread|class="sp-pull-break|class="sp-marginalia|class="sp-brief|class="sp-dash|class="sp-chapter-chrome|class="unmissables|class="unmissable[ "]' chapter.html
-# expect: 0 on holiday issues. Non-zero is a hard fail — use .hol-* vocabulary.
+# RT-7: No invented classes — every class must exist in component-contracts.md
+# / spec/specials.md § cover (spot-check anything unfamiliar):
+grep -oE 'class="[^"]+"' chapter.html | sort -u
+# expect: only documented vocabulary
 
 # RT-13b: Every holiday issue uses at least one .hol-half
 grep -c 'class="hol-half ' chapter.html
@@ -895,10 +657,6 @@ grep -c 'class="hol-transit"' chapter.html
 # RT-6: No fabricated URL patterns (bare domains without path)
 grep -oE 'href="https?://[^/"]+/"' chapter.html
 # expect: empty or only known category pages — check each result
-
-# RT-10: Pull-break has wrapper
-grep -n 'sp-pull-break' chapter.html
-# expect: every sp-pull-break line has a sp-pull-break-wrap in context
 ```
 
 ---
@@ -907,9 +665,9 @@ grep -n 'sp-pull-break' chapter.html
 
 If you need detail beyond what's in this file:
 
-1. **`references/editorial-spec.md`** — full spec (980 lines)
-2. **`references/compliance-checklist.md`** — Gate 1 + Gate 2 + Gate 3 mechanical checks
-3. **`references/spec/global/04-markup-contracts.md`** — full markup contract table (all banned alternates)
-4. **`references/spec/global/07-accent-lockdown.md`** — full accent lockdown rules
-5. **`references/spec/formats/<format>.md`** — format-specific requirements for this issue
-6. **`references/spec/specials/`** — chapter gate, imagery budget, ground discipline in detail
+1. **`references/editorial-spec.md`** — full spec
+2. **`references/compliance-checklist.md`** — the three-gate ledger + Gate 1 / Gate 2 / Gate 3 checks
+3. **`references/component-contracts.md`** — canonical markup contracts for every format (the authority)
+4. **`references/spec/global.md`** — § markup-contracts, § ground-discipline, § accent-lockdown, § image-integrity
+5. **`references/spec/formats.md`** — § `<format>`: format-specific requirements for this issue
+6. **`references/spec/specials.md`** — § cover (component list), § holiday-identity, § imagery-budget
