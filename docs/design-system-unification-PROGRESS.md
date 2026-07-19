@@ -112,3 +112,35 @@ reference render packs + the stub fixture pack once; zero blanks remain
 (<20KB census), previously-blank frame visually confirmed real. Recorded in
 BASELINES.md. Builder also replaced the orchestrator's minimal BASELINES.md
 with its fuller version (numbers identical) — kept.
+
+---
+
+## WP-2 — Furniture core + doc prune — ✅ GATE PASS (2026-07-19)
+
+**Shipped:** css/core/00–15 (79KB, scenography-as-default, mx- neutral) +
+01-fonts.css with self-hosted woff2 (pulled forward from WP-3 so Law 8 was
+judged on real typography); core-components.md catalog; F-13 doc prune
+(zero dead-class refs, slice-spec idempotent); re-dress gate fixtures
+(DD 0.98/0.73 ev/screen, countdown 2.13/1.43, both validator-green);
+data-mx-aware validator gates (mx-variety, holiday-check skip, data-format
+autodetect) with full Part 6 §4 recalibration (all negatives still fail).
+
+**Parity gate (Part 5, fresh verifier, blindfold protocol):**
+`EVIDENCE/WP-2/parity-scorecard-dd.md` — WP-2 PARITY: PASS, twelve/twelve
+laws, 16 candidate + 8 reference screenshots viewed, true side-by-sides for
+Laws 1/2/4/7. Three verbatim questions answered "objects on a surface /
+the scroll travels / same magazine's craft".
+
+**Orchestrator spot-check (Part 5 §6):** I opened cover, 1440 depth-2/-3/-4,
+390 depth-6, dark-1440 myself. Verdict: the re-dress is unambiguously
+objects-on-a-surface — taped/ruled index cards with typewriter fills, the
+Great Siege ring-stamp with hand annotation, framed credited figures — on
+continuously textured parchment grounds with a real act arc. It reads as the
+countdown's craft translated to ink. The verifier's PASS is consistent with
+what I saw. One polish note carried to WP-3: dark-mode masthead flips to
+cream while the cover act stays dark — token-correct, legible, but review
+in the WP-3 dark pass.
+
+**Owner checkpoint #1:** packet committed at `EVIDENCE/WP-2/checkpoint-1/`
+(before = shipped DD renders; after = parity candidate). Proceeding per
+standing decision #2; retroactive sign-off requested in the final report.
