@@ -147,20 +147,6 @@ standing decision #2; retroactive sign-off requested in the final report.
 
 ---
 
-## WP-2 — Furniture core — ✅ GATE PASS (2026-07-19)
-
-Core css (7 files + 01-fonts, 79KB+fonts), scenography-as-default, kitchen-sink
-proof, core-components.md catalog; F-13 doc prune (zero dead-class refs,
-grep list in EVIDENCE/WP-2/doc-prune-report.md); re-dress fixtures DD+countdown
-(verbatim copy, validator green); parity gate 12/12 PASS on DD re-dress
-(EVIDENCE/WP-2/parity-scorecard-dd.md); orchestrator spot-check recorded;
-owner checkpoint #1 packet committed (EVIDENCE/WP-2/checkpoint-1/) — proceeding
-per standing decision #2, retroactive sign-off requested in final report.
-Self-hosted fonts pulled forward from WP-3 (npm/fontsource; Google Fonts
-blocked as spec warned). Validator gates made data-mx-aware (mx variety,
-legacy holiday checks skipped on mx pages, data-format autodetect) with full
-Part-6 §4 recalibration: negatives still fail, cleans still pass.
-
 ## WP-3 — Skins + bundling + dark/print — ✅ GATE PASS (2026-07-19)
 
 Editorial/event/transmission skins (zero :not(), F-8/F-12 fixed in ports),
