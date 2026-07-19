@@ -1,0 +1,71 @@
+{
+  "id": "matchday-worldcup",
+  "notes": [
+    "Spec §2.3's worked example: a Season Review pack for the 2026 World Cup.",
+    "Chequer pattern, trophy-stamp glyph, terrace-bunting band, matchday kit,",
+    "tier2 motion. Floodlight-navy night act -> terrace-paper day act.",
+    "Also exercises non-core self-hosted families (Alfa Slab One, Oswald):",
+    "the renderer emits their @font-face from assets/fonts/ — no network."
+  ],
+  "acts": [
+    {
+      "id": 1,
+      "name": "floodlight",
+      "tokens": {
+        "--mx-paper": "#0b2240",
+        "--mx-ink": "#f2f4e8",
+        "--mx-ink-soft": "rgba(242, 244, 232, 0.68)",
+        "--mx-accent": "#e8c34a",
+        "--mx-accent-ink": "#132339",
+        "--mx-accent-2": "#c8442e",
+        "--mx-accent-2-ink": "#f7efe0",
+        "--mx-support-1": "#1f6b3a",
+        "--mx-support-2": "#e8c34a",
+        "--mx-hair": "rgba(242, 244, 232, 0.3)",
+        "--mx-ghost": "rgba(232, 195, 74, 0.12)",
+        "--mx-quote-bg": "rgba(0, 0, 0, 0.32)",
+        "--mx-shadow": "rgba(0, 0, 0, 0.8)",
+        "--mx-hand-ink": "#e8c34a",
+        "--mx-stamp-ink": "#e8c34a",
+        "--mx-grain": "0.08"
+      }
+    },
+    {
+      "id": 2,
+      "name": "terrace",
+      "tokens": {
+        "--mx-paper": "#f4f1e4",
+        "--mx-ink": "#17251c",
+        "--mx-ink-soft": "rgba(23, 37, 28, 0.64)",
+        "--mx-accent": "#1f6b3a",
+        "--mx-accent-ink": "#f4f1e4",
+        "--mx-accent-2": "#a3262e",
+        "--mx-accent-2-ink": "#f7efe0",
+        "--mx-support-1": "#1f6b3a",
+        "--mx-support-2": "#b98f2b",
+        "--mx-hair": "rgba(23, 37, 28, 0.3)",
+        "--mx-ghost": "rgba(31, 107, 58, 0.1)",
+        "--mx-quote-bg": "rgba(31, 107, 58, 0.06)",
+        "--mx-shadow": "rgba(20, 30, 15, 0.5)",
+        "--mx-hand-ink": "#a3262e",
+        "--mx-stamp-ink": "#1f6b3a",
+        "--mx-grain": "0.08"
+      }
+    }
+  ],
+  "type": {
+    "chunk": "Alfa Slab One",
+    "tall": "Oswald",
+    "script": "Yellowtail",
+    "hand": "Caveat",
+    "serif": "Cormorant Garamond",
+    "mono": "Space Mono"
+  },
+  "pattern": "chequer.svg",
+  "glyph": "trophy-stamp.svg",
+  "band": "pennant-band.svg",
+  "cover_plate": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' fill='currentColor' role='img' aria-label='Trophy plate'><circle cx='100' cy='100' r='96' fill='none' stroke='currentColor' stroke-width='3'/><path d='M70 52 H130 V82 C130 104 116 118 100 118 C84 118 70 104 70 82 Z'/><path d='M70 58 H50 C48 78 57 90 72 92 L70 82 C61 80 57 73 58 66 H70 Z'/><path d='M130 58 H150 C152 78 143 90 128 92 L130 82 C139 80 143 73 142 66 H130 Z'/><rect x='94' y='118' width='12' height='14'/><path d='M76 132 H124 L130 148 H70 Z'/><rect x='66' y='148' width='68' height='9' rx='2'/></svg>",
+  "grain": "halftone",
+  "kit": "matchday",
+  "motion": "tier2"
+}

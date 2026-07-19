@@ -1,0 +1,107 @@
+{
+  "_comment": [
+    "Motif-pack type whitelist (design-system unification spec §2.2 — the",
+    "~15-family list). A pack's six type roles may name ONLY these families.",
+    "kind:self-hosted families have subsetted woff2 under assets/fonts/ and the",
+    "renderer emits @font-face for them (core/01-fonts.css already declares the",
+    "six default-role families; duplicates are harmless and deterministic).",
+    "kind:system families are OS stacks — no files, no network, ever.",
+    "A pack can NEVER introduce a network font: unknown families are rejected",
+    "by tools/motif/validate-motif-pack.py (reason FONT-WHITELIST)."
+  ],
+  "families": {
+    "Bowlby One": {
+      "kind": "self-hosted",
+      "fallback": ["Arial Black", "Arial Rounded MT Bold", "Impact", "sans-serif"],
+      "faces": [
+        { "file": "bowlby-one-latin-400-normal.woff2", "weight": 400, "style": "normal" }
+      ]
+    },
+    "Alfa Slab One": {
+      "kind": "self-hosted",
+      "fallback": ["Bowlby One", "Arial Black", "Impact", "sans-serif"],
+      "faces": [
+        { "file": "alfa-slab-one-latin-400-normal.woff2", "weight": 400, "style": "normal" }
+      ]
+    },
+    "Anton": {
+      "kind": "self-hosted",
+      "fallback": ["Oswald", "Arial Narrow", "Impact", "sans-serif"],
+      "faces": [
+        { "file": "anton-latin-400-normal.woff2", "weight": 400, "style": "normal" }
+      ]
+    },
+    "Oswald": {
+      "kind": "self-hosted",
+      "fallback": ["Arial Narrow", "Impact", "sans-serif"],
+      "faces": [
+        { "file": "oswald-latin-400-normal.woff2", "weight": 400, "style": "normal" },
+        { "file": "oswald-latin-600-normal.woff2", "weight": 600, "style": "normal" },
+        { "file": "oswald-latin-700-normal.woff2", "weight": 700, "style": "normal" }
+      ]
+    },
+    "Yellowtail": {
+      "kind": "self-hosted",
+      "fallback": ["Segoe Script", "Brush Script MT", "cursive"],
+      "faces": [
+        { "file": "yellowtail-latin-400-normal.woff2", "weight": 400, "style": "normal" }
+      ]
+    },
+    "Caveat": {
+      "kind": "self-hosted",
+      "fallback": ["Bradley Hand", "Segoe Print", "cursive"],
+      "faces": [
+        { "file": "caveat-latin-400-normal.woff2", "weight": 400, "style": "normal" },
+        { "file": "caveat-latin-600-normal.woff2", "weight": 600, "style": "normal" },
+        { "file": "caveat-latin-700-normal.woff2", "weight": 700, "style": "normal" }
+      ]
+    },
+    "Cormorant Garamond": {
+      "kind": "self-hosted",
+      "fallback": ["Iowan Old Style", "Palatino Linotype", "Georgia", "serif"],
+      "faces": [
+        { "file": "cormorant-garamond-latin-400-normal.woff2", "weight": 400, "style": "normal" },
+        { "file": "cormorant-garamond-latin-400-italic.woff2", "weight": 400, "style": "italic" },
+        { "file": "cormorant-garamond-latin-600-normal.woff2", "weight": 600, "style": "normal" },
+        { "file": "cormorant-garamond-latin-700-normal.woff2", "weight": 700, "style": "normal" }
+      ]
+    },
+    "Space Mono": {
+      "kind": "self-hosted",
+      "fallback": ["JetBrains Mono", "ui-monospace", "Courier New", "monospace"],
+      "faces": [
+        { "file": "space-mono-latin-400-normal.woff2", "weight": 400, "style": "normal" },
+        { "file": "space-mono-latin-400-italic.woff2", "weight": 400, "style": "italic" },
+        { "file": "space-mono-latin-700-normal.woff2", "weight": 700, "style": "normal" }
+      ]
+    },
+    "Georgia": {
+      "kind": "system",
+      "fallback": ["Times New Roman", "serif"]
+    },
+    "Palatino Linotype": {
+      "kind": "system",
+      "fallback": ["Palatino", "Georgia", "serif"]
+    },
+    "Iowan Old Style": {
+      "kind": "system",
+      "fallback": ["Palatino Linotype", "Georgia", "serif"]
+    },
+    "Impact": {
+      "kind": "system",
+      "fallback": ["Arial Black", "sans-serif"]
+    },
+    "Arial Black": {
+      "kind": "system",
+      "fallback": ["Impact", "sans-serif"]
+    },
+    "Arial Narrow": {
+      "kind": "system",
+      "fallback": ["Arial", "sans-serif"]
+    },
+    "Courier New": {
+      "kind": "system",
+      "fallback": ["Courier", "monospace"]
+    }
+  }
+}

@@ -40,6 +40,13 @@ BUILD_DIR="/tmp/signal-build"
 OUT_PATH=""
 ISSUE_NUMBER=""
 SKILL_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+REPO_ROOT="$(cd "$SKILL_DIR/../../.." && pwd)"
+# WP-4: optional motif pack (L2) for data-mx issues. Set via PACK=path env or
+# --pack path. The pack is validated (tools/motif/validate-motif-pack.py) and
+# its generated head block is injected into the stitched output at the
+# `<!-- INJECT:MX-PACK -->` marker (or before </head> when absent). Zero repo
+# CSS is touched — the pack's whole effect is per-issue head injection.
+PACK_PATH="${PACK:-}"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Arg parsing
@@ -51,6 +58,7 @@ while [[ $# -gt 0 ]]; do
     --build-dir)    BUILD_DIR="$2";     shift 2 ;;
     --out)          OUT_PATH="$2";      shift 2 ;;
     --issue-number) ISSUE_NUMBER="$2";  shift 2 ;;
+    --pack)         PACK_PATH="$2";     shift 2 ;;
     *)              echo "Unknown arg: $1"; exit 1 ;;
   esac
 done
@@ -200,11 +208,33 @@ if [[ "$DESIGN_SYSTEM" == "mx" ]]; then
   # legacy masthead/cover/footer/wax-seal scaffold parts must not ship.
   ORIGINAL_PARTS="$SCAFFOLD_PARTS"
   SCAFFOLD_PARTS="00-head-open.html,19-closing.html"
+  # ── WP-4: optional motif pack — validate now, inject after stitch ──
+  if [[ -n "$PACK_PATH" ]]; then
+    if [[ ! -f "$PACK_PATH" ]]; then
+      echo "ERROR: motif pack not found: $PACK_PATH"
+      exit 1
+    fi
+    if ! python3 "${REPO_ROOT}/tools/motif/validate-motif-pack.py" "$PACK_PATH"; then
+      echo "ERROR: motif pack REJECTED by validator — refusing to stitch with it."
+      exit 1
+    fi
+    # pack's motion tier fills in when the plan didn't declare one
+    if [[ -z "$PLAN_MOTION" ]]; then
+      MX_MOTION="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["motion"])' "$PACK_PATH")"
+    fi
+  fi
   echo "  DATA-MX ISSUE — skin=$MX_SKIN motion=$MX_MOTION budget=${MX_BUDGET} bytes"
   echo "    css manifest:   $(basename "$MX_CSS_MANIFEST")"
+  if [[ -n "$PACK_PATH" ]]; then
+    echo "    motif pack:     $PACK_PATH (validated green)"
+  fi
   if [[ "$ORIGINAL_PARTS" != "$SCAFFOLD_PARTS" ]]; then
     echo "    scaffold parts: forced to head+closing (plan said: $ORIGINAL_PARTS)"
   fi
+elif [[ -n "$PACK_PATH" ]]; then
+  echo "ERROR: --pack/PACK= is only valid for data-mx issues (plan issue_meta.design_system:\"mx\")."
+  echo "       Legacy issues cannot take a motif pack."
+  exit 1
 fi
 
 # Holiday formats (countdown, field_guide/field-guide) MUST NOT ship the legacy
@@ -956,6 +986,23 @@ print(f"  Output size:       {total_bytes:,} bytes ({total_bytes/1024:.1f} KB)")
 print(f"  Output path:       {out_path}")
 
 PYEOF
+
+# ─────────────────────────────────────────────────────────────────────────────
+# WP-4: motif-pack head injection (data-mx issues only; pack validated above).
+# render-motif-pack.py --inject rewrites the stitched file in place: pack
+# <style> block at the INJECT:MX-PACK marker (or before </head>), page act
+# names aliased onto pack acts, pattern-art opt-in classes, per-act corner
+# glyph, body data-motion set to the pack's tier. Repo CSS untouched.
+# ─────────────────────────────────────────────────────────────────────────────
+if [[ "$DESIGN_SYSTEM" == "mx" && -n "$PACK_PATH" ]]; then
+  echo ""
+  echo "=== Injecting motif pack ==="
+  if ! python3 "${REPO_ROOT}/tools/motif/render-motif-pack.py" "$PACK_PATH" \
+      --inject "$OUT_PATH" --out "$OUT_PATH"; then
+    echo "ERROR: motif-pack injection failed"
+    exit 1
+  fi
+fi
 
 echo ""
 echo "=== DONE ==="
