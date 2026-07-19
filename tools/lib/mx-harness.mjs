@@ -150,6 +150,10 @@ export async function prepareContext(browser, opts) {
     reducedMotion: opts.reducedMotion ? 'reduce' : 'no-preference',
     colorScheme: opts.colorScheme || 'light',
     serviceWorkers: 'block',
+    // WP-5 (additive, flag-gated by callers): render with page JavaScript
+    // disabled to prove the JS-off = 100%-content rule. page.evaluate still
+    // works (CDP Runtime), only the page's own scripts are disabled.
+    javaScriptEnabled: opts.jsDisabled ? false : true,
   });
   context.setDefaultTimeout(20000);
   context.setDefaultNavigationTimeout(45000);
@@ -294,13 +298,19 @@ export async function smoothScrollPass(page, { collectMotion = false, stepWaitMs
   return { pageHeight, steps, motionElements };
 }
 
-/** Minimal argv parser: positional target + --out <dir> (+ --repo-root). */
+/** Minimal argv parser: positional target + --out <dir> (+ --repo-root).
+ *  WP-5 additive flags (render.mjs only): --no-js, --burst [depthIndex]. */
 export function parseArgs(argv, usage) {
   const args = { _: [] };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--out') args.out = argv[++i];
     else if (a === '--repo-root') args.repoRoot = argv[++i];
+    else if (a === '--no-js') args.noJs = true;
+    else if (a === '--burst') {
+      args.burst = true;
+      if (argv[i + 1] !== undefined && /^\d+$/.test(argv[i + 1])) args.burstDepth = Number(argv[++i]);
+    }
     else if (a === '--help' || a === '-h') { console.log(usage); process.exit(0); }
     else args._.push(a);
   }

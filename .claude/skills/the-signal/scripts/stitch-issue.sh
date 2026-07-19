@@ -204,6 +204,15 @@ if [[ "$DESIGN_SYSTEM" == "mx" ]]; then
     event)     MX_BUDGET=$((160 * 1024)) ;;
     *)         MX_BUDGET=$((160 * 1024)) ;;
   esac
+  # ── WP-5: mx issues ship the small motion controller, never the legacy
+  # 96KB assets/script.js (inert weight on the new system — its selectors
+  # target legacy classes that don't exist in an mx bundle). Legacy formats
+  # keep script.js; the weekly path dispatched long before this block.
+  JS_FILE="${SKILL_DIR}/assets/mx-motion.js"
+  if [[ ! -f "$JS_FILE" ]]; then
+    echo "ERROR: mx motion controller not found: $JS_FILE"
+    exit 1
+  fi
   # Core supplies ALL chrome (one .mx-mast, cover scaffold, footer) — the
   # legacy masthead/cover/footer/wax-seal scaffold parts must not ship.
   ORIGINAL_PARTS="$SCAFFOLD_PARTS"
@@ -225,6 +234,7 @@ if [[ "$DESIGN_SYSTEM" == "mx" ]]; then
   fi
   echo "  DATA-MX ISSUE — skin=$MX_SKIN motion=$MX_MOTION budget=${MX_BUDGET} bytes"
   echo "    css manifest:   $(basename "$MX_CSS_MANIFEST")"
+  echo "    js controller:  mx-motion.js ($(wc -c < "$JS_FILE") bytes; legacy script.js not shipped)"
   if [[ -n "$PACK_PATH" ]]; then
     echo "    motif pack:     $PACK_PATH (validated green)"
   fi

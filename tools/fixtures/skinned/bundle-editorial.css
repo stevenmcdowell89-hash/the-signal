@@ -196,6 +196,7 @@
   transform: rotate(-2deg);
   max-width: 30ch;
 }
+
 /* ═══════════════════════════════════════════════════════════════════════════
    THE SIGNAL · FURNITURE CORE · 01-FONTS
    Self-hosted subsetted woff2 under /assets/fonts/ (§2.2: Google Fonts links
@@ -275,6 +276,7 @@
   src: url("/assets/fonts/space-mono-latin-700-normal.woff2") format("woff2");
   font-weight: 700; font-style: normal; font-display: swap;
 }
+
 /* ============================================================
    MX CORE · 10-ephemera.css
    Framed-object chassis: content window + fastener + hand
@@ -782,6 +784,7 @@
   gap: 30px;
   justify-items: center;
 }
+
 /* ============================================================
    MX CORE · 11-ledgers.css
    Data furniture: facts <dl> ledgers, ranked entries + rank
@@ -1173,6 +1176,7 @@
 .mx-scorecard__gap { text-align: right; font-weight: 700; }
 .mx-scorecard tr.is-lead td { font-weight: 700; }
 .mx-scorecard tr.is-lead .mx-scorecard__gap { color: var(--mxl-accent); }
+
 /* ============================================================
    MX CORE · 12-plates.css
    Editorial set pieces: numbered plates (chapter headers with
@@ -1582,6 +1586,7 @@
 .mx-dontmiss__list li:nth-child(3)::before { transform: translateY(-50%) rotate(-3deg); }
 .mx-dontmiss__list li:nth-child(4)::before { transform: translateY(-50%) rotate(7deg); }
 .mx-dontmiss__list li b { color: var(--mx-support-2); }
+
 /* ============================================================
    MX CORE · 13-chrome.css
    ONE masthead, cover scaffolds (incl. poster), kicker, act
@@ -2184,24 +2189,23 @@
   color: var(--mx-support-2);
   margin-bottom: 12px;
 }
+
 /* ============================================================
-   MX CORE · 14-motion.css
-   TIER SCAFFOLDING ONLY. Full motion behaviors (IO-driven
-   reveals, signature moments, JS controllers) are WP-5. This
-   file establishes:
-     · the tier switch  [data-motion="tier0|tier1|tier2"] on <body>
-     · animation tokens
-     · signature-moment HOOK classnames (inert until WP-5 binds
-       them; safe to author into content today)
-     · the few CSS-only behaviors that are safe without JS
-       (marquee drift under tier2, hover settles)
-     · the GLOBAL prefers-reduced-motion gate that kills ALL
-       core animation (the countdown’s ungated ambient shimmer is
-       the named failure this gate exists to prevent)
+   MX CORE · 14-motion.css  (WP-2 scaffold + WP-5 behaviors)
+   Tier switch: [data-motion="tier0|tier1|tier2"] on <body>.
+   Controller: assets/mx-motion.js (data-mx issues only). It
+   stamps data-mx-motion-ready on <html> and .is-in (+
+   data-mx-inview) on furniture entering the viewport, indexes
+   staggered children via --mx-i, and feeds the scroll dials
+   --mx-par (tier0 ghost parallax) and --mx-seam (tier2 act
+   crossfade at transit seams).
 
    RULES (Law 5): motion attaches to furniture, never running
-   text; JS-off renders 100% of content (nothing here hides
-   content by default); no scroll-jacking.
+   text; JS-off renders 100% of content — every initial-hidden
+   state below is gated behind [data-mx-motion-ready], which
+   only the controller stamps; prefers-reduced-motion honored
+   at both layers (controller no-ops; §99 gate kills the rest);
+   no scroll-jacking.
 
    Tier map: tier0 print-still (Deep Dive) · tier1 calm
    (Weekly, Rewind, Next, Guide) · tier2 event (trip specials,
@@ -2216,40 +2220,74 @@
   --mx-m-dur: 640ms;            /* standard entrance duration       */
   --mx-m-settle: 1deg;          /* object settle over-rotation      */
   --mx-m-ease: cubic-bezier(0.22, 0.9, 0.3, 1);
+  --mx-m-spring: cubic-bezier(0.34, 1.56, 0.64, 1);  /* tape-down overshoot */
+  --mx-m-stagger: 80ms;         /* sibling stagger unit (× --mx-i)  */
   --mx-m-marquee: 32s;          /* marquee loop period              */
 }
 
 /* ------------------------------------------------------------
-   01 · KEYFRAMES (bound below and by WP-5)
+   01 · KEYFRAMES
+   Entrance keyframes deliberately OMIT the end transform: the
+   animation lands on each element's own underlying transform
+   (cards keep their nth-of-type tilt, stamps their -8°). Fills
+   are `backwards`, so after the entrance the element returns
+   fully to stylesheet control (hover settles keep working) and
+   scenography defaults are never clobbered.
    ------------------------------------------------------------ */
 @keyframes mx-rise-in {
   from { opacity: 0; transform: translateY(var(--mx-m-rise)); }
-  to   { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; }
 }
-@keyframes mx-settle-in {
-  0%   { opacity: 0; transform: translateY(var(--mx-m-rise))
-           rotate(calc(var(--mx-tilt, -1.6deg) + var(--mx-m-settle))); }
-  70%  { opacity: 1; transform: translateY(-2px)
-           rotate(calc(var(--mx-tilt, -1.6deg) - 0.4deg)); }
-  100% { opacity: 1; transform: translateY(0) rotate(var(--mx-tilt, -1.6deg)); }
+@keyframes mx-settle-in {          /* cards "tape down": lands on own tilt
+                                      via the spring ease (~1° overshoot) */
+  from { opacity: 0; transform: translateY(var(--mx-m-rise))
+           rotate(calc(var(--mx-tilt, -1.6deg) + var(--mx-m-settle) * 3)); }
+  to   { opacity: 1; }
+}
+@keyframes mx-slam-in {            /* stamp-slam: fall + ONE hard step */
+  0%   { opacity: 0; transform: scale(1.6) rotate(calc(var(--mx-tilt, -8deg) + 10deg)); }
+  54%  { opacity: 0; transform: scale(1.3) rotate(calc(var(--mx-tilt, -8deg) + 6deg)); }
+  55%  { opacity: 1; transform: scale(0.94) rotate(var(--mx-tilt, -8deg)); } /* impact */
+  100% { opacity: 1; }
+}
+@keyframes mx-row-tick {           /* ledger rows tick in sequence */
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; }
+}
+@keyframes mx-row-climb {          /* leaderboard rows climb into place */
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; }
+}
+@keyframes mx-col-reveal {         /* memory-test columns unfurl top-down */
+  from { opacity: 0; transform: scaleY(0.62) translateY(-10px); }
+  to   { opacity: 1; }
+}
+@keyframes mx-flip-in {            /* countdown numeral flip */
+  0%   { opacity: 0; transform: rotateX(-92deg); }
+  60%  { opacity: 1; transform: rotateX(14deg); }
+  100% { opacity: 1; }
 }
 @keyframes mx-marquee-drift {
   from { transform: translateX(0); }
   to   { transform: translateX(-50%); }
 }
-@keyframes mx-draw-in {          /* hairline draw (tier0's only move) */
+@keyframes mx-draw-in {            /* hairline draw (tier0's only move) */
   from { transform: scaleX(0); }
   to   { transform: scaleX(1); }
 }
+@keyframes mx-chart-draw {         /* sparkline/chart line draw (pathLength="1") */
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
+}
+@keyframes mx-dial-sweep {         /* weekly dial-needle sweep (WP-8 hook);
+                                      lands on the needle's own set angle */
+  from { transform: rotate(-98deg); }
+}
 
 /* ------------------------------------------------------------
-   02 · SCROLL-REVEAL SCAFFOLD (structural)
-   WP-5's controller stamps data-mx-motion-ready on <html> and
-   .is-in on furniture as it enters. Without the controller
-   (JS off) nothing is ever hidden — the :not(ready) guard is
-   the JS-off guarantee.
-   Hooks: .mx-rise (generic furniture) · .mx-settle (tilted
-   ephemera: cards tape down with a ~1° settle).
+   02 · SCROLL-REVEAL — rises and settles (tier1/tier2)
+   Without the controller (JS off) nothing is ever hidden — the
+   [data-mx-motion-ready] guard is the JS-off guarantee.
    ------------------------------------------------------------ */
 [data-mx-motion-ready] [data-motion="tier1"] .mx-rise:not(.is-in),
 [data-mx-motion-ready] [data-motion="tier2"] .mx-rise:not(.is-in) {
@@ -2258,7 +2296,8 @@
 }
 [data-mx-motion-ready] [data-motion="tier1"] .mx-rise.is-in,
 [data-mx-motion-ready] [data-motion="tier2"] .mx-rise.is-in {
-  animation: mx-rise-in var(--mx-m-dur) var(--mx-m-ease) both;
+  animation: mx-rise-in var(--mx-m-dur) var(--mx-m-ease) backwards;
+  animation-delay: min(calc(var(--mx-i, 0) * var(--mx-m-stagger)), 400ms);
 }
 [data-mx-motion-ready] [data-motion="tier1"] .mx-settle:not(.is-in),
 [data-mx-motion-ready] [data-motion="tier2"] .mx-settle:not(.is-in) {
@@ -2266,26 +2305,157 @@
 }
 [data-mx-motion-ready] [data-motion="tier1"] .mx-settle.is-in,
 [data-mx-motion-ready] [data-motion="tier2"] .mx-settle.is-in {
-  animation: mx-settle-in calc(var(--mx-m-dur) + 160ms) var(--mx-m-ease) both;
+  animation: mx-settle-in calc(var(--mx-m-dur) + 160ms) var(--mx-m-spring) backwards;
+  animation-delay: min(calc(var(--mx-i, 0) * var(--mx-m-stagger)), 400ms);
+}
+
+/* sequences: container reveals, rows tick in --mx-i order */
+[data-mx-motion-ready] [data-motion="tier1"] .mx-seq:not(.is-in) .mx-row,
+[data-mx-motion-ready] [data-motion="tier2"] .mx-seq:not(.is-in) .mx-row {
+  opacity: 0;
+}
+[data-mx-motion-ready] [data-motion="tier1"] .mx-seq.is-in .mx-row,
+[data-mx-motion-ready] [data-motion="tier2"] .mx-seq.is-in .mx-row {
+  animation: mx-row-tick 420ms var(--mx-m-ease) backwards;
+  animation-delay: min(calc(var(--mx-i, 0) * 70ms), 490ms);
+}
+
+/* sparkline / chart draw: .mx-chart svg lines with class
+   .mx-chartline and pathLength="1" draw in on reveal */
+[data-mx-motion-ready] [data-motion="tier1"] .mx-chart.is-in .mx-chartline,
+[data-mx-motion-ready] [data-motion="tier2"] .mx-chart.is-in .mx-chartline {
+  stroke-dasharray: 1;
+  animation: mx-chart-draw 1100ms var(--mx-m-ease) backwards;
 }
 
 /* ------------------------------------------------------------
-   03 · SIGNATURE-MOMENT HOOKS (one per format; WP-5 implements)
-   Author these classnames now; they are inert scaffolding here.
+   03 · TIER2 EVENT MOVES
+   ------------------------------------------------------------ */
+/* stamp-slam (controller gives .mx-stamp → .mx-slam at tier2) */
+[data-mx-motion-ready] [data-motion="tier1"] .mx-slam:not(.is-in),
+[data-mx-motion-ready] [data-motion="tier2"] .mx-slam:not(.is-in) {
+  opacity: 0;
+}
+[data-mx-motion-ready] [data-motion="tier1"] .mx-slam.is-in,
+[data-mx-motion-ready] [data-motion="tier2"] .mx-slam.is-in {
+  animation: mx-slam-in 620ms var(--mx-m-ease) backwards;
+  animation-delay: min(calc(var(--mx-i, 0) * var(--mx-m-stagger)), 320ms);
+}
+
+/* flip-grid: countdown numerals flip in as their cells tick */
+[data-motion="tier2"] .mx-countdown__cell { perspective: 420px; }
+[data-mx-motion-ready] [data-motion="tier2"] .mx-countdown:not(.is-in) .mx-countdown__num {
+  opacity: 0;
+}
+[data-mx-motion-ready] [data-motion="tier2"] .mx-countdown.is-in .mx-countdown__num {
+  display: inline-block;
+  animation: mx-flip-in 700ms var(--mx-m-ease) backwards;
+  animation-delay: min(calc(var(--mx-i, 0) * 120ms), 480ms);
+}
+/* live re-flip on value change (controller toggles the class) */
+[data-mx-motion-ready] [data-motion="tier2"] .mx-countdown__num.mx-flip-tick {
+  display: inline-block;
+  animation: mx-flip-in 560ms var(--mx-m-ease) backwards;
+}
+
+/* act crossfade at the transit seam. The controller injects one
+   .mx-seam--out at the closing edge of the act before a
+   .mx-transit and one .mx-seam--in at the opening edge after
+   it, then drives --mx-seam (0..1) by seam proximity. Endpoint
+   colors are ACT TOKENS (Part 8: legacy 38/39 hard-coded rgba
+   → var(--mx-*)); each overlay inherits its own act's tokens. */
+[data-motion="tier2"] .mx-seam {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: min(420px, 45vh);
+  pointer-events: none;
+  z-index: 3;
+  opacity: var(--mx-seam, 0);
+  transition: opacity 360ms linear;
+  mix-blend-mode: multiply;
+}
+[data-motion="tier2"] .mx-seam--out {
+  bottom: 0;
+  background: linear-gradient(180deg,
+    transparent 0%,
+    color-mix(in srgb, var(--mx-accent) 42%, transparent) 55%,
+    color-mix(in srgb, var(--mx-chrome-bg, var(--mx-ink)) 55%, var(--mx-accent) 45%) 100%);
+}
+[data-motion="tier2"] .mx-seam--in {
+  top: 0;
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--mx-chrome-bg, var(--mx-ink)) 58%, var(--mx-accent-2, var(--mx-accent)) 42%) 0%,
+    color-mix(in srgb, var(--mx-accent-2, var(--mx-accent)) 30%, transparent) 55%,
+    transparent 100%);
+}
+
+/* ------------------------------------------------------------
+   04 · SIGNATURE MOMENTS (one per format — hooks the WP-6
+   skeletons place; behaviors bound here)
      .mx-sig-stamp-slam    Versus — verdict stamp slams per round
+                           (controller maps it onto .mx-slam)
      .mx-sig-rows-climb    Season Review — leaderboard rows climb
      .mx-sig-cols-reveal   Rewind — Memory Test columns in sequence
      .mx-sig-dial-sweep    Weekly — dial-needle sweep on band entry
-     .mx-sig-flip          Countdown — digit flips
+                           (hook only until WP-8 touches the weekly)
+     .mx-sig-flip          Countdown — digit flips (see §03)
+   These override the generic .mx-seq row tick (same specificity,
+   later in the file wins).
    ------------------------------------------------------------ */
-.mx-sig-stamp-slam,
-.mx-sig-rows-climb,
-.mx-sig-cols-reveal,
-.mx-sig-dial-sweep,
-.mx-sig-flip { /* WP-5 binding point — no behavior at core level */ }
+[data-mx-motion-ready] [data-motion="tier1"] .mx-sig-rows-climb.is-in .mx-row,
+[data-mx-motion-ready] [data-motion="tier2"] .mx-sig-rows-climb.is-in .mx-row {
+  animation: mx-row-climb 560ms var(--mx-m-spring) backwards;
+  animation-delay: min(calc(var(--mx-i, 0) * 90ms), 630ms);
+}
+[data-mx-motion-ready] [data-motion="tier1"] .mx-sig-cols-reveal.is-in .mx-row,
+[data-mx-motion-ready] [data-motion="tier2"] .mx-sig-cols-reveal.is-in .mx-row {
+  transform-origin: center top;
+  animation: mx-col-reveal 620ms var(--mx-m-ease) backwards;
+  animation-delay: min(calc(var(--mx-i, 0) * 160ms), 640ms);
+}
+[data-mx-motion-ready] [data-motion="tier1"] .mx-sig-dial-sweep.is-in .mx-dial__needle,
+[data-mx-motion-ready] [data-motion="tier1"] .mx-sig-dial-sweep.is-in [data-mx-needle],
+[data-mx-motion-ready] [data-motion="tier2"] .mx-sig-dial-sweep.is-in .mx-dial__needle,
+[data-mx-motion-ready] [data-motion="tier2"] .mx-sig-dial-sweep.is-in [data-mx-needle] {
+  transform-origin: 50% 100%;
+  animation: mx-dial-sweep 900ms var(--mx-m-spring) backwards;
+}
 
 /* ------------------------------------------------------------
-   04 · CSS-ONLY BEHAVIORS (safe without JS)
+   05 · TIER0 PRINT-STILL — hairline draw-ins + ghost parallax
+   ONLY (Law 5). Content is never hidden: the draw-in is an
+   overlay hairline pseudo; the parallax is a passive transform
+   on the decorative ghost numeral (aria-hidden).
+   ------------------------------------------------------------ */
+[data-mx-motion-ready] [data-motion="tier0"] .mx-draw { position: relative; }
+[data-mx-motion-ready] [data-motion="tier0"] .mx-draw::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: var(--mx-hair);
+  transform: scaleX(0);
+  transform-origin: left center;
+  pointer-events: none;
+}
+[data-mx-motion-ready] [data-motion="tier0"] .mx-draw.is-in::after {
+  animation: mx-draw-in 900ms var(--mx-m-ease) both;
+}
+/* ghost-numeral parallax — controller feeds --mx-par (-1..1)
+   from viewport position; a longish linear transition keeps it
+   gliding between scroll samples. No scroll-jacking: purely a
+   passive read of scroll position. */
+[data-mx-motion-ready] [data-motion="tier0"] .mx-plate__ghost {
+  transform: translate3d(0, calc(var(--mx-par, 0) * 26px), 0);
+  transition: transform 300ms linear;
+  will-change: transform;
+}
+
+/* ------------------------------------------------------------
+   06 · CSS-ONLY BEHAVIORS (safe without JS)
    ------------------------------------------------------------ */
 /* marquee drift — tier2 furniture only. Track content must be
    duplicated once in markup for the -50% loop. */
@@ -2307,17 +2477,15 @@
 [data-motion="tier2"] .mx-card:hover { transform: rotate(0deg) scale(1.02); }
 [data-motion="tier1"] .mx-ticket:hover,
 [data-motion="tier2"] .mx-ticket:hover { transform: rotate(0deg); }
-/* tier0: hairline draw-in is the ONLY permitted move */
-[data-mx-motion-ready] [data-motion="tier0"] .mx-draw.is-in {
-  transform-origin: left center;
-  animation: mx-draw-in 900ms var(--mx-m-ease) both;
-}
 
 /* ------------------------------------------------------------
    99 · GLOBAL REDUCED-MOTION GATE — kills ALL core animation.
    Every animation and transition in the mx- namespace dies
-   here, including the marquee drift and anything WP-5 adds
-   under [data-mx]. No exceptions, no ungated ambience.
+   here, including the marquee drift and every WP-5 move under
+   [data-mx]. No exceptions, no ungated ambience. The
+   controller additionally no-ops (never stamps
+   data-mx-motion-ready) when the preference is set at load,
+   and drops the attribute if it flips on mid-read.
    ------------------------------------------------------------ */
 @media (prefers-reduced-motion: reduce) {
   [data-mx] *,
@@ -2335,7 +2503,18 @@
     opacity: 1;
     transform: rotate(var(--mx-tilt, 0deg));
   }
+  [data-mx-motion-ready] [data-motion] .mx-slam:not(.is-in),
+  [data-mx-motion-ready] [data-motion] .mx-seq:not(.is-in) .mx-row,
+  [data-mx-motion-ready] [data-motion] .mx-countdown:not(.is-in) .mx-countdown__num {
+    opacity: 1;
+  }
+  /* scroll-dial layers park at rest */
+  [data-motion] .mx-seam { opacity: 0 !important; }
+  [data-mx-motion-ready] [data-motion="tier0"] .mx-plate__ghost {
+    transform: none !important;
+  }
 }
+
 /* ============================================================
    MX CORE · 15-responsive.css
    390px stacking, fixed-chrome space reservation, table
@@ -2525,6 +2704,7 @@
   .mx-quote figcaption { font-size: max(0.72rem, var(--mx-micro)); }
   .mx-body p { font-size: max(0.95rem, 1rem); }
 }
+
 /* ============================================================
    MX CORE · 16-print.css
    Minimal print sheet (Law 10). Grounds off, ink on paper, no
@@ -2670,6 +2850,7 @@
   [data-mx] img { max-width: 100% !important; }
   [data-mx] .mx-body p { orphans: 3; widows: 3; }
 }
+
 /* ============================================================
    MX SKIN · skin-editorial.css                       (L1, WP-3)
    THE SIGNAL — editorial skin for Deep Dive / Rewind / Versus /
@@ -3049,3 +3230,4 @@
 }
 /* ledger captions + quote sources pick up the brass register */
 [data-skin="editorial"] .mx-quote figcaption b { color: var(--mx-accent); }
+

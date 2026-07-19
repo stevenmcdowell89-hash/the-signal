@@ -25,18 +25,24 @@ import {
   smoothScrollPass, parseArgs,
 } from './lib/mx-harness.mjs';
 
-const USAGE = 'Usage: node tools/render.mjs <issue-path-or-url> --out <dir>';
+const USAGE = 'Usage: node tools/render.mjs <issue-path-or-url> --out <dir> [--no-js] [--burst [depthIndex]]';
+// WP-5 additive flags (default behavior unchanged when omitted):
+//   --no-js              render with page JavaScript disabled (JS-off content
+//                        proof for Law 5); shots land in the same layout.
+//   --burst [i]          also capture 6 frames across ~3s immediately after a
+//                        fresh-page teleport to depth i (default 4) at 1440 —
+//                        frame-sequence evidence that reveals visibly fire.
 
 const WIDTHS = [
   { key: '1440', width: 1440, height: 900 },
   { key: '390', width: 390, height: 844 },
 ];
 
-async function shootWidth(browser, target, vp, outDir, manifest) {
+async function shootWidth(browser, target, vp, outDir, manifest, jsDisabled) {
   const dir = path.join(outDir, vp.key);
   fs.mkdirSync(dir, { recursive: true });
   const context = await prepareContext(browser, {
-    width: vp.width, height: vp.height, origin: target.origin,
+    width: vp.width, height: vp.height, origin: target.origin, jsDisabled,
   });
   const page = await openPage(context, target.url);
 
@@ -70,6 +76,40 @@ async function shootWidth(browser, target, vp, outDir, manifest) {
   await context.close();
 }
 
+/** --burst: fresh page, teleport to one reveal-rich depth, then 6 frames
+ *  across ~3s. Two differing frames = motion visibly firing (WP-5 gate). */
+async function shootBurst(browser, target, outDir, manifest, depthIndex) {
+  manifest.burst = {};
+  for (const vp of WIDTHS) await shootBurstAt(browser, target, outDir, manifest, depthIndex, vp);
+}
+
+async function shootBurstAt(browser, target, outDir, manifest, depthIndex, vp) {
+  const dir = path.join(outDir, 'burst', vp.key);
+  fs.mkdirSync(dir, { recursive: true });
+  const context = await prepareContext(browser, {
+    width: vp.width, height: vp.height, origin: target.origin,
+  });
+  const page = await openPage(context, target.url);
+  const pageHeight = await page.evaluate(() =>
+    Math.max(document.documentElement.scrollHeight, document.body ? document.body.scrollHeight : 0));
+  const maxScroll = Math.max(0, pageHeight - vp.height);
+  const y = Math.round((maxScroll * depthIndex) / 7);
+  await page.evaluate((top) => window.scrollTo({ top, behavior: 'auto' }), y);
+  const files = [];
+  for (let i = 0; i < 6; i++) {
+    const file = `burst-${i}.png`;
+    await page.screenshot({ path: path.join(dir, file) });
+    files.push(file);
+    if (i < 5) await page.waitForTimeout(420);
+  }
+  manifest.burst[vp.key] = {
+    viewport: { width: vp.width, height: vp.height },
+    depthIndex, y, frames: files, spacingMs: 420,
+    note: 'fresh page teleported to depth; frames straddle the reveal animations',
+  };
+  await context.close();
+}
+
 async function shootDark(browser, target, outDir, manifest) {
   const context = await prepareContext(browser, {
     width: 1440, height: 900, origin: target.origin, colorScheme: 'dark',
@@ -97,14 +137,20 @@ async function main() {
     source: args._[0],
     url: target.url,
     generatedAt: new Date().toISOString(),
+    jsDisabled: !!args.noJs,
     widths: {},
     dark: null,
   };
 
   try {
     for (const vp of WIDTHS) {
-      console.log(`[render] ${vp.key}px pass…`);
-      await shootWidth(browser, target, vp, outDir, manifest);
+      console.log(`[render] ${vp.key}px pass…${args.noJs ? ' (JS disabled)' : ''}`);
+      await shootWidth(browser, target, vp, outDir, manifest, !!args.noJs);
+    }
+    if (args.burst && !args.noJs) {
+      const di = args.burstDepth === undefined ? 4 : args.burstDepth;
+      console.log(`[render] burst pass at 1440, depth ${di}…`);
+      await shootBurst(browser, target, outDir, manifest, di);
     }
     console.log('[render] dark-mode render at 1440…');
     await shootDark(browser, target, outDir, manifest);

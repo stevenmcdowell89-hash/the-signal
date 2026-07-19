@@ -400,23 +400,47 @@ overflows its container is a bug to fix in the table, not to wrap. The
 `.mx-tablewrap` shell (+ author-supplied `.mx-tablewrap__hint`) exists only
 to keep an overflowing table from breaking the document while it gets fixed.
 
-## 9 · Motion tiers (`14-motion.css`)
+## 9 · Motion tiers (`14-motion.css` + `assets/mx-motion.js`)
 
-- `<body data-motion="tier0">` print-still: hairline `.mx-draw` only.
-- `tier1` calm: `.mx-rise` (generic furniture) and `.mx-settle` (tilted
-  ephemera tape down with a ~1° settle) + hover settles + slow marquee.
-- `tier2` event: same hooks, full-speed marquee, signature moments.
+The WP-5 controller (`assets/mx-motion.js`, ~8KB; the stitcher ships it on
+data-mx issues INSTEAD of the legacy 96KB `script.js`) auto-targets core
+component classes — **no per-issue motion markup is required**:
 
-The reveal scaffold only activates when a controller (WP-5) stamps
-`data-mx-motion-ready` on the root and `.is-in` on entering furniture —
-**JS-off renders 100% of content**. Signature-moment hooks (inert until
-WP-5): `.mx-sig-stamp-slam` (Versus) · `.mx-sig-rows-climb` (Season Review) ·
-`.mx-sig-cols-reveal` (Rewind) · `.mx-sig-dial-sweep` (Weekly) ·
-`.mx-sig-flip` (Countdown).
+- `tier0` print-still (Deep Dive): plates/act openers/pulls/ledgers/stat
+  bands/quotes/sources get `.mx-draw` (an overlay hairline draws in via
+  `::after`; content itself is never hidden) + `.mx-plate__ghost` parallax
+  driven by `--mx-par`. Nothing else moves.
+- `tier1` calm: `.mx-card`/`.mx-ticket`/`.mx-coaster`/`.mx-note`/`.mx-stamp`
+  → `.mx-settle` (tape down, lands on own tilt); `.mx-quote`/`.mx-pull`/
+  `.mx-anchor`/`.mx-plate`/`.mx-actopen`/`.mx-zig__entry`/`.mx-chart` →
+  `.mx-rise`; ledgers/ranked/scorecards/stat bands/cheat cols/don't-miss/
+  countdown cells → `.mx-seq` containers whose `.mx-row` children tick in
+  `--mx-i` order; `.mx-chartline` (svg path with `pathLength="1"`) draws;
+  hover settles + slow marquee.
+- `tier2` event: tier1 plus stamp-slam (`.mx-stamp` → `.mx-slam`, one hard
+  step), full-speed marquee, countdown-numeral flips, and the act crossfade
+  at transit seams (controller injects `.mx-seam--out/--in` into the
+  `data-act` neighbours of each `.mx-transit` and drives `--mx-seam`;
+  gradient endpoints are act tokens, per Part 8).
 
-A global `prefers-reduced-motion` gate kills every animation and transition
-under `[data-mx]` — anything WP-5 adds inherits the gate for free. Motion
-attaches to furniture, never running text.
+Reveals: the controller stamps `data-mx-motion-ready` on `<html>` and
+`.is-in` + `data-mx-inview` on furniture entering the viewport — every
+initial-hidden rule is gated on that attribute, so **JS-off renders 100% of
+content**. Stagger delays are capped with `min()` so tails resolve fast.
+
+Signature moments (classes the WP-6 skeletons place): `.mx-sig-stamp-slam`
+(Versus verdict slam) · `.mx-sig-rows-climb` (Season Review leaderboard
+rows climb) · `.mx-sig-cols-reveal` (Rewind Memory-Test columns in
+sequence) · `.mx-sig-dial-sweep` (Weekly needle sweep — hook only until
+WP-8; binds `.mx-dial__needle`/`[data-mx-needle]`) · countdown flips fire
+automatically on `.mx-countdown` under tier2 (`data-mx-target="ISO date"`
+opts into live ticking with re-flips).
+
+`prefers-reduced-motion` is honored at BOTH layers: the controller no-ops
+entirely (and drops `data-mx-motion-ready` if the preference flips
+mid-read), and the global CSS gate kills every animation/transition under
+`[data-mx]`. Motion attaches to furniture, never running text; no
+scroll-jacking.
 
 ## 10 · Checklist for a new page
 
