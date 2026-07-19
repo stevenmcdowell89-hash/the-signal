@@ -57,6 +57,14 @@
    core .mx-body--serif variant for the full serif register. */
 [data-skin="editorial"] .mx-body p { font-family: var(--mx-t-serif); }
 
+/* Desktop reading air: the serif measure earns a slower rhythm at
+   magazine widths. Also keeps long-form pages under the Law-2
+   words/screen cap (220 for Deep Dive) without touching body copy. */
+@media (min-width: 1280px) {
+  [data-skin="editorial"] .mx-body p { margin-bottom: 1.5em; line-height: 1.76; }
+  [data-skin="editorial"] section[data-act] { padding-block: 6rem; }
+}
+
 /* ------------------------------------------------------------
    01 · RESTRAINED GROUNDS — ink-and-paper ambience, never loud.
    The utilities stay ON (Law 1: no flat act grounds); the skin

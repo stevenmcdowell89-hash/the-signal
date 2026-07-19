@@ -196,7 +196,6 @@
   transform: rotate(-2deg);
   max-width: 30ch;
 }
-
 /* ═══════════════════════════════════════════════════════════════════════════
    THE SIGNAL · FURNITURE CORE · 01-FONTS
    Self-hosted subsetted woff2 under /assets/fonts/ (§2.2: Google Fonts links
@@ -276,7 +275,6 @@
   src: url("/assets/fonts/space-mono-latin-700-normal.woff2") format("woff2");
   font-weight: 700; font-style: normal; font-display: swap;
 }
-
 /* ============================================================
    MX CORE · 10-ephemera.css
    Framed-object chassis: content window + fastener + hand
@@ -784,7 +782,6 @@
   gap: 30px;
   justify-items: center;
 }
-
 /* ============================================================
    MX CORE · 11-ledgers.css
    Data furniture: facts <dl> ledgers, ranked entries + rank
@@ -1176,7 +1173,6 @@
 .mx-scorecard__gap { text-align: right; font-weight: 700; }
 .mx-scorecard tr.is-lead td { font-weight: 700; }
 .mx-scorecard tr.is-lead .mx-scorecard__gap { color: var(--mxl-accent); }
-
 /* ============================================================
    MX CORE · 12-plates.css
    Editorial set pieces: numbered plates (chapter headers with
@@ -1586,7 +1582,6 @@
 .mx-dontmiss__list li:nth-child(3)::before { transform: translateY(-50%) rotate(-3deg); }
 .mx-dontmiss__list li:nth-child(4)::before { transform: translateY(-50%) rotate(7deg); }
 .mx-dontmiss__list li b { color: var(--mx-support-2); }
-
 /* ============================================================
    MX CORE · 13-chrome.css
    ONE masthead, cover scaffolds (incl. poster), kicker, act
@@ -2189,7 +2184,6 @@
   color: var(--mx-support-2);
   margin-bottom: 12px;
 }
-
 /* ============================================================
    MX CORE · 14-motion.css
    TIER SCAFFOLDING ONLY. Full motion behaviors (IO-driven
@@ -2342,7 +2336,6 @@
     transform: rotate(var(--mx-tilt, 0deg));
   }
 }
-
 /* ============================================================
    MX CORE · 15-responsive.css
    390px stacking, fixed-chrome space reservation, table
@@ -2532,7 +2525,6 @@
   .mx-quote figcaption { font-size: max(0.72rem, var(--mx-micro)); }
   .mx-body p { font-size: max(0.95rem, 1rem); }
 }
-
 /* ============================================================
    MX CORE · 16-print.css
    Minimal print sheet (Law 10). Grounds off, ink on paper, no
@@ -2678,7 +2670,6 @@
   [data-mx] img { max-width: 100% !important; }
   [data-mx] .mx-body p { orphans: 3; widows: 3; }
 }
-
 /* ============================================================
    MX SKIN · skin-editorial.css                       (L1, WP-3)
    THE SIGNAL — editorial skin for Deep Dive / Rewind / Versus /
@@ -2737,6 +2728,14 @@
    editorial skin never changes density metrics. Pair with the
    core .mx-body--serif variant for the full serif register. */
 [data-skin="editorial"] .mx-body p { font-family: var(--mx-t-serif); }
+
+/* Desktop reading air: the serif measure earns a slower rhythm at
+   magazine widths. Also keeps long-form pages under the Law-2
+   words/screen cap (220 for Deep Dive) without touching body copy. */
+@media (min-width: 1280px) {
+  [data-skin="editorial"] .mx-body p { margin-bottom: 1.5em; line-height: 1.76; }
+  [data-skin="editorial"] section[data-act] { padding-block: 6rem; }
+}
 
 /* ------------------------------------------------------------
    01 · RESTRAINED GROUNDS — ink-and-paper ambience, never loud.
@@ -3050,4 +3049,3 @@
 }
 /* ledger captions + quote sources pick up the brass register */
 [data-skin="editorial"] .mx-quote figcaption b { color: var(--mx-accent); }
-
