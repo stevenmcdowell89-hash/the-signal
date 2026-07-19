@@ -68,11 +68,16 @@ curated.
   `pointer-events: none` layers covering >= 85% of the viewport are treated as
   decorative scene/grain overlays, excluded from pairs but listed in
   `decorativeFullViewportOverlaysExcluded`.
-- `horizontalScroll` — `documentElement/body scrollWidth > clientWidth + 1`.
-  NOTE: a page with `overflow-x: clip` on `html` can hide real overflow from
-  this flag — that is what `maxContentRightPx` (informational; transforms and
-  marquee tracks can legitimately exceed it) and the truncation detector are
-  for.
+- `horizontalScroll` — flags only h-scroll a READER actually experiences:
+  `flag` is true when (a) `scrollWidth > clientWidth + 1` (`geometricOverflow`),
+  AND (b) an attempted `scrollingElement.scrollLeft = 50` reads back > 0
+  (`scrollLeftAfterAttempt`), AND (c) `overflow-x` on `html`/`body` is not
+  `hidden`/`clip` (`overflowXSuppressed`). Tilted/bleeding ephemera behind an
+  overflow-suppressed root overflow geometrically but cannot be scrolled to —
+  that is reported via `geometricOverflow`/`maxContentRightPx` (informational;
+  transforms and marquee tracks can legitimately exceed the viewport), not via
+  the flag. A page that hides real content behind `overflow-x: clip` is caught
+  by the truncation detector instead.
 - `tableTruncation` — three detectors over `table, th, td, .cheat-sheet`:
   1. `clipped-in-place`: `scrollWidth > clientWidth + 2` with no scrollable
      overflow on the element and no scroll-wrap ancestor;
@@ -162,6 +167,15 @@ distribution failure.
   hover-only transitions never fire under this harness. Counts are of
   *elements* that animated, not of animation instances. Infinite ambient
   animations (grain shimmer, drifts) count — they are motion actually firing.
+  Pseudo-element animations (`::before`/`::after`) are attributed to their
+  host element by `document.getAnimations()`.
+- **The countdown genuinely violates reduced motion (3 elements).** Under
+  `prefers-reduced-motion: reduce` the countdown still animates
+  `hol-shimmer` on `.theme-heat-haze::after` (three heat-haze sections —
+  `section.hol-half--two` and two inner `.theme-heat-haze` sections). The
+  `@keyframes hol-shimmer` rule (issue line ~7410) is applied outside any
+  reduced-motion gate. This is a true finding in the reference, not a census
+  artifact — the unified system must gate every animation (Law 5).
 - **"Mid-word" truncation is inferred, not read.** The detectors are
   geometric (overflow with no visible affordance) plus `nowrapCells` as
   mid-word evidence; the tool does not OCR the cut glyphs.

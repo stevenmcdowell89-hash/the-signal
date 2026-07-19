@@ -203,8 +203,23 @@ const EVENT_CENSUS_FN = `(args) => {
 const HSCROLL_FN = `() => {
   const de = document.documentElement;
   const body = document.body;
+  const se = document.scrollingElement || de;
   const scrollWidth = Math.max(de.scrollWidth, body ? body.scrollWidth : 0);
   const clientWidth = de.clientWidth;
+  const geometricOverflow = scrollWidth > clientWidth + 1;
+  // Law 10 cares about h-scroll a READER experiences. Tilted/bleeding
+  // ephemera behind an overflow-x:hidden/clip root overflow geometrically
+  // but the document cannot actually be scrolled sideways. Test it: attempt
+  // a horizontal scroll and read back, and respect overflow-x on html/body.
+  const rootOverflowX = getComputedStyle(de).overflowX;
+  const bodyOverflowX = body ? getComputedStyle(body).overflowX : 'visible';
+  const overflowXSuppressed = ['hidden', 'clip'].includes(rootOverflowX) ||
+    ['hidden', 'clip'].includes(bodyOverflowX);
+  const prev = se.scrollLeft;
+  se.scrollLeft = 50;
+  const scrollLeftAfterAttempt = se.scrollLeft;
+  se.scrollLeft = prev;
+  const flag = geometricOverflow && scrollLeftAfterAttempt > 0 && !overflowXSuppressed;
   // max visual right edge of laid-out elements (informational: transforms
   // and marquee tracks can exceed the viewport legitimately)
   let maxRight = 0;
@@ -215,7 +230,10 @@ const HSCROLL_FN = `() => {
   return {
     docScrollWidth: scrollWidth,
     clientWidth,
-    flag: scrollWidth > clientWidth + 1,
+    geometricOverflow,
+    scrollLeftAfterAttempt,
+    overflowXSuppressed,
+    flag,
     maxContentRightPx: Math.round(maxRight),
   };
 }`;

@@ -1,8 +1,8 @@
 {
   "tool": "tools/measure-issue.mjs",
   "source": "tools/fixtures/negative/attempt2-stub-flat-season-review.html",
-  "url": "http://127.0.0.1:46555/tools/fixtures/negative/attempt2-stub-flat-season-review.html",
-  "generatedAt": "2026-07-19T07:37:11.143Z",
+  "url": "http://127.0.0.1:46651/tools/fixtures/negative/attempt2-stub-flat-season-review.html",
+  "generatedAt": "2026-07-19T08:22:46.462Z",
   "viewports": {
     "1440x900": {
       "viewport": {
@@ -171,6 +171,7 @@
         "totalIntersections": 1,
         "uniquePairs": 1,
         "fails": true,
+        "decorativeFullViewportOverlaysExcluded": [],
         "overlaps": [
           {
             "fixed": "a.signal-back-to-archive",
@@ -189,6 +190,9 @@
       "horizontalScroll": {
         "docScrollWidth": 1440,
         "clientWidth": 1440,
+        "geometricOverflow": false,
+        "scrollLeftAfterAttempt": 0,
+        "overflowXSuppressed": true,
         "flag": false,
         "maxContentRightPx": 1440
       },
@@ -366,9 +370,10 @@
       "chromeOverlap": {
         "fixedOrStickyElements": 1,
         "depthsSampled": 10,
-        "totalIntersections": 11,
-        "uniquePairs": 6,
+        "totalIntersections": 12,
+        "uniquePairs": 7,
         "fails": true,
+        "decorativeFullViewportOverlaysExcluded": [],
         "overlaps": [
           {
             "fixed": "a.signal-back-to-archive",
@@ -378,7 +383,7 @@
             "depthsSeen": 3,
             "overlap": {
               "w": 113,
-              "h": 28
+              "h": 27
             },
             "contentText": "SEMIS · FINAL"
           },
@@ -387,12 +392,12 @@
             "position": "fixed",
             "content": "aside.mx-block.mx-ledger > dl > dd",
             "firstDepth": 924,
-            "depthsSeen": 3,
+            "depthsSeen": 2,
             "overlap": {
               "w": 113,
-              "h": 37
+              "h": 26
             },
-            "contentText": "A new round of 32 before the familiar last-16 spine"
+            "contentText": "The United States, Canada and Mexico — the first three-natio"
           },
           {
             "fixed": "a.signal-back-to-archive",
@@ -434,19 +439,34 @@
             "fixed": "a.signal-back-to-archive",
             "position": "fixed",
             "content": "section > div.mx-plate > h2.mx-plate__title",
-            "firstDepth": 3694,
+            "firstDepth": 2771,
+            "depthsSeen": 2,
+            "overlap": {
+              "w": 84,
+              "h": 12
+            },
+            "contentText": "The Road Through the Rounds"
+          },
+          {
+            "fixed": "a.signal-back-to-archive",
+            "position": "fixed",
+            "content": "section.mx-chapter > aside.mx-block.mx-ledger > p.mx-ledger__title",
+            "firstDepth": 4156,
             "depthsSeen": 1,
             "overlap": {
-              "w": 86,
-              "h": 26
+              "w": 113,
+              "h": 17
             },
-            "contentText": "By the Numbers"
+            "contentText": "What grew, what stayed"
           }
         ]
       },
       "horizontalScroll": {
         "docScrollWidth": 390,
         "clientWidth": 390,
+        "geometricOverflow": false,
+        "scrollLeftAfterAttempt": 0,
+        "overflowXSuppressed": true,
         "flag": false,
         "maxContentRightPx": 498
       },

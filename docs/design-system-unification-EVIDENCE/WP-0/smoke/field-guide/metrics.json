@@ -1,8 +1,8 @@
 {
   "tool": "tools/measure-issue.mjs",
   "source": "issues/signal_field-guide_2026-05-17.html",
-  "url": "http://127.0.0.1:42115/issues/signal_field-guide_2026-05-17.html",
-  "generatedAt": "2026-07-19T07:37:35.232Z",
+  "url": "http://127.0.0.1:39395/issues/signal_field-guide_2026-05-17.html",
+  "generatedAt": "2026-07-19T08:24:02.369Z",
   "viewports": {
     "1440x900": {
       "viewport": {
@@ -894,26 +894,132 @@
       "chromeOverlap": {
         "fixedOrStickyElements": 5,
         "depthsSampled": 10,
-        "totalIntersections": 0,
-        "uniquePairs": 0,
-        "fails": false,
-        "overlaps": []
+        "totalIntersections": 2,
+        "uniquePairs": 2,
+        "fails": true,
+        "decorativeFullViewportOverlaysExcluded": [],
+        "overlaps": [
+          {
+            "fixed": "a.signal-back-to-archive",
+            "position": "fixed",
+            "content": "div.hol-postcard.hm-rise > div.hol-postcard__front > figure",
+            "firstDepth": 28422,
+            "depthsSeen": 1,
+            "overlap": {
+              "w": 54,
+              "h": 34
+            },
+            "contentText": "Restaurant Saga, Wonder Hotel — renovated April 2025, with t"
+          },
+          {
+            "fixed": "a.signal-back-to-archive",
+            "position": "fixed",
+            "content": "div.hol-dont-miss.hm-rise > ul.hol-dont-miss__list > li",
+            "firstDepth": 49738,
+            "depthsSeen": 1,
+            "overlap": {
+              "w": 33,
+              "h": 34
+            },
+            "contentText": "The iced stroopwafel coffee at De Gebrande Boon. €5.85 — and"
+          }
+        ]
       },
       "horizontalScroll": {
         "docScrollWidth": 1460,
         "clientWidth": 1440,
-        "flag": true,
-        "maxContentRightPx": 7084
+        "geometricOverflow": true,
+        "scrollLeftAfterAttempt": 0,
+        "overflowXSuppressed": true,
+        "flag": false,
+        "maxContentRightPx": 6985
       },
       "tableTruncation": {
         "flags": [],
         "fails": false
       },
       "motion": {
-        "animatedElements": 911,
+        "animatedElements": 913,
         "note": "elements with animations/transitions (duration>0) observed firing during the scroll pass; chrome excluded",
         "sampled": [
           {
+            "selector": "div.hol-cover__layout > div.hol-cover__collage > figure.hol-polaroid.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-cover__layout > div.hol-cover__collage > figure.hol-polaroid.hol-polaroid--right",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-cover__layout > div.hol-cover__collage > div.hol-stamp.hol-stamp--brass",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-kicker-strip.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-kicker-strip.hm-rise > div.hol-kicker-strip__inner > h2.hol-kicker-strip__title",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-kicker-strip.hm-rise > div.hol-kicker-strip__inner > div.hol-kicker-strip__sub",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-opening__inner > div.hol-opening__prose > figure.hol-polaroid.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-opening__inner > div.hol-opening__prose > div.hol-postcard.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-opening__inner > div.hol-opening__prose > div.hol-stamp.hol-stamp--mustard",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--one > div.hol-half__inner > div.hol-half__opener.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-half__inner > div.hol-half__opener.hm-rise > div.hol-half__opener-tag.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
             "selector": "div.hol-half__inner > div.hol-half__opener.hm-rise > h2.hol-half__opener-title.hm-rise",
             "kinds": [
               "CSSTransition:opacity",
@@ -935,7 +1041,334 @@
             ]
           },
           {
+            "selector": "section.hol-half.hol-half--one > div.hol-half__inner > div.hol-anchor.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
             "selector": "div.hol-half__inner > div.hol-anchor.hm-rise > div.hol-anchor__badge",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--one > div.hol-half__inner > figure.hol-polaroid.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--one > div.hol-half__inner > div.hol-unmissable.hol-unmissable--reverse",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-half__inner > div.hol-unmissable.hol-unmissable--reverse > div.hol-unmissable__photo-wrap",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-half__inner > div.hol-unmissable.hol-unmissable--reverse > div.hol-unmissable__card",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--one > div.hol-half__inner > figure.hol-polaroid.hol-polaroid--flat",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--one > div.hol-half__inner > figure.hol-polaroid.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--one > div.hol-half__inner > div.hol-unmissable.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-half__inner > div.hol-unmissable.hm-rise > div.hol-unmissable__photo-wrap",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-half__inner > div.hol-unmissable.hm-rise > div.hol-unmissable__card",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--one > div.hol-half__inner > figure.hol-polaroid.hol-polaroid--flat",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--one > div.hol-half__inner > div.hol-postcard.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--one > div.hol-half__inner > div.hol-unmissable.hol-unmissable--reverse",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-half__inner > div.hol-unmissable.hol-unmissable--reverse > div.hol-unmissable__photo-wrap",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-half__inner > div.hol-unmissable.hol-unmissable--reverse > div.hol-unmissable__card",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--one > div.hol-half__inner > figure.hol-polaroid.hol-polaroid--flat",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--one > div.hol-half__inner > div.hol-marquee.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--one > div.hol-half__inner > div.hol-unmissable.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-half__inner > div.hol-unmissable.hm-rise > div.hol-unmissable__photo-wrap",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-half__inner > div.hol-unmissable.hm-rise > div.hol-unmissable__card",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--one > div.hol-half__inner > figure.hol-polaroid.hol-polaroid--flat",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--one > div.hol-half__inner > div.hol-stamp.hol-stamp--ruby",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--one > div.hol-half__inner > div.hol-unmissable.hol-unmissable--reverse",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-half__inner > div.hol-unmissable.hol-unmissable--reverse > div.hol-unmissable__card",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--one > div.hol-half__inner > div.hol-chalkboard.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--one > div.hol-half__inner > div.hol-unmissable.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-half__inner > div.hol-unmissable.hm-rise > div.hol-unmissable__photo-wrap",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-half__inner > div.hol-unmissable.hm-rise > div.hol-unmissable__card",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--one > div.hol-half__inner > figure.hol-polaroid.hol-polaroid--flat",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--one > div.hol-half__inner > figure.hol-polaroid.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--one > div.hol-half__inner > figure.hol-polaroid.hol-polaroid--right",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--one > div.hol-half__inner > div.hol-marquee.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--one > div.hol-half__inner > div.hol-postcard.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--one > div.hol-half__inner > figure.hol-polaroid.hol-polaroid--right",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--one > div.hol-half__inner > div.hol-stamp.hol-stamp--brass",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--one > div.hol-half__inner > figure.hol-polaroid.hol-polaroid--flat",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--one > div.hol-half__inner > figure.hol-polaroid.hol-polaroid--flat",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--one > div.hol-half__inner > div.hol-dont-miss.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-dont-miss.hm-rise > ul.hol-dont-miss__list > li",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-dont-miss.hm-rise > ul.hol-dont-miss__list > li",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-dont-miss.hm-rise > ul.hol-dont-miss__list > li",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-transit.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-transit.hm-rise > div.hol-transit__side.hol-transit__side--left",
+            "kinds": [
+              "CSSTransition:opacity"
+            ]
+          },
+          {
+            "selector": "section.hol-transit.hm-rise > div.hol-transit__center > div.hol-transit__center-card",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-transit.hm-rise > div.hol-transit__side.hol-transit__side--right",
+            "kinds": [
+              "CSSTransition:opacity"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--two > div.hol-half__inner > div.hol-half__opener.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-half__inner > div.hol-half__opener.hm-rise > div.hol-half__opener-tag.hm-rise",
             "kinds": [
               "CSSTransition:opacity",
               "CSSTransition:transform"
@@ -963,7 +1396,350 @@
             ]
           },
           {
+            "selector": "section.hol-half.hol-half--two > div.hol-half__inner > div.hol-anchor.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
             "selector": "div.hol-half__inner > div.hol-anchor.hm-rise > div.hol-anchor__badge",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--two > div.hol-half__inner > div.hol-unmissable.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-half__inner > div.hol-unmissable.hm-rise > div.hol-unmissable__photo-wrap",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-half__inner > div.hol-unmissable.hm-rise > div.hol-unmissable__card",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--two > div.hol-half__inner > figure.hol-polaroid.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--two > div.hol-half__inner > div.hol-unmissable.hol-unmissable--reverse",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-half__inner > div.hol-unmissable.hol-unmissable--reverse > div.hol-unmissable__photo-wrap",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-half__inner > div.hol-unmissable.hol-unmissable--reverse > div.hol-unmissable__card",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--two > div.hol-half__inner > figure.hol-polaroid.hol-polaroid--flat",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--two > div.hol-half__inner > div.hol-marquee.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--two > div.hol-half__inner > div.hol-unmissable.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-half__inner > div.hol-unmissable.hm-rise > div.hol-unmissable__photo-wrap",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-half__inner > div.hol-unmissable.hm-rise > div.hol-unmissable__card",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--two > div.hol-half__inner > figure.hol-polaroid.hol-polaroid--flat",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--two > div.hol-half__inner > div.hol-postcard.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--two > div.hol-half__inner > div.hol-unmissable.hol-unmissable--reverse",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-half__inner > div.hol-unmissable.hol-unmissable--reverse > div.hol-unmissable__photo-wrap",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-half__inner > div.hol-unmissable.hol-unmissable--reverse > div.hol-unmissable__card",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--two > div.hol-half__inner > figure.hol-polaroid.hol-polaroid--flat",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-half__inner > div > div.hol-stamp.hol-stamp--mustard",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-half__inner > div > figure.hol-polaroid.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-half__inner > div > div.hol-stamp.hol-stamp--terracotta",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--two > div.hol-half__inner > div.hol-unmissable.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-half__inner > div.hol-unmissable.hm-rise > div.hol-unmissable__photo-wrap",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-half__inner > div.hol-unmissable.hm-rise > div.hol-unmissable__card",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--two > div.hol-half__inner > figure.hol-polaroid.hol-polaroid--flat",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--two > div.hol-half__inner > div.hol-chalkboard.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--two > div.hol-half__inner > div.hol-unmissable.hol-unmissable--reverse",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-half__inner > div.hol-unmissable.hol-unmissable--reverse > div.hol-unmissable__photo-wrap",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-half__inner > div.hol-unmissable.hol-unmissable--reverse > div.hol-unmissable__card",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--two > div.hol-half__inner > figure.hol-polaroid.hol-polaroid--flat",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--two > div.hol-half__inner > figure.hol-polaroid.hol-polaroid--right",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--two > div.hol-half__inner > div.hol-unmissable.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-half__inner > div.hol-unmissable.hm-rise > div.hol-unmissable__photo-wrap",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-half__inner > div.hol-unmissable.hm-rise > div.hol-unmissable__card",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--two > div.hol-half__inner > figure.hol-polaroid.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--two > div.hol-half__inner > figure.hol-polaroid.hol-polaroid--flat",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--two > div.hol-half__inner > div.hol-marquee.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--two > div.hol-half__inner > div.hol-postcard.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--two > div.hol-half__inner > figure.hol-polaroid.hol-polaroid--reverse",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--two > div.hol-half__inner > figure.hol-polaroid.hol-polaroid--right",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--two > div.hol-half__inner > div.hol-stamp.hol-stamp--burnt",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--two > div.hol-half__inner > figure.hol-polaroid.hol-polaroid--flat",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "section.hol-half.hol-half--two > div.hol-half__inner > div.hol-dont-miss.hm-rise",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-dont-miss.hm-rise > ul.hol-dont-miss__list > li",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-dont-miss.hm-rise > ul.hol-dont-miss__list > li",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-dont-miss.hm-rise > ul.hol-dont-miss__list > li",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-dont-miss.hm-rise > ul.hol-dont-miss__list > li",
+            "kinds": [
+              "CSSTransition:opacity",
+              "CSSTransition:transform"
+            ]
+          },
+          {
+            "selector": "div.hol-meanwhile__inner > div > h2.hol-meanwhile__title.hm-rise",
             "kinds": [
               "CSSTransition:opacity",
               "CSSTransition:transform"
@@ -991,648 +1767,6 @@
             "selector": "section.hol-cover > div.hol-cover__inner > p.hol-cover__dek.hm-typewriter",
             "kinds": [
               "CSSAnimation:hm-caret-blink"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
-            ]
-          },
-          {
-            "selector": "div.hol-cover__inner > p.hol-cover__dek.hm-typewriter > span.hm-typed",
-            "kinds": [
-              "CSSAnimation:hm-typewriter-in"
             ]
           },
           {
@@ -3028,39 +3162,76 @@
       "chromeOverlap": {
         "fixedOrStickyElements": 5,
         "depthsSampled": 10,
-        "totalIntersections": 12,
-        "uniquePairs": 9,
+        "totalIntersections": 13,
+        "uniquePairs": 7,
         "fails": true,
+        "decorativeFullViewportOverlaysExcluded": [],
         "overlaps": [
           {
             "fixed": "a.signal-back-to-archive",
             "position": "fixed",
-            "content": "div.hol-half__inner > div.hol-meal-slot > p.hol-meal-slot__intro",
-            "firstDepth": 0,
+            "content": "section.hol-half.hol-half--two > div.hol-half__inner > p",
+            "firstDepth": 24814,
+            "depthsSeen": 3,
+            "overlap": {
+              "w": 131,
+              "h": 34
+            },
+            "contentText": "Moto is the evening anchor for guests staying in the Safari "
+          },
+          {
+            "fixed": "button#backToTop.back-to-top.visible",
+            "position": "fixed",
+            "content": "section.hol-half.hol-half--two > div.hol-half__inner > p",
+            "firstDepth": 24814,
+            "depthsSeen": 5,
+            "overlap": {
+              "w": 36,
+              "h": 40
+            },
+            "contentText": "The pizza delivery service — available on Friday, Saturday, "
+          },
+          {
+            "fixed": "button#backToTop.back-to-top.visible",
+            "position": "fixed",
+            "content": "section.hol-half.hol-half--two > div.hol-half__inner > p.hol-dropcap",
+            "firstDepth": 37221,
             "depthsSeen": 1,
             "overlap": {
-              "w": 98,
-              "h": 31
+              "w": 36,
+              "h": 40
             },
-            "contentText": "Amma and Hogon are the anchors for Safari Hotel guests; Laba"
+            "contentText": "Restaurant Amma sits inside the Safari Hotel's central Hogon"
+          },
+          {
+            "fixed": "button#backToTop.back-to-top.visible",
+            "position": "fixed",
+            "content": "div.hol-dont-miss.hm-rise > ul.hol-dont-miss__list > li",
+            "firstDepth": 49628,
+            "depthsSeen": 1,
+            "overlap": {
+              "w": 40,
+              "h": 40
+            },
+            "contentText": "The giant pickled gherkin at Hollandsche Gebakkraam. €2.00. "
           },
           {
             "fixed": "a.signal-back-to-archive",
             "position": "fixed",
-            "content": "div.hol-half__inner > div > figure.hol-polaroid.hm-rise",
-            "firstDepth": 12407,
+            "content": "section.hol-half.hol-half--two > div.hol-half__inner > p.hol-dropcap",
+            "firstDepth": 74443,
             "depthsSeen": 1,
             "overlap": {
-              "w": 91,
+              "w": 131,
               "h": 34
             },
-            "contentText": "both estates, one thread. — the stroopwafel runs through it "
+            "contentText": "Restaurant Amma sits inside the Safari Hotel's central Hogon"
           },
           {
             "fixed": "a.signal-back-to-archive",
             "position": "fixed",
             "content": "div.hol-unmissable.hol-unmissable--reverse > div.hol-unmissable__card > p.hol-unmissable__quote",
-            "firstDepth": 24814,
+            "firstDepth": 86850,
             "depthsSeen": 1,
             "overlap": {
               "w": 95,
@@ -3069,84 +3240,27 @@
             "contentText": "\"Stunning views over the vast Serengeti savannah while chefs"
           },
           {
-            "fixed": "button#backToTop.back-to-top.visible",
-            "position": "fixed",
-            "content": "section.hol-half.hol-half--two > div.hol-half__inner > p",
-            "firstDepth": 24814,
-            "depthsSeen": 1,
-            "overlap": {
-              "w": 36,
-              "h": 40
-            },
-            "contentText": "Moto is the evening anchor for guests staying in the Safari "
-          },
-          {
             "fixed": "a.signal-back-to-archive",
             "position": "fixed",
-            "content": "div.hol-meal-slot > ol.hol-meal-slot__list > li.hol-meal-slot__item",
-            "firstDepth": 37221,
-            "depthsSeen": 3,
+            "content": "section.hol-half.hol-half--two > div.hol-half__inner > figure.hol-polaroid.hol-polaroid--flat",
+            "firstDepth": 99257,
+            "depthsSeen": 1,
             "overlap": {
-              "w": 98,
+              "w": 113,
               "h": 34
             },
-            "contentText": "Kashba — mint tea and Arabian sweets Kashba's afternoon corn"
-          },
-          {
-            "fixed": "a.signal-back-to-archive",
-            "position": "fixed",
-            "content": "ol.hol-meal-slot__list > li.hol-meal-slot__item > p",
-            "firstDepth": 37221,
-            "depthsSeen": 2,
-            "overlap": {
-              "w": 77,
-              "h": 34
-            },
-            "contentText": "Kashba's afternoon corner runs mint tea and Arabian-style sw"
-          },
-          {
-            "fixed": "a.signal-back-to-archive",
-            "position": "fixed",
-            "content": "ol.hol-meal-slot__list > li.hol-meal-slot__item > h4",
-            "firstDepth": 49628,
-            "depthsSeen": 1,
-            "overlap": {
-              "w": 77,
-              "h": 17
-            },
-            "contentText": "Hollandsche Gebakkraam — fairytale forest entrance UNMISSABL"
-          },
-          {
-            "fixed": "button#backToTop.back-to-top.visible",
-            "position": "fixed",
-            "content": "div.hol-anchor.hm-rise > div > p.hol-anchor__dek",
-            "firstDepth": 74443,
-            "depthsSeen": 1,
-            "overlap": {
-              "w": 36,
-              "h": 35
-            },
-            "contentText": "Five mornings. One anchor. The breakfast buffet at the Safar"
-          },
-          {
-            "fixed": "a.signal-back-to-archive",
-            "position": "fixed",
-            "content": "section.hol-half.hol-half--two > div.hol-half__inner > p",
-            "firstDepth": 111664,
-            "depthsSeen": 1,
-            "overlap": {
-              "w": 131,
-              "h": 34
-            },
-            "contentText": "Lanes can be reserved via the Beekse Bergen app or at resort"
+            "contentText": "Boschendal Sauvignon Blanc + Merlot — the South African list"
           }
         ]
       },
       "horizontalScroll": {
         "docScrollWidth": 411,
         "clientWidth": 390,
-        "flag": true,
-        "maxContentRightPx": 5477
+        "geometricOverflow": true,
+        "scrollLeftAfterAttempt": 0,
+        "overflowXSuppressed": true,
+        "flag": false,
+        "maxContentRightPx": 5502
       },
       "tableTruncation": {
         "flags": [],
