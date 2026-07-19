@@ -1,0 +1,189 @@
+/* ============================================================
+   MX CORE · 15-responsive.css
+   390px stacking, fixed-chrome space reservation, table
+   wrap-or-stack with VISIBLE scroll affordance, Law-8 type
+   floors preserved at every width. (Law 10 / F-8.)
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   00 · DOCUMENT-LEVEL H-SCROLL GUARD
+   The marquee's deliberate bleed is contained by its section;
+   nothing else may push the document wider than the viewport.
+   ------------------------------------------------------------ */
+[data-mx] { overflow-x: clip; }
+[data-mx] section[data-act],
+[data-mx] .mx-cover,
+[data-mx] .mx-transit { overflow-x: clip; }
+
+/* ------------------------------------------------------------
+   01 · FIXED-CHROME RESERVATION (the back pill — Law 10)
+   The archive pill is fixed top-left (~132×48px incl. inset).
+   Strategy: reserve the zone at the top of the page (13-chrome
+   pads .mx-mast / .mx-cover when body carries
+   data-mx-chrome="pill"), then FADE THE PILL OUT once the
+   reader scrolls past the masthead — pure CSS scroll-driven
+   animation, no JS. The pill returns when the reader returns
+   to the top. Reduced motion: scroll-driven progress is state,
+   not movement; the 14-motion kill leaves it functional
+   (duration is timeline-driven).
+   ------------------------------------------------------------ */
+@supports (animation-timeline: scroll()) {
+  [data-mx-chrome~="pill"] .signal-back-to-archive {
+    animation: mx-pill-recede linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0px 320px;
+  }
+}
+@keyframes mx-pill-recede {
+  0%   { opacity: 1; }
+  60%  { opacity: 0; }
+  100% { opacity: 0; visibility: hidden; pointer-events: none; }
+}
+/* no scroll-timeline support: keep the pill but shrink its
+   footprint and let the reserved top zone do the work */
+@supports not (animation-timeline: scroll()) {
+  [data-mx-chrome~="pill"] .signal-back-to-archive { opacity: 0.85; }
+}
+
+/* ------------------------------------------------------------
+   02 · TABLES: WRAP OR STACK — never truncate, never rely on an
+   invisible scrollbar. POLICY: core tables must FIT their
+   container — cells wrap at word boundaries (auto table layout),
+   ledgers stack at phone widths (below). Chromium's overlay
+   scrollbars occupy zero layout height, so a scroll-wrapped
+   table can never show the gate's required visible affordance —
+   scrolling tables are therefore forbidden in data-mx issues;
+   .mx-tablewrap exists as a bounded shell that keeps a table
+   that CANNOT fit from breaking the document, with edge fades
+   + a mono swipe hint (.mx-tablewrap__hint, author-supplied)
+   as the human-visible affordance. Expect the craft gate to
+   flag any table that actually overflows: fix the table.
+   ------------------------------------------------------------ */
+.mx-tablewrap { overflow-x: auto; }
+.mx-tablewrap table { width: 100%; }
+.mx-tablewrap__hint {
+  display: none;
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--mx-ink-soft);
+  margin-top: 6px;
+}
+/* cells wrap at word boundaries; never truncate mid-word at rest */
+.mx-scorecard td,
+.mx-scorecard th,
+.mx-tablewrap td,
+.mx-tablewrap th { overflow-wrap: break-word; white-space: normal; }
+
+/* ------------------------------------------------------------
+   03 · ≤ 900px — tablet reflow
+   ------------------------------------------------------------ */
+@media (max-width: 900px) {
+  .mx-anchor { grid-template-columns: 1fr; padding-left: 24px; gap: 32px; }
+  .mx-anchor__badge { top: -34px; right: 4px; width: 112px; height: 112px; font-size: 1.05rem; }
+  .mx-zig__entry,
+  .mx-zig__entry:nth-child(2n) { flex-direction: column; gap: 24px; }
+  .mx-zig__media,
+  .mx-zig__entry:nth-child(2n) .mx-zig__media { flex: 0 0 auto; width: 100%; transform: rotate(0.8deg); }
+  .mx-zig__card { width: 100%; }
+  .mx-cheat__cols { grid-template-columns: 1fr; }
+  .mx-cheat__col {
+    border-right: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--mx-card-ink) 22%, transparent);
+  }
+  .mx-cheat__col:last-child { border-bottom: none; }
+}
+
+/* ------------------------------------------------------------
+   04 · ≤ 720px — the pill zone + transit stack
+   ------------------------------------------------------------ */
+@media (max-width: 720px) {
+  /* masthead: content drops BELOW the pill zone, centred */
+  [data-mx-chrome~="pill"] .mx-mast {
+    padding: 3.6rem 20px 14px;
+    justify-content: center;
+    text-align: center;
+  }
+  [data-mx-chrome~="pill"] .mx-cover { padding-top: 96px; }
+  .mx-transit {
+    grid-template-columns: 1fr;
+    min-height: 0;
+    padding: 32px 0;
+    gap: 24px;
+  }
+  .mx-transit__side,
+  .mx-transit__side--left { padding: 0 24px; text-align: center; justify-content: center; }
+  .mx-transit__center { width: auto; height: 0; }
+  .mx-transit__card { position: relative; transform: rotate(-1.2deg); top: auto; left: auto; margin: 0 auto; display: inline-block; }
+  .mx-twocol { grid-template-columns: 1fr; }
+  .mx-twocol__aside { justify-items: center; }
+}
+
+/* ------------------------------------------------------------
+   05 · ≤ 560px — phone stacking (390 target)
+   ------------------------------------------------------------ */
+@media (max-width: 560px) {
+  /* ledgers stack label-over-value */
+  .mx-ledger dl { grid-template-columns: 1fr; }
+  .mx-ledger dt { padding-bottom: 0; border-bottom: none; }
+  .mx-ledger dd { padding-top: 4px; }
+
+  /* stat band: two columns */
+  .mx-numbers { grid-template-columns: repeat(2, 1fr); }
+  .mx-numbers__cell {
+    border-right: 1px dotted var(--mxl-rule, var(--mx-hair)) !important;
+    border-bottom: 1px dotted var(--mxl-rule, var(--mx-hair));
+  }
+  .mx-numbers__cell:nth-child(2n) { border-right: none !important; }
+  .mx-numbers__cell:nth-last-child(-n+2) { border-bottom: none; }
+
+  /* ephemera scale-down, scenography preserved (tilt/tape stay) */
+  .mx-shelf { gap: 34px 24px; margin: 44px 0; }
+  .mx-shelf > *:nth-child(2n) { margin-top: 18px; }
+  .mx-card { width: min(272px, 100%); }
+  .mx-ticket { width: 100%; grid-template-columns: 1fr 84px; }
+  .mx-ticket::before, .mx-ticket::after { right: 77px; }
+  .mx-card--mail { width: 100%; min-height: 172px; }
+  .mx-mail__greet { font-size: 1.4rem; }
+  .mx-coaster { width: 158px; height: 158px; }
+
+  /* plates + slabs tighten; chip gutter shrinks */
+  .mx-plate__ghost { top: -30px; right: -6px; }
+  .mx-dontmiss { padding: 28px 20px 34px; margin: 56px 0; }
+  .mx-dontmiss__title { text-shadow: 2px 2px 0 var(--mx-ink); }
+  .mx-dontmiss__list li { padding-left: 64px; }
+  .mx-dontmiss__list li::before { min-width: 46px; font-size: 1.1rem; padding: 7px 8px 5px; }
+  .mx-quote { padding: 22px 18px 18px; margin: 34px 0; }
+  .mx-ranked__entry { padding: 0.85rem 0.9rem; }
+  .mx-scorecard { width: 100%; }
+  .mx-scorecard td,
+  .mx-scorecard th { padding-right: 8px; }
+  .mx-cover__pills { gap: 8px; }
+  .mx-marquee { margin: 32px -4vw; width: calc(100% + 8vw); }
+
+  /* countdown grid: 2×2 */
+  .mx-countdown__grid { grid-template-columns: repeat(2, 1fr); }
+
+  /* swipe hint becomes visible where fingers scroll tables */
+  .mx-tablewrap__hint { display: inline-block; }
+
+  /* ----------------------------------------------------------
+     LAW-8 FLOORS, REASSERTED. No micro-label below 0.72rem and
+     no body below 0.95rem at phone widths, whatever a skin did.
+     ---------------------------------------------------------- */
+  .mx-micro,
+  .mx-card__credit,
+  .mx-ticket__meta,
+  .mx-ledger__caption,
+  .mx-ledger dt,
+  .mx-numbers__label,
+  .mx-scorecard__title,
+  .mx-scorecard td,
+  .mx-scorecard th,
+  .mx-cheat__head,
+  .mx-tier,
+  .mx-countdown__unit,
+  .mx-quote figcaption { font-size: max(0.72rem, var(--mx-micro)); }
+  .mx-body p { font-size: max(0.95rem, 1rem); }
+}

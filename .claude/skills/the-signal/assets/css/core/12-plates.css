@@ -1,0 +1,409 @@
+/* ============================================================
+   MX CORE · 12-plates.css
+   Editorial set pieces: numbered plates (chapter headers with
+   ghost numerals), anchor feature blocks, zig-zag entries,
+   don't-miss chip lists. Descended from holiday 36§12/§12b/§14
+   and the mockup kit-plate.
+
+   EVENT CENSUS: data-mx-event="plate" on .mx-plate;
+   "figure" on .mx-anchor and each .mx-zig__entry;
+   "cheatsheet" on .mx-dontmiss.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   01 · NUMBERED PLATE — giant ghosted numeral + chip + title
+   MARKUP:
+     <header class="mx-plate" data-mx-event="plate">
+       <div class="mx-plate__ghost" aria-hidden="true">IX</div>
+       <span class="mx-plate__no">FILE 09</span>
+       <h2 class="mx-plate__title">How the Empire Worked</h2>
+       <p class="mx-plate__dek">A state is a machine for surviving…</p>
+     </header>
+   ------------------------------------------------------------ */
+.mx-plate {
+  position: relative;
+  padding: 34px 0 6px;
+}
+.mx-plate__ghost {
+  position: absolute;
+  top: -46px;
+  right: -10px;
+  font-family: var(--mx-t-serif);
+  font-weight: 700;
+  font-size: clamp(150px, 26vw, 300px);
+  line-height: 1;
+  color: var(--mx-ghost);
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+.mx-plate__no {
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+  font-family: var(--mx-t-mono);
+  font-weight: 700;
+  font-size: max(0.72rem, 0.8rem);
+  letter-spacing: 0.12em;
+  background: var(--mx-accent);
+  color: var(--mx-accent-ink);
+  padding: 6px 12px 5px;
+  border-radius: 2px;
+  margin-bottom: 16px;
+  transform: rotate(-1.2deg);
+}
+.mx-plate__title {
+  position: relative;
+  z-index: 1;
+  font-family: var(--mx-t-serif);
+  font-weight: 600;
+  font-size: clamp(2.5rem, 7vw, 4.6rem);
+  line-height: 0.98;
+  color: var(--mx-ink);
+  max-width: 14ch;
+  margin: 0;
+}
+.mx-plate__dek {
+  position: relative;
+  z-index: 1;
+  font-family: var(--mx-t-serif);
+  font-style: italic;
+  font-size: clamp(1.18rem, 2.6vw, 1.5rem);
+  line-height: 1.4;
+  color: var(--mx-ink-soft);
+  max-width: 44ch;
+  margin: 16px 0 0;
+}
+/* display-register variant (event acts): chunky title voice */
+.mx-plate--loud .mx-plate__title {
+  font-family: var(--mx-t-chunk);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 0.92;
+}
+.mx-plate--loud .mx-plate__ghost { font-family: var(--mx-t-chunk); }
+
+/* ------------------------------------------------------------
+   02 · ANCHOR — the feature block. Tilted spine, media beside
+   card copy, rotated hand badge overlapping the boundary
+   (Law 1: one object per chapter breaks the grid — this is it).
+   MARKUP:
+     <article class="mx-anchor" data-mx-event="figure">
+       <div class="mx-anchor__media">
+         <img src="…" alt="…">   (or role="img" aria-label div)
+       </div>
+       <div class="mx-anchor__copy">
+         <h3 class="mx-anchor__title">The Night Riviera</h3>
+         <p class="mx-anchor__dek">…</p>
+         <div class="mx-anchor__meta">
+           <span>Dep <b>23:45 Paddington</b></span>
+         </div>
+       </div>
+       <div class="mx-anchor__badge">worth the berth</div>
+     </article>
+   ------------------------------------------------------------ */
+.mx-anchor {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(28px, 4vw, 56px);
+  align-items: center;
+  margin: 48px 0 72px;
+  padding: 32px 0 32px 32px;
+  border-left: 10px solid var(--mx-accent);
+  transform: rotate(-1deg);
+}
+.mx-anchor__media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: var(--mx-card-window);
+  border: 10px solid var(--mx-card);
+  box-shadow: 0 34px 54px -20px var(--mx-shadow);
+  transform: rotate(1.2deg);
+  overflow: hidden;
+}
+.mx-anchor__media > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.mx-anchor__media > [role="img"] {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+.mx-anchor__copy { padding-right: 104px; } /* title clears the badge */
+@media (max-width: 900px) { .mx-anchor__copy { padding-right: 0; } }
+.mx-anchor__title {
+  font-family: var(--mx-t-tall);
+  font-weight: 400;
+  font-size: clamp(2.2rem, 5vw, 4.2rem);
+  line-height: 0.95;
+  color: var(--mx-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  margin: 0 0 14px;
+}
+.mx-anchor__dek {
+  font-family: var(--mx-t-serif);
+  font-style: italic;
+  font-size: clamp(1.15rem, 2.4vw, 1.6rem);
+  line-height: 1.35;
+  color: var(--mx-ink);
+  max-width: 34ch;
+  margin: 0 0 24px;
+}
+.mx-anchor__meta {
+  border-top: 1px solid var(--mx-hair);
+  padding-top: 16px;
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mx-ink-soft);
+}
+.mx-anchor__meta b {
+  display: block;
+  font-family: var(--mx-t-body);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--mx-ink);
+  margin-top: 4px;
+}
+.mx-anchor__badge {
+  position: absolute;
+  top: -26px;
+  right: -6px;
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  background: var(--mx-card);
+  color: var(--mx-accent-2);
+  font-family: var(--mx-t-hand);
+  font-size: 1.25rem;
+  line-height: 1.05;
+  padding: 14px;
+  transform: rotate(10deg);
+  border: 4px solid var(--mx-support-2);
+  box-shadow: 0 24px 40px -16px var(--mx-shadow);
+  z-index: 4;
+}
+.mx-anchor__note {
+  position: absolute;
+  bottom: -26px;
+  right: 56px;
+  font-family: var(--mx-t-script);
+  font-size: clamp(1.7rem, 3.4vw, 2.6rem);
+  color: var(--mx-hand-ink);
+  transform: rotate(4deg);
+  opacity: 0.92;
+  z-index: 4;
+}
+
+/* ------------------------------------------------------------
+   03 · ZIG-ZAG ENTRIES — ranked editorial picks, media beside
+   a plate card, sides alternating automatically. On dark acts
+   the ground reads through between rows (illustrated plates
+   pasted on the night sky — 36§12b).
+   MARKUP:
+     <div class="mx-zig">
+       <article class="mx-zig__entry" data-mx-event="figure">
+         <div class="mx-zig__media"><img src="…" alt="…"></div>
+         <div class="mx-zig__card">
+           <div class="mx-zig__head">
+             <span class="mx-rank">01</span>
+             <h3 class="mx-zig__title">The Caledonian Sleeper</h3>
+           </div>
+           <p class="mx-zig__quote">“…” lede in serif italic.</p>
+           <dl class="mx-zig__meta"><dt>Where</dt><dd>…</dd></dl>
+         </div>
+       </article> ×N
+     </div>
+   ------------------------------------------------------------ */
+.mx-zig {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(48px, 7vw, 80px);
+  margin: 32px 0 64px;
+  counter-reset: mx-rank;
+}
+.mx-zig__entry { counter-increment: mx-rank; }
+/* rank chip on card stock: card-ink chip, card-stock numeral */
+.mx-zig__card {
+  --mxl-rank-bg: var(--mx-card-ink);
+  --mxl-rank-fg: var(--mx-card);
+}
+.mx-zig__entry {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  position: relative;
+}
+.mx-zig__entry:nth-child(2n) { flex-direction: row-reverse; }
+.mx-zig__media {
+  flex: 0 0 48%;
+  aspect-ratio: 4 / 3;
+  background: var(--mx-card-window);
+  border: 4px solid var(--mx-card);
+  border-radius: 10px;
+  box-shadow: 0 30px 55px -22px var(--mx-shadow);
+  transform: rotate(1.4deg);
+  overflow: hidden;
+}
+.mx-zig__entry:nth-child(2n) .mx-zig__media { transform: rotate(-1.6deg); }
+.mx-zig__media > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.mx-zig__media > [role="img"] {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+.mx-zig__card {
+  flex: 1 1 0;
+  position: relative;
+  z-index: 1;
+  background: var(--mx-card);
+  color: var(--mx-card-ink);
+  border-radius: 8px;
+  padding: clamp(24px, 3.4vw, 40px);
+  box-shadow: 0 26px 50px -22px var(--mx-shadow);
+  transform: rotate(-0.5deg);
+}
+.mx-zig__entry:nth-child(2n) .mx-zig__card { transform: rotate(0.6deg); }
+.mx-zig__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.mx-zig__title {
+  font-family: var(--mx-t-serif);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  line-height: 1.1;
+  color: var(--mx-card-ink);
+  margin: 0;
+}
+.mx-zig__quote {
+  font-family: var(--mx-t-serif);
+  font-style: italic;
+  font-size: 1.14rem;
+  line-height: 1.45;
+  color: var(--mx-card-ink);
+  margin: 0 0 20px;
+}
+.mx-zig__meta {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 14px;
+  align-items: baseline;
+  margin: 0;
+}
+.mx-zig__meta dt {
+  font-family: var(--mx-t-mono);
+  font-weight: 700;
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--mx-card-ink) 70%, transparent);
+  min-width: 56px;
+}
+.mx-zig__meta dd {
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--mx-card-ink);
+  margin: 0;
+}
+
+/* ------------------------------------------------------------
+   04 · DON'T-MISS — rotated accent slab with chip list.
+   Deliberately loud: double hard shadow, alternating chip
+   rotations. The chapter's grid-breaker on editorial acts.
+   MARKUP:
+     <aside class="mx-dontmiss" data-mx-event="cheatsheet">
+       <span class="mx-dontmiss__kicker">don't miss</span>
+       <h3 class="mx-dontmiss__title">Four things worth the detour</h3>
+       <ol class="mx-dontmiss__list"><li><b>…</b> …</li> ×3–5</ol>
+     </aside>
+   ------------------------------------------------------------ */
+.mx-dontmiss {
+  background: var(--mx-accent-2);
+  color: var(--mx-accent-2-ink);
+  padding: 36px 36px 42px;
+  position: relative;
+  margin: 64px 0;
+  transform: rotate(-1.2deg);
+  box-shadow:
+    10px 10px 0 var(--mx-ink),
+    20px 20px 0 var(--mx-support-2);
+}
+.mx-dontmiss__kicker {
+  font-family: var(--mx-t-script);
+  font-size: clamp(2.2rem, 5vw, 3.6rem);
+  color: var(--mx-support-2);
+  line-height: 0.9;
+  transform: rotate(-3deg);
+  display: inline-block;
+}
+.mx-dontmiss__title {
+  font-family: var(--mx-t-chunk);
+  font-weight: 400;
+  font-size: clamp(1.5rem, 4vw, 2.8rem);
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  text-shadow: 4px 4px 0 var(--mx-ink);
+  margin: 8px 0 24px;
+  max-width: 26ch;
+}
+.mx-dontmiss__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 16px;
+  counter-reset: mx-dm;
+}
+.mx-dontmiss__list li {
+  padding: 14px 0 14px 76px;
+  position: relative;
+  font-size: 1.05rem;
+  line-height: 1.4;
+  font-weight: 500;
+  counter-increment: mx-dm;
+  min-height: 52px;
+}
+.mx-dontmiss__list li::before {
+  content: counter(mx-dm, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%) rotate(-6deg);
+  background: var(--mx-support-2);
+  color: var(--mx-ink);
+  font-family: var(--mx-t-chunk);
+  font-size: 1.3rem;
+  padding: 8px 10px 6px;
+  border: 2px solid var(--mx-paper);
+  box-shadow: 3px 3px 0 var(--mx-ink);
+  min-width: 52px;
+  text-align: center;
+}
+.mx-dontmiss__list li:nth-child(2)::before { transform: translateY(-50%) rotate(5deg); }
+.mx-dontmiss__list li:nth-child(3)::before { transform: translateY(-50%) rotate(-3deg); }
+.mx-dontmiss__list li:nth-child(4)::before { transform: translateY(-50%) rotate(7deg); }
+.mx-dontmiss__list li b { color: var(--mx-support-2); }

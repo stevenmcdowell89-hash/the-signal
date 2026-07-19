@@ -1,0 +1,602 @@
+/* ============================================================
+   MX CORE · 13-chrome.css
+   ONE masthead, cover scaffolds (incl. poster), kicker, act
+   opener, SCENE-GROUND utilities, transit band, marquee,
+   countdown grid. Descended from holiday 36§02–§08/§15 and
+   the mockup chrome.
+
+   LAW 1 — an act's ground is NEVER a flat single colour.
+   Stack exactly one .mx-ground-* utility (or a pack-supplied
+   ground) on every section[data-act]. The utilities paint via
+   ::before so the act's own background colour stays the base
+   coat underneath.
+
+   LAW 10 — fixed chrome never overlaps content. When the page
+   ships the archive back pill, mark <body data-mx-chrome="pill">;
+   13-chrome reserves the top-left zone and 15-responsive fades
+   the pill out once the reader scrolls.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   01 · MASTHEAD — one per bundle (F-3). `.mx-mast` is in the
+   measurement harness's chrome list: its words/events don't
+   count toward density, so keep it chrome-only.
+   MARKUP:
+     <header class="mx-mast">
+       <span class="mx-mast__title">The Signal<span class="mx-mast__stop">.</span></span>
+       <span class="mx-mast__badge">Special Edition</span>
+       <span class="mx-mast__meta">№ 21 · Sunday 19 July 2026</span>
+     </header>
+   ------------------------------------------------------------ */
+.mx-mast {
+  background: var(--mx-ink);
+  color: var(--mx-paper);
+  padding: 14px clamp(20px, 4vw, 56px);
+  border-bottom: 6px solid var(--mx-accent);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px 24px;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 100;
+}
+/* back-pill reservation: pill occupies ~top-left 132×48px */
+[data-mx-chrome~="pill"] .mx-mast { padding-left: max(clamp(20px, 4vw, 56px), 158px); }
+.mx-mast__title {
+  font-family: var(--mx-t-serif);
+  font-weight: 700;
+  font-size: 1.6rem;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+.mx-mast__stop { color: var(--mx-accent); }
+.mx-mast__badge {
+  background: var(--mx-accent);
+  color: var(--mx-accent-ink);
+  padding: 6px 12px;
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.mx-mast__meta {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+
+/* ------------------------------------------------------------
+   02 · SCENE-GROUND UTILITIES — Law 1's ambient layer.
+   Apply ONE to each section[data-act] (they also work on
+   .mx-cover). All paint with act tokens so they re-theme freely.
+   ------------------------------------------------------------ */
+.mx-ground-starfield,
+.mx-ground-gradient-sky,
+.mx-ground-pattern,
+.mx-ground-grain {
+  position: relative;
+  isolation: isolate;
+}
+.mx-ground-starfield::before,
+.mx-ground-gradient-sky::before,
+.mx-ground-pattern::before,
+.mx-ground-grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+/* star/dot field — two offset dot grids + sparse sparkles */
+.mx-ground-starfield::before {
+  background-image:
+    radial-gradient(circle 1.5px, var(--mx-support-2) 100%, transparent 100%),
+    radial-gradient(circle 1px, var(--mx-ink-soft) 100%, transparent 100%),
+    radial-gradient(circle 2.5px, var(--mx-support-2) 100%, transparent 100%);
+  background-size: 84px 84px, 124px 124px, 340px 340px;
+  background-position: 14px 22px, 62px 88px, 190px 140px;
+  opacity: 0.45;
+}
+/* gradient sky — vertical wash from paper into its supports */
+.mx-ground-gradient-sky::before {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--mx-paper) 82%, var(--mx-accent)) 0%,
+    var(--mx-paper) 46%,
+    color-mix(in srgb, var(--mx-paper) 86%, var(--mx-support-2)) 100%);
+  opacity: 0.9;
+}
+/* pattern field — motif-pack tile via --mx-pattern; disciplined
+   diagonal hatch fallback so the ground is never flat undressed */
+.mx-ground-pattern::before {
+  background-image: var(--mx-pattern, none);
+  background-size: 220px auto;
+  opacity: 0.15;
+}
+[data-mx] .mx-ground-pattern[style*="--mx-pattern"]::before,
+.mx-ground-pattern--has-art::before { opacity: 0.2; }
+.mx-ground-pattern:not(.mx-ground-pattern--has-art)::before {
+  background-image:
+    repeating-linear-gradient(45deg, currentColor 0 1px, transparent 1px 26px),
+    repeating-linear-gradient(-45deg, currentColor 0 1px, transparent 1px 26px);
+  background-size: auto;
+  opacity: 0.05;
+}
+/* visible grain — SVG turbulence tile, opacity via --mx-grain */
+.mx-ground-grain::after {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='160' height='160' filter='url(%23n)' opacity='0.6'/></svg>");
+  background-size: 160px 160px;
+  opacity: var(--mx-grain, 0.05);
+  mix-blend-mode: multiply;
+}
+/* glyph slot — currentColor art via mask (replaces per-venue rules) */
+.mx-glyph {
+  display: inline-block;
+  width: 64px;
+  height: 64px;
+  background: currentColor;
+  -webkit-mask-image: var(--mx-glyph);
+  mask-image: var(--mx-glyph);
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+/* ------------------------------------------------------------
+   03 · COVER SCAFFOLD — poster-grade (Law 7). The accent is
+   always var(--mx-accent); the owned gesture per format comes
+   from the skin/pack (ghost numeral content, plate art).
+   Markup pattern: references/core-components.md §cover.
+   ------------------------------------------------------------ */
+.mx-cover {
+  position: relative;
+  isolation: isolate;
+  background: var(--mx-paper);
+  color: var(--mx-ink);
+  padding: 72px clamp(20px, 4vw, 56px) 96px;
+  overflow: hidden;
+}
+[data-mx-chrome~="pill"] .mx-cover { padding-top: 88px; }
+.mx-cover__ghost {
+  position: absolute;
+  top: -4%;
+  right: -3%;
+  z-index: 0;
+  font-family: var(--mx-t-chunk);
+  font-size: clamp(240px, 42vw, 640px);
+  line-height: 0.8;
+  letter-spacing: -0.06em;
+  color: var(--mx-accent-2);
+  opacity: 0.32;
+  pointer-events: none;
+  user-select: none;
+  font-variant-numeric: tabular-nums;
+}
+.mx-cover__script-ghost {
+  position: absolute;
+  bottom: 1%;
+  left: -2%;
+  z-index: 0;
+  font-family: var(--mx-t-script);
+  font-size: clamp(120px, 20vw, 300px);
+  line-height: 0.9;
+  color: var(--mx-support-2);
+  opacity: 0.16;
+  pointer-events: none;
+}
+.mx-cover__inner {
+  position: relative;
+  z-index: 2;
+  max-width: var(--mx-wrap);
+  margin: 0 auto;
+}
+.mx-cover__sig {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--mx-support-2);
+  border-bottom: 1px solid var(--mx-hair);
+  padding-bottom: 14px;
+  margin-bottom: 32px;
+}
+.mx-cover__overline {
+  font-family: var(--mx-t-script);
+  font-size: clamp(2.1rem, 5.4vw, 3.8rem);
+  color: var(--mx-support-2);
+  line-height: 1;
+  transform: rotate(-2deg);
+  display: inline-block;
+  margin-bottom: 6px;
+}
+.mx-cover__title {
+  font-family: var(--mx-t-chunk);
+  font-weight: 400;
+  font-size: clamp(3.4rem, 11vw, 10rem);
+  line-height: 0.85;
+  letter-spacing: -0.03em;
+  margin: 4px 0 18px;
+  color: var(--mx-ink);
+  text-transform: uppercase;
+}
+.mx-cover__title .mx-cover__accent { color: var(--mx-accent); }
+.mx-cover__outline {
+  -webkit-text-stroke: 2.5px var(--mx-ink);
+  color: transparent;
+}
+.mx-cover__amp {
+  font-family: var(--mx-t-script);
+  font-size: 0.45em;
+  color: var(--mx-support-2);
+  letter-spacing: 0;
+  margin: 0 10px;
+  vertical-align: 0.2em;
+  display: inline-block;
+  transform: rotate(-3deg);
+  -webkit-text-stroke: 0;
+}
+.mx-cover__dek {
+  max-width: 58ch;
+  font-size: 1.12rem;
+  line-height: 1.5;
+  margin: 0 0 32px;
+}
+.mx-cover__pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.mx-cover__pills > span {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  border: 1px solid var(--mx-hair);
+  padding: 7px 13px 6px;
+  border-radius: 999px;
+}
+/* poster variant: framed plate + centred composition */
+.mx-cover--poster { text-align: center; }
+.mx-cover--poster .mx-cover__inner {
+  max-width: 880px;
+  border: 3px double var(--mx-hair);
+  padding: clamp(28px, 5vw, 56px) clamp(20px, 4vw, 48px);
+}
+.mx-cover--poster .mx-cover__sig { justify-content: center; gap: 28px; }
+.mx-cover--poster .mx-cover__dek { margin-inline: auto; }
+.mx-cover--poster .mx-cover__pills { justify-content: center; }
+.mx-cover__plate {
+  margin: 10px auto 26px;
+  max-width: 560px;
+}
+.mx-cover__plate svg { display: block; width: 100%; height: auto; }
+
+/* ------------------------------------------------------------
+   04 · KICKER — chapter eyebrow + the strip between cover and
+   first act.
+   ------------------------------------------------------------ */
+.mx-kicker {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--mx-accent);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.mx-kicker::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: currentColor;
+  opacity: 0.35;
+}
+.mx-kickerstrip {
+  background: var(--mx-paper);
+  color: var(--mx-ink);
+  padding: 20px clamp(20px, 4vw, 56px);
+  border-top: 3px double var(--mx-ink);
+  border-bottom: 3px double var(--mx-ink);
+}
+.mx-kickerstrip__inner {
+  max-width: var(--mx-wrap);
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.mx-kickerstrip__title {
+  font-family: var(--mx-t-tall);
+  font-weight: 400;
+  font-size: clamp(1.7rem, 4.5vw, 2.9rem);
+  line-height: 0.9;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  margin: 0;
+}
+.mx-kickerstrip__sub {
+  font-family: var(--mx-t-script);
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  color: var(--mx-accent);
+  line-height: 1;
+  transform: rotate(-1.5deg);
+  display: inline-block;
+}
+.mx-kickerstrip__meta {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-align: right;
+  line-height: 1.5;
+  color: var(--mx-ink-soft);
+}
+
+/* ------------------------------------------------------------
+   05 · ACT OPENER — the designed entrance to an act.
+   MARKUP:
+     <header class="mx-actopen" data-mx-event="plate">
+       <span class="mx-actopen__no">Act II</span>
+       <h2 class="mx-actopen__title">Down to the Sea</h2>
+       <span class="mx-actopen__hand">by the 10:04 from York</span>
+     </header>
+   ------------------------------------------------------------ */
+.mx-actopen {
+  text-align: center;
+  padding: 24px 0 8px;
+  position: relative;
+}
+.mx-actopen__no {
+  display: inline-block;
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--mx-accent);
+  border: 1px solid var(--mx-hair);
+  padding: 7px 16px 6px;
+  border-radius: 999px;
+  margin-bottom: 18px;
+}
+.mx-actopen__title {
+  font-family: var(--mx-t-tall);
+  font-weight: 400;
+  font-size: clamp(2.6rem, 8vw, 5.6rem);
+  line-height: 0.92;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--mx-ink);
+  margin: 0;
+}
+.mx-actopen__hand {
+  display: inline-block;
+  font-family: var(--mx-t-script);
+  font-size: clamp(1.5rem, 3.6vw, 2.4rem);
+  color: var(--mx-hand-ink);
+  transform: rotate(-2deg);
+  margin-top: 10px;
+  line-height: 1;
+}
+
+/* ------------------------------------------------------------
+   06 · TRANSIT BAND — the designed act transition (Law 4).
+   Markup pattern: references/core-components.md §transit.
+   ------------------------------------------------------------ */
+.mx-transit {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  min-height: 240px;
+  width: 100%;
+  background: var(--mx-ink);
+  color: var(--mx-paper);
+  border-top: 10px solid var(--mx-ink);
+  border-bottom: 10px solid var(--mx-ink);
+  position: relative;
+  overflow: hidden;
+  z-index: 5;
+}
+.mx-transit__side {
+  position: relative;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding: 0 clamp(56px, 16vw, 240px); /* labels clear the centre card */
+}
+.mx-transit__side--left  { justify-content: flex-end; text-align: right; }
+.mx-transit__side--right { justify-content: flex-start; text-align: left; }
+.mx-transit__mega {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  z-index: 1;
+  font-family: var(--mx-t-tall);
+  font-size: clamp(110px, 17vw, 220px);
+  letter-spacing: -0.02em;
+  color: color-mix(in srgb, var(--mx-paper) 8%, transparent);
+  text-transform: uppercase;
+  line-height: 0.9;
+  pointer-events: none;
+}
+.mx-transit__side--left  .mx-transit__mega { justify-content: flex-end; padding-right: 20px; }
+.mx-transit__side--right .mx-transit__mega { justify-content: flex-start; padding-left: 20px; }
+.mx-transit__label { position: relative; z-index: 2; }
+.mx-transit__hand {
+  font-family: var(--mx-t-script);
+  font-size: clamp(1.6rem, 3.2vw, 2.5rem);
+  color: var(--mx-support-2);
+  display: block;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.mx-transit__name {
+  font-family: var(--mx-t-tall);
+  font-size: clamp(2rem, 3.8vw, 3.4rem);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--mx-paper) 88%, transparent);
+  line-height: 1;
+}
+.mx-transit__center { position: relative; width: 0; z-index: 6; }
+.mx-transit__card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-1.2deg);
+  background: var(--mx-ink);
+  color: var(--mx-paper);
+  padding: 16px 36px;
+  border: 4px solid var(--mx-paper);
+  font-family: var(--mx-t-chunk);
+  font-size: clamp(1.15rem, 2.4vw, 1.9rem);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: 0 26px 50px var(--mx-shadow);
+}
+
+/* ------------------------------------------------------------
+   07 · MARQUEE — kinetic act divider. Static composition here;
+   the track animation binds in 14-motion under tier2 only.
+   MARKUP:
+     <div class="mx-marquee" data-mx-event="marquee" aria-hidden="true">
+       <div class="mx-marquee__track">
+         <span>Last trains south</span><span>Berth 12</span>…(repeat set ×2)
+       </div>
+     </div>
+   ------------------------------------------------------------ */
+.mx-marquee {
+  background: var(--mx-accent);
+  color: var(--mx-accent-ink);
+  border-top: 4px solid var(--mx-ink);
+  border-bottom: 4px solid var(--mx-ink);
+  overflow: hidden;
+  font-family: var(--mx-t-chunk);
+  font-size: clamp(2rem, 6vw, 4.2rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  padding: 16px 0;
+  position: relative;
+  transform: rotate(-1.2deg);
+  margin: 40px -2vw;
+  width: calc(100% + 4vw);
+  box-shadow: 0 8px 0 var(--mx-support-2);
+}
+.mx-marquee__track {
+  display: inline-flex;
+  white-space: nowrap;
+  gap: 40px;
+  padding-right: 40px;
+  will-change: transform;
+}
+.mx-marquee__track > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 32px;
+  flex-shrink: 0;
+  padding-right: 32px;
+}
+.mx-marquee__track > span::after {
+  content: "✶";
+  font-size: 0.7em;
+  color: var(--mx-support-2);
+}
+
+/* ------------------------------------------------------------
+   08 · COUNTDOWN GRID — live digit grid scaffold. NO ambient
+   shimmer here or anywhere (the ungated holiday ambient shimmer is the
+   named failure); motion binds in 14-motion, gated.
+   MARKUP:
+     <div class="mx-countdown" data-mx-event="statband">
+       <div class="mx-countdown__grid">
+         <div class="mx-countdown__cell">
+           <span class="mx-countdown__num" data-cd="days">27</span>
+           <span class="mx-countdown__unit">Days</span>
+         </div> ×4
+       </div>
+       <div class="mx-countdown__target">Kick-off · 21 June 2027</div>
+     </div>
+   ------------------------------------------------------------ */
+.mx-countdown {
+  background: color-mix(in srgb, var(--mx-paper) 6%, transparent);
+  border: 2px solid var(--mx-support-2);
+  padding: 22px 18px;
+  max-width: 720px;
+  text-align: center;
+  position: relative;
+}
+.mx-countdown__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.mx-countdown__cell {
+  border: 1px solid color-mix(in srgb, var(--mx-support-2) 60%, transparent);
+  padding: 16px 6px;
+  text-align: center;
+}
+.mx-countdown__num {
+  font-family: var(--mx-t-chunk);
+  font-size: clamp(2.6rem, 8vw, 5.4rem);
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--mx-ink);
+  display: block;
+}
+.mx-countdown__unit {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  margin-top: 6px;
+  color: var(--mx-support-2);
+  display: block;
+}
+.mx-countdown__target {
+  margin-top: 14px;
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mx-support-2);
+}
+
+/* ------------------------------------------------------------
+   09 · FOOTER BAND — minimal colophon chrome (.mx-footer is in
+   the harness chrome list).
+   ------------------------------------------------------------ */
+.mx-footer {
+  background: var(--mx-ink);
+  color: color-mix(in srgb, var(--mx-paper) 68%, transparent);
+  padding: 44px clamp(20px, 4vw, 56px) 60px;
+  font-size: 0.82rem;
+  text-align: center;
+}
+.mx-footer b {
+  display: block;
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--mx-support-2);
+  margin-bottom: 12px;
+}

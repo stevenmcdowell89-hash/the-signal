@@ -1,0 +1,391 @@
+/* ============================================================
+   MX CORE · 11-ledgers.css
+   Data furniture: facts <dl> ledgers, ranked entries + rank
+   chips, tier pills, stat bands, cheat-sheet, scorecard.
+   Extraction template: layer 40's meal-slot `--slot-*` DOUBLE-
+   TOKEN pattern — every component maps a small set of local
+   `--mxl-*` tokens from the act palette at its top, so an act
+   (or skin) restyles the whole component by remapping ONE block
+   instead of touching per-part rules.
+
+   EVENT CENSUS: data-mx-event="ledger" on .mx-ledger,
+   .mx-ranked, .mx-scorecard; "statband" on .mx-numbers;
+   "cheatsheet" on .mx-cheat.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   01 · FACTS LEDGER — the WHERE/ORDER/TIMING/WALK move
+   MARKUP:
+     <div class="mx-ledger" data-mx-event="ledger">
+       <div class="mx-ledger__caption">Ledger · One Emperor, Filed</div>
+       <dl><dt>Reign</dt><dd>527–565 …</dd> …</dl>
+     </div>
+   ------------------------------------------------------------ */
+.mx-ledger {
+  --mxl-ink:    var(--mx-ink);
+  --mxl-soft:   var(--mx-ink-soft);
+  --mxl-accent: var(--mx-accent);
+  --mxl-rule:   var(--mx-hair);
+  border-top: 3px solid var(--mxl-ink);
+  border-bottom: 1px solid var(--mxl-rule);
+  margin: 34px 0;
+}
+.mx-ledger__caption {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--mxl-accent);
+  padding: 10px 0 9px;
+  border-bottom: 1px solid var(--mxl-rule);
+}
+.mx-ledger dl {
+  display: grid;
+  grid-template-columns: 118px 1fr;
+  margin: 0;
+}
+.mx-ledger dt {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--mxl-soft);
+  padding: 12px 12px 12px 0;
+  border-bottom: 1px dotted var(--mxl-rule);
+}
+.mx-ledger dd {
+  font-size: 0.94rem;
+  line-height: 1.55;
+  color: var(--mxl-ink);
+  margin: 0;
+  padding: 11px 0 12px;
+  border-bottom: 1px dotted var(--mxl-rule);
+}
+.mx-ledger dt:last-of-type,
+.mx-ledger dd:last-of-type { border-bottom: none; }
+
+/* ------------------------------------------------------------
+   02 · RANKED ENTRIES + RANK CHIPS + TIER PILLS
+   (meal-slot descendant, layer 40)
+   MARKUP:
+     <div class="mx-ranked" data-mx-event="ledger">
+       <h3 class="mx-ranked__title">Chip shops, ranked.</h3>
+       <ol class="mx-ranked__list">
+         <li class="mx-ranked__entry">
+           <div class="mx-ranked__head">
+             <span class="mx-rank">01</span>
+             <h4 class="mx-ranked__name">The Magpie Café</h4>
+             <span class="mx-tier mx-tier--hot">Go</span>
+           </div>
+           <p>…verdict copy…</p>
+           <dl class="mx-ranked__facts"><dt>Queue</dt><dd>40 min at noon</dd></dl>
+         </li>
+       </ol>
+     </div>
+   ------------------------------------------------------------ */
+.mx-ranked {
+  --mxl-card:      color-mix(in srgb, var(--mx-card) 72%, white);
+  --mxl-card-ink:  var(--mx-card-ink);
+  --mxl-soft:      color-mix(in srgb, var(--mx-card-ink) 62%, transparent);
+  --mxl-accent:    var(--mx-accent);
+  --mxl-rank-bg:   var(--mx-ink);
+  --mxl-rank-fg:   var(--mx-paper);
+  margin: 2.4rem 0;
+  max-width: 720px;
+}
+.mx-ranked__title {
+  font-family: var(--mx-t-serif);
+  font-style: italic;
+  font-weight: 700;
+  font-size: clamp(1.4rem, 2.6vw, 1.75rem);
+  margin: 0 0 0.9rem;
+  color: var(--mx-ink);
+}
+.mx-ranked__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  counter-reset: mx-rank;
+}
+.mx-ranked__entry {
+  background: var(--mxl-card);
+  color: var(--mxl-card-ink);
+  border: 1px solid color-mix(in srgb, var(--mxl-card-ink) 14%, transparent);
+  border-left: 3px solid var(--mxl-accent);
+  border-radius: 3px;
+  padding: 0.95rem 1.1rem;
+  position: relative;
+  counter-increment: mx-rank;
+  box-shadow: 0 10px 18px -14px var(--mx-shadow);
+}
+/* scenography nudge: entries sit a hair off-axis, alternating */
+.mx-ranked__entry:nth-child(2n) { transform: rotate(0.4deg); }
+.mx-ranked__entry:nth-child(2n+1) { transform: rotate(-0.35deg); }
+.mx-ranked__head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.4rem;
+}
+.mx-ranked__name {
+  font-family: var(--mx-t-serif);
+  font-size: 1.18rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.25;
+  flex: 1 1 auto;
+  color: var(--mxl-card-ink);
+}
+.mx-ranked__entry > p {
+  margin: 0.3rem 0 0;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--mxl-card-ink) 88%, transparent);
+}
+.mx-ranked__facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 0.65rem;
+  row-gap: 0.2rem;
+  margin: 0.7rem 0 0;
+  padding: 0.5rem 0 0;
+  border-top: 1px dashed color-mix(in srgb, var(--mxl-card-ink) 16%, transparent);
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  line-height: 1.4;
+}
+.mx-ranked__facts dt {
+  color: var(--mxl-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+}
+.mx-ranked__facts dd { color: var(--mxl-card-ink); margin: 0; }
+
+/* rank chip — chunky numeral; auto-numbers when empty */
+.mx-rank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.9rem;
+  height: 1.9rem;
+  padding: 0 0.45rem;
+  background: var(--mxl-rank-bg, var(--mx-ink));
+  color: var(--mxl-rank-fg, var(--mx-paper));
+  font-family: var(--mx-t-chunk);
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  border-radius: 2px;
+  flex-shrink: 0;
+  transform: rotate(-2deg);
+}
+.mx-ranked__entry:nth-child(2n) .mx-rank { transform: rotate(2.5deg); }
+.mx-rank:empty::before {
+  content: counter(mx-rank, decimal-leading-zero);
+}
+
+/* tier pill — verdict badge */
+.mx-tier {
+  display: inline-block;
+  padding: 0.2rem 0.55rem 0.16rem;
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 2px;
+  background: var(--mx-ink-soft);
+  color: var(--mx-paper);
+  flex-shrink: 0;
+  align-self: center;
+}
+.mx-tier--hot  { background: var(--mx-accent-2);  color: var(--mx-accent-2-ink); }
+.mx-tier--warm { background: var(--mx-support-2); color: var(--mx-ink); }
+.mx-tier--note { background: var(--mx-support-1); color: var(--mx-paper); }
+
+/* ------------------------------------------------------------
+   03 · STAT BAND — the trip-numbers move (layer 43 descendant)
+   MARKUP:
+     <div class="mx-numbers" data-mx-event="statband">
+       <div class="mx-numbers__cell">
+         <span class="mx-numbers__num">1,123</span>
+         <span class="mx-numbers__label">Years</span>
+         <span class="mx-numbers__sub">330 dedication → 1453 fall</span>
+       </div> ×3–6
+     </div>
+   ------------------------------------------------------------ */
+.mx-numbers {
+  --mxl-ink:    var(--mx-ink);
+  --mxl-soft:   var(--mx-ink-soft);
+  --mxl-accent: var(--mx-accent);
+  --mxl-rule:   var(--mx-hair);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 3px solid var(--mxl-ink);
+  border-bottom: 3px solid var(--mxl-ink);
+  margin: 40px 0;
+}
+.mx-numbers__cell {
+  padding: 20px 14px 18px;
+  text-align: center;
+  border-right: 1px dotted var(--mxl-rule);
+}
+.mx-numbers__cell:nth-child(3n) { border-right: none; }
+.mx-numbers__cell:nth-child(-n+3):nth-last-child(n+4) {
+  border-bottom: 1px dotted var(--mxl-rule);
+}
+.mx-numbers__num {
+  display: block;
+  font-family: var(--mx-t-serif);
+  font-weight: 700;
+  font-size: clamp(1.9rem, 4.6vw, 2.75rem);
+  line-height: 1;
+  color: var(--mxl-accent);
+}
+.mx-numbers__label {
+  display: block;
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mxl-ink);
+  margin-top: 8px;
+}
+.mx-numbers__sub {
+  display: block;
+  font-size: 0.74rem;
+  color: var(--mxl-soft);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+/* display-register variant for event acts (chunk numerals) */
+.mx-numbers--loud .mx-numbers__num {
+  font-family: var(--mx-t-chunk);
+  letter-spacing: -0.02em;
+}
+
+/* ------------------------------------------------------------
+   04 · CHEAT-SHEET — tiered summary card (memory-test 3-col
+   descendant). Head strip + columns; each column takes a
+   .mx-tier pill.
+   MARKUP:
+     <div class="mx-cheat" data-mx-event="cheatsheet">
+       <div class="mx-cheat__head">The Cheat Sheet · No Fence-Sitting</div>
+       <div class="mx-cheat__cols">
+         <div class="mx-cheat__col">
+           <span class="mx-tier mx-tier--hot">Will stick</span>
+           <h5>…</h5><p>…</p>
+         </div> ×3
+       </div>
+     </div>
+   ------------------------------------------------------------ */
+.mx-cheat {
+  --mxl-card:     var(--mx-card);
+  --mxl-card-ink: var(--mx-card-ink);
+  border: 1.5px solid var(--mx-ink);
+  background: var(--mxl-card);
+  color: var(--mxl-card-ink);
+  box-shadow: 0 26px 40px -18px var(--mx-shadow);
+  margin: 44px 0 8px;
+  transform: rotate(-0.4deg);
+}
+.mx-cheat__head {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  text-align: center;
+  background: var(--mx-ink);
+  color: var(--mx-paper);
+  padding: 11px 10px 10px;
+}
+.mx-cheat__cols {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+.mx-cheat__col {
+  padding: 18px 18px 20px;
+  border-right: 1px solid color-mix(in srgb, var(--mxl-card-ink) 22%, transparent);
+}
+.mx-cheat__col:last-child { border-right: none; }
+.mx-cheat__col > .mx-tier { margin-bottom: 12px; }
+.mx-cheat__col h5 {
+  font-family: var(--mx-t-serif);
+  font-weight: 700;
+  font-size: 1.1rem;
+  line-height: 1.2;
+  margin: 0 0 6px;
+  color: var(--mxl-card-ink);
+}
+.mx-cheat__col p {
+  font-size: 0.8rem;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--mxl-card-ink) 78%, transparent);
+  margin: 0 0 14px;
+}
+.mx-cheat__col p:last-child { margin-bottom: 0; }
+
+/* ------------------------------------------------------------
+   05 · SCORECARD — results/standings on card stock.
+   A table dressed as an object: card chassis, tilt, hard
+   shadow. Wide tables go inside .mx-tablewrap (15-responsive).
+   MARKUP:
+     <div class="mx-scorecard" data-mx-event="ledger">
+       <h4 class="mx-scorecard__title">Tour de France · GC, Rest Day 1</h4>
+       <div class="mx-tablewrap">
+         <table>
+           <tr class="is-lead"><td class="mx-scorecard__pos">01</td><td>POGAČAR</td><td class="mx-scorecard__gap">YELLOW</td></tr>
+         </table>
+       </div>
+     </div>
+   ------------------------------------------------------------ */
+.mx-scorecard {
+  --mxl-card-ink: var(--mx-card-ink);
+  --mxl-accent:   var(--mx-accent);
+  width: min(340px, 100%);
+  background: var(--mx-card);
+  color: var(--mxl-card-ink);
+  border: 1.5px solid var(--mxl-card-ink);
+  box-shadow: 5px 5px 0 var(--mx-shadow);
+  transform: rotate(var(--mx-tilt, 1.2deg));
+  padding: 14px 16px 12px;
+}
+.mx-scorecard:nth-of-type(2n) { --mx-tilt: -1.4deg; }
+.mx-scorecard--wide { width: min(560px, 100%); }
+.mx-scorecard__title {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--mxl-accent);
+  border-bottom: 2px solid var(--mxl-card-ink);
+  padding-bottom: 8px;
+  margin: 0 0 2px;
+}
+.mx-scorecard table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.mx-scorecard td,
+.mx-scorecard th {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  text-align: left;
+  padding: 8px 18px 7px 0;
+  border-bottom: 1px dotted color-mix(in srgb, var(--mxl-card-ink) 38%, transparent);
+  color: var(--mxl-card-ink);
+}
+.mx-scorecard tr:last-child td { border-bottom: none; }
+.mx-scorecard__pos { width: 26px; font-weight: 700; color: var(--mx-ink-soft); }
+.mx-scorecard__gap { text-align: right; font-weight: 700; }
+.mx-scorecard tr.is-lead td { font-weight: 700; }
+.mx-scorecard tr.is-lead .mx-scorecard__gap { color: var(--mxl-accent); }

@@ -1,0 +1,152 @@
+/* ============================================================
+   MX CORE · 14-motion.css
+   TIER SCAFFOLDING ONLY. Full motion behaviors (IO-driven
+   reveals, signature moments, JS controllers) are WP-5. This
+   file establishes:
+     · the tier switch  [data-motion="tier0|tier1|tier2"] on <body>
+     · animation tokens
+     · signature-moment HOOK classnames (inert until WP-5 binds
+       them; safe to author into content today)
+     · the few CSS-only behaviors that are safe without JS
+       (marquee drift under tier2, hover settles)
+     · the GLOBAL prefers-reduced-motion gate that kills ALL
+       core animation (the countdown’s ungated ambient shimmer is
+       the named failure this gate exists to prevent)
+
+   RULES (Law 5): motion attaches to furniture, never running
+   text; JS-off renders 100% of content (nothing here hides
+   content by default); no scroll-jacking.
+
+   Tier map: tier0 print-still (Deep Dive) · tier1 calm
+   (Weekly, Rewind, Next, Guide) · tier2 event (trip specials,
+   Season Review, Versus).
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   00 · TOKENS
+   ------------------------------------------------------------ */
+[data-mx] {
+  --mx-m-rise: 20px;            /* rise-on-scroll travel            */
+  --mx-m-dur: 640ms;            /* standard entrance duration       */
+  --mx-m-settle: 1deg;          /* object settle over-rotation      */
+  --mx-m-ease: cubic-bezier(0.22, 0.9, 0.3, 1);
+  --mx-m-marquee: 32s;          /* marquee loop period              */
+}
+
+/* ------------------------------------------------------------
+   01 · KEYFRAMES (bound below and by WP-5)
+   ------------------------------------------------------------ */
+@keyframes mx-rise-in {
+  from { opacity: 0; transform: translateY(var(--mx-m-rise)); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes mx-settle-in {
+  0%   { opacity: 0; transform: translateY(var(--mx-m-rise))
+           rotate(calc(var(--mx-tilt, -1.6deg) + var(--mx-m-settle))); }
+  70%  { opacity: 1; transform: translateY(-2px)
+           rotate(calc(var(--mx-tilt, -1.6deg) - 0.4deg)); }
+  100% { opacity: 1; transform: translateY(0) rotate(var(--mx-tilt, -1.6deg)); }
+}
+@keyframes mx-marquee-drift {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes mx-draw-in {          /* hairline draw (tier0's only move) */
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* ------------------------------------------------------------
+   02 · SCROLL-REVEAL SCAFFOLD (structural)
+   WP-5's controller stamps data-mx-motion-ready on <html> and
+   .is-in on furniture as it enters. Without the controller
+   (JS off) nothing is ever hidden — the :not(ready) guard is
+   the JS-off guarantee.
+   Hooks: .mx-rise (generic furniture) · .mx-settle (tilted
+   ephemera: cards tape down with a ~1° settle).
+   ------------------------------------------------------------ */
+[data-mx-motion-ready] [data-motion="tier1"] .mx-rise:not(.is-in),
+[data-mx-motion-ready] [data-motion="tier2"] .mx-rise:not(.is-in) {
+  opacity: 0;
+  transform: translateY(var(--mx-m-rise));
+}
+[data-mx-motion-ready] [data-motion="tier1"] .mx-rise.is-in,
+[data-mx-motion-ready] [data-motion="tier2"] .mx-rise.is-in {
+  animation: mx-rise-in var(--mx-m-dur) var(--mx-m-ease) both;
+}
+[data-mx-motion-ready] [data-motion="tier1"] .mx-settle:not(.is-in),
+[data-mx-motion-ready] [data-motion="tier2"] .mx-settle:not(.is-in) {
+  opacity: 0;
+}
+[data-mx-motion-ready] [data-motion="tier1"] .mx-settle.is-in,
+[data-mx-motion-ready] [data-motion="tier2"] .mx-settle.is-in {
+  animation: mx-settle-in calc(var(--mx-m-dur) + 160ms) var(--mx-m-ease) both;
+}
+
+/* ------------------------------------------------------------
+   03 · SIGNATURE-MOMENT HOOKS (one per format; WP-5 implements)
+   Author these classnames now; they are inert scaffolding here.
+     .mx-sig-stamp-slam    Versus — verdict stamp slams per round
+     .mx-sig-rows-climb    Season Review — leaderboard rows climb
+     .mx-sig-cols-reveal   Rewind — Memory Test columns in sequence
+     .mx-sig-dial-sweep    Weekly — dial-needle sweep on band entry
+     .mx-sig-flip          Countdown — digit flips
+   ------------------------------------------------------------ */
+.mx-sig-stamp-slam,
+.mx-sig-rows-climb,
+.mx-sig-cols-reveal,
+.mx-sig-dial-sweep,
+.mx-sig-flip { /* WP-5 binding point — no behavior at core level */ }
+
+/* ------------------------------------------------------------
+   04 · CSS-ONLY BEHAVIORS (safe without JS)
+   ------------------------------------------------------------ */
+/* marquee drift — tier2 furniture only. Track content must be
+   duplicated once in markup for the -50% loop. */
+[data-motion="tier2"] .mx-marquee__track {
+  animation: mx-marquee-drift var(--mx-m-marquee) linear infinite;
+}
+/* tier1 gets a slow, calmer drift */
+[data-motion="tier1"] .mx-marquee__track {
+  animation: mx-marquee-drift calc(var(--mx-m-marquee) * 2) linear infinite;
+}
+/* hover settles — furniture acknowledges the hand (all tiers ≥1) */
+[data-motion="tier1"] .mx-card,
+[data-motion="tier2"] .mx-card,
+[data-motion="tier1"] .mx-ticket,
+[data-motion="tier2"] .mx-ticket {
+  transition: transform 0.35s var(--mx-m-ease);
+}
+[data-motion="tier1"] .mx-card:hover,
+[data-motion="tier2"] .mx-card:hover { transform: rotate(0deg) scale(1.02); }
+[data-motion="tier1"] .mx-ticket:hover,
+[data-motion="tier2"] .mx-ticket:hover { transform: rotate(0deg); }
+/* tier0: hairline draw-in is the ONLY permitted move */
+[data-mx-motion-ready] [data-motion="tier0"] .mx-draw.is-in {
+  transform-origin: left center;
+  animation: mx-draw-in 900ms var(--mx-m-ease) both;
+}
+
+/* ------------------------------------------------------------
+   99 · GLOBAL REDUCED-MOTION GATE — kills ALL core animation.
+   Every animation and transition in the mx- namespace dies
+   here, including the marquee drift and anything WP-5 adds
+   under [data-mx]. No exceptions, no ungated ambience.
+   ------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  [data-mx] *,
+  [data-mx] *::before,
+  [data-mx] *::after {
+    animation-duration: 0.001s !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001s !important;
+    scroll-behavior: auto !important;
+  }
+  /* reveal scaffold: content simply present, never held hidden */
+  [data-mx-motion-ready] [data-motion] .mx-rise:not(.is-in),
+  [data-mx-motion-ready] [data-motion] .mx-settle:not(.is-in) {
+    opacity: 1;
+    transform: rotate(var(--mx-tilt, 0deg));
+  }
+}

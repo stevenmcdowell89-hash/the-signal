@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Core kitchen sink — every mx- component, two acts</title>
+<!--
+  Furniture-core proof fixture. Exercises EVERY furniture-core component across
+  two acts with different data-act token sets and scene grounds.
+  Not an issue; never publishes. Serve from repo root:
+    node tools/render.mjs tools/fixtures/core-kitchen-sink.html --out <dir>
+    node tools/measure-issue.mjs tools/fixtures/core-kitchen-sink.html --out <dir>
+-->
+<link rel="stylesheet" href="/.claude/skills/the-signal/assets/css/core/00-contract.css">
+<link rel="stylesheet" href="/.claude/skills/the-signal/assets/css/core/10-ephemera.css">
+<link rel="stylesheet" href="/.claude/skills/the-signal/assets/css/core/11-ledgers.css">
+<link rel="stylesheet" href="/.claude/skills/the-signal/assets/css/core/12-plates.css">
+<link rel="stylesheet" href="/.claude/skills/the-signal/assets/css/core/13-chrome.css">
+<link rel="stylesheet" href="/.claude/skills/the-signal/assets/css/core/14-motion.css">
+<link rel="stylesheet" href="/.claude/skills/the-signal/assets/css/core/15-responsive.css">
+<style>
+/* ---- per-issue act token blocks (the per-issue theming slot) ---- */
+/* ACT: night — indigo sleeper-train dusk */
+[data-act="night"] {
+  --mx-paper:      #141b33;
+  --mx-ink:        #f0e9d6;
+  --mx-ink-soft:   rgba(240, 233, 214, 0.66);
+  --mx-accent:     #d9b66a;
+  --mx-accent-ink: #10142a;
+  --mx-accent-2:   #8a2d3c;
+  --mx-accent-2-ink:#f5edd9;
+  --mx-support-1:  #1f5b48;
+  --mx-support-2:  #d9b66a;
+  --mx-hair:       rgba(240, 233, 214, 0.3);
+  --mx-ghost:      rgba(217, 182, 106, 0.1);
+  --mx-quote-bg:   rgba(0, 0, 0, 0.28);
+  --mx-shadow:     rgba(0, 0, 0, 0.8);
+  --mx-hand-ink:   #d9b66a;
+  --mx-stamp-ink:  #d9b66a;
+  --mx-grain:      0.08;
+}
+/* ACT: coast — cream seaside daylight */
+[data-act="coast"] {
+  --mx-paper:      #f0e7d1;
+  --mx-ink:        #23201a;
+  --mx-ink-soft:   #6a5f48;
+  --mx-accent:     #1f5b6e;
+  --mx-accent-ink: #f4eedd;
+  --mx-accent-2:   #b8502a;
+  --mx-accent-2-ink:#f7efe0;
+  --mx-support-1:  #3f6650;
+  --mx-support-2:  #c9a227;
+  --mx-hair:       rgba(35, 32, 26, 0.32);
+  --mx-ghost:      rgba(184, 80, 42, 0.09);
+  --mx-quote-bg:   rgba(31, 91, 110, 0.06);
+  --mx-shadow:     rgba(46, 36, 18, 0.45);
+  --mx-hand-ink:   #b8502a;
+  --mx-stamp-ink:  #8a2d3c;
+  --mx-grain:      0.06;
+}
+/* fixture-local: simple CSS-drawn art in real-image-contract windows */
+.fx-moon {
+  width: 110px; height: 110px; border-radius: 50%;
+  background: radial-gradient(circle at 36% 32%, #f6ecd0 0%, #dcc48a 55%, #a8873f 100%);
+  box-shadow: inset -10px -8px 22px rgba(60, 40, 0, 0.4), 0 4px 12px rgba(0,0,0,0.35);
+}
+.fx-window-night {
+  width: 100%; height: 100%; min-height: 150px;
+  background:
+    linear-gradient(180deg, #1a2342 0%, #2c3a63 62%, #0e1226 100%);
+  position: relative;
+}
+.fx-window-night::after {
+  content: ""; position: absolute; inset: 0;
+  background-image:
+    radial-gradient(circle 1.5px, rgba(240,233,214,0.9) 100%, transparent 100%),
+    radial-gradient(circle 1px, rgba(217,182,106,0.8) 100%, transparent 100%);
+  background-size: 60px 60px, 90px 90px;
+  background-position: 10px 8px, 40px 30px;
+}
+.fx-window-platform {
+  width: 100%; height: 100%; min-height: 150px;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 44px, rgba(20,27,51,0.16) 44px 46px),
+    linear-gradient(180deg, #9db3c2 0%, #cfd8d2 48%, #8b8672 100%);
+}
+.fx-window-beach {
+  width: 100%; height: 100%; min-height: 190px;
+  background: linear-gradient(180deg, #a7c6d4 0 42%, #6f9aa8 42% 58%, #e3cf9e 58% 100%);
+}
+</style>
+</head>
+<body data-mx data-motion="tier2" data-mx-chrome="pill">
+
+<!-- the-signal:back -->
+<style data-signal-back>
+  .signal-back-to-archive {
+    position: fixed;
+    top: max(0.75rem, env(safe-area-inset-top, 0px));
+    left: max(0.75rem, env(safe-area-inset-left, 0px));
+    z-index: 9999;
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.45rem 0.85rem 0.45rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(20, 20, 30, 0.72); color: #fff;
+    font-family: system-ui, sans-serif;
+    font-size: 0.74rem; font-weight: 600; letter-spacing: 0.12em;
+    text-transform: uppercase; text-decoration: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.22);
+  }
+</style>
+<a href="../" class="signal-back-to-archive" aria-label="Back to The Signal archive">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+  <span>The Signal</span>
+</a>
+<!-- /the-signal:back -->
+
+<header class="mx-mast">
+  <span class="mx-mast__title">The Signal<span class="mx-mast__stop">.</span></span>
+  <span class="mx-mast__badge">Special Edition</span>
+  <span class="mx-mast__meta">№ 21 · Sunday 19 July 2026</span>
+</header>
+
+<!-- ============ COVER (night act tokens + starfield ground) ============ -->
+<section class="mx-cover mx-ground-starfield mx-ground-grain" data-act="night">
+  <div class="mx-cover__ghost" aria-hidden="true">21</div>
+  <div class="mx-cover__script-ghost" aria-hidden="true">overnight</div>
+  <div class="mx-cover__inner">
+    <div class="mx-cover__sig">
+      <span>The Signal · One Reader</span>
+      <span>Trip Special</span>
+      <span>№ 21</span>
+    </div>
+    <span class="mx-cover__overline">a berth on the</span>
+    <h1 class="mx-cover__title">Night <span class="mx-cover__amp">&amp;</span> <span class="mx-cover__outline">Tide</span></h1>
+    <p class="mx-cover__dek">Two journeys stitched into one week: south through the dark on Europe's surviving sleeper trains, then along the Yorkshire coast while the tide does the timekeeping. Berths, piers, chip shops and the arithmetic of both.</p>
+    <div class="mx-cover__pills">
+      <span>Act I · The Sleepers</span>
+      <span>Act II · The Coast</span>
+      <span>Filed 19 July</span>
+    </div>
+  </div>
+</section>
+
+<div class="mx-kickerstrip">
+  <div class="mx-kickerstrip__inner">
+    <span class="mx-kickerstrip__title">Two Acts, One Ticket</span>
+    <span class="mx-kickerstrip__sub">read it before the alarm</span>
+    <span class="mx-kickerstrip__meta">6 min to first act<br>coffee first</span>
+  </div>
+</div>
+
+<!-- ==================== ACT I · NIGHT ==================== -->
+<section data-act="night" class="mx-ground-starfield mx-ground-grain" style="padding: 64px 0 96px;">
+  <div class="mx-wrap">
+
+    <div class="mx-kicker">Act I · File 09 · The Sleepers</div>
+    <header class="mx-plate" data-mx-event="plate">
+      <div class="mx-plate__ghost" aria-hidden="true">IX</div>
+      <span class="mx-plate__no">FILE 09</span>
+      <h2 class="mx-plate__title">The Trains That Refused to Die</h2>
+      <p class="mx-plate__dek">Fifteen years ago the sleeper was a museum piece with a timetable. Now the couchettes are booked out by March, and the operators can't add carriages fast enough.</p>
+    </header>
+
+    <div class="mx-twocol">
+      <div class="mx-body">
+        <p>The revival has a date. In December 2016, Austria's ÖBB bought the sleeper carriages Deutsche Bahn no longer wanted and rebadged them <strong>Nightjet</strong> — a bet that a bed on rails could compete with a dawn flight and a hotel bill. The bet paid. ÖBB now runs the largest night-train network in Europe, carries around <strong>1.5 million passengers a year</strong> on it, and has spent the decade since ordering entirely new stock rather than inheriting anyone's cast-offs.</p>
+        <p>The economics are stubborn — a sleeping car hauls a third of the passengers of a seated one and needs staff all night — which is why the routes that survive are the ones with a story as strong as their timetable: Vienna to Venice arriving with the lagoon at breakfast, the Highland sleeper splitting at Edinburgh in the small hours, three Cornish counties passing unseen before Penzance.</p>
+      </div>
+      <div class="mx-twocol__aside">
+        <div class="mx-stamp" data-mx-event="ephemera">
+          <span>Wien Hbf · Gleis 11</span>
+          <b>21:27</b>
+          <span>Nightjet 233 · Venezia</span>
+        </div>
+        <span class="mx-note">stamped at the platform gate, not the app</span>
+      </div>
+    </div>
+
+    <div class="mx-ledger" data-mx-event="ledger">
+      <div class="mx-ledger__caption">Ledger · One Train, Filed</div>
+      <dl>
+        <dt>Train</dt><dd>Nightjet 233, Vienna → Venice. Departs 21:27, arrives Santa Lucia 08:24.</dd>
+        <dt>Berth</dt><dd>Double sleeper with washstand; the new-generation cars add lockable mini-cabins for solo travellers.</dd>
+        <dt>Breakfast</dt><dd>Ordered on a card the attendant collects at Villach, delivered as the causeway crosses the lagoon.</dd>
+        <dt>Verdict</dt><dd>The only queue in Venice you will ever enjoy is the one for the gangway at 08:30.</dd>
+      </dl>
+    </div>
+
+    <div class="mx-shelf">
+      <figure class="mx-card mx-card--ruled" data-mx-event="ephemera">
+        <div class="mx-card__window">
+          <div class="mx-typed">
+            <b>ROUTE:</b> London → Penzance<br>
+            <b>NAME:</b> Night Riviera<br>
+            <b>DEP:</b> 23:45 · Paddington<br>
+            <b>NOTE:</b> seals fixed, 2025 refit
+          </div>
+        </div>
+        <figcaption class="mx-card__caption">index card, drawer "sleepers — GB"</figcaption>
+        <span class="mx-card__credit">Card · The Signal archive</span>
+      </figure>
+
+      <figure class="mx-card mx-card--pin" data-mx-event="chart">
+        <div class="mx-card__window" role="img" aria-label="Hand-drawn line chart: ÖBB Nightjet passengers per year rising from 1.0 million in 2017 to 1.5 million in 2024">
+          <svg viewBox="0 0 240 130" width="240" height="130" aria-hidden="true">
+            <line x1="24" y1="106" x2="228" y2="106" stroke="#6a5f48" stroke-width="1.5"/>
+            <line x1="24" y1="10" x2="24" y2="106" stroke="#6a5f48" stroke-width="1.5"/>
+            <polyline points="24,84 62,80 100,88 138,60 176,44 214,26" fill="none" stroke="#8a2d3c" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="214" cy="26" r="4" fill="#8a2d3c"/>
+            <text x="30" y="22" font-family="monospace" font-size="11" fill="#23201a">1.5m riders, 2024</text>
+            <text x="26" y="120" font-family="monospace" font-size="9" fill="#6a5f48">2017</text>
+            <text x="196" y="120" font-family="monospace" font-size="9" fill="#6a5f48">2024</text>
+          </svg>
+        </div>
+        <figcaption class="mx-card__caption">the line that made the accountants blink</figcaption>
+        <span class="mx-card__credit">Chart · The Signal, from ÖBB annual figures</span>
+      </figure>
+
+      <figure class="mx-card" data-mx-event="ephemera">
+        <div class="mx-card__window" role="img" aria-label="A full moon drawn over an indigo night sky">
+          <div class="fx-moon"></div>
+        </div>
+        <figcaption class="mx-card__caption">the view from berth 12, somewhere after Villach</figcaption>
+        <span class="mx-card__credit">Drawn · no photograph survives the glass</span>
+      </figure>
+    </div>
+
+    <figure class="mx-quote" data-mx-event="quote">
+      <blockquote>Night trains are the closest thing Europe has to teleportation — you disappear in one city and materialise in another, having slept through the boring bit.</blockquote>
+      <figcaption>— <b>Mark Smith</b> · The Man in Seat 61</figcaption>
+    </figure>
+
+    <div class="mx-numbers mx-numbers--loud" data-mx-event="statband">
+      <div class="mx-numbers__cell">
+        <span class="mx-numbers__num">1.5m</span>
+        <span class="mx-numbers__label">Riders a year</span>
+        <span class="mx-numbers__sub">ÖBB Nightjet network, 2024</span>
+      </div>
+      <div class="mx-numbers__cell">
+        <span class="mx-numbers__num">33</span>
+        <span class="mx-numbers__label">New cars ordered</span>
+        <span class="mx-numbers__sub">next-generation sets since 2018</span>
+      </div>
+      <div class="mx-numbers__cell">
+        <span class="mx-numbers__num">08:24</span>
+        <span class="mx-numbers__label">Venice, on time</span>
+        <span class="mx-numbers__sub">lagoon crossing at breakfast</span>
+      </div>
+      <div class="mx-numbers__cell">
+        <span class="mx-numbers__num">3</span>
+        <span class="mx-numbers__label">Counties asleep</span>
+        <span class="mx-numbers__sub">the Night Riviera's quiet miles</span>
+      </div>
+      <div class="mx-numbers__cell">
+        <span class="mx-numbers__num">23:45</span>
+        <span class="mx-numbers__label">Paddington, last call</span>
+        <span class="mx-numbers__sub">lower your voice on platform 1</span>
+      </div>
+      <div class="mx-numbers__cell">
+        <span class="mx-numbers__num">£109</span>
+        <span class="mx-numbers__label">Solo berth from</span>
+        <span class="mx-numbers__sub">as of July 2026 · book at 12 weeks</span>
+      </div>
+    </div>
+
+    <div class="mx-marquee" data-mx-event="marquee" aria-hidden="true">
+      <div class="mx-marquee__track">
+        <span>Mind the gap</span><span>Last train south</span><span>Berth 12</span><span>Lights out at Villach</span>
+        <span>Mind the gap</span><span>Last train south</span><span>Berth 12</span><span>Lights out at Villach</span>
+      </div>
+    </div>
+
+    <div class="mx-kicker" style="margin-top:64px;">Three Sleepers Worth the Berth</div>
+    <div class="mx-zig">
+      <article class="mx-zig__entry" data-mx-event="figure">
+        <div class="mx-zig__media" role="img" aria-label="A sleeper carriage window at night, stars over a dark horizon">
+          <div class="fx-window-night"></div>
+        </div>
+        <div class="mx-zig__card">
+          <div class="mx-zig__head">
+            <span class="mx-rank"></span>
+            <h3 class="mx-zig__title">The Caledonian Sleeper</h3>
+          </div>
+          <p class="mx-zig__quote">“Falling asleep at Euston and waking to a stag on the hillside at Corrour is still the best magic trick in British travel.”</p>
+          <dl class="mx-zig__meta">
+            <dt>Route</dt><dd>London Euston → Fort William, splitting at Edinburgh</dd>
+            <dt>Book</dt><dd>Twelve weeks out for a Club room; the seated coach never sells out</dd>
+            <dt>Moment</dt><dd>Rannoch Moor at 07:40 with the tea tray</dd>
+          </dl>
+        </div>
+      </article>
+      <article class="mx-zig__entry" data-mx-event="figure">
+        <div class="mx-zig__media" role="img" aria-label="An empty station platform at dawn, long shadows across the paving">
+          <div class="fx-window-platform"></div>
+        </div>
+        <div class="mx-zig__card">
+          <div class="mx-zig__head">
+            <span class="mx-rank"></span>
+            <h3 class="mx-zig__title">Nightjet to Venice</h3>
+          </div>
+          <p class="mx-zig__quote">“You board in a Viennese drizzle and step off onto water. No airport does that.”</p>
+          <dl class="mx-zig__meta">
+            <dt>Route</dt><dd>Vienna Hbf → Venezia Santa Lucia, 21:27 → 08:24</dd>
+            <dt>Book</dt><dd>Mini-cabins release at 180 days and go first</dd>
+            <dt>Moment</dt><dd>The lagoon causeway with coffee in hand</dd>
+          </dl>
+        </div>
+      </article>
+    </div>
+
+    <div class="mx-countdown" data-mx-event="statband" style="margin: 48px auto 0;">
+      <div class="mx-countdown__grid">
+        <div class="mx-countdown__cell"><span class="mx-countdown__num">27</span><span class="mx-countdown__unit">Days</span></div>
+        <div class="mx-countdown__cell"><span class="mx-countdown__num">14</span><span class="mx-countdown__unit">Hours</span></div>
+        <div class="mx-countdown__cell"><span class="mx-countdown__num">52</span><span class="mx-countdown__unit">Minutes</span></div>
+        <div class="mx-countdown__cell"><span class="mx-countdown__num">08</span><span class="mx-countdown__unit">Seconds</span></div>
+      </div>
+      <div class="mx-countdown__target">Departure · Paddington, platform 1 · 15 August</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ==================== TRANSIT ==================== -->
+<div class="mx-transit" data-mx-event="marquee">
+  <div class="mx-transit__side mx-transit__side--left">
+    <div class="mx-transit__mega" aria-hidden="true">NIGHT</div>
+    <div class="mx-transit__label">
+      <span class="mx-transit__hand">leaving</span>
+      <span class="mx-transit__name">The Sleepers</span>
+    </div>
+  </div>
+  <div class="mx-transit__center"><div class="mx-transit__card">Change Here</div></div>
+  <div class="mx-transit__side mx-transit__side--right">
+    <div class="mx-transit__mega" aria-hidden="true">TIDE</div>
+    <div class="mx-transit__label">
+      <span class="mx-transit__hand">arriving</span>
+      <span class="mx-transit__name">The Coast</span>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== ACT II · COAST ==================== -->
+<section data-act="coast" class="mx-ground-gradient-sky mx-ground-grain" style="padding: 64px 0 96px;">
+  <div class="mx-wrap">
+
+    <header class="mx-actopen" data-mx-event="plate">
+      <span class="mx-actopen__no">Act II</span>
+      <h2 class="mx-actopen__title">Down to the Sea</h2>
+      <span class="mx-actopen__hand">by the 10:04 from York</span>
+    </header>
+
+    <div class="mx-body" style="margin: 32px auto 0;">
+      <p>The English seaside resort was invented by a timetable. When the York &amp; North Midland Railway reached Scarborough in <strong>1845</strong>, a fishing town with a spa became, within a decade, the place an entire industrial county went to breathe. The Grand Hotel followed in 1867 — for a while the largest brick building in Europe, built to a calendar conceit: four towers for the seasons, twelve floors for the months, a room for every day of the year.</p>
+      <p>What survives is not nostalgia but rhythm. The tide still empties and refills the South Bay twice a day; the chip shops still calibrate their fryers to the arrival of the 12:52; and the funicular — the oldest in Britain still running, opened in <strong>1875</strong> — still does in ninety seconds what the cliff steps do in a bad fifteen minutes.</p>
+    </div>
+
+    <article class="mx-anchor" data-mx-event="figure">
+      <div class="mx-anchor__media" role="img" aria-label="Scarborough South Bay: sky, sea band and pale sand drawn in three strips">
+        <div class="fx-window-beach"></div>
+      </div>
+      <div class="mx-anchor__copy">
+        <h3 class="mx-anchor__title">The Grand at 159</h3>
+        <p class="mx-anchor__dek">Still the most ambitious building on the Yorkshire coast — a calendar in brick, glaring out at the North Sea it was built to charge admission for.</p>
+        <div class="mx-anchor__meta">
+          <span>Opened <b>24 July 1867</b></span>
+          <span>Towers <b>4 · one a season</b></span>
+          <span>Rooms <b>365 at opening</b></span>
+        </div>
+      </div>
+      <div class="mx-anchor__badge">book a sea-facing corner</div>
+      <div class="mx-anchor__note">the gulls are part of the rate</div>
+    </article>
+
+    <div class="mx-ranked" data-mx-event="ledger">
+      <h3 class="mx-ranked__title">Chip shops, ranked by queue theory.</h3>
+      <ol class="mx-ranked__list">
+        <li class="mx-ranked__entry">
+          <div class="mx-ranked__head">
+            <span class="mx-rank"></span>
+            <h4 class="mx-ranked__name">The Magpie Café, Whitby</h4>
+            <span class="mx-tier mx-tier--hot">Go</span>
+          </div>
+          <p>The queue down the harbour wall is the point: it moves at exactly the speed a portion takes to fry, which tells you everything about the kitchen.</p>
+          <dl class="mx-ranked__facts">
+            <dt>Queue</dt><dd>40 min at noon · 10 min at 16:30</dd>
+            <dt>Order</dt><dd>haddock, not cod — ask for scraps</dd>
+          </dl>
+        </li>
+        <li class="mx-ranked__entry">
+          <div class="mx-ranked__head">
+            <span class="mx-rank"></span>
+            <h4 class="mx-ranked__name">Winking Willy's, Scarborough</h4>
+            <span class="mx-tier mx-tier--warm">Solid</span>
+          </div>
+          <p>Foreshore institution since 1969. Eat on the sea wall and hold the tray with both hands; the herring gulls have a flight school here.</p>
+          <dl class="mx-ranked__facts">
+            <dt>Queue</dt><dd>15 min, moves briskly</dd>
+            <dt>Order</dt><dd>the regular is plenty</dd>
+          </dl>
+        </li>
+        <li class="mx-ranked__entry">
+          <div class="mx-ranked__head">
+            <span class="mx-rank"></span>
+            <h4 class="mx-ranked__name">Anywhere on the pier after 17:00</h4>
+            <span class="mx-tier mx-tier--note">Caveat</span>
+          </div>
+          <p>The fryers rest between the lunch and evening tides. Whatever you buy at 17:00 was cooked at 14:00. Walk the front instead and come back hungry.</p>
+          <dl class="mx-ranked__facts">
+            <dt>Rule</dt><dd>never order within an hour of a coach party</dd>
+          </dl>
+        </li>
+      </ol>
+    </div>
+
+    <div class="mx-twocol">
+      <figure class="mx-quote" data-mx-event="quote" style="margin: 8px 0;">
+        <blockquote>A Scarborough holiday was not a rest — it was a performance of leisure, rehearsed all winter in the mills.</blockquote>
+        <figcaption>— <b>Prof. John K. Walton</b> · The English Seaside Resort: A Social History</figcaption>
+      </figure>
+      <div class="mx-scorecard" data-mx-event="ledger">
+        <h4 class="mx-scorecard__title">South Bay · Tide Card, Sat 25 July</h4>
+        <table>
+          <tr class="is-lead"><td class="mx-scorecard__pos">HW</td><td>06:41 · 5.2m</td><td class="mx-scorecard__gap">SWIM</td></tr>
+          <tr><td class="mx-scorecard__pos">LW</td><td>12:58 · 1.1m</td><td class="mx-scorecard__gap">ROCKPOOLS</td></tr>
+          <tr class="is-lead"><td class="mx-scorecard__pos">HW</td><td>19:09 · 5.4m</td><td class="mx-scorecard__gap">PIER WALK</td></tr>
+          <tr><td class="mx-scorecard__pos">—</td><td>times BST, ±10 min</td><td class="mx-scorecard__gap">&nbsp;</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="mx-scorecard mx-scorecard--wide" data-mx-event="ledger" style="margin: 40px auto;">
+      <h4 class="mx-scorecard__title">The Coastal Line · Saturday Services from York</h4>
+      <div class="mx-tablewrap">
+        <table>
+          <tr><th>Dep York</th><th>Arr Scarborough</th><th>Calling at</th><th>Sets</th><th>Note</th></tr>
+          <tr class="is-lead"><td>10:04</td><td>10:52</td><td>Malton · Seamer</td><td>6-car</td><td>the beach train — board early</td></tr>
+          <tr><td>11:04</td><td>11:53</td><td>Malton · Seamer</td><td>3-car</td><td>standing room after Malton</td></tr>
+          <tr><td>12:04</td><td>12:52</td><td>Malton · Seamer</td><td>6-car</td><td>meets the lunch fryers</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="mx-shelf">
+      <div class="mx-ticket" data-mx-event="ephemera">
+        <div class="mx-ticket__main">
+          <span class="mx-ticket__meta">North Bay Railway · Est. 1931</span>
+          <span class="mx-ticket__event">Peasholm → Scalby Mills</span>
+          <span class="mx-ticket__meta mx-ticket__row"><span>Gauge</span><span>20 inches</span></span>
+          <span class="mx-ticket__meta mx-ticket__row"><span>Fare</span><span>£4.50 return · as of July 2026</span></span>
+        </div>
+        <div class="mx-ticket__stub">
+          <div class="mx-stamp"><span>N.B.R.</span><b>RIDE</b><span>№ 0451</span></div>
+        </div>
+      </div>
+
+      <div class="mx-coaster" data-mx-event="ephemera">
+        <span>Harbour Bar · knickerbocker glory · £6.20 · worth it</span>
+      </div>
+
+      <figure class="mx-card--mail" data-mx-event="ephemera">
+        <div class="mx-mail__front">
+          <span class="mx-mail__greet">Greetings from</span>
+          <span class="mx-mail__place">Scarborough</span>
+        </div>
+        <div class="mx-mail__back">Dear H — the funicular still works, the gulls are still criminals, and the sea is exactly as cold as 1988. Wish you were here. — S.</div>
+      </figure>
+    </div>
+
+    <aside class="mx-dontmiss" data-mx-event="cheatsheet">
+      <span class="mx-dontmiss__kicker">don't miss</span>
+      <h3 class="mx-dontmiss__title">Four things the day-trippers walk past</h3>
+      <ol class="mx-dontmiss__list">
+        <li><b>The Central Tramway,</b> 1881 — ninety seconds of Victorian engineering, still on its original route up the cliff.</li>
+        <li><b>Anne Brontë's grave</b> in St Mary's churchyard, above the harbour, facing the sea she came here to take.</li>
+        <li><b>The Rotunda,</b> 1829 — one of the world's first purpose-built museums, a drum of local geology by William Smith's nephew.</li>
+        <li><b>Low tide at Cornelian Bay,</b> twenty minutes' walk south and usually empty even in August.</li>
+      </ol>
+    </aside>
+
+    <div class="mx-cheat" data-mx-event="cheatsheet">
+      <div class="mx-cheat__head">The Cheat Sheet · One Saturday, Solved</div>
+      <div class="mx-cheat__cols">
+        <div class="mx-cheat__col">
+          <span class="mx-tier mx-tier--hot">Morning</span>
+          <h5>10:04 from York</h5>
+          <p>The six-car set. Sit on the left after Malton for the first sight of the sea.</p>
+          <h5>Funicular up, steps down</h5>
+          <p>£1.60 buys you the legs you'll want at low tide.</p>
+        </div>
+        <div class="mx-cheat__col">
+          <span class="mx-tier mx-tier--warm">Afternoon</span>
+          <h5>Rockpools at 12:58</h5>
+          <p>Low water. An hour either side is the whole window — check the tide card, not your phone.</p>
+          <h5>Fry at 16:30</h5>
+          <p>The queue-theory sweet spot: fresh oil, no coach parties.</p>
+        </div>
+        <div class="mx-cheat__col">
+          <span class="mx-tier mx-tier--note">Evening</span>
+          <h5>Pier walk at high water</h5>
+          <p>19:09, sea at 5.4 metres, lights coming on along the front.</p>
+          <h5>The 20:31 home</h5>
+          <p>Last fast service. Miss it and you're on the stopper — which, tonight, is not a punishment.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer class="mx-footer">
+  <b>End of the sink · Every piece of furniture, twice-grounded</b>
+  <p>Set in the six voices · two acts, two grounds · filed 19 July 2026, for one reader.</p>
+</footer>
+
+</body>
+</html>

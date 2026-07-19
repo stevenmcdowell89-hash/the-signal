@@ -1,0 +1,507 @@
+/* ============================================================
+   MX CORE · 10-ephemera.css
+   Framed-object chassis: content window + fastener + hand
+   caption + credit. Descended from the holiday polaroid (36§09),
+   postcard (36§10), stamp (36§11), ticket/coaster (41), and the
+   de-themed kit-card of the unification mockup.
+
+   LAW 1 — SCENOGRAPHY IS THE DEFAULT. Every object here ships
+   with ≥2 scenography cues OUT OF THE BOX: rotation (1–3°),
+   a fastener rendered as a pseudo-element (tape / pin / photo
+   corners), and a drop shadow on card stock. Flattening is an
+   explicit opt-out: add .mx-flat. There is no upright,
+   shadowless default.
+
+   REAL-IMAGE CONTRACT (F-6). A photo slot is a real
+   <img src alt> (object-fit: cover) inside .mx-card__window.
+   A CSS-drawn object instead uses
+       <div class="mx-card__window" role="img" aria-label="…">.
+   Never a bare background-image div.
+
+   EVENT CENSUS. Every rendered instance carries
+   data-mx-event="ephemera" (quote objects: "quote"; a chart in
+   a window: "chart") on the OUTERMOST element of the object.
+
+   MARKUP — pinned/taped card (polaroid descendant):
+     <figure class="mx-card" data-mx-event="ephemera">
+       <div class="mx-card__window">
+         <img src="/assets/cached/x.jpg" alt="…">
+       </div>
+       <figcaption class="mx-card__caption">hand-written line</figcaption>
+       <span class="mx-card__credit">Photo · Named Source</span>
+     </figure>
+   Variants: .mx-card--pin  (pushpin fastener)
+             .mx-card--corner (photo corners)
+             .mx-card--ruled (index-card ruling in the window)
+             .mx-card--wide  (420px)
+             .mx-flat (opt-out: upright, no fastener, soft shadow)
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   01 · CARD CHASSIS
+   ------------------------------------------------------------ */
+.mx-card {
+  background: var(--mx-card);
+  color: var(--mx-card-ink);
+  border: 1px solid var(--mx-card-edge);
+  box-shadow:
+    0 22px 34px -16px var(--mx-shadow),
+    0 2px 0 rgba(0, 0, 0, 0.05);
+  padding: 12px 12px 14px;
+  width: min(300px, 100%);
+  position: relative;
+  margin: 0;
+  transform: rotate(var(--mx-tilt, -1.6deg));
+}
+.mx-card--wide { width: min(420px, 100%); }
+
+/* tilt variance so a shelf of cards never reads as a grid */
+.mx-card:nth-of-type(2n)   { --mx-tilt: 2.2deg; }
+.mx-card:nth-of-type(3n)   { --mx-tilt: -2.6deg; }
+.mx-card:nth-of-type(4n+1) { --mx-tilt: 1.2deg; }
+
+/* — fastener: washi tape (default) — */
+.mx-card::before {
+  content: "";
+  position: absolute;
+  top: -11px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-3.5deg);
+  width: 92px;
+  height: 24px;
+  background: var(--mx-tape);
+  border-left: 1px dashed rgba(255, 255, 255, 0.5);
+  border-right: 1px dashed rgba(255, 255, 255, 0.5);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+  z-index: 3;
+}
+.mx-card:nth-of-type(2n)::before { transform: translateX(-50%) rotate(4deg); }
+
+/* — fastener: pushpin — */
+.mx-card--pin::before {
+  width: 16px;
+  height: 16px;
+  top: -8px;
+  border: none;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 30%, rgba(255, 255, 255, 0.85) 0 18%, transparent 40%),
+    var(--mx-accent-2);
+  box-shadow: 0 6px 8px -3px var(--mx-shadow);
+  transform: translateX(-50%);
+}
+
+/* — fastener: photo corners (two opposing corners) — */
+.mx-card--corner::before,
+.mx-card--corner::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  border: 16px solid transparent;
+  box-shadow: none;
+  background: none;
+  transform: none;
+  pointer-events: none;
+  z-index: 3;
+}
+.mx-card--corner::before {
+  top: -3px; left: -3px;
+  border-top-color: var(--mx-support-2);
+  border-left-color: var(--mx-support-2);
+}
+.mx-card--corner::after {
+  bottom: -3px; right: -3px;
+  border-bottom-color: var(--mx-support-2);
+  border-right-color: var(--mx-support-2);
+}
+
+/* — the explicit opt-out (Law 1: flattening is never a default) — */
+.mx-flat,
+.mx-flat.mx-card {
+  transform: none;
+  box-shadow: 0 10px 18px -14px var(--mx-shadow);
+}
+.mx-flat::before,
+.mx-flat::after { display: none; }
+
+/* ------------------------------------------------------------
+   02 · CONTENT WINDOW + CAPTION + CREDIT
+   ------------------------------------------------------------ */
+.mx-card__window {
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  background: var(--mx-card-window);
+  min-height: 120px;
+  display: grid;
+  place-items: center;
+  padding: 14px 12px;
+  overflow: hidden;
+}
+.mx-card__window > img {
+  display: block;
+  width: calc(100% + 24px);
+  margin: -14px -12px;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+.mx-card__caption {
+  font-family: var(--mx-t-hand);
+  font-size: 1.28rem;
+  line-height: 1.15;
+  text-align: center;
+  margin-top: 10px;
+  color: var(--mx-card-ink);
+}
+.mx-card__credit {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  display: block;
+  margin-top: 6px;
+  opacity: 0.6;
+}
+
+/* index-card ruling variant */
+.mx-card--ruled .mx-card__window {
+  background-image:
+    linear-gradient(180deg, transparent 0 30px, rgba(150, 40, 40, 0.5) 30px 31px, transparent 31px),
+    repeating-linear-gradient(180deg, transparent 0 26px, rgba(40, 60, 120, 0.28) 26px 27px);
+  place-items: start stretch;
+  text-align: left;
+}
+.mx-typed {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, 0.74rem);
+  line-height: 26px; /* matches the ruling */
+  color: var(--mx-card-ink);
+  padding-top: 4px;
+}
+.mx-typed b { letter-spacing: 0.14em; }
+
+/* ------------------------------------------------------------
+   03 · MAIL CARD (postcard descendant)
+   front panel (ink ground + script greeting) beside a lined,
+   hand-written back. Scenography: airmail edge + tilt + hard
+   offset shadow (3 cues, no tape).
+   MARKUP:
+     <figure class="mx-card--mail" data-mx-event="ephemera">
+       <div class="mx-mail__front">
+         <span class="mx-mail__greet">Greetings from</span>
+         <span class="mx-mail__place">Scarborough</span>
+       </div>
+       <div class="mx-mail__back">…hand-written message…</div>
+     </figure>
+   ------------------------------------------------------------ */
+.mx-card--mail {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: min(400px, 100%);
+  min-height: 190px;
+  margin: 0;
+  background: var(--mx-card);
+  color: var(--mx-card-ink);
+  border: 5px solid transparent;
+  border-image: repeating-linear-gradient(
+      45deg,
+      var(--mx-accent-2) 0 10px,
+      var(--mx-card) 10px 20px,
+      var(--mx-accent) 20px 30px,
+      var(--mx-card) 30px 40px) 5;
+  box-shadow: 6px 6px 0 var(--mx-shadow);
+  transform: rotate(var(--mx-tilt, -1.4deg));
+  position: relative;
+}
+.mx-card--mail:nth-of-type(2n) { --mx-tilt: 1.8deg; }
+.mx-mail__front {
+  background: var(--mx-ink);
+  color: var(--mx-paper);
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+}
+.mx-mail__greet {
+  font-family: var(--mx-t-script);
+  font-size: 1.65rem;
+  line-height: 0.95;
+  color: var(--mx-support-2);
+}
+.mx-mail__place {
+  font-family: var(--mx-t-tall);
+  font-size: 1.1rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.mx-mail__back {
+  padding: 14px 14px 14px 12px;
+  font-family: var(--mx-t-hand);
+  font-size: 1.12rem;
+  line-height: 1.28;
+  color: var(--mx-card-ink);
+  border-left: 1px dashed var(--mx-hair);
+  background-image: repeating-linear-gradient(
+      180deg, transparent 0 22px, var(--mx-hair) 22px 23px);
+  background-position: 0 12px;
+}
+
+/* ------------------------------------------------------------
+   04 · STAMP / SEAL — currentColor roundel
+   MARKUP:
+     <div class="mx-stamp" data-mx-event="ephemera">
+       <span>Filed · The Signal</span><b>4.5g</b><span>72 to the pound</span>
+     </div>
+   ------------------------------------------------------------ */
+.mx-stamp {
+  display: inline-grid;
+  place-items: center;
+  width: 128px;
+  height: 128px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  color: var(--mx-stamp-ink);
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 16px;
+  line-height: 1.3;
+  transform: rotate(-8deg);
+  position: relative;
+  background: transparent;
+}
+.mx-stamp::before {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  opacity: 0.85;
+}
+.mx-stamp b {
+  display: block;
+  font-family: var(--mx-t-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  margin: 4px 0 3px;
+}
+.mx-stamp--support { color: var(--mx-support-1); }
+.mx-stamp--brass   { color: var(--mx-support-2); }
+
+/* ------------------------------------------------------------
+   05 · TICKET — perforated stub, punch holes, hard shadow
+   MARKUP:
+     <div class="mx-ticket" data-mx-event="ephemera">
+       <div class="mx-ticket__main">
+         <span class="mx-ticket__meta">Grand Départ · Stage 1</span>
+         <span class="mx-ticket__event">Lille → Lille</span>
+         <span class="mx-ticket__meta mx-ticket__row"><span>Gate</span><span>Nord 4</span></span>
+       </div>
+       <div class="mx-ticket__stub">
+         <div class="mx-stamp"><span>Admit</span><b>One</b></div>
+       </div>
+     </div>
+   ------------------------------------------------------------ */
+.mx-ticket {
+  display: grid;
+  grid-template-columns: 1fr 96px;
+  width: min(360px, 100%);
+  background: var(--mx-card);
+  color: var(--mx-card-ink);
+  border: 1.5px solid var(--mx-card-ink);
+  box-shadow: 5px 5px 0 var(--mx-shadow);
+  transform: rotate(var(--mx-tilt, -1.5deg));
+  position: relative;
+}
+.mx-ticket:nth-of-type(2n) { --mx-tilt: 1.6deg; }
+/* punch holes on the perforation line */
+.mx-ticket::before,
+.mx-ticket::after {
+  content: "";
+  position: absolute;
+  right: 89px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--mx-paper);
+  border: 1.5px solid var(--mx-card-ink);
+}
+.mx-ticket::before { top: -8px; }
+.mx-ticket::after  { bottom: -8px; }
+.mx-ticket__main { padding: 15px 16px 13px; }
+.mx-ticket__event {
+  display: block;
+  font-family: var(--mx-t-serif);
+  font-weight: 600;
+  font-size: 1.45rem;
+  line-height: 1.05;
+  margin: 3px 0 8px;
+}
+.mx-ticket__meta {
+  display: block;
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mx-ink-soft);
+}
+.mx-ticket__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 6px;
+}
+.mx-ticket__row > span:last-child { color: var(--mx-card-ink); }
+.mx-ticket__stub {
+  border-left: 2px dashed var(--mx-card-ink);
+  display: grid;
+  place-items: center;
+  padding: 10px 6px;
+  background: repeating-linear-gradient(
+      45deg, transparent 0 6px, var(--mx-quote-bg) 6px 12px);
+}
+.mx-ticket__stub .mx-stamp {
+  width: 82px;
+  height: 82px;
+  padding: 8px;
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.04em;
+  transform: rotate(8deg);
+}
+.mx-ticket__stub .mx-stamp b { font-size: 0.95rem; }
+
+/* ------------------------------------------------------------
+   06 · COASTER — circular centre-text object
+   MARKUP:
+     <div class="mx-coaster" data-mx-event="ephemera">
+       <span>Harbour Bar · vanilla ice · £3.40</span>
+     </div>
+   ------------------------------------------------------------ */
+.mx-coaster {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 176px;
+  height: 176px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center, transparent 56%, rgba(0, 0, 0, 0.05) 58%, transparent 60%),
+    var(--mx-card);
+  border: 1.5px solid var(--mx-hair);
+  color: var(--mx-card-ink);
+  position: relative;
+  box-shadow:
+    0 0 0 6px rgba(255, 255, 255, 0.4),
+    0 14px 22px -12px var(--mx-shadow);
+  transform: rotate(-4deg);
+}
+.mx-coaster:nth-of-type(2n) { transform: rotate(3deg); }
+.mx-coaster::before {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  border-radius: 50%;
+  border: 1px dashed var(--mx-hair);
+}
+.mx-coaster span {
+  display: block;
+  font-family: var(--mx-t-serif);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.25;
+  text-align: center;
+  padding: 0 1.4rem;
+  max-width: 150px;
+}
+.mx-coaster--accent  { background: var(--mx-accent);  color: var(--mx-accent-ink); }
+.mx-coaster--accent2 { background: var(--mx-accent-2); color: var(--mx-accent-2-ink); }
+.mx-coaster--accent::before,
+.mx-coaster--accent2::before { border-color: rgba(255, 255, 255, 0.4); }
+
+/* ------------------------------------------------------------
+   07 · QUOTE OBJECT — a voice, never a floating italic line.
+   Named source is mandatory (Law 9).
+   MARKUP:
+     <figure class="mx-quote" data-mx-event="quote">
+       <blockquote>…verbatim words…</blockquote>
+       <figcaption>— <b>Named Person</b> · where they said it</figcaption>
+     </figure>
+   ------------------------------------------------------------ */
+.mx-quote {
+  margin: 40px 0;
+  padding: 26px 26px 20px;
+  border-left: 6px solid var(--mx-accent);
+  background: var(--mx-quote-bg);
+  position: relative;
+}
+.mx-quote::before {
+  content: "\201C";
+  position: absolute;
+  top: -24px;
+  left: 12px;
+  font-family: var(--mx-t-serif);
+  font-size: 5.2rem;
+  line-height: 1;
+  color: var(--mx-accent);
+  opacity: 0.9;
+  pointer-events: none;
+}
+.mx-quote blockquote {
+  font-family: var(--mx-t-serif);
+  font-style: italic;
+  font-size: clamp(1.18rem, 2.6vw, 1.5rem);
+  line-height: 1.42;
+  color: var(--mx-ink);
+  margin: 0;
+  border: none;
+}
+.mx-quote figcaption {
+  margin-top: 12px;
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--mx-ink-soft);
+}
+.mx-quote figcaption b { color: var(--mx-accent); font-weight: 700; }
+
+/* ------------------------------------------------------------
+   08 · SHELF — the scatter surface for ephemera beside copy.
+   Deliberate un-grid: alternating vertical offsets so objects
+   read as laid on a table, not slotted in cells.
+   ------------------------------------------------------------ */
+.mx-shelf {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px 44px;
+  align-items: flex-start;
+  justify-content: center;
+  margin: 56px 0;
+}
+.mx-shelf > * { flex: 0 1 auto; }
+.mx-shelf > *:nth-child(2n) { margin-top: 30px; }
+.mx-shelf > *:nth-child(3n) { margin-top: -12px; }
+
+/* copy + object two-column */
+.mx-twocol {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 40px;
+  align-items: start;
+  margin: 40px 0;
+}
+.mx-twocol__aside {
+  display: grid;
+  gap: 30px;
+  justify-items: center;
+}

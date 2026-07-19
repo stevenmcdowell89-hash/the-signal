@@ -1,0 +1,185 @@
+/* ============================================================
+   MX CORE · 00-contract.css
+   THE SIGNAL — furniture core, layer L0 (design-system
+   unification spec §2.1). Token contract + neutral defaults +
+   the six type voices + Law-8 floors.
+
+   SCOPE. Everything keys off [data-mx] (put it on <body>).
+   Palette tokens re-scope per act: any `section[data-act]`
+   (or any element carrying data-act) may remap the --mx-*
+   palette for its subtree. Acts are declared per issue by the
+   skin / motif pack; this file only ships neutral defaults so
+   an undressed page still renders as a disciplined object.
+
+   NAMESPACE. All classes are `mx-` and theme-neutral. The
+   weekly's forbidden-marker gates key on `sp-*` / `hol-*`
+   vocabularies — nothing here can false-fire them.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   00 · TOKEN CONTRACT (~30 custom properties)
+   ------------------------------------------------------------ */
+[data-mx] {
+  /* — act palette (re-scopable via [data-act]) — */
+  --mx-paper:      #f2eee3;               /* the ground of the act            */
+  --mx-ink:        #1d1b16;               /* running text                     */
+  --mx-ink-soft:   #6c6455;               /* secondary text                   */
+  --mx-accent:     #31577d;               /* primary accent (never hard-coded
+                                             downstream — Law 7)             */
+  --mx-accent-ink: #f4f0e6;               /* text ON the accent               */
+  --mx-accent-2:   #a9502c;               /* second accent / event colour     */
+  --mx-accent-2-ink:#f7efe0;
+  --mx-support-1:  #3f6650;               /* pills, tiers, seals              */
+  --mx-support-2:  #b08f3c;               /* brass-register support           */
+  --mx-hair:       rgba(29, 27, 22, 0.3); /* hairlines, dotted rules          */
+
+  /* — object surfaces (the ephemera chassis) — */
+  --mx-card:        #f7f1e1;              /* card stock                       */
+  --mx-card-ink:    #221d12;
+  --mx-card-edge:   rgba(0, 0, 0, 0.18);
+  --mx-card-window: #efe7d2;              /* content/photo window             */
+  --mx-tape:        rgba(196, 168, 108, 0.72);
+  --mx-ghost:       rgba(29, 27, 22, 0.08);  /* mega ghost numerals           */
+  --mx-quote-bg:    rgba(29, 27, 22, 0.045);
+  --mx-shadow:      rgba(20, 16, 8, 0.5);    /* object drop-shadow colour     */
+  --mx-hand-ink:    var(--mx-accent-2);      /* handwriting voice colour      */
+  --mx-stamp-ink:   var(--mx-accent-2);      /* rubber-stamp / seal colour    */
+
+  /* — art slots (filled by motif packs; safe empty defaults) — */
+  --mx-pattern: none;        /* tiled bg image for .mx-ground-pattern         */
+  --mx-glyph:   none;        /* currentColor glyph via mask-image             */
+  --mx-band:    none;        /* decorative band image                         */
+  --mx-grain:   0.05;        /* grain overlay opacity for .mx-ground-grain    */
+
+  /* — scenography — */
+  --mx-tilt: -1.6deg;        /* base object rotation; components vary it      */
+
+  /* — six type voices (Law 8) —
+     Font-family indirection only: self-hosted files are the
+     skins/bundler's job (WP-3). System fallbacks keep every
+     voice legible with zero network. */
+  --mx-t-chunk:  "Bowlby One", "Arial Black", "Arial Rounded MT Bold", Impact, sans-serif;
+  --mx-t-tall:   "Anton", "Bebas Neue", "Oswald", "Arial Narrow", Impact, sans-serif;
+  --mx-t-script: "Yellowtail", "Pacifico", "Segoe Script", "Brush Script MT", cursive;
+  --mx-t-hand:   "Caveat", "Kalam", "Bradley Hand", "Comic Sans MS", cursive;
+  --mx-t-serif:  "Cormorant Garamond", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --mx-t-mono:   "Space Mono", "JetBrains Mono", ui-monospace, "Cascadia Mono", "Courier New", monospace;
+  --mx-t-body:   "DM Sans", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* — Law-8 floors + layout constants — */
+  --mx-micro:   0.72rem;     /* mono micro-label floor — never go below       */
+  --mx-measure: 62ch;        /* body measure; hard cap 68ch enforced below    */
+  --mx-wrap:    1140px;      /* interior column                               */
+}
+
+/* Dark scheme: remap the NEUTRAL tokens only. Acts declared by a
+   pack may ship their own dark remaps; a pack that locks its
+   scheme sets data-mx-scheme="locked" on the act section.
+   Ephemera stays paper-coloured — objects are physical stock. */
+@media (prefers-color-scheme: dark) {
+  [data-mx]:not([data-mx-scheme="locked"]) {
+    --mx-paper:    #17161c;
+    --mx-ink:      #e9e3d3;
+    --mx-ink-soft: rgba(233, 227, 211, 0.64);
+    --mx-accent:   #7fa8cc;
+    --mx-accent-ink:#141319;
+    --mx-hair:     rgba(233, 227, 211, 0.28);
+    --mx-ghost:    rgba(233, 227, 211, 0.07);
+    --mx-quote-bg: rgba(0, 0, 0, 0.28);
+    --mx-shadow:   rgba(0, 0, 0, 0.85);
+  }
+}
+/* Explicit per-page override hooks (viewer toggles / harness) */
+[data-mx][data-mx-scheme="dark"] {
+  --mx-paper:    #17161c;
+  --mx-ink:      #e9e3d3;
+  --mx-ink-soft: rgba(233, 227, 211, 0.64);
+  --mx-accent:   #7fa8cc;
+  --mx-accent-ink:#141319;
+  --mx-hair:     rgba(233, 227, 211, 0.28);
+  --mx-ghost:    rgba(233, 227, 211, 0.07);
+  --mx-quote-bg: rgba(0, 0, 0, 0.28);
+  --mx-shadow:   rgba(0, 0, 0, 0.85);
+}
+
+/* ------------------------------------------------------------
+   01 · BASE REGISTER
+   ------------------------------------------------------------ */
+[data-mx] {
+  margin: 0;
+  background: var(--mx-paper);
+  color: var(--mx-ink);
+  font-family: var(--mx-t-body);
+  line-height: 1.62;
+  -webkit-text-size-adjust: 100%;
+}
+[data-mx] *,
+[data-mx] *::before,
+[data-mx] *::after { box-sizing: border-box; }
+
+[data-mx] img,
+[data-mx] svg { max-width: 100%; }
+
+/* Acts: every act paints its own ground and palette. A flat
+   single-colour ground behind a whole act is a Law-1 FAIL —
+   stack a .mx-ground-* utility (13-chrome) on the section. */
+[data-mx] section[data-act],
+[data-mx] [data-act] {
+  position: relative;
+  isolation: isolate;
+  background: var(--mx-paper);
+  color: var(--mx-ink);
+}
+
+/* Interior column */
+.mx-wrap {
+  position: relative;
+  z-index: 2;                 /* above the act's ground layers */
+  max-width: var(--mx-wrap);
+  margin: 0 auto;
+  padding: 0 clamp(20px, 4vw, 56px);
+}
+
+/* ------------------------------------------------------------
+   02 · BODY COPY — disciplined (Law 8)
+   ------------------------------------------------------------ */
+.mx-body { max-width: min(var(--mx-measure), 68ch); }
+.mx-body p {
+  font-size: 1.03rem;
+  line-height: 1.68;
+  color: var(--mx-ink);
+  margin: 0 0 1.1em;
+}
+.mx-body strong { font-weight: 700; }
+.mx-body a {
+  color: var(--mx-accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+/* Serif register variant (editorial-skin acts flip body voice) */
+.mx-body--serif p { font-family: var(--mx-t-serif); font-size: 1.12rem; }
+
+/* ------------------------------------------------------------
+   03 · MICRO-LABEL VOICE (mono, uppercase) — Law-8 floor baked in
+   ------------------------------------------------------------ */
+.mx-micro {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  line-height: 1.5;
+}
+
+/* Handwriting marginalia voice */
+.mx-note {
+  display: inline-block;
+  font-family: var(--mx-t-hand);
+  font-size: clamp(1.25rem, 2.6vw, 1.55rem);
+  line-height: 1.15;
+  color: var(--mx-hand-ink);
+  transform: rotate(-2deg);
+  max-width: 30ch;
+}
