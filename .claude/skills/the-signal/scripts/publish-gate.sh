@@ -72,6 +72,40 @@ else
   echo "--- gate: image-diversity — no <img> in issue (CSS-placeholder plates), skipped ---"
 fi
 
+# ── WP-6: rendered gates for NEW-SYSTEM (data-mx) issues ──────────────────────
+# A data-mx issue additionally runs the WP-0 measurement harness
+# (tools/measure-issue.mjs: one run, both viewports + reduced-motion passes)
+# and hard-fails on Law-2 floors/distribution, words-per-screen caps, Law-3
+# measured body copy, Law-10 craft flags (chrome overlap / h-scroll / table
+# truncation) and the Law-5 motion census per tier incl. reduced-motion==0.
+# Detection keys off the REAL <body> tag (after </head>), same as
+# validate-issue.py's is_new_system. Legacy issues never enter this block.
+IS_MX=$(python3 - "$HTML" <<'PY'
+import re, sys
+html = open(sys.argv[1], encoding="utf-8", errors="ignore").read()
+he = re.search(r"</head\s*>", html, re.I)
+tail = html[he.end():] if he else html
+m = re.search(r"<body\b[^>]*>", tail, re.I)
+print("yes" if (m and re.search(r"\bdata-mx\b", m.group(0))) else "no")
+PY
+)
+if [[ "$IS_MX" == "yes" ]]; then
+  REPO_ROOT="$(cd "$SKILL_DIR/../../.." && pwd)"
+  METRICS_DIR="${MX_METRICS_DIR:-$(dirname "$HTML")/$(basename "$HTML" .html)-metrics}"
+  mkdir -p "$METRICS_DIR"
+  echo "--- data-mx issue: running WP-0 rendered gates (measure-issue.mjs → $METRICS_DIR) ---"
+  run_gate "rendered-measure" node "$REPO_ROOT/tools/measure-issue.mjs" "$HTML" --out "$METRICS_DIR"
+  if [[ -f "$METRICS_DIR/metrics.json" ]]; then
+    run_gate "rendered-metrics" python3 "$SKILL_DIR/scripts/check-rendered-metrics.py" \
+      "$METRICS_DIR/metrics.json" --format "$FMT" --html "$HTML"
+  else
+    echo "--- gate: rendered-metrics — metrics.json missing (measure failed) ---"
+    NAMES+=("rendered-metrics"); EXITS+=(1)
+  fi
+else
+  echo "--- rendered gates: legacy (non-mx) issue — skipped, pipeline unchanged ---"
+fi
+
 # --- compute verdict + write receipt ---
 VERDICT="green"
 for rc in "${EXITS[@]}"; do [[ "$rc" -ne 0 ]] && VERDICT="red"; done

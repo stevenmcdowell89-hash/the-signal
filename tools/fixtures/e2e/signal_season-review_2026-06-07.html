@@ -1,0 +1,4362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Signal — The 2025-26 Premier League Season · Season Review</title>
+<meta name="description" content="Arsenal end the twenty-two-year wait. Every club graded, every moment filed, and what actually changes in August.">
+<style>
+/* ============================================================
+   MX CORE · 00-contract.css
+   THE SIGNAL — furniture core, layer L0 (design-system
+   unification spec §2.1). Token contract + neutral defaults +
+   the six type voices + Law-8 floors.
+
+   SCOPE. Everything keys off [data-mx] (put it on <body>).
+   Palette tokens re-scope per act: any `section[data-act]`
+   (or any element carrying data-act) may remap the --mx-*
+   palette for its subtree. Acts are declared per issue by the
+   skin / motif pack; this file only ships neutral defaults so
+   an undressed page still renders as a disciplined object.
+
+   NAMESPACE. All classes are `mx-` and theme-neutral. The
+   weekly's forbidden-marker gates key on `sp-*` / `hol-*`
+   vocabularies — nothing here can false-fire them.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   00 · TOKEN CONTRACT (~30 custom properties)
+   ------------------------------------------------------------ */
+[data-mx] {
+  /* — act palette (re-scopable via [data-act]) — */
+  --mx-paper:      #f2eee3;               /* the ground of the act            */
+  --mx-ink:        #1d1b16;               /* running text                     */
+  --mx-ink-soft:   #6c6455;               /* secondary text                   */
+  --mx-accent:     #31577d;               /* primary accent (never hard-coded
+                                             downstream — Law 7)             */
+  --mx-accent-ink: #f4f0e6;               /* text ON the accent               */
+  --mx-accent-2:   #a9502c;               /* second accent / event colour     */
+  --mx-accent-2-ink:#f7efe0;
+  --mx-support-1:  #3f6650;               /* pills, tiers, seals              */
+  --mx-support-2:  #b08f3c;               /* brass-register support           */
+  --mx-hair:       rgba(29, 27, 22, 0.3); /* hairlines, dotted rules          */
+
+  /* — object surfaces (the ephemera chassis) — */
+  --mx-card:        #f7f1e1;              /* card stock                       */
+  --mx-card-ink:    #221d12;
+  --mx-card-edge:   rgba(0, 0, 0, 0.18);
+  --mx-card-window: #efe7d2;              /* content/photo window             */
+  --mx-tape:        rgba(196, 168, 108, 0.72);
+  --mx-ghost:       rgba(29, 27, 22, 0.08);  /* mega ghost numerals           */
+  --mx-quote-bg:    rgba(29, 27, 22, 0.045);
+  --mx-shadow:      rgba(20, 16, 8, 0.5);    /* object drop-shadow colour     */
+  --mx-hand-ink:    var(--mx-accent-2);      /* handwriting voice colour      */
+  --mx-stamp-ink:   var(--mx-accent-2);      /* rubber-stamp / seal colour    */
+
+  /* — chrome surfaces (masthead / footer / transit bands) —
+     Default: ink-on-paper inverted. Under the dark scheme these
+     remap to stay DARK with cream type instead of following the
+     ink/paper flip (WP-2 dark note: the masthead must not read
+     cream over a dark cover act). */
+  --mx-chrome-bg:   var(--mx-ink);
+  --mx-chrome-ink:  var(--mx-paper);
+
+  /* — art slots (filled by motif packs; safe empty defaults) — */
+  --mx-pattern: none;        /* tiled bg image for .mx-ground-pattern         */
+  --mx-glyph:   none;        /* currentColor glyph via mask-image             */
+  --mx-band:    none;        /* decorative band image                         */
+  --mx-grain:   0.05;        /* grain overlay opacity for .mx-ground-grain    */
+
+  /* — scenography — */
+  --mx-tilt: -1.6deg;        /* base object rotation; components vary it      */
+
+  /* — six type voices (Law 8) —
+     Font-family indirection only: self-hosted files are the
+     skins/bundler's job (WP-3). System fallbacks keep every
+     voice legible with zero network. */
+  --mx-t-chunk:  "Bowlby One", "Arial Black", "Arial Rounded MT Bold", Impact, sans-serif;
+  --mx-t-tall:   "Anton", "Bebas Neue", "Oswald", "Arial Narrow", Impact, sans-serif;
+  --mx-t-script: "Yellowtail", "Pacifico", "Segoe Script", "Brush Script MT", cursive;
+  --mx-t-hand:   "Caveat", "Kalam", "Bradley Hand", "Comic Sans MS", cursive;
+  --mx-t-serif:  "Cormorant Garamond", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --mx-t-mono:   "Space Mono", "JetBrains Mono", ui-monospace, "Cascadia Mono", "Courier New", monospace;
+  --mx-t-body:   "DM Sans", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* — Law-8 floors + layout constants — */
+  --mx-micro:   0.72rem;     /* mono micro-label floor — never go below       */
+  --mx-measure: 62ch;        /* body measure; hard cap 68ch enforced below    */
+  --mx-wrap:    1140px;      /* interior column                               */
+}
+
+/* Dark scheme: remap the NEUTRAL tokens only. Acts declared by a
+   pack may ship their own dark remaps; a pack that locks its
+   scheme sets data-mx-scheme="locked" on the act section.
+   Ephemera stays paper-coloured — objects are physical stock. */
+@media (prefers-color-scheme: dark) {
+  [data-mx]:not([data-mx-scheme="locked"]) {
+    --mx-paper:    #17161c;
+    --mx-ink:      #e9e3d3;
+    --mx-ink-soft: rgba(233, 227, 211, 0.64);
+    --mx-accent:   #7fa8cc;
+    --mx-accent-ink:#141319;
+    --mx-hair:     rgba(233, 227, 211, 0.28);
+    --mx-ghost:    rgba(233, 227, 211, 0.07);
+    --mx-quote-bg: rgba(0, 0, 0, 0.28);
+    --mx-shadow:   rgba(0, 0, 0, 0.85);
+    /* chrome stays dark under the dark scheme (no cream flip) */
+    --mx-chrome-bg:  #100f14;
+    --mx-chrome-ink: #e9e3d3;
+  }
+}
+/* Explicit per-page override hooks (viewer toggles / harness) */
+[data-mx][data-mx-scheme="dark"] {
+  --mx-paper:    #17161c;
+  --mx-ink:      #e9e3d3;
+  --mx-ink-soft: rgba(233, 227, 211, 0.64);
+  --mx-accent:   #7fa8cc;
+  --mx-accent-ink:#141319;
+  --mx-hair:     rgba(233, 227, 211, 0.28);
+  --mx-ghost:    rgba(233, 227, 211, 0.07);
+  --mx-quote-bg: rgba(0, 0, 0, 0.28);
+  --mx-shadow:   rgba(0, 0, 0, 0.85);
+  --mx-chrome-bg:  #100f14;
+  --mx-chrome-ink: #e9e3d3;
+}
+
+/* ------------------------------------------------------------
+   01 · BASE REGISTER
+   ------------------------------------------------------------ */
+[data-mx] {
+  margin: 0;
+  background: var(--mx-paper);
+  color: var(--mx-ink);
+  font-family: var(--mx-t-body);
+  line-height: 1.62;
+  -webkit-text-size-adjust: 100%;
+}
+[data-mx] *,
+[data-mx] *::before,
+[data-mx] *::after { box-sizing: border-box; }
+
+[data-mx] img,
+[data-mx] svg { max-width: 100%; }
+
+/* Acts: every act paints its own ground and palette. A flat
+   single-colour ground behind a whole act is a Law-1 FAIL —
+   stack a .mx-ground-* utility (13-chrome) on the section. */
+[data-mx] section[data-act],
+[data-mx] [data-act] {
+  position: relative;
+  isolation: isolate;
+  background: var(--mx-paper);
+  color: var(--mx-ink);
+}
+
+/* Interior column */
+.mx-wrap {
+  position: relative;
+  z-index: 2;                 /* above the act's ground layers */
+  max-width: var(--mx-wrap);
+  margin: 0 auto;
+  padding: 0 clamp(20px, 4vw, 56px);
+}
+
+/* ------------------------------------------------------------
+   02 · BODY COPY — disciplined (Law 8)
+   ------------------------------------------------------------ */
+.mx-body { max-width: min(var(--mx-measure), 68ch); }
+.mx-body p {
+  font-size: 1.03rem;
+  line-height: 1.68;
+  color: var(--mx-ink);
+  margin: 0 0 1.1em;
+}
+.mx-body strong { font-weight: 700; }
+.mx-body a {
+  color: var(--mx-accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+/* Serif register variant (editorial-skin acts flip body voice) */
+.mx-body--serif p { font-family: var(--mx-t-serif); font-size: 1.12rem; }
+
+/* ------------------------------------------------------------
+   03 · MICRO-LABEL VOICE (mono, uppercase) — Law-8 floor baked in
+   ------------------------------------------------------------ */
+.mx-micro {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  line-height: 1.5;
+}
+
+/* Handwriting marginalia voice */
+.mx-note {
+  display: inline-block;
+  font-family: var(--mx-t-hand);
+  font-size: clamp(1.25rem, 2.6vw, 1.55rem);
+  line-height: 1.15;
+  color: var(--mx-hand-ink);
+  transform: rotate(-2deg);
+  max-width: 30ch;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   THE SIGNAL · FURNITURE CORE · 01-FONTS
+   Self-hosted subsetted woff2 under /assets/fonts/ (§2.2: Google Fonts links
+   are a proven runtime failure — one gate render runs network-disabled).
+   Only faces referenced by the 00-contract type roles are declared here;
+   additional whitelist families live in assets/fonts/ for motif packs.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* chunk — heavy rounded display */
+@font-face {
+  font-family: "Bowlby One";
+  src: url("/assets/fonts/bowlby-one-latin-400-normal.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+
+/* tall — condensed black display */
+@font-face {
+  font-family: "Anton";
+  src: url("/assets/fonts/anton-latin-400-normal.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+
+/* script — sign-painter connected script */
+@font-face {
+  font-family: "Yellowtail";
+  src: url("/assets/fonts/yellowtail-latin-400-normal.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+
+/* hand — marker hand for captions */
+@font-face {
+  font-family: "Caveat";
+  src: url("/assets/fonts/caveat-latin-400-normal.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Caveat";
+  src: url("/assets/fonts/caveat-latin-700-normal.woff2") format("woff2");
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+
+/* serif — bookish body/display serif */
+@font-face {
+  font-family: "Cormorant Garamond";
+  src: url("/assets/fonts/cormorant-garamond-latin-400-normal.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Cormorant Garamond";
+  src: url("/assets/fonts/cormorant-garamond-latin-400-italic.woff2") format("woff2");
+  font-weight: 400; font-style: italic; font-display: swap;
+}
+@font-face {
+  font-family: "Cormorant Garamond";
+  src: url("/assets/fonts/cormorant-garamond-latin-600-normal.woff2") format("woff2");
+  font-weight: 600; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Cormorant Garamond";
+  src: url("/assets/fonts/cormorant-garamond-latin-700-normal.woff2") format("woff2");
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+
+/* mono — typewriter mono for micro-labels and ledgers */
+@font-face {
+  font-family: "Space Mono";
+  src: url("/assets/fonts/space-mono-latin-400-normal.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Space Mono";
+  src: url("/assets/fonts/space-mono-latin-400-italic.woff2") format("woff2");
+  font-weight: 400; font-style: italic; font-display: swap;
+}
+@font-face {
+  font-family: "Space Mono";
+  src: url("/assets/fonts/space-mono-latin-700-normal.woff2") format("woff2");
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+
+/* ============================================================
+   MX CORE · 10-ephemera.css
+   Framed-object chassis: content window + fastener + hand
+   caption + credit. Descended from the holiday polaroid (36§09),
+   postcard (36§10), stamp (36§11), ticket/coaster (41), and the
+   de-themed kit-card of the unification mockup.
+
+   LAW 1 — SCENOGRAPHY IS THE DEFAULT. Every object here ships
+   with ≥2 scenography cues OUT OF THE BOX: rotation (1–3°),
+   a fastener rendered as a pseudo-element (tape / pin / photo
+   corners), and a drop shadow on card stock. Flattening is an
+   explicit opt-out: add .mx-flat. There is no upright,
+   shadowless default.
+
+   REAL-IMAGE CONTRACT (F-6). A photo slot is a real
+   <img src alt> (object-fit: cover) inside .mx-card__window.
+   A CSS-drawn object instead uses
+       <div class="mx-card__window" role="img" aria-label="…">.
+   Never a bare background-image div.
+
+   EVENT CENSUS. Every rendered instance carries
+   data-mx-event="ephemera" (quote objects: "quote"; a chart in
+   a window: "chart") on the OUTERMOST element of the object.
+
+   MARKUP — pinned/taped card (polaroid descendant):
+     <figure class="mx-card" data-mx-event="ephemera">
+       <div class="mx-card__window">
+         <img src="/assets/cached/x.jpg" alt="…">
+       </div>
+       <figcaption class="mx-card__caption">hand-written line</figcaption>
+       <span class="mx-card__credit">Photo · Named Source</span>
+     </figure>
+   Variants: .mx-card--pin  (pushpin fastener)
+             .mx-card--corner (photo corners)
+             .mx-card--ruled (index-card ruling in the window)
+             .mx-card--wide  (420px)
+             .mx-flat (opt-out: upright, no fastener, soft shadow)
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   01 · CARD CHASSIS
+   ------------------------------------------------------------ */
+.mx-card {
+  background: var(--mx-card);
+  color: var(--mx-card-ink);
+  border: 1px solid var(--mx-card-edge);
+  box-shadow:
+    0 22px 34px -16px var(--mx-shadow),
+    0 2px 0 rgba(0, 0, 0, 0.05);
+  padding: 12px 12px 14px;
+  width: min(300px, 100%);
+  position: relative;
+  margin: 0;
+  transform: rotate(var(--mx-tilt, -1.6deg));
+}
+.mx-card--wide { width: min(420px, 100%); }
+
+/* tilt variance so a shelf of cards never reads as a grid */
+.mx-card:nth-of-type(2n)   { --mx-tilt: 2.2deg; }
+.mx-card:nth-of-type(3n)   { --mx-tilt: -2.6deg; }
+.mx-card:nth-of-type(4n+1) { --mx-tilt: 1.2deg; }
+
+/* — fastener: washi tape (default) — */
+.mx-card::before {
+  content: "";
+  position: absolute;
+  top: -11px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-3.5deg);
+  width: 92px;
+  height: 24px;
+  background: var(--mx-tape);
+  border-left: 1px dashed rgba(255, 255, 255, 0.5);
+  border-right: 1px dashed rgba(255, 255, 255, 0.5);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+  z-index: 3;
+}
+.mx-card:nth-of-type(2n)::before { transform: translateX(-50%) rotate(4deg); }
+
+/* — fastener: pushpin — */
+.mx-card--pin::before {
+  width: 16px;
+  height: 16px;
+  top: -8px;
+  border: none;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 30%, rgba(255, 255, 255, 0.85) 0 18%, transparent 40%),
+    var(--mx-accent-2);
+  box-shadow: 0 6px 8px -3px var(--mx-shadow);
+  transform: translateX(-50%);
+}
+
+/* — fastener: photo corners (two opposing corners) — */
+.mx-card--corner::before,
+.mx-card--corner::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  border: 16px solid transparent;
+  box-shadow: none;
+  background: none;
+  transform: none;
+  pointer-events: none;
+  z-index: 3;
+}
+.mx-card--corner::before {
+  top: -3px; left: -3px;
+  border-top-color: var(--mx-support-2);
+  border-left-color: var(--mx-support-2);
+}
+.mx-card--corner::after {
+  bottom: -3px; right: -3px;
+  border-bottom-color: var(--mx-support-2);
+  border-right-color: var(--mx-support-2);
+}
+
+/* — the explicit opt-out (Law 1: flattening is never a default) — */
+.mx-flat,
+.mx-flat.mx-card {
+  transform: none;
+  box-shadow: 0 10px 18px -14px var(--mx-shadow);
+}
+.mx-flat::before,
+.mx-flat::after { display: none; }
+
+/* ------------------------------------------------------------
+   02 · CONTENT WINDOW + CAPTION + CREDIT
+   ------------------------------------------------------------ */
+.mx-card__window {
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  background: var(--mx-card-window);
+  min-height: 120px;
+  display: grid;
+  place-items: center;
+  padding: 14px 12px;
+  overflow: hidden;
+}
+.mx-card__window > img {
+  display: block;
+  width: calc(100% + 24px);
+  margin: -14px -12px;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+.mx-card__caption {
+  font-family: var(--mx-t-hand);
+  font-size: 1.28rem;
+  line-height: 1.15;
+  text-align: center;
+  margin-top: 10px;
+  color: var(--mx-card-ink);
+}
+.mx-card__credit {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  display: block;
+  margin-top: 6px;
+  opacity: 0.6;
+}
+
+/* index-card ruling variant */
+.mx-card--ruled .mx-card__window {
+  background-image:
+    linear-gradient(180deg, transparent 0 30px, rgba(150, 40, 40, 0.5) 30px 31px, transparent 31px),
+    repeating-linear-gradient(180deg, transparent 0 26px, rgba(40, 60, 120, 0.28) 26px 27px);
+  place-items: start stretch;
+  text-align: left;
+}
+.mx-typed {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, 0.74rem);
+  line-height: 26px; /* matches the ruling */
+  color: var(--mx-card-ink);
+  padding-top: 4px;
+}
+.mx-typed b { letter-spacing: 0.14em; }
+
+/* ------------------------------------------------------------
+   03 · MAIL CARD (postcard descendant)
+   front panel (ink ground + script greeting) beside a lined,
+   hand-written back. Scenography: airmail edge + tilt + hard
+   offset shadow (3 cues, no tape).
+   MARKUP:
+     <figure class="mx-card--mail" data-mx-event="ephemera">
+       <div class="mx-mail__front">
+         <span class="mx-mail__greet">Greetings from</span>
+         <span class="mx-mail__place">Scarborough</span>
+       </div>
+       <div class="mx-mail__back">…hand-written message…</div>
+     </figure>
+   ------------------------------------------------------------ */
+.mx-card--mail {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: min(400px, 100%);
+  min-height: 190px;
+  margin: 0;
+  background: var(--mx-card);
+  color: var(--mx-card-ink);
+  border: 5px solid transparent;
+  border-image: repeating-linear-gradient(
+      45deg,
+      var(--mx-accent-2) 0 10px,
+      var(--mx-card) 10px 20px,
+      var(--mx-accent) 20px 30px,
+      var(--mx-card) 30px 40px) 5;
+  box-shadow: 6px 6px 0 var(--mx-shadow);
+  transform: rotate(var(--mx-tilt, -1.4deg));
+  position: relative;
+}
+.mx-card--mail:nth-of-type(2n) { --mx-tilt: 1.8deg; }
+.mx-mail__front {
+  background: var(--mx-ink);
+  color: var(--mx-paper);
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+}
+.mx-mail__greet {
+  font-family: var(--mx-t-script);
+  font-size: 1.65rem;
+  line-height: 0.95;
+  color: var(--mx-support-2);
+}
+.mx-mail__place {
+  font-family: var(--mx-t-tall);
+  font-size: 1.1rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.mx-mail__back {
+  padding: 14px 14px 14px 12px;
+  font-family: var(--mx-t-hand);
+  font-size: 1.12rem;
+  line-height: 1.28;
+  color: var(--mx-card-ink);
+  border-left: 1px dashed var(--mx-hair);
+  background-image: repeating-linear-gradient(
+      180deg, transparent 0 22px, var(--mx-hair) 22px 23px);
+  background-position: 0 12px;
+}
+
+/* ------------------------------------------------------------
+   04 · STAMP / SEAL — currentColor roundel
+   MARKUP:
+     <div class="mx-stamp" data-mx-event="ephemera">
+       <span>Filed · The Signal</span><b>4.5g</b><span>72 to the pound</span>
+     </div>
+   ------------------------------------------------------------ */
+.mx-stamp {
+  display: inline-grid;
+  place-items: center;
+  width: 128px;
+  height: 128px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  color: var(--mx-stamp-ink);
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 16px;
+  line-height: 1.3;
+  transform: rotate(-8deg);
+  position: relative;
+  background: transparent;
+}
+.mx-stamp::before {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  opacity: 0.85;
+}
+.mx-stamp b {
+  display: block;
+  font-family: var(--mx-t-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  margin: 4px 0 3px;
+}
+.mx-stamp--support { color: var(--mx-support-1); }
+.mx-stamp--brass   { color: var(--mx-support-2); }
+
+/* ------------------------------------------------------------
+   05 · TICKET — perforated stub, punch holes, hard shadow
+   MARKUP:
+     <div class="mx-ticket" data-mx-event="ephemera">
+       <div class="mx-ticket__main">
+         <span class="mx-ticket__meta">Grand Départ · Stage 1</span>
+         <span class="mx-ticket__event">Lille → Lille</span>
+         <span class="mx-ticket__meta mx-ticket__row"><span>Gate</span><span>Nord 4</span></span>
+       </div>
+       <div class="mx-ticket__stub">
+         <div class="mx-stamp"><span>Admit</span><b>One</b></div>
+       </div>
+     </div>
+   ------------------------------------------------------------ */
+.mx-ticket {
+  display: grid;
+  grid-template-columns: 1fr 96px;
+  width: min(360px, 100%);
+  background: var(--mx-card);
+  color: var(--mx-card-ink);
+  border: 1.5px solid var(--mx-card-ink);
+  box-shadow: 5px 5px 0 var(--mx-shadow);
+  transform: rotate(var(--mx-tilt, -1.5deg));
+  position: relative;
+}
+.mx-ticket:nth-of-type(2n) { --mx-tilt: 1.6deg; }
+/* punch holes on the perforation line */
+.mx-ticket::before,
+.mx-ticket::after {
+  content: "";
+  position: absolute;
+  right: 89px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--mx-paper);
+  border: 1.5px solid var(--mx-card-ink);
+}
+.mx-ticket::before { top: -8px; }
+.mx-ticket::after  { bottom: -8px; }
+.mx-ticket__main { padding: 15px 16px 13px; }
+.mx-ticket__event {
+  display: block;
+  font-family: var(--mx-t-serif);
+  font-weight: 600;
+  font-size: 1.45rem;
+  line-height: 1.05;
+  margin: 3px 0 8px;
+}
+.mx-ticket__meta {
+  display: block;
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mx-ink-soft);
+}
+.mx-ticket__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 6px;
+}
+.mx-ticket__row > span:last-child { color: var(--mx-card-ink); }
+.mx-ticket__stub {
+  border-left: 2px dashed var(--mx-card-ink);
+  display: grid;
+  place-items: center;
+  padding: 10px 6px;
+  background: repeating-linear-gradient(
+      45deg, transparent 0 6px, var(--mx-quote-bg) 6px 12px);
+}
+.mx-ticket__stub .mx-stamp {
+  width: 82px;
+  height: 82px;
+  padding: 8px;
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.04em;
+  transform: rotate(8deg);
+}
+.mx-ticket__stub .mx-stamp b { font-size: 0.95rem; }
+
+/* ------------------------------------------------------------
+   06 · COASTER — circular centre-text object
+   MARKUP:
+     <div class="mx-coaster" data-mx-event="ephemera">
+       <span>Harbour Bar · vanilla ice · £3.40</span>
+     </div>
+   ------------------------------------------------------------ */
+.mx-coaster {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 176px;
+  height: 176px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center, transparent 56%, rgba(0, 0, 0, 0.05) 58%, transparent 60%),
+    var(--mx-card);
+  border: 1.5px solid var(--mx-hair);
+  color: var(--mx-card-ink);
+  position: relative;
+  box-shadow:
+    0 0 0 6px rgba(255, 255, 255, 0.4),
+    0 14px 22px -12px var(--mx-shadow);
+  transform: rotate(-4deg);
+}
+.mx-coaster:nth-of-type(2n) { transform: rotate(3deg); }
+.mx-coaster::before {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  border-radius: 50%;
+  border: 1px dashed var(--mx-hair);
+}
+.mx-coaster span {
+  display: block;
+  font-family: var(--mx-t-serif);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.25;
+  text-align: center;
+  padding: 0 1.4rem;
+  max-width: 150px;
+}
+.mx-coaster--accent  { background: var(--mx-accent);  color: var(--mx-accent-ink); }
+.mx-coaster--accent2 { background: var(--mx-accent-2); color: var(--mx-accent-2-ink); }
+.mx-coaster--accent::before,
+.mx-coaster--accent2::before { border-color: rgba(255, 255, 255, 0.4); }
+
+/* ------------------------------------------------------------
+   07 · QUOTE OBJECT — a voice, never a floating italic line.
+   Named source is mandatory (Law 9).
+   MARKUP:
+     <figure class="mx-quote" data-mx-event="quote">
+       <blockquote>…verbatim words…</blockquote>
+       <figcaption>— <b>Named Person</b> · where they said it</figcaption>
+     </figure>
+   ------------------------------------------------------------ */
+.mx-quote {
+  margin: 40px 0;
+  padding: 26px 26px 20px;
+  border-left: 6px solid var(--mx-accent);
+  background: var(--mx-quote-bg);
+  position: relative;
+}
+.mx-quote::before {
+  content: "\201C";
+  position: absolute;
+  top: -24px;
+  left: 12px;
+  font-family: var(--mx-t-serif);
+  font-size: 5.2rem;
+  line-height: 1;
+  color: var(--mx-accent);
+  opacity: 0.9;
+  pointer-events: none;
+}
+.mx-quote blockquote {
+  font-family: var(--mx-t-serif);
+  font-style: italic;
+  font-size: clamp(1.18rem, 2.6vw, 1.5rem);
+  line-height: 1.42;
+  color: var(--mx-ink);
+  margin: 0;
+  border: none;
+}
+.mx-quote figcaption {
+  margin-top: 12px;
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--mx-ink-soft);
+}
+.mx-quote figcaption b { color: var(--mx-accent); font-weight: 700; }
+
+/* ------------------------------------------------------------
+   08 · SHELF — the scatter surface for ephemera beside copy.
+   Deliberate un-grid: alternating vertical offsets so objects
+   read as laid on a table, not slotted in cells.
+   ------------------------------------------------------------ */
+.mx-shelf {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px 44px;
+  align-items: flex-start;
+  justify-content: center;
+  margin: 56px 0;
+}
+.mx-shelf > * { flex: 0 1 auto; }
+.mx-shelf > *:nth-child(2n) { margin-top: 30px; }
+.mx-shelf > *:nth-child(3n) { margin-top: -12px; }
+
+/* copy + object two-column */
+.mx-twocol {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 40px;
+  align-items: start;
+  margin: 40px 0;
+}
+.mx-twocol__aside {
+  display: grid;
+  gap: 30px;
+  justify-items: center;
+}
+
+/* ============================================================
+   MX CORE · 11-ledgers.css
+   Data furniture: facts <dl> ledgers, ranked entries + rank
+   chips, tier pills, stat bands, cheat-sheet, scorecard.
+   Extraction template: layer 40's meal-slot `--slot-*` DOUBLE-
+   TOKEN pattern — every component maps a small set of local
+   `--mxl-*` tokens from the act palette at its top, so an act
+   (or skin) restyles the whole component by remapping ONE block
+   instead of touching per-part rules.
+
+   EVENT CENSUS: data-mx-event="ledger" on .mx-ledger,
+   .mx-ranked, .mx-scorecard; "statband" on .mx-numbers;
+   "cheatsheet" on .mx-cheat.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   01 · FACTS LEDGER — the WHERE/ORDER/TIMING/WALK move
+   MARKUP:
+     <div class="mx-ledger" data-mx-event="ledger">
+       <div class="mx-ledger__caption">Ledger · One Emperor, Filed</div>
+       <dl><dt>Reign</dt><dd>527–565 …</dd> …</dl>
+     </div>
+   ------------------------------------------------------------ */
+.mx-ledger {
+  --mxl-ink:    var(--mx-ink);
+  --mxl-soft:   var(--mx-ink-soft);
+  --mxl-accent: var(--mx-accent);
+  --mxl-rule:   var(--mx-hair);
+  border-top: 3px solid var(--mxl-ink);
+  border-bottom: 1px solid var(--mxl-rule);
+  margin: 34px 0;
+}
+.mx-ledger__caption {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--mxl-accent);
+  padding: 10px 0 9px;
+  border-bottom: 1px solid var(--mxl-rule);
+}
+.mx-ledger dl {
+  display: grid;
+  grid-template-columns: 118px 1fr;
+  margin: 0;
+}
+.mx-ledger dt {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--mxl-soft);
+  padding: 12px 12px 12px 0;
+  border-bottom: 1px dotted var(--mxl-rule);
+}
+.mx-ledger dd {
+  font-size: 0.94rem;
+  line-height: 1.55;
+  color: var(--mxl-ink);
+  margin: 0;
+  padding: 11px 0 12px;
+  border-bottom: 1px dotted var(--mxl-rule);
+}
+.mx-ledger dt:last-of-type,
+.mx-ledger dd:last-of-type { border-bottom: none; }
+
+/* ------------------------------------------------------------
+   02 · RANKED ENTRIES + RANK CHIPS + TIER PILLS
+   (meal-slot descendant, layer 40)
+   MARKUP:
+     <div class="mx-ranked" data-mx-event="ledger">
+       <h3 class="mx-ranked__title">Chip shops, ranked.</h3>
+       <ol class="mx-ranked__list">
+         <li class="mx-ranked__entry">
+           <div class="mx-ranked__head">
+             <span class="mx-rank">01</span>
+             <h4 class="mx-ranked__name">The Magpie Café</h4>
+             <span class="mx-tier mx-tier--hot">Go</span>
+           </div>
+           <p>…verdict copy…</p>
+           <dl class="mx-ranked__facts"><dt>Queue</dt><dd>40 min at noon</dd></dl>
+         </li>
+       </ol>
+     </div>
+   ------------------------------------------------------------ */
+.mx-ranked {
+  --mxl-card:      color-mix(in srgb, var(--mx-card) 72%, white);
+  --mxl-card-ink:  var(--mx-card-ink);
+  --mxl-soft:      color-mix(in srgb, var(--mx-card-ink) 62%, transparent);
+  --mxl-accent:    var(--mx-accent);
+  --mxl-rank-bg:   var(--mx-ink);
+  --mxl-rank-fg:   var(--mx-paper);
+  margin: 2.4rem 0;
+  max-width: 720px;
+}
+.mx-ranked__title {
+  font-family: var(--mx-t-serif);
+  font-style: italic;
+  font-weight: 700;
+  font-size: clamp(1.4rem, 2.6vw, 1.75rem);
+  margin: 0 0 0.9rem;
+  color: var(--mx-ink);
+}
+.mx-ranked__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  counter-reset: mx-rank;
+}
+.mx-ranked__entry {
+  background: var(--mxl-card);
+  color: var(--mxl-card-ink);
+  border: 1px solid color-mix(in srgb, var(--mxl-card-ink) 14%, transparent);
+  border-left: 3px solid var(--mxl-accent);
+  border-radius: 3px;
+  padding: 0.95rem 1.1rem;
+  position: relative;
+  counter-increment: mx-rank;
+  box-shadow: 0 10px 18px -14px var(--mx-shadow);
+}
+/* scenography nudge: entries sit a hair off-axis, alternating */
+.mx-ranked__entry:nth-child(2n) { transform: rotate(0.4deg); }
+.mx-ranked__entry:nth-child(2n+1) { transform: rotate(-0.35deg); }
+.mx-ranked__head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.4rem;
+}
+.mx-ranked__name {
+  font-family: var(--mx-t-serif);
+  font-size: 1.18rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.25;
+  flex: 1 1 auto;
+  color: var(--mxl-card-ink);
+}
+.mx-ranked__entry > p {
+  margin: 0.3rem 0 0;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--mxl-card-ink) 88%, transparent);
+}
+.mx-ranked__facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 0.65rem;
+  row-gap: 0.2rem;
+  margin: 0.7rem 0 0;
+  padding: 0.5rem 0 0;
+  border-top: 1px dashed color-mix(in srgb, var(--mxl-card-ink) 16%, transparent);
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  line-height: 1.4;
+}
+.mx-ranked__facts dt {
+  color: var(--mxl-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+}
+.mx-ranked__facts dd { color: var(--mxl-card-ink); margin: 0; }
+
+/* rank chip — chunky numeral; auto-numbers when empty */
+.mx-rank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.9rem;
+  height: 1.9rem;
+  padding: 0 0.45rem;
+  background: var(--mxl-rank-bg, var(--mx-ink));
+  color: var(--mxl-rank-fg, var(--mx-paper));
+  font-family: var(--mx-t-chunk);
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  border-radius: 2px;
+  flex-shrink: 0;
+  transform: rotate(-2deg);
+}
+.mx-ranked__entry:nth-child(2n) .mx-rank { transform: rotate(2.5deg); }
+.mx-rank:empty::before {
+  content: counter(mx-rank, decimal-leading-zero);
+}
+
+/* tier pill — verdict badge */
+.mx-tier {
+  display: inline-block;
+  padding: 0.2rem 0.55rem 0.16rem;
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 2px;
+  background: var(--mx-ink-soft);
+  color: var(--mx-paper);
+  flex-shrink: 0;
+  align-self: center;
+}
+.mx-tier--hot  { background: var(--mx-accent-2);  color: var(--mx-accent-2-ink); }
+.mx-tier--warm { background: var(--mx-support-2); color: var(--mx-ink); }
+.mx-tier--note { background: var(--mx-support-1); color: var(--mx-paper); }
+
+/* ------------------------------------------------------------
+   03 · STAT BAND — the trip-numbers move (layer 43 descendant)
+   MARKUP:
+     <div class="mx-numbers" data-mx-event="statband">
+       <div class="mx-numbers__cell">
+         <span class="mx-numbers__num">1,123</span>
+         <span class="mx-numbers__label">Years</span>
+         <span class="mx-numbers__sub">330 dedication → 1453 fall</span>
+       </div> ×3–6
+     </div>
+   ------------------------------------------------------------ */
+.mx-numbers {
+  --mxl-ink:    var(--mx-ink);
+  --mxl-soft:   var(--mx-ink-soft);
+  --mxl-accent: var(--mx-accent);
+  --mxl-rule:   var(--mx-hair);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 3px solid var(--mxl-ink);
+  border-bottom: 3px solid var(--mxl-ink);
+  margin: 40px 0;
+}
+.mx-numbers__cell {
+  padding: 20px 14px 18px;
+  text-align: center;
+  border-right: 1px dotted var(--mxl-rule);
+}
+.mx-numbers__cell:nth-child(3n) { border-right: none; }
+.mx-numbers__cell:nth-child(-n+3):nth-last-child(n+4) {
+  border-bottom: 1px dotted var(--mxl-rule);
+}
+.mx-numbers__num {
+  display: block;
+  font-family: var(--mx-t-serif);
+  font-weight: 700;
+  font-size: clamp(1.9rem, 4.6vw, 2.75rem);
+  line-height: 1;
+  color: var(--mxl-accent);
+}
+.mx-numbers__label {
+  display: block;
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mxl-ink);
+  margin-top: 8px;
+}
+.mx-numbers__sub {
+  display: block;
+  font-size: 0.74rem;
+  color: var(--mxl-soft);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+/* display-register variant for event acts (chunk numerals) */
+.mx-numbers--loud .mx-numbers__num {
+  font-family: var(--mx-t-chunk);
+  letter-spacing: -0.02em;
+}
+
+/* ------------------------------------------------------------
+   04 · CHEAT-SHEET — tiered summary card (memory-test 3-col
+   descendant). Head strip + columns; each column takes a
+   .mx-tier pill.
+   MARKUP:
+     <div class="mx-cheat" data-mx-event="cheatsheet">
+       <div class="mx-cheat__head">The Cheat Sheet · No Fence-Sitting</div>
+       <div class="mx-cheat__cols">
+         <div class="mx-cheat__col">
+           <span class="mx-tier mx-tier--hot">Will stick</span>
+           <h5>…</h5><p>…</p>
+         </div> ×3
+       </div>
+     </div>
+   ------------------------------------------------------------ */
+.mx-cheat {
+  --mxl-card:     var(--mx-card);
+  --mxl-card-ink: var(--mx-card-ink);
+  border: 1.5px solid var(--mx-ink);
+  background: var(--mxl-card);
+  color: var(--mxl-card-ink);
+  box-shadow: 0 26px 40px -18px var(--mx-shadow);
+  margin: 44px 0 8px;
+  transform: rotate(-0.4deg);
+}
+.mx-cheat__head {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  text-align: center;
+  background: var(--mx-ink);
+  color: var(--mx-paper);
+  padding: 11px 10px 10px;
+}
+.mx-cheat__cols {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+.mx-cheat__col {
+  padding: 18px 18px 20px;
+  border-right: 1px solid color-mix(in srgb, var(--mxl-card-ink) 22%, transparent);
+}
+.mx-cheat__col:last-child { border-right: none; }
+.mx-cheat__col > .mx-tier { margin-bottom: 12px; }
+.mx-cheat__col h5 {
+  font-family: var(--mx-t-serif);
+  font-weight: 700;
+  font-size: 1.1rem;
+  line-height: 1.2;
+  margin: 0 0 6px;
+  color: var(--mxl-card-ink);
+}
+.mx-cheat__col p {
+  font-size: 0.8rem;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--mxl-card-ink) 78%, transparent);
+  margin: 0 0 14px;
+}
+.mx-cheat__col p:last-child { margin-bottom: 0; }
+
+/* ------------------------------------------------------------
+   05 · SCORECARD — results/standings on card stock.
+   A table dressed as an object: card chassis, tilt, hard
+   shadow. Wide tables go inside .mx-tablewrap (15-responsive).
+   MARKUP:
+     <div class="mx-scorecard" data-mx-event="ledger">
+       <h4 class="mx-scorecard__title">Tour de France · GC, Rest Day 1</h4>
+       <div class="mx-tablewrap">
+         <table>
+           <tr class="is-lead"><td class="mx-scorecard__pos">01</td><td>POGAČAR</td><td class="mx-scorecard__gap">YELLOW</td></tr>
+         </table>
+       </div>
+     </div>
+   ------------------------------------------------------------ */
+.mx-scorecard {
+  --mxl-card-ink: var(--mx-card-ink);
+  --mxl-accent:   var(--mx-accent);
+  width: min(340px, 100%);
+  background: var(--mx-card);
+  color: var(--mxl-card-ink);
+  border: 1.5px solid var(--mxl-card-ink);
+  box-shadow: 5px 5px 0 var(--mx-shadow);
+  transform: rotate(var(--mx-tilt, 1.2deg));
+  padding: 14px 16px 12px;
+}
+.mx-scorecard:nth-of-type(2n) { --mx-tilt: -1.4deg; }
+.mx-scorecard--wide { width: min(560px, 100%); }
+.mx-scorecard__title {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--mxl-accent);
+  border-bottom: 2px solid var(--mxl-card-ink);
+  padding-bottom: 8px;
+  margin: 0 0 2px;
+}
+.mx-scorecard table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.mx-scorecard td,
+.mx-scorecard th {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  text-align: left;
+  padding: 8px 18px 7px 0;
+  border-bottom: 1px dotted color-mix(in srgb, var(--mxl-card-ink) 38%, transparent);
+  color: var(--mxl-card-ink);
+}
+.mx-scorecard tr:last-child td { border-bottom: none; }
+.mx-scorecard__pos { width: 26px; font-weight: 700; color: var(--mx-ink-soft); }
+.mx-scorecard__gap { text-align: right; font-weight: 700; }
+.mx-scorecard tr.is-lead td { font-weight: 700; }
+.mx-scorecard tr.is-lead .mx-scorecard__gap { color: var(--mxl-accent); }
+
+/* ============================================================
+   MX CORE · 12-plates.css
+   Editorial set pieces: numbered plates (chapter headers with
+   ghost numerals), anchor feature blocks, zig-zag entries,
+   don't-miss chip lists. Descended from holiday 36§12/§12b/§14
+   and the mockup kit-plate.
+
+   EVENT CENSUS: data-mx-event="plate" on .mx-plate;
+   "figure" on .mx-anchor and each .mx-zig__entry;
+   "cheatsheet" on .mx-dontmiss.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   01 · NUMBERED PLATE — giant ghosted numeral + chip + title
+   MARKUP:
+     <header class="mx-plate" data-mx-event="plate">
+       <div class="mx-plate__ghost" aria-hidden="true">IX</div>
+       <span class="mx-plate__no">FILE 09</span>
+       <h2 class="mx-plate__title">How the Empire Worked</h2>
+       <p class="mx-plate__dek">A state is a machine for surviving…</p>
+     </header>
+   ------------------------------------------------------------ */
+.mx-plate {
+  position: relative;
+  padding: 34px 0 6px;
+}
+.mx-plate__ghost {
+  position: absolute;
+  top: -46px;
+  right: -10px;
+  font-family: var(--mx-t-serif);
+  font-weight: 700;
+  font-size: clamp(150px, 26vw, 300px);
+  line-height: 1;
+  color: var(--mx-ghost);
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+.mx-plate__no {
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+  font-family: var(--mx-t-mono);
+  font-weight: 700;
+  font-size: max(0.72rem, 0.8rem);
+  letter-spacing: 0.12em;
+  background: var(--mx-accent);
+  color: var(--mx-accent-ink);
+  padding: 6px 12px 5px;
+  border-radius: 2px;
+  margin-bottom: 16px;
+  transform: rotate(-1.2deg);
+}
+.mx-plate__title {
+  position: relative;
+  z-index: 1;
+  font-family: var(--mx-t-serif);
+  font-weight: 600;
+  font-size: clamp(2.5rem, 7vw, 4.6rem);
+  line-height: 0.98;
+  color: var(--mx-ink);
+  max-width: 14ch;
+  margin: 0;
+}
+.mx-plate__dek {
+  position: relative;
+  z-index: 1;
+  font-family: var(--mx-t-serif);
+  font-style: italic;
+  font-size: clamp(1.18rem, 2.6vw, 1.5rem);
+  line-height: 1.4;
+  color: var(--mx-ink-soft);
+  max-width: 44ch;
+  margin: 16px 0 0;
+}
+/* display-register variant (event acts): chunky title voice */
+.mx-plate--loud .mx-plate__title {
+  font-family: var(--mx-t-chunk);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 0.92;
+}
+.mx-plate--loud .mx-plate__ghost { font-family: var(--mx-t-chunk); }
+
+/* ------------------------------------------------------------
+   02 · ANCHOR — the feature block. Tilted spine, media beside
+   card copy, rotated hand badge overlapping the boundary
+   (Law 1: one object per chapter breaks the grid — this is it).
+   MARKUP:
+     <article class="mx-anchor" data-mx-event="figure">
+       <div class="mx-anchor__media">
+         <img src="…" alt="…">   (or role="img" aria-label div)
+       </div>
+       <div class="mx-anchor__copy">
+         <h3 class="mx-anchor__title">The Night Riviera</h3>
+         <p class="mx-anchor__dek">…</p>
+         <div class="mx-anchor__meta">
+           <span>Dep <b>23:45 Paddington</b></span>
+         </div>
+       </div>
+       <div class="mx-anchor__badge">worth the berth</div>
+     </article>
+   ------------------------------------------------------------ */
+.mx-anchor {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(28px, 4vw, 56px);
+  align-items: center;
+  margin: 48px 0 72px;
+  padding: 32px 0 32px 32px;
+  border-left: 10px solid var(--mx-accent);
+  transform: rotate(-1deg);
+}
+.mx-anchor__media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: var(--mx-card-window);
+  border: 10px solid var(--mx-card);
+  box-shadow: 0 34px 54px -20px var(--mx-shadow);
+  transform: rotate(1.2deg);
+  overflow: hidden;
+}
+.mx-anchor__media > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.mx-anchor__media > [role="img"] {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+.mx-anchor__copy { padding-right: 104px; } /* title clears the badge */
+@media (max-width: 900px) { .mx-anchor__copy { padding-right: 0; } }
+.mx-anchor__title {
+  font-family: var(--mx-t-tall);
+  font-weight: 400;
+  font-size: clamp(2.2rem, 5vw, 4.2rem);
+  line-height: 0.95;
+  color: var(--mx-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  margin: 0 0 14px;
+}
+.mx-anchor__dek {
+  font-family: var(--mx-t-serif);
+  font-style: italic;
+  font-size: clamp(1.15rem, 2.4vw, 1.6rem);
+  line-height: 1.35;
+  color: var(--mx-ink);
+  max-width: 34ch;
+  margin: 0 0 24px;
+}
+.mx-anchor__meta {
+  border-top: 1px solid var(--mx-hair);
+  padding-top: 16px;
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mx-ink-soft);
+}
+.mx-anchor__meta b {
+  display: block;
+  font-family: var(--mx-t-body);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--mx-ink);
+  margin-top: 4px;
+}
+.mx-anchor__badge {
+  position: absolute;
+  top: -26px;
+  right: -6px;
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  background: var(--mx-card);
+  color: var(--mx-accent-2);
+  font-family: var(--mx-t-hand);
+  font-size: 1.25rem;
+  line-height: 1.05;
+  padding: 14px;
+  transform: rotate(10deg);
+  border: 4px solid var(--mx-support-2);
+  box-shadow: 0 24px 40px -16px var(--mx-shadow);
+  z-index: 4;
+}
+.mx-anchor__note {
+  position: absolute;
+  bottom: -26px;
+  right: 56px;
+  font-family: var(--mx-t-script);
+  font-size: clamp(1.7rem, 3.4vw, 2.6rem);
+  color: var(--mx-hand-ink);
+  transform: rotate(4deg);
+  opacity: 0.92;
+  z-index: 4;
+}
+
+/* ------------------------------------------------------------
+   03 · ZIG-ZAG ENTRIES — ranked editorial picks, media beside
+   a plate card, sides alternating automatically. On dark acts
+   the ground reads through between rows (illustrated plates
+   pasted on the night sky — 36§12b).
+   MARKUP:
+     <div class="mx-zig">
+       <article class="mx-zig__entry" data-mx-event="figure">
+         <div class="mx-zig__media"><img src="…" alt="…"></div>
+         <div class="mx-zig__card">
+           <div class="mx-zig__head">
+             <span class="mx-rank">01</span>
+             <h3 class="mx-zig__title">The Caledonian Sleeper</h3>
+           </div>
+           <p class="mx-zig__quote">“…” lede in serif italic.</p>
+           <dl class="mx-zig__meta"><dt>Where</dt><dd>…</dd></dl>
+         </div>
+       </article> ×N
+     </div>
+   ------------------------------------------------------------ */
+.mx-zig {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(48px, 7vw, 80px);
+  margin: 32px 0 64px;
+  counter-reset: mx-rank;
+}
+.mx-zig__entry { counter-increment: mx-rank; }
+/* rank chip on card stock: card-ink chip, card-stock numeral */
+.mx-zig__card {
+  --mxl-rank-bg: var(--mx-card-ink);
+  --mxl-rank-fg: var(--mx-card);
+}
+.mx-zig__entry {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  position: relative;
+}
+.mx-zig__entry:nth-child(2n) { flex-direction: row-reverse; }
+.mx-zig__media {
+  flex: 0 0 48%;
+  aspect-ratio: 4 / 3;
+  background: var(--mx-card-window);
+  border: 4px solid var(--mx-card);
+  border-radius: 10px;
+  box-shadow: 0 30px 55px -22px var(--mx-shadow);
+  transform: rotate(1.4deg);
+  overflow: hidden;
+}
+.mx-zig__entry:nth-child(2n) .mx-zig__media { transform: rotate(-1.6deg); }
+.mx-zig__media > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.mx-zig__media > [role="img"] {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+.mx-zig__card {
+  flex: 1 1 0;
+  position: relative;
+  z-index: 1;
+  background: var(--mx-card);
+  color: var(--mx-card-ink);
+  border-radius: 8px;
+  padding: clamp(24px, 3.4vw, 40px);
+  box-shadow: 0 26px 50px -22px var(--mx-shadow);
+  transform: rotate(-0.5deg);
+}
+.mx-zig__entry:nth-child(2n) .mx-zig__card { transform: rotate(0.6deg); }
+.mx-zig__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.mx-zig__title {
+  font-family: var(--mx-t-serif);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  line-height: 1.1;
+  color: var(--mx-card-ink);
+  margin: 0;
+}
+.mx-zig__quote {
+  font-family: var(--mx-t-serif);
+  font-style: italic;
+  font-size: 1.14rem;
+  line-height: 1.45;
+  color: var(--mx-card-ink);
+  margin: 0 0 20px;
+}
+.mx-zig__meta {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 14px;
+  align-items: baseline;
+  margin: 0;
+}
+.mx-zig__meta dt {
+  font-family: var(--mx-t-mono);
+  font-weight: 700;
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--mx-card-ink) 70%, transparent);
+  min-width: 56px;
+}
+.mx-zig__meta dd {
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--mx-card-ink);
+  margin: 0;
+}
+
+/* ------------------------------------------------------------
+   04 · DON'T-MISS — rotated accent slab with chip list.
+   Deliberately loud: double hard shadow, alternating chip
+   rotations. The chapter's grid-breaker on editorial acts.
+   MARKUP:
+     <aside class="mx-dontmiss" data-mx-event="cheatsheet">
+       <span class="mx-dontmiss__kicker">don't miss</span>
+       <h3 class="mx-dontmiss__title">Four things worth the detour</h3>
+       <ol class="mx-dontmiss__list"><li><b>…</b> …</li> ×3–5</ol>
+     </aside>
+   ------------------------------------------------------------ */
+.mx-dontmiss {
+  background: var(--mx-accent-2);
+  color: var(--mx-accent-2-ink);
+  padding: 36px 36px 42px;
+  position: relative;
+  margin: 64px 0;
+  transform: rotate(-1.2deg);
+  box-shadow:
+    10px 10px 0 var(--mx-ink),
+    20px 20px 0 var(--mx-support-2);
+}
+.mx-dontmiss__kicker {
+  font-family: var(--mx-t-script);
+  font-size: clamp(2.2rem, 5vw, 3.6rem);
+  color: var(--mx-support-2);
+  line-height: 0.9;
+  transform: rotate(-3deg);
+  display: inline-block;
+}
+.mx-dontmiss__title {
+  font-family: var(--mx-t-chunk);
+  font-weight: 400;
+  font-size: clamp(1.5rem, 4vw, 2.8rem);
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  text-shadow: 4px 4px 0 var(--mx-ink);
+  margin: 8px 0 24px;
+  max-width: 26ch;
+}
+.mx-dontmiss__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 16px;
+  counter-reset: mx-dm;
+}
+.mx-dontmiss__list li {
+  padding: 14px 0 14px 76px;
+  position: relative;
+  font-size: 1.05rem;
+  line-height: 1.4;
+  font-weight: 500;
+  counter-increment: mx-dm;
+  min-height: 52px;
+}
+.mx-dontmiss__list li::before {
+  content: counter(mx-dm, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%) rotate(-6deg);
+  background: var(--mx-support-2);
+  color: var(--mx-ink);
+  font-family: var(--mx-t-chunk);
+  font-size: 1.3rem;
+  padding: 8px 10px 6px;
+  border: 2px solid var(--mx-paper);
+  box-shadow: 3px 3px 0 var(--mx-ink);
+  min-width: 52px;
+  text-align: center;
+}
+.mx-dontmiss__list li:nth-child(2)::before { transform: translateY(-50%) rotate(5deg); }
+.mx-dontmiss__list li:nth-child(3)::before { transform: translateY(-50%) rotate(-3deg); }
+.mx-dontmiss__list li:nth-child(4)::before { transform: translateY(-50%) rotate(7deg); }
+.mx-dontmiss__list li b { color: var(--mx-support-2); }
+
+/* ============================================================
+   MX CORE · 13-chrome.css
+   ONE masthead, cover scaffolds (incl. poster), kicker, act
+   opener, SCENE-GROUND utilities, transit band, marquee,
+   countdown grid. Descended from holiday 36§02–§08/§15 and
+   the mockup chrome.
+
+   LAW 1 — an act's ground is NEVER a flat single colour.
+   Stack exactly one .mx-ground-* utility (or a pack-supplied
+   ground) on every section[data-act]. The utilities paint via
+   ::before so the act's own background colour stays the base
+   coat underneath.
+
+   LAW 10 — fixed chrome never overlaps content. When the page
+   ships the archive back pill, mark <body data-mx-chrome="pill">;
+   13-chrome reserves the top-left zone and 15-responsive fades
+   the pill out once the reader scrolls.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   01 · MASTHEAD — one per bundle (F-3). `.mx-mast` is in the
+   measurement harness's chrome list: its words/events don't
+   count toward density, so keep it chrome-only.
+   MARKUP:
+     <header class="mx-mast">
+       <span class="mx-mast__title">The Signal<span class="mx-mast__stop">.</span></span>
+       <span class="mx-mast__badge">Special Edition</span>
+       <span class="mx-mast__meta">№ 21 · Sunday 19 July 2026</span>
+     </header>
+   ------------------------------------------------------------ */
+.mx-mast {
+  background: var(--mx-chrome-bg, var(--mx-ink));
+  color: var(--mx-chrome-ink, var(--mx-paper));
+  padding: 14px clamp(20px, 4vw, 56px);
+  border-bottom: 6px solid var(--mx-accent);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px 24px;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 100;
+}
+/* back-pill reservation: pill occupies ~top-left 132×48px */
+[data-mx-chrome~="pill"] .mx-mast { padding-left: max(clamp(20px, 4vw, 56px), 158px); }
+.mx-mast__title {
+  font-family: var(--mx-t-serif);
+  font-weight: 700;
+  font-size: 1.6rem;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+.mx-mast__stop { color: var(--mx-accent); }
+.mx-mast__badge {
+  background: var(--mx-accent);
+  color: var(--mx-accent-ink);
+  padding: 6px 12px;
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.mx-mast__meta {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+
+/* ------------------------------------------------------------
+   02 · SCENE-GROUND UTILITIES — Law 1's ambient layer.
+   Apply ONE to each section[data-act] (they also work on
+   .mx-cover). All paint with act tokens so they re-theme freely.
+   ------------------------------------------------------------ */
+.mx-ground-starfield,
+.mx-ground-gradient-sky,
+.mx-ground-pattern,
+.mx-ground-grain {
+  position: relative;
+  isolation: isolate;
+}
+.mx-ground-starfield::before,
+.mx-ground-gradient-sky::before,
+.mx-ground-pattern::before,
+.mx-ground-grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+/* star/dot field — two offset dot grids + sparse sparkles */
+.mx-ground-starfield::before {
+  background-image:
+    radial-gradient(circle 1.5px, var(--mx-support-2) 100%, transparent 100%),
+    radial-gradient(circle 1px, var(--mx-ink-soft) 100%, transparent 100%),
+    radial-gradient(circle 2.5px, var(--mx-support-2) 100%, transparent 100%);
+  background-size: 84px 84px, 124px 124px, 340px 340px;
+  background-position: 14px 22px, 62px 88px, 190px 140px;
+  opacity: 0.45;
+}
+/* gradient sky — vertical wash from paper into its supports */
+.mx-ground-gradient-sky::before {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--mx-paper) 82%, var(--mx-accent)) 0%,
+    var(--mx-paper) 46%,
+    color-mix(in srgb, var(--mx-paper) 86%, var(--mx-support-2)) 100%);
+  opacity: 0.9;
+}
+/* pattern field — motif-pack tile via --mx-pattern; disciplined
+   diagonal hatch fallback so the ground is never flat undressed */
+.mx-ground-pattern::before {
+  background-image: var(--mx-pattern, none);
+  background-size: 220px auto;
+  opacity: 0.15;
+}
+[data-mx] .mx-ground-pattern[style*="--mx-pattern"]::before,
+.mx-ground-pattern--has-art::before { opacity: 0.2; }
+.mx-ground-pattern:not(.mx-ground-pattern--has-art)::before {
+  background-image:
+    repeating-linear-gradient(45deg, currentColor 0 1px, transparent 1px 26px),
+    repeating-linear-gradient(-45deg, currentColor 0 1px, transparent 1px 26px);
+  background-size: auto;
+  opacity: 0.05;
+}
+/* visible grain — SVG turbulence tile, opacity via --mx-grain */
+.mx-ground-grain::after {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='160' height='160' filter='url(%23n)' opacity='0.6'/></svg>");
+  background-size: 160px 160px;
+  opacity: var(--mx-grain, 0.05);
+  mix-blend-mode: multiply;
+}
+/* glyph slot — currentColor art via mask (replaces per-venue rules) */
+.mx-glyph {
+  display: inline-block;
+  width: 64px;
+  height: 64px;
+  background: currentColor;
+  -webkit-mask-image: var(--mx-glyph);
+  mask-image: var(--mx-glyph);
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+/* ------------------------------------------------------------
+   03 · COVER SCAFFOLD — poster-grade (Law 7). The accent is
+   always var(--mx-accent); the owned gesture per format comes
+   from the skin/pack (ghost numeral content, plate art).
+   Markup pattern: references/core-components.md §cover.
+   ------------------------------------------------------------ */
+.mx-cover {
+  position: relative;
+  isolation: isolate;
+  background: var(--mx-paper);
+  color: var(--mx-ink);
+  padding: 72px clamp(20px, 4vw, 56px) 96px;
+  overflow: hidden;
+}
+[data-mx-chrome~="pill"] .mx-cover { padding-top: 88px; }
+.mx-cover__ghost {
+  position: absolute;
+  top: -4%;
+  right: -3%;
+  z-index: 0;
+  font-family: var(--mx-t-chunk);
+  font-size: clamp(240px, 42vw, 640px);
+  line-height: 0.8;
+  letter-spacing: -0.06em;
+  color: var(--mx-accent-2);
+  opacity: 0.32;
+  pointer-events: none;
+  user-select: none;
+  font-variant-numeric: tabular-nums;
+}
+.mx-cover__script-ghost {
+  position: absolute;
+  bottom: 1%;
+  left: -2%;
+  z-index: 0;
+  font-family: var(--mx-t-script);
+  font-size: clamp(120px, 20vw, 300px);
+  line-height: 0.9;
+  color: var(--mx-support-2);
+  opacity: 0.16;
+  pointer-events: none;
+}
+.mx-cover__inner {
+  position: relative;
+  z-index: 2;
+  max-width: var(--mx-wrap);
+  margin: 0 auto;
+}
+.mx-cover__sig {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--mx-support-2);
+  border-bottom: 1px solid var(--mx-hair);
+  padding-bottom: 14px;
+  margin-bottom: 32px;
+}
+.mx-cover__overline {
+  font-family: var(--mx-t-script);
+  font-size: clamp(2.1rem, 5.4vw, 3.8rem);
+  color: var(--mx-support-2);
+  line-height: 1;
+  transform: rotate(-2deg);
+  display: inline-block;
+  margin-bottom: 6px;
+}
+.mx-cover__title {
+  font-family: var(--mx-t-chunk);
+  font-weight: 400;
+  font-size: clamp(3.4rem, 11vw, 10rem);
+  line-height: 0.85;
+  letter-spacing: -0.03em;
+  margin: 4px 0 18px;
+  color: var(--mx-ink);
+  text-transform: uppercase;
+}
+.mx-cover__title .mx-cover__accent { color: var(--mx-accent); }
+.mx-cover__outline {
+  -webkit-text-stroke: 2.5px var(--mx-ink);
+  color: transparent;
+}
+.mx-cover__amp {
+  font-family: var(--mx-t-script);
+  font-size: 0.45em;
+  color: var(--mx-support-2);
+  letter-spacing: 0;
+  margin: 0 10px;
+  vertical-align: 0.2em;
+  display: inline-block;
+  transform: rotate(-3deg);
+  -webkit-text-stroke: 0;
+}
+.mx-cover__dek {
+  max-width: 58ch;
+  font-size: 1.12rem;
+  line-height: 1.5;
+  margin: 0 0 32px;
+}
+.mx-cover__pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.mx-cover__pills > span {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  border: 1px solid var(--mx-hair);
+  padding: 7px 13px 6px;
+  border-radius: 999px;
+}
+/* poster variant: framed plate + centred composition */
+.mx-cover--poster { text-align: center; }
+.mx-cover--poster .mx-cover__inner {
+  max-width: 880px;
+  border: 3px double var(--mx-hair);
+  padding: clamp(28px, 5vw, 56px) clamp(20px, 4vw, 48px);
+}
+.mx-cover--poster .mx-cover__sig { justify-content: center; gap: 28px; }
+.mx-cover--poster .mx-cover__dek { margin-inline: auto; }
+.mx-cover--poster .mx-cover__pills { justify-content: center; }
+.mx-cover__plate {
+  margin: 10px auto 26px;
+  max-width: 560px;
+}
+.mx-cover__plate svg { display: block; width: 100%; height: auto; }
+
+/* ------------------------------------------------------------
+   04 · KICKER — chapter eyebrow + the strip between cover and
+   first act.
+   ------------------------------------------------------------ */
+.mx-kicker {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--mx-accent);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.mx-kicker::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: currentColor;
+  opacity: 0.35;
+}
+.mx-kickerstrip {
+  background: var(--mx-paper);
+  color: var(--mx-ink);
+  padding: 20px clamp(20px, 4vw, 56px);
+  border-top: 3px double var(--mx-ink);
+  border-bottom: 3px double var(--mx-ink);
+}
+.mx-kickerstrip__inner {
+  max-width: var(--mx-wrap);
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.mx-kickerstrip__title {
+  font-family: var(--mx-t-tall);
+  font-weight: 400;
+  font-size: clamp(1.7rem, 4.5vw, 2.9rem);
+  line-height: 0.9;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  margin: 0;
+}
+.mx-kickerstrip__sub {
+  font-family: var(--mx-t-script);
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  color: var(--mx-accent);
+  line-height: 1;
+  transform: rotate(-1.5deg);
+  display: inline-block;
+}
+.mx-kickerstrip__meta {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-align: right;
+  line-height: 1.5;
+  color: var(--mx-ink-soft);
+}
+
+/* ------------------------------------------------------------
+   05 · ACT OPENER — the designed entrance to an act.
+   MARKUP:
+     <header class="mx-actopen" data-mx-event="plate">
+       <span class="mx-actopen__no">Act II</span>
+       <h2 class="mx-actopen__title">Down to the Sea</h2>
+       <span class="mx-actopen__hand">by the 10:04 from York</span>
+     </header>
+   ------------------------------------------------------------ */
+.mx-actopen {
+  text-align: center;
+  padding: 24px 0 8px;
+  position: relative;
+}
+.mx-actopen__no {
+  display: inline-block;
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--mx-accent);
+  border: 1px solid var(--mx-hair);
+  padding: 7px 16px 6px;
+  border-radius: 999px;
+  margin-bottom: 18px;
+}
+.mx-actopen__title {
+  font-family: var(--mx-t-tall);
+  font-weight: 400;
+  font-size: clamp(2.6rem, 8vw, 5.6rem);
+  line-height: 0.92;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--mx-ink);
+  margin: 0;
+}
+.mx-actopen__hand {
+  display: inline-block;
+  font-family: var(--mx-t-script);
+  font-size: clamp(1.5rem, 3.6vw, 2.4rem);
+  color: var(--mx-hand-ink);
+  transform: rotate(-2deg);
+  margin-top: 10px;
+  line-height: 1;
+}
+
+/* ------------------------------------------------------------
+   06 · TRANSIT BAND — the designed act transition (Law 4).
+   Markup pattern: references/core-components.md §transit.
+   ------------------------------------------------------------ */
+.mx-transit {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  min-height: 240px;
+  width: 100%;
+  background: var(--mx-chrome-bg, var(--mx-ink));
+  color: var(--mx-chrome-ink, var(--mx-paper));
+  border-top: 10px solid var(--mx-chrome-bg, var(--mx-ink));
+  border-bottom: 10px solid var(--mx-chrome-bg, var(--mx-ink));
+  position: relative;
+  overflow: hidden;
+  z-index: 5;
+}
+.mx-transit__side {
+  position: relative;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding: 0 clamp(56px, 16vw, 240px); /* labels clear the centre card */
+}
+.mx-transit__side--left  { justify-content: flex-end; text-align: right; }
+.mx-transit__side--right { justify-content: flex-start; text-align: left; }
+.mx-transit__mega {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  z-index: 1;
+  font-family: var(--mx-t-tall);
+  font-size: clamp(110px, 17vw, 220px);
+  letter-spacing: -0.02em;
+  color: color-mix(in srgb, var(--mx-chrome-ink, var(--mx-paper)) 8%, transparent);
+  text-transform: uppercase;
+  line-height: 0.9;
+  pointer-events: none;
+}
+.mx-transit__side--left  .mx-transit__mega { justify-content: flex-end; padding-right: 20px; }
+.mx-transit__side--right .mx-transit__mega { justify-content: flex-start; padding-left: 20px; }
+.mx-transit__label { position: relative; z-index: 2; }
+.mx-transit__hand {
+  font-family: var(--mx-t-script);
+  font-size: clamp(1.6rem, 3.2vw, 2.5rem);
+  color: var(--mx-support-2);
+  display: block;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.mx-transit__name {
+  font-family: var(--mx-t-tall);
+  font-size: clamp(2rem, 3.8vw, 3.4rem);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--mx-chrome-ink, var(--mx-paper)) 88%, transparent);
+  line-height: 1;
+}
+.mx-transit__center { position: relative; width: 0; z-index: 6; }
+.mx-transit__card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-1.2deg);
+  background: var(--mx-chrome-bg, var(--mx-ink));
+  color: var(--mx-chrome-ink, var(--mx-paper));
+  padding: 16px 36px;
+  border: 4px solid var(--mx-chrome-ink, var(--mx-paper));
+  font-family: var(--mx-t-chunk);
+  font-size: clamp(1.15rem, 2.4vw, 1.9rem);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: 0 26px 50px var(--mx-shadow);
+}
+
+/* ------------------------------------------------------------
+   07 · MARQUEE — kinetic act divider. Static composition here;
+   the track animation binds in 14-motion under tier2 only.
+   MARKUP:
+     <div class="mx-marquee" data-mx-event="marquee" aria-hidden="true">
+       <div class="mx-marquee__track">
+         <span>Last trains south</span><span>Berth 12</span>…(repeat set ×2)
+       </div>
+     </div>
+   ------------------------------------------------------------ */
+.mx-marquee {
+  background: var(--mx-accent);
+  color: var(--mx-accent-ink);
+  border-top: 4px solid var(--mx-ink);
+  border-bottom: 4px solid var(--mx-ink);
+  overflow: hidden;
+  font-family: var(--mx-t-chunk);
+  font-size: clamp(2rem, 6vw, 4.2rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  padding: 16px 0;
+  position: relative;
+  transform: rotate(-1.2deg);
+  margin: 40px -2vw;
+  width: calc(100% + 4vw);
+  box-shadow: 0 8px 0 var(--mx-support-2);
+}
+.mx-marquee__track {
+  display: inline-flex;
+  white-space: nowrap;
+  gap: 40px;
+  padding-right: 40px;
+  will-change: transform;
+}
+.mx-marquee__track > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 32px;
+  flex-shrink: 0;
+  padding-right: 32px;
+}
+.mx-marquee__track > span::after {
+  content: "✶";
+  font-size: 0.7em;
+  color: var(--mx-support-2);
+}
+
+/* ------------------------------------------------------------
+   08 · COUNTDOWN GRID — live digit grid scaffold. NO ambient
+   shimmer here or anywhere (the ungated holiday ambient shimmer is the
+   named failure); motion binds in 14-motion, gated.
+   MARKUP:
+     <div class="mx-countdown" data-mx-event="statband">
+       <div class="mx-countdown__grid">
+         <div class="mx-countdown__cell">
+           <span class="mx-countdown__num" data-cd="days">27</span>
+           <span class="mx-countdown__unit">Days</span>
+         </div> ×4
+       </div>
+       <div class="mx-countdown__target">Kick-off · 21 June 2027</div>
+     </div>
+   ------------------------------------------------------------ */
+.mx-countdown {
+  background: color-mix(in srgb, var(--mx-paper) 6%, transparent);
+  border: 2px solid var(--mx-support-2);
+  padding: 22px 18px;
+  max-width: 720px;
+  text-align: center;
+  position: relative;
+}
+.mx-countdown__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.mx-countdown__cell {
+  border: 1px solid color-mix(in srgb, var(--mx-support-2) 60%, transparent);
+  padding: 16px 6px;
+  text-align: center;
+}
+.mx-countdown__num {
+  font-family: var(--mx-t-chunk);
+  font-size: clamp(2.6rem, 8vw, 5.4rem);
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--mx-ink);
+  display: block;
+}
+.mx-countdown__unit {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  margin-top: 6px;
+  color: var(--mx-support-2);
+  display: block;
+}
+.mx-countdown__target {
+  margin-top: 14px;
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mx-support-2);
+}
+
+/* ------------------------------------------------------------
+   09 · FOOTER BAND — minimal colophon chrome (.mx-footer is in
+   the harness chrome list).
+   ------------------------------------------------------------ */
+.mx-footer {
+  background: var(--mx-chrome-bg, var(--mx-ink));
+  color: color-mix(in srgb, var(--mx-chrome-ink, var(--mx-paper)) 68%, transparent);
+  padding: 44px clamp(20px, 4vw, 56px) 60px;
+  font-size: 0.82rem;
+  text-align: center;
+}
+.mx-footer b {
+  display: block;
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--mx-support-2);
+  margin-bottom: 12px;
+}
+
+/* ============================================================
+   MX CORE · 14-motion.css  (WP-2 scaffold + WP-5 behaviors)
+   Tier switch: [data-motion="tier0|tier1|tier2"] on <body>.
+   Controller: assets/mx-motion.js (data-mx issues only). It
+   stamps data-mx-motion-ready on <html> and .is-in (+
+   data-mx-inview) on furniture entering the viewport, indexes
+   staggered children via --mx-i, and feeds the scroll dials
+   --mx-par (tier0 ghost parallax) and --mx-seam (tier2 act
+   crossfade at transit seams).
+
+   RULES (Law 5): motion attaches to furniture, never running
+   text; JS-off renders 100% of content — every initial-hidden
+   state below is gated behind [data-mx-motion-ready], which
+   only the controller stamps; prefers-reduced-motion honored
+   at both layers (controller no-ops; §99 gate kills the rest);
+   no scroll-jacking.
+
+   Tier map: tier0 print-still (Deep Dive) · tier1 calm
+   (Weekly, Rewind, Next, Guide) · tier2 event (trip specials,
+   Season Review, Versus).
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   00 · TOKENS
+   ------------------------------------------------------------ */
+[data-mx] {
+  --mx-m-rise: 20px;            /* rise-on-scroll travel            */
+  --mx-m-dur: 640ms;            /* standard entrance duration       */
+  --mx-m-settle: 1deg;          /* object settle over-rotation      */
+  --mx-m-ease: cubic-bezier(0.22, 0.9, 0.3, 1);
+  --mx-m-spring: cubic-bezier(0.34, 1.56, 0.64, 1);  /* tape-down overshoot */
+  --mx-m-stagger: 80ms;         /* sibling stagger unit (× --mx-i)  */
+  --mx-m-marquee: 32s;          /* marquee loop period              */
+}
+
+/* ------------------------------------------------------------
+   01 · KEYFRAMES
+   Entrance keyframes deliberately OMIT the end transform: the
+   animation lands on each element's own underlying transform
+   (cards keep their nth-of-type tilt, stamps their -8°). Fills
+   are `backwards`, so after the entrance the element returns
+   fully to stylesheet control (hover settles keep working) and
+   scenography defaults are never clobbered.
+   ------------------------------------------------------------ */
+@keyframes mx-rise-in {
+  from { opacity: 0; transform: translateY(var(--mx-m-rise)); }
+  to   { opacity: 1; }
+}
+@keyframes mx-settle-in {          /* cards "tape down": lands on own tilt
+                                      via the spring ease (~1° overshoot) */
+  from { opacity: 0; transform: translateY(var(--mx-m-rise))
+           rotate(calc(var(--mx-tilt, -1.6deg) + var(--mx-m-settle) * 3)); }
+  to   { opacity: 1; }
+}
+@keyframes mx-slam-in {            /* stamp-slam: fall + ONE hard step */
+  0%   { opacity: 0; transform: scale(1.6) rotate(calc(var(--mx-tilt, -8deg) + 10deg)); }
+  54%  { opacity: 0; transform: scale(1.3) rotate(calc(var(--mx-tilt, -8deg) + 6deg)); }
+  55%  { opacity: 1; transform: scale(0.94) rotate(var(--mx-tilt, -8deg)); } /* impact */
+  100% { opacity: 1; }
+}
+@keyframes mx-row-tick {           /* ledger rows tick in sequence */
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; }
+}
+@keyframes mx-row-climb {          /* leaderboard rows climb into place */
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; }
+}
+@keyframes mx-col-reveal {         /* memory-test columns unfurl top-down */
+  from { opacity: 0; transform: scaleY(0.62) translateY(-10px); }
+  to   { opacity: 1; }
+}
+@keyframes mx-flip-in {            /* countdown numeral flip */
+  0%   { opacity: 0; transform: rotateX(-92deg); }
+  60%  { opacity: 1; transform: rotateX(14deg); }
+  100% { opacity: 1; }
+}
+@keyframes mx-marquee-drift {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes mx-draw-in {            /* hairline draw (tier0's only move) */
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+@keyframes mx-chart-draw {         /* sparkline/chart line draw (pathLength="1") */
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
+}
+@keyframes mx-dial-sweep {         /* weekly dial-needle sweep (WP-8 hook);
+                                      lands on the needle's own set angle */
+  from { transform: rotate(-98deg); }
+}
+
+/* ------------------------------------------------------------
+   02 · SCROLL-REVEAL — rises and settles (tier1/tier2)
+   Without the controller (JS off) nothing is ever hidden — the
+   [data-mx-motion-ready] guard is the JS-off guarantee.
+   ------------------------------------------------------------ */
+[data-mx-motion-ready] [data-motion="tier1"] .mx-rise:not(.is-in),
+[data-mx-motion-ready] [data-motion="tier2"] .mx-rise:not(.is-in) {
+  opacity: 0;
+  transform: translateY(var(--mx-m-rise));
+}
+[data-mx-motion-ready] [data-motion="tier1"] .mx-rise.is-in,
+[data-mx-motion-ready] [data-motion="tier2"] .mx-rise.is-in {
+  animation: mx-rise-in var(--mx-m-dur) var(--mx-m-ease) backwards;
+  animation-delay: min(calc(var(--mx-i, 0) * var(--mx-m-stagger)), 400ms);
+}
+[data-mx-motion-ready] [data-motion="tier1"] .mx-settle:not(.is-in),
+[data-mx-motion-ready] [data-motion="tier2"] .mx-settle:not(.is-in) {
+  opacity: 0;
+}
+[data-mx-motion-ready] [data-motion="tier1"] .mx-settle.is-in,
+[data-mx-motion-ready] [data-motion="tier2"] .mx-settle.is-in {
+  animation: mx-settle-in calc(var(--mx-m-dur) + 160ms) var(--mx-m-spring) backwards;
+  animation-delay: min(calc(var(--mx-i, 0) * var(--mx-m-stagger)), 400ms);
+}
+
+/* sequences: container reveals, rows tick in --mx-i order */
+[data-mx-motion-ready] [data-motion="tier1"] .mx-seq:not(.is-in) .mx-row,
+[data-mx-motion-ready] [data-motion="tier2"] .mx-seq:not(.is-in) .mx-row {
+  opacity: 0;
+}
+[data-mx-motion-ready] [data-motion="tier1"] .mx-seq.is-in .mx-row,
+[data-mx-motion-ready] [data-motion="tier2"] .mx-seq.is-in .mx-row {
+  animation: mx-row-tick 420ms var(--mx-m-ease) backwards;
+  animation-delay: min(calc(var(--mx-i, 0) * 70ms), 490ms);
+}
+
+/* sparkline / chart draw: .mx-chart svg lines with class
+   .mx-chartline and pathLength="1" draw in on reveal */
+[data-mx-motion-ready] [data-motion="tier1"] .mx-chart.is-in .mx-chartline,
+[data-mx-motion-ready] [data-motion="tier2"] .mx-chart.is-in .mx-chartline {
+  stroke-dasharray: 1;
+  animation: mx-chart-draw 1100ms var(--mx-m-ease) backwards;
+}
+
+/* ------------------------------------------------------------
+   03 · TIER2 EVENT MOVES
+   ------------------------------------------------------------ */
+/* stamp-slam (controller gives .mx-stamp → .mx-slam at tier2) */
+[data-mx-motion-ready] [data-motion="tier1"] .mx-slam:not(.is-in),
+[data-mx-motion-ready] [data-motion="tier2"] .mx-slam:not(.is-in) {
+  opacity: 0;
+}
+[data-mx-motion-ready] [data-motion="tier1"] .mx-slam.is-in,
+[data-mx-motion-ready] [data-motion="tier2"] .mx-slam.is-in {
+  animation: mx-slam-in 620ms var(--mx-m-ease) backwards;
+  animation-delay: min(calc(var(--mx-i, 0) * var(--mx-m-stagger)), 320ms);
+}
+
+/* flip-grid: countdown numerals flip in as their cells tick */
+[data-motion="tier2"] .mx-countdown__cell { perspective: 420px; }
+[data-mx-motion-ready] [data-motion="tier2"] .mx-countdown:not(.is-in) .mx-countdown__num {
+  opacity: 0;
+}
+[data-mx-motion-ready] [data-motion="tier2"] .mx-countdown.is-in .mx-countdown__num {
+  display: inline-block;
+  animation: mx-flip-in 700ms var(--mx-m-ease) backwards;
+  animation-delay: min(calc(var(--mx-i, 0) * 120ms), 480ms);
+}
+/* live re-flip on value change (controller toggles the class) */
+[data-mx-motion-ready] [data-motion="tier2"] .mx-countdown__num.mx-flip-tick {
+  display: inline-block;
+  animation: mx-flip-in 560ms var(--mx-m-ease) backwards;
+}
+
+/* act crossfade at the transit seam. The controller injects one
+   .mx-seam--out at the closing edge of the act before a
+   .mx-transit and one .mx-seam--in at the opening edge after
+   it, then drives --mx-seam (0..1) by seam proximity. Endpoint
+   colors are ACT TOKENS (Part 8: legacy 38/39 hard-coded rgba
+   → var(--mx-*)); each overlay inherits its own act's tokens. */
+[data-motion="tier2"] .mx-seam {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: min(420px, 45vh);
+  pointer-events: none;
+  z-index: 3;
+  opacity: var(--mx-seam, 0);
+  transition: opacity 360ms linear;
+  mix-blend-mode: multiply;
+}
+[data-motion="tier2"] .mx-seam--out {
+  bottom: 0;
+  background: linear-gradient(180deg,
+    transparent 0%,
+    color-mix(in srgb, var(--mx-accent) 42%, transparent) 55%,
+    color-mix(in srgb, var(--mx-chrome-bg, var(--mx-ink)) 55%, var(--mx-accent) 45%) 100%);
+}
+[data-motion="tier2"] .mx-seam--in {
+  top: 0;
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--mx-chrome-bg, var(--mx-ink)) 58%, var(--mx-accent-2, var(--mx-accent)) 42%) 0%,
+    color-mix(in srgb, var(--mx-accent-2, var(--mx-accent)) 30%, transparent) 55%,
+    transparent 100%);
+}
+
+/* ------------------------------------------------------------
+   04 · SIGNATURE MOMENTS (one per format — hooks the WP-6
+   skeletons place; behaviors bound here)
+     .mx-sig-stamp-slam    Versus — verdict stamp slams per round
+                           (controller maps it onto .mx-slam)
+     .mx-sig-rows-climb    Season Review — leaderboard rows climb
+     .mx-sig-cols-reveal   Rewind — Memory Test columns in sequence
+     .mx-sig-dial-sweep    Weekly — dial-needle sweep on band entry
+                           (hook only until WP-8 touches the weekly)
+     .mx-sig-flip          Countdown — digit flips (see §03)
+   These override the generic .mx-seq row tick (same specificity,
+   later in the file wins).
+   ------------------------------------------------------------ */
+[data-mx-motion-ready] [data-motion="tier1"] .mx-sig-rows-climb.is-in .mx-row,
+[data-mx-motion-ready] [data-motion="tier2"] .mx-sig-rows-climb.is-in .mx-row {
+  animation: mx-row-climb 560ms var(--mx-m-spring) backwards;
+  animation-delay: min(calc(var(--mx-i, 0) * 90ms), 630ms);
+}
+[data-mx-motion-ready] [data-motion="tier1"] .mx-sig-cols-reveal.is-in .mx-row,
+[data-mx-motion-ready] [data-motion="tier2"] .mx-sig-cols-reveal.is-in .mx-row {
+  transform-origin: center top;
+  animation: mx-col-reveal 620ms var(--mx-m-ease) backwards;
+  animation-delay: min(calc(var(--mx-i, 0) * 160ms), 640ms);
+}
+[data-mx-motion-ready] [data-motion="tier1"] .mx-sig-dial-sweep.is-in .mx-dial__needle,
+[data-mx-motion-ready] [data-motion="tier1"] .mx-sig-dial-sweep.is-in [data-mx-needle],
+[data-mx-motion-ready] [data-motion="tier2"] .mx-sig-dial-sweep.is-in .mx-dial__needle,
+[data-mx-motion-ready] [data-motion="tier2"] .mx-sig-dial-sweep.is-in [data-mx-needle] {
+  transform-origin: 50% 100%;
+  animation: mx-dial-sweep 900ms var(--mx-m-spring) backwards;
+}
+
+/* ------------------------------------------------------------
+   05 · TIER0 PRINT-STILL — hairline draw-ins + ghost parallax
+   ONLY (Law 5). Content is never hidden: the draw-in is an
+   overlay hairline pseudo; the parallax is a passive transform
+   on the decorative ghost numeral (aria-hidden).
+   ------------------------------------------------------------ */
+[data-mx-motion-ready] [data-motion="tier0"] .mx-draw { position: relative; }
+[data-mx-motion-ready] [data-motion="tier0"] .mx-draw::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: var(--mx-hair);
+  transform: scaleX(0);
+  transform-origin: left center;
+  pointer-events: none;
+}
+[data-mx-motion-ready] [data-motion="tier0"] .mx-draw.is-in::after {
+  animation: mx-draw-in 900ms var(--mx-m-ease) both;
+}
+/* ghost-numeral parallax — controller feeds --mx-par (-1..1)
+   from viewport position; a longish linear transition keeps it
+   gliding between scroll samples. No scroll-jacking: purely a
+   passive read of scroll position. */
+[data-mx-motion-ready] [data-motion="tier0"] .mx-plate__ghost {
+  transform: translate3d(0, calc(var(--mx-par, 0) * 26px), 0);
+  transition: transform 300ms linear;
+  will-change: transform;
+}
+
+/* ------------------------------------------------------------
+   06 · CSS-ONLY BEHAVIORS (safe without JS)
+   ------------------------------------------------------------ */
+/* marquee drift — tier2 furniture only. Track content must be
+   duplicated once in markup for the -50% loop. */
+[data-motion="tier2"] .mx-marquee__track {
+  animation: mx-marquee-drift var(--mx-m-marquee) linear infinite;
+}
+/* tier1 gets a slow, calmer drift */
+[data-motion="tier1"] .mx-marquee__track {
+  animation: mx-marquee-drift calc(var(--mx-m-marquee) * 2) linear infinite;
+}
+/* hover settles — furniture acknowledges the hand (all tiers ≥1) */
+[data-motion="tier1"] .mx-card,
+[data-motion="tier2"] .mx-card,
+[data-motion="tier1"] .mx-ticket,
+[data-motion="tier2"] .mx-ticket {
+  transition: transform 0.35s var(--mx-m-ease);
+}
+[data-motion="tier1"] .mx-card:hover,
+[data-motion="tier2"] .mx-card:hover { transform: rotate(0deg) scale(1.02); }
+[data-motion="tier1"] .mx-ticket:hover,
+[data-motion="tier2"] .mx-ticket:hover { transform: rotate(0deg); }
+
+/* ------------------------------------------------------------
+   99 · GLOBAL REDUCED-MOTION GATE — kills ALL core animation.
+   Every animation and transition in the mx- namespace dies
+   here, including the marquee drift and every WP-5 move under
+   [data-mx]. No exceptions, no ungated ambience. The
+   controller additionally no-ops (never stamps
+   data-mx-motion-ready) when the preference is set at load,
+   and drops the attribute if it flips on mid-read.
+   ------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  [data-mx] *,
+  [data-mx] *::before,
+  [data-mx] *::after {
+    animation-duration: 0.001s !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001s !important;
+    scroll-behavior: auto !important;
+  }
+  /* reveal scaffold: content simply present, never held hidden */
+  [data-mx-motion-ready] [data-motion] .mx-rise:not(.is-in),
+  [data-mx-motion-ready] [data-motion] .mx-settle:not(.is-in) {
+    opacity: 1;
+    transform: rotate(var(--mx-tilt, 0deg));
+  }
+  [data-mx-motion-ready] [data-motion] .mx-slam:not(.is-in),
+  [data-mx-motion-ready] [data-motion] .mx-seq:not(.is-in) .mx-row,
+  [data-mx-motion-ready] [data-motion] .mx-countdown:not(.is-in) .mx-countdown__num {
+    opacity: 1;
+  }
+  /* scroll-dial layers park at rest */
+  [data-motion] .mx-seam { opacity: 0 !important; }
+  [data-mx-motion-ready] [data-motion="tier0"] .mx-plate__ghost {
+    transform: none !important;
+  }
+}
+
+/* ============================================================
+   MX CORE · 15-responsive.css
+   390px stacking, fixed-chrome space reservation, table
+   wrap-or-stack with VISIBLE scroll affordance, Law-8 type
+   floors preserved at every width. (Law 10 / F-8.)
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   00 · DOCUMENT-LEVEL H-SCROLL GUARD
+   The marquee's deliberate bleed is contained by its section;
+   nothing else may push the document wider than the viewport.
+   ------------------------------------------------------------ */
+[data-mx] { overflow-x: clip; }
+[data-mx] section[data-act],
+[data-mx] .mx-cover,
+[data-mx] .mx-transit { overflow-x: clip; }
+
+/* ------------------------------------------------------------
+   01 · FIXED-CHROME RESERVATION (the back pill — Law 10)
+   The archive pill is fixed top-left (~132×48px incl. inset).
+   Strategy: reserve the zone at the top of the page (13-chrome
+   pads .mx-mast / .mx-cover when body carries
+   data-mx-chrome="pill"), then FADE THE PILL OUT once the
+   reader scrolls past the masthead — pure CSS scroll-driven
+   animation, no JS. The pill returns when the reader returns
+   to the top. Reduced motion: scroll-driven progress is state,
+   not movement; the 14-motion kill leaves it functional
+   (duration is timeline-driven).
+   ------------------------------------------------------------ */
+@supports (animation-timeline: scroll()) {
+  [data-mx-chrome~="pill"] .signal-back-to-archive {
+    animation: mx-pill-recede linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0px 320px;
+  }
+}
+@keyframes mx-pill-recede {
+  0%   { opacity: 1; }
+  60%  { opacity: 0; }
+  100% { opacity: 0; visibility: hidden; pointer-events: none; }
+}
+/* no scroll-timeline support: keep the pill but shrink its
+   footprint and let the reserved top zone do the work */
+@supports not (animation-timeline: scroll()) {
+  [data-mx-chrome~="pill"] .signal-back-to-archive { opacity: 0.85; }
+}
+
+/* ------------------------------------------------------------
+   02 · TABLES: WRAP OR STACK — never truncate, never rely on an
+   invisible scrollbar. POLICY: core tables must FIT their
+   container — cells wrap at word boundaries (auto table layout),
+   ledgers stack at phone widths (below). Chromium's overlay
+   scrollbars occupy zero layout height, so a scroll-wrapped
+   table can never show the gate's required visible affordance —
+   scrolling tables are therefore forbidden in data-mx issues;
+   .mx-tablewrap exists as a bounded shell that keeps a table
+   that CANNOT fit from breaking the document, with edge fades
+   + a mono swipe hint (.mx-tablewrap__hint, author-supplied)
+   as the human-visible affordance. Expect the craft gate to
+   flag any table that actually overflows: fix the table.
+   ------------------------------------------------------------ */
+.mx-tablewrap { overflow-x: auto; }
+.mx-tablewrap table { width: 100%; }
+.mx-tablewrap__hint {
+  display: none;
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--mx-ink-soft);
+  margin-top: 6px;
+}
+/* cells wrap at word boundaries; never truncate mid-word at rest */
+.mx-scorecard td,
+.mx-scorecard th,
+.mx-tablewrap td,
+.mx-tablewrap th { overflow-wrap: break-word; white-space: normal; }
+
+/* ------------------------------------------------------------
+   03 · ≤ 900px — tablet reflow
+   ------------------------------------------------------------ */
+@media (max-width: 900px) {
+  .mx-anchor { grid-template-columns: 1fr; padding-left: 24px; gap: 32px; }
+  .mx-anchor__badge { top: -34px; right: 4px; width: 112px; height: 112px; font-size: 1.05rem; }
+  .mx-zig__entry,
+  .mx-zig__entry:nth-child(2n) { flex-direction: column; gap: 24px; }
+  .mx-zig__media,
+  .mx-zig__entry:nth-child(2n) .mx-zig__media { flex: 0 0 auto; width: 100%; transform: rotate(0.8deg); }
+  .mx-zig__card { width: 100%; }
+  .mx-cheat__cols { grid-template-columns: 1fr; }
+  .mx-cheat__col {
+    border-right: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--mx-card-ink) 22%, transparent);
+  }
+  .mx-cheat__col:last-child { border-bottom: none; }
+}
+
+/* ------------------------------------------------------------
+   04 · ≤ 720px — the pill zone + transit stack
+   ------------------------------------------------------------ */
+@media (max-width: 720px) {
+  /* masthead: content drops BELOW the pill zone, centred */
+  [data-mx-chrome~="pill"] .mx-mast {
+    padding: 3.6rem 20px 14px;
+    justify-content: center;
+    text-align: center;
+  }
+  [data-mx-chrome~="pill"] .mx-cover { padding-top: 96px; }
+  .mx-transit {
+    grid-template-columns: 1fr;
+    min-height: 0;
+    padding: 32px 0;
+    gap: 24px;
+  }
+  .mx-transit__side,
+  .mx-transit__side--left { padding: 0 24px; text-align: center; justify-content: center; }
+  .mx-transit__center { width: auto; height: 0; }
+  .mx-transit__card { position: relative; transform: rotate(-1.2deg); top: auto; left: auto; margin: 0 auto; display: inline-block; }
+  .mx-twocol { grid-template-columns: 1fr; }
+  .mx-twocol__aside { justify-items: center; }
+}
+
+/* ------------------------------------------------------------
+   05 · ≤ 560px — phone stacking (390 target)
+   ------------------------------------------------------------ */
+@media (max-width: 560px) {
+  /* ledgers stack label-over-value */
+  .mx-ledger dl { grid-template-columns: 1fr; }
+  .mx-ledger dt { padding-bottom: 0; border-bottom: none; }
+  .mx-ledger dd { padding-top: 4px; }
+
+  /* stat band: two columns */
+  .mx-numbers { grid-template-columns: repeat(2, 1fr); }
+  .mx-numbers__cell {
+    border-right: 1px dotted var(--mxl-rule, var(--mx-hair)) !important;
+    border-bottom: 1px dotted var(--mxl-rule, var(--mx-hair));
+  }
+  .mx-numbers__cell:nth-child(2n) { border-right: none !important; }
+  .mx-numbers__cell:nth-last-child(-n+2) { border-bottom: none; }
+
+  /* ephemera scale-down, scenography preserved (tilt/tape stay) */
+  .mx-shelf { gap: 34px 24px; margin: 44px 0; }
+  .mx-shelf > *:nth-child(2n) { margin-top: 18px; }
+  .mx-card { width: min(272px, 100%); }
+  .mx-ticket { width: 100%; grid-template-columns: 1fr 84px; }
+  .mx-ticket::before, .mx-ticket::after { right: 77px; }
+  .mx-card--mail { width: 100%; min-height: 172px; }
+  .mx-mail__greet { font-size: 1.4rem; }
+  .mx-coaster { width: 158px; height: 158px; }
+
+  /* plates + slabs tighten; chip gutter shrinks */
+  .mx-plate__ghost { top: -30px; right: -6px; }
+  .mx-dontmiss { padding: 28px 20px 34px; margin: 56px 0; }
+  .mx-dontmiss__title { text-shadow: 2px 2px 0 var(--mx-ink); }
+  .mx-dontmiss__list li { padding-left: 64px; }
+  .mx-dontmiss__list li::before { min-width: 46px; font-size: 1.1rem; padding: 7px 8px 5px; }
+  .mx-quote { padding: 22px 18px 18px; margin: 34px 0; }
+  .mx-ranked__entry { padding: 0.85rem 0.9rem; }
+  .mx-scorecard { width: 100%; }
+  .mx-scorecard td,
+  .mx-scorecard th { padding-right: 8px; }
+  .mx-cover__pills { gap: 8px; }
+  .mx-marquee { margin: 32px -4vw; width: calc(100% + 8vw); }
+
+  /* countdown grid: 2×2 */
+  .mx-countdown__grid { grid-template-columns: repeat(2, 1fr); }
+
+  /* swipe hint becomes visible where fingers scroll tables */
+  .mx-tablewrap__hint { display: inline-block; }
+
+  /* ----------------------------------------------------------
+     LAW-8 FLOORS, REASSERTED. No micro-label below 0.72rem and
+     no body below 0.95rem at phone widths, whatever a skin did.
+     ---------------------------------------------------------- */
+  .mx-micro,
+  .mx-card__credit,
+  .mx-ticket__meta,
+  .mx-ledger__caption,
+  .mx-ledger dt,
+  .mx-numbers__label,
+  .mx-scorecard__title,
+  .mx-scorecard td,
+  .mx-scorecard th,
+  .mx-cheat__head,
+  .mx-tier,
+  .mx-countdown__unit,
+  .mx-quote figcaption { font-size: max(0.72rem, var(--mx-micro)); }
+  .mx-body p { font-size: max(0.95rem, 1rem); }
+}
+
+/* ============================================================
+   MX CORE · 16-print.css
+   Minimal print sheet (Law 10). Grounds off, ink on paper, no
+   fixed chrome, page-break hygiene. Loads in every mx bundle
+   (after 15-responsive, before the skin).
+   ============================================================ */
+@media print {
+
+  /* --------------------------------------------------------
+     00 · INK ON PAPER — force every act to print register.
+     Acts declare their own --mx-* palettes at equal
+     specificity in the issue <style>, so the print remap wins
+     via !important on the custom properties themselves.
+     -------------------------------------------------------- */
+  [data-mx],
+  [data-mx] [data-act] {
+    --mx-paper:      #ffffff !important;
+    --mx-ink:        #141414 !important;
+    --mx-ink-soft:   #454545 !important;
+    --mx-accent:     #2a2a2a !important;
+    --mx-accent-ink: #ffffff !important;
+    --mx-accent-2:   #3a3a3a !important;
+    --mx-accent-2-ink:#ffffff !important;
+    --mx-support-1:  #3a3a3a !important;
+    --mx-support-2:  #555555 !important;
+    --mx-hair:       rgba(0, 0, 0, 0.4) !important;
+    --mx-card:       #ffffff !important;
+    --mx-card-ink:   #141414 !important;
+    --mx-card-edge:  rgba(0, 0, 0, 0.5) !important;
+    --mx-card-window:#f2f2f2 !important;
+    --mx-tape:       rgba(0, 0, 0, 0.12) !important;
+    --mx-ghost:      rgba(0, 0, 0, 0.07) !important;
+    --mx-quote-bg:   rgba(0, 0, 0, 0.04) !important;
+    --mx-shadow:     transparent !important;
+    --mx-hand-ink:   #2a2a2a !important;
+    --mx-stamp-ink:  #2a2a2a !important;
+    --mx-grain:      0 !important;
+    --mx-chrome-bg:  #ffffff !important;
+    --mx-chrome-ink: #141414 !important;
+  }
+
+  /* --------------------------------------------------------
+     01 · GROUNDS OFF — scene layers don't spend toner.
+     -------------------------------------------------------- */
+  [data-mx] .mx-ground-starfield::before,
+  [data-mx] .mx-ground-gradient-sky::before,
+  [data-mx] .mx-ground-pattern::before,
+  [data-mx] .mx-ground-grain::after,
+  [data-mx] .mx-ground-horizon::after { display: none !important; }
+  [data-mx] section[data-act],
+  [data-mx] [data-act],
+  [data-mx] .mx-cover { background: #ffffff !important; }
+
+  /* --------------------------------------------------------
+     02 · NO FIXED CHROME, NO MOTION.
+     -------------------------------------------------------- */
+  [data-mx] .signal-back-to-archive { display: none !important; }
+  [data-mx] *,
+  [data-mx] *::before,
+  [data-mx] *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  /* JS-off/print guarantee: nothing held hidden by the reveal
+     scaffold ever prints blank */
+  [data-mx] .mx-rise,
+  [data-mx] .mx-settle { opacity: 1 !important; transform: none !important; }
+
+  /* objects flatten: no tilt, no drop shadows on paper */
+  [data-mx] .mx-card,
+  [data-mx] .mx-card--mail,
+  [data-mx] .mx-stamp,
+  [data-mx] .mx-ticket,
+  [data-mx] .mx-coaster,
+  [data-mx] .mx-note,
+  [data-mx] .mx-marquee,
+  [data-mx] .mx-tminus,
+  [data-mx] .mx-plate__no {
+    transform: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  [data-mx] .mx-mast,
+  [data-mx] .mx-footer,
+  [data-mx] .mx-transit,
+  [data-mx] .mx-kickerstrip {
+    background: #ffffff !important;
+    color: #141414 !important;
+    border-color: #141414 !important;
+  }
+  /* dark chrome bands read as ruled paper sections instead */
+  [data-mx] .mx-transit { min-height: 0; border-top-width: 2px; border-bottom-width: 2px; }
+  [data-mx] .mx-transit__card {
+    background: #ffffff !important;
+    color: #141414 !important;
+    border-color: #141414 !important;
+  }
+  [data-mx] .mx-transit__name { color: #141414 !important; }
+  [data-mx] .mx-transit__mega { color: rgba(0, 0, 0, 0.08) !important; }
+  /* marquee: static strip, outlined */
+  [data-mx] .mx-marquee {
+    background: #ffffff !important;
+    color: #141414 !important;
+    margin-left: 0;
+    margin-right: 0;
+    width: 100%;
+  }
+  [data-mx] .mx-marquee__track { animation: none !important; }
+
+  /* --------------------------------------------------------
+     03 · PAGE-BREAK HYGIENE — objects never split; openers
+     never orphan from their first content.
+     -------------------------------------------------------- */
+  [data-mx] .mx-card,
+  [data-mx] .mx-card--mail,
+  [data-mx] .mx-ticket,
+  [data-mx] .mx-coaster,
+  [data-mx] .mx-stamp,
+  [data-mx] .mx-quote,
+  [data-mx] .mx-pull,
+  [data-mx] .mx-ledger,
+  [data-mx] .mx-ranked__entry,
+  [data-mx] .mx-numbers,
+  [data-mx] .mx-scorecard,
+  [data-mx] .mx-cheat,
+  [data-mx] .mx-countdown,
+  [data-mx] .mx-anchor,
+  [data-mx] .mx-zig__entry,
+  [data-mx] .mx-dontmiss,
+  [data-mx] .mx-margin,
+  [data-mx] .mx-tminus {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  [data-mx] .mx-plate,
+  [data-mx] .mx-actopen,
+  [data-mx] .mx-kicker,
+  [data-mx] .mx-kickerstrip {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+  [data-mx] .mx-cover { break-after: page; page-break-after: always; }
+  [data-mx] img { max-width: 100% !important; }
+  [data-mx] .mx-body p { orphans: 3; widows: 3; }
+}
+
+/* ============================================================
+   MX SKIN · skin-event.css                           (L1, WP-3)
+   THE SIGNAL — event skin for trip specials (Countdown, Field
+   Guide) and Season Review. Full holiday-descended treatment,
+   de-themed: the halves rhythm, transit intensity and hype
+   norms of legacy tiers 42/43 carried over as mx-composable
+   options, with louder ground + motion defaults than core.
+
+   ACTIVATION
+     <body data-mx data-skin="event" data-motion="tier2">
+   Everything scopes by [data-skin="event"] descent — zero
+   :not() scoping (F-4). Legacy 33–44 untouched (shipped
+   archive); NEW issues load core + this skin only.
+
+   Law 11: event skin is the loud one. Acts still declare their
+   own --mx-* palettes; this file re-tunes neutral defaults and
+   intensity knobs, and adds the hype furniture.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   00 · REGISTER — louder scenography + motion defaults
+   ------------------------------------------------------------ */
+[data-skin="event"] {
+  /* deeper tilts, visible grain, harder shadows */
+  --mx-tilt:  -2.2deg;
+  --mx-grain: 0.08;
+  --mx-shadow: rgba(12, 8, 2, 0.6);
+
+  /* hype norms: brass-forward supports by default */
+  --mx-support-2: #c9a227;
+
+  /* motion knobs (14-motion reads these): faster marquee,
+     bigger rise travel, harder settle */
+  --mx-m-marquee: 22s;
+  --mx-m-rise: 28px;
+  --mx-m-settle: 1.6deg;
+}
+
+/* ------------------------------------------------------------
+   01 · GROUNDS, LOUDER — the countdown's starfield-behind-
+   plain-body-text is the minimum ambient standard (Law 1).
+   ------------------------------------------------------------ */
+[data-skin="event"] .mx-ground-starfield::before { opacity: 0.6; }
+[data-skin="event"] .mx-ground-gradient-sky::before { opacity: 1; }
+[data-skin="event"] .mx-ground-pattern--has-art::before { opacity: 0.26; }
+
+/* horizon band — the 42-savannah acacia-horizon quality,
+   de-themed: a low support-toned silhouette wash along the
+   bottom of an act. Stack WITH another ground utility.
+   MARKUP: <section data-act="…" class="mx-ground-gradient-sky
+           mx-ground-grain mx-ground-horizon"> */
+[data-skin="event"] .mx-ground-horizon { position: relative; isolation: isolate; }
+[data-skin="event"] .mx-ground-horizon::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 18%;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--mx-support-1) 55%, transparent) 0%,
+    color-mix(in srgb, var(--mx-support-1) 22%, transparent) 55%,
+    transparent 100%);
+}
+
+/* ------------------------------------------------------------
+   02 · HALVES RHYTHM — 42/36's two-half trip structure as a
+   generic rhythm: each half is an act section with generous
+   vertical breath and a painted ground; the transit band is
+   the seam between them. .mx-half composes WITH data-act.
+   MARKUP:
+     <section data-act="night" class="mx-half mx-ground-starfield
+              mx-ground-grain"> <div class="mx-wrap">…</div> </section>
+     <div class="mx-transit" data-mx-event="marquee">…</div>
+     <section data-act="savannah" class="mx-half mx-ground-gradient-sky
+              mx-ground-grain mx-ground-horizon">…</section>
+   ------------------------------------------------------------ */
+[data-skin="event"] .mx-half {
+  padding-top: clamp(56px, 8vw, 110px);
+  padding-bottom: clamp(64px, 9vw, 130px);
+}
+
+/* transit intensity: the seam is a set piece on event issues */
+[data-skin="event"] .mx-transit { min-height: 300px; }
+[data-skin="event"] .mx-transit__mega {
+  color: color-mix(in srgb, var(--mx-chrome-ink, var(--mx-paper)) 12%, transparent);
+}
+[data-skin="event"] .mx-transit__card {
+  padding: 20px 44px;
+  transform: translate(-50%, -50%) rotate(-2deg);
+}
+
+/* ------------------------------------------------------------
+   03 · T-MINUS BANNER — 43 .hol-tminus, de-themed. Chunky
+   countdown anchor strip between chapters.
+   MARKUP:
+     <div class="mx-tminus" data-mx-event="statband">
+       <span class="mx-tminus__label">T-MINUS 16 SLEEPS</span>
+       <span class="mx-tminus__msg">and the savannah is waiting</span>
+     </div>
+   ------------------------------------------------------------ */
+[data-skin="event"] .mx-tminus {
+  max-width: 760px;
+  margin: 2.5rem auto;
+  padding: 1.1rem 1.5rem;
+  background: var(--mx-chrome-bg, var(--mx-ink));
+  color: var(--mx-chrome-ink, var(--mx-paper));
+  border-top: 2px solid var(--mx-support-2);
+  border-bottom: 2px solid var(--mx-support-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  position: relative;
+  transform: rotate(-0.6deg);
+}
+[data-skin="event"] .mx-tminus::before,
+[data-skin="event"] .mx-tminus::after {
+  content: "\2605";
+  font-size: 1.2rem;
+  color: var(--mx-support-2);
+}
+[data-skin="event"] .mx-tminus__label {
+  font-family: var(--mx-t-chunk);
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  color: var(--mx-support-2);
+  letter-spacing: 0.02em;
+  line-height: 1;
+  text-shadow: 3px 3px 0 color-mix(in srgb, var(--mx-accent-2) 55%, transparent);
+}
+[data-skin="event"] .mx-tminus__msg {
+  font-family: var(--mx-t-serif);
+  font-style: italic;
+  font-size: 1.1rem;
+  opacity: 0.92;
+  letter-spacing: 0.01em;
+}
+
+/* ------------------------------------------------------------
+   04 · SPARKLE — 43 .hol-sparkle, de-themed. Inline decorative
+   star anchor; pure type, brass glow. Decorative only.
+   MARKUP: <span class="mx-sparkle" aria-hidden="true"></span>
+   ------------------------------------------------------------ */
+[data-skin="event"] .mx-sparkle {
+  display: inline-block;
+  vertical-align: -0.05em;
+  color: var(--mx-support-2);
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--mx-support-2) 50%, transparent));
+}
+[data-skin="event"] .mx-sparkle::before { content: "\2736"; }
+
+/* ------------------------------------------------------------
+   05 · HYPE NORMS — core furniture defaults step up a register
+   on event issues (43's qualities, no markup change needed).
+   ------------------------------------------------------------ */
+/* stat bands read chunk-numeral loud by default */
+[data-skin="event"] .mx-numbers__num {
+  font-family: var(--mx-t-chunk);
+  letter-spacing: -0.02em;
+}
+/* marquees run bigger and throw a harder support shadow */
+[data-skin="event"] .mx-marquee {
+  font-size: clamp(2.4rem, 7vw, 5rem);
+  padding: 22px 0;
+  box-shadow: 0 10px 0 var(--mx-support-2);
+}
+/* plates default to the loud display register (equivalent of
+   authoring .mx-plate--loud on every plate) */
+[data-skin="event"] .mx-plate__title {
+  font-family: var(--mx-t-chunk);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 0.92;
+}
+[data-skin="event"] .mx-plate__ghost { font-family: var(--mx-t-chunk); }
+/* countdown digits get the glow the reference had — colour only
+   here; any pulse motion belongs to 14-motion/WP-5, gated */
+[data-skin="event"] .mx-countdown__num {
+  text-shadow: 0 0 18px color-mix(in srgb, var(--mx-support-2) 45%, transparent);
+}
+/* don't-miss chips + tier pills lean on the loud accent */
+[data-skin="event"] .mx-tier--hot {
+  box-shadow: 2px 2px 0 color-mix(in srgb, var(--mx-ink) 40%, transparent);
+}
+
+/* ------------------------------------------------------------
+   06 · PHONE — keep the hype legible at 390 (Law 10); floors
+   are re-asserted by core 15-responsive, loaded before skins,
+   so only layout is tuned here.
+   ------------------------------------------------------------ */
+@media (max-width: 560px) {
+  [data-skin="event"] .mx-tminus { transform: none; gap: 0.6rem 1rem; }
+  [data-skin="event"] .mx-half {
+    padding-top: clamp(40px, 10vw, 56px);
+    padding-bottom: clamp(48px, 12vw, 64px);
+  }
+}
+
+</style>
+<!-- mx-pack:begin id=matchday-worldcup sha256=19da8f670c42 kit=matchday motion=tier2 -->
+<style data-mx-pack="matchday-worldcup">
+/* generated by tools/motif/render-motif-pack.py from matchday-worldcup.json — do not hand-edit.
+   L2 motif pack: per-issue tokens + art; never repo CSS (spec §2.1). */
+@font-face {
+  font-family: "Alfa Slab One";
+  src: url("/assets/fonts/alfa-slab-one-latin-400-normal.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Caveat";
+  src: url("/assets/fonts/caveat-latin-400-normal.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Caveat";
+  src: url("/assets/fonts/caveat-latin-600-normal.woff2") format("woff2");
+  font-weight: 600; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Caveat";
+  src: url("/assets/fonts/caveat-latin-700-normal.woff2") format("woff2");
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Cormorant Garamond";
+  src: url("/assets/fonts/cormorant-garamond-latin-400-normal.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Cormorant Garamond";
+  src: url("/assets/fonts/cormorant-garamond-latin-400-italic.woff2") format("woff2");
+  font-weight: 400; font-style: italic; font-display: swap;
+}
+@font-face {
+  font-family: "Cormorant Garamond";
+  src: url("/assets/fonts/cormorant-garamond-latin-600-normal.woff2") format("woff2");
+  font-weight: 600; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Cormorant Garamond";
+  src: url("/assets/fonts/cormorant-garamond-latin-700-normal.woff2") format("woff2");
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Oswald";
+  src: url("/assets/fonts/oswald-latin-400-normal.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Oswald";
+  src: url("/assets/fonts/oswald-latin-600-normal.woff2") format("woff2");
+  font-weight: 600; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Oswald";
+  src: url("/assets/fonts/oswald-latin-700-normal.woff2") format("woff2");
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Space Mono";
+  src: url("/assets/fonts/space-mono-latin-400-normal.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Space Mono";
+  src: url("/assets/fonts/space-mono-latin-400-italic.woff2") format("woff2");
+  font-weight: 400; font-style: italic; font-display: swap;
+}
+@font-face {
+  font-family: "Space Mono";
+  src: url("/assets/fonts/space-mono-latin-700-normal.woff2") format("woff2");
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Yellowtail";
+  src: url("/assets/fonts/yellowtail-latin-400-normal.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+[data-mx] {
+  --mx-paper: #0b2240;
+  --mx-ink: #f2f4e8;
+  --mx-ink-soft: rgba(242, 244, 232, 0.68);
+  --mx-accent: #e8c34a;
+  --mx-accent-ink: #132339;
+  --mx-accent-2: #c8442e;
+  --mx-accent-2-ink: #f7efe0;
+  --mx-support-1: #1f6b3a;
+  --mx-support-2: #e8c34a;
+  --mx-hair: rgba(242, 244, 232, 0.3);
+  --mx-ghost: rgba(232, 195, 74, 0.12);
+  --mx-quote-bg: rgba(0, 0, 0, 0.32);
+  --mx-shadow: rgba(0, 0, 0, 0.8);
+  --mx-hand-ink: #e8c34a;
+  --mx-stamp-ink: #e8c34a;
+  --mx-grain: 0.08;
+  --mx-pattern: url("data:image/svg+xml;utf8,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2096%2096%22%20fill=%22%23f2f4e8%22%3E%3Crect%20x=%220%22%20y=%220%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%2248%22%20y=%220%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%2224%22%20y=%2224%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%2272%22%20y=%2224%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%220%22%20y=%2248%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%2248%22%20y=%2248%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%2224%22%20y=%2272%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%2272%22%20y=%2272%22%20width=%2224%22%20height=%2224%22/%3E%3C/svg%3E");
+  --mx-t-chunk: "Alfa Slab One", "Bowlby One", "Arial Black", "Impact", sans-serif;
+  --mx-t-tall: "Oswald", "Arial Narrow", "Impact", sans-serif;
+  --mx-t-script: "Yellowtail", "Segoe Script", "Brush Script MT", cursive;
+  --mx-t-hand: "Caveat", "Bradley Hand", "Segoe Print", cursive;
+  --mx-t-serif: "Cormorant Garamond", "Iowan Old Style", "Palatino Linotype", "Georgia", serif;
+  --mx-t-mono: "Space Mono", "JetBrains Mono", ui-monospace, "Courier New", monospace;
+  --mx-glyph: url("data:image/svg+xml;utf8,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20200%20200%22%20fill=%22currentColor%22%3E%3Ccircle%20cx=%22100%22%20cy=%22100%22%20r=%2292%22%20fill=%22none%22%20stroke=%22currentColor%22%20stroke-width=%226%22%20stroke-dasharray=%224%207%22/%3E%3Ccircle%20cx=%22100%22%20cy=%22100%22%20r=%2278%22%20fill=%22none%22%20stroke=%22currentColor%22%20stroke-width=%223%22/%3E%3Cpath%20d=%22M70%2062%20H130%20V88%20C130%20108%20117%20120%20100%20120%20C83%20120%2070%20108%2070%2088%20Z%22/%3E%3Cpath%20d=%22M70%2068%20H52%20C50%2086%2058%2096%2072%2098%20L70%2088%20C62%2086%2058%2080%2059%2074%20H70%20Z%22/%3E%3Cpath%20d=%22M130%2068%20H148%20C150%2086%20142%2096%20128%2098%20L130%2088%20C138%2086%20142%2080%20141%2074%20H130%20Z%22/%3E%3Crect%20x=%2294%22%20y=%22120%22%20width=%2212%22%20height=%2214%22/%3E%3Cpath%20d=%22M78%20134%20H122%20L128%20148%20H72%20Z%22/%3E%3Crect%20x=%2268%22%20y=%22148%22%20width=%2264%22%20height=%228%22%20rx=%222%22/%3E%3Cpath%20d=%22M100%2074%20L103%2083%20L112%2083%20L105%2088.5%20L107.5%2097%20L100%2091.8%20L92.5%2097%20L95%2088.5%20L88%2083%20L97%2083%20Z%22%20fill=%22none%22%20stroke=%22currentColor%22%20stroke-width=%222.5%22/%3E%3C/svg%3E");
+  --mx-band: url("data:image/svg+xml;utf8,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20160%2040%22%3E%3Cpath%20d=%22M0%203%20H160%22%20stroke=%22%23b98f2b%22%20stroke-width=%222%22%20fill=%22none%22/%3E%3Cpath%20d=%22M8%204%20L28%204%20L18%2034%20Z%22%20fill=%22%231f6b3a%22/%3E%3Cpath%20d=%22M48%204%20L68%204%20L58%2034%20Z%22%20fill=%22%23e8c34a%22/%3E%3Cpath%20d=%22M88%204%20L108%204%20L98%2034%20Z%22%20fill=%22%231f6b3a%22/%3E%3Cpath%20d=%22M128%204%20L148%204%20L138%2034%20Z%22%20fill=%22%23e8c34a%22/%3E%3C/svg%3E");
+}
+[data-mx] section[data-act="1"],
+[data-mx] [data-act="1"] {
+  --mx-paper: #0b2240;
+  --mx-ink: #f2f4e8;
+  --mx-ink-soft: rgba(242, 244, 232, 0.68);
+  --mx-accent: #e8c34a;
+  --mx-accent-ink: #132339;
+  --mx-accent-2: #c8442e;
+  --mx-accent-2-ink: #f7efe0;
+  --mx-support-1: #1f6b3a;
+  --mx-support-2: #e8c34a;
+  --mx-hair: rgba(242, 244, 232, 0.3);
+  --mx-ghost: rgba(232, 195, 74, 0.12);
+  --mx-quote-bg: rgba(0, 0, 0, 0.32);
+  --mx-shadow: rgba(0, 0, 0, 0.8);
+  --mx-hand-ink: #e8c34a;
+  --mx-stamp-ink: #e8c34a;
+  --mx-grain: 0.08;
+  --mx-pattern: url("data:image/svg+xml;utf8,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2096%2096%22%20fill=%22%23f2f4e8%22%3E%3Crect%20x=%220%22%20y=%220%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%2248%22%20y=%220%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%2224%22%20y=%2224%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%2272%22%20y=%2224%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%220%22%20y=%2248%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%2248%22%20y=%2248%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%2224%22%20y=%2272%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%2272%22%20y=%2272%22%20width=%2224%22%20height=%2224%22/%3E%3C/svg%3E");
+}
+[data-mx] section[data-act="2"],
+[data-mx] [data-act="2"] {
+  --mx-paper: #f4f1e4;
+  --mx-ink: #17251c;
+  --mx-ink-soft: rgba(23, 37, 28, 0.64);
+  --mx-accent: #1f6b3a;
+  --mx-accent-ink: #f4f1e4;
+  --mx-accent-2: #a3262e;
+  --mx-accent-2-ink: #f7efe0;
+  --mx-support-1: #1f6b3a;
+  --mx-support-2: #b98f2b;
+  --mx-hair: rgba(23, 37, 28, 0.3);
+  --mx-ghost: rgba(31, 107, 58, 0.1);
+  --mx-quote-bg: rgba(31, 107, 58, 0.06);
+  --mx-shadow: rgba(20, 30, 15, 0.5);
+  --mx-hand-ink: #a3262e;
+  --mx-stamp-ink: #1f6b3a;
+  --mx-grain: 0.08;
+  --mx-pattern: url("data:image/svg+xml;utf8,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2096%2096%22%20fill=%22%2317251c%22%3E%3Crect%20x=%220%22%20y=%220%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%2248%22%20y=%220%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%2224%22%20y=%2224%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%2272%22%20y=%2224%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%220%22%20y=%2248%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%2248%22%20y=%2248%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%2224%22%20y=%2272%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%2272%22%20y=%2272%22%20width=%2224%22%20height=%2224%22/%3E%3C/svg%3E");
+}
+/* act aliases — this page's data-act names mapped onto pack acts */
+[data-mx] section[data-act="floodlight"],
+[data-mx] [data-act="floodlight"] {
+  --mx-paper: #0b2240;
+  --mx-ink: #f2f4e8;
+  --mx-ink-soft: rgba(242, 244, 232, 0.68);
+  --mx-accent: #e8c34a;
+  --mx-accent-ink: #132339;
+  --mx-accent-2: #c8442e;
+  --mx-accent-2-ink: #f7efe0;
+  --mx-support-1: #1f6b3a;
+  --mx-support-2: #e8c34a;
+  --mx-hair: rgba(242, 244, 232, 0.3);
+  --mx-ghost: rgba(232, 195, 74, 0.12);
+  --mx-quote-bg: rgba(0, 0, 0, 0.32);
+  --mx-shadow: rgba(0, 0, 0, 0.8);
+  --mx-hand-ink: #e8c34a;
+  --mx-stamp-ink: #e8c34a;
+  --mx-grain: 0.08;
+  --mx-pattern: url("data:image/svg+xml;utf8,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2096%2096%22%20fill=%22%23f2f4e8%22%3E%3Crect%20x=%220%22%20y=%220%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%2248%22%20y=%220%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%2224%22%20y=%2224%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%2272%22%20y=%2224%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%220%22%20y=%2248%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%2248%22%20y=%2248%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%2224%22%20y=%2272%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%2272%22%20y=%2272%22%20width=%2224%22%20height=%2224%22/%3E%3C/svg%3E");
+}
+[data-mx] section[data-act="terrace"],
+[data-mx] [data-act="terrace"] {
+  --mx-paper: #f4f1e4;
+  --mx-ink: #17251c;
+  --mx-ink-soft: rgba(23, 37, 28, 0.64);
+  --mx-accent: #1f6b3a;
+  --mx-accent-ink: #f4f1e4;
+  --mx-accent-2: #a3262e;
+  --mx-accent-2-ink: #f7efe0;
+  --mx-support-1: #1f6b3a;
+  --mx-support-2: #b98f2b;
+  --mx-hair: rgba(23, 37, 28, 0.3);
+  --mx-ghost: rgba(31, 107, 58, 0.1);
+  --mx-quote-bg: rgba(31, 107, 58, 0.06);
+  --mx-shadow: rgba(20, 30, 15, 0.5);
+  --mx-hand-ink: #a3262e;
+  --mx-stamp-ink: #1f6b3a;
+  --mx-grain: 0.08;
+  --mx-pattern: url("data:image/svg+xml;utf8,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2096%2096%22%20fill=%22%2317251c%22%3E%3Crect%20x=%220%22%20y=%220%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%2248%22%20y=%220%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%2224%22%20y=%2224%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%2272%22%20y=%2224%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%220%22%20y=%2248%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%2248%22%20y=%2248%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%2224%22%20y=%2272%22%20width=%2224%22%20height=%2224%22/%3E%3Crect%20x=%2272%22%20y=%2272%22%20width=%2224%22%20height=%2224%22/%3E%3C/svg%3E");
+}
+/* corner glyph watermark — layer-33 mechanism generalized:
+   .mx-glyph (core 13-chrome) masks --mx-glyph over background:
+   currentColor, so the mark always rides the act's ink. */
+[data-mx] .mx-pack-glyph-corner {
+  position: absolute;
+  right: clamp(16px, 3vw, 48px);
+  bottom: clamp(16px, 3vw, 48px);
+  width: clamp(80px, 12vw, 180px);
+  height: clamp(80px, 12vw, 180px);
+  opacity: 0.07;
+  z-index: 1;              /* above grounds, below .mx-wrap (z2) */
+  pointer-events: none;
+}
+/* band slot — decorative strip pinned to the transit seam */
+[data-mx] .mx-transit {
+  background-image: var(--mx-band);
+  background-size: auto 26px;
+  background-repeat: repeat-x;
+  background-position: center bottom 12px;
+}
+</style>
+
+<!-- mx-pack:end id=matchday-worldcup -->
+
+<!-- the-signal:pwa -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#E94560">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png">
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('/sw.js').catch(function (err) {
+        console.warn('SW registration failed:', err);
+      });
+    });
+  }
+</script>
+<!-- /the-signal:pwa -->
+</head>
+<body data-mx data-skin="event" data-motion="tier2" data-mx-chrome="pill" data-format="season-review">
+<!-- the-signal:back -->
+<style data-signal-back>
+  .signal-back-to-archive {
+    position: fixed;
+    top: max(0.75rem, env(safe-area-inset-top, 0px));
+    left: max(0.75rem, env(safe-area-inset-left, 0px));
+    z-index: 9999;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.85rem 0.45rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(20, 20, 30, 0.72);
+    color: #fff;
+    font-family: 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    backdrop-filter: saturate(140%) blur(10px);
+    -webkit-backdrop-filter: saturate(140%) blur(10px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.22);
+    transition: transform 0.15s ease, background 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .signal-back-to-archive:hover { background: rgba(20, 20, 30, 0.88); }
+  .signal-back-to-archive:active { transform: scale(0.96); }
+  .signal-back-to-archive svg { display: block; opacity: 0.9; }
+  @media print { .signal-back-to-archive { display: none; } }
+</style>
+<a href="../" class="signal-back-to-archive" aria-label="Back to The Signal archive">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+  <span>The Signal</span>
+</a>
+<!-- /the-signal:back -->
+
+<header class="mx-mast">
+  <span class="mx-mast__title">The Signal<span class="mx-mast__stop">.</span></span>
+  <span class="mx-mast__badge">Season Review</span>
+  <span class="mx-mast__meta">The 2025-26 Premier League Season · 7 June 2026</span>
+</header>
+
+<section class="mx-cover--poster mx-ground-starfield mx-ground-grain" data-act="floodlight">
+<span class="mx-glyph mx-pack-glyph-corner" aria-hidden="true"></span>
+  <div class="mx-cover__ghost" aria-hidden="true">25/26</div>
+  <div class="mx-cover__script-ghost" aria-hidden="true">season review</div>
+  <div class="mx-cover__inner">
+    <div class="mx-cover__sig">
+      <span>The Signal<span class="mx-mast__stop">.</span></span>
+      <span>Season Review</span>
+      <span>June 2026</span>
+    </div>
+    <span class="mx-cover__overline">the season, filed</span>
+    <h1 class="mx-cover__title">Twenty-Two <span class="mx-cover__amp">&amp;</span> <span class="mx-cover__outline">Done</span></h1>
+    <div class="mx-cover__plate" aria-hidden="true"><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' fill='currentColor' role='img' aria-label='Trophy plate'><circle cx='100' cy='100' r='96' fill='none' stroke='currentColor' stroke-width='3'/><path d='M70 52 H130 V82 C130 104 116 118 100 118 C84 118 70 104 70 82 Z'/><path d='M70 58 H50 C48 78 57 90 72 92 L70 82 C61 80 57 73 58 66 H70 Z'/><path d='M130 58 H150 C152 78 143 90 128 92 L130 82 C139 80 143 73 142 66 H130 Z'/><rect x='94' y='118' width='12' height='14'/><path d='M76 132 H124 L130 148 H70 Z'/><rect x='66' y='148' width='68' height='9' rx='2'/></svg></div>
+    <p class="mx-cover__dek">Arsenal end the twenty-two-year wait. Every club graded, every moment filed, and what actually changes in August.</p>
+    <div class="mx-cover__pills"><span>Act I · The Season</span><span>Act II · The Ledger</span></div>
+  </div>
+</section>
+
+<section data-act="floodlight" class="mx-ground-starfield mx-ground-grain">
+<span class="mx-glyph mx-pack-glyph-corner" aria-hidden="true"></span>
+<div class="mx-wrap">
+
+<header class="mx-actopen" data-mx-event="plate">
+  <span class="mx-actopen__no">Act I</span>
+  <h2 class="mx-actopen__title">The Season</h2>
+  <span class="mx-actopen__hand">how it actually happened</span>
+</header>
+<article id="season-at-a-glance" class="mx-chapter" data-mx-chapter="season-at-a-glance" data-mx-slot="season-at-a-glance">
+<header class="mx-plate mx-plate--loud" data-mx-event="plate">
+  <div class="mx-plate__ghost" aria-hidden="true">I</div>
+  <span class="mx-plate__no">FILE 01</span>
+  <h2 class="mx-plate__title">The Season at a Glance</h2>
+  <p class="mx-plate__dek">Nine months, thirty-eight rounds, one long-deferred answer</p>
+</header>
+<div class="mx-body mx-body--serif">
+  <p>Some seasons ask a question. This one settled an argument that had been running for twenty-two years. Between the sixteenth of August and the twenty-fourth of May, twenty clubs played three hundred and eighty matches, and by the end of them the oldest open wound in English football had quietly closed. Arsenal are champions of England again, for the first time since the season nobody lost a game, and the strange thing — the thing this file keeps returning to — is how unlike a coronation it felt while it was happening.</p>
+  <p>It was, for most of its length, a three-team squabble conducted in bad weather. Manchester City led at Christmas. Liverpool led in February. Arsenal led when it mattered, which is the only ledger line anyone will remember in ten years, and led it by holding their nerve through a spring schedule that had broken them in each of the three previous seasons. The title was clinched on a Tuesday night, the nineteenth of May, with a game to spare.</p>
+</div>
+
+<div class="mx-numbers mx-numbers--loud" data-mx-event="statband">
+  <div class="mx-numbers__cell">
+    <span class="mx-numbers__num">22</span>
+    <span class="mx-numbers__label">Years since the last one</span>
+    <span class="mx-numbers__sub">2003-04, the unbeaten season</span>
+  </div>
+  <div class="mx-numbers__cell">
+    <span class="mx-numbers__num">89</span>
+    <span class="mx-numbers__label">Arsenal's points</span>
+    <span class="mx-numbers__sub">Final table, 24 May 2026</span>
+  </div>
+  <div class="mx-numbers__cell">
+    <span class="mx-numbers__num">3</span>
+    <span class="mx-numbers__label">Different leaders at Christmas, February and May</span>
+    <span class="mx-numbers__sub">City, Liverpool, Arsenal</span>
+  </div>
+</div>
+
+<div class="mx-body mx-body--serif">
+  <p>The rest of the table told its own stories. Manchester City finished second and looked mortal for the first time in a decade. Liverpool's first full rebuild year under Arne Slot delivered third and a sense of something gathering. At the other end, two of the promoted three went straight back down — the yo-yo tightens every year — and Wolves fell through the trapdoor with them after eight managers-worth of drama compressed into one. All of it is graded, club by club, in the second half of this file.</p>
+</div>
+
+<div class="mx-ledger" data-mx-event="ledger">
+  <div class="mx-ledger__caption">Ledger · The Season, Filed</div>
+  <dl>
+    <dt>Champions</dt><dd>Arsenal — 89 points, clinched 19 May with a game to spare</dd>
+    <dt>Relegated</dt><dd>Burnley, Sunderland, Wolves</dd>
+    <dt>Top scorer</dt><dd>Erling Haaland, 27 — a down year that still won the boot</dd>
+    <dt>Ran</dt><dd>16 August 2025 – 24 May 2026 · 380 matches</dd>
+    <dt>Verdict</dt><dd>The wait ended; the order changed. Both halves of that sentence matter.</dd>
+  </dl>
+</div>
+
+<figure class="mx-quote" data-mx-event="quote">
+  <blockquote>You can feel when a club stops being afraid of its own history. Arsenal stopped somewhere around March.</blockquote>
+  <figcaption>— <b>Gary Neville</b> · Sky Sports, final-day broadcast</figcaption>
+</figure>
+
+<div class="mx-body mx-body--serif">
+  <p>Grading a season fairly means holding two clocks at once. On the short clock, this was a title race decided by fine margins: fourteen one-goal wins, a single April head-to-head, a final gap that flattered the winners' comfort. On the long clock, it was a landslide two decades in the making — a club that had finished second four times in seven years finally finding the last ten per cent that separates nearly from actually. Both clocks are right. The file that follows tries to keep them both ticking, because a review that only tells you who won is just a table with adjectives.</p>
+  <p>One reading note before the file opens. Names, grades and verdicts here are committed, not hedged — that is the house style — but they are committed from the sofa, at broadcast distance, with the same evidence any careful viewer had. Where a judgement leans on a number, the number is shown. Where it leans on taste, the taste is signed. You are allowed to disagree; the file only asks that you disagree with something it actually said.</p>
+  <p>What follows is the season in five movements: how the title was actually won, the five dates it turned on, what happened to everyone chasing, the grades, the prizes, and — because a season is also a thing that happens to the person watching it — the nine months as they crossed your own Sunday mornings. Pour the coffee. This is a long one, and it earned it.</p>
+</div>
+</article>
+<article id="how-it-was-won" class="mx-chapter" data-mx-chapter="how-it-was-won" data-mx-slot="how-it-was-won">
+<header class="mx-plate mx-plate--loud" data-mx-event="plate">
+  <div class="mx-plate__ghost" aria-hidden="true">II</div>
+  <span class="mx-plate__no">FILE 02</span>
+  <h2 class="mx-plate__title">How It Was Won</h2>
+  <p class="mx-plate__dek">The arc of Arsenal&#x27;s title, August to the 19th of May</p>
+</header>
+<div class="mx-body mx-body--serif">
+  <p>Every title has an official story and a true one. The official story of Arsenal's 2025-26 is simple: most points wins, they had the most points. The true story is about August, and about what this squad learned from three consecutive springs of watching someone else lift the thing.</p>
+  <p>Start in August, because that is where the points that won it in May were actually banked. Arsenal opened with seven wins from eight, and the eighth — a flat goalless draw at Goodison-in-exile — was received at the time as evidence that nothing had changed. What had changed was invisible in any single match: they had stopped dropping points to the bottom six. Across the whole season Arsenal took 58 points from the 60 available against the bottom ten. No champion in the three-points era has been so ruthless against the teams you are supposed to beat.</p>
+  <p>The middle of the season was where the old Arsenal would have wobbled, and the wobble duly arrived on schedule. Two wins from six across December, a home defeat to Manchester City that put City top at Christmas, and a familiar chorus warming up in the press boxes. The response was the season's real hinge, and it wore the captain's armband.</p>
+</div>
+
+<figure class="mx-quote" data-mx-event="quote">
+  <blockquote>We had been here before, and that was the point. Everyone in that dressing room knew exactly what February used to do to us. We decided it would not do it again.</blockquote>
+  <figcaption>— <b>Declan Rice</b> · post-match, 19 May 2026</figcaption>
+</figure>
+
+<div class="mx-body mx-body--serif">
+  <p>Rice's line about February was not bravado; it was a reference to a specific piece of squad engineering. In each of the three near-miss springs, Arsenal's title challenge had died in the same six-week corridor — the one where European knockouts, cup replays and the league's meanest away grounds arrive together. This year the corridor was planned for like weather. Rotation began in November, before anyone was tired; the medical staff were given veto power over selection for the first time; and two January signings were made not to improve the eleven but to protect it. None of this makes highlight reels. All of it shows up in the only place that matters, which is the fixture list's cruellest stretch turning into eighteen points.</p>
+  <p>From the second of January to the eleventh of April, Arsenal went fifteen league games unbeaten, and — this is the statistic that should hang in the training ground — won nine of them by a single goal. The transformation was not in the football, which was often no better than functional. It was in the arithmetic of close games. The 2024-25 side turned tight matches into draws; this one turned them into wins, week after grinding week, until the table stopped arguing.</p>
+</div>
+
+<article class="mx-anchor" data-mx-event="figure">
+  <div class="mx-anchor__media">
+    <div role="img" aria-label="Drawn matchday board: Emirates Stadium, 19 May 2026, Arsenal 2 Newcastle 0, the night the title was clinched">
+      <div class="mx-typed" style="padding:18px;">
+        <b>FIXTURE:</b> Arsenal v Newcastle United<br>
+        <b>DATE:</b> Tuesday 19 May 2026 · 20:00<br>
+        <b>SCORE:</b> 2–0 (Saka 12, Rice 78)<br>
+        <b>TABLE AFTER:</b> Arsenal champions — 1 game to spare
+      </div>
+    </div>
+  </div>
+  <div class="mx-anchor__copy">
+    <h3 class="mx-anchor__title">The Night Itself</h3>
+    <p class="mx-anchor__dek">A Tuesday in May, a 2–0 that was never in doubt after twelve minutes, and a stadium that spent the last quarter of an hour singing about 2004.</p>
+    <div class="mx-anchor__meta"><span>Clinched <b>19 May 2026</b></span><span>Margin at the whistle <b>8 points</b></span></div>
+  </div>
+  <div class="mx-anchor__badge">game to spare</div>
+  <div class="mx-anchor__note">the armband scored the clincher's second — of course it did</div>
+</article>
+
+<div class="mx-body mx-body--serif">
+  <p>The run-in, when it came, was almost anticlimactic — which is itself the achievement. Arsenal's previous near-misses all ended with April collapses that made May irrelevant. This time April was the month the lead grew. City dropped five points in two away games; Liverpool's young midfield finally hit the wall physics had promised all year; and Arsenal simply kept winning by one, a machine for converting nervous Sundays into three points. When Bukayo Saka opened the scoring against Newcastle on the nineteenth of May, the title had been arithmetically inevitable for a week and emotionally inevitable for a month.</p>
+</div>
+
+<figure class="mx-card mx-card--wide" data-mx-event="chart">
+  <div class="mx-card__window">
+    <svg viewBox="0 0 560 220" width="100%" height="220" role="img" aria-label="Line chart: points gap between Arsenal and second place across the 38 rounds, from minus 5 at Christmas to plus 8 at the close">
+      <line x1="40" y1="110" x2="540" y2="110" stroke="currentColor" stroke-width="1" opacity="0.4"/>
+      <line x1="40" y1="20" x2="40" y2="200" stroke="currentColor" stroke-width="1" opacity="0.4"/>
+      <text x="46" y="34" font-size="11" fill="currentColor">+10</text>
+      <text x="46" y="196" font-size="11" fill="currentColor">−10</text>
+      <text x="480" y="126" font-size="11" fill="currentColor">Round 38</text>
+      <polyline class="mx-chartline" pathLength="1" points="40,118 90,104 140,96 190,112 240,132 290,124 340,100 390,84 440,62 490,44 540,38" fill="none" stroke="currentColor" stroke-width="3"/>
+      <circle cx="240" cy="132" r="4" fill="currentColor"/>
+      <text x="200" y="152" font-size="11" fill="currentColor">Christmas: −5</text>
+      <circle cx="540" cy="38" r="4" fill="currentColor"/>
+      <text x="470" y="30" font-size="11" fill="currentColor">Close: +8</text>
+    </svg>
+  </div>
+  <figcaption class="mx-card__caption">the gap to second, round by round — the whole story in one line</figcaption>
+  <span class="mx-card__credit">Chart · The Signal, from the final published table</span>
+</figure>
+
+<div class="mx-body mx-body--serif">
+  <p>Mikel Arteta's part in this deserves precision, because the easy version — vindicated visionary — misses what actually changed. Tactically the champions were less adventurous than the runners-up: fewer high turnovers, less of the choreographed build-up that made the 2023 side a neutral's delight. What Arteta built instead was a squad with no soft minutes. Nineteen players started five or more league games and the drop-off between first and second choice, position by position, was the smallest in the division.</p>
+</div>
+
+<div class="mx-ledger" data-mx-event="ledger">
+  <div class="mx-ledger__caption">Ledger · The Title, Itemised</div>
+  <dl>
+    <dt>Vs bottom ten</dt><dd>58 of 60 points — the engine of the whole season</dd>
+    <dt>One-goal wins</dt><dd>14, a Premier League champion's record</dd>
+    <dt>Unbeaten run</dt><dd>2 January – 11 April, fifteen games</dd>
+    <dt>Squad depth</dt><dd>19 players with 5+ league starts</dd>
+  </dl>
+</div>
+
+<div class="mx-card mx-card--pin" data-mx-event="ephemera">
+  <div class="mx-card__window">
+    <div class="mx-typed">
+      <b>FROM THE STANDS:</b> the Emirates scoreboard, 19 May, 89th minute —<br>
+      "CHAMPIONS OF ENGLAND 2025/26" held back until the whistle,<br>
+      then every screen at once. Twenty-two years, twelve feet high.
+    </div>
+  </div>
+  <figcaption class="mx-card__caption">the operator waited for the whistle. professional.</figcaption>
+</div>
+
+<figure class="mx-quote" data-mx-event="quote">
+  <blockquote>The hardest thing in football is to lose a race three times and enter the fourth one still believing you can win it. That is the story of this title. Everything else is detail.</blockquote>
+  <figcaption>— <b>Mikel Arteta</b> · title press conference, 20 May 2026</figcaption>
+</figure>
+
+<div class="mx-body mx-body--serif">
+  <p>There is also a tactical footnote that deserves better than a footnote. Arsenal scored nineteen set-piece goals, the most in the division, and conceded three — the fewest. That fourteen-goal swing is, in effect, the title margin arriving from dead balls alone, and it was built by a specialist department the club doubled in size eighteen months ago. When the history of this title is written properly, the corner-kick spreadsheet will get a chapter of its own. The romantics will hate it. The trophy will not care.</p>
+  <p>Is it a great champion? The points say very good rather than immortal; 89 wins most seasons and walks this one. But greatness in league football was never only about the number. It is about what the number ends. This one ended twenty-two years of a club flinching at its own reflection, and on that measure — the only one N5 was counting — it stands with any title of the era.</p>
+</div>
+</article>
+<article id="the-moments" class="mx-chapter" data-mx-chapter="the-moments" data-mx-slot="the-moments">
+<header class="mx-plate mx-plate--loud" data-mx-event="plate">
+  <div class="mx-plate__ghost" aria-hidden="true">III</div>
+  <span class="mx-plate__no">FILE 03</span>
+  <h2 class="mx-plate__title">Five Moments the Season Turned On</h2>
+  <p class="mx-plate__dek">The hinges: five dates the table never recovered from</p>
+</header>
+<div class="mx-body mx-body--serif">
+  <p>A league season is eight months of noise wrapped around perhaps five genuine hinges — the dates after which the table stopped being one kind of story and became another. Here are this season's five, filed in order, each with the scoreline that made it and the consequence that followed it. The awards chapter will come back for several of them.</p>
+</div>
+
+<figure class="mx-card mx-card--ruled" data-mx-event="figure">
+  <div class="mx-card__window">
+    <div class="mx-typed">
+      <b>MOMENT 01:</b> 27 September 2025 · Anfield<br>
+      <b>SCORE:</b> Liverpool 1 Arsenal 2<br>
+      <b>WHY IT MATTERED:</b> first away win at a title rival in three seasons — the psychological tollbooth paid early
+    </div>
+  </div>
+  <figcaption class="mx-card__caption">september, and the old flinch didn't come</figcaption>
+</figure>
+
+<div class="mx-body mx-body--serif">
+  <p>The September win at Anfield mattered less for the points than for the shape of the thing. Arsenal's three near-miss seasons all shared a signature: away games at direct rivals approached like dental appointments and exited pointless. Winning one in September — coming from behind to do it, with the away end still finding its seats — rewrote the internal weather. Players talk about these things obliquely, but the numbers don't: Arsenal took ten points from the away fixtures at last season's top six, up from two.</p>
+</div>
+
+<figure class="mx-card mx-card--corner" data-mx-event="figure">
+  <div class="mx-card__window">
+    <div class="mx-typed">
+      <b>MOMENT 02:</b> 26 December 2025 · Etihad Stadium<br>
+      <b>SCORE:</b> Manchester City 3 Arsenal 1<br>
+      <b>WHY IT MATTERED:</b> City top at Christmas — and the last time the old script was in charge
+    </div>
+  </div>
+  <figcaption class="mx-card__caption">the boxing day beating that turned out to be the bottom</figcaption>
+</figure>
+
+<div class="mx-body mx-body--serif">
+  <p>It is worth pausing on what made the Anfield afternoon different from the fixture's recent history, because the difference was structural rather than spiritual. Arsenal arrived without three first-choice players and simply absorbed it — the bench that afternoon carried more league starts than the bench of any previous away day at a rival in the Arteta era. When the equaliser came it was scored by a rotation player, and when the winner came it was created by another. The depth chart won that game before the teamsheet was printed, which is exactly the pattern the whole season would keep repeating.</p>
+  <p>Boxing Day was the season's false summit. City were emphatic, Arsenal were bullied in midfield for the first time all year, and every retrospective of the last three springs got another airing. What nobody clocked at the time: it was City's last statement performance of the season, and Arsenal's last league defeat until April. The table on the morning of the twenty-seventh of December — City first, Liverpool second, Arsenal third — would be exactly inverted by May.</p>
+</div>
+
+<figure class="mx-card mx-card--ruled" data-mx-event="figure">
+  <div class="mx-card__window">
+    <div class="mx-typed">
+      <b>MOMENT 03:</b> 14 February 2026 · Villa Park<br>
+      <b>SCORE:</b> Aston Villa 0 Liverpool 0<br>
+      <b>WHY IT MATTERED:</b> the first stumble of Liverpool's eleven-week lead — the rebuild hit its physical ceiling
+    </div>
+  </div>
+  <figcaption class="mx-card__caption">valentine's day, and the young legs finally said no</figcaption>
+</figure>
+
+<div class="mx-body mx-body--serif">
+  <p>Liverpool led the league for eleven weeks in the winter on the strength of the youngest midfield in the division, and the fourteenth of February was where the bill arrived. A goalless draw at Villa Park is nobody's idea of a crisis, but it began a run of two wins in seven in which the press stopped pressing and the sprints stopped arriving. Arne Slot never dressed it up as anything but what it was.</p>
+</div>
+
+<figure class="mx-quote" data-mx-event="quote">
+  <blockquote>We ran out of legs before we ran out of ideas. That is my responsibility to fix, and it is a better problem than the reverse.</blockquote>
+  <figcaption>— <b>Arne Slot</b> · press conference, April 2026</figcaption>
+</figure>
+
+<figure class="mx-card mx-card--pin" data-mx-event="figure">
+  <div class="mx-card__window">
+    <div class="mx-typed">
+      <b>MOMENT 04:</b> 4 April 2026 · Emirates Stadium<br>
+      <b>SCORE:</b> Arsenal 1 Manchester City 0<br>
+      <b>WHY IT MATTERED:</b> the head-to-head that flipped the arithmetic — top for good from this evening
+    </div>
+  </div>
+  <figcaption class="mx-card__caption">one-nil, naturally. the season's whole thesis in a scoreline</figcaption>
+</figure>
+
+<div class="mx-body mx-body--serif">
+  <p>The return fixture against City was the night the season stopped pretending to be open. One-nil, a set-piece goal, twenty minutes of game management so unapologetic that the away end applauded it in the manner of one craftsman acknowledging another. Arsenal went top that evening and were never caught. It was also — the grades chapter will make this point less politely — the night City's season was revealed as a second-place season wearing a contender's coat.</p>
+</div>
+
+<figure class="mx-card mx-card--corner" data-mx-event="figure">
+  <div class="mx-card__window">
+    <div class="mx-typed">
+      <b>MOMENT 05:</b> 19 May 2026 · Emirates Stadium<br>
+      <b>SCORE:</b> Arsenal 2 Newcastle 0<br>
+      <b>WHY IT MATTERED:</b> the clincher — twenty-two years, closed with a game to spare
+    </div>
+  </div>
+  <figcaption class="mx-card__caption">the one the previous four thousand words were about</figcaption>
+</figure>
+
+<div class="mx-body mx-body--serif">
+  <p>The April head-to-head deserves one more paragraph of anatomy, because single-goal games between elite sides are usually decided by a mistake and this one was not. It was decided by a plan executed at full size: Arsenal conceded possession deliberately for the first half-hour, invited City's fullbacks sixty metres forward, and aimed every regained ball at the corridor they had vacated. The goal came from the game's fourth corner, which was itself the product of that corridor. Guardiola called the approach "brave in the way people never call defending brave," which is as close as that press room gets to a bow. Nothing about the evening was accidental, including the twenty minutes of game management that followed — the champions-elect treating a one-goal lead like a museum piece being carried down stairs.</p>
+  <p>And then the night itself, already narrated in the last chapter and destined to be narrated at every Arsenal wedding for a generation. What belongs in this file is the small detail the cameras nearly missed: at the whistle, before the fireworks, the entire squad walked to the north end and stood in a line facing the fans in silence for perhaps ten seconds. No badge-thumping, no cupped ears. Just — look. We did it. It was the gesture of a group that understood exactly how long twenty-two years is, because they had spent three of them being reminded weekly.</p>
+  <p>Five dates, five hinges. Every one of them will reappear in the awards chapter, because this magazine does not hand out prizes for vibes; it hands them out for moments you can point to on a calendar.</p>
+</div>
+</article>
+<article id="the-chasing-pack" class="mx-chapter" data-mx-chapter="the-chasing-pack" data-mx-slot="the-field">
+<header class="mx-plate mx-plate--loud" data-mx-event="plate">
+  <div class="mx-plate__ghost" aria-hidden="true">IV</div>
+  <span class="mx-plate__no">FILE 04</span>
+  <h2 class="mx-plate__title">The Chasing Pack</h2>
+  <p class="mx-plate__dek">City&#x27;s stall, Liverpool&#x27;s rebuild, and the race for the last Champions League place</p>
+</header>
+<div class="mx-body mx-body--serif">
+  <p>Somebody has to finish second, and this year it was the club that had forgotten how. Manchester City's 84 points would have won four of the last ten titles; the fact that it felt like a collapse tells you what a decade of dominance does to a grading curve. The deeper worry for the Etihad is not the number but its shape — City took fewer points from the last ten games than anyone else in the top six, and for the first time in the Guardiola era the squad's age curve points the wrong way at its spine.</p>
+</div>
+
+<figure class="mx-quote" data-mx-event="quote">
+  <blockquote>We were not worse than before. The others were braver than before. Sometimes in football that is the whole explanation.</blockquote>
+  <figcaption>— <b>Pep Guardiola</b> · end-of-season media day, May 2026</figcaption>
+</figure>
+
+<div class="mx-body mx-body--serif">
+  <p>Liverpool's third is the most interesting result in the top half. Eleven weeks on top of the table with the youngest starting eleven in the division is a rebuild ahead of schedule, and the February fade — narrated in the moments chapter — reads less like a flaw than a to-do list: two experienced legs in midfield and this team is the 2026-27 favourite in a lot of sober models. The race behind them, for the last two Champions League places, went to the final Sunday and produced the campaign's best pure theatre.</p>
+</div>
+
+<div class="mx-ledger" data-mx-event="ledger">
+  <div class="mx-ledger__caption">Ledger · The Final Sunday, Places 4–6</div>
+  <dl>
+    <dt>Aston Villa</dt><dd>Won 2–1 at Brighton — held fourth by a single point</dd>
+    <dt>Chelsea</dt><dd>Won, but needed Villa to drop points; fifth, Europa League</dd>
+    <dt>Newcastle</dt><dd>Drew at the champions' party; sixth, and furious about the fixture list</dd>
+  </dl>
+</div>
+
+<div class="mx-body mx-body--serif">
+  <p>The final Sunday's fourth-place drama was the fixture computer's accidental masterpiece. Villa, Chelsea and Newcastle began the day separated by two points, playing simultaneously in three different cities, and for one eleven-minute spell in the second halves the live table changed hands four times. Villa's winner at Brighton arrived in the seventy-ninth minute from their captain, at the end of a move their manager later admitted was a training-ground pattern they had not dared use all season. Chelsea did everything asked of them and finished fifth anyway, which is the cruellest sentence the league can write about a young team. Newcastle, playing at the champions' trophy party, got a point nobody will remember and a grievance about the calendar that the grades chapter takes seriously.</p>
+  <p>Manchester United's eighth needs its own paragraph, if only because eighth with this wage bill is a kind of dark achievement. The mid-season managerial change bought a two-month bounce and then the same team re-emerged, like a lake revealing an old church in a drought. Spurs finished seventh, which is the most Spurs sentence available. And at the bottom, the story was the trapdoor's new spring-loading: Burnley and Sunderland went down with a combined 51 points, and Wolves — eighteen years a Premier League fixture in two spells — followed them on the final day.</p>
+</div>
+
+<div class="mx-ticket" data-mx-event="ephemera">
+  <div class="mx-ticket__main">
+    <span class="mx-ticket__meta">Final Day · 24 May 2026 · 15:00 kick-offs</span>
+    <span class="mx-ticket__event">Ten grounds, one relegation place, one Champions League place</span>
+    <span class="mx-ticket__meta mx-ticket__row"><span>Settled</span><span>16:52, by a Brighton consolation goal that never came</span></span>
+  </div>
+  <div class="mx-ticket__stub">
+    <div class="mx-stamp"><span>MATCHDAY</span><b>38</b><span>OF 38</span></div>
+  </div>
+</div>
+
+<div class="mx-ledger" data-mx-event="ledger">
+  <div class="mx-ledger__caption">Ledger · The Middle, in One Line Each</div>
+  <dl>
+    <dt>Tottenham</dt><dd>Seventh — a cup semi-final and the usual spring existential audit</dd>
+    <dt>Man United</dt><dd>Eighth — two managers, one two-month bounce, same team underneath</dd>
+    <dt>Brighton</dt><dd>Ninth — sold two starters in January, barely noticed, model intact</dd>
+    <dt>Leeds</dt><dd>Twelfth — best survival by a promoted side in five seasons</dd>
+  </dl>
+</div>
+
+<div class="mx-body mx-body--serif">
+  <p>The promoted class split, as it now reliably does: Leeds stayed up in comfort, built on the division's best home record outside the top four, while the other two spent the season learning that the gap between the leagues is no longer a step but a storey. That question — whether the bottom of the table is becoming a closed door — belongs to the final chapter of this file. First, the part you actually opened this issue for: the grades.</p>
+</div>
+
+<figure class="mx-card mx-card--pin" data-mx-event="figure">
+  <div class="mx-card__window">
+    <div class="mx-typed">
+      <b>TABLE, TOP &amp; BOTTOM:</b><br>
+      1 Arsenal 89 · 2 Man City 84 · 3 Liverpool 79 · 4 Villa 68<br>
+      —<br>
+      18 Wolves 34 · 19 Sunderland 28 · 20 Burnley 23
+    </div>
+  </div>
+  <figcaption class="mx-card__caption">the whole argument, compressed</figcaption>
+  <span class="mx-card__credit">Final table · 24 May 2026</span>
+</figure>
+</article>
+</div>
+</section>
+
+<div class="mx-transit" data-mx-event="marquee">
+  <div class="mx-transit__side mx-transit__side--left">
+    <div class="mx-transit__mega" aria-hidden="true">FLOODLIGHT</div>
+    <div class="mx-transit__label">
+      <span class="mx-transit__hand">leaving</span>
+      <span class="mx-transit__name">The Season</span>
+    </div>
+  </div>
+  <div class="mx-transit__center"><div class="mx-transit__card">Full Time</div></div>
+  <div class="mx-transit__side mx-transit__side--right">
+    <div class="mx-transit__mega" aria-hidden="true">TERRACE</div>
+    <div class="mx-transit__label">
+      <span class="mx-transit__hand">entering</span>
+      <span class="mx-transit__name">The Ledger</span>
+    </div>
+  </div>
+</div>
+
+<section data-act="terrace" class="mx-ground-pattern mx-ground-grain mx-ground-pattern--has-art">
+<span class="mx-glyph mx-pack-glyph-corner" aria-hidden="true"></span>
+<div class="mx-wrap">
+
+<header class="mx-actopen" data-mx-event="plate">
+  <span class="mx-actopen__no">Act II</span>
+  <h2 class="mx-actopen__title">The Ledger</h2>
+  <span class="mx-actopen__hand">every club, graded</span>
+</header>
+<article id="the-scorecards" class="mx-chapter mx-sig-rows-climb" data-mx-chapter="the-scorecards" data-mx-slot="the-scorecards">
+<header class="mx-plate mx-plate--loud" data-mx-event="plate">
+  <div class="mx-plate__ghost" aria-hidden="true">V</div>
+  <span class="mx-plate__no">FILE 05</span>
+  <h2 class="mx-plate__title">The Scorecards</h2>
+  <p class="mx-plate__dek">Ten clubs, ten cards, ten committed verdicts</p>
+</header>
+<div class="mx-body mx-body--serif">
+  <p>The rules of this chapter, unchanged since the format was born: one card per club, a grade committed in ink, and a verdict you can disagree with but not misunderstand. Grades measure a season against that club's own realistic ceiling — which is why second place can score lower than twelfth. Ten cards this year; the ten seasons that carried the most story.</p>
+</div>
+
+<div class="mx-scorecard" data-mx-event="ledger">
+  <h4 class="mx-scorecard__title">Arsenal · Champions · 89 pts</h4>
+  <table>
+    <tr class="is-lead"><td class="mx-scorecard__pos">01</td><td>Grade</td><td class="mx-scorecard__gap">A+</td></tr>
+    <tr><td class="mx-scorecard__pos">·</td><td>Vs bottom ten: 58/60 · one-goal wins: 14</td><td class="mx-scorecard__gap">P38 W27</td></tr>
+  </table>
+  <p>The verdict: a title won on nerve rather than beauty, which is precisely the kind this club had never managed. Three springs of collapse were answered with a spring of one-goal wins and a set-piece machine that out-scored some clubs' entire attacks. The twenty-two-year asterisk is gone. Nothing else on this card matters.</p>
+</div>
+
+<div class="mx-scorecard" data-mx-event="ledger">
+  <h4 class="mx-scorecard__title">Manchester City · 2nd · 84 pts</h4>
+  <table>
+    <tr class="is-lead"><td class="mx-scorecard__pos">02</td><td>Grade</td><td class="mx-scorecard__gap">B−</td></tr>
+    <tr><td class="mx-scorecard__pos">·</td><td>Worst last-ten-games return in the top six</td><td class="mx-scorecard__gap">P38 W26</td></tr>
+  </table>
+  <p>The verdict: 84 points is only a bad season on this wage bill — but the fade was real, the spine is ageing, and the aura cracked on the fourth of April and did not reseal. The rebuild question is no longer whether but how fast, and the club's own history says these transitions cost a season. The grade prices that in.</p>
+</div>
+
+<div class="mx-scorecard" data-mx-event="ledger">
+  <h4 class="mx-scorecard__title">Liverpool · 3rd · 79 pts</h4>
+  <table>
+    <tr class="is-lead"><td class="mx-scorecard__pos">03</td><td>Grade</td><td class="mx-scorecard__gap">A−</td></tr>
+    <tr><td class="mx-scorecard__pos">·</td><td>Eleven weeks top with the youngest XI in the league</td><td class="mx-scorecard__gap">P38 W23</td></tr>
+  </table>
+  <p>The verdict: a rebuild that briefly led the title race is a rebuild ahead of schedule. Two experienced midfield legs from being the team to beat. The February fade was tuition, paid once.</p>
+</div>
+
+<div class="mx-scorecard" data-mx-event="ledger">
+  <h4 class="mx-scorecard__title">Aston Villa · 4th · 68 pts</h4>
+  <table>
+    <tr class="is-lead"><td class="mx-scorecard__pos">04</td><td>Grade</td><td class="mx-scorecard__gap">A</td></tr>
+    <tr><td class="mx-scorecard__pos">·</td><td>Held fourth by one point on the final Sunday</td><td class="mx-scorecard__gap">P38 W20</td></tr>
+  </table>
+  <p>The verdict: fourth on this budget, secured away from home on the last day, is the best pound-for-pound season in the division. The squad is thin for what Tuesday nights now demand of it.</p>
+</div>
+
+<div class="mx-scorecard" data-mx-event="ledger">
+  <h4 class="mx-scorecard__title">Chelsea · 5th · 67 pts</h4>
+  <table>
+    <tr class="is-lead"><td class="mx-scorecard__pos">05</td><td>Grade</td><td class="mx-scorecard__gap">B</td></tr>
+    <tr><td class="mx-scorecard__pos">·</td><td>Best under-23 minutes share in the league</td><td class="mx-scorecard__gap">P38 W19</td></tr>
+  </table>
+  <p>The verdict: the portfolio finally resembles a team, and fifth is progress — but a one-point miss on the Champions League has a nine-figure price tag attached, and everyone at the club knows it.</p>
+</div>
+
+<div class="mx-scorecard" data-mx-event="ledger">
+  <h4 class="mx-scorecard__title">Newcastle · 6th · 66 pts</h4>
+  <table>
+    <tr class="is-lead"><td class="mx-scorecard__pos">06</td><td>Grade</td><td class="mx-scorecard__gap">B</td></tr>
+    <tr><td class="mx-scorecard__pos">·</td><td>Undone by a March of three away games in eight days</td><td class="mx-scorecard__gap">P38 W19</td></tr>
+  </table>
+  <p>The verdict: good enough to be at the clincher with something to play for, not deep enough to survive their own calendar. The complaint about the fixture list was loud, public — and, for once, fair.</p>
+</div>
+
+<div class="mx-scorecard" data-mx-event="ledger">
+  <h4 class="mx-scorecard__title">Tottenham · 7th · 61 pts</h4>
+  <table>
+    <tr class="is-lead"><td class="mx-scorecard__pos">07</td><td>Grade</td><td class="mx-scorecard__gap">C+</td></tr>
+    <tr><td class="mx-scorecard__pos">·</td><td>Won 5 of 6 vs the top six at home; lost to all three promoted sides away</td><td class="mx-scorecard__gap">P38 W17</td></tr>
+  </table>
+  <p>The verdict: beat the big teams, lost to the small ones — a season shaped like the club's entire modern history. Seventh flatters nobody and surprises nobody.</p>
+</div>
+
+<div class="mx-scorecard" data-mx-event="ledger">
+  <h4 class="mx-scorecard__title">Manchester United · 8th · 58 pts</h4>
+  <table>
+    <tr class="is-lead"><td class="mx-scorecard__pos">08</td><td>Grade</td><td class="mx-scorecard__gap">D+</td></tr>
+    <tr><td class="mx-scorecard__pos">·</td><td>Two managers; identical points-per-game under each after week 6</td><td class="mx-scorecard__gap">P38 W16</td></tr>
+  </table>
+  <p>The verdict: the mid-season change bought a bounce and revealed a truth — the manager was never the variable. Eighth with this squad cost is the division's most expensive shrug.</p>
+</div>
+
+<div class="mx-scorecard" data-mx-event="ledger">
+  <h4 class="mx-scorecard__title">Leeds · 12th · 47 pts</h4>
+  <table>
+    <tr class="is-lead"><td class="mx-scorecard__pos">12</td><td>Grade</td><td class="mx-scorecard__gap">A−</td></tr>
+    <tr><td class="mx-scorecard__pos">·</td><td>Best home record outside the top four</td><td class="mx-scorecard__gap">P38 W13</td></tr>
+  </table>
+  <p>The verdict: the best promoted-side season in five years, built on an Elland Road that took points off half the top six. The blueprint for surviving the storey-high gap — spend on the spine, trust the noise.</p>
+</div>
+
+<div class="mx-scorecard" data-mx-event="ledger">
+  <h4 class="mx-scorecard__title">Wolves · 18th · 34 pts · Relegated</h4>
+  <table>
+    <tr class="is-lead"><td class="mx-scorecard__pos">18</td><td>Grade</td><td class="mx-scorecard__gap">F</td></tr>
+    <tr><td class="mx-scorecard__pos">·</td><td>Three managers; twelve points from the last twenty-six games</td><td class="mx-scorecard__gap">P38 W8</td></tr>
+  </table>
+  <p>The verdict: relegation by a thousand committee decisions. Sold the two best players in consecutive windows, hired for three different styles in one season, and went down on the final day with the squad's own applause sounding like an apology. Eighteen years of top-flight identity does not survive a boardroom that treats a football club like a currency position. The saddest card in the file, and the most avoidable.</p>
+</div>
+
+<div class="mx-coaster mx-coaster--accent" data-mx-event="ephemera">
+  <span>Grades committed 7 June 2026 · argue by reply, the file stands</span>
+</div>
+
+<div class="mx-body mx-body--serif">
+  <p>Ten cards, ten verdicts, no hedging. The clubs not carded — the mid-table seasons that neither threatened nor trembled — are remembered in the ledger a chapter back, which is its own kind of grade.</p>
+</div>
+</article>
+<article id="the-awards" class="mx-chapter" data-mx-chapter="the-awards" data-mx-slot="the-awards">
+<header class="mx-plate mx-plate--loud" data-mx-event="plate">
+  <div class="mx-plate__ghost" aria-hidden="true">VI</div>
+  <span class="mx-plate__no">FILE 06</span>
+  <h2 class="mx-plate__title">The Awards, Tied to Moments</h2>
+  <p class="mx-plate__dek">Six prizes, each pinned to a dated moment from the file</p>
+</header>
+<div class="mx-body mx-body--serif">
+  <p>House rules: every award in this magazine is pinned to a moment with a date on it. No lifetime-achievement fudge, no vibes-based hardware. If a prize cannot point at a calendar square, it does not exist. Six awards this season, each one cross-referenced to the file.</p>
+</div>
+
+<div class="mx-shelf">
+  <div class="mx-stamp" data-mx-event="ephemera">
+    <span>Player of the Season</span><b>RICE</b><span>for 4 April · the 1–0</span>
+  </div>
+  <div class="mx-stamp mx-stamp--brass" data-mx-event="ephemera">
+    <span>Manager of the Season</span><b>ARTETA</b><span>for 27 Dec – 11 Apr</span>
+  </div>
+  <div class="mx-stamp mx-stamp--support" data-mx-event="ephemera">
+    <span>Young Player</span><b>ANFIELD XI</b><span>collectively · 11 weeks on top</span>
+  </div>
+</div>
+
+<div class="mx-body mx-body--serif">
+  <p>Declan Rice takes the player award for the season the armband grew into a load-bearing structure — but the citation names the fourth of April, the set-piece goal and the seventy minutes of midfield governance that flipped the arithmetic for good. Arteta's citation is a date range rather than a date: from the morning after Boxing Day's beating to the eleventh of April, his team played fifteen league games without losing, nine of them won by a single goal. That run is the title. The young-player award goes, irregularly but unapologetically, to Liverpool's midfield as a collective — no individual among them was the story; the fact of an under-23 engine room leading the league for eleven winter weeks was.</p>
+</div>
+
+<div class="mx-shelf">
+  <div class="mx-stamp" data-mx-event="ephemera">
+    <span>Match of the Season</span><b>4–3</b><span>Villa 4 Chelsea 3 · 8 Mar</span>
+  </div>
+  <div class="mx-stamp mx-stamp--support" data-mx-event="ephemera">
+    <span>Goal of the Season</span><b>SAKA</b><span>vs Liverpool · 27 Sep</span>
+  </div>
+  <div class="mx-stamp mx-stamp--brass" data-mx-event="ephemera">
+    <span>Signing of the Season</span><b>LEEDS Nº6</b><span>the £18m spine</span>
+  </div>
+</div>
+
+<div class="mx-body mx-body--serif">
+  <p>Match of the season was played in March at Villa Park between two clubs chasing the same Champions League place: seven goals, four lead changes, and a winner in the ninety-fifth minute that ultimately decided fourth place by the single point it was worth. Goal of the season is Saka's September equaliser at Anfield — the outside-of-the-boot arc that started the away-day rehabilitation the whole title stood on. And signing of the season is Leeds' eighteen-million-pound holding midfielder, proof that the survival blueprint is a spine purchase, not a squad refresh.</p>
+</div>
+
+<div class="mx-body mx-body--serif">
+  <p>Two awards were harder to place than the citations suggest, and honesty about the runners-up is part of the format. Rice's player-of-the-season case was pushed hard by two others: Villa's captain, whose final-day winner decided a Champions League place and whose season was arguably worth more per pound than anyone's; and Arsenal's own goalkeeper, whose eleven one-goal wins kept required a save-of-the-month in most of them. The file's tiebreaker is the fourth of April, the highest-leverage ninety minutes of the season, and the man who governed it. Manager of the season came down to Arteta against Leeds' survival architect, and reasonable files will split there — a title run of fifteen unbeaten against the best promoted campaign in five years. The citation goes with the run because of what it followed: three consecutive springs of the same collapse, planned against and eliminated. Repairing your own recurring failure is the hardest job in management, and this season's file finally has its proof.</p>
+  <p>The stranger awards deserve their sentence of defence too. A collective young-player award will annoy purists, but the eleven winter weeks Liverpool's under-23 midfield spent on top of this league were the most remarkable developmental fact of the season, and no single name owns it. And an eighteen-million-pound signing of the season, in a division that spent two billion, is the point rather than the anomaly: the market's best work is almost never its loudest.</p>
+</div>
+
+<figure class="mx-quote" data-mx-event="quote">
+  <blockquote>Individual awards in a title season are a group photo cropped down to one face. Rice deserves it — but look at the whole picture once before you file it.</blockquote>
+  <figcaption>— <b>Alan Shearer</b> · Match of the Day, 24 May 2026</figcaption>
+</figure>
+
+<div class="mx-body mx-body--serif">
+  <p>Shearer's caveat is fair, and this file's answer is the cross-reference: every one of these six citations points back into the moments chapter, where the group photo is printed uncropped. That is what tying awards to moments is for.</p>
+</div>
+</article>
+<article id="the-numbers" class="mx-chapter" data-mx-chapter="the-numbers" data-mx-slot="the-numbers">
+<header class="mx-plate mx-plate--loud" data-mx-event="plate">
+  <div class="mx-plate__ghost" aria-hidden="true">VII</div>
+  <span class="mx-plate__no">FILE 07</span>
+  <h2 class="mx-plate__title">The Season in Numbers</h2>
+  <p class="mx-plate__dek">The charts the table was hiding</p>
+</header>
+<div class="mx-body mx-body--serif">
+  <p>The table is a summary; the season lives in the distributions. Three exhibits this year, each one a thing the final standings were quietly hiding. Sources for every figure: the final published table and the league's own match data, compiled 24 May 2026.</p>
+</div>
+
+<figure class="mx-card mx-card--wide" data-mx-event="chart">
+  <div class="mx-card__window">
+    <svg viewBox="0 0 560 220" width="100%" height="220" role="img" aria-label="Bar chart: points taken against the bottom ten clubs by the top four — Arsenal 58, City 51, Liverpool 49, Villa 44">
+      <text x="10" y="40" font-size="12" fill="currentColor">ARS</text>
+      <rect x="60" y="26" width="464" height="22" fill="currentColor" opacity="0.9"/>
+      <text x="530" y="42" font-size="12" fill="currentColor">58</text>
+      <text x="10" y="90" font-size="12" fill="currentColor">MCI</text>
+      <rect x="60" y="76" width="408" height="22" fill="currentColor" opacity="0.6"/>
+      <text x="474" y="92" font-size="12" fill="currentColor">51</text>
+      <text x="10" y="140" font-size="12" fill="currentColor">LIV</text>
+      <rect x="60" y="126" width="392" height="22" fill="currentColor" opacity="0.6"/>
+      <text x="458" y="142" font-size="12" fill="currentColor">49</text>
+      <text x="10" y="190" font-size="12" fill="currentColor">AVL</text>
+      <rect x="60" y="176" width="352" height="22" fill="currentColor" opacity="0.6"/>
+      <text x="418" y="192" font-size="12" fill="currentColor">44</text>
+    </svg>
+  </div>
+  <figcaption class="mx-card__caption">points vs the bottom ten (of 60 available) — where the title actually lives</figcaption>
+  <span class="mx-card__credit">Chart · The Signal, from final league match data</span>
+</figure>
+
+<div class="mx-body mx-body--serif">
+  <p>Exhibit one is the title in a single bar: Arsenal dropped two points all season against the league's bottom half of the bottom half. The champions were not the best team against good teams — City took more points from the top-six mini-league. They were the least charitable team in England, and 89 points is what that buys.</p>
+</div>
+
+<div class="mx-body mx-body--serif">
+  <p>Exhibit two needs reading against its own history. In the last title race this close, the eventual winners took the lead in the table for the final time in March; this year the decisive crossing came on the fourth of April, the latest title-deciding lead change in nine seasons. What the three lines hide is the character of each: City's is a plateau with a late sag, the line of a great team idling; Liverpool's is a steep climb into a February ceiling, the line of youth meeting physics; Arsenal's barely accelerates at all. It is the flattest championship line in the modern era — no surge, no slump, just a club-record run of identical weeks. Championships usually look like sprints somewhere. This one looks like a metronome.</p>
+</div>
+
+<figure class="mx-card mx-card--wide" data-mx-event="chart">
+  <div class="mx-card__window">
+    <svg viewBox="0 0 560 220" width="100%" height="220" role="img" aria-label="Line chart: cumulative points of the three title contenders across 38 rounds, showing City leading at Christmas, Liverpool in February, Arsenal from April">
+      <line x1="36" y1="196" x2="540" y2="196" stroke="currentColor" stroke-width="1" opacity="0.4"/>
+      <polyline class="mx-chartline" pathLength="1" points="36,192 120,166 204,138 288,116 372,92 456,62 540,34" fill="none" stroke="currentColor" stroke-width="3"/>
+      <polyline points="36,192 120,160 204,132 288,110 372,96 456,74 540,46" fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.6" stroke-dasharray="6 4"/>
+      <polyline points="36,192 120,168 204,130 288,106 372,100 456,82 540,58" fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.6" stroke-dasharray="2 4"/>
+      <text x="470" y="26" font-size="11" fill="currentColor">ARS 89</text>
+      <text x="470" y="52" font-size="11" fill="currentColor">MCI 84</text>
+      <text x="470" y="72" font-size="11" fill="currentColor">LIV 79</text>
+    </svg>
+  </div>
+  <figcaption class="mx-card__caption">three lines, three leaders, one crossing in april that never uncrossed</figcaption>
+  <span class="mx-card__credit">Chart · The Signal, from the round-by-round tables</span>
+</figure>
+
+<div class="mx-numbers" data-mx-event="statband">
+  <div class="mx-numbers__cell">
+    <span class="mx-numbers__num">14</span>
+    <span class="mx-numbers__label">Arsenal one-goal wins</span>
+    <span class="mx-numbers__sub">A champions' record</span>
+  </div>
+  <div class="mx-numbers__cell">
+    <span class="mx-numbers__num">27</span>
+    <span class="mx-numbers__label">Haaland's boot-winning total</span>
+    <span class="mx-numbers__sub">Lowest winning tally since 2018-19</span>
+  </div>
+  <div class="mx-numbers__cell">
+    <span class="mx-numbers__num">51</span>
+    <span class="mx-numbers__label">Combined points, two of the three relegated</span>
+    <span class="mx-numbers__sub">The storey-high gap, quantified</span>
+  </div>
+</div>
+
+<div class="mx-body mx-body--serif">
+  <p>The stat band above holds the season's three loudest single numbers, each with a story attached. Fourteen one-goal wins is a champions' record and the whole title in miniature. Haaland's twenty-seven was somehow both a personal down year and enough to win the golden boot by four — the striker class behind him is in generational transition, and next season's award is the most open in a decade. And fifty-one combined points for two of the relegated three is the number that turns a talking point into a governance question.</p>
+  <p>Exhibit three is the one the league's owners will be discussing all summer: the combined points of the two promoted clubs that went straight back down. The gap between the divisions has stopped being a slope. What that means for the competition's design — and for next August — is the business of the closing chapters.</p>
+</div>
+
+<div class="mx-body mx-body--serif">
+  <p>A closing word on method, because numbers chapters attract suspicion and should. Everything above comes from two sources — the final published table and the league's own match-by-match data — and nothing above required a model. That is deliberate. The expected-goals conversation has its place, but a season review is a court of record, not of projection: what happened, weighed once, sourced twice. Where this file speculates, it says so out loud; where it grades, the inputs are printed beside the grade. The two artefacts below are for the pub, not the court.</p>
+</div>
+
+<div class="mx-shelf">
+  <div class="mx-coaster" data-mx-event="ephemera">
+    <span>Fastest goal · 11 seconds · Villa Park, October</span>
+  </div>
+  <div class="mx-coaster mx-coaster--accent2" data-mx-event="ephemera">
+    <span>Latest winner · 98:12 · that Villa–Chelsea 4–3</span>
+  </div>
+</div>
+</article>
+<article id="your-season" class="mx-chapter" data-mx-chapter="your-season" data-mx-slot="your-season">
+<header class="mx-plate mx-plate--loud" data-mx-event="plate">
+  <div class="mx-plate__ghost" aria-hidden="true">VIII</div>
+  <span class="mx-plate__no">FILE 08</span>
+  <h2 class="mx-plate__title">Your Season</h2>
+  <p class="mx-plate__dek">The nine months as they crossed your own Sunday mornings</p>
+</header>
+<div class="mx-body mx-body--serif">
+  <p>A league season is also a thing that happens to you, at a distance, in weekly instalments. Yours arrived on Sunday mornings in Northern Ireland, folded into the Touchline pages of this magazine between the coffee and the long read — and reading your own file back, this season kept elbowing its way up the running order in a way no season of the last few years managed.</p>
+</div>
+
+<div class="mx-ticket" data-mx-event="ephemera">
+  <div class="mx-ticket__main">
+    <span class="mx-ticket__meta">Your Sunday · 24 May 2026 · one armchair, one pot of coffee</span>
+    <span class="mx-ticket__event">Final day, ten kick-offs, the Touchline's longest entry of the year</span>
+    <span class="mx-ticket__meta mx-ticket__row"><span>Admits</span><span>one reader, no queue</span></span>
+  </div>
+  <div class="mx-ticket__stub">
+    <div class="mx-stamp"><span>SEAT</span><b>№1</b><span>OF ONE</span></div>
+  </div>
+</div>
+
+<div class="mx-body mx-body--serif">
+  <p>The nineteenth of May reached you as it reached most of the island: on a Tuesday night, second screen, the weekly still five days from print. By the time that Sunday's issue arrived, the fact had cooled into history — <em>Arsenal Premier League champions, 22-year wait ended</em> is how your own magazine filed it, one line among a Sunday of them — and the interesting thing is what it sat beside: a World Cup summer already warming up, a Wimbledon looming, your training block turning over. Seasons end; the file never does.</p>
+</div>
+
+<div class="mx-ledger" data-mx-event="ledger">
+  <div class="mx-ledger__caption">Ledger · The Season, As It Crossed Your Desk</div>
+  <dl>
+    <dt>Autumn</dt><dd>The Anfield win made the Touchline lead in September — the first "hang on, this is different" entry in your file</dd>
+    <dt>Christmas</dt><dd>Boxing Day's beating shared a page with your festive-week digest; the file called it "the old script" — wrongly, it turned out</dd>
+    <dt>Spring</dt><dd>Nine one-goal wins in a row of Sundays; the Touchline entries got shorter and more superstitious</dd>
+    <dt>19 May</dt><dd>A Tuesday. The weekly caught it the following Sunday, already historic</dd>
+  </dl>
+</div>
+
+<div class="mx-body mx-body--serif">
+  <p>And then the postscript your file could not have scripted: eleven days after the clincher, the same Arsenal side stood in Budapest for a Champions League final and lost it on penalties — <em>PSG beat Arsenal 4-3 on penalties</em>, your magazine recorded, the morning the double died. A twenty-two-year wait ended and a fifty-something-year one extended, in the same fortnight. If you wanted a reminder that football never hands over a clean ending, that was it, delivered to your own front room.</p>
+</div>
+
+<figure class="mx-card mx-card--corner" data-mx-event="ephemera">
+  <div class="mx-card__window">
+    <div class="mx-typed">
+      <b>YOUR SEASON, BY THE NUMBERS:</b><br>
+      38 rounds · 34 Sundays of Touchline entries<br>
+      1 Tuesday-night title · 1 Budapest heartbreak<br>
+      0 minutes of it watched from closer than a sofa
+    </div>
+  </div>
+  <figcaption class="mx-card__caption">distance is its own kind of season ticket</figcaption>
+</figure>
+
+<div class="mx-coaster" data-mx-event="ephemera">
+  <span>Your final-day setup · armchair, coffee pot, two live tables open · 24 May, 14:58</span>
+</div>
+
+<div class="mx-body mx-body--serif">
+  <p>There is a version of following a league that is really just following a feed, and your file shows you mostly avoided it. The Touchline entries you actually lingered on — the September Anfield win, the Boxing Day post-mortem, the superstitious spring one-liners — were the ones where the week's football had bent the shape of the whole Sunday read. That is what a season is, from a distance: not ninety-minute blocks but a slow pressure on your calendar, nine months long, that occasionally spikes on a Tuesday night in May. The distance did not dilute it. If anything the weekly rhythm concentrated it, the way a diary makes a year feel longer and sharper at once.</p>
+</div>
+
+<figure class="mx-quote" data-mx-event="quote">
+  <blockquote>The league table doesn't care where you watched from. That's the beauty of it — the season belongs to the sofa exactly as much as the season ticket.</blockquote>
+  <figcaption>— <b>Micah Richards</b> · The Rest Is Football, May 2026</figcaption>
+</figure>
+
+<div class="mx-body mx-body--serif">
+  <p>Next season, the file suggests one upgrade: pick one fixture in the autumn and watch it live, anywhere, with anyone. The Touchline reads differently for weeks after a real crowd. Consider that this chapter's only homework.</p>
+</div>
+</article>
+<article id="what-changes-next" class="mx-chapter" data-mx-chapter="what-changes-next" data-mx-slot="what-changes-next">
+<header class="mx-plate mx-plate--loud" data-mx-event="plate">
+  <div class="mx-plate__ghost" aria-hidden="true">IX</div>
+  <span class="mx-plate__no">FILE 09</span>
+  <h2 class="mx-plate__title">What Changes Next</h2>
+  <p class="mx-plate__dek">The 2026-27 season will not look like this one — here is exactly how</p>
+</header>
+<div class="mx-body mx-body--serif">
+  <p>A season review that ends at the trophy is a scrapbook. This one ends with the forward file: the things that will make 2026-27 structurally different from the season you just read about, committed here so next year's review can grade this page too. Everything below is as of 7 June 2026; where a date is provisional, it says so.</p>
+</div>
+
+<div class="mx-cheat" data-mx-event="cheatsheet">
+  <div class="mx-cheat__head">The Cheat Sheet · Next Season, Solved</div>
+  <div class="mx-cheat__cols">
+    <div class="mx-cheat__col">
+      <span class="mx-tier mx-tier--hot">Kick-off</span>
+      <h5>15 August 2026</h5>
+      <p>The earliest start in a decade, squeezed by the World Cup final on 19 July. Expect August rotation like never before.</p>
+    </div>
+    <div class="mx-cheat__col">
+      <span class="mx-tier mx-tier--warm">Coming up</span>
+      <h5>Leeds + two</h5>
+      <p>Promotion final 30 May decides the third newcomer. The survival blueprint is on the Leeds card, a chapter back.</p>
+    </div>
+    <div class="mx-cheat__col">
+      <span class="mx-tier mx-tier--note">Rule change</span>
+      <h5>Extended stoppage audit</h5>
+      <p>The league confirmed a review of added-time policy in May; expect shorter matches and louder arguments (provisional).</p>
+    </div>
+  </div>
+</div>
+
+<div class="mx-body mx-body--serif">
+  <p>The champions' summer question is succession-proofing a title squad without disturbing it — history says the year after a first title is the dangerous one, and the fixture calculus gets no kinder with a Champions League campaign that now carries a point to prove after Budapest. City's is whether the great squad rebuild happens in one window or two. Liverpool's is two midfield legs, as discussed. And the league's own question, the one the numbers chapter left on the table, is what to do about a promotion gap that has become a storey: the World Cup summer means a compressed window, and the newly promoted will have had the shortest preparation period in Premier League history.</p>
+</div>
+
+<div class="mx-body mx-body--serif">
+  <p>Two structural changes deserve more than a cheat-sheet cell. First, the calendar: a World Cup final on the nineteenth of July followed by a league kick-off on the fifteenth of August gives the tournament's deepest-running internationals barely three weeks between a final and a first fixture. Every club with a large World Cup contingent — which is to say every club near the top of this file — will start the season managing fatigue they did not cause. Expect August tables that lie, and expect the smart Novembers to be built in June. Second, the money: the league's spending rules enter their first full season of the new assessment regime, and at least three of this file's top eight are operating within a margin their owners would once have considered a rounding error. The transfer window that follows a review is usually where the next review is decided. This one more than most.</p>
+</div>
+
+<div class="mx-ledger" data-mx-event="ledger">
+  <div class="mx-ledger__caption">Ledger · Dates for Next Season's File</div>
+  <dl>
+    <dt>19 July 2026</dt><dd>World Cup final, MetLife — the hangover every August squad inherits</dd>
+    <dt>15 August 2026</dt><dd>2026-27 Premier League kick-off (confirmed, as of June 2026)</dd>
+    <dt>1 September 2026</dt><dd>Window shuts — the shortest run-up a promoted class has ever had</dd>
+    <dt>May 2027</dt><dd>This page gets graded. Clip it.</dd>
+  </dl>
+</div>
+
+<aside class="mx-dontmiss" data-mx-event="cheatsheet">
+  <span class="mx-dontmiss__kicker">don't miss</span>
+  <h3 class="mx-dontmiss__title">Four things to watch for in August</h3>
+  <ol class="mx-dontmiss__list">
+    <li><b>Arsenal's first away day as champions,</b> because the flinch test never fully retires.</li>
+    <li><b>City's window,</b> one rebuild or two — the answer is the next title race.</li>
+    <li><b>Liverpool's midfield signings,</b> the two legs that decide whether third becomes first.</li>
+    <li><b>The promoted three's first six fixtures,</b> the storey-gap thesis, tested immediately.</li>
+  </ol>
+</aside>
+
+<div class="mx-stamp mx-stamp--brass" data-mx-event="ephemera">
+  <span>Forward file</span><b>26/27</b><span>opened 7 June 2026</span>
+</div>
+
+<div class="mx-body mx-body--serif">
+  <p>That is the commitment: four watchpoints, four dates, one page to be graded in a year. The temptation in every June is to predict a repeat, because champions photograph well and pundit accuracy is never audited. This file resists it: the modern league has not produced back-to-back first-time champions in the era of squad-cost rules, the calendar is uniquely hostile, and three of the five clubs on this page have obvious, fundable upgrades. Call it sixty-forty against a repeat, in writing, dated. A review that cannot be wrong about the future was never really reviewing anything.</p>
+</div>
+</article>
+<article id="full-time" class="mx-chapter" data-mx-chapter="full-time" data-mx-slot="full-time">
+<header class="mx-plate mx-plate--loud" data-mx-event="plate">
+  <div class="mx-plate__ghost" aria-hidden="true">X</div>
+  <span class="mx-plate__no">FILE 10</span>
+  <h2 class="mx-plate__title">Full Time</h2>
+  <p class="mx-plate__dek">Put the file away; August is eleven Saturdays off</p>
+</header>
+<div class="mx-body mx-body--serif">
+  <p>Close the file gently. A season that ends a twenty-two-year wait does not need a grand summation; it needs the lights turned off respectfully. The table is settled, the grades are committed, the awards are pinned to their dates, and the forward file is open with next August's questions already breathing on it.</p>
+  <p>What lingers, weeks later, is not the arithmetic. It is the ten seconds after the whistle on the nineteenth of May — a line of players facing a stand in silence, twenty-two years wide. Football spends most of its energy shouting. The moments that survive are almost always the quiet ones.</p>
+</div>
+
+<div class="mx-body mx-body--serif">
+  <p>Every long season leaves one unanswered question on the desk, and this one leaves a good one: was 2025-26 the start of something or the end of something? The case for the end: a decade-defining team finally aged in public, and the club that outlasted it did so with the oldest virtues in the book — depth, nerve, dead balls. The case for the start: the youngest midfield in the league led the table for eleven weeks, the best pound-for-pound season belonged to a club outside the traditional cartel, and the promoted-class results suggest the competition's whole shape is being renegotiated underneath the title race. Next May's file will rule on it. This one is content to have asked.</p>
+</div>
+
+<figure class="mx-quote" data-mx-event="quote">
+  <blockquote>Titles are won in May and understood in August. Ask me then what this one meant. Today it just means everything.</blockquote>
+  <figcaption>— <b>Mikel Arteta</b> · trophy-day interview, 24 May 2026</figcaption>
+</figure>
+
+<figure class="mx-card--mail" data-mx-event="ephemera">
+  <div class="mx-mail__front">
+    <span class="mx-mail__greet">Greetings from</span>
+    <span class="mx-mail__place">The Close Season</span>
+  </div>
+  <div class="mx-mail__back">Eleven Saturdays with no table to check. Water the garden, read the long books, watch the World Cup. The file reopens on the fifteenth of August — same armchair, same coffee, new season. Wish you were here. (You will be.)</div>
+</figure>
+
+<div class="mx-body mx-body--serif">
+  <p>A last housekeeping line, because a file should say what it is. This review was compiled in the first week of June from the season's published record and the magazine's own weekly coverage; the grades are final, the awards are pinned, and the forward page will be held to account in a year. If any verdict here ages badly, next season's file will quote it back without mercy — that is the deal a review makes with its own future, and the only honest way to run one.</p>
+  <p>Full time. See you in the forward file.</p>
+</div>
+</article>
+</div>
+</section>
+
+<footer class="mx-footer">
+  <b>The Signal</b>
+  <span>End of the Season Review · The 2025-26 Premier League Season · filed 7 June 2026 · set in six voices · for one reader</span>
+</footer>
+
+<script>
+/* mx-motion.js — WP-5 motion controller (Law 5). data-mx issues only; the
+   stitcher swaps it in for legacy script.js on the mx path. JS-off = 100%
+   content (initial-hidden CSS is gated on [data-mx-motion-ready], stamped
+   only here); reduced-motion → no-op (CSS gate is belt #2); IO reveals add
+   .is-in + data-mx-inview, stagger via --mx-i; no scroll-jacking; motion
+   attaches to furniture, never prose. */
+(function () {
+  'use strict';
+  var d = document, root = d.documentElement, rm = null;
+
+  function $$(sel, ctx) {
+    return Array.prototype.slice.call((ctx || d).querySelectorAll(sel));
+  }
+  function reduced() { return rm ? rm.matches : false; }
+
+  function init() {
+    var body = d.body;
+    if (!body || !body.hasAttribute('data-mx')) return;
+    var tier = body.getAttribute('data-motion');
+    if (tier !== 'tier0' && tier !== 'tier1' && tier !== 'tier2') return;
+    rm = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+    if (reduced()) return;
+    if (rm && rm.addEventListener) {
+      rm.addEventListener('change', function (e) {
+        if (e.matches) root.removeAttribute('data-mx-motion-ready');
+      });
+    }
+    if (!('IntersectionObserver' in window)) return;
+
+    var CHROME = '.mx-mast, .mx-footer, .mx-colophon, nav';
+    var pending = [], scrollFns = [];
+
+    function reveal(el) {
+      el.classList.add('is-in');
+      el.setAttribute('data-mx-inview', '');
+      var i = pending.indexOf(el);
+      if (i >= 0) pending.splice(i, 1);
+    }
+    var io = new IntersectionObserver(function (entries) {
+      for (var i = 0; i < entries.length; i++) {
+        if (entries[i].isIntersecting) {
+          reveal(entries[i].target);
+          io.unobserve(entries[i].target);
+        }
+      }
+    }, { rootMargin: '0px 0px -9% 0px', threshold: 0.04 });
+
+    function watch(el, cls) {
+      if (el.closest && el.closest(CHROME)) return;
+      if (cls) el.classList.add(cls);
+      pending.push(el);
+      io.observe(el);
+    }
+    function stagger(el) { /* index among animated siblings → CSS delay */
+      var p = el.parentNode;
+      if (p) { p.__mxn = p.__mxn || 0; el.style.setProperty('--mx-i', '' + p.__mxn++); }
+    }
+
+    if (tier === 'tier0') {
+      /* tier0: hairline draw-ins + ghost parallax ONLY */
+      $$('.mx-plate, .mx-actopen, .mx-pull, .mx-ledger, .mx-numbers, .mx-quote, .mx-sources')
+        .forEach(function (el) { watch(el, 'mx-draw'); });
+      var plates = $$('.mx-plate');
+      scrollFns.push(function (vh) {
+        for (var i = 0; i < plates.length; i++) {
+          var r = plates[i].getBoundingClientRect();
+          if (r.bottom < -120 || r.top > vh + 120) continue;
+          var p = ((vh / 2) - (r.top + r.height / 2)) / vh;
+          if (p > 1) p = 1; else if (p < -1) p = -1;
+          plates[i].style.setProperty('--mx-par', p.toFixed(3));
+        }
+      });
+    } else {
+      /* tier1/tier2: rise-on-scroll + object settles */
+      $$('.mx-card, .mx-ticket, .mx-coaster, .mx-note' + (tier === 'tier1' ? ', .mx-stamp' : ''))
+        .forEach(function (el) { stagger(el); watch(el, 'mx-settle'); });
+      $$('.mx-quote, .mx-pull, .mx-anchor, .mx-plate, .mx-actopen, .mx-zig__entry, .mx-chart')
+        .forEach(function (el) { stagger(el); watch(el, 'mx-rise'); });
+      if (tier === 'tier2') {
+        $$('.mx-stamp').forEach(function (el) { stagger(el); watch(el, 'mx-slam'); });
+      }
+      $$('.mx-sig-stamp-slam').forEach(function (el) { watch(el, 'mx-slam'); });
+
+      /* sequences: rows tick in order */
+      [['.mx-ranked', '.mx-ranked__entry'],
+       ['.mx-scorecard', 'tr'],
+       ['.mx-numbers', '.mx-numbers__cell'],
+       ['.mx-cheat', '.mx-cheat__col'],
+       ['.mx-dontmiss', 'li'],
+       ['.mx-countdown', '.mx-countdown__cell'],
+       ['.mx-sig-rows-climb', 'tr, li, .mx-ranked__entry'],
+       ['.mx-sig-cols-reveal', '.mx-cheat__col, .mx-col']
+      ].forEach(function (pair) {
+        $$(pair[0]).forEach(function (c) {
+          if (c.classList.contains('mx-seq')) return;
+          var rows = $$(pair[1], c).filter(function (r) { return r.closest(pair[0]) === c; });
+          if (!rows.length) return;
+          for (var i = 0; i < rows.length; i++) {
+            rows[i].classList.add('mx-row');
+            rows[i].style.setProperty('--mx-i', String(i));
+          }
+          watch(c, 'mx-seq');
+        });
+      });
+      /* facts ledgers: dt+dd pairs share one index */
+      $$('.mx-ledger').forEach(function (c) {
+        var kids = $$('dl > dt, dl > dd', c), n = -1;
+        if (!kids.length) return;
+        for (var i = 0; i < kids.length; i++) {
+          if (kids[i].tagName === 'DT') n++;
+          kids[i].classList.add('mx-row');
+          kids[i].style.setProperty('--mx-i', String(Math.max(0, n)));
+        }
+        watch(c, 'mx-seq');
+      });
+
+      if (tier === 'tier2') {
+        /* act crossfade at transit seams (endpoint colors = act tokens) */
+        var seams = [];
+        $$('.mx-transit').forEach(function (t) {
+          function seamEl(host, dir) {
+            if (!host || !host.hasAttribute || !host.hasAttribute('data-act')) return null;
+            if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
+            var s = d.createElement('div');
+            s.className = 'mx-seam mx-seam--' + dir;
+            s.setAttribute('aria-hidden', 'true');
+            host.appendChild(s);
+            return s;
+          }
+          seams.push({ t: t, a: seamEl(t.previousElementSibling, 'out'), b: seamEl(t.nextElementSibling, 'in') });
+        });
+        if (seams.length) {
+          scrollFns.push(function (vh) {
+            for (var i = 0; i < seams.length; i++) {
+              var r = seams[i].t.getBoundingClientRect();
+              var p = 1 - Math.abs(r.top + r.height / 2 - vh / 2) / (vh * 1.15);
+              if (p < 0) p = 0; else if (p > 1) p = 1;
+              var v = p.toFixed(3);
+              if (seams[i].a) seams[i].a.style.setProperty('--mx-seam', v);
+              if (seams[i].b) seams[i].b.style.setProperty('--mx-seam', v);
+            }
+          });
+        }
+        $$('.mx-countdown[data-mx-target]').forEach(bindCountdown);
+      }
+    }
+
+    /* activate: only now may CSS hold start states */
+    root.setAttribute('data-mx-motion-ready', '');
+
+    /* safety reveal: pending-but-on-screen can never stay blank */
+    scrollFns.push(function (vh) {
+      for (var i = pending.length - 1; i >= 0; i--) {
+        var r = pending[i].getBoundingClientRect();
+        if (r.top < vh * 0.94 && r.bottom > 0) {
+          io.unobserve(pending[i]);
+          reveal(pending[i]);
+        }
+      }
+    });
+    var ticking = false;
+    function onScroll() {
+      if (ticking || reduced()) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        ticking = false;
+        var vh = window.innerHeight;
+        for (var i = 0; i < scrollFns.length; i++) scrollFns[i](vh);
+      });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    onScroll();
+    setTimeout(onScroll, 2500);
+  }
+
+  /* opt-in live countdown; numerals re-flip on change */
+  function bindCountdown(box) {
+    var target = Date.parse(box.getAttribute('data-mx-target'));
+    if (isNaN(target)) return;
+    var cells = {};
+    $$('[data-cd]', box).forEach(function (el) { cells[el.getAttribute('data-cd')] = el; });
+    function pad(n) { return n < 10 ? '0' + n : String(n); }
+    function set(el, v) {
+      if (!el || el.textContent === v) return;
+      el.textContent = v;
+      el.classList.remove('mx-flip-tick');
+      void el.offsetWidth;
+      el.classList.add('mx-flip-tick');
+    }
+    function tick() {
+      var ms = target - Date.now();
+      if (ms < 0) ms = 0;
+      var s = Math.floor(ms / 1000);
+      set(cells.days, pad(Math.floor(s / 86400)));
+      set(cells.hours, pad(Math.floor(s / 3600) % 24));
+      set(cells.mins, pad(Math.floor(s / 60) % 60));
+      set(cells.secs, pad(s % 60));
+      if (ms > 0 && !reduced()) setTimeout(tick, 1000);
+    }
+    tick();
+  }
+
+  if (d.readyState === 'loading') d.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+
+</script>
+</body>
+</html>

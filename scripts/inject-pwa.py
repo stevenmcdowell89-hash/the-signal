@@ -64,13 +64,21 @@ def main() -> None:
         for tpl in REPO_ROOT.glob(".claude/skills/the-signal/**/weekly-template.html"):
             targets.append(tpl)
 
+    def rel(path: Path) -> str:
+        # WP-6 mx-compat: targets may live outside the repo (fixture dry-runs);
+        # relative_to raises there — fall back to the absolute path.
+        try:
+            return str(path.relative_to(REPO_ROOT))
+        except ValueError:
+            return str(path)
+
     modified = 0
     for path in targets:
         if inject(path):
             modified += 1
-            print(f"  + {path.relative_to(REPO_ROOT)}")
+            print(f"  + {rel(path)}")
         else:
-            print(f"  = {path.relative_to(REPO_ROOT)} (already has snippet)")
+            print(f"  = {rel(path)} (already has snippet)")
 
     print(f"\nDone. {modified}/{len(targets)} files modified.")
 

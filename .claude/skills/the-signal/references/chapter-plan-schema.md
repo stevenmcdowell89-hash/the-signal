@@ -1,5 +1,27 @@
 # Chapter Plan Schema (v8.27)
 
+> **WP-6 (2026-07) — NEW-SYSTEM (data-mx) SPECIAL plans.** A special plan opts
+> into the unified design system with `issue_meta.design_system: "mx"`. Its
+> structure is then **skeleton-driven**: `references/format-skeletons/<format>.json`
+> (season-review · deep-dive · versus · rewind) is the single source of truth,
+> and `scripts/stitch_specials.py` assembles all chrome from it (writers fill
+> interiors only). On top of everything below, an mx plan carries:
+> `issue_meta.kit` (from the skeleton's allowed set), `issue_meta.acts`
+> (1–3 acts: `{name, title, hand?, grounds[], tokens?, transit_card?}`),
+> `issue_meta.event` (season_review/countdown) or `issue_meta.period` (rewind)
+> for the Part-7 §2 timing sanity gate, plan-level `personalisation`
+> (`{chapter_id, description, state_evidence[]}` — evidence strings must appear
+> verbatim in `state/signal-state.json`), and per-chapter `skeleton_slot`,
+> `act`, and `visual_events` (`{law2-event-type: count}` from the closed
+> vocabulary figure/ephemera/ledger/statband/quote/plate/chart/marquee/cheatsheet).
+> `validate-chapter-plan.py` enforces: Law-3 word floors per format, a
+> planned-density reachability check (documented in each skeleton's
+> `law2.planned_density_note`), planned distribution (no dead chapters/runs),
+> killer features per Part 7 §3 (rule vocabulary in each skeleton's
+> `killer_features`), the personalisation floor, and editorial-timing sanity.
+> Legacy special plans (no `design_system` field) are governed by this document
+> unchanged.
+
 The planner subagent writes `/tmp/signal-build/chapter-plan.json`. This file defines the contract between the planner and the writer subagents. Every field here is required unless marked optional.
 
 The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan that fails validation cannot proceed to Phase 5 (writer subagents).

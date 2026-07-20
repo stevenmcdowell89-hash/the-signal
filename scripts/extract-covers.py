@@ -47,7 +47,22 @@ COVER_PATTERNS = [
         r'<section\s+class="[^"]*\bhol-cover\b[^"]*"[^>]*>(.*?)</section>',
         re.IGNORECASE | re.DOTALL,
     ),
+    # WP-6 mx-compat: new-system covers — <section class="mx-cover ..."> ... </section>
+    re.compile(
+        r'<section\s+class="[^"]*\bmx-cover\b[^"]*"[^>]*>(.*?)</section>',
+        re.IGNORECASE | re.DOTALL,
+    ),
 ]
+
+# WP-6 mx-compat: scan the DOM only. The unified bundle inlines CSS whose
+# comments contain example markup (e.g. `<img src="/assets/cached/img.jpg">`
+# in core/10-ephemera.css) — scanning raw HTML made the fallback matcher pick
+# those up as "covers". Strip comments/<style>/<script> before matching.
+def _dom_only(html: str) -> str:
+    html = re.sub(r"<!--.*?-->", " ", html, flags=re.DOTALL)
+    html = re.sub(r"<style\b[^>]*>.*?</style>", " ", html, flags=re.DOTALL | re.IGNORECASE)
+    html = re.sub(r"<script\b[^>]*>.*?</script>", " ", html, flags=re.DOTALL | re.IGNORECASE)
+    return html
 
 IMG_SRC_RE = re.compile(
     r'<img\s[^>]*?src=["\'](/assets/cached/[^"\']+)["\']',
@@ -61,6 +76,7 @@ ANY_IMG_SRC_RE = re.compile(
 
 def find_cover_path(html: str) -> str | None:
     """Return the /assets/cached/... path of the issue's cover image, or None."""
+    html = _dom_only(html)
     # First: scan the dedicated cover region.
     for pat in COVER_PATTERNS:
         m = pat.search(html)
