@@ -1,0 +1,102 @@
+{
+  "$schema_note": "Deterministic structure of a NEW-SYSTEM (data-mx) Versus. SINGLE SOURCE OF TRUTH — consumed by validate-chapter-plan.py (mx-special checks, WP-6) and scripts/stitch_specials.py. Chrome is stitcher-owned and writer-unrepresentable. Spec: design-system-unification SPEC Part 1 (Law 5: verdict stamp slams per round), Part 7 §3 (Versus = criteria-first + per-round verdicts + committed conditional verdict), WP-6.",
+  "format": "versus",
+  "design_system": "mx",
+  "skin": "editorial",
+  "motion": "tier2",
+  "default_kit": "inventory",
+  "allowed_kits": ["inventory", "cinema", "matchday", "library", "broadcast"],
+
+  "law3_word_floor": 4500,
+  "law2": {
+    "floor": 0.8,
+    "target": 1.0,
+    "words_per_screen_max": 210,
+    "planned_density_note": "Same reachability model as season-review.json: est_screens_390 = words/250 + 0.5 x total_planned_events (writer events + stitcher structural: plates = n_chapters, act openers = n_acts, transits = n_acts - 1); reject when total/est < law2.floor."
+  },
+
+  "acts": {
+    "min": 1,
+    "max": 3,
+    "note": "Editorial-skin arc; a two-act contender split (one per corner) or single-act ring both valid. Palettes from a motif pack or per-act tokens."
+  },
+
+  "timing": {
+    "rule": "none",
+    "note": "Versus subjects are undated — no event/period timing gate."
+  },
+
+  "signature_moment": {
+    "class": "mx-sig-stamp-slam",
+    "slot": "round",
+    "note": "Law 5: THE Versus signature — the verdict stamp slams at the close of every round. The stitcher stamps mx-sig-stamp-slam on every chapter wrapper whose skeleton_slot is 'round'; the round's .mx-stamp verdict object slams under tier2."
+  },
+
+  "personalisation_slot": null,
+
+  "cover": {
+    "gesture": "split-corner type — the two contenders share the cover, divided; never the event poster",
+    "class": "mx-cover",
+    "min_voices": 3
+  },
+
+  "chrome": {
+    "note": "Stitcher-owned: one .mx-mast, cover, .mx-actopen per act, .mx-transit per seam, one .mx-plate per chapter, back pill, .mx-footer. Structural events at plan time: n_chapters + n_acts + (n_acts - 1)."
+  },
+
+  "slots": [
+    {
+      "slot_id": "the-matchup",
+      "required": true,
+      "repeatable": false,
+      "default_act": 1,
+      "role": "opener",
+      "min_visual_events": { "figure": 1 },
+      "notes": "Who's in the ring and why this comparison matters now."
+    },
+    {
+      "slot_id": "the-criteria",
+      "required": true,
+      "repeatable": false,
+      "default_act": 1,
+      "role": "killer-feature",
+      "min_visual_events": { "ledger": 1 },
+      "notes": "CRITERIA-FIRST (Part 7 §3): the judging criteria as a ledger object BEFORE any round — the validator enforces that this chapter precedes every round chapter."
+    },
+    {
+      "slot_id": "round",
+      "required": true,
+      "repeatable": true,
+      "default_act": 1,
+      "role": "killer-feature",
+      "required_chapter_fields": ["round_verdict"],
+      "min_visual_events": { "ephemera": 1 },
+      "notes": "One criterion per round, 3-7 rounds. Each round chapter MUST carry plan field `round_verdict` (the committed one-line call) and plan >=1 ephemera event (the .mx-stamp verdict object the signature slam attaches to)."
+    },
+    {
+      "slot_id": "the-verdict",
+      "required": true,
+      "repeatable": false,
+      "default_act": 3,
+      "role": "killer-feature",
+      "required_chapter_fields": ["conditional_verdict"],
+      "min_visual_events": { "ledger": 1 },
+      "notes": "THE COMMITTED CONDITIONAL VERDICT (Part 7 §3): 'if you are X, buy A; if you are Y, buy B' — carried as plan field `conditional_verdict` and rendered as the closing scorecard/ledger."
+    }
+  ],
+
+  "killer_features": [
+    { "id": "criteria-present", "rule": "slot_present", "slot": "the-criteria",
+      "desc": "Versus is criteria-first (Part 7 §3)." },
+    { "id": "criteria-before-rounds", "rule": "slot_before", "slot": "the-criteria", "before": "round",
+      "desc": "The criteria chapter must precede every round — criteria-FIRST, not retrofitted." },
+    { "id": "three-rounds", "rule": "slot_count_min", "slot": "round", "min": 3,
+      "desc": "At least 3 rounds; each closes on a committed verdict." },
+    { "id": "round-verdicts", "rule": "chapter_field", "slot": "round", "field": "round_verdict",
+      "desc": "Every round carries a committed per-round verdict (Part 7 §3)." },
+    { "id": "final-verdict-present", "rule": "slot_present", "slot": "the-verdict",
+      "desc": "Versus ships the committed conditional final verdict (Part 7 §3)." },
+    { "id": "final-verdict-committed", "rule": "chapter_field", "slot": "the-verdict", "field": "conditional_verdict",
+      "desc": "The final verdict is a committed conditional, carried in the plan." }
+  ]
+}

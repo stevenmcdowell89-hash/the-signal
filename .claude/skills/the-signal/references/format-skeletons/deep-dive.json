@@ -1,0 +1,94 @@
+{
+  "$schema_note": "Deterministic structure of a NEW-SYSTEM (data-mx) Deep Dive. SINGLE SOURCE OF TRUTH — consumed by validate-chapter-plan.py (mx-special checks, WP-6) and scripts/stitch_specials.py. Chrome (masthead, cover, act openers, transit seams, chapter plates, footer) is stitcher-owned and writer-unrepresentable. Spec: design-system-unification SPEC Part 1, Part 7 §3 (Deep Dive = The Argument + Keep Digging), WP-6.",
+  "format": "deep_dive",
+  "design_system": "mx",
+  "skin": "editorial",
+  "motion": "tier0",
+  "default_kit": "dossier",
+  "allowed_kits": ["dossier", "library", "cinema", "inventory"],
+
+  "law3_word_floor": 8000,
+  "law2": {
+    "floor": 0.7,
+    "target": 0.9,
+    "words_per_screen_max": 220,
+    "planned_density_note": "Same reachability model as season-review.json: est_screens_390 = words/250 + 0.5 x total_planned_events (writer events + stitcher structural: plates = n_chapters, act openers = n_acts, transits = n_acts - 1); reject when total/est < law2.floor. Rendered gates remain ground truth."
+  },
+
+  "acts": {
+    "min": 1,
+    "max": 3,
+    "note": "Editorial-skin arc in ink terms: paper-white -> parchment/sepia tints (Law 4/11). issue_meta.acts as in season-review.json; palettes from a dossier motif pack or per-act tokens."
+  },
+
+  "timing": {
+    "rule": "none",
+    "note": "Deep Dives are undated subjects — no event/period timing gate."
+  },
+
+  "signature_moment": {
+    "class": "mx-draw",
+    "slot": null,
+    "note": "tier0 print-still: hairline draw-ins + ghost-numeral parallax are auto-targeted by mx-motion.js; no per-chapter signature class is stamped."
+  },
+
+  "personalisation_slot": null,
+
+  "cover": {
+    "gesture": "oversized ghosted numeral or map fragment (Law 7); editorial cover, not the event poster",
+    "class": "mx-cover",
+    "min_voices": 3
+  },
+
+  "chrome": {
+    "note": "Stitcher-owned: one .mx-mast, cover, .mx-actopen per act, .mx-transit per seam, one .mx-plate per chapter, back pill, .mx-footer. Structural events at plan time: n_chapters + n_acts + (n_acts - 1)."
+  },
+
+  "slots": [
+    {
+      "slot_id": "the-brief",
+      "required": true,
+      "repeatable": false,
+      "default_act": 1,
+      "role": "opener",
+      "min_visual_events": { "ledger": 1 },
+      "notes": "Orientation: what this dive is, why now, the map of the terrain — dossier index-card ledger."
+    },
+    {
+      "slot_id": "chapter",
+      "required": true,
+      "repeatable": true,
+      "default_act": 1,
+      "role": "narrative",
+      "min_visual_events": {},
+      "notes": "The body chapters (typically 4-9). Long-form prose with dossier objects: index cards, telegram slips, map fragments, framed figures, quote objects (Law 9: >=5 named voices across the issue; historians/primary sources count)."
+    },
+    {
+      "slot_id": "the-argument",
+      "required": true,
+      "repeatable": false,
+      "default_act": 3,
+      "role": "killer-feature",
+      "min_visual_events": { "quote": 1 },
+      "notes": "THE KILLER FEATURE (Part 7 §3): the magazine's own position, ANALYZED lane, working shown — not a summary. Validator rejects a Deep Dive plan without it."
+    },
+    {
+      "slot_id": "keep-digging",
+      "required": true,
+      "repeatable": false,
+      "default_act": 3,
+      "role": "killer-feature",
+      "min_visual_events": { "cheatsheet": 1 },
+      "notes": "THE KILLER FEATURE (Part 7 §3): the onward-reading/watching trailhead as cheat-sheet furniture (books, sources, one wildcard)."
+    }
+  ],
+
+  "killer_features": [
+    { "id": "argument-present", "rule": "slot_present", "slot": "the-argument",
+      "desc": "Deep Dive ships The Argument (Part 7 §3)." },
+    { "id": "keep-digging-present", "rule": "slot_present", "slot": "keep-digging",
+      "desc": "Deep Dive ships Keep Digging (Part 7 §3)." },
+    { "id": "keep-digging-cheatsheet", "rule": "slot_event_range", "slot": "keep-digging", "event_type": "cheatsheet", "min": 1, "max": 3,
+      "desc": "Keep Digging renders as cheat-sheet furniture." }
+  ]
+}

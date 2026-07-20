@@ -997,6 +997,437 @@ def check_weekly_plan(plan):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# NEW-SYSTEM (data-mx) SPECIAL plan validation — WP-6 deterministic pipeline.
+#
+# A special plan opts into the unified design system with
+# issue_meta.design_system == "mx". Its structure is then SKELETON-DRIVEN:
+# references/format-skeletons/<format>.json is the single source of truth for
+# slots, acts, killer features, Law-2/Law-3 budgets and editorial timing.
+# Everything below is derived from the skeleton — never hardcoded per format
+# (the killer-feature rules are a small closed rule vocabulary the skeletons
+# use). Legacy special plans (no design_system field) are untouched.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Law-2 closed event vocabulary (spec Part 1 Law 2; core-components.md §4).
+MX_EVENT_TYPES = {
+    "figure", "ephemera", "ledger", "statband", "quote",
+    "plate", "chart", "marquee", "cheatsheet",
+}
+
+# Formats with a WP-6 skeleton. An mx plan for any OTHER special format is
+# rejected (the deterministic pipeline cannot stitch without a skeleton);
+# add the skeleton first.
+MX_SKELETON_DIR = Path(__file__).resolve().parent.parent / "references" / "format-skeletons"
+MX_SKELETON_FILES = {
+    "season_review": "season-review.json",
+    "deep_dive":     "deep-dive.json",
+    "versus":        "versus.json",
+    "rewind":        "rewind.json",
+}
+
+# Default reader-state path (repo-root/state/signal-state.json), overridable
+# with --state. The personalisation floor (Part 7 §4) validates against it.
+MX_DEFAULT_STATE_PATH = Path(__file__).resolve().parents[4] / "state" / "signal-state.json"
+
+# Planned-density screens-estimate formula (documented; calibrated against the
+# WP-1/WP-2 measured packs at 390x844 — the binding viewport, where density is
+# lowest):
+#   est_screens_390 = words / 250  +  0.5 * total_planned_events
+# Calibration: countdown 6,380w/115ev -> est 83 vs measured 80.2;
+# DD re-dress 18,429w/84ev -> est 115.7 vs measured 115.5.
+# total_planned_events = sum of chapter visual_events + stitcher structural
+# events (one plate per chapter, one act opener per act, one transit per act
+# seam). Reject when total/est < the skeleton's law2.floor: such a plan cannot
+# reach the Law-2 floor no matter how well it is written. The rendered
+# publish-gate (tools/measure-issue.mjs) remains the ground truth.
+MX_WORDS_PER_SCREEN_390 = 250.0
+MX_SCREENS_PER_EVENT_390 = 0.5
+
+# A chapter allocated this many words with ZERO planned visual events is a
+# guaranteed >=2-screen dead run on its own (550/250 ~= 2.2 screens before
+# furniture) — planned-distribution reject.
+MX_DEAD_CHAPTER_WORDS = 550
+
+
+def _load_mx_skeleton(fmt):
+    """Load the WP-6 format skeleton for an mx special. Errors + returns None
+    if the format has no skeleton or the file is unreadable."""
+    fname = MX_SKELETON_FILES.get(fmt)
+    if fname is None:
+        err(f"[MX-SKELETON] format '{fmt}' has no format skeleton — mx specials are "
+            f"skeleton-driven (WP-6). Skeletons exist for: {sorted(MX_SKELETON_FILES)}. "
+            f"Add references/format-skeletons/ coverage before planning this format as mx.")
+        return None
+    path = MX_SKELETON_DIR / fname
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, json.JSONDecodeError) as e:
+        err(f"[MX-SKELETON] could not load skeleton at '{path}': {e}")
+        return None
+
+
+def _mx_parse_date(s):
+    try:
+        return datetime.strptime(str(s), "%Y-%m-%d").date()
+    except (ValueError, TypeError):
+        return None
+
+
+def check_mx_timing(plan):
+    """Part 7 §2 — editorial-timing sanity for dated formats. Runs for EVERY
+    mx plan (independent of skeleton availability, so a countdown mx plan is
+    still timing-checked):
+
+      season_review : issue_meta.event {name, end_date, status} — the season/
+                      tournament must be CONCLUDED strictly before publish
+                      date. status must be 'concluded' AND end_date < date.
+                      (Attempt #2 scheduled a Season Review the morning BEFORE
+                      the final — end_date == publish date is a REJECT.)
+      countdown     : issue_meta.event {name, start_date} — the event must lie
+                      in the FUTURE: start_date > publish date.
+      rewind        : issue_meta.period {label, start_date, end_date} — the
+                      Rewind is BOUNDED to its period: start < end and
+                      end_date <= publish date.
+    """
+    meta = plan.get("issue_meta") or {}
+    fmt = meta.get("format")
+    pub = _mx_parse_date(meta.get("date"))
+    if pub is None:
+        return  # date malformation already reported by check_issue_meta
+
+    if fmt == "season_review":
+        ev = meta.get("event")
+        if not isinstance(ev, dict):
+            err("[MX-TIMING] season_review plan is missing issue_meta.event "
+                "{name, end_date, status} — Part 7 §2: a Season Review requires the "
+                "season/tournament CONCLUDED before publish date, and the plan must "
+                "carry the dates to prove it.")
+            return
+        for key in ("name", "end_date", "status"):
+            if not ev.get(key):
+                err(f"[MX-TIMING] issue_meta.event missing/empty '{key}' (season_review "
+                    f"timing sanity, Part 7 §2).")
+        end = _mx_parse_date(ev.get("end_date"))
+        if ev.get("end_date") and end is None:
+            err(f"[MX-TIMING] issue_meta.event.end_date='{ev.get('end_date')}' must be YYYY-MM-DD.")
+        if ev.get("status") and ev.get("status") != "concluded":
+            err(f"[MX-TIMING] season_review requires issue_meta.event.status='concluded' "
+                f"(got '{ev.get('status')}'). The season must have FINISHED before this "
+                f"issue publishes — a review of an unfinished season is unpublishable "
+                f"(Part 7 §2; the attempt-#2 failure).")
+        if end is not None and end >= pub:
+            err(f"[MX-TIMING] season_review event '{ev.get('name')}' ends {end} but the "
+                f"issue publishes {pub} — the event must be CONCLUDED STRICTLY BEFORE "
+                f"publish date. Publishing a Season Review the morning before (or the "
+                f"day of) the final is the attempt-#2 failure this gate exists to make "
+                f"impossible (Part 7 §2).")
+
+    elif fmt == "countdown":
+        ev = meta.get("event")
+        if not isinstance(ev, dict):
+            err("[MX-TIMING] countdown plan is missing issue_meta.event "
+                "{name, start_date} — Part 7 §2: a Countdown requires the event in "
+                "the FUTURE, and the plan must carry the date to prove it.")
+            return
+        for key in ("name", "start_date"):
+            if not ev.get(key):
+                err(f"[MX-TIMING] issue_meta.event missing/empty '{key}' (countdown "
+                    f"timing sanity, Part 7 §2).")
+        start = _mx_parse_date(ev.get("start_date"))
+        if ev.get("start_date") and start is None:
+            err(f"[MX-TIMING] issue_meta.event.start_date='{ev.get('start_date')}' must be YYYY-MM-DD.")
+        if start is not None and start <= pub:
+            err(f"[MX-TIMING] countdown event '{ev.get('name')}' starts {start} but the "
+                f"issue publishes {pub} — a Countdown counts down to an event in the "
+                f"FUTURE (start_date must be after publish date, Part 7 §2).")
+
+    elif fmt == "rewind":
+        per = meta.get("period")
+        if not isinstance(per, dict):
+            err("[MX-TIMING] rewind plan is missing issue_meta.period "
+                "{label, start_date, end_date} — Part 7 §2: a Rewind is bounded to "
+                "its period, and the plan must carry the bounds.")
+            return
+        for key in ("label", "start_date", "end_date"):
+            if not per.get(key):
+                err(f"[MX-TIMING] issue_meta.period missing/empty '{key}' (rewind "
+                    f"timing sanity, Part 7 §2).")
+        start = _mx_parse_date(per.get("start_date"))
+        end = _mx_parse_date(per.get("end_date"))
+        if per.get("start_date") and start is None:
+            err(f"[MX-TIMING] issue_meta.period.start_date='{per.get('start_date')}' must be YYYY-MM-DD.")
+        if per.get("end_date") and end is None:
+            err(f"[MX-TIMING] issue_meta.period.end_date='{per.get('end_date')}' must be YYYY-MM-DD.")
+        if start is not None and end is not None and start >= end:
+            err(f"[MX-TIMING] rewind period runs {start} -> {end}: start must precede end.")
+        if end is not None and end > pub:
+            err(f"[MX-TIMING] rewind period ends {end}, after the {pub} publish date — "
+                f"a Rewind is bounded to a period that has ALREADY FINISHED "
+                f"(Part 7 §2).")
+
+
+def _mx_chapter_events(ch):
+    """Return (events_dict, total) for a chapter's visual_events; {}/0 when absent."""
+    ve = ch.get("visual_events")
+    if not isinstance(ve, dict):
+        return {}, 0
+    total = sum(v for v in ve.values() if isinstance(v, int) and v > 0)
+    return ve, total
+
+
+def check_mx_special_plan(plan, state_text):
+    """WP-6 skeleton-driven validation for mx special plans. state_text is the
+    raw reader-state JSON text (for the personalisation floor), or None."""
+    meta = plan.get("issue_meta") or {}
+    fmt = meta.get("format")
+    chapters = [c for c in plan.get("chapters", []) if isinstance(c, dict)]
+
+    # Editorial-timing sanity runs for every mx plan, skeleton or not.
+    check_mx_timing(plan)
+
+    skeleton = _load_mx_skeleton(fmt)
+    if skeleton is None:
+        return
+
+    slots_def = {s["slot_id"]: s for s in skeleton.get("slots", []) if isinstance(s, dict)}
+    law2 = skeleton.get("law2", {})
+    law3_floor = skeleton.get("law3_word_floor", 0)
+
+    # ── kit (Law 6: one kit per issue, from the skeleton's allowed set) ──
+    kit = meta.get("kit")
+    allowed_kits = skeleton.get("allowed_kits", [])
+    if kit is not None and allowed_kits and kit not in allowed_kits:
+        err(f"[MX-KIT] issue_meta.kit='{kit}' is not an allowed kit for {fmt} "
+            f"(allowed: {allowed_kits}; Law 6 — one kit per issue, from the format's family).")
+
+    # ── motion tier sanity ──
+    motion = meta.get("motion")
+    if motion is not None and motion not in ("tier0", "tier1", "tier2"):
+        err(f"[MX-MOTION] issue_meta.motion='{motion}' must be tier0|tier1|tier2.")
+    elif motion is not None and motion != skeleton.get("motion"):
+        warn(f"[MX-MOTION] issue_meta.motion='{motion}' differs from the {fmt} skeleton "
+             f"default '{skeleton.get('motion')}' — deliberate?")
+
+    # ── acts (Law 4) ──
+    acts = meta.get("acts")
+    acts_rule = skeleton.get("acts", {})
+    amin, amax = acts_rule.get("min", 1), acts_rule.get("max", 3)
+    n_acts = 0
+    if not isinstance(acts, list) or not acts:
+        err(f"[MX-ACTS] issue_meta.acts must be a non-empty array of act declarations "
+            f"({amin}-{amax} for {fmt}; each: {{name, title, grounds[]}}) — Law 4: the "
+            f"scroll travels through declared palette acts.")
+    else:
+        n_acts = len(acts)
+        if not (amin <= n_acts <= amax):
+            err(f"[MX-ACTS] {n_acts} act(s) declared; {fmt} takes {amin}-{amax} (Law 4 / skeleton).")
+        names = []
+        for i, a in enumerate(acts):
+            if not isinstance(a, dict) or not a.get("name"):
+                err(f"[MX-ACTS] issue_meta.acts[{i}] must be an object with a non-empty 'name'.")
+                continue
+            names.append(a["name"])
+            grounds = a.get("grounds")
+            if not (isinstance(grounds, list) and grounds):
+                err(f"[MX-ACTS] act '{a['name']}' declares no scene-ground utilities — Law 1: "
+                    f"a flat single-colour act ground is a FAIL (use mx-ground-starfield / "
+                    f"mx-ground-gradient-sky / mx-ground-pattern / mx-ground-grain...).")
+        if len(set(names)) != len(names):
+            err(f"[MX-ACTS] duplicate act names: {names}.")
+
+    # ── slots: every chapter maps to a skeleton slot ──
+    slot_chapters = {}   # slot_id -> [chapter dicts in chapter_num order]
+    for i, ch in enumerate(sorted(chapters, key=lambda c: c.get("chapter_num", 0))):
+        cpath = f"chapters[{i}]"
+        slot = ch.get("skeleton_slot")
+        if not slot:
+            err(f"[MX-SLOT] {cpath} ('{ch.get('chapter_id')}'): missing 'skeleton_slot' — every "
+                f"mx chapter maps to a slot in the {fmt} skeleton "
+                f"(known: {sorted(slots_def)}).")
+            continue
+        if slot not in slots_def:
+            err(f"[MX-SLOT] {cpath} ('{ch.get('chapter_id')}'): skeleton_slot='{slot}' is not a "
+                f"{fmt} skeleton slot (known: {sorted(slots_def)}).")
+            continue
+        slot_chapters.setdefault(slot, []).append(ch)
+
+        # act assignment must reference a declared act
+        act_no = ch.get("act")
+        if n_acts and (not isinstance(act_no, int) or not (1 <= act_no <= n_acts)):
+            err(f"[MX-ACTS] {cpath} ('{ch.get('chapter_id')}'): act={act_no!r} must be an "
+                f"integer in 1..{n_acts} (the declared acts).")
+
+        # visual_events vocabulary
+        ve = ch.get("visual_events")
+        if ve is not None:
+            if not isinstance(ve, dict):
+                err(f"[MX-EVENTS] {cpath}.visual_events must be an object "
+                    f"{{event_type: count}} in the Law-2 vocabulary.")
+            else:
+                for k, v in ve.items():
+                    if k not in MX_EVENT_TYPES:
+                        err(f"[MX-EVENTS] {cpath}.visual_events key '{k}' is not in the Law-2 "
+                            f"closed vocabulary {sorted(MX_EVENT_TYPES)}.")
+                    if not isinstance(v, int) or v < 0:
+                        err(f"[MX-EVENTS] {cpath}.visual_events['{k}']={v!r} must be a "
+                            f"non-negative integer.")
+
+        # per-slot minimum events + required chapter fields (from the skeleton)
+        sdef = slots_def[slot]
+        ve_d, _ = _mx_chapter_events(ch)
+        for etype, emin in (sdef.get("min_visual_events") or {}).items():
+            have = ve_d.get(etype, 0) if isinstance(ve_d.get(etype, 0), int) else 0
+            if have < emin:
+                err(f"[MX-SLOT-EVENTS] {cpath} ('{ch.get('chapter_id')}', slot '{slot}'): plans "
+                    f"{have} '{etype}' event(s); the skeleton requires >= {emin} for this slot.")
+        for field in sdef.get("required_chapter_fields", []):
+            if not ch.get(field):
+                err(f"[MX-KILLER] {cpath} ('{ch.get('chapter_id')}', slot '{slot}'): missing/empty "
+                    f"required field '{field}' (Part 7 §3 killer-feature contract).")
+
+    # act ordering: non-decreasing act numbers across chapter order
+    act_seq = [ch.get("act") for ch in sorted(chapters, key=lambda c: c.get("chapter_num", 0))
+               if isinstance(ch.get("act"), int)]
+    if act_seq and act_seq != sorted(act_seq):
+        err(f"[MX-ACTS] chapter act assignments {act_seq} must be non-decreasing in chapter "
+            f"order — an act is a contiguous run of chapters (Law 4).")
+
+    # required / non-repeatable slots
+    for slot_id, sdef in slots_def.items():
+        n = len(slot_chapters.get(slot_id, []))
+        if sdef.get("required") and n == 0:
+            err(f"[MX-SLOT] required {fmt} slot '{slot_id}' has no chapter — the skeleton "
+                f"requires it ({sdef.get('notes', '')[:100]}).")
+        if not sdef.get("repeatable") and n > 1:
+            err(f"[MX-SLOT] slot '{slot_id}' is not repeatable but {n} chapters claim it.")
+
+    # ── Law-3 word floor ──
+    total_words = sum(ch.get("target_word_count", 0) for ch in chapters
+                      if isinstance(ch.get("target_word_count"), int))
+    if total_words < law3_floor:
+        err(f"[MX-LAW3] per-chapter target_word_count allocations sum to {total_words:,}, "
+            f"under the Law-3 {fmt} floor of {law3_floor:,} (spec Part 1 Law 3; F-18: "
+            f"density by shortness is a FAIL — the 542-word stub). Allocate more words "
+            f"or do not plan this format.")
+
+    # ── planned density (Law-2 reachability) ──
+    writer_events = sum(_mx_chapter_events(ch)[1] for ch in chapters)
+    structural = len(chapters) + n_acts + max(0, n_acts - 1)
+    total_events = writer_events + structural
+    floor = law2.get("floor", 0)
+    if total_words > 0 and floor:
+        est_screens = total_words / MX_WORDS_PER_SCREEN_390 + MX_SCREENS_PER_EVENT_390 * total_events
+        density = total_events / est_screens if est_screens else 0.0
+        if density < floor:
+            need = floor * (total_words / MX_WORDS_PER_SCREEN_390) / (1 - floor * MX_SCREENS_PER_EVENT_390)
+            err(f"[MX-DENSITY] planned events cannot reach the Law-2 floor: "
+                f"{writer_events} writer events + {structural} structural (plates/act "
+                f"openers/transits) = {total_events} over ~{est_screens:.1f} estimated "
+                f"screens (est_screens_390 = words/250 + 0.5*events; {total_words:,} words) "
+                f"= {density:.2f} ev/screen < {fmt} floor {floor}. Plan >= {need:.0f} total "
+                f"events or cut words. The rendered gate would fail this issue no matter "
+                f"how it is written.")
+
+    # planned distribution: dead chapters and dead runs
+    ordered = sorted(chapters, key=lambda c: c.get("chapter_num", 0))
+    run = []
+    for ch in ordered:
+        _, n_ev = _mx_chapter_events(ch)
+        twc = ch.get("target_word_count", 0)
+        if n_ev == 0 and isinstance(twc, int) and twc >= MX_DEAD_CHAPTER_WORDS:
+            err(f"[MX-DEAD-CHAPTER] chapter '{ch.get('chapter_id')}' allocates {twc} words "
+                f"with ZERO planned visual events — a guaranteed multi-screen dead run "
+                f"(Law 2 distribution: no 3+ consecutive event-free screens).")
+        if n_ev == 0:
+            run.append(str(ch.get("chapter_id")))
+            if len(run) >= 3:
+                err(f"[MX-DEAD-RUN] {len(run)} consecutive chapters with zero planned visual "
+                    f"events ({', '.join(run)}) — planned distribution cannot satisfy Law 2 "
+                    f"(no run of 3+ event-free screens).")
+                run = []  # report once per run
+        else:
+            run = []
+
+    # ── killer features (Part 7 §3), rule vocabulary driven by the skeleton ──
+    for kf in skeleton.get("killer_features", []):
+        rule = kf.get("rule")
+        slot = kf.get("slot")
+        in_slot = slot_chapters.get(slot, [])
+        if rule == "slot_present":
+            if not in_slot:
+                err(f"[MX-KILLER] {fmt} killer feature '{kf.get('id')}' missing: no chapter "
+                    f"fills slot '{slot}'. {kf.get('desc', '')} An issue missing its killer "
+                    f"feature fails plan validation (Part 7 §3).")
+        elif rule == "slot_count_min":
+            if len(in_slot) < kf.get("min", 1):
+                err(f"[MX-KILLER] {fmt} killer feature '{kf.get('id')}': {len(in_slot)} "
+                    f"chapter(s) fill slot '{slot}'; >= {kf.get('min')} required. {kf.get('desc', '')}")
+        elif rule == "slot_event_range":
+            etype = kf.get("event_type")
+            lo, hi = kf.get("min", 0), kf.get("max", 10 ** 6)
+            have = sum((_mx_chapter_events(ch)[0].get(etype, 0) or 0) for ch in in_slot)
+            if in_slot and not (lo <= have <= hi):
+                err(f"[MX-KILLER] {fmt} killer feature '{kf.get('id')}': slot '{slot}' plans "
+                    f"{have} '{etype}' event(s); the format requires {lo}-{hi}. {kf.get('desc', '')}")
+        elif rule == "slot_before":
+            before = kf.get("before")
+            later = slot_chapters.get(before, [])
+            if in_slot and later:
+                last_first = max(ch.get("chapter_num", 0) for ch in in_slot)
+                first_later = min(ch.get("chapter_num", 10 ** 6) for ch in later)
+                if last_first >= first_later:
+                    err(f"[MX-KILLER] {fmt} killer feature '{kf.get('id')}': slot '{slot}' "
+                        f"(chapter_num {last_first}) must precede every '{before}' chapter "
+                        f"(first at {first_later}). {kf.get('desc', '')}")
+        elif rule == "chapter_field":
+            field = kf.get("field")
+            for ch in in_slot:
+                if not ch.get(field):
+                    err(f"[MX-KILLER] {fmt} killer feature '{kf.get('id')}': chapter "
+                        f"'{ch.get('chapter_id')}' (slot '{slot}') missing/empty field "
+                        f"'{field}'. {kf.get('desc', '')}")
+        else:
+            warn(f"[MX-KILLER] unknown killer-feature rule '{rule}' in the {fmt} skeleton — "
+                 f"skipped (validator/skeleton drift?).")
+
+    # ── personalisation floor (Part 7 §4) ──
+    pers = plan.get("personalisation")
+    pslot = skeleton.get("personalisation_slot")
+    if not isinstance(pers, dict):
+        err(f"[MX-PERSONALISATION] plan.personalisation is missing — Part 7 §4: every mx "
+            f"special carries >= 1 reader-specific bridge (from state: clubs, podcasts, "
+            f"trips, training), declared as {{chapter_id, description, state_evidence[]}}. "
+            f"The plan must NAME it.")
+    else:
+        pch = next((c for c in chapters if c.get("chapter_id") == pers.get("chapter_id")), None)
+        if pch is None:
+            err(f"[MX-PERSONALISATION] personalisation.chapter_id='{pers.get('chapter_id')}' "
+                f"does not match any chapter.")
+        elif pslot and pch.get("skeleton_slot") != pslot:
+            err(f"[MX-PERSONALISATION] {fmt} carries the reader's angle as a CHAPTER-LEVEL "
+                f"element: personalisation.chapter_id must point at the '{pslot}' slot "
+                f"chapter (Part 7 §4), not '{pch.get('skeleton_slot')}'.")
+        if not (isinstance(pers.get("description"), str) and pers.get("description", "").strip()):
+            err("[MX-PERSONALISATION] personalisation.description must say what the bridge IS.")
+        evidence = pers.get("state_evidence")
+        if not (isinstance(evidence, list) and evidence):
+            err("[MX-PERSONALISATION] personalisation.state_evidence must be a non-empty list "
+                "of strings drawn from state/signal-state.json — the bridge is grounded in "
+                "the reader's actual state, not invented.")
+        elif state_text is None:
+            err("[MX-PERSONALISATION] reader state file unavailable — cannot verify "
+                "state_evidence. Pass --state <path> (default: state/signal-state.json).")
+        else:
+            low = state_text.lower()
+            for ev_str in evidence:
+                if not (isinstance(ev_str, str) and ev_str.strip() and ev_str.lower() in low):
+                    err(f"[MX-PERSONALISATION] state_evidence entry {ev_str!r} not found in the "
+                        f"reader state file — every evidence string must appear in state "
+                        f"(verbatim, case-insensitive).")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Main
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -1090,6 +1521,19 @@ def main():
         # v8.19 — lens-not-filter discovery quota (weekly only)
         if isinstance(issue_meta, dict):
             check_discovery_picks(plan, issue_meta)
+
+        # WP-6 — NEW-SYSTEM (data-mx) special plans get the skeleton-driven
+        # checks: Law-3 floors, planned density/distribution, killer features,
+        # personalisation floor, editorial-timing sanity. Legacy plans (no
+        # design_system field) are untouched.
+        if isinstance(issue_meta, dict) and issue_meta.get("design_system") == "mx":
+            resolved_state = Path(state_path) if state_path else MX_DEFAULT_STATE_PATH
+            state_text = None
+            try:
+                state_text = resolved_state.read_text(encoding="utf-8")
+            except OSError:
+                pass  # check_mx_special_plan reports if personalisation needs it
+            check_mx_special_plan(plan, state_text)
 
     # ── Report ──
     if warnings:
@@ -1738,6 +2182,311 @@ def run_inline_tests():
     run_test("valid release_radar passes", make_plan(
         _no_radar=True, issue_meta=weekly_meta, chapters=[dict(rr_world), radar_chapter(valid_items)]
     ), expect_pass=True)
+
+    # ── WP-6: NEW-SYSTEM (data-mx) special plan cases ─────────────────────────
+    # Skeleton-driven checks: Law-3 floors, planned density/distribution,
+    # killer features, personalisation floor, editorial-timing sanity.
+
+    MX_TEST_STATE = json.dumps({
+        "reader_profile": {"notes": "premier league · touchline · arsenal · northern ireland"},
+        "training_phase": {"current_block": "Block 3: Hypertrophy"},
+    })
+
+    def run_mx_test(name, plan_dict, expect_pass, state_text=MX_TEST_STATE):
+        global errors, warnings
+        errors = []
+        warnings = []
+        issue_meta = plan_dict.get("issue_meta", {})
+        chapters   = plan_dict.get("chapters", [])
+        assets     = plan_dict.get("assets", {})
+        compliance = plan_dict.get("compliance", {})
+        if isinstance(issue_meta, dict): check_issue_meta(issue_meta)
+        if isinstance(chapters, list):   check_chapters(chapters, issue_meta if isinstance(issue_meta, dict) else {})
+        if isinstance(assets, dict):     check_assets(assets)
+        if isinstance(compliance, dict): check_compliance(compliance)
+        check_mx_special_plan(plan_dict, state_text)
+        passed = len(errors) == 0
+        ok = (passed == expect_pass)
+        test_results.append(("PASS" if ok else "FAIL", name, errors[:] if not ok else []))
+        return ok
+
+    def mx_chapter(cid, num, slot, act, words, events, extra=None):
+        ch = {
+            "chapter_id": cid, "chapter_num": num, "chapter_type": "literary",
+            "chapter_title": cid.replace("-", " ").title(), "chapter_arc": "arc",
+            "ground": "paper", "is_hype": False, "data_venue": None,
+            "target_word_count": words, "images_needed": [], "key_facts": [],
+            "forbidden_topics": [], "cross_refs": [],
+            "skeleton_slot": slot, "act": act, "visual_events": events,
+        }
+        if extra:
+            ch.update(extra)
+        return ch
+
+    def mx_sr_plan(**over):
+        """A VALID mx season_review plan (2025-26 season concluded 24 May,
+        published 7 June). 6,650 words, 45 planned events incl. structural."""
+        plan = {
+            "issue_meta": {
+                "format": "season_review", "date": "2026-06-07",
+                "topic": "The 2025-26 Premier League Season",
+                "special_id": "season-review-pl-2025-26", "execution_mode": "sequential",
+                "design_system": "mx", "kit": "matchday", "motion": "tier2",
+                "event": {"name": "2025-26 Premier League season",
+                          "start_date": "2025-08-16", "end_date": "2026-05-24",
+                          "status": "concluded"},
+                "acts": [
+                    {"name": "floodlight", "title": "The Season", "grounds": ["mx-ground-starfield", "mx-ground-grain"]},
+                    {"name": "terrace", "title": "The Ledger", "grounds": ["mx-ground-pattern", "mx-ground-grain"]},
+                ],
+            },
+            "chapters": [
+                mx_chapter("season-at-a-glance", 1, "season-at-a-glance", 1, 950, {"statband": 1, "ledger": 1}),
+                mx_chapter("how-it-was-won", 2, "how-it-was-won", 1, 950, {"figure": 2, "quote": 2}),
+                mx_chapter("the-moments", 3, "the-moments", 1, 950, {"figure": 4, "quote": 1}),
+                mx_chapter("the-scorecards", 4, "the-scorecards", 2, 950, {"ledger": 10}),
+                mx_chapter("the-awards", 5, "the-awards", 2, 950, {"ephemera": 5, "quote": 2}),
+                mx_chapter("your-season", 6, "your-season", 2, 950, {"ephemera": 2, "quote": 1, "ledger": 1}),
+                mx_chapter("what-changes-next", 7, "what-changes-next", 2, 950, {"cheatsheet": 2, "ledger": 1}),
+            ],
+            "personalisation": {
+                "chapter_id": "your-season",
+                "description": "The reader's season: the Touchline weeks, second person.",
+                "state_evidence": ["premier league", "touchline"],
+            },
+            "assets": {"css_inject_marker": "<!-- INJECT:CSS -->",
+                       "js_inject_marker": "<!-- INJECT:JS -->",
+                       "scaffold_parts_used": []},
+            "compliance": {"stat_budget_max": 12, "image_source_diversity_min": 0.5,
+                           "accent_lockdown": True},
+        }
+        for k, v in over.items():
+            plan[k] = v
+        return plan
+
+    # PASS: the valid season-review plan
+    run_mx_test("mx season_review valid plan passes", mx_sr_plan(), expect_pass=True)
+
+    # FAIL: under-floor word budget (Law 3) — 700w/chapter = 4,900 < 6,500
+    p = mx_sr_plan()
+    for ch in p["chapters"]:
+        ch["target_word_count"] = 700
+    run_mx_test("mx season_review under Law-3 word floor rejected", p, expect_pass=False)
+
+    # FAIL: missing killer feature — no scorecards chapter
+    p = mx_sr_plan()
+    p["chapters"] = [c for c in p["chapters"] if c["chapter_id"] != "the-scorecards"]
+    for i, c in enumerate(p["chapters"], 1):
+        c["chapter_num"] = i
+    run_mx_test("mx season_review missing The Scorecards rejected", p, expect_pass=False)
+
+    # FAIL: the attempt-#2 case VERBATIM — Season Review scheduled the morning
+    # BEFORE the final (publish 2026-07-19; the tournament final is that
+    # evening; not concluded)
+    p = mx_sr_plan()
+    p["issue_meta"]["date"] = "2026-07-19"
+    p["issue_meta"]["topic"] = "The 2026 World Cup"
+    p["issue_meta"]["event"] = {"name": "2026 FIFA World Cup",
+                                "start_date": "2026-06-11",
+                                "end_date": "2026-07-19",
+                                "status": "in_progress"}
+    run_mx_test("mx season_review dated BEFORE season end rejected (attempt-#2 case)",
+                p, expect_pass=False)
+
+    # FAIL: zero visual_events in a run of 3+ chapters (planned distribution)
+    p = mx_sr_plan()
+    for cid in ("how-it-was-won", "the-moments", "the-scorecards"):
+        for c in p["chapters"]:
+            if c["chapter_id"] == cid:
+                c["visual_events"] = {}
+    run_mx_test("mx plan with zero events across a 3-chapter run rejected", p, expect_pass=False)
+
+    # FAIL: missing personalisation bridge
+    p = mx_sr_plan()
+    del p["personalisation"]
+    run_mx_test("mx plan missing personalisation bridge rejected", p, expect_pass=False)
+
+    # FAIL: personalisation evidence not present in reader state
+    p = mx_sr_plan()
+    p["personalisation"]["state_evidence"] = ["curling club membership"]
+    run_mx_test("mx personalisation evidence absent from state rejected", p, expect_pass=False)
+
+    # FAIL: planned density below the Law-2 floor (slot minimums met, but the
+    # totals cannot reach 0.9 ev/screen)
+    p = mx_sr_plan()
+    slim = {"season-at-a-glance": {"statband": 1, "ledger": 1},
+            "how-it-was-won": {"figure": 1, "quote": 1},
+            "the-moments": {"figure": 3},
+            "the-scorecards": {"ledger": 8},
+            "the-awards": {"ephemera": 4, "quote": 1},
+            "your-season": {"ephemera": 1},
+            "what-changes-next": {"cheatsheet": 1}}
+    for c in p["chapters"]:
+        c["visual_events"] = slim[c["chapter_id"]]
+    run_mx_test("mx plan below planned-density floor rejected", p, expect_pass=False)
+
+    # FAIL: The Scorecards outside the 8-12 range
+    p = mx_sr_plan()
+    for c in p["chapters"]:
+        if c["chapter_id"] == "the-scorecards":
+            c["visual_events"] = {"ledger": 15}
+    run_mx_test("mx scorecards count outside 8-12 rejected", p, expect_pass=False)
+
+    # FAIL: visual_events outside the Law-2 vocabulary
+    p = mx_sr_plan()
+    p["chapters"][1]["visual_events"] = {"hero": 2, "quote": 2, "figure": 2}
+    run_mx_test("mx visual_events outside Law-2 vocabulary rejected", p, expect_pass=False)
+
+    # ── versus ──
+    def mx_versus_plan():
+        return {
+            "issue_meta": {
+                "format": "versus", "date": "2026-06-15", "topic": "Whoop vs Garmin",
+                "special_id": "versus-wearables-2026", "execution_mode": "sequential",
+                "design_system": "mx", "kit": "inventory", "motion": "tier2",
+                "acts": [{"name": "ring", "title": "The Ring", "grounds": ["mx-ground-gradient-sky", "mx-ground-grain"]}],
+            },
+            "chapters": [
+                mx_chapter("the-matchup", 1, "the-matchup", 1, 800, {"figure": 1, "quote": 1, "ledger": 1}),
+                mx_chapter("the-criteria", 2, "the-criteria", 1, 800, {"ledger": 1, "quote": 1}),
+                mx_chapter("round-battery", 3, "round", 1, 800, {"ephemera": 2, "figure": 1, "quote": 1},
+                           {"round_verdict": "Whoop takes it — five days vs two."}),
+                mx_chapter("round-accuracy", 4, "round", 1, 800, {"ephemera": 2, "figure": 1, "quote": 1},
+                           {"round_verdict": "Garmin, narrowly, on GPS."}),
+                mx_chapter("round-price", 5, "round", 1, 800, {"ephemera": 2, "figure": 1, "quote": 1},
+                           {"round_verdict": "Garmin — no subscription."}),
+                mx_chapter("the-verdict", 6, "the-verdict", 1, 800, {"ledger": 1, "ephemera": 1, "quote": 1},
+                           {"conditional_verdict": "Training for a race: Garmin. Chasing recovery: Whoop."}),
+            ],
+            "personalisation": {
+                "chapter_id": "the-verdict",
+                "description": "The verdict is keyed to the reader's dual-device setup.",
+                "state_evidence": ["premier league"],
+            },
+            "assets": {"css_inject_marker": "<!-- INJECT:CSS -->",
+                       "js_inject_marker": "<!-- INJECT:JS -->", "scaffold_parts_used": []},
+            "compliance": {"stat_budget_max": 12, "image_source_diversity_min": 0.5,
+                           "accent_lockdown": True},
+        }
+
+    run_mx_test("mx versus valid plan passes", mx_versus_plan(), expect_pass=True)
+
+    # FAIL: criteria AFTER the rounds (criteria-first violated)
+    p = mx_versus_plan()
+    order = {"the-matchup": 1, "round-battery": 2, "round-accuracy": 3,
+             "round-price": 4, "the-criteria": 5, "the-verdict": 6}
+    for c in p["chapters"]:
+        c["chapter_num"] = order[c["chapter_id"]]
+    run_mx_test("mx versus criteria-after-rounds rejected", p, expect_pass=False)
+
+    # FAIL: a round without its committed verdict
+    p = mx_versus_plan()
+    for c in p["chapters"]:
+        if c["chapter_id"] == "round-price":
+            del c["round_verdict"]
+    run_mx_test("mx versus round without verdict rejected", p, expect_pass=False)
+
+    # ── rewind ──
+    def mx_rewind_plan():
+        return {
+            "issue_meta": {
+                "format": "rewind", "date": "2026-07-12", "topic": "H1 2026 in Review",
+                "special_id": "rewind-h1-2026", "execution_mode": "sequential",
+                "design_system": "mx", "kit": "scrapbook", "motion": "tier1",
+                "period": {"label": "H1 2026", "start_date": "2026-01-01", "end_date": "2026-06-30"},
+                "acts": [
+                    {"name": "winter", "title": "Jan-Mar", "grounds": ["mx-ground-gradient-sky", "mx-ground-grain"]},
+                    {"name": "summer", "title": "Apr-Jun", "grounds": ["mx-ground-pattern", "mx-ground-grain"]},
+                ],
+            },
+            "chapters": [
+                mx_chapter("the-period", 1, "the-period", 1, 1200, {"statband": 1, "ledger": 1, "ephemera": 2}),
+                mx_chapter("the-news", 2, "chapter", 1, 1200, {"figure": 3, "ephemera": 3, "quote": 1, "ledger": 1}),
+                mx_chapter("the-sport", 3, "chapter", 1, 1200, {"figure": 3, "ephemera": 3, "quote": 1, "ledger": 1}),
+                mx_chapter("the-screen", 4, "chapter", 2, 1200, {"figure": 3, "ephemera": 3, "quote": 1, "ledger": 1}),
+                mx_chapter("your-period", 5, "your-period", 2, 1200, {"ephemera": 3, "quote": 1, "ledger": 2}),
+                mx_chapter("the-memory-test", 6, "the-memory-test", 2, 1200, {"cheatsheet": 2, "ledger": 2, "quote": 1},
+                           {"grading_note": "Answers graded in the H2 2026 Rewind."}),
+            ],
+            "personalisation": {
+                "chapter_id": "your-period",
+                "description": "The reader's half-year: training blocks + trips, second person.",
+                "state_evidence": ["Hypertrophy"],
+            },
+            "assets": {"css_inject_marker": "<!-- INJECT:CSS -->",
+                       "js_inject_marker": "<!-- INJECT:JS -->", "scaffold_parts_used": []},
+            "compliance": {"stat_budget_max": 12, "image_source_diversity_min": 0.5,
+                           "accent_lockdown": True},
+        }
+
+    run_mx_test("mx rewind valid plan passes", mx_rewind_plan(), expect_pass=True)
+
+    # FAIL: rewind period not bounded (ends after publish date)
+    p = mx_rewind_plan()
+    p["issue_meta"]["period"]["end_date"] = "2026-09-30"
+    run_mx_test("mx rewind period beyond publish date rejected", p, expect_pass=False)
+
+    # FAIL: rewind without its Memory Test
+    p = mx_rewind_plan()
+    p["chapters"] = [c for c in p["chapters"] if c["chapter_id"] != "the-memory-test"]
+    run_mx_test("mx rewind missing Memory Test rejected", p, expect_pass=False)
+
+    # ── deep dive ──
+    def mx_dd_plan():
+        chapters = [mx_chapter("the-brief", 1, "the-brief", 1, 1050, {"ledger": 1, "quote": 1})]
+        for i, cid in enumerate(["origins", "rise", "turn", "fall", "aftermath"], start=2):
+            chapters.append(mx_chapter(cid, i, "chapter", 1 if i <= 4 else 2, 1050,
+                                       {"figure": 2, "quote": 1, "ephemera": 2}))
+        chapters.append(mx_chapter("the-argument", 7, "the-argument", 2, 1050, {"quote": 2}))
+        chapters.append(mx_chapter("keep-digging", 8, "keep-digging", 2, 1050, {"cheatsheet": 1, "ledger": 1}))
+        return {
+            "issue_meta": {
+                "format": "deep_dive", "date": "2026-09-27", "topic": "The History of Nintendo",
+                "special_id": "deep-dive-nintendo-2026", "execution_mode": "sequential",
+                "design_system": "mx", "kit": "dossier", "motion": "tier0",
+                "acts": [
+                    {"name": "paper", "title": "The Cards", "grounds": ["mx-ground-gradient-sky", "mx-ground-grain"]},
+                    {"name": "sepia", "title": "The Machines", "grounds": ["mx-ground-pattern", "mx-ground-grain"]},
+                ],
+            },
+            "chapters": chapters,
+            "personalisation": {
+                "chapter_id": "keep-digging",
+                "description": "Trailhead keyed to the reader's Switch 2 shelf.",
+                "state_evidence": ["premier league"],
+            },
+            "assets": {"css_inject_marker": "<!-- INJECT:CSS -->",
+                       "js_inject_marker": "<!-- INJECT:JS -->", "scaffold_parts_used": []},
+            "compliance": {"stat_budget_max": 12, "image_source_diversity_min": 0.5,
+                           "accent_lockdown": True},
+        }
+
+    run_mx_test("mx deep_dive valid plan passes", mx_dd_plan(), expect_pass=True)
+
+    # FAIL: deep dive without The Argument
+    p = mx_dd_plan()
+    p["chapters"] = [c for c in p["chapters"] if c["chapter_id"] != "the-argument"]
+    for i, c in enumerate(p["chapters"], 1):
+        c["chapter_num"] = i
+    run_mx_test("mx deep_dive missing The Argument rejected", p, expect_pass=False)
+
+    # FAIL: countdown mx plan with the event in the past (timing fires even
+    # though countdown has no skeleton yet)
+    p = {
+        "issue_meta": {
+            "format": "countdown", "date": "2026-06-15", "topic": "Efteling",
+            "special_id": "countdown-efteling-2026", "execution_mode": "parallel",
+            "design_system": "mx",
+            "event": {"name": "Efteling trip", "start_date": "2026-06-01"},
+            "acts": [{"name": "night", "title": "Night", "grounds": ["mx-ground-starfield"]}],
+        },
+        "chapters": [mx_chapter("by-the-numbers", 1, "opener", 1, 800, {"statband": 1})],
+        "assets": {"css_inject_marker": "<!-- INJECT:CSS -->",
+                   "js_inject_marker": "<!-- INJECT:JS -->", "scaffold_parts_used": []},
+        "compliance": {"stat_budget_max": 12, "image_source_diversity_min": 0.5,
+                       "accent_lockdown": True},
+    }
+    run_mx_test("mx countdown with past event rejected (timing)", p, expect_pass=False)
 
     # ── Summary ──
     print("\n=== INLINE TEST RESULTS ===")

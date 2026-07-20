@@ -1,0 +1,150 @@
+{
+  "$schema_note": "Deterministic structure of a NEW-SYSTEM (data-mx) Season Review special. SINGLE SOURCE OF TRUTH for the format's structure — consumed by validate-chapter-plan.py (mx-special checks, WP-6) and scripts/stitch_specials.py (skeleton-driven assembly). The plan selects/repeats slots via each chapter's `skeleton_slot`; ALL chrome (masthead, cover, act openers, transit seams, chapter plates, footer) is stitcher-owned and unrepresentable in writer files. Spec: docs/design-system-unification-SPEC-2026-07-18.md Part 1 (Laws 2/3/5/6/7), Part 7 §2-§4, WP-6.",
+  "format": "season_review",
+  "design_system": "mx",
+  "skin": "event",
+  "motion": "tier2",
+  "default_kit": "matchday",
+  "allowed_kits": ["matchday", "scorecard", "paddock", "inventory", "cinema"],
+
+  "law3_word_floor": 6500,
+  "law2": {
+    "floor": 0.9,
+    "target": 1.1,
+    "words_per_screen_max": 210,
+    "planned_density_note": "Plan-time reachability check (validate-chapter-plan.py): est_screens_390 = words/250 + 0.5 x total_planned_events (calibrated against the WP-1/WP-2 measured packs: countdown 6,380w/115ev -> 82.7 est vs 80.2 measured; DD re-dress 18,429w/84ev -> 115.7 est vs 115.5 measured). total_planned_events = sum(chapters[].visual_events) + structural events the stitcher emits (one plate per chapter + one act opener per act + one transit per act seam). Reject when total/est_screens < law2.floor. The rendered publish-gate (tools/measure-issue.mjs) stays the ground truth; this check only rejects plans that cannot possibly reach the floor."
+  },
+
+  "acts": {
+    "min": 2,
+    "max": 3,
+    "note": "issue_meta.acts declares 2-3 acts: [{name, title, hand, grounds[], tokens?{}, transit_card?}]. grounds are core scene-ground utilities (>=1 per act, Law 1). Act palettes come from a motif pack (preferred; e.g. references/motif-packs/matchday-worldcup.json) or per-act `tokens` maps; the stitcher refuses a flat act (no pack AND no tokens)."
+  },
+
+  "timing": {
+    "rule": "concluded_event",
+    "note": "Part 7 §2 — a Season Review REQUIRES the season/tournament CONCLUDED strictly before publish date. issue_meta.event = {name, start_date?, end_date, status:'concluded'}. end_date < issue_meta.date, strictly: attempt #2 scheduled a Season Review the morning BEFORE the final (end_date == publish date) — that plan must be impossible."
+  },
+
+  "signature_moment": {
+    "class": "mx-sig-rows-climb",
+    "slot": "the-scorecards",
+    "note": "Law 5: Season Review's signature — leaderboard/scorecard rows climb into place. The stitcher stamps the class on the chapter wrapper whose skeleton_slot matches; mx-motion.js sequences tr/li/.mx-ranked__entry children under tier1/tier2."
+  },
+
+  "personalisation_slot": "your-season",
+
+  "cover": {
+    "gesture": "bracket/trophy motif — oversized season-code ghost (e.g. 25/26) behind a poster cover; pack cover_plate art consumed into .mx-cover__plate when the motif pack ships one",
+    "class": "mx-cover--poster",
+    "min_voices": 3
+  },
+
+  "chrome": {
+    "note": "Stitcher-owned, writer-unrepresentable: one .mx-mast, poster cover, .mx-actopen per act, .mx-transit per act seam, one .mx-plate per chapter (auto-numbered), back pill, .mx-footer colophon. Structural events counted at plan time: plates = n_chapters, act openers = n_acts, transits = n_acts - 1."
+  },
+
+  "slots": [
+    {
+      "slot_id": "season-at-a-glance",
+      "required": true,
+      "repeatable": false,
+      "default_act": 1,
+      "role": "opener",
+      "min_visual_events": { "statband": 1, "ledger": 1 },
+      "notes": "The season's shape in one screenful: stat band + facts ledger before any narrative."
+    },
+    {
+      "slot_id": "how-it-was-won",
+      "required": true,
+      "repeatable": false,
+      "default_act": 1,
+      "role": "narrative",
+      "min_visual_events": { "figure": 1, "quote": 1 },
+      "notes": "The champion's arc — the season's spine, anchored on a figure block and at least one named voice."
+    },
+    {
+      "slot_id": "the-moments",
+      "required": true,
+      "repeatable": false,
+      "default_act": 1,
+      "role": "narrative",
+      "min_visual_events": { "figure": 3 },
+      "notes": "Turning points as kit objects (clipping cards / tickets), each tied to a date. Awards later must point back at these."
+    },
+    {
+      "slot_id": "the-field",
+      "required": false,
+      "repeatable": true,
+      "default_act": 1,
+      "role": "narrative",
+      "min_visual_events": {},
+      "notes": "Optional narrative chapters: chasing pack, relegation, managers, europe."
+    },
+    {
+      "slot_id": "the-scorecards",
+      "required": true,
+      "repeatable": false,
+      "default_act": 2,
+      "role": "killer-feature",
+      "min_visual_events": { "ledger": 8 },
+      "notes": "THE KILLER FEATURE (Part 7 §3): 8-12 per-club/team scorecards, each a matchday/scorecard-kit ledger object with a committed verdict line. Validator enforces ledger events in [8,12] here. Carries the signature rows-climb moment."
+    },
+    {
+      "slot_id": "the-awards",
+      "required": true,
+      "repeatable": false,
+      "default_act": 2,
+      "role": "killer-feature",
+      "min_visual_events": { "ephemera": 4, "quote": 1 },
+      "notes": "Awards TIED TO MOMENTS (Part 7 §3): each award is a stamp/seal object citing a dated moment (cross-ref the-moments), never a bare superlative."
+    },
+    {
+      "slot_id": "the-numbers",
+      "required": false,
+      "repeatable": false,
+      "default_act": 2,
+      "role": "data",
+      "min_visual_events": { "chart": 1, "statband": 1 },
+      "notes": "Self-made charts (sparklines, race charts) + a stat band. Every stat named-source or confidence-tagged."
+    },
+    {
+      "slot_id": "your-season",
+      "required": true,
+      "repeatable": false,
+      "default_act": 3,
+      "role": "personalisation",
+      "min_visual_events": { "ephemera": 1 },
+      "notes": "Part 7 §4 — the reader's own angle as a chapter-level element, SECOND PERSON, drawn from state (clubs, the weekly's Touchline coverage, trips, training). plan.personalisation.chapter_id must point at this chapter with state_evidence."
+    },
+    {
+      "slot_id": "what-changes-next",
+      "required": true,
+      "repeatable": false,
+      "default_act": 3,
+      "role": "killer-feature",
+      "min_visual_events": { "cheatsheet": 1 },
+      "notes": "THE KILLER FEATURE (Part 7 §3): what actually changes next season — rules, promoted sides, transfers windows, dates — as cheat-sheet furniture, forward-committed."
+    },
+    {
+      "slot_id": "full-time",
+      "required": false,
+      "repeatable": false,
+      "default_act": 3,
+      "role": "closer",
+      "min_visual_events": {},
+      "notes": "Short closing beat before the colophon."
+    }
+  ],
+
+  "killer_features": [
+    { "id": "scorecards-present", "rule": "slot_present", "slot": "the-scorecards",
+      "desc": "Season Review ships The Scorecards (Part 7 §3) — a plan without a scorecards chapter is invalid." },
+    { "id": "scorecards-count", "rule": "slot_event_range", "slot": "the-scorecards", "event_type": "ledger", "min": 8, "max": 12,
+      "desc": "The Scorecards is 8-12 scorecard objects, planned as ledger events." },
+    { "id": "awards-present", "rule": "slot_present", "slot": "the-awards",
+      "desc": "Awards-tied-to-moments chapter is mandatory (Part 7 §3)." },
+    { "id": "what-changes-next-present", "rule": "slot_present", "slot": "what-changes-next",
+      "desc": "The forward-looking what-changes-next chapter is mandatory (Part 7 §3)." }
+  ]
+}

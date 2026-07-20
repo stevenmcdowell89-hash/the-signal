@@ -1,0 +1,104 @@
+{
+  "$schema_note": "Deterministic structure of a NEW-SYSTEM (data-mx) Rewind. SINGLE SOURCE OF TRUTH — consumed by validate-chapter-plan.py (mx-special checks, WP-6) and scripts/stitch_specials.py. Chrome is stitcher-owned and writer-unrepresentable. Spec: design-system-unification SPEC Part 1 (Law 5: Memory Test columns reveal in sequence; Law 7: the year-band cover), Part 7 §2 (Rewind bounded to its period) + §3 (Rewind = The Memory Test, graded next period) + §4 (reader's own angle as a chapter-level element), WP-6.",
+  "format": "rewind",
+  "design_system": "mx",
+  "skin": "editorial",
+  "motion": "tier1",
+  "default_kit": "scrapbook",
+  "allowed_kits": ["scrapbook", "broadcast", "cinema"],
+
+  "law3_word_floor": 7000,
+  "law2": {
+    "floor": 0.9,
+    "target": 1.1,
+    "words_per_screen_max": 210,
+    "planned_density_note": "Same reachability model as season-review.json: est_screens_390 = words/250 + 0.5 x total_planned_events (writer events + stitcher structural: plates = n_chapters, act openers = n_acts, transits = n_acts - 1); reject when total/est < law2.floor."
+  },
+
+  "acts": {
+    "min": 1,
+    "max": 3,
+    "note": "Editorial-skin arc in scrapbook paper tints; a chronological act split (early period -> late period) is the natural shape. Palettes from a motif pack or per-act tokens."
+  },
+
+  "timing": {
+    "rule": "bounded_period",
+    "note": "Part 7 §2 — a Rewind is BOUNDED to its period. issue_meta.period = {label, start_date, end_date}; start_date < end_date and end_date <= issue_meta.date (you cannot rewind a period that hasn't finished)."
+  },
+
+  "signature_moment": {
+    "class": "mx-sig-cols-reveal",
+    "slot": "the-memory-test",
+    "note": "Law 5: Rewind's signature — the Memory Test columns reveal in sequence. Stamped on the memory-test chapter wrapper; mx-motion.js sequences .mx-cheat__col/.mx-col children under tier1."
+  },
+
+  "personalisation_slot": "your-period",
+
+  "cover": {
+    "gesture": "the year-band (Law 7): the period code as an oversized band/ghost across the cover",
+    "class": "mx-cover",
+    "min_voices": 3
+  },
+
+  "chrome": {
+    "note": "Stitcher-owned: one .mx-mast, cover, .mx-actopen per act, .mx-transit per seam, one .mx-plate per chapter, back pill, .mx-footer. Structural events at plan time: n_chapters + n_acts + (n_acts - 1)."
+  },
+
+  "slots": [
+    {
+      "slot_id": "the-period",
+      "required": true,
+      "repeatable": false,
+      "default_act": 1,
+      "role": "opener",
+      "min_visual_events": { "statband": 1 },
+      "notes": "The period at a glance: the shape of the months in numbers + a taped calendar tear-off."
+    },
+    {
+      "slot_id": "chapter",
+      "required": true,
+      "repeatable": true,
+      "default_act": 1,
+      "role": "narrative",
+      "min_visual_events": {},
+      "notes": "Thematic narrative chapters (news, sport, screen, personal threads) built from scrapbook objects: taped memory cards, photo corners, calendar tear-offs, report cards, cassette labels."
+    },
+    {
+      "slot_id": "your-period",
+      "required": true,
+      "repeatable": false,
+      "default_act": 2,
+      "role": "personalisation",
+      "min_visual_events": { "ephemera": 1 },
+      "notes": "Part 7 §4 — the reader's own angle as a chapter-level element, SECOND PERSON, from state (training blocks, trips, the weekly's own coverage). plan.personalisation.chapter_id must point here."
+    },
+    {
+      "slot_id": "the-memory-test",
+      "required": true,
+      "repeatable": false,
+      "default_act": 3,
+      "role": "killer-feature",
+      "required_chapter_fields": ["grading_note"],
+      "min_visual_events": { "cheatsheet": 1 },
+      "notes": "THE KILLER FEATURE (Part 7 §3): The Memory Test — question columns over the period, GRADED NEXT PERIOD. Plan field `grading_note` commits when/where the answers get graded (the next Rewind). Carries the cols-reveal signature."
+    },
+    {
+      "slot_id": "what-carried-forward",
+      "required": false,
+      "repeatable": false,
+      "default_act": 3,
+      "role": "closer",
+      "min_visual_events": {},
+      "notes": "Which of the period's threads are still running — hand-off into the weekly's The Threads."
+    }
+  ],
+
+  "killer_features": [
+    { "id": "memory-test-present", "rule": "slot_present", "slot": "the-memory-test",
+      "desc": "Rewind ships The Memory Test (Part 7 §3)." },
+    { "id": "memory-test-columns", "rule": "slot_event_range", "slot": "the-memory-test", "event_type": "cheatsheet", "min": 1, "max": 4,
+      "desc": "The Memory Test renders as cheat-sheet column furniture (the cols-reveal signature target)." },
+    { "id": "memory-test-graded", "rule": "chapter_field", "slot": "the-memory-test", "field": "grading_note",
+      "desc": "The Memory Test commits to being graded next period (Part 7 §3)." }
+  ]
+}
