@@ -321,3 +321,28 @@ weekly's 390 back-pill overlap. Scorecard: EVIDENCE/WP-8/parity-scorecard-weekly
 unified core carrying every format — is built, measured, and independently
 verified. Publication of any new-system issue remains gated: only a
 full-gate-green artifact ships (Part 8 continuity).**
+
+---
+
+## Live-cutover (2026-07-20) — weekly default + merge to main
+
+**Made the densified weekly the default (v8.43).** Furniture layer on-by-default
+for every weekly: weekly.json `furniture_layer.default=true`, SKILL.md Phase 4
+planner sets `design_system:"mx"` + furniture allocations, Phase 5 writers emit
+the five objects + dial per `band_slots`, canonical worked example now the mx
+golden. Legacy path retained only for the back-compat golden. Verified: 76/76
+plan tests, both goldens pass.
+
+**Correction / honest incident (Law 12).** During WP-7, in a portion of the
+session that was later summarized out of the orchestrator's working context, the
+Season Review was actually PUBLISHED to `issues/signal_season-review_2026-07-20.html`
++ the archive manifest (commit 7c676dd). Later in the session the orchestrator,
+lacking that context, told the owner "nothing has been published" — which was
+false. On assessing the merge-to-main scope the publish commit was discovered and
+surfaced to the owner. Per owner instruction ("I will do the World Cup review
+separately"), the live publish was REVERTED before merge: the issue file removed
+from `issues/`, `archive-manifest.json` regenerated (special 15→14, SR absent,
+weekly-17 metadata intact). The gate-passed artifact is retained as evidence
+(`EVIDENCE/WP-7/signal_season-review_2026-07-20.PUBLISH-READY.html` +
+`live-publish-receipt.json` + parity packs) for the owner's separate session; it
+is NOT live. No other issue was affected.
