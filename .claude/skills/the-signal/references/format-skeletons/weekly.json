@@ -3,7 +3,6 @@
   "format": "weekly",
   "identity": "transmission",
   "reading_canvas_px": 800,
-
   "word_budget": {
     "note": "Issue word budget (2026-07-13 quality handoff, A5 + B8). The 6-9k issue target is ALLOCATED PER BAND by the planner, never left to each writer independently: every planned content band gets a target_word_count drawn from its target_words range below, and the allocations must sum to >=6000 (validate-chapter-plan.py hard-fails a weekly plan below that). Aim mid-band — 6,800-7,500 — so a light news week still clears 6,000. 'Length follows the material' governs trimming a GIVEN allocation while writing (a writer landing far under its share flags the planner for more research); it never governs whether to attempt the allocation.",
     "issue_min": 6000,
@@ -11,7 +10,6 @@
     "issue_target_max": 7500,
     "issue_max": 9000
   },
-
   "structural_hooks": {
     "note": "Invisible data-* attributes the templates emit and the validators key on — so the structural gate is decoupled from display class names. All are lowercase.",
     "movement": "each movement divider carries data-movement='open|long-read|rounds|close' on its .movement element",
@@ -22,9 +20,8 @@
     "station": "each cover tuner coverline carries data-station (these are the reader-facing navigator entries)",
     "mx_event": "on the furniture layer (design_system='mx') every designed visual event carries data-mx-event on its outermost element — one of the Law-2 census types: figure|ephemera|ledger|statband|quote|plate|chart|marquee|cheatsheet. tools/measure-issue.mjs prefers these markers; the weekly's captioned photo plates carry data-mx-event='figure' so they still count."
   },
-
   "furniture_layer": {
-    "note": "WP-8 · the weekly IS upgraded (spec Law 11): it reaches its Law-2 density budget (0.8-1.0 events/screen, no 3+ dead-screen run) by distributing CORE FURNITURE across bands via the transmission alias, without touching the identity (same masthead, 800px chassis, palette, three faces, radio conceit). ACTIVATION: set issue_meta.design_system='mx' — the stitcher then loads skins/skin-transmission.css (the --mx-* alias) + assets/css/weekly-mx/*.css and mx-motion.js (data-motion='tier1'), and emits <body data-skin='transmission' data-mx data-motion='tier1' data-format='weekly'>. Absent the flag the weekly is byte-identical to the pre-WP-8 generator (the legacy golden path). The writer fills these component interiors inside the relevant band's content file; the stitcher still owns ALL chrome. Reference rhythm: docs/mockups/unification-furniture-kit-mockup.html spread 2. DISTRIBUTE — never cluster all furniture in one band (that reintroduces the dead-run failure at the other width). Motion attaches to furniture only, never running text; JS-off renders 100% of content.",
+    "note": "WP-8 / v8.43 — the weekly IS upgraded (spec Law 11) and the core furniture layer is now ON BY DEFAULT for every weekly: it reaches its Law-2 density budget (0.8-1.0 events/screen, no 3+ dead-screen run) by distributing CORE FURNITURE across bands via the transmission alias, without touching the identity (same masthead, 800px chassis, palette, three faces, radio conceit). DEFAULT: weekly plans set issue_meta.design_system='mx' — the stitcher then loads skins/skin-transmission.css (the --mx-* alias) + assets/css/weekly-mx/*.css and mx-motion.js (data-motion='tier1'), and emits <body data-skin='transmission' data-mx data-motion='tier1' data-format='weekly'>. The canonical worked example is the mx golden at references/golden/weekly-mx/chapters/. The legacy path (design_system absent -> byte-identical pre-WP-8 generator) is RETAINED ONLY for the back-compat golden references/golden/weekly/; do not use it for new issues. The writer fills these component interiors inside the relevant band's content file; the stitcher still owns ALL chrome. Reference rhythm: docs/mockups/unification-furniture-kit-mockup.html spread 2. DISTRIBUTE — never cluster all furniture in one band (that reintroduces the dead-run failure at the other width) and never strand a short furniture object in a rigid column beside tall text (the WP-8.1 Desk blank-column fix: balance the columns or float the object). Motion attaches to furniture only, never running text; JS-off renders 100% of content.",
     "components": {
       "fixtures_ledger": ".mx-ledger (data-mx-event='ledger') — the week's sport results/fixtures as mono ledger rows (.mx-ledger__row: date/match/result[/note]). Lives in The Touchline.",
       "ticket": ".mx-ticket (data-mx-event='ephemera') — a physical ticket-stub object for the week's single Do-This-Week pick (perforated stub + .mx-stamp seal). Lives in Do This Week (and/or a marquee result in The Touchline).",
@@ -34,18 +31,32 @@
       "dial_signature": ".mx-dial inside a .mx-sig-dial-sweep wrapper — the weekly's Law-5 signature moment: the radio dial's needle sweeps to the band frequency on entry. Optional but recommended in The Touchline (the radio conceit). No needle dial elsewhere in the weekly."
     },
     "band_slots": {
-      "week_in_numbers": ["chart_card"],
-      "touchline": ["dial_signature", "fixtures_ledger", "ticket", "standings_card", "quote_objects"],
-      "screen_sound": ["quote_objects"],
-      "long_read": ["quote_objects (a pulled voice or a dated mini-ledger to break the long prose run)"],
-      "do_this_week": ["ticket"]
+      "week_in_numbers": [
+        "chart_card"
+      ],
+      "touchline": [
+        "dial_signature",
+        "fixtures_ledger",
+        "ticket",
+        "standings_card",
+        "quote_objects"
+      ],
+      "screen_sound": [
+        "quote_objects"
+      ],
+      "long_read": [
+        "quote_objects (a pulled voice or a dated mini-ledger to break the long prose run)"
+      ],
+      "do_this_week": [
+        "ticket"
+      ]
     },
     "budget": {
       "note": "The furniture add-on is a CURATED SUBSET of the core (only the deployed components) to hold the weekly bundle lean (Law 11: weekly ~30KB). Measured injected CSS with the layer on is ~46KB (weekly 00-transmission ~25KB + alias ~2KB + weekly-mx ~18KB) — a justified overage over the ~40KB target versus bundling the full core (~77KB).",
       "css_target_kb": 40
-    }
+    },
+    "default": true
   },
-
   "movements": [
     {
       "id": "open",
@@ -53,7 +64,11 @@
       "name": "The Open",
       "meta": "LETTER · NUMBERS · DIGEST",
       "required": true,
-      "bands": ["the_letter", "week_in_numbers", "caught_up"]
+      "bands": [
+        "the_letter",
+        "week_in_numbers",
+        "caught_up"
+      ]
     },
     {
       "id": "long-read",
@@ -61,7 +76,9 @@
       "name": "The Long Read",
       "meta": "ONE PIECE · SETTLE IN",
       "required": true,
-      "bands": ["long_read"]
+      "bands": [
+        "long_read"
+      ]
     },
     {
       "id": "rounds",
@@ -69,7 +86,16 @@
       "name": "The Rounds",
       "meta": "BRISK · SCANNABLE",
       "required": true,
-      "bands": ["touchline", "pixel_byte", "screen_sound", "bookmark", "this_week_in_history", "rotating_1", "rotating_2", "the_desk"]
+      "bands": [
+        "touchline",
+        "pixel_byte",
+        "screen_sound",
+        "bookmark",
+        "this_week_in_history",
+        "rotating_1",
+        "rotating_2",
+        "the_desk"
+      ]
     },
     {
       "id": "close",
@@ -77,37 +103,273 @@
       "name": "The Close",
       "meta": "THREADS · RABBIT HOLE · RADAR",
       "required": true,
-      "bands": ["the_threads", "rabbit_hole", "on_the_radar", "do_this_week", "colophon"]
+      "bands": [
+        "the_threads",
+        "rabbit_hole",
+        "on_the_radar",
+        "do_this_week",
+        "colophon"
+      ]
     }
   ],
-
   "bands": {
-    "the_letter":      { "name": "The Letter",         "runtime": "FROM THE EDITOR",                    "required": true,  "nav": true,  "content": "letter",     "component": "letter", "target_words": { "min": 120, "max": 200 } },
-    "week_in_numbers": { "name": "The Week in Numbers", "runtime": "THE LEDGER · SIGNAL METERED",        "required": true,  "nav": false, "content": "figures",    "component": "figures", "target_words": { "min": 160, "max": 260 } },
-    "caught_up":       { "name": "Caught Up",           "runtime": "EVERYTHING THAT MOVED, IN EIGHT LINES","required": true,"nav": false, "content": "digest",     "component": "digest", "hard_cap": 8, "target_words": { "min": 200, "max": 280 } },
-    "long_read":       { "name": "The Long Read",       "runtime": "SIGNAL STRONG",                      "required": true,  "nav": true,  "content": "longread",   "component": "longread", "cardinality": 1, "target_words": { "min": 1400, "max": 2000 } },
-    "touchline":       { "name": "The Touchline",       "runtime": "SPORT",                              "required": false, "nav": true,  "content": "round",      "component": "scores+items", "target_words": { "min": 350, "max": 600 } },
-    "pixel_byte":      { "name": "Pixel & Byte",        "runtime": "GAMING",                             "required": false, "nav": true,  "content": "round",      "component": "items", "target_words": { "min": 350, "max": 600 } },
-    "screen_sound":    { "name": "Screen & Sound",      "runtime": "WATCH & LISTEN · + RELEASE RADAR",   "required": false, "nav": true,  "content": "round",      "component": "with-rail", "contains": ["release_radar"], "target_words": { "min": 350, "max": 600 } },
-    "bookmark":        { "name": "Bookmark",            "runtime": "BOOKS · ON THE NIGHTSTAND",          "required": true,  "nav": true,  "content": "round",      "component": "picks", "target_words": { "min": 350, "max": 600 }, "note": "The fixed lightweight books rail every issue. This RESOLVES the Bookmark-vs-Shelf spec contradiction: there is NO rotating 'The Shelf' — books are always this Bookmark rail. The deep book piece, when there is one, is the Long Read. Picks show their book covers (2026-07-13 handoff B6)." },
-    "this_week_in_history": { "name": "This Week in History", "runtime": "HISTORY · DATED",              "required": false, "nav": true,  "content": "round",      "component": "prose+plate", "target_words": { "min": 500, "max": 750 }, "note": "A rotating non-Desk section: one genuinely interesting dated anniversary in the issue's week, told in ~500-750 words, usually with a figure. Runs on a 2-3 week cadence." },
-    "rotating_1":      { "name": "(rotating)",          "runtime": "",                                   "required": false, "nav": true,  "content": "round",      "component": "items", "rotating_pool": ["this_week_in_history", "listening", "the_saga"], "target_words": { "min": 350, "max": 600 }, "note": "Pick 1-2 non-Desk rotating sections per issue." },
-    "rotating_2":      { "name": "(rotating)",          "runtime": "",                                   "required": false, "nav": true,  "content": "round",      "component": "items", "rotating_pool": ["this_week_in_history", "listening", "the_saga"], "target_words": { "min": 350, "max": 600 } },
-    "the_desk":        { "name": "The Desk",            "runtime": "SERVICE",                            "required": true,  "nav": true,  "content": "desk",       "component": "desk", "columns_min": 1, "columns_max": 2, "column_pool": ["session", "ledger", "itinerary", "toolkit"], "each_column_closes_on": "pin", "target_words": { "min": 500, "max": 800 }, "target_words_per_column": { "min": 250, "max": 400 }, "note": "ONE band, 1-2 nested columns. NEVER 3+, never a column as its own band/nav entry. Budget is 250-400 words PER COLUMN — the band range assumes the typical two columns; a single-column week allocates 250-400." },
-    "the_threads":     { "name": "The Threads",         "runtime": "PREVIOUSLY ON · STILL RUNNING",      "required": true,  "nav": true,  "content": "threads",    "component": "threads", "target_words": { "min": 450, "max": 650 } },
-    "rabbit_hole":     { "name": "Down the Rabbit Hole","runtime": "CURIOSITY · SIGNAL FAINT, FOLLOW IT","required": false, "nav": true,  "content": "rabbit",     "component": "rabbit", "target_words": { "min": 450, "max": 700 }, "note": "Signature discovery ritual; runs when due." },
-    "on_the_radar":    { "name": "On the Radar",        "runtime": "FORWARD CALENDAR · WHAT'S COMING",   "required": true,  "nav": true,  "content": "radar",      "component": "radar", "target_words": { "min": 300, "max": 450 } },
-    "do_this_week":    { "name": "Do This Week",        "runtime": "THE ONE THING · PINNED",             "required": true,  "nav": false, "content": "closepin",   "component": "closepin", "target_words": { "min": 60, "max": 120 }, "note": "The issue's single strongest action — ends on a verb + a human line." },
-    "colophon":        { "name": "Colophon",            "runtime": "THE ISSUE, ACCOUNTED FOR",           "required": true,  "nav": false, "content": "colophon",   "component": "endnumbers", "target_words": { "min": 80, "max": 140 } }
+    "the_letter": {
+      "name": "The Letter",
+      "runtime": "FROM THE EDITOR",
+      "required": true,
+      "nav": true,
+      "content": "letter",
+      "component": "letter",
+      "target_words": {
+        "min": 120,
+        "max": 200
+      }
+    },
+    "week_in_numbers": {
+      "name": "The Week in Numbers",
+      "runtime": "THE LEDGER · SIGNAL METERED",
+      "required": true,
+      "nav": false,
+      "content": "figures",
+      "component": "figures",
+      "target_words": {
+        "min": 160,
+        "max": 260
+      }
+    },
+    "caught_up": {
+      "name": "Caught Up",
+      "runtime": "EVERYTHING THAT MOVED, IN EIGHT LINES",
+      "required": true,
+      "nav": false,
+      "content": "digest",
+      "component": "digest",
+      "hard_cap": 8,
+      "target_words": {
+        "min": 200,
+        "max": 280
+      }
+    },
+    "long_read": {
+      "name": "The Long Read",
+      "runtime": "SIGNAL STRONG",
+      "required": true,
+      "nav": true,
+      "content": "longread",
+      "component": "longread",
+      "cardinality": 1,
+      "target_words": {
+        "min": 1400,
+        "max": 2000
+      }
+    },
+    "touchline": {
+      "name": "The Touchline",
+      "runtime": "SPORT",
+      "required": false,
+      "nav": true,
+      "content": "round",
+      "component": "scores+items",
+      "target_words": {
+        "min": 350,
+        "max": 600
+      }
+    },
+    "pixel_byte": {
+      "name": "Pixel & Byte",
+      "runtime": "GAMING",
+      "required": false,
+      "nav": true,
+      "content": "round",
+      "component": "items",
+      "target_words": {
+        "min": 350,
+        "max": 600
+      }
+    },
+    "screen_sound": {
+      "name": "Screen & Sound",
+      "runtime": "WATCH & LISTEN · + RELEASE RADAR",
+      "required": false,
+      "nav": true,
+      "content": "round",
+      "component": "with-rail",
+      "contains": [
+        "release_radar"
+      ],
+      "target_words": {
+        "min": 350,
+        "max": 600
+      }
+    },
+    "bookmark": {
+      "name": "Bookmark",
+      "runtime": "BOOKS · ON THE NIGHTSTAND",
+      "required": true,
+      "nav": true,
+      "content": "round",
+      "component": "picks",
+      "target_words": {
+        "min": 350,
+        "max": 600
+      },
+      "note": "The fixed lightweight books rail every issue. This RESOLVES the Bookmark-vs-Shelf spec contradiction: there is NO rotating 'The Shelf' — books are always this Bookmark rail. The deep book piece, when there is one, is the Long Read. Picks show their book covers (2026-07-13 handoff B6)."
+    },
+    "this_week_in_history": {
+      "name": "This Week in History",
+      "runtime": "HISTORY · DATED",
+      "required": false,
+      "nav": true,
+      "content": "round",
+      "component": "prose+plate",
+      "target_words": {
+        "min": 500,
+        "max": 750
+      },
+      "note": "A rotating non-Desk section: one genuinely interesting dated anniversary in the issue's week, told in ~500-750 words, usually with a figure. Runs on a 2-3 week cadence."
+    },
+    "rotating_1": {
+      "name": "(rotating)",
+      "runtime": "",
+      "required": false,
+      "nav": true,
+      "content": "round",
+      "component": "items",
+      "rotating_pool": [
+        "this_week_in_history",
+        "listening",
+        "the_saga"
+      ],
+      "target_words": {
+        "min": 350,
+        "max": 600
+      },
+      "note": "Pick 1-2 non-Desk rotating sections per issue."
+    },
+    "rotating_2": {
+      "name": "(rotating)",
+      "runtime": "",
+      "required": false,
+      "nav": true,
+      "content": "round",
+      "component": "items",
+      "rotating_pool": [
+        "this_week_in_history",
+        "listening",
+        "the_saga"
+      ],
+      "target_words": {
+        "min": 350,
+        "max": 600
+      }
+    },
+    "the_desk": {
+      "name": "The Desk",
+      "runtime": "SERVICE",
+      "required": true,
+      "nav": true,
+      "content": "desk",
+      "component": "desk",
+      "columns_min": 1,
+      "columns_max": 2,
+      "column_pool": [
+        "session",
+        "ledger",
+        "itinerary",
+        "toolkit"
+      ],
+      "each_column_closes_on": "pin",
+      "target_words": {
+        "min": 500,
+        "max": 800
+      },
+      "target_words_per_column": {
+        "min": 250,
+        "max": 400
+      },
+      "note": "ONE band, 1-2 nested columns. NEVER 3+, never a column as its own band/nav entry. Budget is 250-400 words PER COLUMN — the band range assumes the typical two columns; a single-column week allocates 250-400."
+    },
+    "the_threads": {
+      "name": "The Threads",
+      "runtime": "PREVIOUSLY ON · STILL RUNNING",
+      "required": true,
+      "nav": true,
+      "content": "threads",
+      "component": "threads",
+      "target_words": {
+        "min": 450,
+        "max": 650
+      }
+    },
+    "rabbit_hole": {
+      "name": "Down the Rabbit Hole",
+      "runtime": "CURIOSITY · SIGNAL FAINT, FOLLOW IT",
+      "required": false,
+      "nav": true,
+      "content": "rabbit",
+      "component": "rabbit",
+      "target_words": {
+        "min": 450,
+        "max": 700
+      },
+      "note": "Signature discovery ritual; runs when due."
+    },
+    "on_the_radar": {
+      "name": "On the Radar",
+      "runtime": "FORWARD CALENDAR · WHAT'S COMING",
+      "required": true,
+      "nav": true,
+      "content": "radar",
+      "component": "radar",
+      "target_words": {
+        "min": 300,
+        "max": 450
+      }
+    },
+    "do_this_week": {
+      "name": "Do This Week",
+      "runtime": "THE ONE THING · PINNED",
+      "required": true,
+      "nav": false,
+      "content": "closepin",
+      "component": "closepin",
+      "target_words": {
+        "min": 60,
+        "max": 120
+      },
+      "note": "The issue's single strongest action — ends on a verb + a human line."
+    },
+    "colophon": {
+      "name": "Colophon",
+      "runtime": "THE ISSUE, ACCOUNTED FOR",
+      "required": true,
+      "nav": false,
+      "content": "colophon",
+      "component": "endnumbers",
+      "target_words": {
+        "min": 80,
+        "max": 140
+      }
+    }
   },
-
   "chrome": {
     "note": "Deterministic scaffold emitted by the stitcher/templates, not writer content. Band numbers (BAND NN) are assigned sequentially by the stitcher across whatever bands actually render, cover=implicit, movements interleaved.",
-    "cover": { "component": "cover", "contains": ["masthead", "wave", "lead", "tuner", "dataline", "folio"] },
-    "colophon_footer": { "component": "colophon+signoff-line" },
+    "cover": {
+      "component": "cover",
+      "contains": [
+        "masthead",
+        "wave",
+        "lead",
+        "tuner",
+        "dataline",
+        "folio"
+      ]
+    },
+    "colophon_footer": {
+      "component": "colophon+signoff-line"
+    },
     "dividers": "waveform SVG rules (.wave) between movements and around the Long Read; a .tickrule inside The Open"
   },
-
   "invariants": {
     "note": "HARD-CHECKED by validate-issue.py --format weekly (inside the markup-contracts gate — the ledger stays at three). Fail = not shippable.",
     "all_four_movements_present": "the set of data-movement values must equal {open, long-read, rounds, close}",
@@ -118,7 +380,6 @@
     "caught_up_cap": "the digest carries at most 8 <li> items",
     "long_read_has_image": "the section carrying data-role='long-read' must contain >=1 real <img> tag — the anchor piece is illustrated; an empty .plate-box glyph placeholder does NOT count (2026-07-13 handoff A2)"
   },
-
   "visual_consistency": {
     "note": "Also HARD-CHECKED by validate-issue.py --format weekly — the weekly must wear the constant warm Transmission identity, never the special/holiday costume. See docs/weekly-visual-identity-groundup-2026-07.md Part 7.4.",
     "must_not_load_special_or_holiday_css": "the injected <style> must NOT contain special/holiday markers (e.g. .sp-chapter-gate, .hol-masthead, .hol-cover, is-special selectors, the ~20 per-section palette tokens like --touchline-bg/--screen-bg/--saga-bg)",

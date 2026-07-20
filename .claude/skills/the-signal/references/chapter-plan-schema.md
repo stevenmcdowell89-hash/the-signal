@@ -21,6 +21,16 @@
 > `killer_features`), the personalisation floor, and editorial-timing sanity.
 > Legacy special plans (no `design_system` field) are governed by this document
 > unchanged.
+>
+> **WP-8/8.1 (v8.43) — WEEKLY plans default to `design_system: "mx"`.** The core
+> furniture layer is now ON BY DEFAULT for every weekly (not just specials). A
+> weekly plan sets `issue_meta.design_system: "mx"` and allocates the furniture
+> objects to bands per `references/format-skeletons/weekly.json` §
+> `furniture_layer.band_slots`; writers fill their interiors with `data-mx-event`
+> markers. The weekly keeps its Transmission identity (skin-transmission alias, no
+> acts/kit/pack — those are special-only). Omit `design_system` only for a
+> deliberate legacy back-compat weekly (the `references/golden/weekly/` fixture);
+> new issues are `mx`.
 
 The planner subagent writes `/tmp/signal-build/chapter-plan.json`. This file defines the contract between the planner and the writer subagents. Every field here is required unless marked optional.
 
