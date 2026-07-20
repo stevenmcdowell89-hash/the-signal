@@ -187,3 +187,30 @@ EVIDENCE/WP-5/parity-scorecards.md — BOTH candidates 12/12 PASS; burst
 frames at both widths show mid-reveal→settled; body text pixel-static.
 Orchestrator spot-check: burst-0/burst-1 opened personally — stamp slam
 and polaroid tape-down visibly firing.
+
+---
+
+## WP-6 — Deterministic pipeline — ✅ GATE PASS (2026-07-20)
+
+Skeletons (season-review/deep-dive/versus/rewind) with per-slot Law-2 event
+quotas + killer-feature rule lists; validate-chapter-plan 76/76 (planned
+density, Law-3 budgets, killer features, personalisation-with-state-evidence,
+MX-TIMING — the attempt-#2 before-the-final Season Review is now rejected
+with named text, orchestrator-reproduced); stitch_specials.py (writer
+interiors only; chrome unrepresentable; per-skin vocabulary gate; pack
+cover_plate consumed); publish-gate runs rendered WP-0 gates on data-mx
+issues (check-rendered-metrics.py). E2E test Season Review GREEN through
+the whole chain incl. post-publish dry-runs (extract-covers + inject-pwa
+mx-compat fixes); 7 seeded-bad artifacts rejected. Weekly golden PASS.
+Fixture: tools/fixtures/e2e/. Gaps: no skeletons yet for countdown/
+field-guide/guide/next (named [MX-SKELETON] reject); per-type census at
+plan time only.
+
+## WP-7 — First live special — IN PROGRESS (2026-07-20)
+
+Target: Season Review of the 2026 FIFA World Cup (concluded 2026-07-19:
+Spain 1–0 Argentina aet, Torres 106') — publish 2026-07-20. Real research
+bundle via web; matchday kit + matchday-worldcup pack; furniture-first.
+To follow: dual independent parity verifiers, orchestrator ≥6-shot
+spot-check, owner checkpoint #2 packet, publish decision per standing
+decision #2 + the owner's prior live-cutover override.
