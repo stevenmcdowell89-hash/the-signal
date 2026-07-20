@@ -1,0 +1,553 @@
+/* ============================================================
+   MX WEEKLY FURNITURE  ·  weekly-mx/10-mx-weekly.css        (WP-8)
+   Transmission weekly's core-furniture add-on. Bundled ONLY when
+   issue_meta.design_system == "mx"; a legacy weekly never loads
+   it and renders byte-identical to before. Law 11: every value
+   resolves through the transmission alias onto the weekly's own
+   tokens, so objects arrive dressed in Transmission paper/ink/
+   signal + the three faces (Instrument Serif / Newsreader /
+   JetBrains Mono). NO display fonts (chunk/tall/script/hand all
+   alias to Instrument Serif). CURATED SUBSET of the furniture
+   core (10-ephemera/11-ledgers/14-motion/15-responsive): only
+   the five deployed components (mx-ledger fixtures · mx-ticket ·
+   mx-scorecard standings · mx-quote voices · mx-card--chart) +
+   the radio-dial signature. Neutral mx- classes; class-scoped,
+   so a band with no mx- object renders exactly as today.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   00a · FIXED-CHROME RESERVATION (Law 10 — the back pill never
+   overlaps content). The archive pill is fixed top-left; fade it
+   out once the reader scrolls past the masthead (pure CSS scroll-
+   driven animation, no JS), and reserve the top zone where scroll-
+   timeline is unsupported. Body carries data-mx-chrome="pill".
+   Extracted from core/15-responsive.css §01.
+   ------------------------------------------------------------ */
+@supports (animation-timeline: scroll()) {
+  [data-mx-chrome~="pill"] .signal-back-to-archive {
+    animation: mx-pill-recede linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0px 300px;
+  }
+}
+@keyframes mx-pill-recede {
+  0%   { opacity: 1; }
+  55%  { opacity: 0; }
+  100% { opacity: 0; visibility: hidden; pointer-events: none; }
+}
+@supports not (animation-timeline: scroll()) {
+  [data-mx-chrome~="pill"] .signal-back-to-archive { opacity: 0.85; }
+}
+
+/* ------------------------------------------------------------
+   00 · SHELF + TWO-COLUMN SURFACES (un-grid scatter beside copy)
+   ------------------------------------------------------------ */
+.mx-shelf {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 34px 40px;
+  align-items: flex-start;
+  justify-content: center;
+  margin: 54px 0;
+}
+.mx-shelf > * { flex: 0 1 auto; }
+.mx-shelf > *:nth-child(2n) { margin-top: 22px; }
+.mx-shelf > *:nth-child(3n) { margin-top: -8px; }
+
+.mx-twocol {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 36px;
+  align-items: start;
+  margin: 34px 0;
+}
+.mx-twocol__aside { display: grid; gap: 26px; justify-items: center; }
+
+/* ------------------------------------------------------------
+   01 · CARD CHASSIS + CHART CARD (self-made sparkline/bar SVG)
+   scenography defaults: tilt + washi tape + drop shadow (Law 1)
+   ------------------------------------------------------------ */
+.mx-card {
+  background: var(--mx-card);
+  color: var(--mx-card-ink);
+  border: 1px solid var(--mx-card-edge);
+  box-shadow: 0 18px 30px -16px var(--mx-shadow), 0 2px 0 rgba(0, 0, 0, 0.05);
+  padding: 12px 12px 14px;
+  width: min(340px, 100%);
+  position: relative;
+  margin: 0;
+  transform: rotate(var(--mx-tilt, -1deg));
+}
+.mx-card:nth-of-type(2n) { --mx-tilt: 1.6deg; }
+.mx-card::before {
+  content: "";
+  position: absolute;
+  top: -11px; left: 50%;
+  transform: translateX(-50%) rotate(-3.5deg);
+  width: 92px; height: 22px;
+  background: var(--mx-tape);
+  border-left: 1px dashed rgba(255, 255, 255, 0.5);
+  border-right: 1px dashed rgba(255, 255, 255, 0.5);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  pointer-events: none; z-index: 3;
+}
+.mx-card:nth-of-type(2n)::before { transform: translateX(-50%) rotate(4deg); }
+.mx-card__window {
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  background: var(--mx-card-window);
+  padding: 14px 14px 10px;
+  overflow: hidden;
+}
+.mx-card__caption {
+  font-family: var(--mx-t-hand);          /* aliases to Instrument Serif */
+  font-style: italic;
+  font-size: 1.18rem;
+  line-height: 1.2;
+  text-align: center;
+  margin-top: 10px;
+  color: var(--mx-card-ink);
+}
+.mx-card__credit {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  display: block;
+  margin-top: 6px;
+  opacity: 0.6;
+}
+
+/* chart card — the week-in-numbers sparkline/bars, drawn in SVG */
+.mx-card--chart { width: min(420px, 100%); }
+.mx-card--chart .mx-card__window { padding: 16px 16px 12px; }
+.mx-chart { display: block; width: 100%; }
+.mx-chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.mx-chartline { fill: none; stroke: var(--mx-accent); stroke-width: 2.4; }
+.mx-chart__bar { fill: var(--mx-accent); }
+.mx-chart__bar--2 { fill: var(--mx-accent-2); }
+.mx-chart__base { stroke: var(--mx-hair); stroke-width: 1; }
+.mx-chart__dot { fill: var(--mx-accent-2); }
+.mx-chart__label {
+  font-family: var(--mx-t-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  fill: var(--mx-ink-soft);
+}
+.mx-chart__cap {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mx-accent);
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* ------------------------------------------------------------
+   02 · TICKET — perforated stub, punch holes, hard shadow
+   (the week's Do-This-Week pick, as a physical object)
+   ------------------------------------------------------------ */
+.mx-ticket {
+  display: grid;
+  grid-template-columns: 1fr 96px;
+  width: min(360px, 100%);
+  background: var(--mx-card);
+  color: var(--mx-card-ink);
+  border: 1.5px solid var(--mx-card-ink);
+  box-shadow: 5px 5px 0 var(--mx-shadow);
+  transform: rotate(var(--mx-tilt, -1.5deg));
+  position: relative;
+  margin: 0;
+}
+.mx-ticket:nth-of-type(2n) { --mx-tilt: 1.6deg; }
+.mx-ticket::before, .mx-ticket::after {
+  content: "";
+  position: absolute;
+  right: 89px;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--mx-paper);
+  border: 1.5px solid var(--mx-card-ink);
+}
+.mx-ticket::before { top: -8px; }
+.mx-ticket::after  { bottom: -8px; }
+.mx-ticket__main { padding: 15px 16px 13px; }
+.mx-ticket__event {
+  display: block;
+  font-family: var(--mx-t-serif);          /* Newsreader */
+  font-weight: 600;
+  font-size: 1.4rem;
+  line-height: 1.05;
+  margin: 3px 0 8px;
+}
+.mx-ticket__meta {
+  display: block;
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mx-ink-soft);
+}
+.mx-ticket__row { display: flex; justify-content: space-between; gap: 10px; margin-top: 6px; }
+.mx-ticket__row > span:last-child { color: var(--mx-card-ink); }
+.mx-ticket__stub {
+  border-left: 2px dashed var(--mx-card-ink);
+  display: grid;
+  place-items: center;
+  padding: 10px 6px;
+  background: repeating-linear-gradient(45deg, transparent 0 6px, var(--mx-quote-bg) 6px 12px);
+}
+
+/* ------------------------------------------------------------
+   03 · STAMP / SEAL — currentColor roundel (the ticket stub)
+   ------------------------------------------------------------ */
+.mx-stamp {
+  display: inline-grid;
+  place-items: center;
+  width: 82px; height: 82px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  color: var(--mx-stamp-ink);              /* aliases to --signal */
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 8px;
+  line-height: 1.25;
+  transform: rotate(8deg);
+  position: relative;
+  background: transparent;
+}
+.mx-stamp::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  opacity: 0.85;
+}
+.mx-stamp b {
+  display: block;
+  font-family: var(--mx-t-serif);
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1;
+  margin: 3px 0 2px;
+}
+
+/* ------------------------------------------------------------
+   04 · QUOTE OBJECT — a named voice, never a floating italic
+   line. Attribution mandatory (Law 9).
+   ------------------------------------------------------------ */
+.mx-quote {
+  margin: 54px 0;
+  padding: 24px 24px 18px;
+  border-left: 5px solid var(--mx-accent);
+  background: var(--mx-quote-bg);
+  position: relative;
+}
+.mx-quote::before {
+  content: "\201C";
+  position: absolute;
+  top: -20px; left: 12px;
+  font-family: var(--mx-t-serif);
+  font-size: 4.6rem;
+  line-height: 1;
+  color: var(--mx-accent);
+  opacity: 0.85;
+  pointer-events: none;
+}
+.mx-quote blockquote {
+  font-family: var(--mx-t-serif);          /* Newsreader italic */
+  font-style: italic;
+  font-size: clamp(1.14rem, 2.4vw, 1.4rem);
+  line-height: 1.42;
+  color: var(--mx-ink);
+  margin: 0;
+  border: none;
+  padding: 0;
+}
+.mx-quote figcaption {
+  margin-top: 12px;
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mx-ink-soft);
+}
+.mx-quote figcaption b { color: var(--mx-accent); font-weight: 700; }
+
+/* ------------------------------------------------------------
+   05 · FIXTURES LEDGER — sport results as a mono ledger
+   (row form; the dl form of core/11-ledgers is unused here)
+   ------------------------------------------------------------ */
+.mx-ledger {
+  --mxl-rule: var(--mx-hair);
+  border-top: 3px solid var(--mx-ink);
+  border-bottom: 1px solid var(--mxl-rule);
+  margin: 52px 0;
+}
+.mx-ledger__caption {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--mx-accent);
+  padding: 10px 0 9px;
+  border-bottom: 1px solid var(--mxl-rule);
+}
+.mx-ledger__row {
+  display: grid;
+  grid-template-columns: 68px 1fr auto;
+  gap: 6px 14px;
+  padding: 11px 0 12px;
+  border-bottom: 1px dotted var(--mxl-rule);
+  align-items: baseline;
+}
+.mx-ledger__row:last-child { border-bottom: none; }
+.mx-ledger__date {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mx-ink-soft);
+}
+.mx-ledger__match { font-size: 0.98rem; line-height: 1.4; color: var(--mx-ink); }
+.mx-ledger__match b { font-weight: 700; }
+.mx-ledger__result {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mx-accent);
+  white-space: nowrap;
+}
+.mx-ledger__note {
+  grid-column: 2 / -1;
+  font-size: 0.86rem;
+  line-height: 1.4;
+  color: var(--mx-ink-soft);
+  margin-top: 2px;
+}
+
+/* ------------------------------------------------------------
+   06 · SCORECARD — standings on card stock (a table dressed as
+   an object). Cells wrap at word boundaries (never truncate).
+   ------------------------------------------------------------ */
+.mx-scorecard {
+  width: min(320px, 100%);
+  background: var(--mx-card);
+  color: var(--mx-card-ink);
+  border: 1.5px solid var(--mx-card-ink);
+  box-shadow: 5px 5px 0 var(--mx-shadow);
+  transform: rotate(var(--mx-tilt, 1.2deg));
+  padding: 14px 16px 12px;
+  margin: 0;
+}
+.mx-scorecard:nth-of-type(2n) { --mx-tilt: -1.4deg; }
+.mx-scorecard__title {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mx-accent);
+  border-bottom: 2px solid var(--mx-card-ink);
+  padding-bottom: 8px;
+  margin: 0 0 2px;
+}
+.mx-scorecard table { width: 100%; border-collapse: collapse; }
+.mx-scorecard td, .mx-scorecard th {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  text-align: left;
+  padding: 8px 16px 7px 0;
+  border-bottom: 1px dotted color-mix(in srgb, var(--mx-card-ink) 38%, transparent);
+  color: var(--mx-card-ink);
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+.mx-scorecard tr:last-child td { border-bottom: none; }
+.mx-scorecard__pos { width: 26px; font-weight: 700; color: var(--mx-ink-soft); }
+.mx-scorecard__gap { text-align: right; font-weight: 700; white-space: nowrap; }
+.mx-scorecard tr.is-lead td { font-weight: 700; }
+.mx-scorecard tr.is-lead .mx-scorecard__gap { color: var(--mx-accent); }
+
+/* ------------------------------------------------------------
+   07 · RADIO DIAL — the weekly's signature furniture object.
+   A tuning scale with a needle that sweeps to the band frequency
+   on entry (Law 5: Weekly = dial-needle sweep). Pure Transmission
+   (the radio conceit), CSS-drawn, aria-hidden.
+   ------------------------------------------------------------ */
+.mx-dial {
+  --mx-dial-h: 42px;
+  position: relative;
+  width: min(360px, 100%);
+  height: var(--mx-dial-h);
+  margin: 10px 0 6px;
+  border-bottom: 2px solid var(--mx-ink);
+  background:
+    repeating-linear-gradient(90deg,
+      var(--mx-hair) 0 1px, transparent 1px 12px);
+  background-position: 0 100%;
+  background-size: 100% 60%;
+  background-repeat: no-repeat;
+}
+.mx-dial::after {                          /* a few taller ticks */
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 78%;
+  background: repeating-linear-gradient(90deg,
+    var(--mx-ink) 0 1.5px, transparent 1.5px 60px);
+  opacity: 0.5;
+  pointer-events: none;
+}
+.mx-dial__needle {
+  position: absolute;
+  bottom: 0;
+  left: var(--mx-needle-x, 68%);
+  width: 2px;
+  height: 100%;
+  background: var(--mx-accent);
+  transform-origin: 50% 100%;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+.mx-dial__needle::before {
+  content: "";
+  position: absolute;
+  top: -5px; left: -3px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--mx-accent);
+}
+.mx-freq {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mx-accent);
+  display: block;
+  margin-top: 8px;
+}
+
+/* ------------------------------------------------------------
+   08 · MOTION — tier1 calm (rise / settle / row-tick / chart-
+   draw / dial-sweep). Extracted from core/14-motion.css. All
+   start-states are gated behind [data-mx-motion-ready] so JS-off
+   renders 100% of content; the controller (mx-motion.js) is the
+   only thing that stamps it. Motion attaches to furniture, never
+   running text (Law 5).
+   ------------------------------------------------------------ */
+[data-mx] {
+  --mx-m-rise: 20px;
+  --mx-m-dur: 640ms;
+  --mx-m-settle: 1deg;
+  --mx-m-ease: cubic-bezier(0.22, 0.9, 0.3, 1);
+  --mx-m-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --mx-m-stagger: 80ms;
+}
+@keyframes mx-rise-in {
+  from { opacity: 0; transform: translateY(var(--mx-m-rise)); }
+  to   { opacity: 1; }
+}
+@keyframes mx-settle-in {
+  from { opacity: 0; transform: translateY(var(--mx-m-rise))
+           rotate(calc(var(--mx-tilt, -1deg) + var(--mx-m-settle) * 3)); }
+  to   { opacity: 1; }
+}
+@keyframes mx-row-tick {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; }
+}
+@keyframes mx-chart-draw {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
+}
+@keyframes mx-dial-sweep { from { transform: rotate(-98deg); } }
+
+[data-mx-motion-ready] [data-motion="tier1"] .mx-rise:not(.is-in) {
+  opacity: 0; transform: translateY(var(--mx-m-rise));
+}
+[data-mx-motion-ready] [data-motion="tier1"] .mx-rise.is-in {
+  animation: mx-rise-in var(--mx-m-dur) var(--mx-m-ease) backwards;
+  animation-delay: min(calc(var(--mx-i, 0) * var(--mx-m-stagger)), 360ms);
+}
+[data-mx-motion-ready] [data-motion="tier1"] .mx-settle:not(.is-in) { opacity: 0; }
+[data-mx-motion-ready] [data-motion="tier1"] .mx-settle.is-in {
+  animation: mx-settle-in calc(var(--mx-m-dur) + 160ms) var(--mx-m-spring) backwards;
+  animation-delay: min(calc(var(--mx-i, 0) * var(--mx-m-stagger)), 360ms);
+}
+/* sequenced rows tick in --mx-i order (fixtures ledger, standings) */
+[data-mx-motion-ready] [data-motion="tier1"] .mx-seq:not(.is-in) .mx-row { opacity: 0; }
+[data-mx-motion-ready] [data-motion="tier1"] .mx-seq.is-in .mx-row {
+  animation: mx-row-tick 420ms var(--mx-m-ease) backwards;
+  animation-delay: min(calc(var(--mx-i, 0) * 70ms), 490ms);
+}
+/* sparkline / chart line draws on reveal */
+[data-mx-motion-ready] [data-motion="tier1"] .mx-chart.is-in .mx-chartline {
+  stroke-dasharray: 1;
+  animation: mx-chart-draw 1100ms var(--mx-m-ease) backwards;
+}
+/* signature: dial needle sweeps to its frequency on band entry */
+[data-mx-motion-ready] [data-motion="tier1"] .mx-sig-dial-sweep.is-in .mx-dial__needle {
+  animation: mx-dial-sweep 900ms var(--mx-m-spring) backwards;
+}
+/* hover settles — furniture acknowledges the hand */
+[data-motion="tier1"] .mx-card,
+[data-motion="tier1"] .mx-ticket,
+[data-motion="tier1"] .mx-scorecard { transition: transform 0.35s var(--mx-m-ease); }
+[data-motion="tier1"] .mx-card:hover { transform: rotate(0deg) scale(1.015); }
+[data-motion="tier1"] .mx-ticket:hover,
+[data-motion="tier1"] .mx-scorecard:hover { transform: rotate(0deg); }
+
+/* ------------------------------------------------------------
+   09 · RESPONSIVE — 390px stacking; Law-8 type floors held.
+   ------------------------------------------------------------ */
+@media (max-width: 720px) {
+  .mx-twocol { grid-template-columns: 1fr; }
+  .mx-twocol__aside { justify-items: center; }
+}
+@media (max-width: 560px) {
+  .mx-shelf { gap: 28px 20px; margin: 34px 0; }
+  .mx-shelf > *:nth-child(2n) { margin-top: 12px; }
+  .mx-card, .mx-card--chart { width: min(320px, 100%); }
+  .mx-ticket { width: 100%; grid-template-columns: 1fr 84px; }
+  .mx-ticket::before, .mx-ticket::after { right: 77px; }
+  .mx-scorecard { width: 100%; }
+  .mx-ledger__row { grid-template-columns: 56px 1fr; }
+  .mx-ledger__result { grid-column: 2; justify-self: start; margin-top: 2px; }
+  .mx-quote { padding: 20px 18px 16px; margin: 28px 0; }
+  .mx-dial { width: 100%; }
+  /* Law-8 floors reasserted at phone width */
+  .mx-ledger__caption, .mx-ledger__date, .mx-ledger__result,
+  .mx-ticket__meta, .mx-card__credit, .mx-scorecard__title,
+  .mx-scorecard td, .mx-scorecard th, .mx-quote figcaption,
+  .mx-freq, .mx-chart__cap { font-size: max(0.72rem, var(--mx-micro)); }
+}
+
+/* ------------------------------------------------------------
+   99 · REDUCED-MOTION GATE — kills every mx animation/transition
+   under [data-mx]; content is simply present, never held hidden.
+   The controller additionally no-ops when the preference is set.
+   ------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  [data-mx] *, [data-mx] *::before, [data-mx] *::after {
+    animation-duration: 0.001s !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001s !important;
+  }
+  [data-mx-motion-ready] [data-motion="tier1"] .mx-rise:not(.is-in),
+  [data-mx-motion-ready] [data-motion="tier1"] .mx-settle:not(.is-in) {
+    opacity: 1; transform: rotate(var(--mx-tilt, 0deg));
+  }
+  [data-mx-motion-ready] [data-motion="tier1"] .mx-seq:not(.is-in) .mx-row { opacity: 1; }
+}

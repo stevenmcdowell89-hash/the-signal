@@ -85,7 +85,7 @@ def compute_dates(date_str):
 
 # ── chrome generators ─────────────────────────────────────────────────────────
 
-def render_head(title):
+def render_head(title, body_attrs=""):
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -97,7 +97,7 @@ def render_head(title):
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <!-- INJECT:CSS -->
 </head>
-<body>
+<body{body_attrs}>
 <div class="issue">
 """
 
@@ -226,12 +226,28 @@ def main():
     dates = compute_dates(meta.get("date", ""))
     title = f"The Signal — Transmission №{str(issue_no).zfill(3)}" if issue_no else "The Signal — Weekly"
 
+    # WP-8 · furniture layer (opt-in). A weekly plan may set
+    #   "issue_meta": { … "design_system": "mx" }
+    # to load the core-furniture add-on so the issue reaches its Law-2 density
+    # budget (fixtures ledger, ticket, standings card, quote-objects, chart
+    # card). The IDENTITY IS UNTOUCHED (Law 11): same masthead, same 800px
+    # chassis, same three faces — the furniture arrives dressed through the
+    # transmission alias. Absent the flag the weekly is byte-identical to the
+    # pre-WP-8 generator (the legacy golden path). data-motion="tier1" is the
+    # calm weekly tier (rise/settle/ticks/dial-sweep via mx-motion.js).
+    mx = str(meta.get("design_system", "")).lower() == "mx"
+    # data-mx-chrome="pill" arms the CSS scroll-timeline that fades the fixed
+    # back-pill out past the masthead (Law 10: fixed chrome never overlaps
+    # content at depth). See weekly-mx/10-mx-weekly.css §00a.
+    body_attrs = (' data-skin="transmission" data-mx data-motion="tier1"'
+                  ' data-format="weekly" data-mx-chrome="pill"') if mx else ""
+
     # present bands: from the plan's chapters[] (each chapter_id is a band_id)
     present = {c["chapter_id"]: c for c in plan.get("chapters", [])}
     bands_def = skeleton["bands"]
 
     # --- assemble body ---
-    parts = [render_head(title)]
+    parts = [render_head(title, body_attrs)]
 
     # cover — stations built from nav bands present, in skeleton order
     stations = []
@@ -307,7 +323,8 @@ def main():
     back_path = skill_dir / "assets/template-parts/back-link.html"
     if back_path.exists() and "<!-- the-signal:back -->" not in body:
         back = back_path.read_text().rstrip() + "\n"
-        body = body.replace("<body>\n", "<body>\n" + back, 1)
+        # body tag may carry mx attributes (WP-8) — match the tag, keep attrs
+        body = re.sub(r"(<body\b[^>]*>\n)", lambda m: m.group(1) + back, body, count=1)
 
     # --- weekly-format gate: ban special .sp-* vocabulary ---
     _weekly_sp_gate(body)
@@ -316,8 +333,24 @@ def main():
     css_files = sorted(css_dir.glob("*.css"))
     if not css_files:
         die(f"No weekly CSS found in {css_dir}")
+    # WP-8: on the furniture layer, append the transmission alias (maps --mx-*
+    # onto the weekly tokens) then the curated furniture add-on. Order matters
+    # — the alias must precede the components so tokens resolve. Legacy weeklies
+    # bundle ONLY weekly/*.css (identical to before).
+    if mx:
+        alias = skill_dir / "assets/css/skins/skin-transmission.css"
+        if alias.exists():
+            css_files = css_files + [alias]
+        css_files = css_files + sorted((skill_dir / "assets/css/weekly-mx").glob("*.css"))
     css_content = "\n".join(f.read_text() for f in css_files)
+
     js_content = js_file.read_text() if js_file.exists() else ""
+    if mx:
+        # add the motion controller ALONGSIDE the existing image-error fallback
+        # (never replacing it — the weekly's JS-off paper contract is intact).
+        motion_js = skill_dir / "assets/mx-motion.js"
+        if motion_js.exists():
+            js_content = js_content + "\n" + motion_js.read_text()
 
     body = body.replace("<!-- INJECT:CSS -->", f"<style>\n{css_content}\n</style>", 1)
     body = body.replace("<!-- INJECT:JS -->", f"<script>\n{js_content}\n</script>", 1)
@@ -341,7 +374,8 @@ def main():
     print(f"=== weekly stitch OK ===")
     print(f"  Bands rendered: {len(band_order)} (+cover)")
     print(f"  Movements:      {', '.join(mv['id'] for mv in skeleton['movements'])}")
-    print(f"  CSS:            {len(css_content.encode('utf-8'))/1024:.1f} KB ({len(css_files)} file)")
+    print(f"  Furniture:      {'mx (design_system=mx)' if mx else 'legacy (none)'}")
+    print(f"  CSS:            {len(css_content.encode('utf-8'))/1024:.1f} KB ({len(css_files)} file[s])")
     print(f"  JS:             {len(js_content.encode('utf-8'))/1024:.1f} KB")
     print(f"  Output:         {out} ({kb:.1f} KB)")
 

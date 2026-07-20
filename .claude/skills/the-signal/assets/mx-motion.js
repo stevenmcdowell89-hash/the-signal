@@ -80,6 +80,10 @@
         $$('.mx-stamp').forEach(function (el) { stagger(el); watch(el, 'mx-slam'); });
       }
       $$('.mx-sig-stamp-slam').forEach(function (el) { watch(el, 'mx-slam'); });
+      /* weekly signature: the radio dial's needle sweeps on band entry
+         (the CSS keys the sweep off .mx-sig-dial-sweep.is-in). Additive —
+         no other tier uses this hook. */
+      $$('.mx-sig-dial-sweep').forEach(function (el) { watch(el); });
 
       /* sequences: rows tick in order */
       [['.mx-ranked', '.mx-ranked__entry'],

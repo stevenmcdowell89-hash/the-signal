@@ -19,7 +19,31 @@
     "long_read": "the single Long Read section carries data-role='long-read'",
     "desk": "The Desk section carries data-role='desk'; each column carries data-desk-column",
     "release_radar": "the Release Radar rail inside Screen & Sound carries data-role='release-radar' (never its own band)",
-    "station": "each cover tuner coverline carries data-station (these are the reader-facing navigator entries)"
+    "station": "each cover tuner coverline carries data-station (these are the reader-facing navigator entries)",
+    "mx_event": "on the furniture layer (design_system='mx') every designed visual event carries data-mx-event on its outermost element — one of the Law-2 census types: figure|ephemera|ledger|statband|quote|plate|chart|marquee|cheatsheet. tools/measure-issue.mjs prefers these markers; the weekly's captioned photo plates carry data-mx-event='figure' so they still count."
+  },
+
+  "furniture_layer": {
+    "note": "WP-8 · the weekly IS upgraded (spec Law 11): it reaches its Law-2 density budget (0.8-1.0 events/screen, no 3+ dead-screen run) by distributing CORE FURNITURE across bands via the transmission alias, without touching the identity (same masthead, 800px chassis, palette, three faces, radio conceit). ACTIVATION: set issue_meta.design_system='mx' — the stitcher then loads skins/skin-transmission.css (the --mx-* alias) + assets/css/weekly-mx/*.css and mx-motion.js (data-motion='tier1'), and emits <body data-skin='transmission' data-mx data-motion='tier1' data-format='weekly'>. Absent the flag the weekly is byte-identical to the pre-WP-8 generator (the legacy golden path). The writer fills these component interiors inside the relevant band's content file; the stitcher still owns ALL chrome. Reference rhythm: docs/mockups/unification-furniture-kit-mockup.html spread 2. DISTRIBUTE — never cluster all furniture in one band (that reintroduces the dead-run failure at the other width). Motion attaches to furniture only, never running text; JS-off renders 100% of content.",
+    "components": {
+      "fixtures_ledger": ".mx-ledger (data-mx-event='ledger') — the week's sport results/fixtures as mono ledger rows (.mx-ledger__row: date/match/result[/note]). Lives in The Touchline.",
+      "ticket": ".mx-ticket (data-mx-event='ephemera') — a physical ticket-stub object for the week's single Do-This-Week pick (perforated stub + .mx-stamp seal). Lives in Do This Week (and/or a marquee result in The Touchline).",
+      "standings_card": ".mx-scorecard (data-mx-event='ledger') — a compact standings/table dressed as card stock (tilt + hard shadow), cells wrap (never truncate). Lives in The Touchline.",
+      "quote_objects": ".mx-quote (data-mx-event='quote') — the week's named verbatim voices lifted out of inline prose into objects (blockquote + attributed figcaption). Law-9 weekly floor is >=4 distinct named external voices; each quote max 2 renderings. Distribute across The Touchline / Screen & Sound / the Long Read.",
+      "chart_card": ".mx-card--chart (data-mx-event='chart') — one self-made sparkline/bar SVG (.mx-chart .mx-chartline, pathLength='1' to draw in) for The Week in Numbers.",
+      "dial_signature": ".mx-dial inside a .mx-sig-dial-sweep wrapper — the weekly's Law-5 signature moment: the radio dial's needle sweeps to the band frequency on entry. Optional but recommended in The Touchline (the radio conceit). No needle dial elsewhere in the weekly."
+    },
+    "band_slots": {
+      "week_in_numbers": ["chart_card"],
+      "touchline": ["dial_signature", "fixtures_ledger", "ticket", "standings_card", "quote_objects"],
+      "screen_sound": ["quote_objects"],
+      "long_read": ["quote_objects (a pulled voice or a dated mini-ledger to break the long prose run)"],
+      "do_this_week": ["ticket"]
+    },
+    "budget": {
+      "note": "The furniture add-on is a CURATED SUBSET of the core (only the deployed components) to hold the weekly bundle lean (Law 11: weekly ~30KB). Measured injected CSS with the layer on is ~46KB (weekly 00-transmission ~25KB + alias ~2KB + weekly-mx ~18KB) — a justified overage over the ~40KB target versus bundling the full core (~77KB).",
+      "css_target_kb": 40
+    }
   },
 
   "movements": [

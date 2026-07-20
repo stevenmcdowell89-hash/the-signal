@@ -1,0 +1,2662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Signal — Transmission №017</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================================
+   THE SIGNAL — "TRANSMISSION" WEEKLY DESIGN SYSTEM
+   ----------------------------------------------------------------------------
+   The single token layer + every component the weekly issue uses. This is the
+   ONLY stylesheet a weekly loads — it is fully self-contained. No @imports, no
+   per-section palette tokens, no holiday/special (.sp-* / .hol-*) rules.
+
+   PALETTE (light / default)
+     --paper   #F5F0E6  warm paper ground        --signal #FF3B2F  vermilion accent
+     --paper-2 #EFE8D9  second paper stock       --blue   #243F5C  signal blue
+     --ink     #16151A  primary body ink         --muted  #8A8578  pencil grey
+     --ink-2   #2C2A30  secondary body ink       --hair   #DDD5C3  hairline
+
+   FONTS (loaded via <link> in the head template — NOT imported here)
+     Instrument Serif · Newsreader · JetBrains Mono
+
+   DARK VARIANT
+     A warm-night mode is appended at the bottom via
+     @media (prefers-color-scheme: dark). It overrides ONLY the token values
+     (warm charcoal ground, warm off-white text, warm-brown hairlines, lightened
+     accents) plus the desk tone behind the page — "night reading, still paper."
+     Every component reads through the tokens, so no component rules are restated.
+   ============================================================================ */
+
+  :root{
+    --paper:#F5F0E6;
+    --paper-2:#EFE8D9;
+    --ink:#16151A;
+    --ink-2:#2C2A30;
+    --signal:#FF3B2F;
+    --blue:#243F5C;
+    --muted:#8A8578;
+    --hair:#DDD5C3;
+    --measure:64ch;
+  }
+
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:var(--muted);
+    color:var(--ink);
+    font-family:"Newsreader",Georgia,serif;
+    font-size:19px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+
+  /* The "printed object" — a tablet-portrait page floating on a desk tone */
+  .issue{
+    max-width:800px;
+    margin:0 auto;
+    background:var(--paper);
+    box-shadow:0 1px 0 rgba(0,0,0,.04), 0 24px 60px -24px rgba(0,0,0,.45);
+    overflow:hidden;
+  }
+
+  /* ---------- shared type ---------- */
+  .mono{
+    font-family:"JetBrains Mono",ui-monospace,monospace;
+    text-transform:uppercase;
+    letter-spacing:.16em;
+    font-size:11px;
+    font-weight:500;
+    color:var(--muted);
+  }
+  .serif{font-family:"Instrument Serif",Georgia,serif;font-weight:400;}
+
+  /* ---------- the waveform / frequency rule ---------- */
+  .wave{
+    height:26px;
+    width:100%;
+    color:var(--signal);
+    display:block;
+  }
+  .wave svg{display:block;width:100%;height:100%;}
+  .wave--blue{color:var(--blue);}
+  .wave--ink{color:var(--ink);}
+
+  /* thin frequency tick rule (repeating gradient) */
+  .tickrule{
+    height:12px;
+    background-image:repeating-linear-gradient(90deg,
+      var(--ink) 0, var(--ink) 1px,
+      transparent 1px, transparent 7px);
+    opacity:.55;
+  }
+  .hair{height:1px;background:var(--hair);border:0;margin:0;}
+
+  /* ================= COVER ================= */
+  .cover{
+    padding:26px 40px 30px;
+    position:relative;
+  }
+  .cover__top{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    padding-bottom:12px;
+  }
+  .cover__top .mono{color:var(--ink);opacity:.75;}
+  .cover__top .price{color:var(--signal);}
+
+  .dataline{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:12px;
+    padding:14px 0 6px;
+  }
+  .dataline .dot{color:var(--signal);}
+
+  .masthead{
+    font-family:"Instrument Serif",Georgia,serif;
+    font-weight:400;
+    line-height:.86;
+    letter-spacing:-.02em;
+    font-size:118px;
+    margin:2px 0 0;
+    color:var(--ink);
+  }
+  .masthead em{
+    font-style:italic;
+    color:var(--signal);
+  }
+  .masthead__sub{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-top:8px;
+    border-bottom:2px solid var(--ink);
+    padding-bottom:12px;
+  }
+  .masthead__sub .tag{
+    font-family:"Newsreader",serif;
+    font-style:italic;
+    font-size:20px;
+    color:var(--blue);
+  }
+
+  /* lead + tuner two-column area */
+  .cover__body{
+    display:grid;
+    grid-template-columns:1.55fr .95fr;
+    gap:34px;
+    margin-top:26px;
+  }
+  .lead__eyebrow{margin-bottom:14px;color:var(--signal);}
+  .lead__head{
+    font-family:"Instrument Serif",Georgia,serif;
+    font-weight:400;
+    font-size:47px;
+    line-height:1.02;
+    letter-spacing:-.01em;
+    margin:0;
+  }
+  .lead__head .hl{color:var(--signal);font-style:italic;}
+  .lead__stand{
+    font-style:italic;
+    color:var(--blue);
+    font-size:20px;
+    line-height:1.35;
+    margin-top:18px;
+    max-width:34ch;
+  }
+
+  /* tuner / station list of coverlines */
+  .tuner{
+    border-top:2px solid var(--ink);
+    padding-top:10px;
+  }
+  .tuner__label{
+    display:flex;justify-content:space-between;align-items:baseline;
+    margin-bottom:6px;
+  }
+  .station{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:12px;
+    align-items:baseline;
+    padding:9px 0;
+    border-bottom:1px solid var(--hair);
+  }
+  .station:last-child{border-bottom:0;}
+  .station .freq{
+    font-family:"JetBrains Mono",monospace;
+    font-size:11px;
+    letter-spacing:.06em;
+    color:var(--muted);
+    padding-top:3px;
+  }
+  .station .name{
+    font-family:"Newsreader",serif;
+    font-size:18px;
+    line-height:1.24;
+    color:var(--ink);
+  }
+  .station .name b{font-weight:600;}
+  .station.on .freq{color:var(--signal);}
+  .station.on .name{color:var(--blue);}
+
+  /* oversized folio */
+  .folio{
+    position:absolute;
+    right:34px;
+    bottom:14px;
+    font-family:"Instrument Serif",Georgia,serif;
+    font-size:150px;
+    line-height:.7;
+    color:var(--signal);
+    opacity:.12;
+    letter-spacing:-.04em;
+    pointer-events:none;
+  }
+
+  /* ================= MOVEMENT DIVIDER ================= */
+  .movement{
+    padding:56px 40px 8px;
+  }
+  .movement__rule{
+    display:flex;
+    align-items:baseline;
+    gap:16px;
+    border-top:2px solid var(--ink);
+    padding-top:12px;
+  }
+  .movement__no{
+    font-family:"Instrument Serif",serif;
+    font-size:40px;
+    line-height:.8;
+    color:var(--signal);
+  }
+  .movement__name{
+    font-family:"Instrument Serif",serif;
+    font-size:34px;
+    line-height:.9;
+    color:var(--ink);
+  }
+  .movement__meta{margin-left:auto;color:var(--muted);}
+
+  /* ================= SECTION SCAFFOLD ================= */
+  section{padding:0 40px;}
+  .band{
+    padding:52px 40px 0;
+  }
+  .bandhead{
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+    margin-bottom:6px;
+  }
+  .bandhead .code{color:var(--signal);}
+  .bandhead .code b{color:var(--ink);font-weight:700;}
+  .bandhead .runtime{margin-left:auto;color:var(--muted);}
+  /* accent tick — the one section marker */
+  .bandhead::before{
+    content:"";
+    width:9px;height:9px;
+    background:var(--signal);
+    display:inline-block;
+    align-self:center;
+    flex:0 0 auto;
+    transform:translateY(-1px);
+  }
+
+  /* ================= THE LETTER ================= */
+  .letter{max-width:var(--measure);margin:0 auto;padding-top:22px;padding-bottom:8px;}
+  .letter h2{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:34px;line-height:1.05;margin:0 0 4px;
+  }
+  .letter .kicker{color:var(--blue);font-style:italic;font-size:19px;margin-bottom:22px;}
+  .letter p{margin:0 0 18px;}
+  .letter p.first{text-indent:0;}
+  .letter p.first::first-letter{
+    font-family:"Instrument Serif",serif;
+    float:left;
+    font-size:82px;
+    line-height:.72;
+    padding:8px 12px 0 0;
+    color:var(--signal);
+  }
+  .letter .sig{
+    font-family:"Instrument Serif",serif;
+    font-style:italic;
+    font-size:26px;
+    color:var(--ink);
+    margin-top:26px;
+  }
+  .letter .sigline{margin-top:2px;}
+
+  /* ================= THE WEEK IN NUMBERS (ledger data panel) ================= */
+  .figures{max-width:var(--measure);margin:14px auto 0;}
+  .figures-frame{
+    border:1.5px solid var(--ink);
+    position:relative;
+    background:var(--paper-2);
+  }
+  .figures-frame::after{
+    content:""; position:absolute; inset:4px;
+    border:.75px solid var(--signal); opacity:.4; pointer-events:none;
+  }
+  .fig-caption{
+    display:flex;justify-content:space-between;align-items:baseline;
+    font-family:"JetBrains Mono",monospace;
+    text-transform:uppercase; letter-spacing:.16em;
+    font-size:11px; color:var(--muted); font-weight:500;
+    padding:12px 0 10px;
+    border-bottom:1px solid var(--hair);
+    margin:0 20px;
+  }
+  .fig-caption b{color:var(--signal);font-weight:700;}
+  .fig-row{
+    display:grid;
+    grid-template-columns:1fr auto;
+    align-items:baseline;
+    gap:16px;
+    padding:16px 20px;
+    border-bottom:1px solid var(--hair);
+  }
+  .fig-row:last-of-type{border-bottom:0;}
+  .fig-label .k{
+    font-family:"JetBrains Mono",monospace;
+    text-transform:uppercase; letter-spacing:.1em;
+    font-size:12px; color:var(--blue); font-weight:500;
+    display:block;
+  }
+  .fig-label .d{
+    font-style:italic; color:var(--muted); font-size:15px;
+  }
+  .fig-val{
+    font-family:"Instrument Serif",serif;
+    font-size:52px;
+    line-height:.82;
+    text-align:right;
+    letter-spacing:-.01em;
+    white-space:nowrap;
+    color:var(--ink);
+  }
+  .fig-val small{
+    font-size:20px;
+    font-style:italic;
+    font-family:"Newsreader",serif;
+    color:var(--muted);
+    margin-left:3px;
+  }
+  .fig-val .win{color:var(--signal);}
+  .fig-foot{
+    display:flex;justify-content:space-between;align-items:baseline;
+    font-family:"JetBrains Mono",monospace;
+    text-transform:uppercase;letter-spacing:.12em;
+    color:var(--muted);
+    font-size:10.5px;
+    padding:12px 20px 14px;
+    border-top:1px solid var(--hair);
+  }
+
+  /* ================= CAUGHT UP ================= */
+  .caughtup{padding-top:20px;}
+  .digest{
+    max-width:var(--measure);
+    margin:14px auto 0;
+    list-style:none;
+    padding:0;
+    counter-reset:d;
+  }
+  .digest li{
+    counter-increment:d;
+    display:grid;
+    grid-template-columns:38px 1fr;
+    gap:16px;
+    align-items:baseline;
+    padding:13px 0;
+    border-bottom:1px solid var(--hair);
+  }
+  .digest li:first-child{border-top:1px solid var(--ink);}
+  .digest li::before{
+    content:counter(d,decimal-leading-zero);
+    font-family:"JetBrains Mono",monospace;
+    font-size:12px;
+    color:var(--signal);
+    letter-spacing:.05em;
+    padding-top:4px;
+  }
+  .digest li p{margin:0;font-size:18px;line-height:1.4;}
+  .digest li b{font-weight:600;color:var(--blue);}
+
+  /* ================= THE LONG READ ================= */
+  .longread{padding-top:24px;padding-bottom:8px;}
+  .lr-title{
+    max-width:var(--measure);
+    margin:6px auto 0;
+  }
+  .lr-title h2{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:58px;line-height:1.0;letter-spacing:-.015em;
+    margin:14px 0 0;
+  }
+  .lr-title h2 em{font-style:italic;color:var(--signal);}
+  .lr-title .stand{
+    font-style:italic;color:var(--blue);
+    font-size:23px;line-height:1.34;
+    margin:20px 0 0;max-width:44ch;
+  }
+  .lr-title .byline{
+    margin-top:20px;color:var(--muted);
+  }
+  .lr-body{
+    max-width:var(--measure);
+    margin:0 auto;
+    font-size:20px;
+    line-height:1.72;
+  }
+  .lr-body p{margin:0 0 22px;}
+  .lr-body p.first{text-indent:0;}
+  .lr-body p.first::first-letter{
+    font-family:"Instrument Serif",serif;
+    float:left;
+    font-size:96px;
+    line-height:.68;
+    padding:10px 14px 0 0;
+    color:var(--signal);
+  }
+  .lr-body p + p{text-indent:1.4em;}
+  .lr-body p.first, .lr-body p.noindent{text-indent:0;}
+
+  .pullquote{
+    margin:34px 0;
+    padding:6px 0 6px 26px;
+    border-left:3px solid var(--signal);
+    font-family:"Instrument Serif",serif;
+    font-size:34px;
+    line-height:1.14;
+    color:var(--blue);
+    text-indent:0;
+  }
+  .pullquote .attr{
+    display:block;
+    font-family:"JetBrains Mono",monospace;
+    text-transform:uppercase;letter-spacing:.14em;
+    font-size:11px;color:var(--muted);
+    margin-top:14px;
+  }
+
+  /* captioned image — real <img> or the drawn placeholder box */
+  .plate-img{
+    max-width:var(--measure);
+    margin:30px auto;
+  }
+  .plate-img img{
+    display:block;
+    width:100%;
+    height:auto;
+    border:1px solid var(--hair);
+    background:var(--paper-2);
+  }
+  /* a wider "plate" for a section-opening lead image */
+  .plate-img.lead{ margin:8px auto 26px; }
+  .plate-box{
+    aspect-ratio:16/9;
+    border:1px solid var(--hair);
+    background:
+      repeating-linear-gradient(135deg, transparent 0, transparent 13px, rgba(36,63,92,.06) 13px, rgba(36,63,92,.06) 14px),
+      var(--paper-2);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+  }
+  .plate-box::after{
+    content:"";
+    position:absolute;inset:8px;
+    border:1px dashed var(--hair);
+    pointer-events:none;
+  }
+  .plate-box .glyph{
+    font-family:"JetBrains Mono",monospace;
+    text-transform:uppercase;letter-spacing:.2em;
+    font-size:11px;color:var(--muted);
+  }
+  .plate-cap{
+    display:flex;gap:12px;align-items:baseline;
+    margin-top:10px;
+  }
+  .plate-cap .fig{color:var(--signal);flex:0 0 auto;}
+  .plate-cap .txt{font-style:italic;color:var(--muted);font-size:15px;line-height:1.35;}
+  .plate-cap .credit{
+    font-family:"JetBrains Mono",monospace;
+    text-transform:uppercase;letter-spacing:.1em;
+    font-size:10px;color:var(--muted);font-style:normal;
+    display:block;margin-top:4px;
+  }
+
+  /* case-against aside — a warm planner note, ground-disciplined */
+  .aside-note{
+    max-width:var(--measure);
+    margin:34px auto;
+    background:var(--paper-2);
+    border-top:2px solid var(--ink);
+    border-bottom:1px solid var(--hair);
+    padding:18px 22px 20px;
+  }
+  .aside-note .lbl{
+    display:flex;gap:10px;align-items:baseline;
+    color:var(--signal);margin-bottom:10px;
+  }
+  .aside-note .lbl b{color:var(--ink);}
+  .aside-note h4{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:25px;line-height:1.08;margin:0 0 8px;
+  }
+  .aside-note p{margin:0;font-size:17px;line-height:1.5;color:var(--ink-2);}
+
+  /* ================= THE ROUNDS — compact rhythm ================= */
+  .round{padding-top:20px;padding-bottom:4px;}
+  .round .lead{
+    max-width:var(--measure);
+    margin:12px auto 22px;
+    font-size:19px;
+  }
+  .round .lead .drop{color:var(--signal);font-weight:600;}
+
+  /* two-column score grid (touchline) */
+  .scores{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:1px;
+    background:var(--hair);
+    border:1px solid var(--hair);
+    max-width:var(--measure);
+    margin:0 auto;
+  }
+  .score{
+    background:var(--paper);
+    padding:20px 22px 22px;
+  }
+  .score.wide{grid-column:1 / -1;}
+  .score .tag{color:var(--signal);margin-bottom:10px;display:block;}
+  .score h3{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:27px;line-height:1.04;margin:0 0 8px;
+  }
+  .score.wide h3{font-size:33px;}
+  .score p{margin:0;font-size:17px;line-height:1.42;color:var(--ink-2);}
+  .score .num{color:var(--blue);font-weight:600;}
+
+  /* items list — brisk scannable rows for rounds */
+  .items{
+    max-width:var(--measure);
+    margin:6px auto 0;
+    list-style:none;padding:0;
+  }
+  .items li{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:16px;
+    align-items:baseline;
+    padding:14px 0;
+    border-bottom:1px solid var(--hair);
+  }
+  .items li:first-child{border-top:1px solid var(--ink);}
+  .items .freq{
+    font-family:"JetBrains Mono",monospace;
+    font-size:11px;letter-spacing:.06em;
+    color:var(--signal);padding-top:5px;
+    white-space:nowrap;
+  }
+  .items h3{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:24px;line-height:1.06;margin:0 0 4px;
+  }
+  .items p{margin:0;font-size:16.5px;line-height:1.44;color:var(--ink-2);}
+  .items p b{color:var(--blue);font-weight:600;}
+
+  /* section with a side rail (screen & sound / bookmark) */
+  .with-rail{
+    max-width:var(--measure);
+    margin:6px auto 0;
+    display:grid;
+    grid-template-columns:1.5fr .9fr;
+    gap:30px;
+    align-items:start;
+  }
+  .rail{
+    border-top:2px solid var(--ink);
+    padding-top:10px;
+  }
+  .rail__label{
+    display:flex;justify-content:space-between;align-items:baseline;
+    margin-bottom:10px;
+  }
+  .rail__label .t{color:var(--signal);}
+  .rail-item{
+    padding:10px 0;
+    border-bottom:1px solid var(--hair);
+  }
+  .rail-item:last-child{border-bottom:0;}
+  .rail-item .when{
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;letter-spacing:.1em;
+    color:var(--blue);text-transform:uppercase;
+    display:block;margin-bottom:3px;
+  }
+  .rail-item .what{
+    font-family:"Newsreader",serif;
+    font-size:17px;line-height:1.24;
+  }
+  .rail-item .what b{font-weight:600;}
+  .rail-item .what i{font-style:italic;color:var(--muted);font-size:14.5px;display:block;margin-top:1px;}
+
+  /* bookmark picks */
+  .picks{list-style:none;padding:0;margin:6px 0 0;}
+  .picks li{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:16px;
+    padding:14px 0;
+    border-bottom:1px solid var(--hair);
+    align-items:baseline;
+  }
+  .picks li:first-child{border-top:1px solid var(--ink);}
+  .picks .spine{
+    width:8px;align-self:stretch;
+    background:var(--blue);
+    min-height:52px;
+  }
+  .picks li:nth-child(2) .spine{background:var(--signal);}
+  .picks li:nth-child(3) .spine{background:var(--muted);}
+  .picks h3{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:23px;line-height:1.05;margin:0 0 2px;
+  }
+  .picks .meta{color:var(--muted);font-style:italic;font-size:14.5px;margin-bottom:5px;}
+  .picks p{margin:0;font-size:16.5px;line-height:1.42;color:var(--ink-2);}
+
+  /* ================= THE DESK — service columns w/ planner pins ================= */
+  .desk{
+    max-width:var(--measure);
+    margin:8px auto 0;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:30px;
+  }
+  .deskcol h3{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:27px;line-height:1.04;margin:0 0 4px;
+    border-top:2px solid var(--ink);padding-top:12px;
+  }
+  .deskcol .sub{color:var(--signal);margin-bottom:12px;display:block;}
+  .deskcol p{margin:0 0 14px;font-size:17px;line-height:1.5;}
+  .deskcol p b{color:var(--blue);font-weight:600;}
+
+  /* the shared planner-note device: "Do This Week" pin */
+  .pin{
+    background:var(--paper-2);
+    border-left:3px solid var(--signal);
+    padding:13px 16px 15px;
+    margin-top:6px;
+  }
+  .pin .pinlbl{
+    display:flex;gap:8px;align-items:center;
+    color:var(--signal);margin-bottom:6px;
+  }
+  .pin .pinlbl::before{
+    content:"";width:7px;height:7px;background:var(--signal);
+    display:inline-block;transform:rotate(45deg);
+  }
+  .pin .pinlbl b{color:var(--ink);}
+  .pin .act{
+    font-family:"Newsreader",serif;
+    font-size:18px;line-height:1.32;font-weight:600;
+    color:var(--ink);margin:0 0 5px;
+  }
+  .pin .why{margin:0;font-size:15px;line-height:1.4;font-style:italic;color:var(--muted);}
+
+  /* ================= THE THREADS ================= */
+  .threads{max-width:var(--measure);margin:14px auto 0;}
+  .thread{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:18px;
+    padding:16px 0;
+    border-bottom:1px solid var(--hair);
+    align-items:baseline;
+  }
+  .thread:first-child{border-top:1px solid var(--ink);}
+  .thread .ep{
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;letter-spacing:.08em;
+    color:var(--signal);text-transform:uppercase;
+    padding-top:5px;white-space:nowrap;
+  }
+  .thread h3{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:24px;line-height:1.06;margin:0 0 4px;
+  }
+  .thread .prev{
+    font-style:italic;color:var(--muted);font-size:15px;
+    margin:0 0 6px;
+  }
+  .thread p{margin:0;font-size:16.5px;line-height:1.44;color:var(--ink-2);}
+  .thread p b{color:var(--blue);font-weight:600;}
+
+  /* ================= RABBIT HOLE ================= */
+  .rabbit{
+    max-width:var(--measure);
+    margin:16px auto 0;
+    background:var(--paper-2);
+    border:1.5px solid var(--ink);
+    position:relative;
+    padding:26px 28px 28px;
+  }
+  .rabbit::after{
+    content:"";position:absolute;inset:5px;
+    border:.75px solid var(--signal);opacity:.35;pointer-events:none;
+  }
+  .rabbit .lbl{color:var(--signal);margin-bottom:14px;display:block;}
+  .rabbit .chain{
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    gap:16px;
+    align-items:center;
+    margin-bottom:18px;
+  }
+  .rabbit .node .cap{color:var(--muted);display:block;margin-bottom:4px;}
+  .rabbit .node .nm{
+    font-family:"Instrument Serif",serif;font-size:26px;line-height:1.02;
+  }
+  .rabbit .arrow{
+    font-family:"Instrument Serif",serif;font-style:italic;
+    color:var(--signal);font-size:30px;line-height:1;
+  }
+  .rabbit p{margin:0;font-size:18px;line-height:1.56;}
+  .rabbit p em{font-style:italic;color:var(--blue);}
+
+  /* ================= ON THE RADAR ================= */
+  .radar{max-width:var(--measure);margin:14px auto 0;list-style:none;padding:0;}
+  .radar li{
+    display:grid;
+    grid-template-columns:120px 1fr;
+    gap:18px;
+    padding:13px 0;
+    border-bottom:1px solid var(--hair);
+    align-items:baseline;
+  }
+  .radar li:first-child{border-top:1px solid var(--ink);}
+  .radar .date{
+    font-family:"JetBrains Mono",monospace;
+    font-size:11px;letter-spacing:.06em;color:var(--signal);
+  }
+  .radar .ev{font-size:17px;line-height:1.34;}
+  .radar .ev b{color:var(--blue);font-weight:600;}
+
+  /* closing "do this week" — the strongest single pin */
+  .closepin{
+    max-width:var(--measure);
+    margin:20px auto 0;
+    background:var(--paper-2);
+    border-top:3px solid var(--signal);
+    border-bottom:1px solid var(--hair);
+    padding:22px 26px 24px;
+  }
+  .closepin .pinlbl{display:flex;gap:10px;align-items:baseline;color:var(--signal);margin-bottom:10px;}
+  .closepin .pinlbl b{color:var(--ink);}
+  .closepin .act{
+    font-family:"Instrument Serif",serif;font-size:32px;line-height:1.08;
+    margin:0 0 8px;color:var(--ink);
+  }
+  .closepin .why{margin:0;font-size:17px;line-height:1.46;font-style:italic;color:var(--muted);}
+
+  /* ================= COLOPHON ================= */
+  .endnumbers{
+    max-width:var(--measure);
+    margin:20px auto 0;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:1px;background:var(--hair);border:1px solid var(--hair);
+  }
+  .endnumbers .cell{
+    background:var(--paper);padding:16px 18px;
+  }
+  .endnumbers .cell .k{color:var(--muted);display:block;margin-bottom:4px;}
+  .endnumbers .cell .v{
+    font-family:"Instrument Serif",serif;font-size:30px;line-height:1;color:var(--ink);
+  }
+  .endnumbers .cell .v em{color:var(--signal);font-style:italic;}
+
+  .colophon{
+    padding:26px 40px 20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-top:2px solid var(--ink);
+    margin-top:32px;
+  }
+  .colophon .serif{font-size:30px;}
+  .colophon .serif em{font-style:italic;color:var(--signal);}
+  .signoff-line{
+    padding:6px 40px 44px;
+    text-align:center;
+  }
+  .signoff-line .big{
+    font-family:"Instrument Serif",serif;
+    font-size:30px;line-height:1.16;
+    color:var(--ink);
+    max-width:30ch;margin:14px auto 0;
+  }
+  .signoff-line .big em{font-style:italic;color:var(--signal);}
+  .signoff-line .stamp{margin-top:16px;color:var(--muted);}
+
+  /* ---- portrait tablet niceties ---- */
+  @media (max-width:640px){
+    .cover{padding:22px 24px 26px;}
+    .masthead{font-size:78px;}
+    .cover__body{grid-template-columns:1fr;gap:26px;}
+    .lead__head{font-size:38px;}
+    section{padding:0 24px;}
+    .band{padding:44px 24px 0;}
+    .movement{padding:48px 24px 8px;}
+    .colophon,.signoff-line{padding-left:24px;padding-right:24px;}
+    .scores{grid-template-columns:1fr;}
+    .score.wide{grid-column:auto;}
+    .folio{font-size:110px;}
+    .lr-title h2{font-size:44px;}
+    .with-rail,.desk{grid-template-columns:1fr;gap:26px;}
+    .rabbit .chain{grid-template-columns:1fr;gap:8px;text-align:center;}
+    .rabbit .arrow{transform:rotate(90deg);}
+    .endnumbers{grid-template-columns:1fr;}
+    .radar li{grid-template-columns:1fr;gap:2px;}
+  }
+
+  /* ============================================================================
+     WARM-NIGHT DARK VARIANT
+     ----------------------------------------------------------------------------
+     "Night reading, still paper." Overrides ONLY the token values plus the desk
+     tone behind the page. Every component reads through the tokens above, so no
+     component rule is restated here. Warm charcoal ground (never cold/black),
+     warm off-white text, warm-brown hairlines, accents lightened for the ground.
+     ============================================================================ */
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#1A1613;    /* warm charcoal ground */
+      --paper-2:#221D18;  /* slightly lifted second stock */
+      --ink:#ECE4D4;      /* warm off-white primary text */
+      --ink-2:#C9C1B2;    /* muted warm secondary text */
+      --signal:#FF5A47;   /* vermilion, lightened for dark ground */
+      --blue:#93B4D6;     /* signal-blue lightened to read on charcoal */
+      --muted:#9A9484;    /* pencil grey, nudged lighter */
+      --hair:#3A3227;     /* warm-brown hairline */
+    }
+    /* the desk tone behind the floating page (light mode keeps var(--muted)) */
+    body{background:#0F0D0B;}
+    /* soften the drop shadow so it reads as depth, not a black halo, on charcoal */
+    .issue{box-shadow:0 1px 0 rgba(0,0,0,.20), 0 24px 60px -24px rgba(0,0,0,.70);}
+  }
+
+/* ============================================================
+   MX SKIN · skin-transmission.css                    (L1, WP-3)
+   Alias block ONLY: maps the weekly's EXISTING Transmission
+   tokens (assets/css/weekly/00-transmission.css) onto the mx
+   contract so core furniture can drop into a weekly without
+   restyling it (Law 11 / WP-8). Loads AFTER the weekly bundle;
+   the weekly's own CSS stays byte-identical. No components, no
+   :not(), no new colours — every value is a weekly token or a
+   direct derivative.  ACTIVATION: <body … data-skin="transmission">
+   ============================================================ */
+body[data-skin="transmission"] {
+  --mx-paper: var(--paper);         --mx-ink: var(--ink);
+  --mx-ink-soft: var(--muted);      --mx-hair: var(--hair);
+  --mx-accent: var(--signal);       --mx-accent-ink: var(--paper);
+  --mx-accent-2: var(--blue);       --mx-accent-2-ink: var(--paper);
+  --mx-support-1: var(--blue);      --mx-support-2: var(--muted);
+  --mx-card: var(--paper-2);        --mx-card-ink: var(--ink);
+  --mx-card-window: var(--paper-2); --mx-card-edge: var(--hair);
+  --mx-quote-bg: var(--paper-2);    --mx-ghost: rgba(22, 21, 26, 0.08);
+  --mx-tape: rgba(221, 213, 195, 0.8);
+  --mx-shadow: rgba(0, 0, 0, 0.35);
+  --mx-hand-ink: var(--signal);     --mx-stamp-ink: var(--signal);
+  --mx-chrome-bg: var(--ink);       --mx-chrome-ink: var(--paper);
+  --mx-t-chunk: "Instrument Serif", Georgia, serif;   /* weekly display voice */
+  --mx-t-tall: "Instrument Serif", Georgia, serif;
+  --mx-t-script: "Instrument Serif", Georgia, serif;  /* weekly has no script voice */
+  --mx-t-hand: "Instrument Serif", Georgia, serif;
+  --mx-t-serif: "Newsreader", Georgia, serif;
+  --mx-t-mono: "JetBrains Mono", ui-monospace, monospace;
+  --mx-t-body: "Newsreader", Georgia, serif;
+  --mx-tilt: -1deg;  --mx-grain: 0.03;  --mx-measure: var(--measure, 64ch);
+  --mx-wrap: 720px;                 /* sits inside the 800px printed object */
+  --mx-micro: 0.72rem;              /* Law-8 mono micro-label floor (core 00-contract
+                                       is NOT bundled into the weekly; the components
+                                       read --mx-micro, so the alias must supply it) */
+}
+
+/* ============================================================
+   MX WEEKLY FURNITURE  ·  weekly-mx/10-mx-weekly.css        (WP-8)
+   Transmission weekly's core-furniture add-on. Bundled ONLY when
+   issue_meta.design_system == "mx"; a legacy weekly never loads
+   it and renders byte-identical to before. Law 11: every value
+   resolves through the transmission alias onto the weekly's own
+   tokens, so objects arrive dressed in Transmission paper/ink/
+   signal + the three faces (Instrument Serif / Newsreader /
+   JetBrains Mono). NO display fonts (chunk/tall/script/hand all
+   alias to Instrument Serif). CURATED SUBSET of the furniture
+   core (10-ephemera/11-ledgers/14-motion/15-responsive): only
+   the five deployed components (mx-ledger fixtures · mx-ticket ·
+   mx-scorecard standings · mx-quote voices · mx-card--chart) +
+   the radio-dial signature. Neutral mx- classes; class-scoped,
+   so a band with no mx- object renders exactly as today.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   00a · FIXED-CHROME RESERVATION (Law 10 — the back pill never
+   overlaps content). The archive pill is fixed top-left; fade it
+   out once the reader scrolls past the masthead (pure CSS scroll-
+   driven animation, no JS), and reserve the top zone where scroll-
+   timeline is unsupported. Body carries data-mx-chrome="pill".
+   Extracted from core/15-responsive.css §01.
+   ------------------------------------------------------------ */
+@supports (animation-timeline: scroll()) {
+  [data-mx-chrome~="pill"] .signal-back-to-archive {
+    animation: mx-pill-recede linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0px 300px;
+  }
+}
+@keyframes mx-pill-recede {
+  0%   { opacity: 1; }
+  55%  { opacity: 0; }
+  100% { opacity: 0; visibility: hidden; pointer-events: none; }
+}
+@supports not (animation-timeline: scroll()) {
+  [data-mx-chrome~="pill"] .signal-back-to-archive { opacity: 0.85; }
+}
+
+/* ------------------------------------------------------------
+   00 · SHELF + TWO-COLUMN SURFACES (un-grid scatter beside copy)
+   ------------------------------------------------------------ */
+.mx-shelf {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 34px 40px;
+  align-items: flex-start;
+  justify-content: center;
+  margin: 54px 0;
+}
+.mx-shelf > * { flex: 0 1 auto; }
+.mx-shelf > *:nth-child(2n) { margin-top: 22px; }
+.mx-shelf > *:nth-child(3n) { margin-top: -8px; }
+
+.mx-twocol {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 36px;
+  align-items: start;
+  margin: 34px 0;
+}
+.mx-twocol__aside { display: grid; gap: 26px; justify-items: center; }
+
+/* ------------------------------------------------------------
+   01 · CARD CHASSIS + CHART CARD (self-made sparkline/bar SVG)
+   scenography defaults: tilt + washi tape + drop shadow (Law 1)
+   ------------------------------------------------------------ */
+.mx-card {
+  background: var(--mx-card);
+  color: var(--mx-card-ink);
+  border: 1px solid var(--mx-card-edge);
+  box-shadow: 0 18px 30px -16px var(--mx-shadow), 0 2px 0 rgba(0, 0, 0, 0.05);
+  padding: 12px 12px 14px;
+  width: min(340px, 100%);
+  position: relative;
+  margin: 0;
+  transform: rotate(var(--mx-tilt, -1deg));
+}
+.mx-card:nth-of-type(2n) { --mx-tilt: 1.6deg; }
+.mx-card::before {
+  content: "";
+  position: absolute;
+  top: -11px; left: 50%;
+  transform: translateX(-50%) rotate(-3.5deg);
+  width: 92px; height: 22px;
+  background: var(--mx-tape);
+  border-left: 1px dashed rgba(255, 255, 255, 0.5);
+  border-right: 1px dashed rgba(255, 255, 255, 0.5);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  pointer-events: none; z-index: 3;
+}
+.mx-card:nth-of-type(2n)::before { transform: translateX(-50%) rotate(4deg); }
+.mx-card__window {
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  background: var(--mx-card-window);
+  padding: 14px 14px 10px;
+  overflow: hidden;
+}
+.mx-card__caption {
+  font-family: var(--mx-t-hand);          /* aliases to Instrument Serif */
+  font-style: italic;
+  font-size: 1.18rem;
+  line-height: 1.2;
+  text-align: center;
+  margin-top: 10px;
+  color: var(--mx-card-ink);
+}
+.mx-card__credit {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  display: block;
+  margin-top: 6px;
+  opacity: 0.6;
+}
+
+/* chart card — the week-in-numbers sparkline/bars, drawn in SVG */
+.mx-card--chart { width: min(420px, 100%); }
+.mx-card--chart .mx-card__window { padding: 16px 16px 12px; }
+.mx-chart { display: block; width: 100%; }
+.mx-chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.mx-chartline { fill: none; stroke: var(--mx-accent); stroke-width: 2.4; }
+.mx-chart__bar { fill: var(--mx-accent); }
+.mx-chart__bar--2 { fill: var(--mx-accent-2); }
+.mx-chart__base { stroke: var(--mx-hair); stroke-width: 1; }
+.mx-chart__dot { fill: var(--mx-accent-2); }
+.mx-chart__label {
+  font-family: var(--mx-t-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  fill: var(--mx-ink-soft);
+}
+.mx-chart__cap {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mx-accent);
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* ------------------------------------------------------------
+   02 · TICKET — perforated stub, punch holes, hard shadow
+   (the week's Do-This-Week pick, as a physical object)
+   ------------------------------------------------------------ */
+.mx-ticket {
+  display: grid;
+  grid-template-columns: 1fr 96px;
+  width: min(360px, 100%);
+  background: var(--mx-card);
+  color: var(--mx-card-ink);
+  border: 1.5px solid var(--mx-card-ink);
+  box-shadow: 5px 5px 0 var(--mx-shadow);
+  transform: rotate(var(--mx-tilt, -1.5deg));
+  position: relative;
+  margin: 0;
+}
+.mx-ticket:nth-of-type(2n) { --mx-tilt: 1.6deg; }
+.mx-ticket::before, .mx-ticket::after {
+  content: "";
+  position: absolute;
+  right: 89px;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--mx-paper);
+  border: 1.5px solid var(--mx-card-ink);
+}
+.mx-ticket::before { top: -8px; }
+.mx-ticket::after  { bottom: -8px; }
+.mx-ticket__main { padding: 15px 16px 13px; }
+.mx-ticket__event {
+  display: block;
+  font-family: var(--mx-t-serif);          /* Newsreader */
+  font-weight: 600;
+  font-size: 1.4rem;
+  line-height: 1.05;
+  margin: 3px 0 8px;
+}
+.mx-ticket__meta {
+  display: block;
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mx-ink-soft);
+}
+.mx-ticket__row { display: flex; justify-content: space-between; gap: 10px; margin-top: 6px; }
+.mx-ticket__row > span:last-child { color: var(--mx-card-ink); }
+.mx-ticket__stub {
+  border-left: 2px dashed var(--mx-card-ink);
+  display: grid;
+  place-items: center;
+  padding: 10px 6px;
+  background: repeating-linear-gradient(45deg, transparent 0 6px, var(--mx-quote-bg) 6px 12px);
+}
+
+/* ------------------------------------------------------------
+   03 · STAMP / SEAL — currentColor roundel (the ticket stub)
+   ------------------------------------------------------------ */
+.mx-stamp {
+  display: inline-grid;
+  place-items: center;
+  width: 82px; height: 82px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  color: var(--mx-stamp-ink);              /* aliases to --signal */
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 8px;
+  line-height: 1.25;
+  transform: rotate(8deg);
+  position: relative;
+  background: transparent;
+}
+.mx-stamp::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  opacity: 0.85;
+}
+.mx-stamp b {
+  display: block;
+  font-family: var(--mx-t-serif);
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1;
+  margin: 3px 0 2px;
+}
+
+/* ------------------------------------------------------------
+   04 · QUOTE OBJECT — a named voice, never a floating italic
+   line. Attribution mandatory (Law 9).
+   ------------------------------------------------------------ */
+.mx-quote {
+  margin: 54px 0;
+  padding: 24px 24px 18px;
+  border-left: 5px solid var(--mx-accent);
+  background: var(--mx-quote-bg);
+  position: relative;
+}
+.mx-quote::before {
+  content: "\201C";
+  position: absolute;
+  top: -20px; left: 12px;
+  font-family: var(--mx-t-serif);
+  font-size: 4.6rem;
+  line-height: 1;
+  color: var(--mx-accent);
+  opacity: 0.85;
+  pointer-events: none;
+}
+.mx-quote blockquote {
+  font-family: var(--mx-t-serif);          /* Newsreader italic */
+  font-style: italic;
+  font-size: clamp(1.14rem, 2.4vw, 1.4rem);
+  line-height: 1.42;
+  color: var(--mx-ink);
+  margin: 0;
+  border: none;
+  padding: 0;
+}
+.mx-quote figcaption {
+  margin-top: 12px;
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mx-ink-soft);
+}
+.mx-quote figcaption b { color: var(--mx-accent); font-weight: 700; }
+
+/* ------------------------------------------------------------
+   05 · FIXTURES LEDGER — sport results as a mono ledger
+   (row form; the dl form of core/11-ledgers is unused here)
+   ------------------------------------------------------------ */
+.mx-ledger {
+  --mxl-rule: var(--mx-hair);
+  border-top: 3px solid var(--mx-ink);
+  border-bottom: 1px solid var(--mxl-rule);
+  margin: 52px 0;
+}
+.mx-ledger__caption {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--mx-accent);
+  padding: 10px 0 9px;
+  border-bottom: 1px solid var(--mxl-rule);
+}
+.mx-ledger__row {
+  display: grid;
+  grid-template-columns: 68px 1fr auto;
+  gap: 6px 14px;
+  padding: 11px 0 12px;
+  border-bottom: 1px dotted var(--mxl-rule);
+  align-items: baseline;
+}
+.mx-ledger__row:last-child { border-bottom: none; }
+.mx-ledger__date {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mx-ink-soft);
+}
+.mx-ledger__match { font-size: 0.98rem; line-height: 1.4; color: var(--mx-ink); }
+.mx-ledger__match b { font-weight: 700; }
+.mx-ledger__result {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mx-accent);
+  white-space: nowrap;
+}
+.mx-ledger__note {
+  grid-column: 2 / -1;
+  font-size: 0.86rem;
+  line-height: 1.4;
+  color: var(--mx-ink-soft);
+  margin-top: 2px;
+}
+
+/* ------------------------------------------------------------
+   06 · SCORECARD — standings on card stock (a table dressed as
+   an object). Cells wrap at word boundaries (never truncate).
+   ------------------------------------------------------------ */
+.mx-scorecard {
+  width: min(320px, 100%);
+  background: var(--mx-card);
+  color: var(--mx-card-ink);
+  border: 1.5px solid var(--mx-card-ink);
+  box-shadow: 5px 5px 0 var(--mx-shadow);
+  transform: rotate(var(--mx-tilt, 1.2deg));
+  padding: 14px 16px 12px;
+  margin: 0;
+}
+.mx-scorecard:nth-of-type(2n) { --mx-tilt: -1.4deg; }
+.mx-scorecard__title {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mx-accent);
+  border-bottom: 2px solid var(--mx-card-ink);
+  padding-bottom: 8px;
+  margin: 0 0 2px;
+}
+.mx-scorecard table { width: 100%; border-collapse: collapse; }
+.mx-scorecard td, .mx-scorecard th {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  text-align: left;
+  padding: 8px 16px 7px 0;
+  border-bottom: 1px dotted color-mix(in srgb, var(--mx-card-ink) 38%, transparent);
+  color: var(--mx-card-ink);
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+.mx-scorecard tr:last-child td { border-bottom: none; }
+.mx-scorecard__pos { width: 26px; font-weight: 700; color: var(--mx-ink-soft); }
+.mx-scorecard__gap { text-align: right; font-weight: 700; white-space: nowrap; }
+.mx-scorecard tr.is-lead td { font-weight: 700; }
+.mx-scorecard tr.is-lead .mx-scorecard__gap { color: var(--mx-accent); }
+
+/* ------------------------------------------------------------
+   07 · RADIO DIAL — the weekly's signature furniture object.
+   A tuning scale with a needle that sweeps to the band frequency
+   on entry (Law 5: Weekly = dial-needle sweep). Pure Transmission
+   (the radio conceit), CSS-drawn, aria-hidden.
+   ------------------------------------------------------------ */
+.mx-dial {
+  --mx-dial-h: 42px;
+  position: relative;
+  width: min(360px, 100%);
+  height: var(--mx-dial-h);
+  margin: 10px 0 6px;
+  border-bottom: 2px solid var(--mx-ink);
+  background:
+    repeating-linear-gradient(90deg,
+      var(--mx-hair) 0 1px, transparent 1px 12px);
+  background-position: 0 100%;
+  background-size: 100% 60%;
+  background-repeat: no-repeat;
+}
+.mx-dial::after {                          /* a few taller ticks */
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 78%;
+  background: repeating-linear-gradient(90deg,
+    var(--mx-ink) 0 1.5px, transparent 1.5px 60px);
+  opacity: 0.5;
+  pointer-events: none;
+}
+.mx-dial__needle {
+  position: absolute;
+  bottom: 0;
+  left: var(--mx-needle-x, 68%);
+  width: 2px;
+  height: 100%;
+  background: var(--mx-accent);
+  transform-origin: 50% 100%;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+.mx-dial__needle::before {
+  content: "";
+  position: absolute;
+  top: -5px; left: -3px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--mx-accent);
+}
+.mx-freq {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mx-accent);
+  display: block;
+  margin-top: 8px;
+}
+
+/* ------------------------------------------------------------
+   08 · MOTION — tier1 calm (rise / settle / row-tick / chart-
+   draw / dial-sweep). Extracted from core/14-motion.css. All
+   start-states are gated behind [data-mx-motion-ready] so JS-off
+   renders 100% of content; the controller (mx-motion.js) is the
+   only thing that stamps it. Motion attaches to furniture, never
+   running text (Law 5).
+   ------------------------------------------------------------ */
+[data-mx] {
+  --mx-m-rise: 20px;
+  --mx-m-dur: 640ms;
+  --mx-m-settle: 1deg;
+  --mx-m-ease: cubic-bezier(0.22, 0.9, 0.3, 1);
+  --mx-m-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --mx-m-stagger: 80ms;
+}
+@keyframes mx-rise-in {
+  from { opacity: 0; transform: translateY(var(--mx-m-rise)); }
+  to   { opacity: 1; }
+}
+@keyframes mx-settle-in {
+  from { opacity: 0; transform: translateY(var(--mx-m-rise))
+           rotate(calc(var(--mx-tilt, -1deg) + var(--mx-m-settle) * 3)); }
+  to   { opacity: 1; }
+}
+@keyframes mx-row-tick {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; }
+}
+@keyframes mx-chart-draw {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
+}
+@keyframes mx-dial-sweep { from { transform: rotate(-98deg); } }
+
+[data-mx-motion-ready] [data-motion="tier1"] .mx-rise:not(.is-in) {
+  opacity: 0; transform: translateY(var(--mx-m-rise));
+}
+[data-mx-motion-ready] [data-motion="tier1"] .mx-rise.is-in {
+  animation: mx-rise-in var(--mx-m-dur) var(--mx-m-ease) backwards;
+  animation-delay: min(calc(var(--mx-i, 0) * var(--mx-m-stagger)), 360ms);
+}
+[data-mx-motion-ready] [data-motion="tier1"] .mx-settle:not(.is-in) { opacity: 0; }
+[data-mx-motion-ready] [data-motion="tier1"] .mx-settle.is-in {
+  animation: mx-settle-in calc(var(--mx-m-dur) + 160ms) var(--mx-m-spring) backwards;
+  animation-delay: min(calc(var(--mx-i, 0) * var(--mx-m-stagger)), 360ms);
+}
+/* sequenced rows tick in --mx-i order (fixtures ledger, standings) */
+[data-mx-motion-ready] [data-motion="tier1"] .mx-seq:not(.is-in) .mx-row { opacity: 0; }
+[data-mx-motion-ready] [data-motion="tier1"] .mx-seq.is-in .mx-row {
+  animation: mx-row-tick 420ms var(--mx-m-ease) backwards;
+  animation-delay: min(calc(var(--mx-i, 0) * 70ms), 490ms);
+}
+/* sparkline / chart line draws on reveal */
+[data-mx-motion-ready] [data-motion="tier1"] .mx-chart.is-in .mx-chartline {
+  stroke-dasharray: 1;
+  animation: mx-chart-draw 1100ms var(--mx-m-ease) backwards;
+}
+/* signature: dial needle sweeps to its frequency on band entry */
+[data-mx-motion-ready] [data-motion="tier1"] .mx-sig-dial-sweep.is-in .mx-dial__needle {
+  animation: mx-dial-sweep 900ms var(--mx-m-spring) backwards;
+}
+/* hover settles — furniture acknowledges the hand */
+[data-motion="tier1"] .mx-card,
+[data-motion="tier1"] .mx-ticket,
+[data-motion="tier1"] .mx-scorecard { transition: transform 0.35s var(--mx-m-ease); }
+[data-motion="tier1"] .mx-card:hover { transform: rotate(0deg) scale(1.015); }
+[data-motion="tier1"] .mx-ticket:hover,
+[data-motion="tier1"] .mx-scorecard:hover { transform: rotate(0deg); }
+
+/* ------------------------------------------------------------
+   09 · RESPONSIVE — 390px stacking; Law-8 type floors held.
+   ------------------------------------------------------------ */
+@media (max-width: 720px) {
+  .mx-twocol { grid-template-columns: 1fr; }
+  .mx-twocol__aside { justify-items: center; }
+}
+@media (max-width: 560px) {
+  .mx-shelf { gap: 28px 20px; margin: 34px 0; }
+  .mx-shelf > *:nth-child(2n) { margin-top: 12px; }
+  .mx-card, .mx-card--chart { width: min(320px, 100%); }
+  .mx-ticket { width: 100%; grid-template-columns: 1fr 84px; }
+  .mx-ticket::before, .mx-ticket::after { right: 77px; }
+  .mx-scorecard { width: 100%; }
+  .mx-ledger__row { grid-template-columns: 56px 1fr; }
+  .mx-ledger__result { grid-column: 2; justify-self: start; margin-top: 2px; }
+  .mx-quote { padding: 20px 18px 16px; margin: 28px 0; }
+  .mx-dial { width: 100%; }
+  /* Law-8 floors reasserted at phone width */
+  .mx-ledger__caption, .mx-ledger__date, .mx-ledger__result,
+  .mx-ticket__meta, .mx-card__credit, .mx-scorecard__title,
+  .mx-scorecard td, .mx-scorecard th, .mx-quote figcaption,
+  .mx-freq, .mx-chart__cap { font-size: max(0.72rem, var(--mx-micro)); }
+}
+
+/* ------------------------------------------------------------
+   99 · REDUCED-MOTION GATE — kills every mx animation/transition
+   under [data-mx]; content is simply present, never held hidden.
+   The controller additionally no-ops when the preference is set.
+   ------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  [data-mx] *, [data-mx] *::before, [data-mx] *::after {
+    animation-duration: 0.001s !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001s !important;
+  }
+  [data-mx-motion-ready] [data-motion="tier1"] .mx-rise:not(.is-in),
+  [data-mx-motion-ready] [data-motion="tier1"] .mx-settle:not(.is-in) {
+    opacity: 1; transform: rotate(var(--mx-tilt, 0deg));
+  }
+  [data-mx-motion-ready] [data-motion="tier1"] .mx-seq:not(.is-in) .mx-row { opacity: 1; }
+}
+
+</style>
+</head>
+<body data-skin="transmission" data-mx data-motion="tier1" data-format="weekly" data-mx-chrome="pill">
+<!-- the-signal:back -->
+<style data-signal-back>
+  .signal-back-to-archive {
+    position: fixed;
+    top: max(0.75rem, env(safe-area-inset-top, 0px));
+    left: max(0.75rem, env(safe-area-inset-left, 0px));
+    z-index: 9999;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.85rem 0.45rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(20, 20, 30, 0.72);
+    color: #fff;
+    font-family: 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    backdrop-filter: saturate(140%) blur(10px);
+    -webkit-backdrop-filter: saturate(140%) blur(10px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.22);
+    transition: transform 0.15s ease, background 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .signal-back-to-archive:hover { background: rgba(20, 20, 30, 0.88); }
+  .signal-back-to-archive:active { transform: scale(0.96); }
+  .signal-back-to-archive svg { display: block; opacity: 0.9; }
+  @media print { .signal-back-to-archive { display: none; } }
+</style>
+<a href="../" class="signal-back-to-archive" aria-label="Back to The Signal archive">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+  <span>The Signal</span>
+</a>
+<!-- /the-signal:back -->
+<div class="issue">
+
+  <!-- ================= COVER ================= -->
+  <header class="cover">
+    <div class="cover__top">
+      <span class="mono">A Personal Weekly · Received &amp; Tuned</span>
+      <span class="mono price">Sunday Edition</span>
+    </div>
+  <div class="wave wave--ink" aria-hidden="true">
+    <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+      <path d="M0 13 H60 l6 -10 6 20 6 -20 6 20 6 -20 6 10 H160 l5 -8 5 16 5 -16 5 16 5 -8 H280 l7 -12 7 24 7 -24 7 24 7 -12 H420 l4 -6 4 12 4 -12 4 12 4 -6 H540 l6 -11 6 22 6 -22 6 22 6 -11 H680 l5 -7 5 14 5 -14 5 14 5 -7 H800" fill="none" stroke="currentColor" stroke-width="2.0"/>
+    </svg>
+  </div>
+
+    <h1 class="masthead">The <em>Signal</em></h1>
+    <div class="masthead__sub">
+      <span class="tag">tuning in to the week you lived</span>
+      <span class="mono">EST. 2026</span>
+    </div>
+
+    <div class="cover__body">
+      <div class="lead">
+        <div class="mono lead__eyebrow">BAND 01 — THE LEAD TRANSMISSION</div>
+        <h2 class="lead__head">Seven leaders in a decade, and the newest reaches No.10 <span class="hl">without an election</span>.</h2>
+        <p class="lead__stand">Andy Burnham was declared Labour leader on Friday and is sworn in tomorrow — no national vote required. It is a week of handovers: of power in Westminster, of trophies in New Jersey, of the grid at Spa — with the two biggest outcomes still ahead of you as the coffee cools.</p>
+      </div>
+
+      <nav class="tuner" aria-label="In this transmission">
+        <div class="tuner__label">
+          <span class="mono">STATION LIST</span>
+          <span class="mono">№017</span>
+        </div>
+        <div class="station on" data-station>
+          <span class="freq">88.9</span>
+          <span class="name"><b>The Long Read:</b> seven leaders, no election</span>
+        </div>
+        <div class="station" data-station>
+          <span class="freq">98.4</span>
+          <span class="name">The Cup's last act; Sinner holds</span>
+        </div>
+        <div class="station on" data-station>
+          <span class="freq">104.7</span>
+          <span class="name"><b>Remake summer:</b> Black Flag and Halo reborn</span>
+        </div>
+        <div class="station" data-station>
+          <span class="freq">106.0</span>
+          <span class="name"><b>Heartstopper</b> takes its bow</span>
+        </div>
+        <div class="station" data-station>
+          <span class="freq">90.1</span>
+          <span class="name">Three ways into new SF</span>
+        </div>
+        <div class="station" data-station>
+          <span class="freq">94.6</span>
+          <span class="name">This week in <b>1965</b>: Mars, up close</span>
+        </div>
+        <div class="station on" data-station>
+          <span class="freq">92.3</span>
+          <span class="name"><b>The Desk:</b> running without losing the block, and a rate to beat</span>
+        </div>
+        <div class="station" data-station>
+          <span class="freq">101.2</span>
+          <span class="name">Down the rabbit hole to a Saxon saint</span>
+        </div>
+        <div class="station on" data-station>
+          <span class="freq">96.5</span>
+          <span class="name">What's coming: a new PM, a rate call</span>
+        </div>
+      </nav>
+    </div>
+
+    <div class="dataline">
+      <span class="mono">TRANSMISSION №017</span>
+      <span class="dot" aria-hidden="true">·</span>
+      <span class="mono">13–19 JUL 2026</span>
+      <span class="dot" aria-hidden="true">·</span>
+      <span class="mono">NORTHERN IRELAND</span>
+      <span class="dot" aria-hidden="true">·</span>
+      <span class="mono">FOLIO 017</span>
+      <span class="dot" aria-hidden="true">·</span>
+      <span class="mono">32 MIN · ONE SITTING</span>
+    </div>
+
+    <div class="folio" aria-hidden="true">017</div>
+  </header>
+
+  <div class="wave wave--blue" aria-hidden="true" style="padding:0 40px;">
+    <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+      <path d="M0 13 H40 l5 -9 5 18 5 -18 5 18 5 -9 H120 l7 -13 7 26 7 -26 7 26 7 -13 H260 l4 -6 4 12 4 -12 4 12 4 -6 H360 l6 -11 6 22 6 -22 6 22 6 -11 H500 l5 -8 5 16 5 -16 5 16 5 -8 H620 l7 -13 7 26 7 -26 7 26 7 -13 H800" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    </svg>
+  </div>
+
+  <!-- MOVEMENT I · THE OPEN -->
+  <div class="movement" data-movement="open">
+    <div class="movement__rule">
+      <span class="movement__no">I</span>
+      <span class="movement__name">The Open</span>
+      <span class="mono movement__meta">LETTER · NUMBERS · DIGEST</span>
+    </div>
+  </div>
+
+  <div class="band" data-band="the_letter">
+    <div class="bandhead">
+      <span class="mono code">BAND 02 — <b>THE LETTER</b></span>
+      <span class="mono runtime">FROM THE EDITOR</span>
+    </div>
+  </div>
+  <section class="letter">
+<!-- Issue cover plate — the OPEN movement's establishing image. Transmission worked real-<img> plate form: .plate-img.lead > img (alt + loading="lazy") + .plate-cap (.fig/.txt/.credit). -->
+    <div data-mx-event="figure" class="plate-img lead" style="margin-top:18px;">
+      <img src="/assets/cached/c0fbc060b733.jpg" alt="The exterior of MetLife Stadium in East Rutherford, New Jersey, host venue of the 2026 World Cup final, its ribbed silver facade rising against the sky" loading="lazy">
+      <div class="plate-cap">
+        <span class="mono fig">COVER</span>
+        <span class="txt">MetLife Stadium in East Rutherford, New Jersey — where the largest World Cup ever hands over its trophy this afternoon. A week of handovers, caught at the moment of transfer: power in Westminster, a Cup here, the grid reshuffled at Spa.<span class="credit">Wikimedia Commons</span></span>
+      </div>
+    </div>
+
+    <h2>A week of handovers.</h2>
+    <p class="kicker">Power changes hands in Westminster, a trophy in New Jersey, the grid at Spa — and the two that matter most are still being decided as the coffee cools.</p>
+    <p class="first">Two landscapes shifted on the same Sunday, and I couldn't pull them apart. This morning Britain has a Prime Minister-in-waiting who reached No.10 without a public vote: Andy Burnham, declared Labour leader on Friday, sworn in tomorrow. This afternoon in New Jersey the largest World Cup ever ends — 48 teams, 104 matches, 39 days — with Spain and Argentina, the two best-ranked sides on the planet, kicking off as this issue is read.</p>
+    <p>The honest thing is that both stories are unfinished at the moment they reach the page. I can tell you what a mid-term handover of power means, and what the first 48-team final settles about the tournament's shape; I can't tell you who lifts the trophy, or what Burnham does with a job no election gave him. A week of transitions, then, caught mid-motion — Westminster, MetLife, and a Formula 1 grid reshuffled overnight at Spa. The outcomes are still ahead of us. What they mean, we can start on now.</p>
+    <p class="sig">— The Editor</p>
+    <p class="mono sigline">TRANSMITTED SUNDAY · 19 JUL 2026</p>
+  </section>
+
+  <div class="band" data-band="week_in_numbers">
+    <div class="bandhead">
+      <span class="mono code">BAND 03 — <b>THE WEEK IN NUMBERS</b></span>
+      <span class="mono runtime">THE LEDGER · SIGNAL METERED</span>
+    </div>
+  </div>
+  <section>
+    <div class="figures">
+      <div class="figures-frame" data-mx-event="statband">
+        <div class="fig-caption"><span>TABLE I · <b>DATUMS OF THE WEEK</b></span><span>№017</span></div>
+
+        <div class="fig-row">
+          <div class="fig-label">
+            <span class="k">Burnham Nominations</span>
+            <span class="d">MP backers, about 94% — the highest share in a modern Labour leadership contest, beating Brown's 88% in 2007</span>
+          </div>
+          <div class="fig-val">379</div>
+        </div>
+
+        <div class="fig-row">
+          <div class="fig-label">
+            <span class="k">Leaders in a Decade</span>
+            <span class="d">prime ministers and party leaders Britain will have had once Burnham is sworn in</span>
+          </div>
+          <div class="fig-val">7</div>
+        </div>
+
+        <div class="fig-row">
+          <div class="fig-label">
+            <span class="k">World Cup Matches</span>
+            <span class="d">in the first 48-team edition, up from 64 — across three host nations and 39 days</span>
+          </div>
+          <div class="fig-val">104</div>
+        </div>
+
+        <div class="fig-row">
+          <div class="fig-label">
+            <span class="k">Bronze-Match Goals</span>
+            <span class="d">in the World Cup third-place playoff, England 6-4 France</span>
+          </div>
+          <div class="fig-val">10</div>
+        </div>
+
+        <div class="fig-row">
+          <div class="fig-label">
+            <span class="k">Mariner 4's Approach</span>
+            <span class="d">closest pass to Mars, 61 years ago this week — the first close-up of another planet</span>
+          </div>
+          <div class="fig-val">6,118<small>mi</small></div>
+        </div>
+
+        <div class="fig-row">
+          <div class="fig-label">
+            <span class="k">Pole Lap at Spa</span>
+            <span class="d">Antonelli's time; Norris qualified third but starts 13th on a grid penalty</span>
+          </div>
+          <div class="fig-val">1:44.361</div>
+        </div>
+
+        <div class="fig-foot"><span>CARRIED FORWARD TO №018</span><span>A WEEK OF TRANSITIONS</span></div>
+      </div>
+    </div>
+
+    <div class="mx-card mx-card--chart" data-mx-event="chart" style="margin:30px auto 6px;">
+      <div class="mx-card__window">
+        <span class="mx-chart__cap">Leaders in a Decade · No.10, 2016–2026</span>
+        <div class="mx-chart">
+          <svg viewBox="0 0 260 96" preserveAspectRatio="xMidYMid meet" role="img" aria-label="A rising step line: one to seven UK leaders across 2016 to 2026, Burnham the seventh, reached without an election.">
+            <line class="mx-chart__base" x1="0" y1="84" x2="260" y2="84"/>
+            <path class="mx-chartline" pathLength="1" d="M6,80 L48,80 L48,68 L90,68 L90,56 L132,56 L132,44 L174,44 L174,32 L216,32 L216,20 L254,20"/>
+            <circle class="mx-chart__dot" cx="254" cy="20" r="3.4"/>
+            <text class="mx-chart__label" x="6" y="94">2016</text>
+            <text class="mx-chart__label" x="196" y="94">2026 · 7th</text>
+          </svg>
+        </div>
+      </div>
+      <div class="mx-card__caption">seven in ten years — four without a public vote</div>
+      <span class="mx-card__credit">Chart · The Signal · CNN handover count</span>
+    </div>
+  </section>
+
+  <div class="band" data-band="caught_up">
+    <div class="bandhead">
+      <span class="mono code">BAND 04 — <b>CAUGHT UP</b></span>
+      <span class="mono runtime">EVERYTHING THAT MOVED, IN EIGHT LINES</span>
+    </div>
+  </div>
+  <section class="caughtup">
+    <ol class="digest">
+      <li><p><b>Westminster.</b> Andy Burnham is declared Labour leader unopposed (17 Jul) and is set to be appointed prime minister on Monday — Britain's seventh leader in a decade, arriving with no general election.</p></li>
+      <li><p><b>The final.</b> Spain meet Argentina at MetLife at 15:00 ET today, the top two ranked sides in the first all-Spanish-speaking World Cup final since 1930.</p></li>
+      <li><p><b>Bronze.</b> England beat France 6-4 to take third place at the World Cup (18 Jul).</p></li>
+      <li><p><b>SW19.</b> Jannik Sinner defends his Wimbledon title over Alexander Zverev (12 Jul); Linda Nosková takes the women's crown, the youngest champion since 2011.</p></li>
+      <li><p><b>Spa.</b> Kimi Antonelli starts on pole for the Belgian Grand Prix, which lights up at Spa later today.</p></li>
+      <li><p><b>The Gulf.</b> Washington declares its June ceasefire with Iran over, strikes Iranian targets to protect Strait of Hormuz shipping and imposes fresh sanctions (15 Jul).</p></li>
+      <li><p><b>The Levant.</b> Israel agrees to withdraw from 'pilot zones' in southern Lebanon under the June ceasefire (15 Jul).</p></li>
+      <li><p><b>The ledger.</b> Britain's mortgage price war deepens — Nationwide has cut rates four times in a month — ahead of the Bank of England's 30 Jul decision, where a hold at 3.75% is expected.</p></li>
+    </ol>
+  </section>
+  <div class="wave wave--ink" aria-hidden="true" style="margin-top:26px;color:var(--signal);">
+    <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+      <path d="M0 13 H70 l6 -11 6 22 6 -22 6 22 6 -11 H180 l5 -9 5 18 5 -18 5 18 5 -9 H300 l8 -14 8 28 8 -28 8 28 8 -14 H460 l4 -7 4 14 4 -14 4 14 4 -7 H580 l6 -11 6 22 6 -22 6 22 6 -11 H720 l5 -8 5 16 5 -16 5 16 5 -8 H800" fill="none" stroke="currentColor" stroke-width="2.0"/>
+    </svg>
+  </div>
+
+  <!-- MOVEMENT II · THE LONG READ -->
+  <div class="movement" data-movement="long-read">
+    <div class="movement__rule">
+      <span class="movement__no">II</span>
+      <span class="movement__name">The Long Read</span>
+      <span class="mono movement__meta">ONE PIECE · SETTLE IN</span>
+    </div>
+  </div>
+
+  <div class="band" data-band="long_read">
+    <div class="bandhead">
+      <span class="mono code">BAND 05 — <b>THE LONG READ</b></span>
+      <span class="mono runtime">SIGNAL STRONG</span>
+    </div>
+  </div>
+  <section class="longread" data-role="long-read">
+    <div class="lr-title">
+      <div class="mono" style="color:var(--signal);">SEVEN LEADERS, NO ELECTION</div>
+      <h2>How Britain hands over <em>power</em></h2>
+      <p class="stand">On Monday, Andy Burnham is expected to walk into Downing Street as prime minister. He won 94 percent of his party's nominations and not a single vote from the public. Nothing about that breaks a rule. The unease comes from how routine it has become — the seventh handover in a decade, and the fourth with no election at all.</p>
+      <p class="mono byline">BY THE EDITOR · THE LONG READ · 19 JUL 2026</p>
+    </div>
+
+    <div class="lr-body">
+      <p class="first">On Friday 17 July, Andy Burnham was declared leader of the Labour Party. He had no opponent. When nominations closed two days earlier, on 15 July, he held 379 of his party's MPs behind him — about 94 percent of the parliamentary party, the largest share of nominations any Labour leadership contest has recorded, ahead of the 88 percent Gordon Brown drew in 2007. On Monday 20 July he is expected to be appointed prime minister, replacing Keir Starmer, whom a party rebellion forced out earlier this month. Between the rebellion and the door of Number 10, the British public was not asked to vote once.</p>
+
+
+      <div class="mx-ledger" data-mx-event="ledger" style="margin-top:8px;">
+        <div class="mx-ledger__caption">By the Numbers · The Nomination</div>
+        <div class="mx-ledger__row"><span class="mx-ledger__date">379</span><span class="mx-ledger__match">Labour MPs who nominated Burnham — enough to leave the field clear</span><span class="mx-ledger__result">~94%</span></div>
+        <div class="mx-ledger__row"><span class="mx-ledger__date">2007</span><span class="mx-ledger__match">Gordon Brown's mid-term, uncontested succession</span><span class="mx-ledger__result">88%</span></div>
+        <div class="mx-ledger__row"><span class="mx-ledger__date">650</span><span class="mx-ledger__match">Commons seats — none of which names a prime minister</span><span class="mx-ledger__result">0 VOTES</span></div>
+      </div>
+
+      <p>This is worth stating slowly, because it surprises people every time it happens. Britain does not elect its prime minister. Voters elect 650 members of the House of Commons, one for each constituency, and no ballot paper anywhere in the country names the person who will run it. The prime minister is appointed by the monarch, and by long convention the monarch appoints whoever can command the confidence of the Commons — in practice, the leader of the largest party. "Command confidence" has a concrete meaning: it is the ability to win a no-confidence vote and to get a budget through the House. Whoever can reliably do those two things can govern. When the largest party changes its leader, that person inherits the confidence of its MPs, and so inherits the office. No national vote is required, because no national vote handed out the office in the first place.</p>
+
+      <p>That is why Starmer's fall and Burnham's rise can play out inside a single fortnight in July, with Parliament doing the choosing and the electorate watching. Labour won the last general election, in 2024, with Starmer at its head. The mandate it won belongs to the party, not to the man — the ballot in each seat named a local candidate under a party banner, not a prime minister. The party is therefore entitled to change the man without returning to the country. King Charles will invite Burnham to form a government on Monday for the same reason he invited Starmer two years ago: because Burnham is now the person who can hold a Commons majority together.</p>
+
+      <p>The handover itself is almost startlingly quick. On the day, Starmer travels to the Palace and formally tenders his resignation to the King. Burnham follows, is asked to form a government, and accepts — the old ceremony still described as "kissing hands." He walks out a prime minister the same afternoon. There is no transition period, no confirmation hearing, no interregnum. The country does not spend a day without a head of government, and it does not spend a minute asking the country's permission. The seamlessness is the whole design: the point of the system is that power never drops, that there is always someone who commands the Commons, and that the change of face costs the machinery of state nothing. What the design does not price in is what it costs the public's sense that it chose any of this.</p>
+
+      <div data-mx-event="figure" class="plate-img">
+        <img src="/assets/cached/65aa827ae471.jpg" alt="Andy Burnham's official parliamentary portrait — a head-and-shoulders photograph of the Labour politician in a dark suit against a plain background" loading="lazy">
+        <div class="plate-cap">
+          <span class="mono fig">FIG. 01</span>
+          <span class="txt">Andy Burnham, the incoming prime minister, in his official parliamentary portrait — he returned to the Commons only weeks before taking the top job.<span class="credit">Official parliamentary portrait · Wikimedia Commons</span></span>
+        </div>
+      </div>
+
+
+      <p>Even inside Labour, the choice was made narrowly. Because Burnham gathered the nominations of 379 MPs, no rival could clear the threshold to force a contest, and the leadership passed to him uncontested. There was no ballot of Labour's wider membership, no hustings, no vote of the hundreds of thousands of people who pay the party's subscriptions. The man about to become prime minister was chosen by 379 colleagues in the House of Commons. The country did not vote. His party's members did not vote. His fellow Labour MPs settled it among themselves inside a week. Burnham plainly commands his party; the point is how few people the rules require to make that judgment.</p>
+
+      <p>None of this is new, and that is the part that has begun to trouble people. Burnham will be the seventh person to lead the country in ten years. The line runs David Cameron, Theresa May, Boris Johnson, Liz Truss, Rishi Sunak, Keir Starmer, and now Burnham — seven prime ministers across a decade that ought to hold two or three. By CNN's count, four of the most recent handovers happened with no general election at all: the party in power changed its leader, and the country changed its prime minister as a side effect. Truss lasted weeks rather than years before her own party replaced her with Sunak, again without the public casting a ballot. The machinery worked exactly as designed each time. The frequency is what has changed.</p>
+
+      <p>The template is not even unusual for Labour. Gordon Brown walked the same path in 2007, succeeding Tony Blair mid-term, uncontested, on 88 percent of nominations and without a general election — the precedent Burnham's 94 percent has now surpassed. The mechanism is old and settled. The tempo is the new thing: what used to happen to a country once in a decade now happens to Britain most years.</p>
+
+      <p class="noindent">Burnham reaches Number 10 by a crooked path even by these standards. For most of the drama he was not a member of Parliament at all. Since 2017 he has been the mayor of Greater Manchester, a job he left the Commons to take, and one he used to build a national profile as a regional power broker — "the King of the North," as the label stuck. A mayor cannot be prime minister, and a prime minister must sit in the Commons. So to make himself eligible, Burnham first had to get back into Parliament, which he did by winning the Makerfield by-election and reclaiming a seat in the House he had left years earlier. He campaigned for the leadership of the whole country, in effect, before he held the constitutional standing to take it, and acquired the standing on the way.</p>
+
+      <div class="pullquote" data-mx-event="quote">
+        Burnham won 94 percent of his party's nominations and not one vote from the public — and by the letter of the constitution, that is entirely in order.
+        <span class="attr">TRANSMISSION №017 · THE LONG READ</span>
+      </div>
+
+      <p>There are two honest ways to read all of this, and they do not sit comfortably together. The first is the reading CNN's analysis reached for when Burnham was declared: a governing party burning through leaders is a party consuming itself, and a country that keeps acquiring prime ministers it never chose is running a democratic deficit. On this account the serial handover is a symptom. Starmer's government was floundering; his own MPs decided a change of face was quicker than a change of course or a change of government; and so they installed a new leader over the summer rather than face the voters. The people who backed Labour in 2024 voted for one leader and one prospectus, and by the middle of 2026 they have neither, without having been consulted. Repeat that pattern often enough and the thread connecting what the public votes for to who ends up governing them starts to fray. A prime minister governs with enormous latitude — over war, spending, the shape of the state — and the argument runs that such power should trace back, at some visible point, to a decision the electorate actually made. Four mid-term handovers in a decade stretch that line of accountability until it is hard to see where the public's choice ends and the party's begins.</p>
+
+      <p class="noindent">The second reading takes the same facts and finds them reassuring. A parliamentary system is built precisely so that a failing leader can be removed between elections without the state seizing up. When a chief executive loses the confidence of the people around them, the country swaps the driver and keeps moving; it does not have to crash the car or wait years for a scheduled vote to change direction. Al Jazeera reported Burnham's arrival in exactly these flat terms — a leadership contest resolved, a successor confirmed, a government continuing — rather than as a constitutional crisis. Nothing broke. The Commons still holds a Labour majority; that majority still commands confidence; the person it puts forward becomes prime minister. This is the system doing the exact job it exists to do, quickly and without upheaval, which is no small thing in a century that has watched other countries manage the same task far worse.</p>
+
+      <p>Both readings describe the same seven prime ministers. They disagree about what to call the pattern, and the bare facts will not settle the argument for you. What the constitution treats as a routine transfer, a decade of repetition turns into a question about legitimacy — and the two do not cancel out, because a system can be working exactly as designed and still be reporting that something has gone wrong upstream, in the politics the design was never built to fix.</p>
+
+      <div class="mx-ledger" data-mx-event="ledger">
+        <div class="mx-ledger__caption">The Handovers · Seven Leaders, 2016–2026</div>
+
+      <p>What Burnham inherits makes the argument more than academic. He takes over a government that CNN's analysis described as struggling, with the hard-right Reform UK pressing Labour from the flank and the standing question that hangs over every unelected prime minister: how long can you govern on a predecessor's mandate before the public demands its own say? Sunak carried Boris Johnson's 2019 mandate for the better part of two years, then lost the election he eventually called — the vote that put Starmer in and set this whole chain running toward Monday. Burnham's pitch, trailed as a promise to "restore hope," assumes he can do what most of the leaders before Starmer could not: steady a party in office and win the argument with the country before the country insists on being asked. He arrives with the largest nomination mandate in his party's modern history and the smallest democratic mandate a prime minister can hold, which is none. Whether he can reconcile those two things is the story of the government that begins this week.</p>
+
+
+        <div class="mx-ledger__row"><span class="mx-ledger__date">2016</span><span class="mx-ledger__match"><b>Theresa May</b> succeeds Cameron</span><span class="mx-ledger__result">NO VOTE</span></div>
+        <div class="mx-ledger__row"><span class="mx-ledger__date">2019</span><span class="mx-ledger__match"><b>Boris Johnson</b> wins the Tory leadership</span><span class="mx-ledger__result">PARTY</span></div>
+        <div class="mx-ledger__row"><span class="mx-ledger__date">2022</span><span class="mx-ledger__match"><b>Liz Truss</b>, then <b>Rishi Sunak</b> — weeks apart</span><span class="mx-ledger__result">NO VOTE</span></div>
+        <div class="mx-ledger__row"><span class="mx-ledger__date">2024</span><span class="mx-ledger__match"><b>Keir Starmer</b> wins the general election</span><span class="mx-ledger__result">ELECTED</span></div>
+        <div class="mx-ledger__row"><span class="mx-ledger__date">2026</span><span class="mx-ledger__match"><b>Andy Burnham</b> — 379 nominations, unopposed</span><span class="mx-ledger__result">NO VOTE</span><span class="mx-ledger__note">Britain's seventh leader in a decade; the fourth handover with no election.</span></div>
+      </div>
+
+      <p>On Monday, then, a man almost no voter chose will take the most powerful job in the country, entirely lawfully, to run a government elected under someone else. The rules will be followed at every step. The King will act on convention, the Commons will hold its majority, and the machine will turn over smoothly, the way it is built to. The thing Burnham cannot fix by being competent is the question the whole decade keeps raising: at what point does a system that lawfully keeps handing power to people the public did not pick stop looking like democracy working and start looking like democracy being worked around? He has until the next election, whenever he chooses to call it, to argue that the answer is still the first one.</p>
+    </div>
+  </section>
+  <div class="wave wave--ink" aria-hidden="true" style="margin-top:26px;color:var(--signal);">
+    <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+      <path d="M0 13 H50 l6 -11 6 22 6 -22 6 22 6 -11 H160 l5 -9 5 18 5 -18 5 18 5 -9 H280 l7 -12 7 24 7 -24 7 24 7 -12 H420 l4 -7 4 14 4 -14 4 14 4 -7 H540 l6 -11 6 22 6 -22 6 22 6 -11 H680 l5 -8 5 16 5 -16 5 16 5 -8 H800" fill="none" stroke="currentColor" stroke-width="2.0"/>
+    </svg>
+  </div>
+
+  <!-- MOVEMENT III · THE ROUNDS -->
+  <div class="movement" data-movement="rounds">
+    <div class="movement__rule">
+      <span class="movement__no">III</span>
+      <span class="movement__name">The Rounds</span>
+      <span class="mono movement__meta">BRISK · SCANNABLE</span>
+    </div>
+  </div>
+
+  <div class="band" data-band="touchline">
+    <div class="bandhead">
+      <span class="mono code">BAND 06 — <b>THE TOUCHLINE</b></span>
+      <span class="mono runtime">SPORT</span>
+    </div>
+  </div>
+  <section class="round">
+    <div data-mx-event="figure" class="plate-img lead">
+      <img src="/assets/cached/f37adaa87280.jpg" alt="Jannik Sinner on Centre Court during the 2026 Wimbledon men's singles final, racket in hand mid-point on the grass" loading="lazy">
+      <div class="plate-cap"><span class="mono fig">FIG.</span><span class="txt">Jannik Sinner on his way to defending the Wimbledon title — one of the week's few verdicts already signed and sealed, while sport's two biggest prizes are still to be handed over tonight.<span class="credit">Wikimedia Commons</span></span></div>
+    </div>
+
+    <p class="lead"><span class="drop">The week sport handed its trophies over</span> — and the two biggest are still being decided as this is read. There is a bluntness to sport I find restful on a Sunday: a tennis final ends when the last ball drops, a race ends at the line, and no verdict sits waiting on a committee. This week alone crowned two champions on the grass at Wimbledon and settled a ten-goal bronze match — yet the two prizes that matter most, a World Cup and a Grand Prix, are both still to come. As I write, neither has a winner. By tonight, both will.</p>
+
+
+    <div class="mx-sig-dial-sweep" data-mx-event="chart" style="display:flex;flex-direction:column;align-items:center;margin:24px 0 8px;">
+      <div class="mx-dial" aria-hidden="true" style="--mx-needle-x:58%;"><span class="mx-dial__needle"></span></div>
+      <span class="mx-freq">Tuned · 98.4 · SW19 &amp; MetLife</span>
+    </div>
+
+
+    <figure class="mx-quote" data-mx-event="quote">
+      <blockquote>Not happy with the performance&hellip; sloppy. But proud of the result.</blockquote>
+      <figcaption>— <cite><b>Thomas Tuchel</b></cite> · England head coach, on the World Cup run</figcaption>
+    </figure>
+
+    <div class="scores">
+      <div class="score wide">
+        <span class="mono tag">101.2 · WORLD CUP · THE FINAL</span>
+        <h3>A final still to be played</h3>
+        <p>Spain against Argentina at MetLife Stadium in New Jersey, <a href="https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_final">kicking off at 15:00 Eastern today</a> — the last act of the largest tournament football has staged, the first with 48 teams and 104 matches, run across the United States, Canada and Mexico since 11 June. It is also the first final to bring together the world's top two ranked sides, Argentina first and Spain second, and the first all-Spanish-speaking final since 1930. Neither has lifted anything yet: as this goes out the match is still to be played, and I'm not about to guess it. The path there is settled, though. Spain saw off France 2-0 in the semis; Argentina edged England 2-1. And the bronze is already banked — <a href="https://sports.yahoo.com/soccer/live/france-england-world-cup-2026-score-result-schedule-live-updates-160000692.html">England beat France 6-4 on Saturday</a> in a ten-goal thriller that a third-place playoff had no business being. <span class="num">Kick-off pending.</span></p>
+      </div>
+    </div>
+
+
+    <div class="mx-ledger" data-mx-event="ledger">
+      <div class="mx-ledger__caption">Fixtures &amp; Results · Week 29</div>
+      <div class="mx-ledger__row"><span class="mx-ledger__date">SAT 18</span><span class="mx-ledger__match"><b>England</b> 6–4 France · World Cup, Third-Place Play-off</span><span class="mx-ledger__result">6–4</span><span class="mx-ledger__note">Ten goals in a bronze match that had no business being this open.</span></div>
+      <div class="mx-ledger__row"><span class="mx-ledger__date">SUN 12</span><span class="mx-ledger__match"><b>Sinner</b> d. Zverev · Wimbledon, Gentlemen's Final</span><span class="mx-ledger__result">4 SETS</span><span class="mx-ledger__note">Never trailed after the second-set breaker. Crown retained.</span></div>
+      <div class="mx-ledger__row"><span class="mx-ledger__date">SAT 11</span><span class="mx-ledger__match"><b>Nosková</b> d. Muchová · Wimbledon, Ladies' Final</span><span class="mx-ledger__result">6-2 5-7 6-3</span><span class="mx-ledger__note">A first Slam; the youngest champion since 2011.</span></div>
+      <div class="mx-ledger__row"><span class="mx-ledger__date">TODAY</span><span class="mx-ledger__match"><b>Spain v Argentina</b> · World Cup Final, MetLife</span><span class="mx-ledger__result">15:00 ET</span></div>
+      <div class="mx-ledger__row"><span class="mx-ledger__date">TODAY</span><span class="mx-ledger__match"><b>Belgian Grand Prix</b> · Spa-Francorchamps</span><span class="mx-ledger__result">RACE DAY</span><span class="mx-ledger__note">Antonelli on pole; Norris starts 13th on a grid penalty.</span></div>
+    </div>
+
+    <figure class="mx-quote" data-mx-event="quote">
+      <blockquote>He's still the best player in the world, I do believe that&hellip; probably three guys who can challenge him.</blockquote>
+      <figcaption>— <cite><b>Alexander Zverev</b></cite> · courtside, after the Wimbledon final</figcaption>
+    </figure>
+
+    <ul class="items">
+      <li>
+        <span class="freq">98.4</span>
+        <div>
+          <h3>Two Wimbledon crowns, one of them kept</h3>
+          <p>Jannik Sinner beat Alexander Zverev <a href="https://www.olympics.com/en/news/wimbledon-2026-jannik-sinner-alexander-zverev-mens-singles-final-resuls">6-7(7-9), 7-6(7-2), 6-3, 6-4</a> to defend his title over three hours and forty-six minutes — a fifth Grand Slam, and only the tenth man in the Open Era to retain the gentlemen's crown. He dropped just three sets across the fortnight; the one he lost in the final was the only real wobble. The day before, Linda Nosková came through an all-Czech women's final over Karolína Muchová <a href="https://www.cbssports.com/tennis/news/wimbledon-2026-results-winners-jannik-sinner-linda-noskova/live/">6-2, 5-7, 6-3</a> to take a first major and become the youngest champion since Petra Kvitová in 2011. <b>2 champions.</b></p>
+        </div>
+      </li>
+      <li>
+        <span class="freq">104.7</span>
+        <div>
+          <h3>Spa sets a grid, saves the race for later</h3>
+          <p>The Belgian Grand Prix runs this afternoon, and the front of the grid has a surprise on it. Kimi Antonelli took pole at Spa with a <a href="https://racingnews365.com/2026-f1-belgian-grand-prix-spa-qualifying-results">1:44.361</a>, edging Max Verstappen into second. Lando Norris set the third-fastest time in qualifying but starts 13th after a ten-place grid penalty, which promotes George Russell up the order. Whether Antonelli can convert a maiden pole into something more, and how far Norris can climb back through the field, is the whole story of a race that hasn't happened yet. <b>Lights out later.</b></p>
+        </div>
+      </li>
+      <li>
+        <span class="freq">106.0</span>
+        <div>
+          <h3>Serie A draws its map for August</h3>
+          <p>With the international season closing, the domestic one is already sketched: the <a href="https://en.wikipedia.org/wiki/2026%E2%80%9327_Serie_A">2026-27 Serie A fixtures</a> are out, the campaign opening the weekend of 22-23 August with Torino hosting AC Milan. Juventus begin away at newly promoted Frosinone — a gentle-looking start on paper, though those rarely stay gentle. <b>Kick-off 22 Aug.</b></p>
+        </div>
+      </li>
+    </ul>
+
+    <div class="mx-shelf">
+      <div class="mx-ticket" data-mx-event="ephemera">
+        <div class="mx-ticket__main">
+          <span class="mx-ticket__meta">All England Club · Gentlemen's Final</span>
+          <span class="mx-ticket__event">Sinner v. Zverev</span>
+          <span class="mx-ticket__meta mx-ticket__row"><span>Court</span><span>Centre, SW19</span></span>
+          <span class="mx-ticket__meta mx-ticket__row"><span>Score</span><span>6-7 7-6 6-3 6-4</span></span>
+          <span class="mx-ticket__meta mx-ticket__row"><span>Ledger</span><span>Slam № 5</span></span>
+        </div>
+        <div class="mx-ticket__stub"><div class="mx-stamp"><span>SW19</span><b>RE&#8203;TAINED</b><span>10th ever</span></div></div>
+      </div>
+      <div class="mx-scorecard" data-mx-event="ledger">
+        <h4 class="mx-scorecard__title">World Cup · The Last Four</h4>
+        <table>
+          <tr class="is-lead"><td class="mx-scorecard__pos">F</td><td>SPAIN</td><td class="mx-scorecard__gap">TODAY</td></tr>
+          <tr class="is-lead"><td class="mx-scorecard__pos">F</td><td>ARGENTINA</td><td class="mx-scorecard__gap">TODAY</td></tr>
+          <tr><td class="mx-scorecard__pos">3</td><td>ENGLAND</td><td class="mx-scorecard__gap">BRONZE</td></tr>
+          <tr><td class="mx-scorecard__pos">4</td><td>FRANCE</td><td class="mx-scorecard__gap">4TH</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <figure class="mx-quote" data-mx-event="quote">
+      <blockquote>His game keeps growing and growing.</blockquote>
+      <figcaption>— <cite><b>Jannik Sinner</b></cite> · on Zverev, moments after retaining the title</figcaption>
+    </figure>
+  </section>
+
+  <div class="band" data-band="pixel_byte">
+    <div class="bandhead">
+      <span class="mono code">BAND 07 — <b>PIXEL &amp; BYTE</b></span>
+      <span class="mono runtime">GAMING</span>
+    </div>
+  </div>
+  <section class="round">
+    <div data-mx-event="figure" class="plate-img lead">
+      <img src="/assets/cached/8ff67aa0126f.jpg" alt="Key art for Halo: Campaign Evolved — an armoured Spartan super-soldier standing against a war-torn sky" loading="lazy">
+      <div class="plate-cap"><span class="mono fig">FIG.</span><span class="txt">Halo: Campaign Evolved — the remade original, and the first mainline Halo remake headed to PlayStation, due 28 July.<span class="credit">Xbox / Halo Studios</span></span></div>
+    </div>
+
+    <p class="lead"><span class="drop">Two beloved back catalogues, rebuilt inside a month</span> — July is usually the quiet quarter of the gaming calendar, the lull before the autumn stampede, and this one runs true to form. What fills the gap is a remake summer: two of the medium's most-loved games returned to the workbench and sent back out within weeks of each other, one already here and one about to land. If the new-release slate is thin, the reissue slate is doing the heavy lifting.</p>
+
+    <div data-mx-event="figure" class="plate-img">
+      <img src="/assets/cached/de0cff9fdf9c.jpg" alt="Key art for Assassin's Creed Black Flag Resynced — a pirate captain at the wheel of his ship under storm light" loading="lazy">
+      <div class="plate-cap"><span class="mono fig">FIG.</span><span class="txt">Assassin's Creed Black Flag Resynced — the 2013 pirate adventure rebuilt from the ground up, out since 9 July.<span class="credit">Ubisoft (via Xbox Wire)</span></span></div>
+    </div>
+
+    <ul class="items">
+      <li>
+        <span class="freq">108.6</span>
+        <div>
+          <h3>Black Flag, resynced</h3>
+          <p><a href="https://news.xbox.com/en-us/2026/07/08/assassins-creed-black-flag-resynced-returns/">Assassin's Creed Black Flag Resynced</a> (9 July, PS5/Xbox/PC) is a ground-up remake of 2013's much-loved pirate adventure — the golden-age-of-piracy entry that a lot of players still name as the best the series ever managed. The pull was never really the assassinating; it was the ship. Black Flag was the one where the sailing and the sea shanties outshone the stealth, where a full open ocean sat beneath the map and there was always a horizon worth chasing. Rebuilding it for current hardware is a low-risk proposition, precisely because the thing being rebuilt already worked. If you missed it the first time round, or simply fancy the crossing again, this is the version to board. <b>Set sail again.</b></p>
+        </div>
+      </li>
+      <li>
+        <span class="freq">111.3</span>
+        <div>
+          <h3>Halo comes to PlayStation</h3>
+          <p><a href="https://news.xbox.com/en-us/2026/06/07/halo-campaign-evolved-launch-preorder-xbox-games-showcase-2026/">Halo: Campaign Evolved</a> is the other half of the season, and the more surprising one. It launches 28 July on Xbox, PC (Steam) and — for the first time for a mainline Halo remake — PlayStation 5, arriving day one on Game Pass, with early access from 23 July for anyone who pre-orders. Frame it however you like: a Halo game on a Sony console is the sort of sentence that would have read as a typo not so long ago, and it is the clearest sign yet of how far the old platform walls have come down. The campaign itself is the reason the series mattered in the first place; putting it in front of an audience that has never been able to play it is the interesting part. Still forthcoming as this goes out. <b>28 July, everywhere.</b></p>
+        </div>
+      </li>
+      <li>
+        <span class="freq">113.9</span>
+        <div>
+          <h3>An indie-led lull</h3>
+          <p>Between the two big reissues, the <a href="https://news.instant-gaming.com/en/articles/20703-new-releases-for-the-week-of-july-13-19-2026">week itself</a> (13–19 July) was quiet and indie-led — a scattering of roguelites and co-op horror rather than anything marquee. That is not a complaint. A week with nothing you have to buy is a week to clear the backlog: finish the thing you started in spring, or dip into a small release you would otherwise have skipped straight past. Treat it as the catch-up window it plainly is. <b>Backlog weather.</b></p>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <div class="band" data-band="screen_sound">
+    <div class="bandhead">
+      <span class="mono code">BAND 08 — <b>SCREEN &amp; SOUND</b></span>
+      <span class="mono runtime">WATCH &amp; LISTEN · + RELEASE RADAR</span>
+    </div>
+  </div>
+  <section class="round">
+    <div data-mx-event="figure" class="plate-img lead">
+      <img src="/assets/cached/42906603647c.jpg" alt="First-look image from Heartstopper Forever — Nick and Charlie together in the feature-length Netflix send-off" loading="lazy">
+      <div class="plate-cap"><span class="mono fig">FIG.</span><span class="txt">Heartstopper Forever closes Netflix's teen romance with a feature-length finale.<span class="credit">Netflix · via Variety</span></span></div>
+    </div>
+
+    <div class="with-rail">
+      <ul class="items" style="margin-top:0;">
+        <li>
+          <span class="freq">96.3</span>
+          <div>
+            <h3>Heartstopper bows out with a film, not a fourth season</h3>
+            <p>Heartstopper Forever, the feature-length send-off to Netflix's teen-romance series, arrived this week and draws a line under Nick and Charlie after three seasons. Rather than stretch to another full run, the show chooses a single film — a decision that lets the ending play as a proper valediction instead of one more cliffhanger. The consensus among reviewers is that it grows up with its cast: the writing follows the characters into thornier, more adult territory, and it reaches for closure rather than another hook. The Guardian's Owen Myers, in a three-star notice picked up by Variety, met the recurring complaint that the series is simply too nice head-on: <figure class="mx-quote" data-mx-event="quote" style="margin:20px 0;">
+              <blockquote>Saying Heartstopper Forever is too wholesome is like complaining that your hot chocolate is too rich.</blockquote>
+              <figcaption>— <cite><b>Owen Myers</b></cite> · The Guardian, on the Heartstopper finale</figcaption>
+            </figure> It is a fair defence of a show whose gentleness was always the point — the argument that its warmth is a feature, not a flaw, is roughly the whole case for watching it. That is also the balance the finale has to strike: sending off a young cast the audience has watched grow up without either dodging the harder edges of adulthood or losing the tenderness that made the series matter in the first place. The verdict this week is that it manages it. For anyone who followed the series from its first, quietly radical season, the week of 13-19 July is when it signs off — on its own terms, and on a note the reviews read as a mature swan song rather than a franchise clinging on for one more lap. <a href="https://variety.com/2026/tv/reviews/heartstopper-forever-review-netflix-1236812518/">Read the review</a>.</p>
+          </div>
+        </li>
+        <li>
+          <span class="freq">99.1</span>
+          <div>
+            <h3>A comfort-viewing week around the finale</h3>
+            <p>The Heartstopper film headlines a busier-than-usual streaming week. The Walking Dead: Daryl Dixon returns for its third season, the spin-off that has quietly become one of the more durable branches of that universe still finding new ground. Alongside it, Netflix brings The Hawk, a Will Ferrell golf comedy, and a third season of Quarterback, the NFL-access docuseries that trails the league's starting passers through a full campaign. It makes for a slate that leans hard toward comfort viewing — an apocalypse drama, a broad sports comedy and a locker-room documentary, three very different registers of undemanding company for the back half of July. None of them is reinventing its form, but that is rather the appeal: on a Sunday when the two biggest live events of the week — the World Cup final and the Belgian Grand Prix — are the appointment viewing, the streaming schedule is stacked with the kind of releases that ask nothing more than an evening on the sofa. The returning genre draw anchors it; the two lighter arrivals round it out. Between them there is enough breadth here that a quiet night in is well covered whichever way the mood runs, from post-apocalyptic tension to broad comedy to sport served as documentary. <a href="https://www.whats-on-netflix.com/coming-soon/whats-coming-to-netflix-this-week-july-13-to-19-2026/">What's new this week</a>.</p>
+          </div>
+        </li>
+      </ul>
+
+      <aside class="rail" data-role="release-radar" data-mx-event="ledger" aria-label="Release Radar">
+        <div class="rail__label">
+          <span class="mono t">RELEASE RADAR</span>
+          <span class="mono">DATED</span>
+        </div>
+        <div class="rail-item">
+          <span class="when">TODAY · 19 JUL</span>
+          <span class="what"><b>World Cup Final — Spain v Argentina</b><i>football · MetLife, 15:00 ET</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">TODAY · 19 JUL</span>
+          <span class="what"><b>Belgian Grand Prix</b><i>F1 · race day at Spa</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 21 JUL</span>
+          <span class="what"><b>The Witch Below the Dreaming Wood</b><i>book · H.G. Parry novel</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 23 JUL</span>
+          <span class="what"><b>Halo: Campaign Evolved</b><i>game · early access</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 26 JUL</span>
+          <span class="what"><b>Hungarian Grand Prix</b><i>F1 · Hungaroring, Round 11</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 28 JUL</span>
+          <span class="what"><b>Halo: Campaign Evolved</b><i>game · full launch · Xbox/PS5/Steam</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 30 JUL</span>
+          <span class="what"><b>Bank of England rate decision</b><i>finance · hold expected at 3.75%</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 2 AUG</span>
+          <span class="what"><b>Willy Wonka &amp; the Chocolate Factory</b><i>film · 55th-anniversary re-release</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 8 AUG</span>
+          <span class="what"><b>Tales from Earthsea</b><i>film · Ghibli Fest · 20th</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 14 AUG</span>
+          <span class="what"><b>Train to Busan</b><i>film · 10th-anniversary remaster</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 16 AUG</span>
+          <span class="what"><b>Point Break</b><i>film · 35th-anniversary re-release</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 21 AUG</span>
+          <span class="what"><b>Premier League 2026-27</b><i>football · season opens</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 22 AUG</span>
+          <span class="what"><b>Castle in the Sky</b><i>film · Ghibli Fest · 40th</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 23 AUG</span>
+          <span class="what"><b>Serie A 2026-27</b><i>football · Torino v Milan; Juve at Frosinone</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 28 AUG</span>
+          <span class="what"><b>Terminator 2: Judgment Day</b><i>film · 35th-anniversary re-release</i></span>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <div class="band" data-band="bookmark">
+    <div class="bandhead">
+      <span class="mono code">BAND 09 — <b>BOOKMARK</b></span>
+      <span class="mono runtime">BOOKS · ON THE NIGHTSTAND</span>
+    </div>
+  </div>
+  <section class="round">
+    <ul class="picks">
+      <li data-mx-event="figure">
+        <span class="spine" aria-hidden="true"></span>
+        <span class="jacket"><img src="/assets/cached/4ffb68e0f63b.jpg" alt="Book cover of Not with a Bang by Temi Oh" loading="lazy"></span>
+        <div>
+          <h3>Not with a Bang</h3>
+          <p class="meta">Science fiction · new July 2026 · literary</p>
+          <p>Temi Oh's newest, out this month, drops a family into an apocalypse — but the catch is that each of them lives with a different mental-health condition, and the paranoia turns out to be more than symptom. It's the kind of current, character-first SF that uses the end of the world to look hard at how the mind copes when the ground gives way. The premise keeps the reader guessing about what's real and what's illness, and it does so without letting the human story slide out of focus. Fresh off the press and worth getting to before the spoilers land — the sort of literary SF that rewards reading before the discourse catches up.</p>
+        </div>
+      </li>
+      <li data-mx-event="figure">
+        <span class="spine" aria-hidden="true"></span>
+        <span class="jacket"><img src="/assets/cached/e3d12f7ecb91.jpg" alt="Book cover of Alien Clay by Adrian Tchaikovsky" loading="lazy"></span>
+        <div>
+          <h3>Alien Clay</h3>
+          <p class="meta">Science fiction · alien world · prison colony</p>
+          <p>A penal colony marooned on a genuinely strange alien world, from a writer at the top of the modern SF field. Adrian Tchaikovsky builds ecosystems that feel thought-through rather than decorative, and this one pairs that world-building with a political thriller's edge. The setup — dissidents shipped off-world and put to hard labour under an authoritarian regime — gives the alien biology real stakes rather than set dressing. If it slipped past you when it landed, it's the ideal reset between doorstop fantasy series — self-contained, sharp, and unmistakably its own thing.</p>
+        </div>
+      </li>
+      <li data-mx-event="figure">
+        <span class="spine" aria-hidden="true"></span>
+        <span class="jacket"><img src="/assets/cached/ee6c63d1a88f.jpg" alt="Book cover of Some Desperate Glory by Emily Tesh" loading="lazy"></span>
+        <div>
+          <h3>Some Desperate Glory</h3>
+          <p class="meta">Science fiction · space opera · Hugo winner</p>
+          <p>Emily Tesh's Hugo-winning debut follows a soldier raised inside a militarised, radicalised world and traces what it takes to see past it. It's taut and driven entirely by character — the space-opera scaffolding is real, but the book's engine is one person's slow, painful reckoning. A lean, propulsive read that earns its award shelf and rewards a single-weekend sitting.</p>
+        </div>
+      </li>
+    </ul>
+    <p class="picks-credit mono">JACKETS · OPEN LIBRARY / PUBLISHER COVER</p>
+  </section>
+
+  <div class="band" data-band="this_week_in_history">
+    <div class="bandhead">
+      <span class="mono code">BAND 10 — <b>THIS WEEK IN HISTORY</b></span>
+      <span class="mono runtime">HISTORY · DATED</span>
+    </div>
+  </div>
+  <section class="round">
+    <p class="lead"><span class="drop">On 14 July 1965 — 61 years ago this week — a spacecraft the size of a small car crept to within 6,118 miles of Mars and did something no machine had ever done: it took a close-up photograph of another planet.</span> Mariner 4 had left Cape Canaveral the previous November and spent nearly eight months crossing the dark between the two worlds. In the space of about 25 minutes over the Martian dayside it captured 21 images, storing them on a four-track tape recorder because the radio link home was far too slow to send pictures live. Then it kept going, past Mars and out into an orbit around the Sun, its job done.</p>
+
+    <div data-mx-event="figure" class="plate-img" style="max-width:460px;">
+      <img src="/assets/cached/407d2c022a03.jpg" alt="Two versions of the first television image of Mars side by side: on the left a strip hand-coloured in pastel shades of yellow, orange and brown; on the right the same data rendered in grainy black and white by computer" loading="lazy">
+      <div class="plate-cap"><span class="mono fig">FIG.</span><span class="txt">The first image of Mars, twice over: the hand-coloured strip engineers made with pastel crayons (left) beside the computer-processed original (right).<span class="credit">NASA/JPL</span></span></div>
+    </div>
+
+    <p>What came back rewrote the planet. For centuries Mars had been the sky's great blank canvas — home in the popular imagination to canals, engineers, dying civilisations rationing their water across a drying globe. Mariner 4's pictures showed none of it. They showed craters: a cratered, cold, Moon-like surface, pocked and ancient. The onboard instruments were just as blunt about it. Surface atmospheric pressure came in below 1% of Earth's, far too thin for liquid water or for the lush Mars that novelists and a good many scientists had half-expected. In a single afternoon of data, the romantic Mars quietly died.</p>
+
+    <p>The most human moment came before the computers had even finished. The picture data arrived as a long strip of numbers, each one describing how bright a point on Mars should be. Rather than wait for the processing to render it as a proper image, impatient staff at the Jet Propulsion Laboratory pinned up a printed strip of those raw numbers, bought pastel crayons from an art shop, and hand-coloured each value like a paint-by-numbers — yellow for the brightest, browns and reds for the dark. The result, framed and hung at JPL, was the true first picture of Mars: not a photograph at all, but a colouring made by hand from telemetry, because the people who built the machine could not bear to wait for it.</p>
+
+    <div data-mx-event="figure" class="plate-img" style="max-width:400px;">
+      <img src="/assets/cached/7652b526eda5.jpg" alt="A globe of Mars with Mariner 4's 21 narrow flyby photographs laid out as a diagonal strip across the surface, showing the swath the spacecraft captured on its pass" loading="lazy">
+      <div class="plate-cap"><span class="mono fig">FIG.</span><span class="txt">All 21 of Mariner 4's flyby frames, mapped onto Mars — the thin diagonal ribbon of surface a single fast pass could see.<span class="credit">NASA/JPL</span></span></div>
+    </div>
+
+    <p>The same mid-July week carries a run of other beginnings. On 16 July 1969, Apollo 11 lifted off from Florida to carry the first humans to the Moon. On 17 July 1955, Disneyland opened its gates in Anaheim, California, on a chaotic first day its own staff later nicknamed "Black Sunday". And on 19 July 1848 — 178 years ago today — the Seneca Falls Convention opened in upstate New York, the first women's rights convention in the United States, where the Declaration of Sentiments demanded, among much else, the vote. But it is Mariner 4 that lingers. It flew past Mars once, sent home two dozen grainy frames, and in doing so turned a planet of stories into a place — cratered, thin-aired, real — that every rover since has been sent to read more closely.</p>
+
+    <div class="mx-ledger" data-mx-event="ledger">
+      <div class="mx-ledger__caption">The Same Mid-July Week · Other Beginnings</div>
+      <div class="mx-ledger__row"><span class="mx-ledger__date">14 JUL</span><span class="mx-ledger__match"><b>1965</b> — Mariner 4 passes Mars, first close-up of another planet</span><span class="mx-ledger__result">6,118 MI</span></div>
+      <div class="mx-ledger__row"><span class="mx-ledger__date">16 JUL</span><span class="mx-ledger__match"><b>1969</b> — Apollo 11 lifts off for the Moon</span><span class="mx-ledger__result">LAUNCH</span></div>
+      <div class="mx-ledger__row"><span class="mx-ledger__date">17 JUL</span><span class="mx-ledger__match"><b>1955</b> — Disneyland opens in Anaheim ("Black Sunday")</span><span class="mx-ledger__result">OPENS</span></div>
+      <div class="mx-ledger__row"><span class="mx-ledger__date">19 JUL</span><span class="mx-ledger__match"><b>1848</b> — Seneca Falls, first US women's rights convention</span><span class="mx-ledger__result">178 YRS</span></div>
+    </div>
+  </section>
+
+  <div class="band" data-band="the_desk">
+    <div class="bandhead">
+      <span class="mono code">BAND 11 — <b>THE DESK</b></span>
+      <span class="mono runtime">SERVICE</span>
+    </div>
+  </div>
+  <section class="round" data-role="desk">
+    <div class="desk">
+      <div class="deskcol" data-desk-column>
+        <h3>The Session</h3>
+        <span class="mono sub">FITNESS · BLOCK 3, CONCURRENT LOAD</span>
+        <p>The 10k is going back into a week that's built for building muscle, and the old worry surfaces with it: does running kill your gains? For a recreational lifter, the honest answer is <b>very little</b>. The meta-analyses on concurrent training are consistent — adding endurance work does <b>not</b> significantly blunt hypertrophy, and it trims maximal strength by only about <b>5–10%</b>. Power and explosive output take the biggest hit; the muscle-in-the-mirror job you're actually running Block 3 for is barely touched. So land that plainly before the caveats: a few runs a week will not undo a hypertrophy block.</p>
+        <p>Now the qualifiers, because they're where the free wins are. The interference effect scales with endurance <i>volume</i> — a couple of moderate runs is noise, marathon-week mileage is not — so keep the running honest and moderate while the block is on. Separate the two disciplines by <b>6–8 hours</b> where the day allows it, so fatigue from one doesn't tax the other. If they have to share a session, <b>lift first, run second</b> — you protect the quality of the loaded work that drives the adaptation. And because running's eccentric, pounding load lands hardest on the legs you're also trying to grow, some of those runs can be swapped for <b>cycling</b> when lower-body hypertrophy is the week's priority: similar aerobic stimulus, far less muscle-damaging impact.</p>
+        <div class="pin">
+          <div class="pinlbl mono">DO THIS WEEK · <b>THE SESSION</b></div>
+          <p class="act">Put the hardest lower-body session and the longest run on different days — or at least 6+ hours apart — and when they do collide, barbell before the road.</p>
+          <p class="why">The interference is small and mostly hits power, not size; spacing the two and lifting first keeps even that small cost off the work that grows muscle.</p>
+        </div>
+      </div>
+
+
+      <div class="mx-shelf" style="margin:8px 0 26px;">
+        <div class="mx-scorecard" data-mx-event="ledger">
+          <h4 class="mx-scorecard__title">The Rate War · As of 19 Jul</h4>
+          <table>
+            <tr class="is-lead"><td>BoE base rate</td><td class="mx-scorecard__gap">3.75%</td></tr>
+            <tr><td>Nationwide cuts, 1 mo</td><td class="mx-scorecard__gap">×4</td></tr>
+            <tr><td>Avg 2-yr fix, June</td><td class="mx-scorecard__gap">−0.16pp</td></tr>
+            <tr><td>MPC decision</td><td class="mx-scorecard__gap">30 JUL</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="deskcol" data-desk-column>
+        <h3>The Ledger</h3>
+        <span class="mono sub">MONEY · MORTGAGE RATES</span>
+        <p>The UK mortgage price war is deepening even though the Bank of England hasn't moved. The base rate sits at <b>3.75%</b>, and markets expect a hold when the Monetary Policy Committee meets on <b>30 July</b> — yet lenders aren't waiting for the Bank's cue. Nationwide has cut its rates roughly <b>four times in a month</b>, Yorkshire Building Society twice in a single week, and the average two-year fix fell 0.16 percentage points in June, the fastest monthly drop since October 2024. The important read: the cheaper deals landing right now are coming from <b>lender competition</b>, not from a rate cut. Fixed mortgages are getting cheaper while the base rate stands still.</p>
+        <p>That distinction matters for timing. Because the discounting is a scramble for market share rather than a response to falling base rates, there's no single announcement to wait for — the good deal is the one on the table today, and a better one may or may not follow. The useful mechanic is that most lenders let you <b>lock a rate up to six months ahead</b> of your current deal ending, and swap onto a cheaper one if rates fall further before you complete. You get the downside protection of a secured rate with the upside of the ongoing price war, which is about as close to a free option as this market offers.</p>
+        <div class="pin">
+          <div class="pinlbl mono">DO THIS WEEK · <b>THE LEDGER</b></div>
+          <p class="act">If a fix expires within about six months, get a new deal quoted and locked now — most can be secured up to six months ahead and swapped if rates drop before completion.</p>
+          <p class="why">The cuts are coming from lenders competing, not the Bank easing, so there's no rate decision to wait on. Locking now protects you and still lets you trade down if the price war keeps running.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div class="wave wave--ink" aria-hidden="true" style="margin-top:26px;color:var(--signal);">
+    <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+      <path d="M0 13 H60 l6 -10 6 20 6 -20 6 20 6 -20 6 10 H160 l5 -8 5 16 5 -16 5 16 5 -8 H280 l7 -12 7 24 7 -24 7 24 7 -12 H420 l4 -6 4 12 4 -12 4 12 4 -6 H540 l6 -11 6 22 6 -22 6 22 6 -11 H680 l5 -7 5 14 5 -14 5 14 5 -7 H800" fill="none" stroke="currentColor" stroke-width="2.0"/>
+    </svg>
+  </div>
+
+  <!-- MOVEMENT IV · THE CLOSE -->
+  <div class="movement" data-movement="close">
+    <div class="movement__rule">
+      <span class="movement__no">IV</span>
+      <span class="movement__name">The Close</span>
+      <span class="mono movement__meta">THREADS · RABBIT HOLE · RADAR</span>
+    </div>
+  </div>
+
+  <div class="band" data-band="the_threads">
+    <div class="bandhead">
+      <span class="mono code">BAND 12 — <b>THE THREADS</b></span>
+      <span class="mono runtime">PREVIOUSLY ON · STILL RUNNING</span>
+    </div>
+  </div>
+  <section>
+
+    <div class="mx-ledger" data-mx-event="ledger">
+      <div class="mx-ledger__caption">Previously On · Still Running</div>
+      <div class="mx-ledger__row"><span class="mx-ledger__date">WMIN</span><span class="mx-ledger__match"><b>Seven leaders, no election</b> — Burnham declared, sworn in Monday</span><span class="mx-ledger__result">LIVE</span></div>
+      <div class="mx-ledger__row"><span class="mx-ledger__date">GULF</span><span class="mx-ledger__match"><b>The ceasefire that wouldn't set</b> — US calls it over, strikes resume</span><span class="mx-ledger__result">HOT</span></div>
+      <div class="mx-ledger__row"><span class="mx-ledger__date">LEV.</span><span class="mx-ledger__match"><b>A step back from the border</b> — Israel to leave southern 'pilot zones'</span><span class="mx-ledger__result">EASING</span></div>
+    </div>
+
+    <div class="threads">
+      <div class="thread">
+        <span class="ep">SAGA · WESTMINSTER</span>
+        <div>
+          <h3>Seven leaders, no election</h3>
+          <p class="prev">Previously: nominations opened in the race to replace Keir Starmer, with Andy Burnham the clear front-runner — 322 of Labour's 403 MPs already behind him and on course to win unopposed.</p>
+          <p>Nominations closed on 15 July with Burnham on 379, about 94% — the largest share in a modern Labour leadership contest, past Gordon Brown's 88% in 2007 — and on 17 July he was declared leader with no opponent on the ballot. He is due to be appointed Prime Minister on Monday, replacing Starmer without a general election: Britain's seventh leader in a decade, and one more handover of the top job arriving with no public vote. It is an unusual route to Downing Street — the Mayor of Greater Manchester returned to the Commons through a by-election to make himself eligible, an outsider stepping into the job rather than climbing to it. <b>Next:</b> whether an unelected premier faces pressure to go to the country early, and how the "King of the North" holds off the Reform UK challenge.</p>
+        </div>
+      </div>
+      <div class="thread">
+        <span class="ep">SAGA · THE GULF</span>
+        <div>
+          <h3>The ceasefire that wouldn't set</h3>
+          <p class="prev">Previously: Washington had called the June understanding over, with Qatari mediators shuttling to Tehran to keep a diplomatic channel alive.</p>
+          <p>The truce is now firmly dead. The US declared it over on 8 July after Iranian attacks on commercial ships, and on 15 July said fresh strikes on Iranian targets were aimed at protecting vessels in the Strait of Hormuz — imposing new sanctions on Tehran alongside them. The 60-day window opened by June's Islamabad Memorandum, meant to settle Hormuz navigation, Iran's nuclear and missile programmes and sanctions, has collapsed, and traffic through the strait stays well down from the roughly 110 ships a day it normally carries. <b>Next:</b> whether any negotiating channel reopens, or the strikes and the shipping squeeze harden into a longer standoff.</p>
+        </div>
+      </div>
+      <div class="thread">
+        <span class="ep">SAGA · THE LEVANT</span>
+        <div>
+          <h3>A step back from the border</h3>
+          <p class="prev">Previously: cross-border exchanges between Israel and Lebanon had renewed, with strikes running on past the ceasefire's deadline.</p>
+          <p>The first concrete step down. On 15 July the US State Department reported that Israel had agreed to withdraw from the "pilot zones" it held in southern Lebanon, with the Lebanese army to take exclusive control of the ground it vacates — the clearest de-escalation in the sequence so far, even after Israeli strikes had continued past the earlier deadline. <b>Next:</b> whether the handover to the Lebanese army actually holds, and the quiet with it.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="band" data-band="rabbit_hole">
+    <div class="bandhead">
+      <span class="mono code">BAND 13 — <b>DOWN THE RABBIT HOLE</b></span>
+      <span class="mono runtime">CURIOSITY · SIGNAL FAINT, FOLLOW IT</span>
+    </div>
+  </div>
+  <section>
+    <div class="rabbit">
+      <span class="mono lbl">FROM THIS WEEK'S LONG READ → TUMBLE INTO</span>
+      <div class="chain">
+        <div class="node">
+          <span class="mono cap">FROM THIS WEEK'S LONG READ</span>
+          <span class="nm serif">Medieval machinery, still handing over power</span>
+        </div>
+        <div class="arrow" aria-hidden="true">→</div>
+        <div class="node">
+          <span class="mono cap">TUMBLE INTO</span>
+          <span class="nm serif">A 7th-century saint, fossilised in a word</span>
+        </div>
+      </div>
+
+      <div class="mx-ledger" data-mx-event="ledger">
+        <div class="mx-ledger__caption">The Word's Descent · Saint to Slur</div>
+        <div class="mx-ledger__row"><span class="mx-ledger__date">c.673</span><span class="mx-ledger__match"><b>Æthelthryth</b> — East Anglian princess, founds Ely Abbey</span><span class="mx-ledger__result">SAINT</span></div>
+        <div class="mx-ledger__row"><span class="mx-ledger__date">—</span><span class="mx-ledger__match">softened on English tongues to <b>Etheldreda → Audrey</b></span><span class="mx-ledger__result">St Audrey</span></div>
+        <div class="mx-ledger__row"><span class="mx-ledger__date">fair</span><span class="mx-ledger__match">cheap neck-lace sold at Ely's <b>St Audrey's fair</b></span><span class="mx-ledger__result">"tawdry lace"</span></div>
+        <div class="mx-ledger__row"><span class="mx-ledger__date">C17</span><span class="mx-ledger__match">slips its origins entirely — showy, cheap, worthless</span><span class="mx-ledger__result">TAWDRY</span></div>
+      </div>
+
+      <p>Modern Britain runs on old machinery — a monarch appointing whoever can command the Commons, a mechanism older than Parliament itself. But medieval England survives in stranger places than the constitution. It survives inside the word <em>tawdry</em>. Cheap, gaudy, flashy in a way that gives poor taste away — the word is a fossil, and buried inside it is a real person: a 7th-century Anglo-Saxon princess named Æthelthryth. English tongues softened the name to Etheldreda, then to Audrey, and finally to Saint Audrey. She was the daughter of an East Anglian king, married twice for reasons of state — the second time to Ecgfrith, king of Northumbria — and by tradition kept a vow of chastity through both marriages before leaving the world for religion. Around 673 she founded the abbey at Ely, out on the low island in the Cambridgeshire fens whose name means "eel island," and ruled it as abbess until her death.</p>
+      <p>According to the account left by the Venerable Bede, Æthelthryth died in 679 of a tumour in her throat, and she met the pain as penance. As a young woman she had loved fine necklaces, and she took the swelling at her neck as fair repayment for the vanity of all those jewels once clasped around her throat. It is the detail that outlived everything else about her. She was made a saint; Ely grew into a cathedral and a place of pilgrimage; and her feast days — 23 June, when she died, and 17 October, when her relics were moved — pulled in crowds year after year. By the Middle Ages the fair held in her honour at Ely had become one of the great trading events of the region.</p>
+      <p>Where crowds gather, sellers follow. At the annual St Audrey's fair at Ely, traders sold cheap lace and silk neckwear — collars, ribbons, scarves for the throat — pitched at pilgrims who wanted a keepsake and had little to spend. This finery was known as "St Audrey's lace," a nod to the saint and, pointedly, to the very necklaces that had supposedly killed her. Said quickly and carelessly across generations, "Saint Audrey" simply wore down in ordinary speech. The <em>s</em> of "Saint" slid onto "Audrey," the syllables collapsed inward, and "St Audrey's lace" became "tawdry lace."</p>
+      <p>By the 17th century the erosion was complete and the word had slipped its origins entirely. The lace itself carried a reputation — showy, cheaply made, the kind of thing sold at a fair to people who didn't know better — and "tawdry" broke free of the neckwear to describe anything with that quality. It no longer needed the lace, or the fair, or the saint. Today it means cheap and gaudy, flash without worth, and almost nobody who reaches for it knows they are invoking an Anglo-Saxon abbess who blamed her own jewellery for her death. It is one of the very few English words descended from a saint's name — and the saint is the part that vanished. What survives, lodged inside the word we use to name it, is the vanity she spent her last breath repenting.</p>
+    </div>
+  </section>
+
+  <div class="band" data-band="on_the_radar">
+    <div class="bandhead">
+      <span class="mono code">BAND 14 — <b>ON THE RADAR</b></span>
+      <span class="mono runtime">FORWARD CALENDAR · WHAT&#x27;S COMING</span>
+    </div>
+  </div>
+  <section>
+    <ul class="radar" data-mx-event="ledger">
+      <li>
+        <span class="date">SUN · 19 JUL</span>
+        <span class="ev"><b><a href="https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_final">World Cup final</a></b> — Spain v Argentina at MetLife Stadium, 15:00 ET today. The first 48-team, three-nation tournament, and the largest World Cup ever staged, ends with the two top-ranked sides meeting for the trophy — the closest thing the draw could have produced to a seeding-perfect final.</span>
+      </li>
+      <li>
+        <span class="date">MON · 20 JUL</span>
+        <span class="ev"><b><a href="https://www.aljazeera.com/news/2026/7/17/burnham-confirmed-as-leader-of-uks-governing-labour-party-headed-for-pm">Andy Burnham enters Number 10</a></b> — the former Manchester mayor, confirmed as Labour leader last week, becomes prime minister with the handover completing tomorrow. Britain changes its head of government without a general election — the latest of the decade's mid-term handovers, and its seventh leader in ten years.</span>
+      </li>
+      <li>
+        <span class="date">SUN · 26 JUL</span>
+        <span class="ev"><b><a href="https://www.formula1.com/en/latest/article/formula-1-aws-hungarian-grand-prix-2026.6rqroq0TO24FJxxSOxwXVq">Hungarian Grand Prix</a></b> — F1 heads to the Hungaroring, the tight, twisting circuit outside Budapest where track position is everything and overtaking is scarce. It is the last race before the sport shuts down for its August summer break.</span>
+      </li>
+      <li>
+        <span class="date">TUE · 28 JUL</span>
+        <span class="ev"><b><a href="https://www.xbox.com/en-US/games/halo-campaign-evolved">Halo: Campaign Evolved</a></b> — the series' opening story, rebuilt for current hardware, arrives on Xbox and PC. The remake that reintroduces the campaign that launched the franchise a quarter-century ago.</span>
+      </li>
+      <li>
+        <span class="date">THU · 30 JUL</span>
+        <span class="ev"><b><a href="https://www.bankofengland.co.uk/monetary-policy/the-interest-rate-bank-rate">Bank of England rate decision</a></b> — a hold at 3.75% is the widely expected call. Whichever way the Monetary Policy Committee lands, its verdict sets the tone for the mortgage price war lenders have already begun fighting.</span>
+      </li>
+      <li>
+        <span class="date">FRI · 21 AUG</span>
+        <span class="ev"><b><a href="https://en.wikipedia.org/wiki/2026%E2%80%9327_Premier_League">Premier League returns</a></b> — the 2026-27 season kicks off, the first weekend of English top-flight football back after the summer and the start of the nine-month grind that runs to next May.</span>
+      </li>
+      <li>
+        <span class="date">SUN · 23 AUG</span>
+        <span class="ev"><b><a href="https://en.wikipedia.org/wiki/2026%E2%80%9327_Serie_A">Serie A opens</a></b> — Italy's 2026-27 campaign gets going two days after the Premier League, with Juventus starting away at newly promoted Frosinone. A gentle-looking opener that a title chase would need to win.</span>
+      </li>
+    </ul>
+  </section>
+
+  <div class="band" data-band="do_this_week">
+    <div class="bandhead">
+      <span class="mono code">BAND 15 — <b>DO THIS WEEK</b></span>
+      <span class="mono runtime">THE ONE THING · PINNED</span>
+    </div>
+  </div>
+  <section>
+    <div class="closepin">
+      <div class="pinlbl mono">THE STRONGEST ACTION · <b>PIN IT TO THE FRIDGE</b></div>
+      <p class="act">If your mortgage fix runs out within the next six months, get a rate quote locked in now.</p>
+      <p class="why">Lenders are trimming rates even with the base rate holding steady ahead of the Bank of England's 30 July decision, and most quotes can be reserved up to six months early — then swapped for a cheaper one if rates fall further. Ten minutes on the phone caps your downside and leaves the upside open. Make the call this week, and sleep easier whatever the Bank does.</p>
+    </div>
+
+    <div class="mx-shelf" style="margin:24px 0 8px;">
+      <div class="mx-ticket" data-mx-event="ephemera">
+        <div class="mx-ticket__main">
+          <span class="mx-ticket__meta">The One Thing · Pin to the fridge</span>
+          <span class="mx-ticket__event">Lock a mortgage rate</span>
+          <span class="mx-ticket__meta mx-ticket__row"><span>When</span><span>This week</span></span>
+          <span class="mx-ticket__meta mx-ticket__row"><span>Why</span><span>Lenders cutting</span></span>
+          <span class="mx-ticket__meta mx-ticket__row"><span>Hold</span><span>Up to 6 months</span></span>
+        </div>
+        <div class="mx-ticket__stub"><div class="mx-stamp"><span>Do</span><b>THIS<br>WEEK</b><span>10 min</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="band" data-band="colophon">
+    <div class="bandhead">
+      <span class="mono code">BAND 16 — <b>COLOPHON</b></span>
+      <span class="mono runtime">THE ISSUE, ACCOUNTED FOR</span>
+    </div>
+  </div>
+  <section>
+    <div class="endnumbers" data-mx-event="statband">
+      <div class="cell">
+        <span class="mono k">ISSUE IN NUMBERS</span>
+        <span class="v serif">No. <em>17</em> · 4 movements</span>
+      </div>
+      <div class="cell">
+        <span class="mono k">WORDS SET</span>
+        <span class="v serif">7,100 <em>words</em> · one sitting</span>
+      </div>
+      <div class="cell">
+        <span class="mono k">READING TIME</span>
+        <span class="v serif">32 <em>min</em> · with coffee</span>
+      </div>
+      <div class="cell">
+        <span class="mono k">IN THE FRAME</span>
+        <span class="v serif">11 <em>images</em> · all sourced</span>
+      </div>
+      <div class="cell">
+        <span class="mono k">A FACT</span>
+        <span class="v serif">Cleopatra lived closer to the <em>Moon landing</em> than to the Great Pyramid</span>
+      </div>
+      <div class="cell">
+        <span class="mono k">NEXT WEEK · №018</span>
+        <span class="v serif">Another <em>Sunday</em>, composed</span>
+      </div>
+    </div>
+  </section>
+  <div class="wave wave--ink" aria-hidden="true" style="margin-top:30px;color:var(--signal);">
+    <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+      <path d="M0 13 H40 l5 -9 5 18 5 -18 5 18 5 -9 H120 l7 -13 7 26 7 -26 7 26 7 -13 H260 l4 -6 4 12 4 -12 4 12 4 -6 H360 l6 -11 6 22 6 -22 6 22 6 -11 H500 l5 -8 5 16 5 -16 5 16 5 -8 H620 l7 -13 7 26 7 -26 7 26 7 -13 H800" fill="none" stroke="currentColor" stroke-width="2.0"/>
+    </svg>
+  </div>
+
+  <div class="colophon">
+    <span class="serif">The <em>Signal</em></span>
+    <span class="mono">END OF TRANSMISSION №017 · UNTIL NEXT SUNDAY</span>
+  </div>
+
+  <div class="signoff-line">
+  <div class="wave wave--blue" aria-hidden="true" style="max-width:200px;margin:0 auto;">
+    <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+      <path d="M0 13 H50 l6 -11 6 22 6 -22 6 22 6 -11 H160 l5 -9 5 18 5 -18 5 18 5 -9 H280 l7 -12 7 24 7 -24 7 24 7 -12 H420 l4 -7 4 14 4 -14 4 14 4 -7 H540 l6 -11 6 22 6 -22 6 22 6 -11 H680 l5 -8 5 16 5 -16 5 16 5 -8 H800" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    </svg>
+  </div>
+
+    <p class="big">Until next Sunday — the week will <em>keep</em>.</p>
+    <p class="mono stamp">SET IN INSTRUMENT SERIF, NEWSREADER &amp; JETBRAINS MONO · FILED 19 JUL 2026 · FOR ONE READER</p>
+  </div>
+
+</div>
+<script>
+/* The Signal — weekly (Transmission) JavaScript bundle.
+ *
+ * The weekly is a PAPER OBJECT: it renders complete and beautiful with
+ * JavaScript OFF (the paper-and-ink contract). No progress rails, no
+ * scroll-triggered reveals, no motion, no bead rail — the reference issue
+ * (docs/mockups/reference-issue-transmission.html) proves none are needed.
+ *
+ * The ONLY script the weekly ships is a defensive, invisible image-error
+ * fallback: if a fabricated or expired image URL fails to load, hide the
+ * broken <img> (and its caption/figure) so a bad asset never renders a
+ * broken-image icon. This is progressive enhancement — with JS off, a
+ * broken image is the browser's problem, not a layout break, because the
+ * Transmission layout never depends on an image being present.
+ */
+(function () {
+  document.addEventListener(
+    'error',
+    function (e) {
+      var t = e.target;
+      if (!t || t.tagName !== 'IMG') return;
+      t.style.display = 'none';
+      var p = t.parentElement;
+      if (!p) return;
+      var next = t.nextElementSibling;
+      if (next && next.classList && next.classList.contains('plate-cap')) {
+        next.style.display = 'none';
+      }
+      if (p.classList && p.classList.contains('plate-img')) {
+        p.style.display = 'none';
+      }
+      if (p.tagName === 'FIGURE') {
+        p.style.display = 'none';
+      }
+    },
+    true
+  );
+})();
+
+/* mx-motion.js — WP-5 motion controller (Law 5). data-mx issues only; the
+   stitcher swaps it in for legacy script.js on the mx path. JS-off = 100%
+   content (initial-hidden CSS is gated on [data-mx-motion-ready], stamped
+   only here); reduced-motion → no-op (CSS gate is belt #2); IO reveals add
+   .is-in + data-mx-inview, stagger via --mx-i; no scroll-jacking; motion
+   attaches to furniture, never prose. */
+(function () {
+  'use strict';
+  var d = document, root = d.documentElement, rm = null;
+
+  function $$(sel, ctx) {
+    return Array.prototype.slice.call((ctx || d).querySelectorAll(sel));
+  }
+  function reduced() { return rm ? rm.matches : false; }
+
+  function init() {
+    var body = d.body;
+    if (!body || !body.hasAttribute('data-mx')) return;
+    var tier = body.getAttribute('data-motion');
+    if (tier !== 'tier0' && tier !== 'tier1' && tier !== 'tier2') return;
+    rm = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+    if (reduced()) return;
+    if (rm && rm.addEventListener) {
+      rm.addEventListener('change', function (e) {
+        if (e.matches) root.removeAttribute('data-mx-motion-ready');
+      });
+    }
+    if (!('IntersectionObserver' in window)) return;
+
+    var CHROME = '.mx-mast, .mx-footer, .mx-colophon, nav';
+    var pending = [], scrollFns = [];
+
+    function reveal(el) {
+      el.classList.add('is-in');
+      el.setAttribute('data-mx-inview', '');
+      var i = pending.indexOf(el);
+      if (i >= 0) pending.splice(i, 1);
+    }
+    var io = new IntersectionObserver(function (entries) {
+      for (var i = 0; i < entries.length; i++) {
+        if (entries[i].isIntersecting) {
+          reveal(entries[i].target);
+          io.unobserve(entries[i].target);
+        }
+      }
+    }, { rootMargin: '0px 0px -9% 0px', threshold: 0.04 });
+
+    function watch(el, cls) {
+      if (el.closest && el.closest(CHROME)) return;
+      if (cls) el.classList.add(cls);
+      pending.push(el);
+      io.observe(el);
+    }
+    function stagger(el) { /* index among animated siblings → CSS delay */
+      var p = el.parentNode;
+      if (p) { p.__mxn = p.__mxn || 0; el.style.setProperty('--mx-i', '' + p.__mxn++); }
+    }
+
+    if (tier === 'tier0') {
+      /* tier0: hairline draw-ins + ghost parallax ONLY */
+      $$('.mx-plate, .mx-actopen, .mx-pull, .mx-ledger, .mx-numbers, .mx-quote, .mx-sources')
+        .forEach(function (el) { watch(el, 'mx-draw'); });
+      var plates = $$('.mx-plate');
+      scrollFns.push(function (vh) {
+        for (var i = 0; i < plates.length; i++) {
+          var r = plates[i].getBoundingClientRect();
+          if (r.bottom < -120 || r.top > vh + 120) continue;
+          var p = ((vh / 2) - (r.top + r.height / 2)) / vh;
+          if (p > 1) p = 1; else if (p < -1) p = -1;
+          plates[i].style.setProperty('--mx-par', p.toFixed(3));
+        }
+      });
+    } else {
+      /* tier1/tier2: rise-on-scroll + object settles */
+      $$('.mx-card, .mx-ticket, .mx-coaster, .mx-note' + (tier === 'tier1' ? ', .mx-stamp' : ''))
+        .forEach(function (el) { stagger(el); watch(el, 'mx-settle'); });
+      $$('.mx-quote, .mx-pull, .mx-anchor, .mx-plate, .mx-actopen, .mx-zig__entry, .mx-chart')
+        .forEach(function (el) { stagger(el); watch(el, 'mx-rise'); });
+      if (tier === 'tier2') {
+        $$('.mx-stamp').forEach(function (el) { stagger(el); watch(el, 'mx-slam'); });
+      }
+      $$('.mx-sig-stamp-slam').forEach(function (el) { watch(el, 'mx-slam'); });
+      /* weekly signature: the radio dial's needle sweeps on band entry
+         (the CSS keys the sweep off .mx-sig-dial-sweep.is-in). Additive —
+         no other tier uses this hook. */
+      $$('.mx-sig-dial-sweep').forEach(function (el) { watch(el); });
+
+      /* sequences: rows tick in order */
+      [['.mx-ranked', '.mx-ranked__entry'],
+       ['.mx-scorecard', 'tr'],
+       ['.mx-numbers', '.mx-numbers__cell'],
+       ['.mx-cheat', '.mx-cheat__col'],
+       ['.mx-dontmiss', 'li'],
+       ['.mx-countdown', '.mx-countdown__cell'],
+       ['.mx-sig-rows-climb', 'tr, li, .mx-ranked__entry'],
+       ['.mx-sig-cols-reveal', '.mx-cheat__col, .mx-col']
+      ].forEach(function (pair) {
+        $$(pair[0]).forEach(function (c) {
+          if (c.classList.contains('mx-seq')) return;
+          var rows = $$(pair[1], c).filter(function (r) { return r.closest(pair[0]) === c; });
+          if (!rows.length) return;
+          for (var i = 0; i < rows.length; i++) {
+            rows[i].classList.add('mx-row');
+            rows[i].style.setProperty('--mx-i', String(i));
+          }
+          watch(c, 'mx-seq');
+        });
+      });
+      /* facts ledgers: dt+dd pairs share one index */
+      $$('.mx-ledger').forEach(function (c) {
+        var kids = $$('dl > dt, dl > dd', c), n = -1;
+        if (!kids.length) return;
+        for (var i = 0; i < kids.length; i++) {
+          if (kids[i].tagName === 'DT') n++;
+          kids[i].classList.add('mx-row');
+          kids[i].style.setProperty('--mx-i', String(Math.max(0, n)));
+        }
+        watch(c, 'mx-seq');
+      });
+
+      if (tier === 'tier2') {
+        /* act crossfade at transit seams (endpoint colors = act tokens) */
+        var seams = [];
+        $$('.mx-transit').forEach(function (t) {
+          function seamEl(host, dir) {
+            if (!host || !host.hasAttribute || !host.hasAttribute('data-act')) return null;
+            if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
+            var s = d.createElement('div');
+            s.className = 'mx-seam mx-seam--' + dir;
+            s.setAttribute('aria-hidden', 'true');
+            host.appendChild(s);
+            return s;
+          }
+          seams.push({ t: t, a: seamEl(t.previousElementSibling, 'out'), b: seamEl(t.nextElementSibling, 'in') });
+        });
+        if (seams.length) {
+          scrollFns.push(function (vh) {
+            for (var i = 0; i < seams.length; i++) {
+              var r = seams[i].t.getBoundingClientRect();
+              var p = 1 - Math.abs(r.top + r.height / 2 - vh / 2) / (vh * 1.15);
+              if (p < 0) p = 0; else if (p > 1) p = 1;
+              var v = p.toFixed(3);
+              if (seams[i].a) seams[i].a.style.setProperty('--mx-seam', v);
+              if (seams[i].b) seams[i].b.style.setProperty('--mx-seam', v);
+            }
+          });
+        }
+        $$('.mx-countdown[data-mx-target]').forEach(bindCountdown);
+      }
+    }
+
+    /* activate: only now may CSS hold start states */
+    root.setAttribute('data-mx-motion-ready', '');
+
+    /* safety reveal: pending-but-on-screen can never stay blank */
+    scrollFns.push(function (vh) {
+      for (var i = pending.length - 1; i >= 0; i--) {
+        var r = pending[i].getBoundingClientRect();
+        if (r.top < vh * 0.94 && r.bottom > 0) {
+          io.unobserve(pending[i]);
+          reveal(pending[i]);
+        }
+      }
+    });
+    var ticking = false;
+    function onScroll() {
+      if (ticking || reduced()) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        ticking = false;
+        var vh = window.innerHeight;
+        for (var i = 0; i < scrollFns.length; i++) scrollFns[i](vh);
+      });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    onScroll();
+    setTimeout(onScroll, 2500);
+  }
+
+  /* opt-in live countdown; numerals re-flip on change */
+  function bindCountdown(box) {
+    var target = Date.parse(box.getAttribute('data-mx-target'));
+    if (isNaN(target)) return;
+    var cells = {};
+    $$('[data-cd]', box).forEach(function (el) { cells[el.getAttribute('data-cd')] = el; });
+    function pad(n) { return n < 10 ? '0' + n : String(n); }
+    function set(el, v) {
+      if (!el || el.textContent === v) return;
+      el.textContent = v;
+      el.classList.remove('mx-flip-tick');
+      void el.offsetWidth;
+      el.classList.add('mx-flip-tick');
+    }
+    function tick() {
+      var ms = target - Date.now();
+      if (ms < 0) ms = 0;
+      var s = Math.floor(ms / 1000);
+      set(cells.days, pad(Math.floor(s / 86400)));
+      set(cells.hours, pad(Math.floor(s / 3600) % 24));
+      set(cells.mins, pad(Math.floor(s / 60) % 60));
+      set(cells.secs, pad(s % 60));
+      if (ms > 0 && !reduced()) setTimeout(tick, 1000);
+    }
+    tick();
+  }
+
+  if (d.readyState === 'loading') d.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+
+</script>
+</body>
+</html>

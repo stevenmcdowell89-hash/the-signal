@@ -30,4 +30,7 @@ body[data-skin="transmission"] {
   --mx-t-body: "Newsreader", Georgia, serif;
   --mx-tilt: -1deg;  --mx-grain: 0.03;  --mx-measure: var(--measure, 64ch);
   --mx-wrap: 720px;                 /* sits inside the 800px printed object */
+  --mx-micro: 0.72rem;              /* Law-8 mono micro-label floor (core 00-contract
+                                       is NOT bundled into the weekly; the components
+                                       read --mx-micro, so the alias must supply it) */
 }
