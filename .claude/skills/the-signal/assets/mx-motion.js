@@ -89,6 +89,7 @@
       [['.mx-ranked', '.mx-ranked__entry'],
        ['.mx-scorecard', 'tr'],
        ['.mx-numbers', '.mx-numbers__cell'],
+       ['.figures-frame', '.fig-row'],
        ['.mx-cheat', '.mx-cheat__col'],
        ['.mx-dontmiss', 'li'],
        ['.mx-countdown', '.mx-countdown__cell'],

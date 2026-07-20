@@ -63,6 +63,12 @@
 }
 .mx-twocol__aside { display: grid; gap: 26px; justify-items: center; }
 
+/* a furniture card homed inside a service column (The Desk / The Ledger):
+   fills the column measure so the tall body-text column beside it never
+   leaves a blank right stretch. Sits directly under the column's kicker as
+   the section's lead data object. */
+.deskcol .deskcol__card { width: 100%; margin: 15px 0 22px; }
+
 /* ------------------------------------------------------------
    01 · CARD CHASSIS + CHART CARD (self-made sparkline/bar SVG)
    scenography defaults: tilt + washi tape + drop shadow (Law 1)
@@ -447,58 +453,72 @@
    running text (Law 5).
    ------------------------------------------------------------ */
 [data-mx] {
-  --mx-m-rise: 20px;
-  --mx-m-dur: 640ms;
-  --mx-m-settle: 1deg;
+  --mx-m-rise: 32px;                                   /* was 20 — a clearer lift */
+  --mx-m-dur: 720ms;                                   /* was 640 */
+  --mx-m-settle: 1.8deg;                               /* settle unit; the tape-down swing */
   --mx-m-ease: cubic-bezier(0.22, 0.9, 0.3, 1);
   --mx-m-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --mx-m-stagger: 80ms;
+  --mx-m-stagger: 100ms;                               /* was 80 */
 }
 @keyframes mx-rise-in {
   from { opacity: 0; transform: translateY(var(--mx-m-rise)); }
-  to   { opacity: 1; }
+  to   { opacity: 1; transform: translateY(0); }
 }
+/* TAPE-DOWN SETTLE — the object drops in lifted and over-rotated (~5.4° off
+   its rest tilt), fades in, tips just past level the other way, then settles
+   onto its resting tilt. A clearly-visible placed-by-hand motion, still calm
+   (no slam/flip). Overshoot is built into the keyframes, so it rides the
+   smooth ease, not the spring. */
 @keyframes mx-settle-in {
-  from { opacity: 0; transform: translateY(var(--mx-m-rise))
+  0%   { opacity: 0;
+         transform: translateY(var(--mx-m-rise))
            rotate(calc(var(--mx-tilt, -1deg) + var(--mx-m-settle) * 3)); }
-  to   { opacity: 1; }
+  52%  { opacity: 1; }
+  76%  { transform: translateY(0)
+           rotate(calc(var(--mx-tilt, -1deg) - var(--mx-m-settle) * 0.9)); }
+  100% { opacity: 1; transform: translateY(0) rotate(var(--mx-tilt, -1deg)); }
 }
 @keyframes mx-row-tick {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; }
+  from { opacity: 0; transform: translateY(15px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 @keyframes mx-chart-draw {
   from { stroke-dashoffset: 1; }
   to   { stroke-dashoffset: 0; }
 }
-@keyframes mx-dial-sweep { from { transform: rotate(-98deg); } }
+@keyframes mx-dial-sweep { from { transform: rotate(-104deg); } }
 
 [data-mx-motion-ready] [data-motion="tier1"] .mx-rise:not(.is-in) {
   opacity: 0; transform: translateY(var(--mx-m-rise));
 }
 [data-mx-motion-ready] [data-motion="tier1"] .mx-rise.is-in {
   animation: mx-rise-in var(--mx-m-dur) var(--mx-m-ease) backwards;
-  animation-delay: min(calc(var(--mx-i, 0) * var(--mx-m-stagger)), 360ms);
+  animation-delay: min(calc(var(--mx-i, 0) * var(--mx-m-stagger)), 420ms);
 }
 [data-mx-motion-ready] [data-motion="tier1"] .mx-settle:not(.is-in) { opacity: 0; }
 [data-mx-motion-ready] [data-motion="tier1"] .mx-settle.is-in {
-  animation: mx-settle-in calc(var(--mx-m-dur) + 160ms) var(--mx-m-spring) backwards;
-  animation-delay: min(calc(var(--mx-i, 0) * var(--mx-m-stagger)), 360ms);
+  animation: mx-settle-in calc(var(--mx-m-dur) + 240ms) var(--mx-m-ease) backwards;
+  animation-delay: min(calc(var(--mx-i, 0) * var(--mx-m-stagger)), 420ms);
 }
-/* sequenced rows tick in --mx-i order (fixtures ledger, standings) */
+/* sequenced rows tick in --mx-i order (fixtures ledger, standings, datums) —
+   larger lift + wider stagger so the cascade reads clearly on a real scroll */
 [data-mx-motion-ready] [data-motion="tier1"] .mx-seq:not(.is-in) .mx-row { opacity: 0; }
 [data-mx-motion-ready] [data-motion="tier1"] .mx-seq.is-in .mx-row {
-  animation: mx-row-tick 420ms var(--mx-m-ease) backwards;
-  animation-delay: min(calc(var(--mx-i, 0) * 70ms), 490ms);
+  animation: mx-row-tick 480ms var(--mx-m-ease) backwards;
+  animation-delay: min(calc(var(--mx-i, 0) * 95ms), 760ms);
 }
 /* sparkline / chart line draws on reveal */
 [data-mx-motion-ready] [data-motion="tier1"] .mx-chart.is-in .mx-chartline {
   stroke-dasharray: 1;
-  animation: mx-chart-draw 1100ms var(--mx-m-ease) backwards;
+  animation: mx-chart-draw 1250ms var(--mx-m-ease) backwards;
+}
+[data-mx-motion-ready] [data-motion="tier1"] .mx-chart:not(.is-in) .mx-chart__dot { opacity: 0; }
+[data-mx-motion-ready] [data-motion="tier1"] .mx-chart.is-in .mx-chart__dot {
+  animation: mx-rise-in 360ms var(--mx-m-ease) 1050ms backwards;
 }
 /* signature: dial needle sweeps to its frequency on band entry */
 [data-mx-motion-ready] [data-motion="tier1"] .mx-sig-dial-sweep.is-in .mx-dial__needle {
-  animation: mx-dial-sweep 900ms var(--mx-m-spring) backwards;
+  animation: mx-dial-sweep 1000ms var(--mx-m-spring) backwards;
 }
 /* hover settles — furniture acknowledges the hand */
 [data-motion="tier1"] .mx-card,

@@ -446,7 +446,7 @@
   /* captioned image — real <img> or the drawn placeholder box */
   .plate-img{
     max-width:var(--measure);
-    margin:30px auto;
+    margin:38px auto;
   }
   .plate-img img{
     display:block;
@@ -611,19 +611,26 @@
 
   /* bookmark picks */
   .picks{list-style:none;padding:0;margin:6px 0 0;}
+  /* spine · jacket · copy on ONE row (three columns) so the tall cover never
+     strands the copy onto a second row with a blank column beside it. */
   .picks li{
     display:grid;
-    grid-template-columns:auto 1fr;
-    gap:16px;
-    padding:14px 0;
+    grid-template-columns:8px 205px 1fr;
+    gap:22px;
+    padding:26px 0;
     border-bottom:1px solid var(--hair);
-    align-items:baseline;
+    align-items:start;
   }
   .picks li:first-child{border-top:1px solid var(--ink);}
   .picks .spine{
     width:8px;align-self:stretch;
     background:var(--blue);
     min-height:52px;
+  }
+  .picks .jacket{display:block;}
+  .picks .jacket img{
+    display:block;width:100%;height:auto;
+    box-shadow:0 8px 20px -10px rgba(0,0,0,.55);
   }
   .picks li:nth-child(2) .spine{background:var(--signal);}
   .picks li:nth-child(3) .spine{background:var(--muted);}
@@ -828,6 +835,7 @@
     .rabbit .arrow{transform:rotate(90deg);}
     .endnumbers{grid-template-columns:1fr;}
     .radar li{grid-template-columns:1fr;gap:2px;}
+    .picks li{grid-template-columns:6px 108px 1fr;gap:14px;}
   }
 
   /* ============================================================================

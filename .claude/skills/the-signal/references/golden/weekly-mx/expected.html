@@ -456,7 +456,7 @@
   /* captioned image — real <img> or the drawn placeholder box */
   .plate-img{
     max-width:var(--measure);
-    margin:30px auto;
+    margin:38px auto;
   }
   .plate-img img{
     display:block;
@@ -621,19 +621,26 @@
 
   /* bookmark picks */
   .picks{list-style:none;padding:0;margin:6px 0 0;}
+  /* spine · jacket · copy on ONE row (three columns) so the tall cover never
+     strands the copy onto a second row with a blank column beside it. */
   .picks li{
     display:grid;
-    grid-template-columns:auto 1fr;
-    gap:16px;
-    padding:14px 0;
+    grid-template-columns:8px 205px 1fr;
+    gap:22px;
+    padding:26px 0;
     border-bottom:1px solid var(--hair);
-    align-items:baseline;
+    align-items:start;
   }
   .picks li:first-child{border-top:1px solid var(--ink);}
   .picks .spine{
     width:8px;align-self:stretch;
     background:var(--blue);
     min-height:52px;
+  }
+  .picks .jacket{display:block;}
+  .picks .jacket img{
+    display:block;width:100%;height:auto;
+    box-shadow:0 8px 20px -10px rgba(0,0,0,.55);
   }
   .picks li:nth-child(2) .spine{background:var(--signal);}
   .picks li:nth-child(3) .spine{background:var(--muted);}
@@ -838,6 +845,7 @@
     .rabbit .arrow{transform:rotate(90deg);}
     .endnumbers{grid-template-columns:1fr;}
     .radar li{grid-template-columns:1fr;gap:2px;}
+    .picks li{grid-template-columns:6px 108px 1fr;gap:14px;}
   }
 
   /* ============================================================================
@@ -966,6 +974,12 @@ body[data-skin="transmission"] {
   margin: 34px 0;
 }
 .mx-twocol__aside { display: grid; gap: 26px; justify-items: center; }
+
+/* a furniture card homed inside a service column (The Desk / The Ledger):
+   fills the column measure so the tall body-text column beside it never
+   leaves a blank right stretch. Sits directly under the column's kicker as
+   the section's lead data object. */
+.deskcol .deskcol__card { width: 100%; margin: 15px 0 22px; }
 
 /* ------------------------------------------------------------
    01 · CARD CHASSIS + CHART CARD (self-made sparkline/bar SVG)
@@ -1351,58 +1365,72 @@ body[data-skin="transmission"] {
    running text (Law 5).
    ------------------------------------------------------------ */
 [data-mx] {
-  --mx-m-rise: 20px;
-  --mx-m-dur: 640ms;
-  --mx-m-settle: 1deg;
+  --mx-m-rise: 32px;                                   /* was 20 — a clearer lift */
+  --mx-m-dur: 720ms;                                   /* was 640 */
+  --mx-m-settle: 1.8deg;                               /* settle unit; the tape-down swing */
   --mx-m-ease: cubic-bezier(0.22, 0.9, 0.3, 1);
   --mx-m-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --mx-m-stagger: 80ms;
+  --mx-m-stagger: 100ms;                               /* was 80 */
 }
 @keyframes mx-rise-in {
   from { opacity: 0; transform: translateY(var(--mx-m-rise)); }
-  to   { opacity: 1; }
+  to   { opacity: 1; transform: translateY(0); }
 }
+/* TAPE-DOWN SETTLE — the object drops in lifted and over-rotated (~5.4° off
+   its rest tilt), fades in, tips just past level the other way, then settles
+   onto its resting tilt. A clearly-visible placed-by-hand motion, still calm
+   (no slam/flip). Overshoot is built into the keyframes, so it rides the
+   smooth ease, not the spring. */
 @keyframes mx-settle-in {
-  from { opacity: 0; transform: translateY(var(--mx-m-rise))
+  0%   { opacity: 0;
+         transform: translateY(var(--mx-m-rise))
            rotate(calc(var(--mx-tilt, -1deg) + var(--mx-m-settle) * 3)); }
-  to   { opacity: 1; }
+  52%  { opacity: 1; }
+  76%  { transform: translateY(0)
+           rotate(calc(var(--mx-tilt, -1deg) - var(--mx-m-settle) * 0.9)); }
+  100% { opacity: 1; transform: translateY(0) rotate(var(--mx-tilt, -1deg)); }
 }
 @keyframes mx-row-tick {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; }
+  from { opacity: 0; transform: translateY(15px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 @keyframes mx-chart-draw {
   from { stroke-dashoffset: 1; }
   to   { stroke-dashoffset: 0; }
 }
-@keyframes mx-dial-sweep { from { transform: rotate(-98deg); } }
+@keyframes mx-dial-sweep { from { transform: rotate(-104deg); } }
 
 [data-mx-motion-ready] [data-motion="tier1"] .mx-rise:not(.is-in) {
   opacity: 0; transform: translateY(var(--mx-m-rise));
 }
 [data-mx-motion-ready] [data-motion="tier1"] .mx-rise.is-in {
   animation: mx-rise-in var(--mx-m-dur) var(--mx-m-ease) backwards;
-  animation-delay: min(calc(var(--mx-i, 0) * var(--mx-m-stagger)), 360ms);
+  animation-delay: min(calc(var(--mx-i, 0) * var(--mx-m-stagger)), 420ms);
 }
 [data-mx-motion-ready] [data-motion="tier1"] .mx-settle:not(.is-in) { opacity: 0; }
 [data-mx-motion-ready] [data-motion="tier1"] .mx-settle.is-in {
-  animation: mx-settle-in calc(var(--mx-m-dur) + 160ms) var(--mx-m-spring) backwards;
-  animation-delay: min(calc(var(--mx-i, 0) * var(--mx-m-stagger)), 360ms);
+  animation: mx-settle-in calc(var(--mx-m-dur) + 240ms) var(--mx-m-ease) backwards;
+  animation-delay: min(calc(var(--mx-i, 0) * var(--mx-m-stagger)), 420ms);
 }
-/* sequenced rows tick in --mx-i order (fixtures ledger, standings) */
+/* sequenced rows tick in --mx-i order (fixtures ledger, standings, datums) —
+   larger lift + wider stagger so the cascade reads clearly on a real scroll */
 [data-mx-motion-ready] [data-motion="tier1"] .mx-seq:not(.is-in) .mx-row { opacity: 0; }
 [data-mx-motion-ready] [data-motion="tier1"] .mx-seq.is-in .mx-row {
-  animation: mx-row-tick 420ms var(--mx-m-ease) backwards;
-  animation-delay: min(calc(var(--mx-i, 0) * 70ms), 490ms);
+  animation: mx-row-tick 480ms var(--mx-m-ease) backwards;
+  animation-delay: min(calc(var(--mx-i, 0) * 95ms), 760ms);
 }
 /* sparkline / chart line draws on reveal */
 [data-mx-motion-ready] [data-motion="tier1"] .mx-chart.is-in .mx-chartline {
   stroke-dasharray: 1;
-  animation: mx-chart-draw 1100ms var(--mx-m-ease) backwards;
+  animation: mx-chart-draw 1250ms var(--mx-m-ease) backwards;
+}
+[data-mx-motion-ready] [data-motion="tier1"] .mx-chart:not(.is-in) .mx-chart__dot { opacity: 0; }
+[data-mx-motion-ready] [data-motion="tier1"] .mx-chart.is-in .mx-chart__dot {
+  animation: mx-rise-in 360ms var(--mx-m-ease) 1050ms backwards;
 }
 /* signature: dial needle sweeps to its frequency on band entry */
 [data-mx-motion-ready] [data-motion="tier1"] .mx-sig-dial-sweep.is-in .mx-dial__needle {
-  animation: mx-dial-sweep 900ms var(--mx-m-spring) backwards;
+  animation: mx-dial-sweep 1000ms var(--mx-m-spring) backwards;
 }
 /* hover settles — furniture acknowledges the hand */
 [data-motion="tier1"] .mx-card,
@@ -1615,6 +1643,15 @@ body[data-skin="transmission"] {
     <h2>A week of handovers.</h2>
     <p class="kicker">Power changes hands in Westminster, a trophy in New Jersey, the grid at Spa — and the two that matter most are still being decided as the coffee cools.</p>
     <p class="first">Two landscapes shifted on the same Sunday, and I couldn't pull them apart. This morning Britain has a Prime Minister-in-waiting who reached No.10 without a public vote: Andy Burnham, declared Labour leader on Friday, sworn in tomorrow. This afternoon in New Jersey the largest World Cup ever ends — 48 teams, 104 matches, 39 days — with Spain and Argentina, the two best-ranked sides on the planet, kicking off as this issue is read.</p>
+
+    <div data-mx-event="figure" class="plate-img" style="max-width:420px;margin:26px auto 14px;">
+      <img src="/assets/cached/2a9d4f29c684.jpg" alt="A portrait of Andy Burnham in dark-rimmed glasses and a navy jacket over a black tee, against wood panelling" loading="lazy">
+      <div class="plate-cap">
+        <span class="mono fig">FIG. 01</span>
+        <span class="txt">Andy Burnham — sworn in as prime minister on Monday, the Westminster half of a week of handovers.<span class="credit">Wikimedia Commons · CC BY-SA</span></span>
+      </div>
+    </div>
+
     <p>The honest thing is that both stories are unfinished at the moment they reach the page. I can tell you what a mid-term handover of power means, and what the first 48-team final settles about the tournament's shape; I can't tell you who lifts the trophy, or what Burnham does with a job no election gave him. A week of transitions, then, caught mid-motion — Westminster, MetLife, and a Formula 1 grid reshuffled overnight at Spa. The outcomes are still ahead of us. What they mean, we can start on now.</p>
     <p class="sig">— The Editor</p>
     <p class="mono sigline">TRANSMITTED SUNDAY · 19 JUL 2026</p>
@@ -1790,6 +1827,14 @@ body[data-skin="transmission"] {
       <p>There are two honest ways to read all of this, and they do not sit comfortably together. The first is the reading CNN's analysis reached for when Burnham was declared: a governing party burning through leaders is a party consuming itself, and a country that keeps acquiring prime ministers it never chose is running a democratic deficit. On this account the serial handover is a symptom. Starmer's government was floundering; his own MPs decided a change of face was quicker than a change of course or a change of government; and so they installed a new leader over the summer rather than face the voters. The people who backed Labour in 2024 voted for one leader and one prospectus, and by the middle of 2026 they have neither, without having been consulted. Repeat that pattern often enough and the thread connecting what the public votes for to who ends up governing them starts to fray. A prime minister governs with enormous latitude — over war, spending, the shape of the state — and the argument runs that such power should trace back, at some visible point, to a decision the electorate actually made. Four mid-term handovers in a decade stretch that line of accountability until it is hard to see where the public's choice ends and the party's begins.</p>
 
       <p class="noindent">The second reading takes the same facts and finds them reassuring. A parliamentary system is built precisely so that a failing leader can be removed between elections without the state seizing up. When a chief executive loses the confidence of the people around them, the country swaps the driver and keeps moving; it does not have to crash the car or wait years for a scheduled vote to change direction. Al Jazeera reported Burnham's arrival in exactly these flat terms — a leadership contest resolved, a successor confirmed, a government continuing — rather than as a constitutional crisis. Nothing broke. The Commons still holds a Labour majority; that majority still commands confidence; the person it puts forward becomes prime minister. This is the system doing the exact job it exists to do, quickly and without upheaval, which is no small thing in a century that has watched other countries manage the same task far worse.</p>
+
+      <div data-mx-event="figure" class="plate-img">
+        <img src="/assets/cached/ebecfdf2c5a9.jpg" alt="Keir Starmer, in a dark suit and glasses, speaking in a crowded formal chamber, seen between the silhouetted heads of others in the room" loading="lazy">
+        <div class="plate-cap">
+          <span class="mono fig">FIG. 02</span>
+          <span class="txt">Keir Starmer — the prime minister a party rebellion forced out this month, and the leader Burnham replaces on Monday without a national vote.<span class="credit">AP Photo · via CBS News</span></span>
+        </div>
+      </div>
 
       <p>Both readings describe the same seven prime ministers. They disagree about what to call the pattern, and the bare facts will not settle the argument for you. What the constitution treats as a routine transfer, a decade of repetition turns into a question about legitimacy — and the two do not cancel out, because a system can be working exactly as designed and still be reporting that something has gone wrong upstream, in the politics the design was never built to fix.</p>
 
@@ -2119,7 +2164,7 @@ body[data-skin="transmission"] {
   <section class="round">
     <p class="lead"><span class="drop">On 14 July 1965 — 61 years ago this week — a spacecraft the size of a small car crept to within 6,118 miles of Mars and did something no machine had ever done: it took a close-up photograph of another planet.</span> Mariner 4 had left Cape Canaveral the previous November and spent nearly eight months crossing the dark between the two worlds. In the space of about 25 minutes over the Martian dayside it captured 21 images, storing them on a four-track tape recorder because the radio link home was far too slow to send pictures live. Then it kept going, past Mars and out into an orbit around the Sun, its job done.</p>
 
-    <div data-mx-event="figure" class="plate-img" style="max-width:460px;">
+    <div data-mx-event="figure" class="plate-img" style="max-width:600px;">
       <img src="/assets/cached/407d2c022a03.jpg" alt="Two versions of the first television image of Mars side by side: on the left a strip hand-coloured in pastel shades of yellow, orange and brown; on the right the same data rendered in grainy black and white by computer" loading="lazy">
       <div class="plate-cap"><span class="mono fig">FIG.</span><span class="txt">The first image of Mars, twice over: the hand-coloured strip engineers made with pastel crayons (left) beside the computer-processed original (right).<span class="credit">NASA/JPL</span></span></div>
     </div>
@@ -2128,7 +2173,7 @@ body[data-skin="transmission"] {
 
     <p>The most human moment came before the computers had even finished. The picture data arrived as a long strip of numbers, each one describing how bright a point on Mars should be. Rather than wait for the processing to render it as a proper image, impatient staff at the Jet Propulsion Laboratory pinned up a printed strip of those raw numbers, bought pastel crayons from an art shop, and hand-coloured each value like a paint-by-numbers — yellow for the brightest, browns and reds for the dark. The result, framed and hung at JPL, was the true first picture of Mars: not a photograph at all, but a colouring made by hand from telemetry, because the people who built the machine could not bear to wait for it.</p>
 
-    <div data-mx-event="figure" class="plate-img" style="max-width:400px;">
+    <div data-mx-event="figure" class="plate-img" style="max-width:560px;">
       <img src="/assets/cached/7652b526eda5.jpg" alt="A globe of Mars with Mariner 4's 21 narrow flyby photographs laid out as a diagonal strip across the surface, showing the swath the spacecraft captured on its pass" loading="lazy">
       <div class="plate-cap"><span class="mono fig">FIG.</span><span class="txt">All 21 of Mariner 4's flyby frames, mapped onto Mars — the thin diagonal ribbon of surface a single fast pass could see.<span class="credit">NASA/JPL</span></span></div>
     </div>
@@ -2165,8 +2210,10 @@ body[data-skin="transmission"] {
       </div>
 
 
-      <div class="mx-shelf" style="margin:8px 0 26px;">
-        <div class="mx-scorecard" data-mx-event="ledger">
+      <div class="deskcol" data-desk-column>
+        <h3>The Ledger</h3>
+        <span class="mono sub">MONEY · MORTGAGE RATES</span>
+        <div class="mx-scorecard deskcol__card" data-mx-event="ledger">
           <h4 class="mx-scorecard__title">The Rate War · As of 19 Jul</h4>
           <table>
             <tr class="is-lead"><td>BoE base rate</td><td class="mx-scorecard__gap">3.75%</td></tr>
@@ -2175,11 +2222,6 @@ body[data-skin="transmission"] {
             <tr><td>MPC decision</td><td class="mx-scorecard__gap">30 JUL</td></tr>
           </table>
         </div>
-      </div>
-
-      <div class="deskcol" data-desk-column>
-        <h3>The Ledger</h3>
-        <span class="mono sub">MONEY · MORTGAGE RATES</span>
         <p>The UK mortgage price war is deepening even though the Bank of England hasn't moved. The base rate sits at <b>3.75%</b>, and markets expect a hold when the Monetary Policy Committee meets on <b>30 July</b> — yet lenders aren't waiting for the Bank's cue. Nationwide has cut its rates roughly <b>four times in a month</b>, Yorkshire Building Society twice in a single week, and the average two-year fix fell 0.16 percentage points in June, the fastest monthly drop since October 2024. The important read: the cheaper deals landing right now are coming from <b>lender competition</b>, not from a rate cut. Fixed mortgages are getting cheaper while the base rate stands still.</p>
         <p>That distinction matters for timing. Because the discounting is a scramble for market share rather than a response to falling base rates, there's no single announcement to wait for — the good deal is the one on the table today, and a better one may or may not follow. The useful mechanic is that most lenders let you <b>lock a rate up to six months ahead</b> of your current deal ending, and swap onto a cheaper one if rates fall further before you complete. You get the downside protection of a secured rate with the upside of the ongoing price war, which is about as close to a free option as this market offers.</p>
         <div class="pin">
@@ -2227,6 +2269,13 @@ body[data-skin="transmission"] {
           <h3>Seven leaders, no election</h3>
           <p class="prev">Previously: nominations opened in the race to replace Keir Starmer, with Andy Burnham the clear front-runner — 322 of Labour's 403 MPs already behind him and on course to win unopposed.</p>
           <p>Nominations closed on 15 July with Burnham on 379, about 94% — the largest share in a modern Labour leadership contest, past Gordon Brown's 88% in 2007 — and on 17 July he was declared leader with no opponent on the ballot. He is due to be appointed Prime Minister on Monday, replacing Starmer without a general election: Britain's seventh leader in a decade, and one more handover of the top job arriving with no public vote. It is an unusual route to Downing Street — the Mayor of Greater Manchester returned to the Commons through a by-election to make himself eligible, an outsider stepping into the job rather than climbing to it. <b>Next:</b> whether an unelected premier faces pressure to go to the country early, and how the "King of the North" holds off the Reform UK challenge.</p>
+          <div data-mx-event="figure" class="plate-img" style="margin:22px 0 6px;">
+            <img src="/assets/cached/d2f4e531313a.jpg" alt="Andy Burnham, grey-haired and in glasses, raising a hand in greeting outside a dark-green doorway" loading="lazy">
+            <div class="plate-cap">
+              <span class="mono fig">FIG.</span>
+              <span class="txt">Andy Burnham, declared Labour leader unopposed on 17 July — Britain's incoming prime minister, sworn in Monday.<span class="credit">AFP · via Al Jazeera</span></span>
+            </div>
+          </div>
         </div>
       </div>
       <div class="thread">
@@ -2235,6 +2284,20 @@ body[data-skin="transmission"] {
           <h3>The ceasefire that wouldn't set</h3>
           <p class="prev">Previously: Washington had called the June understanding over, with Qatari mediators shuttling to Tehran to keep a diplomatic channel alive.</p>
           <p>The truce is now firmly dead. The US declared it over on 8 July after Iranian attacks on commercial ships, and on 15 July said fresh strikes on Iranian targets were aimed at protecting vessels in the Strait of Hormuz — imposing new sanctions on Tehran alongside them. The 60-day window opened by June's Islamabad Memorandum, meant to settle Hormuz navigation, Iran's nuclear and missile programmes and sanctions, has collapsed, and traffic through the strait stays well down from the roughly 110 ships a day it normally carries. <b>Next:</b> whether any negotiating channel reopens, or the strikes and the shipping squeeze harden into a longer standoff.</p>
+          <div data-mx-event="figure" class="plate-img" style="margin:24px 0 6px;max-width:580px;">
+            <img src="/assets/cached/e5e95fd4612f.jpg" alt="A labelled map of the Strait of Hormuz, showing the narrow shipping lanes between Iran and the Musandam Peninsula of Oman, with the Persian Gulf to the west and the Gulf of Oman to the east" loading="lazy">
+            <div class="plate-cap">
+              <span class="mono fig">FIG.</span>
+              <span class="txt">The Strait of Hormuz — the choke-point the strikes are meant to keep open, where the marked shipping lanes run within a few miles of the Iranian coast.<span class="credit">Map · via Wikimedia Commons</span></span>
+            </div>
+          </div>
+          <div data-mx-event="figure" class="plate-img" style="margin:22px 0 6px;">
+            <img src="/assets/cached/61aac2156d95.jpg" alt="A large red LPG tanker underway on open Gulf water under a hazy sky, a small support vessel at its stern" loading="lazy">
+            <div class="plate-cap">
+              <span class="mono fig">FIG.</span>
+              <span class="txt">A gas tanker underway in Gulf waters — the shipping the strikes are meant to keep moving, with strait traffic still well down on its usual 110 vessels a day.<span class="credit">Reuters · via PBS</span></span>
+            </div>
+          </div>
         </div>
       </div>
       <div class="thread">
@@ -2243,6 +2306,13 @@ body[data-skin="transmission"] {
           <h3>A step back from the border</h3>
           <p class="prev">Previously: cross-border exchanges between Israel and Lebanon had renewed, with strikes running on past the ceasefire's deadline.</p>
           <p>The first concrete step down. On 15 July the US State Department reported that Israel had agreed to withdraw from the "pilot zones" it held in southern Lebanon, with the Lebanese army to take exclusive control of the ground it vacates — the clearest de-escalation in the sequence so far, even after Israeli strikes had continued past the earlier deadline. <b>Next:</b> whether the handover to the Lebanese army actually holds, and the quiet with it.</p>
+          <div data-mx-event="figure" class="plate-img" style="margin:22px 0 6px;">
+            <img src="/assets/cached/0d3de2610c28.jpg" alt="A woman sits amid the rubble of a destroyed building in southern Lebanon, surrounded by broken concrete, scattered water containers and hosepipes" loading="lazy">
+            <div class="plate-cap">
+              <span class="mono fig">FIG.</span>
+              <span class="txt">The cost on the ground in southern Lebanon: a resident among the rubble as the ceasefire holds on paper and the shooting fades only slowly.<span class="credit">Reuters · via PBS NewsHour</span></span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -2372,7 +2442,7 @@ body[data-skin="transmission"] {
       </div>
       <div class="cell">
         <span class="mono k">IN THE FRAME</span>
-        <span class="v serif">11 <em>images</em> · all sourced</span>
+        <span class="v serif">17 <em>images</em> · all sourced</span>
       </div>
       <div class="cell">
         <span class="mono k">A FACT</span>
@@ -2537,6 +2607,7 @@ body[data-skin="transmission"] {
       [['.mx-ranked', '.mx-ranked__entry'],
        ['.mx-scorecard', 'tr'],
        ['.mx-numbers', '.mx-numbers__cell'],
+       ['.figures-frame', '.fig-row'],
        ['.mx-cheat', '.mx-cheat__col'],
        ['.mx-dontmiss', 'li'],
        ['.mx-countdown', '.mx-countdown__cell'],
