@@ -214,3 +214,16 @@ bundle via web; matchday kit + matchday-worldcup pack; furniture-first.
 To follow: dual independent parity verifiers, orchestrator ≥6-shot
 spot-check, owner checkpoint #2 packet, publish decision per standing
 decision #2 + the owner's prior live-cutover override.
+
+**WP-7 GATE: PASS (2026-07-20).** Both independent parity verifiers scored
+12/12 (EVIDENCE/WP-7/parity-scorecard-verifier{1,2}.md); orchestrator
+six-shot spot-check recorded pre-verdict and concurs
+(orchestrator-spotcheck.md). Checkpoint #2 packet at checkpoint-2/.
+Published: issues/signal_season-review_2026-07-20.html (7,645 words, 8
+named voices, 11 scorecards, matchday-worldcup pack, tier2; publish-gate
+GREEN in place, receipt at live-publish-receipt.json). Post-publish:
+covers no-op (furniture-first, zero photos — by design), archive manifest
+rebuilt (32 issues). Reader notification fires only on merge to main —
+the merge is the owner's go-live moment (checkpoint-#2 sign-off packet
+stands ready). Permission-classifier flakiness during the publish steps
+(transient denials, resolved by retry) noted for transparency.

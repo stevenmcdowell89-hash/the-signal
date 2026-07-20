@@ -1,0 +1,30 @@
+{
+  "issue_id": "signal_season-review_2026-07-20",
+  "format": "season-review",
+  "issue_file": "issues/signal_season-review_2026-07-20.html",
+  "verdict": "green",
+  "gates": [
+    {
+      "name": "validate-issue",
+      "exit": 0,
+      "status": "pass"
+    },
+    {
+      "name": "image-diversity",
+      "exit": 0,
+      "status": "pass"
+    },
+    {
+      "name": "rendered-measure",
+      "exit": 0,
+      "status": "pass"
+    },
+    {
+      "name": "rendered-metrics",
+      "exit": 0,
+      "status": "pass"
+    }
+  ],
+  "publishable": true,
+  "note": "Machine-checkable ship receipt. The publish step must refuse to publish unless verdict=='green'. Reliability design Pillar F."
+}
