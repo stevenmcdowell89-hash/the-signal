@@ -227,3 +227,46 @@ rebuilt (32 issues). Reader notification fires only on merge to main —
 the merge is the owner's go-live moment (checkpoint-#2 sign-off packet
 stands ready). Permission-classifier flakiness during the publish steps
 (transient denials, resolved by retry) noted for transparency.
+
+---
+
+## WP-8 — Weekly densification — BUILD COMPLETE, PARITY RUNNING (2026-07-20)
+
+**Shipped (opt-in mx furniture layer; Transmission identity untouched):**
+- Five core objects into the weekly via the transmission alias so they arrive
+  pre-dressed in weekly palette/type: fixtures `.mx-ledger`, `.mx-ticket`,
+  `.mx-scorecard`, `.mx-quote` ×4 voices, one self-made `.mx-card--chart`
+  sparkline; `.mx-dial` needle-sweep signature. weekly-mx/10-mx-weekly.css
+  (curated subset — only deployed classes, no F-15 dead CSS).
+- stitch_weekly.py: furniture is opt-in on `design_system:"mx"`; legacy path
+  byte-identical (verified). weekly.json additive furniture_layer slots.
+- Densified 2026-07-19: **0.86 ev/screen @1440** (band 0.8–1.0), 209.6 w/s
+  (≤210), no 3+ dead run, overlap 0, truncation 0, h-scroll false, motion
+  20/reduced 0 (tier1). Validator 26/0 (Law-3 7,951w, Law-9 4 real voices,
+  F-16 local). Shipped-baseline contrast: 0.35 ev/screen, 8-screen dead run.
+- Font-leak check (runtime getComputedStyle on 11 furniture roles): every one
+  resolves to Instrument Serif / Newsreader / JetBrains Mono. No display-font
+  leak (core 00-contract, which carries display fonts, deliberately unbundled).
+
+**Golden decision (orchestrator, Law-12-grounded):** the legacy weekly golden
+(issue 16) is KEPT green for backward-compat and deliberately NOT migrated to
+the mx path — its real content carries only 3 named voices and the mx Law-9
+floor is 4; fabricating a fourth is forbidden. Instead a NEW mx-weekly golden
+was committed from the real 4-voice 2026-07-19 densified build
+(references/golden/weekly-mx/), byte-reproducible through stitch_weekly.py and
+wired into verify-weekly-golden.sh (both goldens now checked, both green).
+This satisfies WP-8's "new golden committed" without fabrication.
+
+**Bundle overage (flagged, not hidden):** weekly CSS 25.0→45.9KB (~40KB
+target, +5.9KB) — the curated 5-component subset, far under the full core
+(~77KB) or editorial cap (120KB). JS 1.4→9.6KB (image-fallback + mx-motion).
+
+**Human-verify item (builder-flagged):** Law-9 attribution is markup-trusted;
+verbatim accuracy of the Zverev/Sinner/Tuchel quotes is a human check — all
+real named people on that week's real events, matching the shipped issue and
+the WP-8 mockup; nothing invented.
+
+**Parity:** WP-8 verifier running (candidate vs shipped-weekly identity
+baseline + frozen refs). Orchestrator spot-check (cover + fixtures-ledger/
+Zverev-quote depth, both recorded above): unmistakably Transmission, furniture
+in the weekly's own palette and faces, no skin bleed.
