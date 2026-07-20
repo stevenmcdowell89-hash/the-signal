@@ -270,3 +270,10 @@ the WP-8 mockup; nothing invented.
 baseline + frozen refs). Orchestrator spot-check (cover + fixtures-ledger/
 Zverev-quote depth, both recorded above): unmistakably Transmission, furniture
 in the weekly's own palette and faces, no skin bleed.
+
+**WP-8 GATE: PASS (2026-07-20).** Parity verifier (candidate vs shipped-weekly
+identity baseline + frozen refs): twelve/twelve, headline "unmistakably the
+same Transmission weekly, only denser" — cover pixel-identical to baseline,
+no scene-grounds/display-fonts/skin bleed anywhere across 14 shots; density
+0.35→0.86 ev/screen, dead run gone; the candidate also FIXES the shipped
+weekly's 390 back-pill overlap. Scorecard: EVIDENCE/WP-8/parity-scorecard-weekly.md.
