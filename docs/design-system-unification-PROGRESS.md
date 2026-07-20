@@ -151,7 +151,9 @@ standing decision #2; retroactive sign-off requested in the final report.
 
 Editorial/event/transmission skins (zero :not(), F-8/F-12 fixed in ports),
 manifest bundling in stitch-issue.sh (budgets hard-fail: editorial 102.4KB/120,
-event 96.5KB/160; one-masthead enforced; legacy glob untouched — archive
+event 96.5KB/160 at WP-3 — grew to ~107.6KB/101.8KB after WP-5 expanded
+core/14-motion.css, still under budget, gate passes; per WP-9 audit finding #1;
+one-masthead enforced; legacy glob untouched — archive
 pipeline verified working), chrome tokens (dark stays dark), 16-print.css,
 network-disabled render zero external requests, weekly golden byte-identical
 throughout. Parity gate: event candidate 12/12 PASS first try (judged better
@@ -277,3 +279,45 @@ same Transmission weekly, only denser" — cover pixel-identical to baseline,
 no scene-grounds/display-fonts/skin bleed anywhere across 14 shots; density
 0.35→0.86 ev/screen, dead run gone; the candidate also FIXES the shipped
 weekly's 390 back-pill overlap. Scorecard: EVIDENCE/WP-8/parity-scorecard-weekly.md.
+
+---
+
+## WP-9 — Closeout — ✅ COMPLETE (2026-07-20)
+
+- **F-1…F-20 closeout table:** `EVIDENCE/WP-9/closeout-F1-F20.md` — every
+  registry failure mapped to its fix and committed evidence, plus a 7-item
+  out-of-scope-with-reason list (nothing silently dropped).
+- **Independent re-verification sweep (Part 6 §5 audit, fresh non-builder):**
+  `EVIDENCE/WP-9/audit-report.md`. Verdict: **no false green exists.** All 5
+  retained bad HTML fixtures + all 4 seeded-bad motif packs still FAIL for
+  their exact reasons (gate has not regressed, Part 6 §4). Clean controls,
+  both goldens (legacy + mx-weekly, byte-identical), all 3 motif goldens, and
+  the live Season Review publish-gate all PASS. Fresh measurements reproduce
+  the committed WP-7/WP-8 metrics exactly (live SR 1.95 ev/screen; densified
+  weekly 0.86). 12 committed screenshots opened — all real renders matching
+  their scorecards; direct contrast against the attempt-2 flat negative
+  confirms the output is categorically different from "a load of squares".
+  Five PROGRESS claims reproduced true (76/76 plan tests, MX-TIMING rejects
+  the attempt-#2 before-final Season Review, etc.).
+- **One honest correction from the audit (non-blocking):** WP-3's recorded
+  bundle bytes were ~5KB stale (core/14-motion.css grew in WP-5); actual
+  107.6KB/101.8KB, both still under the 120/160 budgets — gate still passes.
+  Corrected in the closeout table + the WP-3 entry above.
+
+## DEFINITION OF DONE (Part 6 §7) — MET
+
+1. All WP gates green with ledger evidence — ✅ WP-0…WP-8, each with a
+   fresh non-builder verdict + orchestrator spot-check.
+2. F-1…F-20 closeout table complete — ✅ `EVIDENCE/WP-9/closeout-F1-F20.md`.
+3. Parity gate passed on one live special AND the densified weekly — ✅
+   Season Review (TWO independent verifiers 12/12 + orchestrator 6-shot
+   spot-check) and the weekly (unmistakably Transmission, 12/12).
+4. Both owner checkpoints — packets committed (`EVIDENCE/WP-2/checkpoint-1`,
+   `EVIDENCE/WP-7/checkpoint-2`); sign-off requested retroactively per
+   standing decision #2 (owner directive "no feedback until done").
+5. No open false-green incidents — ✅ none recorded; WP-9 audit confirms.
+
+**The engagement's deliverable — the holiday-system quality de-themed into a
+unified core carrying every format — is built, measured, and independently
+verified. Publication of any new-system issue remains gated: only a
+full-gate-green artifact ships (Part 8 continuity).**
