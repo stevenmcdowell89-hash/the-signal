@@ -354,6 +354,13 @@ Resolution — three namespaces, explicitly related, canonicalised by **WP-1** i
 **`data-sport="multi_sport"` is forbidden — WP-4 must reject it.** A result belongs to a sport; rows
 derived from a multi-sport games carry the specific sport (`athletics`, `swimming`, …).
 
+**Hard-fail vs warn (WP-1 round 3, 2026-07-26).** WP-1 canonicalised **22** sport tokens in
+`data-contracts.md` § Sport tokens. WP-4 must **hard-fail** `data-sport="multi_sport"` but only **warn**
+on a token outside the 22 — a closed list that hard-fails would block a ship on the multi-sport-games
+long tail (lawn bowls, para events), and a breadth check that blocks breadth is self-defeating. WP-1
+extends the list by appending. `multi_sport` is also barred as an `interest_depth` key. **WP-3:** every
+`.mx-ledger__row` carries a specific token, *including* rows derived from a games.
+
 ### 3.12 Sports calendar seeding (WP-1)
 
 Seed `sports_calendar` for the remainder of 2026 with recurring/announced majors only. **Every seeded

@@ -18,6 +18,7 @@ Where each contract is documented in full:
 | `research-bundle.json` additions | **this file**, § Research bundle | `scripts/validate-research-bundle.py` (WP-5) |
 | the `shows` enum | **this file**, § The `shows` enum — canonicalised in `references/image-source-types.json` (WP-6) | `validate-research-bundle.py` (WP-5), `validate-issue.py` (WP-4), `check-image-diversity.sh` (WP-6) |
 | `state/signal-state.json` additions | **this file**, § State | written/read by `SKILL.md` phase wiring (WP-9); read by WP-4/WP-5 validators |
+| sport tokens (`data-sport`, `sports_calendar[].sport`, `interest_depth` keys) | **this file**, § Sport tokens | `validate-issue.py` (WP-4) — and it must reject `data-sport="multi_sport"` |
 | rendered HTML attributes | SPEC §3.4 — emitted by `scripts/stitch_weekly.py` (WP-3) | `scripts/validate-issue.py` (WP-4) |
 | `assets/cached/manifest.json` | SPEC §3.10 — written by `scripts/mirror-images.py` (WP-8) | `scripts/extract-covers.py` (WP-8) |
 
@@ -306,6 +307,86 @@ Value set (SPEC §3.5): `full` · `majors_only` · `results_only` · `off`.
 
 ---
 
+## Sport tokens — one vocabulary, three namespaces
+
+Canonicalised here by WP-1 under the SPEC §3.11 amendment *"Sport tokens — one vocabulary, and
+`multi_sport` is not a result"*. Three namespaces answer three different questions and are related by
+the mapping below; they are deliberately **not** forced to share names.
+
+| Namespace | Question it answers | Where it lives |
+|---|---|---|
+| **Sport token** (canonical) | *Which sport is this result?* | `data-sport` on every `.mx-ledger__row`; `sports_calendar[].sport`; `interest_depth` keys |
+| **Daily domain** | *Which edition/section does this item route to?* | `functions/daily/profile.js` `DOMAINS` / `DOMAIN_META` (WP-7) |
+| **Topic family** | *Which editorial beat is this piece on?* | `references/chapter-plan-schema.md` § Topic Family Enumeration; `cover_lead_ledger[].topic_family` |
+
+Topic families are **competition-level** (`premier_league`, `golf_majors`, `f1`, `olympics`) because
+they classify a *piece*; sport tokens are **sport-level** (`football`, `golf`, `motorsport`,
+`athletics`) because they classify a *result*. Neither replaces the other.
+
+### The closed sport-token list
+
+Lowercase `snake_case`, singular, and the **sport** — never the competition (`football`, not
+`premier_league`; `motorsport`, not `f1`).
+
+`football` · `golf` · `cricket` · `cycling` · `athletics` · `motorsport` · `rugby` · `tennis` ·
+`boxing` · `mma` · `snooker` · `darts` · `gaelic_games` · `swimming` · `diving` · `gymnastics` ·
+`netball` · `hockey` · `ice_hockey` · `horse_racing` · `basketball` · `american_football`
+
+Derivation (so the list is auditable, not invented): `football` and `golf` are the reader profile's
+stated sports (`references/spec/global.md` § The Reader); `cricket`, `cycling`, `athletics` and
+`motorsport` are WP-7's new daily domains; the remaining tokens are exactly the sports named in the
+keyword set of WP-7's general `sport` catch-all in `functions/daily/profile.js` (rugby, tennis,
+boxing, UFC/MMA, snooker, darts, GAA, swimming/diving, gymnastics, netball, hockey, ice hockey, horse
+racing, NFL, NBA), so every item the daily can surface has somewhere to land in a results ledger.
+
+**Closed, with an extension path.** Adding a token is a one-line change **to this list, by WP-1**
+(the same discipline as a new `topic_family`): append it here with a one-line reason, and no consumer
+needs a code change. Consumers must therefore treat the list as advisory-but-canonical:
+
+- `validate-issue.py` (WP-4) **MUST hard-fail** `data-sport="multi_sport"` (below), and **SHOULD warn,
+  not fail**, on a `data-sport` value outside this list. A genuinely new sport (weightlifting, judo,
+  squash — the Commonwealth Games long tail) must not block a ship; the warning is the prompt to
+  extend the list.
+- No consumer may *substitute* a token it does not recognise, and none may lowercase-normalise
+  silently: the writer emits a listed token or the token gets added here.
+
+### `multi_sport` is legal in exactly one place
+
+- **Legal:** `sports_calendar[].sport` — it classifies an **event** (Glasgow 2026, an Olympics), where
+  "which sport" has no single answer and the planner needs the whole games on one row.
+- **Forbidden:** `data-sport` in rendered HTML — **WP-4 must reject it.** A *result* always belongs to
+  a specific sport; rows derived from a multi-sport games carry `athletics`, `swimming`, `boxing`, and
+  so on. Reason, in one line: `multi_sport` would collapse ten sports into one token, so a ledger of
+  `[motorsport, multi_sport]` would satisfy the `results_ledger_multi_sport` invariant (SPEC §3.11,
+  ≥2 distinct `data-sport` values) while delivering none of the breadth the invariant exists to force
+  — the F1-saturation defect (41 term-hits to everything-else 0) passing its own check.
+- Also forbidden as an `interest_depth` key, for the same reason (§ `interest_depth`).
+
+### Daily domain → sport token mapping
+
+`functions/daily/profile.js` (WP-7) routes items by domain; the ledger tags results by sport. The
+mapping is a routing convenience, not an identity — do not rename either side to match the other.
+
+| Daily domain (`DOMAIN_META` label) | Sport token(s) |
+|---|---|
+| `football` ("Football") | `football` |
+| `golf` ("Golf") | `golf` |
+| `cricket` ("Cricket") | `cricket` |
+| `cycling` ("Cycling") | `cycling` |
+| `athletics` ("Athletics") | `athletics` |
+| `motorsport` ("Motorsport") | `motorsport` |
+| `sport` ("More Sport" — the catch-all) | any of `rugby`, `tennis`, `boxing`, `mma`, `snooker`, `darts`, `gaelic_games`, `swimming`, `diving`, `gymnastics`, `netball`, `hockey`, `ice_hockey`, `horse_racing`, `basketball`, `american_football` — resolved per item, never carried through as a token |
+
+The six named domains are 1:1 with their tokens. The `sport` catch-all is **1:many**: it exists because
+the daily needs a routing bucket for every sport without a domain of its own, and because its keyword
+set is kept disjoint from the specific domains. It has no token of its own — an item routed to
+"More Sport" whose result reaches a ledger is tagged with the sport it actually is. Multi-sport meets
+route to `sport` (the Olympics/Commonwealth keywords live there) and then resolve, per result, to the
+specific sport — which is the same rule as the `multi_sport` prohibition above, seen from the daily's
+side.
+
+---
+
 ## Seed provenance — what the seeded values are grounded in
 
 Recorded because a seed that looks like a fact of record but was guessed is worse than an empty field.
@@ -342,7 +423,10 @@ Recorded because a seed that looks like a fact of record but was guessed is wors
   (21 Aug) and Serie A (23 Aug) 2026-27 openings are grounded in state's own
   `recent_next_week_themes`. Known gaps Phase 0 should add **once dates are confirmed from a source**:
   the UEFA Champions League 2026-27 league phase (September), the remaining F1 rounds after the
-  August break, and any autumn athletics/cricket set-pieces WP-7's new feeds surface. Deliberately
+  August break, and any autumn athletics/cricket set-pieces WP-7's new feeds surface. The seed's
+  `sport` values (`golf`, `football`, `multi_sport`) already conform to § Sport tokens — the Games row
+  keeps `multi_sport` because it classifies the event, and its *results* will be tagged per sport.
+  Deliberately
   absent: the Ryder Cup (biennial — 2027, not 2026) and the men's golf majors (all four concluded
   before the research cut, The Open last), so golf legitimately yields until 2027.
 - **`interest_depth`** — the three sports the owner weighted (motorsport `results_only`, football

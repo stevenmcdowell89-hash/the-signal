@@ -9,16 +9,21 @@ Each WP appends to its own section. Do not rewrite another WP's entry.
 
 | WP | Title | Status | Defects | Notes |
 |----|-------|--------|---------|-------|
-| WP-1 | Data contracts (foundation) | DONE | A B C D E | contracts written + state seeded; 2 SPEC notes in handoff |
-| WP-2 | Editorial prose spec | PENDING | A C D E | |
-| WP-3 | Structure of record + stitcher + CSS | PENDING | A C D | |
-| WP-4 | Rendered-issue checks | PENDING | A B D E | after WP-3 |
-| WP-5 | Upstream production aids | PENDING | A C D E | after WP-3 |
-| WP-6 | Image taxonomy + specificity doctrine | PENDING | E | |
-| WP-7 | Daily inputs | PENDING | D | |
-| WP-8 | Asset provenance + licence safety | PENDING | E | |
-| WP-9 | Pipeline phase wiring | PENDING | C D | |
-| WP-10 | Verification harness | PENDING | all | last |
+| WP-1 | Data contracts (foundation) | DONE | A B C D E | 3 rounds; contracts + state seed + `cyber_privacy` + 22 sport tokens. 9 handoffs, 1 resolved, 8 routed |
+| WP-2 | Editorial prose spec | IN PROGRESS | A C D E | |
+| WP-3 | Structure of record + stitcher + CSS | IN PROGRESS | A C D | |
+| WP-4 | Rendered-issue checks | PENDING | A B D E | queued behind WP-3; owes handoffs 1, 6, 8 |
+| WP-5 | Upstream production aids | PENDING | A C D E | queued behind WP-3; owes handoffs 1, 2, 6, 7 |
+| WP-6 | Image taxonomy + specificity doctrine | IN PROGRESS | E | |
+| WP-7 | Daily inputs | DONE | D | 9 feeds + 5 domains, all URLs 200-verified; keyword sets regressed over 3286 titles |
+| WP-8 | Asset provenance + licence safety | DONE | E | manifest 438 entries, 13 URLs recovered from git history; ND refusal armed but cannot fire on #18 (frozen, licences unpopulated) |
+| WP-9 | Pipeline phase wiring | IN PROGRESS | C D | owes handoffs 4, 5 |
+| WP-10 | Verification harness | PENDING | all | last; owes handoff 6 (needs an `open` loop fixture) |
+| WP-11 | Daily routing | IN PROGRESS | D | added mid-build — original ownership map left `render.js`/`dedup.js` unowned, leaving WP-7 partly inert |
+
+**Orchestrator owns this file from 2026-07-26.** WP-1 wrote here during rounds 1–2 while it was the
+only agent running; with several WPs now reporting concurrently, all others write
+`docs/editorial-coverage-rebuild-EVIDENCE/WP-<N>.md` instead and the orchestrator merges.
 
 ## Expected-failure ledger
 
