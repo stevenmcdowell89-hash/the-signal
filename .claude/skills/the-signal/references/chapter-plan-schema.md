@@ -32,6 +32,21 @@
 > deliberate legacy back-compat weekly (the `references/golden/weekly/` fixture);
 > new issues are `mx`.
 
+> **WP-1 (2026-07-26) — EDITORIAL COVERAGE REBUILD: coverage window, cover-lead
+> accountability, and Long Read vintage.** Per
+> `docs/editorial-coverage-rebuild-SPEC-2026-07-26.md` §3.1, a weekly plan now
+> declares (a) **when research stopped** — `issue_meta.research_cut_at` and
+> `issue_meta.window` — so a validator can tell "in the calendar range" from
+> "knowable at research time"; (b) **what the cover leads on and why** —
+> `issue_meta.cover_leads_on`, `issue_meta.lead_rationale`, and
+> `issue_meta.lead_override_reason` (the rut rule, SPEC §3.6); (c) the Long Read's
+> **vintage** — `long_read.vintage` plus `material_span` / `latest_development`
+> when evergreen, so an evergreen feature stops being stamped as breaking news;
+> and (d) per-row provenance on the stat strip — `week_in_numbers.rows[].source_band`.
+> All of these are enforced by `scripts/validate-chapter-plan.py` (WP-5). The
+> machine records that cross the *phase* boundaries (research bundle, state file)
+> are documented in `references/spec/data-contracts.md`.
+
 The planner subagent writes `/tmp/signal-build/chapter-plan.json`. This file defines the contract between the planner and the writer subagents. Every field here is required unless marked optional.
 
 The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan that fails validation cannot proceed to Phase 5 (writer subagents).
@@ -116,6 +131,39 @@ The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan
             "target_total": { "type": "integer", "description": "The issue target the planner is aiming at (weekly: 6,800-7,500)." },
             "allocated_total": { "type": "integer", "description": "Sum of all chapters' target_word_count. Weekly: MUST be >= 6,000 (validator hard-fails below)." }
           }
+        },
+
+        "research_cut_at": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+          "description": "WP-1 (SPEC §3.1) — REQUIRED on weekly plans. ISO8601 UTC instant at which research for THIS issue stopped. Copied from `research_cut_at` in state/signal-state.json, which the previous publish wrote (see references/spec/data-contracts.md § State additions). It is the closing bound of this issue's coverage window and the opening bound of the next one. Its point: the coverage window is an INSTANT-bounded range, not a calendar range — an event that concluded after the cut is not 'covered' just because its date falls inside the week, it is an open loop (§3.7). validate-chapter-plan.py hard-fails a weekly plan that omits it, whose value is not a UTC ISO8601 instant, or that disagrees with issue_meta.window.to."
+        },
+
+        "window": {
+          "type": "object",
+          "description": "WP-1 (SPEC §3.1) — REQUIRED on weekly plans. The issue's coverage window as two instants. `from` is the PREVIOUS issue's research cut (so nothing falls between issues); `to` equals this plan's issue_meta.research_cut_at. Enforced by validate-chapter-plan.py (WP-5).",
+          "required": ["from", "to"],
+          "properties": {
+            "from": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$", "description": "Opening bound — the previous issue's research cut. Must be < `to`." },
+            "to": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$", "description": "Closing bound — identical to issue_meta.research_cut_at." }
+          }
+        },
+
+        "cover_leads_on": {
+          "type": "string",
+          "enum": ["news", "long_read"],
+          "description": "WP-1 (SPEC §3.1) — REQUIRED on weekly plans. What the cover's lead transmission leads on: `news` (a development from this week) or `long_read` (the standing anchor piece). This is the value written to `cover_lead_ledger[].led_on` in state at publish (WP-9), and the value the rut rule (SPEC §3.6) counts. validate-chapter-plan.py hard-fails a weekly plan that omits it or uses a value outside the enum."
+        },
+
+        "lead_rationale": {
+          "type": "string",
+          "minLength": 120,
+          "description": "WP-1 (SPEC §3.1) — REQUIRED on weekly plans, >= 120 characters. Prose stating why this cover lead won, NAMING what was considered and rejected. Not a summary of the chosen story — an account of the choice ('the Commonwealth Games opening and the BoE call were both live; the Games ran to 2 Aug so its results are next week's, the BoE is Thursday's'). It exists because defect C was a planner that never had to argue for the lead. validate-chapter-plan.py hard-fails a weekly plan whose lead_rationale is absent or under 120 chars."
+        },
+
+        "lead_override_reason": {
+          "type": "string",
+          "description": "WP-1 (SPEC §3.1) — CONDITIONALLY REQUIRED, >= 80 characters: required only when the rut rule (SPEC §3.6) trips, i.e. when this plan sets cover_leads_on:'news' on a topic_family that already appears as led_on:'news' in >= 3 of the last 4 state `cover_lead_ledger` entries. Not suppression — a forced conscious choice: the planner may always lead with it again, it just has to say in writing why this week's development earns the cover over everything else available. Omit entirely when the rule does not trip. validate-chapter-plan.py hard-fails only the ruttted case (absent or under 80 chars)."
         }
       }
     },
