@@ -13,11 +13,11 @@ Each WP appends to its own section. Do not rewrite another WP's entry.
 | WP-2 | Editorial prose spec | DONE | A C D E | 13 blocks across 2 files, `(v8.44, WP-2)`; ~50 identifiers verified byte-for-byte. Raises R-2 + 2 naming divergences |
 | WP-3 | Structure of record + stitcher + CSS | DONE | A C D | golden regenerated, `verify-weekly-golden.sh` exits 0 (re-run by orchestrator). Caught WP-8's placeholder-stamping bug |
 | WP-4 | Rendered-issue checks | IN PROGRESS | A B D E | owns 6 of 12 acceptance criteria; implements against §3.4a as-built |
-| WP-5 | Upstream production aids | IN PROGRESS | A C D E | launched ahead of queue to fix the in-tree `KeyError` |
+| WP-5 | Upstream production aids | DONE | A C D E | 2 rounds; `KeyError` fixed, criteria #1/#4/#5 firing, 6 handoffs closed, 76/76 self-tests |
 | WP-6 | Image taxonomy + specificity doctrine | DONE | E | `shows` enum canonical; found the missing Steam akamai host and the mistyped Springer domain |
 | WP-7 | Daily inputs | DONE | D | 9 feeds + 5 domains, all URLs 200-verified; keyword sets regressed over 3286 titles |
 | WP-8 | Asset provenance + licence safety | DONE | E | manifest 438 entries, 13 URLs recovered from git history; ND refusal armed but cannot fire on #18 (frozen, licences unpopulated) |
-| WP-9 | Pipeline phase wiring | IN PROGRESS | C D | owes handoffs 4, 5 |
+| WP-9 | Pipeline phase wiring | DONE | C D | 4 rounds; window + open loops wired, 4 stale cap claims retired, researcher brief gained shape intent |
 | WP-10 | Verification harness | PENDING | all | last; owes handoff 6 (needs an `open` loop fixture) |
 | WP-11 | Daily routing | DONE | D | 3 lists changed, 4 audited and left alone; behaviourally verified against real blobs. Raises open risk R-1 |
 | WP-12 | Skill version + changelog | PENDING | — | added mid-build; runs last, after WP-10 |

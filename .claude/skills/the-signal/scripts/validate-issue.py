@@ -2558,21 +2558,24 @@ def _caption_reports_result(fig: dict) -> str | None:
 
 
 def check_image_shape_budgets(figs: list[dict], info_shapes: tuple[str, ...],
+                              never_lead: tuple[str, ...],
                               manifest: dict | None, issue_no: int | None,
                               report: Report) -> None:
     """SPEC §3.8 · acceptance criterion #8.
 
-    Five budgets, each a hard FAIL:
+    Six budgets, each a hard FAIL:
       1. ≥3 distinct data-shows across the issue (min_distinct_shapes, §3.14).
       2. Pixel & Byte: at most one key_art, and key_art is never the band's lead.
-      3. The Long Read carries ≥1 of diagram|map|chart|artefact.
-      4. A Touchline figure captioned as a concluded result must be event_photo.
-      5. Cross-issue: a src that LED the previous issue may not lead this one.
+      3. Never-lead, issue-wide: no lead figure may be a never_lead_shape
+         (§3.8 "Never-lead, resolved 2026-07-26"), with product_shot conditional.
+      4. The Long Read carries ≥1 of diagram|map|chart|artefact.
+      5. A Touchline figure captioned as a concluded result must be event_photo.
+      6. Cross-issue: a src that LED the previous issue may not lead this one.
 
-    (1) and (3) are counted over what the figures DECLARE, so an issue with no
+    (1) and (4) are counted over what the figures DECLARE, so an issue with no
     data-shows at all fails them — correctly. The budget is a per-issue floor on
     what the reader is shown; "we didn't say what the pictures are" is not a way
-    to satisfy it. (2) and (4) can only speak about a declared value, so they
+    to satisfy it. (2), (3) and (5) can only speak about a declared value, so they
     stay silent when the attribute is absent rather than double-reporting a
     figure the provenance check has already failed.
     """
@@ -2622,7 +2625,46 @@ def check_image_shape_budgets(figs: list[dict], info_shapes: tuple[str, ...],
                       f"Pixel & Byte: {len(key_art)} key_art figure(s), none leading "
                       f"({len(pb)} figure(s) in the band)")
 
-    # 3 · Long Read information figure
+    # 3 · never-lead shapes, issue-wide (SPEC §3.8, resolved 2026-07-26)
+    hard_never = tuple(s for s in never_lead if s not in CONDITIONAL_LEAD_SHAPES)
+    cond_never = tuple(s for s in never_lead if s in CONDITIONAL_LEAD_SHAPES)
+    lead_figs = [f for f in figs if f["is_lead"] and f["attrs"].get("data-shows")]
+    banned = [f for f in lead_figs if f["attrs"]["data-shows"] in hard_never]
+    if banned:
+        report.fail("image-shapes/never-lead",
+                    f"{len(banned)} band lead figure(s) use a never-lead shape "
+                    f"{list(hard_never)} (SPEC §3.8, resolved 2026-07-26 — issue-wide, any band):\n"
+                    + "\n".join(f"    • {_fig_id(f)} — data-shows=\"{f['attrs']['data-shows']}\""
+                                for f in banned)
+                    + "\n    Both substitute for showing the thing itself: key art is the logo, and "
+                      "a posed portrait is the person NOT doing the thing (the 'random Pope photo' "
+                      "failure). A lead figure is the band's establishing image — lead with the "
+                      "event, the gameplay, the diagram or the artefact.")
+    else:
+        report.ok("image-shapes/never-lead",
+                  f"none of the {len(lead_figs)} declared lead figure(s) use a never-lead shape "
+                  f"{list(hard_never)}")
+    # product_shot is the ONE conditional case and the condition — "the band's
+    # subject IS the product" — is not in the rendered HTML. A band carries no
+    # machine-readable subject type: `data-band="pixel_byte"` covers hardware,
+    # software, games and services alike, and inferring "this is a hardware
+    # review" from prose would be a guess. So this is reported, not enforced:
+    # per the SPEC's own reasoning, a check that guesses wrong on hardware
+    # coverage is worse than one that only enforces the unambiguous shapes.
+    cond_leads = [f for f in lead_figs if f["attrs"]["data-shows"] in cond_never]
+    if cond_leads:
+        report.warn("image-shapes/never-lead-conditional",
+                    f"{len(cond_leads)} band lead figure(s) are "
+                    f"{list(cond_never)}: "
+                    + "; ".join(_fig_id(f) for f in cond_leads)
+                    + f". SPEC §3.8 allows this ONLY when the band's subject IS the product (a "
+                      f"hardware launch or review) and forbids it for a software, game or service "
+                      f"band. The rendered HTML carries no machine-readable band subject, so this "
+                      f"cannot be decided mechanically — confirm it by eye at gate 3. Reported, "
+                      f"deliberately not failed: blocking it outright would break the legitimate "
+                      f"hardware coverage this reader gets.")
+
+    # 4 · Long Read information figure
     lr = [f for f in figs if f["band"] == "long_read"]
     if lr:
         info = [f for f in lr if f["attrs"].get("data-shows") in info_shapes]
@@ -2641,7 +2683,7 @@ def check_image_shape_budgets(figs: list[dict], info_shapes: tuple[str, ...],
                       f"the Long Read carries {len(info)} information figure(s): "
                       + ", ".join(f"{f['label']}={f['attrs']['data-shows']}" for f in info))
 
-    # 4 · a concluded Touchline result is an event photo
+    # 5 · a concluded Touchline result is an event photo
     tl = [f for f in figs if f["band"] == "touchline"]
     result_figs = [(f, why) for f in tl for why in [_caption_reports_result(f)] if why]
     offenders = [(f, why) for f, why in result_figs
@@ -2659,7 +2701,7 @@ def check_image_shape_budgets(figs: list[dict], info_shapes: tuple[str, ...],
                   + "; ".join(f"{f['label']}={f['attrs'].get('data-shows') or '(undeclared)'}"
                               for f, _ in result_figs))
 
-    # 5 · cross-issue: last week's lead cannot lead again
+    # 6 · cross-issue: last week's lead cannot lead again
     leads = [f for f in figs if f["is_lead"] and f["hash"]]
     if manifest is None or issue_no is None:
         report.warn("image-shapes/cross-issue-lead",
@@ -2775,7 +2817,7 @@ def run_coverage_checks(html: str, fmt: str, new_system: bool, path: Path,
                                          # .lr-title .lr-vintage — scanning the raw
                                          # document would read CSS as markup.
     figs = collect_figures(body)
-    shows_enum, info_shapes, vocab_note = load_shows_vocab()
+    shows_enum, info_shapes, never_lead, vocab_note = load_shows_vocab()
 
     repo_root = find_repo_root(path)
     state_path = Path(state_arg) if state_arg else repo_root / "state" / "signal-state.json"
@@ -2815,7 +2857,8 @@ def run_coverage_checks(html: str, fmt: str, new_system: bool, path: Path,
     check_caption_vintage(body, figs, report)                       # §3.9, crit #3
     if weekly_new:
         check_figure_provenance(figs, shows_enum, vocab_note, report)   # §3.4a n6
-        check_image_shape_budgets(figs, info_shapes, manifest, issue_no, report)  # §3.8, crit #8
+        check_image_shape_budgets(figs, info_shapes, never_lead, manifest,
+                                  issue_no, report)                        # §3.8, crit #8
 
     # ── GATE 2 · markup contracts ───────────────────────────────────────────
     check_sport_tokens(body, report)                               # §3.11, crit #7

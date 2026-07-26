@@ -483,3 +483,68 @@ $ git status --short → SKILL.md (WP-9) + WP-5/WP-6 script paths (parallel WPs,
 ```
 
 No new handoff notes. WP-1's field, WP-5's enforcement and WP-9's copy now agree.
+
+---
+
+# WP-9 follow-up 3 (2026-07-26) — line 274's stale parenthetical, and the never-lead sweep
+
+Coordinator follow-up after WP-6 completed. Source of truth read, not edited:
+`references/image-source-types.json` § `shows` (all four derived lists), SPEC §3.8 § "Never-lead,
+resolved 2026-07-26", and `scripts/validate-issue.py` (WP-4's implementation).
+
+## Line 274 — the parenthetical is DELETED, and the sentence rewritten
+
+The stale parenthetical was mine, from the previous round: *"(`shows.never_lead_shapes` in the lookup
+file; the checklist prose puts `portrait` in the same rung, so do not lead on one either)"*. It
+existed **only** to work around an unreconciled discrepancy — WP-6's machine list then read
+`never_lead_shapes: ["key_art", "product_shot"]` while the checklist's rank-5 prose included
+`portrait`, so the doc hedged rather than pick a side. WP-6 has since reconciled all four lists
+(`never_lead_shapes` and `last_resort_shapes` are both now `[key_art, product_shot, portrait]`) and
+SPEC §3.8 resolved the question outright, so the hedge refers to a disagreement that no longer
+exists. **Deleted rather than rewritten** — a parenthetical whose only job was to paper over a
+contradiction has no residual content once the contradiction is gone.
+
+The surrounding sentence now states the resolved rule positively: rank 5 is `key_art` ·
+`product_shot` · `portrait`; **`key_art` and `portrait` may never be a lead figure, issue-wide, in
+any band** (key art is the logo; a posed portrait is the person *not* doing the thing);
+`product_shot` may lead **only where the band's subject is the product itself** — hardware, never a
+game, software or service band, where it is a box standing in for something that moves. Kept the
+"candid at an event is `event_photo`, not `portrait`" discriminator, because that is the line the
+random-Pope-photo failure actually crossed.
+
+## Drift found and fixed — 3 of the 4 citation sites were wrong
+
+| Site | Said | Now says |
+|---|---|---|
+| **274** (Phase 3a researcher brief) | rank 5 named; *"`key_art` and `product_shot` may never lead"* + the workaround hedge on `portrait` | rank 5 = all three; `key_art`/`portrait` never lead **issue-wide**; `product_shot` conditional on the band's subject being the product |
+| **311** (Phase 3b hierarchy) | *"(5) key art / product shot / posed portrait — last resort, and **never a lead figure**"* — flatly, which overstates `product_shot` | rung membership unchanged; never-lead split into the issue-wide pair + the conditional |
+| **425** (Phase 7.6 shape budgets) | *"no `key_art` leading **Pixel & Byte**"* — the pre-resolution letter of §3.8, band-scoped and `key_art`-only | at most one `key_art` in Pixel & Byte **plus** no `key_art`/`portrait` as any band's lead issue-wide, `product_shot` conditional; also added the Touchline `event_photo` rule, which was missing from this list |
+| **454** (Phase 7.7) | Wikimedia retirement + shape floor only — makes no never-lead claim | unchanged, correctly |
+
+The pattern in all three: my earlier edits were written against §3.8's *original* letter (Pixel &
+Byte, `key_art` only) and WP-6's *then*-current machine list, so they were narrower than the resolved
+rule in one direction and broader in another (`product_shot`).
+
+## Verification
+
+```
+$ python3 - # WP-6's reconciled lists, read from image-source-types.json
+  never_lead_shapes:   ['key_art', 'product_shot', 'portrait']
+  last_resort_shapes:  ['key_art', 'product_shot', 'portrait']
+  rank 5:              ['key_art', 'product_shot', 'portrait']  "LAST RESORT, never a lead."
+  information_figure_shapes: ['diagram', 'map', 'chart', 'artefact']
+$ grep -n "key_art leading|key art leading|key_art may not|only key" SKILL.md   → no output (clean)
+$ grep -n "never lead|never a lead|may never|rank 5|last resort" SKILL.md        → 2 hits (274, 311),
+    both stating the resolved three-way rule; no band-scoped or key_art-only survivor.
+$ git diff --numstat fd32ba6 -- SKILL.md   → 3  3   (baselined on the named commit, not stash)
+```
+
+**Cross-checked against WP-4's implementation** (`validate-issue.py`, read only):
+`NEVER_LEAD_FALLBACK = ("key_art", "product_shot", "portrait")` with
+`CONDITIONAL_LEAD_SHAPES = ("product_shot",)` and `hard_never = tuple(s for s in never_lead if s not
+in CONDITIONAL_LEAD_SHAPES)` — i.e. `key_art`/`portrait` hard-fail as leads issue-wide while
+`product_shot` is treated conditionally. **SKILL.md now describes exactly what the validator
+enforces**, so no handoff note is needed: the JSON's flat `never_lead_shapes` is deliberately the
+plain reading, and WP-4 carries the §3.8 conditional in code with a comment saying so.
+
+No new handoff notes. WP-6's lists, SPEC §3.8, WP-4's enforcement and SKILL.md's prose now agree.
