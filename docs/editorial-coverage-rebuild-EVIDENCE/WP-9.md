@@ -313,3 +313,102 @@ in `.claude/skills/the-signal/scripts/`; `post-publish.sh`, `mirror-images.py` a
    there, which means anything that became knowable between #18's *actual* research cut and that
    literal is either double-covered or missed by a margin of minutes-to-an-hour. That is the
    cheapest possible one-off cost of switching the mechanism on, and it does not recur.
+
+---
+
+# WP-9 follow-up (2026-07-26) — stale Wikimedia caps removed from SKILL.md
+
+Coordinator follow-up after WP-5 and WP-6 completed. `SKILL.md` advertised the **retired**
+`wikimedia_max_pct: 30` / `wikimedia_max_count: 4` ceilings as live rules. This matters more than a
+doc nit because SKILL.md is what the **researcher and planner actually read**: a ceiling that still
+reads as live is how the deleted rule comes back — fill Commons up to 30% and stop, which is defect E.
+
+Source of truth read (not edited): `references/image-source-types.json` (WP-6 — live `thresholds`
+are `single_domain_max_pct: 50`, `min_distinct_source_types: 3`, `min_distinct_shapes: 3`,
+`min_unique_candidates: 16`, `max_uses_per_url: 1`; the two Wikimedia caps sit in
+`retired_thresholds` with their reasons), `scripts/validate-research-bundle.py` and
+`scripts/check-image-diversity.sh` (WP-5/WP-6 — both carry explicit "DO NOT reinstate" comments and
+neither reads the caps), `references/compliance-checklist.md` § Image specificity check (WP-6's
+information-gained hierarchy).
+
+## Every hit audited
+
+| Line | Hit | Verdict | Action |
+|---|---|---|---|
+| 275 | Wikimedia `thumb/` URL-construction trap | **legitimate** | unchanged |
+| 276 | `site:commons.wikimedia.org "File:…"` spelling check | **legitimate** | unchanged |
+| 305 | `wikimedia` as one of the 5 **source types** (`min_distinct_source_types`) | **legitimate — live** | unchanged |
+| **306** | "Wikimedia ≤4 entries AND ≤30% of total (whichever is smaller)" | **STALE** | replaced (below) |
+| 318 | historical anecdote — the 17 May issue's fabricated "Wikimedia Commons: Keir Starmer" keywords | **legitimate** | unchanged |
+| **446** | "Wikimedia ≤30% of images AND ≤4 entries (whichever is smaller)" | **STALE** | replaced (below) |
+| **943** | `validate-research-bundle.py` row: "Wikimedia ≤30%/≤4" | **STALE** | replaced (below) |
+| 945 | `image-source-types.json` row: "plus the threshold values" | **stale-adjacent** (vague, pre-`shows`) | rewritten to name the live thresholds + the `shows` enum + `retired_thresholds` |
+| 272 | per-pick coverage "search … TMDB, and Wikimedia for *each named pick*" | **legitimate** | unchanged |
+| 272 | `min_unique_candidates: 16` | **legitimate — live** | unchanged |
+
+No fourth *cap* claim existed; hit 945 was the only additional one worth rewriting, and one gap was
+found that the grep would not have caught (below). `50%` survives in all three places — RT-5's
+`single_domain_max_pct` is **not** retired, and each mention now says so explicitly.
+
+## What each became
+
+- **Phase 3b (was 306)** — five bullets: RT-5 ≤50% (marked *not retired*); **≥3 distinct `shows`
+  values across `image_candidates[]`** (`min_distinct_shapes`), with the 11-value enum listed and
+  pointed at `image-source-types.json` as canonical; an explicit **RETIRED** paragraph naming both
+  withdrawn keys, where they now live (`retired_thresholds`), and the reason in one line — *a ceiling
+  with no matching floor reads as a target*; and the information-gained hierarchy (rank 1 event
+  photo/gameplay → rank 5 key art, never a lead) with the Halo #18 failure as the worked case.
+- **Phase 7.7 (was 446)** — RT-5 ≤50% and `min_distinct_source_types: 3` kept; the cap line replaced
+  by **≥3 distinct `data-shows`** with the two failure modes WP-6's script actually implements
+  (**no** `data-shows` at all = fail, unlabelled figures cannot be counted; a value outside the enum
+  = fail). Adds the point that kills the ceiling's rationale: #18 cleared source-type diversity
+  comfortably *while* leading on key art — domain diversity never fixed this.
+- **Reference table (was 943)** — the row now reads "≥3 source types, RT-5 ≤50%, **≥3 distinct
+  `shows`**, ambiguous-domain annotation, plus `shows`/`capture_year`/`licence` and the open-loop
+  check (`--state`)", and states the ceilings are retired and unread.
+- **Reference table (945)** — now names the live thresholds explicitly, identifies the file as the
+  **one** home of the `shows` enum ("a shape value in a script but not in this file is the taxonomy
+  drifting again"), and marks `retired_thresholds` as history, not a live read.
+- **Phase 3a — the gap grep would have missed.** The *researcher brief* had no shape instruction at
+  all: it told the researcher to surface 16 verified URLs and nothing about what those images should
+  show. Removing a ceiling without stating the floor where the researcher reads would have left the
+  brief silent. Added a MANDATORY paragraph: `shows` / `capture_year` / `licence` per candidate, the
+  **floor** of ≥3 distinct shapes, the shapes to hunt (the paper's own figures on the already-mapped
+  `media.springernature.com`; Steam `appdetails` `screenshots[]` on the already-mapped Steam CDNs; a
+  map or chart where prose cannot show the thing), rank 5 never leads, and "**no Wikimedia quota in
+  either direction**".
+
+## Checks run
+
+```
+$ grep -n "Wikimedia|wikimedia|30%|≤4|≤30|wikimedia_max" SKILL.md
+  → 9 hits: 275, 276, 305, 308, 318, 451, 947, 949 + one in-body retirement notice.
+    Every remaining Wikimedia mention is a URL trap, the source-type menu, the 2026-05-17
+    anecdote, or a "these are RETIRED, do not reinstate" statement. No live cap claim remains.
+$ grep -n "50%" SKILL.md          → 3 hits, all RT-5, all annotated "not retired".
+$ grep -n "min_distinct_shapes"   → 5 hits (Phase 3b ×2, Phase 7.7, both table rows).
+$ python3 - # all 11 `shows.values` keys from image-source-types.json present in SKILL.md
+  enum size: 11 → missing from SKILL.md: []
+$ python3 - # hierarchy ranks cross-checked against shows.specificity_hierarchy
+  rank1 [event_photo, gameplay] · rank2 [diagram, map, chart] · rank3 [artefact, document]
+  · rank4 [in_engine] · rank5 last resort  → matches SKILL.md's five rungs exactly.
+$ git diff --numstat 796a4d5 -- SKILL.md   → 12  6   (baselined on the named commit, not stash)
+$ git status --short                        → SKILL.md only (WP-9); other paths are parallel WPs.
+```
+
+**`--state` spelling: MATCHES.** WP-5 shipped `ap.add_argument("--state", default=None, …)`
+(`validate-research-bundle.py:582`), whose help text names WP-9's Phase 3b invocation directly.
+SKILL.md line 304 reads `--run-date <today> --state /tmp/the-signal/state/signal-state.json` — the
+cloned repo's state, so the loops the validator matures are the ones Phase 0a-loops read. No change
+needed. `--run-date` also matches (line 576).
+
+## New handoff note
+
+7. **→ WP-6 (`image-source-types.json` vs `compliance-checklist.md`): `portrait` and `never_lead`
+   disagree.** The machine record has `shows.never_lead_shapes: ["key_art", "product_shot"]`, but the
+   checklist's rewritten hierarchy puts `portrait` on the same rank-5 rung and says that rung is
+   "LAST RESORT, and never a lead figure" — and the Pope worked example is precisely a *portrait*
+   used wrongly. SKILL.md documents the mechanical claim as WP-6 shipped it (`key_art` /
+   `product_shot` may never lead) and adds that a portrait should not lead either, so the doc is
+   honest either way. If the intent is that a posed portrait cannot lead a band, `portrait` belongs
+   in `never_lead_shapes` so WP-4 can enforce it; today it is prose-only. Both files are WP-6's.
