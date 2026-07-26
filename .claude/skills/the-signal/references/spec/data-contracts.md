@@ -249,8 +249,10 @@ covered. Copied into the plan as `issue_meta.window.from` (previous value) and
   happens to mention it; and by the Touchline planning that WP-2/WP-3 restructure. Defect D was in
   part that no sporting calendar existed at all, so a Sunday-concluding major simply was not on
   anyone's list.
-- `sport` values used in the seed: `football`, `golf`, `multi_sport`. Keep them aligned with the
-  `data-sport` values the results ledger renders (SPEC §3.4/§3.11) and with `interest_depth` keys.
+- `sport` takes a **sport token** (§ Sport tokens below) **or** the special value `multi_sport`. This
+  field is the only place `multi_sport` is legal, because it classifies an *event* (a games), not a
+  result: `data-sport="multi_sport"` in rendered HTML is **forbidden** (§ Sport tokens). The seed uses
+  `golf`, `football` and `multi_sport` (Commonwealth Games).
 - **`needs_verification: true` on every seeded entry, without exception.** The seed is a prompt to
   check, never a fact of record: Phase 0 must confirm dates against a source before the planner
   relies on an entry. Nothing here asserts a venue, a fixture or a result, by design (SPEC §3.12).
@@ -293,7 +295,10 @@ Value set (SPEC §3.5): `full` · `majors_only` · `results_only` · `off`.
 - **Read** by the researcher/planner (WP-9 wiring) and by `functions/daily/profile.js` feed weighting
   (WP-7: motorsport weighted **low**, consistent with `results_only`; existing football/golf weights
   unchanged).
-- Keys are **sports**, matching `sports_calendar[].sport` and the rendered `data-sport` values.
+- Keys are **sport tokens** (§ Sport tokens below) — the same vocabulary as `sports_calendar[].sport`
+  and rendered `data-sport`. `multi_sport` is **not** a legal `interest_depth` key: a games is a
+  calendar event, not a standing coverage depth. Depth for its constituent sports is expressed per
+  sport (`athletics`, `swimming`, …), or left unset per the absent-key rule below.
 - **A key that is absent is not a policy.** Only the three sports the owner has weighted are seeded.
   A sport with no key should be treated as unset — cover it on news value, and add a key when the
   owner states a depth. Do not silently read an absent key as `off`; that would re-create the

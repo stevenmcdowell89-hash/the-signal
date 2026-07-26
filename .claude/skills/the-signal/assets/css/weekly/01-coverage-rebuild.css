@@ -1,0 +1,78 @@
+/* ============================================================================
+   THE SIGNAL — WEEKLY · COVERAGE-REBUILD COMPONENTS          (WP-3, 2026-07-26)
+   ----------------------------------------------------------------------------
+   The rendered-markup contracts added by
+   docs/editorial-coverage-rebuild-SPEC-2026-07-26.md §3.4, for the parts that
+   live in the WEEKLY CORE (i.e. that must style whether or not the mx furniture
+   layer is bundled). The mx-furniture variants — the results ledger, the
+   demoted-lead ledger, the polymorphic .mx-scorecard — are in
+   weekly-mx/11-mx-coverage-rebuild.css, because they read the --mx-* alias.
+
+   IDENTITY DISCIPLINE (references/spec/global.md § The Transmission identity):
+   nothing here introduces a font, a colour or a token. Every value is one of
+   the eight existing Transmission tokens (--paper / --paper-2 / --ink / --ink-2
+   / --signal / --blue / --muted / --hair) or a length, so the warm-night dark
+   variant at the foot of 00-transmission.css keeps working with no restatement.
+   Mono is the shared .mono rule (JetBrains Mono, uppercase, .16em) — these rules
+   only adjust colour, tracking and spacing on top of it. No .sp-* / .hol-*.
+   ============================================================================ */
+
+  /* ================= THE LONG READ · VINTAGE STAMP ================= */
+  /* SPEC §3.4 / defect A. An evergreen anchor says so ABOVE the headline, in
+     the mono voice, before the reader can mistake it for this week's news:
+
+       <div class="mono lr-vintage">NOT THIS WEEK · A STANDING STORY ·
+       1901–2021 · LATEST DEVELOPMENT MAR 2021</div>
+
+     Set as a ruled mono band — the same "stamped on the paper" gesture as the
+     .bandhead code, so it reads as furniture the magazine put there rather than
+     as a sentence the Editor wrote. Signal-blue, not vermilion: vermilion is the
+     one accent (§ Accent lockdown) and it is already spent on the kicker
+     directly above. Absent on a news anchor — there is no rule to write, the
+     element simply is not emitted. */
+  .lr-title .lr-vintage{
+    margin:12px 0 0;
+    padding:7px 0 8px;
+    border-top:1px solid var(--hair);
+    border-bottom:1px solid var(--hair);
+    color:var(--blue);
+    letter-spacing:.14em;
+    line-height:1.55;
+  }
+  /* the headline needs its air back once the stamp sits above it */
+  .lr-title .lr-vintage + h2{ margin-top:18px; }
+
+  /* ================= RESOLVED LOOPS ================= */
+  /* SPEC §3.4 / defect D. Any element reporting a carried-forward result carries
+     data-resolves-loop="<loop id>" — a Sunday-concluding event that was left
+     pending last week and is being closed THIS week. The reader should be able
+     to see that it is a closure, so the object gets a signal-blue spine: the
+     same "this is continuity" cue The Threads uses, applied at row level.
+
+     Core weekly components only (list items, digest lines, score blocks, thread
+     entries). The .mx-ledger row form is in the mx layer. */
+  .items > li[data-resolves-loop],
+  .digest > li[data-resolves-loop],
+  .threads [data-resolves-loop]{
+    box-shadow:inset 2px 0 0 var(--blue);
+    padding-left:14px;
+  }
+  .score[data-resolves-loop]{
+    border-left:2px solid var(--blue);
+    padding-left:14px;
+  }
+  /* a resolved loop's closing number is the point of it — keep it emphatic
+     without spending vermilion on a piece of continuity furniture */
+  [data-resolves-loop] .num{ color:var(--blue); }
+
+  /* ================= NARROW WIDTHS ================= */
+  @media (max-width:640px){
+    .lr-title .lr-vintage{
+      letter-spacing:.1em;
+      line-height:1.6;
+    }
+    .items > li[data-resolves-loop],
+    .digest > li[data-resolves-loop],
+    .threads [data-resolves-loop],
+    .score[data-resolves-loop]{ padding-left:10px; }
+  }
