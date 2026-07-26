@@ -17,6 +17,23 @@ rotating-section validators. Domain cadence is now a simple editorial checklist 
 now owns continuity, so a quiet domain no longer needs a forced-include gate. The
 rotating-roster cadence map, the state-resolution helper, and their tests are gone.
 
+**This is an upstream PRODUCTION AID, not a ship gate (SPEC 2026-07-26 §1).** The gate
+ledger is exactly three ship gates: validate-issue.py's image checks, its markup
+contracts, and the Phase 9.5 holistic read. A hard fail here halts **production** —
+the writers do not spawn until the plan is fixed — and never fails a finished issue's
+ship. The report prints that distinction. Do not promote this to a fourth ship gate.
+
+2026-07-26 (coverage rebuild, SPEC §3.1/§3.6/§3.11) — adds, for WEEKLY plans only:
+  • the coverage-window / cover-lead / vintage record: `issue_meta.research_cut_at`,
+    `.window{from,to}`, `.cover_leads_on`, `.cover_lead_topic_family` (closed
+    enumeration, hard-failed), `.lead_rationale` (>=120 chars),
+    `.lead_override_reason`; `long_read.vintage` (+ `material_span` /
+    `latest_development` iff evergreen); `week_in_numbers.rows[].key` + `.source_band`.
+  • the RUT RULE (§3.6) — read from state's `cover_lead_ledger`. Not suppression: the
+    planner may lead on the same family every week, it just has to write down why.
+  • sport-token discipline (§3.11) where a plan declares ledger content: `multi_sport`
+    hard-fails, an off-list token warns.
+
 v8.37 (W-3) — RELAXES `check_section_shape`: the mandatory considered-piece backbone
 is retired. The single Long Read carries the deep work; the rounds carry the week's
 news at whatever depth the material earns. A round may be a Lead, a plain Catch-Up
@@ -30,6 +47,7 @@ unchanged.
 import json
 import re
 import sys
+from collections import Counter
 from datetime import date, datetime
 from pathlib import Path
 
@@ -156,6 +174,15 @@ TOPIC_FAMILIES = {
     "uk_politics", "eu_politics", "africa", "middle_east_non_iran",
     "asia_pacific", "climate_environment", "space_exploration",
     "pandemics_health", "ni_politics",
+    # 2026-07-26 (SPEC §3.5 amendment, WP-1 handoff 7): a breach / ransomware /
+    # state-backed intrusion / surveillance programme / data-protection ruling,
+    # where the story IS the compromise or regulation of personal data at scale.
+    # Issue #8's Instructure/Canvas breach (275M records) had no family, so it
+    # could not be filed in `cover_lead_ledger` — which silently narrowed the rut
+    # rule's own input. Added to chapter-plan-schema.md § Topic Family Enumeration
+    # by WP-1; this hardcoded copy has to match it or a plan using the family
+    # hard-fails against its own schema.
+    "cyber_privacy",
     # tech_gaming
     "switch_2", "playstation", "xbox", "nintendo_other", "pc_gaming",
     "steam_deck", "geforce_now", "consumer_ai", "generative_ai_consumer",
@@ -184,6 +211,54 @@ TOPIC_FAMILIES = {
 
 KEBAB_RE = re.compile(r'^[a-z0-9]+([-_][a-z0-9]+)*$')  # v8.15: underscores allowed alongside hyphens (e.g. pixel_byte, screen_sound, long_shelf)
 DATE_RE  = re.compile(r'^\d{4}-\d{2}-\d{2}$')
+
+# ── 2026-07-26 coverage rebuild (SPEC §3.1) — weekly-only plan additions ─────
+# Field names, enum values and the en-dash in material_span are NORMATIVE: they
+# come from SPEC §3.1 and references/chapter-plan-schema.md (WP-1), and are
+# documented for consumers in references/spec/data-contracts.md § Chapter plan.
+ISO_INSTANT_RE   = re.compile(r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$')
+MATERIAL_SPAN_RE = re.compile(r'^(\d{4})–(\d{4})$')   # U+2013 EN DASH, e.g. 1901–2021
+YYYY_MM_RE       = re.compile(r'^(\d{4})-(0[1-9]|1[0-2])$')
+
+COVER_LEADS_ON_VALUES     = ("news", "long_read")
+LONG_READ_VINTAGE_VALUES  = ("news", "evergreen")
+LEAD_RATIONALE_MIN_CHARS  = 120
+LEAD_OVERRIDE_MIN_CHARS   = 80
+
+LONG_READ_CHAPTER_IDS      = {"long_read", "long-read"}
+WEEK_IN_NUMBERS_CHAPTER_IDS = {"week_in_numbers", "week-in-numbers"}
+# The literal that `week_in_numbers.rows[].source_band` may carry besides a
+# chapter_id present in this plan (WP-1 handoff 2, recorded in
+# references/spec/data-contracts.md § Chapter plan). The Week in Numbers is
+# partly a PERSONAL stat strip rendered from state/signal-state.json, so those
+# rows have no originating band; without this the contract is unsatisfiable for
+# the section as chapter-plan-schema.md (v8.36) defines it.
+SOURCE_BAND_STATE_LITERAL = "state"
+
+# ── The rut rule (SPEC §3.6) ────────────────────────────────────────────────
+RUT_LEDGER_WINDOW    = 4   # entries examined (newest first)
+RUT_LEDGER_THRESHOLD = 3   # led_on:"news" appearances of one family within them
+
+# ── Sport tokens (SPEC §3.11) ───────────────────────────────────────────────
+# Canonicalised by WP-1 in references/spec/data-contracts.md § Sport tokens. It
+# is PARSED from that file, not copied, so WP-1 can append a token without a code
+# change here (the file says so explicitly). The frozen set below is a fallback
+# for the case where the file is missing or its list section has moved — used with
+# a warning, never silently.
+DATA_CONTRACTS_PATH = Path(__file__).resolve().parent.parent / "references" / "spec" / "data-contracts.md"
+SPORT_TOKENS_SECTION = "### The closed sport-token list"
+SPORT_TOKEN_LINE_RE = re.compile(r'^\s*`[a-z_]+`(\s*[·,]\s*`[a-z_]+`)*\s*[·,]?\s*$')
+SPORT_TOKENS_FALLBACK = frozenset({
+    "football", "golf", "cricket", "cycling", "athletics", "motorsport", "rugby",
+    "tennis", "boxing", "mma", "snooker", "darts", "gaelic_games", "swimming",
+    "diving", "gymnastics", "netball", "hockey", "ice_hockey", "horse_racing",
+    "basketball", "american_football",
+})
+# `multi_sport` classifies an EVENT (a games) and is legal ONLY in state's
+# sports_calendar[].sport. As a RESULT's sport it collapses ten sports into one
+# token, so a ledger of [motorsport, multi_sport] would satisfy the ≥2-distinct
+# invariant while delivering none of the breadth it exists to force.
+FORBIDDEN_SPORT_TOKEN = "multi_sport"
 
 # v8.36 — the canonical rotating-section cadence map and its chapter_id lookup were
 # removed alongside the cadence-floor / deficit-promotion validators (old rules 7 & 8).
@@ -777,7 +852,537 @@ def _load_weekly_skeleton():
         return None
 
 
-def check_weekly_plan(plan):
+def _load_sport_tokens():
+    """Parse the canonical sport-token list out of references/spec/data-contracts.md.
+
+    WP-1 owns the list and states that appending a token needs no consumer code
+    change, so the list is READ rather than copied. Returns (tokens_set, note) —
+    `note` is None on a clean parse, or a string explaining the fallback.
+    """
+    try:
+        text = DATA_CONTRACTS_PATH.read_text(encoding="utf-8")
+    except OSError as e:
+        return (set(SPORT_TOKENS_FALLBACK),
+                f"could not read {DATA_CONTRACTS_PATH} ({e}); using the built-in fallback list")
+
+    idx = text.find(SPORT_TOKENS_SECTION)
+    if idx < 0:
+        return (set(SPORT_TOKENS_FALLBACK),
+                f"section '{SPORT_TOKENS_SECTION}' not found in {DATA_CONTRACTS_PATH.name}; "
+                f"using the built-in fallback list")
+
+    tokens = set()
+    for line in text[idx + len(SPORT_TOKENS_SECTION):].splitlines():
+        if line.startswith("#"):          # next heading — the list is over
+            break
+        if SPORT_TOKEN_LINE_RE.match(line):
+            tokens.update(re.findall(r'`([a-z_]+)`', line))
+    if len(tokens) < 10:
+        return (set(SPORT_TOKENS_FALLBACK),
+                f"parsed only {len(tokens)} token(s) from {DATA_CONTRACTS_PATH.name} "
+                f"§ Sport tokens; using the built-in fallback list")
+    return (tokens, None)
+
+
+def _walk_declared_sports(node, path="plan", depth=0):
+    """Yield (path, value) for every `sport` a plan DECLARES.
+
+    Bounded recursive walk. Fires only where a plan actually declares ledger
+    content, because no §3.1 contract field carries plan-side sport tokens — the
+    vocabulary is normative (SPEC §3.11) but where a plan states it is not, so this
+    validator checks whatever is there rather than requiring a shape nobody agreed.
+    Anything under a `sports_calendar` key is skipped: that is the one namespace
+    where `multi_sport` is legal, because it classifies an EVENT, not a result.
+    """
+    if depth > 8:
+        return
+    if isinstance(node, dict):
+        for k, v in node.items():
+            if k == "sports_calendar":
+                continue
+            if k == "sport" and isinstance(v, str):
+                yield (f"{path}.sport", v)
+            elif k == "sports" and isinstance(v, list):
+                for i, item in enumerate(v):
+                    if isinstance(item, str):
+                        yield (f"{path}.sports[{i}]", item)
+                    else:
+                        yield from _walk_declared_sports(item, f"{path}.sports[{i}]", depth + 1)
+            else:
+                yield from _walk_declared_sports(v, f"{path}.{k}", depth + 1)
+    elif isinstance(node, list):
+        for i, item in enumerate(node):
+            yield from _walk_declared_sports(item, f"{path}[{i}]", depth + 1)
+
+
+def check_sport_tokens(plan):
+    """SPEC §3.11 — one sport vocabulary, and `multi_sport` is not a result.
+
+    Where the plan declares ledger content (any `sport` field it carries):
+      • `multi_sport` HARD-FAILS. A result belongs to a specific sport; rows
+        derived from a multi-sport games carry `athletics`, `swimming`, `boxing`.
+        Left legal, a Commonwealth Games ledger of [motorsport, multi_sport] would
+        satisfy the results_ledger_multi_sport invariant (≥2 distinct `data-sport`)
+        while collapsing ten sports into one token — the F1-saturation defect
+        passing its own check.
+      • a token outside the canonical list only WARNS. WP-1's instruction, verbatim
+        in data-contracts.md: a closed list that hard-fails would block a ship on
+        the multi-sport-games long tail (lawn bowls, para events), and a breadth
+        check that blocks breadth is self-defeating. The warning is the prompt for
+        WP-1 to append the token.
+    """
+    declared = list(_walk_declared_sports(plan))
+    if not declared:
+        return
+
+    tokens, note = _load_sport_tokens()
+    if note:
+        warn(f"[SPORT-TOKENS] {note}. Canonical home: "
+             f"references/spec/data-contracts.md § Sport tokens (WP-1).")
+
+    for path, value in declared:
+        if value == FORBIDDEN_SPORT_TOKEN:
+            err(f"[SPORT-TOKENS] {path}='{FORBIDDEN_SPORT_TOKEN}' is forbidden as a RESULT's sport "
+                f"(SPEC §3.11). It is legal in exactly one place — state's sports_calendar[].sport, "
+                f"where it classifies an EVENT (a games). A result belongs to a specific sport: a "
+                f"Games swimming final is 'swimming', a Games 10,000m is 'athletics'. One row per "
+                f"sport, never one row for the games — otherwise a ledger of "
+                f"[motorsport, multi_sport] passes the ≥2-distinct-sport invariant while delivering "
+                f"none of the breadth it exists to force.")
+        elif value not in tokens:
+            warn(f"[SPORT-TOKENS] {path}='{value}' is not in the canonical sport-token list "
+                 f"({len(tokens)} tokens, references/spec/data-contracts.md § Sport tokens). "
+                 f"WARNING, not a failure — the multi-sport-games long tail (lawn bowls, para "
+                 f"events) must never block a ship. If this is a real sport, WP-1 appends it to "
+                 f"that list with a one-line reason; if it is a competition ('premier_league', "
+                 f"'f1'), use the SPORT ('football', 'motorsport').")
+
+
+def check_weekly_coverage_meta(meta):
+    """SPEC §3.1 — the coverage window and the cover-lead accountability record.
+
+    All hard fails on a weekly plan. Why each exists:
+
+      research_cut_at / window — the coverage window is bounded by INSTANTS, not
+        by calendar days: `window.from` is the previous issue's research cut,
+        `window.to` == this plan's `research_cut_at`. Before this, a day could be
+        "inside the covered week" while its results were unknowable at research
+        time, so a Sunday-concluding event was gate-checked as upcoming and then
+        abandoned (defect D).
+      cover_leads_on / lead_rationale — defect C was a planner that never had to
+        argue for the lead: UK politics led 6 of 9 covers and a holding-pattern
+        story kept the cover. The rationale must NAME what was considered and
+        rejected, which is why there is a length floor at all.
+      lead_override_reason — conditionally required; the rut rule (§3.6) is the
+        only thing that requires it.
+    """
+    path = "issue_meta"
+
+    # research_cut_at
+    rca = meta.get("research_cut_at")
+    if rca is None:
+        err(f"[WINDOW] {path}.research_cut_at is missing (SPEC §3.1, REQUIRED on weekly plans). "
+            f"ISO8601 UTC instant at which research for THIS issue stopped — copied from "
+            f"state.research_cut_at at Phase 0 and equal to issue_meta.window.to. Without it the "
+            f"coverage window cannot open where the last one closed.")
+    elif not (isinstance(rca, str) and ISO_INSTANT_RE.match(rca)):
+        err(f"[WINDOW] {path}.research_cut_at={rca!r} must be a UTC ISO8601 instant "
+            f"(YYYY-MM-DDThh:mm:ssZ) — an instant, not a date: the whole point is that the window "
+            f"is bounded by moments of knowability.")
+
+    # window {from, to}
+    win = meta.get("window")
+    if win is None:
+        err(f"[WINDOW] {path}.window is missing (SPEC §3.1, REQUIRED on weekly plans): "
+            f"{{\"from\": <previous issue's research cut>, \"to\": <this issue's research cut>}}.")
+    elif not isinstance(win, dict):
+        err(f"[WINDOW] {path}.window must be an object with `from` and `to`, got "
+            f"{type(win).__name__}.")
+    else:
+        w_from, w_to = win.get("from"), win.get("to")
+        for key, val in (("from", w_from), ("to", w_to)):
+            if val is None:
+                err(f"[WINDOW] {path}.window.{key} is missing — the window is two instants "
+                    f"(from = the PREVIOUS issue's research_cut_at, to = this one's).")
+            elif not (isinstance(val, str) and ISO_INSTANT_RE.match(val)):
+                err(f"[WINDOW] {path}.window.{key}={val!r} must be a UTC ISO8601 instant "
+                    f"(YYYY-MM-DDThh:mm:ssZ).")
+        if (isinstance(w_from, str) and isinstance(w_to, str)
+                and ISO_INSTANT_RE.match(w_from) and ISO_INSTANT_RE.match(w_to)):
+            if w_from >= w_to:
+                err(f"[WINDOW] {path}.window runs from {w_from} to {w_to}: `from` must strictly "
+                    f"precede `to`. The window is (previous cut, this cut].")
+        if (isinstance(rca, str) and isinstance(w_to, str) and ISO_INSTANT_RE.match(rca)
+                and rca != w_to):
+            err(f"[WINDOW] {path}.research_cut_at={rca} disagrees with {path}.window.to={w_to}. "
+                f"They are the same instant by definition (SPEC §3.1: research_cut_at == window.to, "
+                f"the newly measured cut; window.from is the previous issue's cut read from state).")
+
+    # cover_leads_on
+    clo = meta.get("cover_leads_on")
+    if clo is None:
+        err(f"[COVER-LEAD] {path}.cover_leads_on is missing (SPEC §3.1, REQUIRED on weekly plans): "
+            f"'news' (a development from this week) or 'long_read' (the standing anchor). This is "
+            f"the value written to state.cover_lead_ledger[].led_on at publish and the value the "
+            f"rut rule (§3.6) counts.")
+    elif clo not in COVER_LEADS_ON_VALUES:
+        err(f"[COVER-LEAD] {path}.cover_leads_on={clo!r} must be one of "
+            f"{list(COVER_LEADS_ON_VALUES)}.")
+
+    # cover_lead_topic_family (SPEC §3.6 amendment, 2026-07-26 — WP-1 round 4).
+    # REQUIRED on weekly plans, and enum-checked HARD. Both halves matter for the
+    # same reason: the rut rule intersects this value with
+    # state.cover_lead_ledger[].topic_family, and the two sides must speak ONE
+    # vocabulary (references/chapter-plan-schema.md § Topic Family Enumeration).
+    # If they drift — a typo, a family invented locally, a parallel set in state —
+    # the intersection silently empties and the rut rule KEEPS PASSING WHILE
+    # CHECKING NOTHING. A green no-op is worse than an absent check because it
+    # reads as coverage, so an out-of-enum value is a hard fail, never a warning.
+    clf = meta.get("cover_lead_topic_family")
+    if clf is None:
+        err(f"[COVER-LEAD] {path}.cover_lead_topic_family is missing (SPEC §3.6 amendment, "
+            f"REQUIRED on weekly plans). The `topic_family` of the story the cover leads on, from the "
+            f"closed enumeration in references/chapter-plan-schema.md § Topic Family Enumeration. It "
+            f"is the rut rule's other half: `cover_leads_on` says news-vs-long_read only, and the "
+            f"ledger's family is written at publish, so without this field the validator has to INFER "
+            f"the family from the plan's lead pieces (it still will, as a compatibility path for "
+            f"plans written before the field existed — but an inferred family is not a stated one).")
+    elif not isinstance(clf, str) or not clf.strip():
+        err(f"[COVER-LEAD] {path}.cover_lead_topic_family={clf!r} must be a non-empty string from the "
+            f"closed Topic Family Enumeration.")
+    elif clf.strip() not in TOPIC_FAMILIES:
+        err(f"[COVER-LEAD] {path}.cover_lead_topic_family='{clf.strip()}' is not in the closed Topic "
+            f"Family Enumeration (references/chapter-plan-schema.md § Topic Family Enumeration; "
+            f"adding a family is a spec amendment by WP-1, not a local edit).\n"
+            f"        This is a HARD fail on purpose. The rut rule (SPEC §3.6) intersects this value "
+            f"with state.cover_lead_ledger[].topic_family, which is drawn from the same enumeration. "
+            f"An out-of-enum value here cannot match anything in the ledger, so the intersection is "
+            f"always empty and the rut rule would pass while checking nothing — a green no-op that "
+            f"reads as coverage. If this is a real editorial category with no home in the list (as "
+            f"cybersecurity had none before `cyber_privacy` was added), say so and amend the "
+            f"enumeration; do not file it under an approximate family.")
+
+    # lead_rationale
+    lr = meta.get("lead_rationale")
+    if lr is None:
+        err(f"[COVER-LEAD] {path}.lead_rationale is missing (SPEC §3.1, REQUIRED on weekly plans, "
+            f">= {LEAD_RATIONALE_MIN_CHARS} chars). Prose stating why THIS lead won, naming what was "
+            f"considered and rejected — an account of the choice, not a summary of the story.")
+    elif not isinstance(lr, str):
+        err(f"[COVER-LEAD] {path}.lead_rationale must be a string, got {type(lr).__name__}.")
+    elif len(lr.strip()) < LEAD_RATIONALE_MIN_CHARS:
+        err(f"[COVER-LEAD] {path}.lead_rationale is {len(lr.strip())} chars, below the "
+            f"{LEAD_RATIONALE_MIN_CHARS}-char floor. Name what else was live this week and why it "
+            f"lost — 'X and Y were both available; Y runs in The Ledger because …'. The floor exists "
+            f"because defect C was a planner that never had to argue for the lead.")
+
+    # lead_override_reason (shape only here; the rut rule decides whether it is required)
+    lor = meta.get("lead_override_reason")
+    if lor is not None:
+        if not isinstance(lor, str):
+            err(f"[COVER-LEAD] {path}.lead_override_reason must be a string, got "
+                f"{type(lor).__name__}.")
+        elif len(lor.strip()) < LEAD_OVERRIDE_MIN_CHARS:
+            warn(f"[COVER-LEAD] {path}.lead_override_reason is {len(lor.strip())} chars, under the "
+                 f"{LEAD_OVERRIDE_MIN_CHARS}-char floor. Harmless while the rut rule (§3.6) is not "
+                 f"tripping, but it would NOT satisfy the rule if it did — write the full reason or "
+                 f"omit the field.")
+
+
+def check_long_read_vintage(chapters):
+    """SPEC §3.1 — the Long Read declares its vintage (acceptance criterion #1).
+
+    Defect A: with no vintage field the stitcher stamped the issue date on every
+    anchor, so an evergreen feature read as "wow, they've just discovered this".
+    `vintage` is rendered as `data-vintage` on the long-read section (§3.4) and
+    checked there by validate-issue.py; the plan is where it has to exist first.
+
+    Required on the `long_read` chapter of every weekly plan; `material_span` and
+    `latest_development` are required iff `vintage == "evergreen"` and forbidden
+    when it is `news` (chapter-plan-schema.md). `vintage` on any other chapter is
+    also forbidden — it would render a second, contradictory data-vintage.
+    """
+    for i, ch in enumerate(chapters):
+        if not isinstance(ch, dict):
+            continue
+        cid = ch.get("chapter_id")
+        cpath = f"chapters[{i}]"
+
+        if cid not in LONG_READ_CHAPTER_IDS:
+            for stray in ("vintage", "material_span", "latest_development"):
+                if stray in ch:
+                    err(f"[VINTAGE] {cpath} ('{cid}') carries '{stray}', which belongs to the "
+                        f"long_read chapter only (SPEC §3.1). The issue has exactly one anchor and "
+                        f"exactly one vintage; a second declaration renders a contradictory "
+                        f"data-vintage.")
+            continue
+
+        vintage = ch.get("vintage")
+        if vintage is None:
+            err(f"[VINTAGE] {cpath} ('{cid}'): missing required 'vintage' (SPEC §3.1) — "
+                f"'news' (a development of THIS week) or 'evergreen' (a standing story whose "
+                f"material predates the issue). Without it the stitcher stamps the issue date on "
+                f"the anchor and the validator cannot tell news from feature, which is defect A: an "
+                f"evergreen Long Read that reads as breaking news.")
+            continue
+        if vintage not in LONG_READ_VINTAGE_VALUES:
+            err(f"[VINTAGE] {cpath}.vintage={vintage!r} must be one of "
+                f"{list(LONG_READ_VINTAGE_VALUES)}.")
+            continue
+
+        span = ch.get("material_span")
+        latest = ch.get("latest_development")
+
+        if vintage == "evergreen":
+            if span is None:
+                err(f"[VINTAGE] {cpath}: vintage='evergreen' requires 'material_span' "
+                    f"(YYYY–YYYY, EN-DASH U+2013, e.g. '1901–2021') — SPEC §3.1. It is rendered into "
+                    f"the .lr-vintage line whose job is to tell the reader up front that the story "
+                    f"is not this week's.")
+            elif not (isinstance(span, str) and MATERIAL_SPAN_RE.match(span)):
+                err(f"[VINTAGE] {cpath}.material_span={span!r} must be 'YYYY–YYYY' with an EN-DASH "
+                    f"(U+2013, not a hyphen '-' and not an em-dash '—').")
+            if latest is None:
+                err(f"[VINTAGE] {cpath}: vintage='evergreen' requires 'latest_development' "
+                    f"(YYYY-MM, e.g. '2021-03') — SPEC §3.1. This is the field that stops an "
+                    f"evergreen anchor implying the news is fresh.")
+            elif not (isinstance(latest, str) and YYYY_MM_RE.match(latest)):
+                err(f"[VINTAGE] {cpath}.latest_development={latest!r} must be 'YYYY-MM'.")
+
+            # latest_development must fall inside material_span (schema).
+            if (isinstance(span, str) and MATERIAL_SPAN_RE.match(span)
+                    and isinstance(latest, str) and YYYY_MM_RE.match(latest)):
+                lo, hi = (int(x) for x in MATERIAL_SPAN_RE.match(span).groups())
+                yr = int(latest[:4])
+                if lo > hi:
+                    err(f"[VINTAGE] {cpath}.material_span='{span}' runs backwards: "
+                        f"{lo} > {hi}.")
+                elif not (lo <= yr <= hi):
+                    err(f"[VINTAGE] {cpath}: latest_development='{latest}' ({yr}) falls outside "
+                        f"material_span='{span}' ({lo}–{hi}). The latest development is part of the "
+                        f"material, so the span must contain it.")
+        else:  # vintage == "news"
+            for stray, val in (("material_span", span), ("latest_development", latest)):
+                if val is not None:
+                    err(f"[VINTAGE] {cpath}: '{stray}' is forbidden when vintage='news' "
+                        f"(chapter-plan-schema.md). A news anchor renders no .lr-vintage line and "
+                        f"keeps the issue date in its byline; carrying span metadata for it means "
+                        f"the vintage declaration and the material disagree.")
+
+
+def check_week_in_numbers_rows(chapters, present_ids):
+    """SPEC §3.1 — every stat-strip row declares where its datum came from.
+
+    Per-row provenance exists because an unattributed stat strip silently
+    re-reports whatever the dominant band already said (defect D: five of six
+    Touchline furniture objects came off one race).
+
+    `source_band` accepts **the chapter_id of a chapter present in this plan, OR
+    the literal "state"** (WP-1 handoff 2, recorded in data-contracts.md
+    § Chapter plan). SPEC §3.1's example shows only a band id, but The Week in
+    Numbers is defined in chapter-plan-schema.md (v8.36) as the *personal* stat
+    strip rendering from state/signal-state.json — its personal rows (training
+    volume, streaks, trips) have no originating band, so a band-only vocabulary
+    makes the contract unsatisfiable for the section as specified.
+    """
+    for i, ch in enumerate(chapters):
+        if not isinstance(ch, dict):
+            continue
+        cid = ch.get("chapter_id")
+        cpath = f"chapters[{i}]"
+        if cid not in WEEK_IN_NUMBERS_CHAPTER_IDS:
+            if "rows" in ch:
+                warn(f"[WIN-ROWS] {cpath} ('{cid}') carries a 'rows' array. Per "
+                     f"chapter-plan-schema.md `rows` belongs to the week_in_numbers chapter; nothing "
+                     f"reads it elsewhere, so this is either a misplaced stat strip or a private "
+                     f"field the stitcher ignores.")
+            continue
+
+        rows = ch.get("rows")
+        if rows is None:
+            err(f"[WIN-ROWS] {cpath} ('{cid}'): missing required 'rows' array (SPEC §3.1). Each row "
+                f"declares {{key, source_band}} so the strip's numbers are traceable instead of "
+                f"silently re-reporting the dominant band.")
+            continue
+        if not isinstance(rows, list):
+            err(f"[WIN-ROWS] {cpath}.rows must be an array, got {type(rows).__name__}.")
+            continue
+        if not rows:
+            err(f"[WIN-ROWS] {cpath}.rows is empty — The Week in Numbers is a required weekly band; "
+                f"if there is genuinely nothing to count, that is an editorial finding, not an empty "
+                f"array.")
+
+        allowed = set(present_ids) | {SOURCE_BAND_STATE_LITERAL}
+        for j, row in enumerate(rows):
+            rpath = f"{cpath}.rows[{j}]"
+            if not isinstance(row, dict):
+                err(f"[WIN-ROWS] {rpath} must be an object {{key, source_band}}.")
+                continue
+            key = row.get("key")
+            if not (isinstance(key, str) and key.strip()):
+                err(f"[WIN-ROWS] {rpath}: missing/empty 'key' (the row's label, e.g. 'Pole Margin').")
+            sb = row.get("source_band")
+            if sb is None:
+                err(f"[WIN-ROWS] {rpath}: missing required 'source_band' — the chapter_id of the band "
+                    f"this number came from, or the literal '{SOURCE_BAND_STATE_LITERAL}' when the "
+                    f"datum is drawn from state/signal-state.json (the personal rows).")
+            elif not isinstance(sb, str):
+                err(f"[WIN-ROWS] {rpath}.source_band={sb!r} must be a string.")
+            elif sb not in allowed:
+                err(f"[WIN-ROWS] {rpath}.source_band='{sb}' is neither the literal "
+                    f"'{SOURCE_BAND_STATE_LITERAL}' nor the chapter_id of a chapter present in this "
+                    f"plan. Bands in this plan: {sorted(present_ids)}. A row cannot claim provenance "
+                    f"from a band the issue does not carry.")
+
+
+def _plan_cover_lead_families(plan, meta):
+    """Resolve the topic_family this plan's cover leads on, for the rut rule.
+
+    **History (SPEC §3.6 / §3.1).** The rut rule is specified against "this plan
+    sets cover_leads_on: 'news' with that same topic_family", and for one round of
+    this build NO field carried it: `cover_leads_on` says news-vs-long_read only,
+    and `cover_lead_ledger[].topic_family` is written at publish (SKILL.md Phase
+    10) from the orchestrator's reading of the cover. WP-1 round 4 closed that on
+    WP-5's finding — `issue_meta.cover_lead_topic_family` is now a weekly-REQUIRED,
+    enum-checked contract field (check_weekly_coverage_meta enforces both), and
+    WP-9 copies it into the ledger at publish so the two sides of the intersection
+    carry the same value by construction.
+
+    The resolution order below is unchanged, and stays as the COMPATIBILITY PATH
+    for plans written before the field existed — such a plan draws the missing-field
+    error above and still gets a meaningful rut verdict rather than a crash:
+
+      1. `issue_meta.cover_lead_topic_family`, trimmed, if a non-empty string — an
+         explicit declaration always wins. (Enum-checked in
+         check_weekly_coverage_meta, which hard-fails an out-of-enum value: it could
+         never intersect the ledger, so the rule would pass while checking nothing.)
+      2. otherwise the families of the plan's `role: "lead"` pieces — the pool the
+         cover lead is drawn from.
+
+    Returns (families:set, source:str|None). An empty set means the rule cannot be
+    evaluated, which is a warning, never a failure: the rut rule requires prose, and
+    guessing a family the plan never stated would demand prose about a choice the
+    planner may not have made.
+    """
+    explicit = meta.get("cover_lead_topic_family")
+    if isinstance(explicit, str) and explicit.strip():
+        return ({explicit.strip()}, "issue_meta.cover_lead_topic_family (explicit)")
+
+    families = set()
+    for ch in plan.get("chapters", []) or []:
+        if not isinstance(ch, dict):
+            continue
+        for p in ch.get("pieces", []) or []:
+            if isinstance(p, dict) and p.get("role") == "lead":
+                tf = p.get("topic_family")
+                if isinstance(tf, str) and tf.strip():
+                    families.add(tf.strip())
+    if families:
+        return (families, "chapters[].pieces[role='lead'].topic_family (derived)")
+    return (set(), None)
+
+
+def check_rut_rule(plan, meta, state):
+    """SPEC §3.6 — the rut rule. NOT suppression; a forced conscious choice.
+
+    Fails a weekly plan when ALL THREE hold:
+      1. the same `topic_family` appears as `led_on: "news"` in >= 3 of the last 4
+         `cover_lead_ledger` entries (newest first), AND
+      2. this plan sets `cover_leads_on: "news"` on that same family, AND
+      3. `issue_meta.lead_override_reason` is absent or under 80 chars.
+
+    **The planner may always lead with it again — it just has to say why in
+    writing.** Nothing is suppressed, nothing is demoted automatically, and the
+    override has no approval step: 80 characters of reasoning is the entire cost.
+    `check-topic-lock.py` was deleted in v8.37 and stays deleted (SPEC §1
+    non-goals); the difference is exact — topic-lock *forbade* a subject from
+    leading, so the pipeline made the editorial decision by refusal. This rule
+    hands the planner an input and a writing obligation. If a future reader finds
+    themselves making this un-overridable, that is the retired gate coming back
+    under a new name.
+
+    Defect C is what it is for: UK politics led the cover 6 of 9 issues while
+    `lead_history` sat written-but-unread and `last_cover_lead` gave the planner
+    exactly one week of view.
+    """
+    if state is None:
+        warn("[RUT] the rut rule (SPEC §3.6) did NOT run: state/signal-state.json was not "
+             "readable, so state.cover_lead_ledger could not be counted. Pass --state <path>. "
+             "This is a skipped check, not a pass.")
+        return
+
+    ledger = state.get("cover_lead_ledger")
+    if ledger is None:
+        warn("[RUT] state carries no `cover_lead_ledger` — the rut rule (SPEC §3.6) has no input. "
+             "Legal on a first run; otherwise the ledger write at Phase 10 is missing.")
+        return
+    if not isinstance(ledger, list):
+        err(f"[RUT] state.cover_lead_ledger must be an array (newest first), got "
+            f"{type(ledger).__name__}. The rut rule cannot run against it.")
+        return
+    if not ledger:
+        return
+
+    window = [e for e in ledger[:RUT_LEDGER_WINDOW] if isinstance(e, dict)]
+    tally = Counter(e.get("topic_family") for e in window
+                    if e.get("led_on") == "news" and isinstance(e.get("topic_family"), str))
+    rutted = {fam for fam, n in tally.items() if n >= RUT_LEDGER_THRESHOLD}
+
+    # Families in the ledger that this validator's enumeration does not know are a
+    # real finding: the two copies must agree or the rule's input is silently
+    # narrowed (which is exactly how issue #8's breach story went unfiled).
+    unknown = {e.get("topic_family") for e in window
+               if isinstance(e.get("topic_family"), str)} - TOPIC_FAMILIES
+    if unknown:
+        warn(f"[RUT] state.cover_lead_ledger uses topic_family value(s) {sorted(unknown)} that are "
+             f"not in this validator's closed enumeration. There is ONE topic-family vocabulary "
+             f"(references/chapter-plan-schema.md § Topic Family Enumeration); a divergence "
+             f"silently narrows the rut rule's input.")
+
+    if not rutted:
+        return
+
+    if meta.get("cover_leads_on") != "news":
+        return  # leading on the Long Read breaks the rut by itself
+
+    families, source = _plan_cover_lead_families(plan, meta)
+    if not families:
+        warn(f"[RUT] {sorted(rutted)} led on news in >= {RUT_LEDGER_THRESHOLD} of the last "
+             f"{RUT_LEDGER_WINDOW} covers and this plan leads on news, but the plan declares no "
+             f"topic_family for its cover lead, so the rut rule (SPEC §3.6) could not be evaluated. "
+             f"Set issue_meta.cover_lead_topic_family (now weekly-required, and separately reported "
+             f"above) — or, on a pre-amendment plan, declare the leading band's piece with "
+             f"role='lead' and its topic_family. The rule is SKIPPED here, not satisfied.")
+        return
+
+    hit = sorted(rutted & families)
+    if not hit:
+        return
+
+    reason = meta.get("lead_override_reason")
+    if isinstance(reason, str) and len(reason.strip()) >= LEAD_OVERRIDE_MIN_CHARS:
+        warn(f"[RUT] rut acknowledged and overridden in writing: {hit} led on news in "
+             f"{[tally[f] for f in hit]} of the last {RUT_LEDGER_WINDOW} covers and this plan leads "
+             f"on news again. lead_override_reason is present ({len(reason.strip())} chars), so the "
+             f"plan PASSES — that is the rule working as designed, not a loophole.")
+        return
+
+    have = len(reason.strip()) if isinstance(reason, str) else None
+    err(f"[RUT] cover-lead rut (SPEC §3.6): topic_family {hit} appears as led_on='news' in "
+        f"{[tally[f] for f in hit]} of the last {RUT_LEDGER_WINDOW} cover_lead_ledger entries, and "
+        f"this plan sets cover_leads_on='news' on the same family "
+        f"[family resolved from {source}], with "
+        f"{'no lead_override_reason' if have is None else f'a {have}-char lead_override_reason'} "
+        f"(>= {LEAD_OVERRIDE_MIN_CHARS} chars required).\n"
+        f"        THIS IS NOT A BAN. Lead on it again if the news warrants it — set "
+        f"issue_meta.lead_override_reason to >= {LEAD_OVERRIDE_MIN_CHARS} characters saying why THIS "
+        f"week's development earns the cover over everything else that was available, and the plan "
+        f"passes. The rule exists because UK politics led 6 of 9 covers while nothing in the "
+        f"pipeline could see a rut (defect C); its entire power is to require the reasoning in "
+        f"writing. Do not resolve it by suppressing the story.")
+
+
+def check_weekly_plan(plan, state=None):
     """Blocking validation for the NEW weekly (Transmission) plan shape.
 
     The weekly was rebuilt around a DETERMINISTIC, skeleton-driven stitcher
@@ -808,6 +1413,20 @@ def check_weekly_plan(plan):
          planner routes >= 1 verified bundle image_candidate to the Long Read.
      13. (A6, WARN) any feature/round band allocated > 350 words with an empty
          images_needed draws a warning — feature bands should open on an image.
+     14. (SPEC §3.1/§3.6) issue_meta carries the coverage window and the cover-lead
+         record: research_cut_at (== window.to), window{from,to}, cover_leads_on,
+         cover_lead_topic_family (required, and enum-checked against the closed
+         Topic Family Enumeration), lead_rationale >= 120 chars, and a well-formed
+         lead_override_reason.
+     15. (SPEC §3.1, acceptance criterion #1) the long_read chapter declares
+         `vintage`; `material_span` + `latest_development` iff evergreen.
+     16. (SPEC §3.1) week_in_numbers carries `rows[]`, each with `key` and a
+         `source_band` that is a chapter_id in this plan or the literal "state".
+     17. (SPEC §3.6, acceptance criterion #4) the rut rule, against state's
+         cover_lead_ledger. Overridable in writing, by design.
+     18. (SPEC §3.11) `multi_sport` hard-fails wherever the plan declares a result's
+         sport; an off-list token warns.
+     19. (WARN) weekly `pieces[].topic_family` outside the closed enumeration.
     """
     skeleton = _load_weekly_skeleton()
     if skeleton is None:
@@ -995,6 +1614,43 @@ def check_weekly_plan(plan):
             warn(f"[WEEKLY] chapters[{i}] band '{cid}' has nav:false in the skeleton but carries a nav "
                  f"coverline — it will not become a tuner station; drop the coverline.")
 
+    # ── Rules 14–18: the 2026-07-26 coverage rebuild (SPEC §3.1/§3.6/§3.11) ──
+    # Rule 14: the coverage window + cover-lead accountability record.
+    check_weekly_coverage_meta(meta)
+
+    # Rule 15: the Long Read declares its vintage (acceptance criterion #1).
+    check_long_read_vintage(chapters)
+
+    # Rule 16: per-row provenance on the stat strip; `source_band` accepts a
+    # chapter_id present in this plan or the literal "state".
+    check_week_in_numbers_rows(chapters, present_set)
+
+    # Rule 17: the rut rule (acceptance criterion #4) — reads state's ledger.
+    check_rut_rule(plan, meta, state)
+
+    # Rule 18: sport-token discipline wherever the plan declares ledger content.
+    check_sport_tokens(plan)
+
+    # Rule 19 (WARN): a weekly plan's `pieces[].topic_family` should be in the
+    # closed enumeration. It is a hard fail on SPECIAL plans (check_section_shape,
+    # which the weekly branch does not run); here it warns, because the rut rule
+    # resolves the cover-lead family from these fields and cannot match a value it
+    # does not recognise. Adding a family is a spec amendment in
+    # chapter-plan-schema.md § Topic Family Enumeration (WP-1), not a local edit.
+    for i, ch in enumerate(chapters):
+        if not isinstance(ch, dict):
+            continue
+        for j, p in enumerate(ch.get("pieces", []) or []):
+            if not isinstance(p, dict):
+                continue
+            tf = p.get("topic_family")
+            if isinstance(tf, str) and tf and tf not in TOPIC_FAMILIES:
+                warn(f"[WEEKLY-FAMILY] chapters[{i}] ('{ch.get('chapter_id')}').pieces[{j}]"
+                     f".topic_family='{tf}' is not in the closed enumeration "
+                     f"(references/chapter-plan-schema.md § Topic Family Enumeration). The rut rule "
+                     f"(SPEC §3.6) matches state's cover_lead_ledger against these values, so an "
+                     f"unrecognised family is invisible to it.")
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # NEW-SYSTEM (data-mx) SPECIAL plan validation — WP-6 deterministic pipeline.
@@ -1026,8 +1682,10 @@ MX_SKELETON_FILES = {
 }
 
 # Default reader-state path (repo-root/state/signal-state.json), overridable
-# with --state. The personalisation floor (Part 7 §4) validates against it.
-MX_DEFAULT_STATE_PATH = Path(__file__).resolve().parents[4] / "state" / "signal-state.json"
+# with --state. Read by the mx personalisation floor (Part 7 §4, as raw text) and
+# by the weekly rut rule (SPEC §3.6, as parsed JSON).
+DEFAULT_STATE_PATH = Path(__file__).resolve().parents[4] / "state" / "signal-state.json"
+MX_DEFAULT_STATE_PATH = DEFAULT_STATE_PATH   # back-compat alias
 
 # Planned-density screens-estimate formula (documented; calibrated against the
 # WP-1/WP-2 measured packs at 390x844 — the binding viewport, where density is
@@ -1497,7 +2155,21 @@ def main():
         # still run.
         if isinstance(issue_meta, dict):
             check_issue_meta(issue_meta)
-        check_weekly_plan(plan)
+        # SPEC §3.6 — the rut rule reads state.cover_lead_ledger. An unreadable or
+        # absent state file is a WARNING (the rule is skipped and says so), never a
+        # silent pass: this is a production aid, and a missing input must be visible.
+        resolved_state = Path(state_path) if state_path else DEFAULT_STATE_PATH
+        weekly_state = None
+        try:
+            weekly_state = json.loads(resolved_state.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as e:
+            warn(f"[STATE] could not read reader state at '{resolved_state}': {e}. "
+                 f"The rut rule (SPEC §3.6) is skipped — pass --state <path>.")
+        if weekly_state is not None and not isinstance(weekly_state, dict):
+            warn(f"[STATE] reader state at '{resolved_state}' is not a JSON object; "
+                 f"the rut rule (SPEC §3.6) is skipped.")
+            weekly_state = None
+        check_weekly_plan(plan, weekly_state)
         if isinstance(assets, dict):
             check_assets(assets)
         if isinstance(compliance, dict):
@@ -1548,6 +2220,10 @@ def main():
         for i, e in enumerate(errors, 1):
             print(f"  [{i}] {e}")
         print()
+        print("PRODUCTION HALT, not a ship failure. This is an upstream production aid (SPEC §1),")
+        print("not a fourth ship gate — the three gates are validate-issue.py's image checks, its")
+        print("markup contracts, and the Phase 9.5 holistic read. Nothing has been written or")
+        print("published; re-plan and re-run.")
         print("Fix all errors and re-run this validator before spawning writer subagents.")
         sys.exit(1)
     else:

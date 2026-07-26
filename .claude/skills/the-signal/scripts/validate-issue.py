@@ -18,6 +18,15 @@ OPTIONS
     --image-timeout N    Per-URL timeout in seconds for HEAD requests. Default 5.
     --workers N          Parallel workers for URL checks. Default 16.
     --strict             Promote warnings to failures.
+    --state PATH         state/signal-state.json. Read-only. Needed by the
+                         open-loop (SPEC §3.7) and results-ledger breadth
+                         (SPEC §3.11) checks. Auto-discovered from the repo root
+                         when omitted.
+    --run-date YYYY-MM-DD
+                         The run/publish date, used to decide which open loops
+                         have MATURED (SPEC §3.7) and which calendar events
+                         concluded in-window (SPEC §3.11). Defaults to a date
+                         parsed from the filename, else today (UTC).
 
 DESIGN
     The orchestrator (not a subagent) runs this and reads the exit code.
@@ -34,6 +43,8 @@ from __future__ import annotations
 
 import argparse
 import concurrent.futures
+import datetime
+import json
 import re
 import sys
 import urllib.request
@@ -257,6 +268,18 @@ class Report:
             self.failures.append((check, detail))
         else:
             self.warnings.append((check, detail))
+
+    def soft_warn(self, check: str, detail: str) -> None:
+        """A warning that --strict must NOT promote to a failure.
+
+        Exactly one class of finding needs this: an unrecognised `data-sport`
+        token (SPEC §3.11 / data-contracts.md § Sport tokens). The 22-token list
+        is closed-with-an-extension-path, so a genuinely new sport — the
+        multi-sport-games long tail: lawn bowls, para events, judo — must never
+        block a ship. "A breadth check that blocks breadth is self-defeating."
+        Everything else uses warn() and stays strict-promotable.
+        """
+        self.warnings.append((check, detail))
 
     def ok(self, check: str, detail: str) -> None:
         self.passes.append((check, detail))
@@ -1696,6 +1719,1435 @@ def check_css_class_sanity(html: str, report: Report) -> None:
         report.ok("css-class-sanity", "top-30 classes all referenced in <style>")
 
 
+# ═════════════════════════════════════════════════════════════════════════════
+# COVERAGE-REBUILD CHECKS  (WP-4 of docs/editorial-coverage-rebuild-SPEC-2026-07-26.md)
+#
+# These are the layer that makes a defective issue FAIL. They land INSIDE the two
+# existing mechanical gates — gate 1 = image checks, gate 2 = markup contracts —
+# because SPEC §0 forbids a fourth ship gate.
+#
+# What each check exists for (defect → structure → check):
+#   A  an evergreen Long Read reading as breaking news
+#        → data-vintage / .lr-vintage / date-free byline  (§3.4, §3.4a; criterion #2)
+#        → data-lr-framing="feature" in The Letter        (§3.4)
+#   B  a 2007 photograph illustrating a 2021 breakthrough
+#        → caption vintage                                (§3.9; criterion #3)
+#   D  Sunday-concluding events vanishing; one sport saturating the band
+#        → data-resolves-loop per matured loop            (§3.7; criterion #6)
+#        → results-ledger sport breadth                   (§3.11; criterion #7)
+#   E  safe, boring, key-art imagery
+#        → image shape budgets                            (§3.8; criterion #8)
+#        → figure provenance presence                     (§3.4a note 6)
+#
+# The attribute VALUES are all fixed by SPEC §3.4 and §3.4a is the as-built
+# reconciliation these implement against. Two rules from §3.4a matter here:
+#   • never name or match an attribute `data-station*` — check_weekly_structure's
+#     navigator tally is `\bdata-station\b` and `-` is a regex word boundary, so
+#     `data-station-band` double-counted every station (§3.4a note 2). Nothing
+#     below introduces a new attribute name at all; every name is WP-3's.
+#   • `data-capture-year=""` is the LEGAL null rendering — empty string, not
+#     "UNKNOWN", not absent. §3.9 applies only to a non-empty 4-digit value; a
+#     value that is neither empty nor 4 digits FAILS, because the stitcher never
+#     emits one, so it came from a writer (§3.4a note 3).
+#
+# All scanning is done on body_text_only() output. This is not cosmetic: the
+# inlined <style> bundle contains `.mx-scorecard[data-table-kind="…"]` and
+# `.lr-title .lr-vintage{`, so a naive whole-document scan reads CSS selectors as
+# rendered markup.
+# ═════════════════════════════════════════════════════════════════════════════
+
+SKILL_ROOT = Path(__file__).resolve().parent.parent   # .claude/skills/the-signal
+
+VINTAGE_VALUES = ("news", "evergreen")
+COVER_LEADS_ON_VALUES = ("news", "long_read")
+# SPEC §3.4 / §3.11: the legal `.mx-scorecard` shapes. A value outside the set
+# renders as the unstyled base card. READ FROM weekly.json at runtime (see
+# load_table_kinds) — the structure of record is the single source. This literal
+# is the fallback only, and it carries `finance`, the sixth kind added by the
+# 2026-07-26 §3.11 amendment: the first five were all sport, while The Desk
+# already used .mx-scorecard for a financial card, so the enum could not name an
+# existing legitimate use. A hardcoded enum here is what stopped WP-3b from
+# stamping that card without taking the golden to exit 1.
+TABLE_KINDS_FALLBACK = ("league", "medal", "gc", "leaderboard", "championship", "finance")
+# SPEC §3.4 / §3.4a note 6 — the machine record every .plate-img must carry.
+FIGURE_PROVENANCE_ATTRS = (
+    "data-shows", "data-capture-year", "data-licence", "data-allows-derivatives",
+)
+# Canonical homes, with SPEC literals as fallbacks so there is no hard dependency
+# on another WP's file (same discipline as stitch_weekly.py).
+SHOWS_ENUM_FALLBACK = (
+    "event_photo", "gameplay", "in_engine", "key_art", "product_shot", "portrait",
+    "diagram", "map", "chart", "artefact", "document",
+)                                                                    # SPEC §3.3
+INFORMATION_SHAPES_FALLBACK = ("diagram", "map", "chart", "artefact")  # SPEC §3.8
+NEVER_LEAD_FALLBACK = ("key_art", "product_shot", "portrait")          # SPEC §3.8
+# SPEC §3.8 "Never-lead, resolved 2026-07-26": every never-lead shape is an
+# issue-wide hard FAIL as a lead figure, with ONE conditional exception —
+# product_shot may lead a band whose subject IS the product (a hardware launch or
+# review). The exception is named here rather than the ban list, so if WP-6 adds a
+# shape to never_lead_shapes it propagates as a hard fail (the plain reading of
+# "never lead") instead of quietly needing a code change.
+CONDITIONAL_LEAD_SHAPES = ("product_shot",)
+SPORT_TOKENS_FALLBACK = (
+    "football", "golf", "cricket", "cycling", "athletics", "motorsport", "rugby",
+    "tennis", "boxing", "mma", "snooker", "darts", "gaelic_games", "swimming",
+    "diving", "gymnastics", "netball", "hockey", "ice_hockey", "horse_racing",
+    "basketball", "american_football",
+)                            # data-contracts.md § The closed sport-token list (22)
+
+MIN_DISTINCT_SHOWS = 3       # SPEC §3.8 / §3.14 min_distinct_shapes
+YEAR_RE = re.compile(r"\b(1[5-9]\d{2}|20\d{2}|2100)\b")
+
+# ─────────────────────────────────────────────────────────────────────────────
+# §3.9 claim-year extraction — digits are not the only way prose dates a claim.
+#
+# WP-3b's finding, and it is the important one: THREE captions in the mx golden
+# PASSED §3.9 while being wrong, because a first version of this check measured
+# claim_max as the largest 4-DIGIT year in the band's prose. A band that writes
+# "one hundred and forty-nine years after the first Championships" or "sixty-four
+# years ago this week" contributes nothing, so the check reported "band makes no
+# dated claim" for a 2009 photograph captioned as THIS WEEK's Wimbledon final —
+# a live defect-B instance, invisible to the gate that exists for defect B.
+#
+# Three sources of a claim year are now read, and every failure quotes the
+# evidence phrase so the reasoning is auditable rather than magic:
+#   1. digits            — "In March 2021 a team at UCL…"
+#   2. spelled-out forms — "nineteen sixty-five", "two thousand and four",
+#                          "the nineteen-seventies", "the twentieth century"
+#   3. this-week deixis  — "this week", "today", "on Monday": in a weekly, a
+#                          present-tense claim IS a claim about the issue's own
+#                          year, which is taken from --run-date. This is the class
+#                          that produced the miss above.
+# Anything recognisably a date expression but NOT resolvable to a year (a
+# relative span, "the turn of the century", a bare decade) is reported as a
+# WARNING that quotes what could not be parsed — see check_caption_vintage. A
+# check that explains its own blind spot is worth more than one that pretends not
+# to have one; silently passing and falsely failing are both worse.
+# ─────────────────────────────────────────────────────────────────────────────
+_W_UNIT = "one|two|three|four|five|six|seven|eight|nine"
+_W_TEEN = "ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen"
+_W_TENS = "twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety"
+_W_TENS_PL = "twenties|thirties|forties|fifties|sixties|seventies|eighties|nineties"
+# Only these can open a spelled year, which is what keeps "sixty-four years ago"
+# and "one hundred and forty-nine years" out of the year parser entirely.
+_W_CENTURY = "fifteen|sixteen|seventeen|eighteen|nineteen|twenty"
+_WORD_VALUES = {
+    **{w: i + 1 for i, w in enumerate(_W_UNIT.split("|"))},
+    **{w: i + 10 for i, w in enumerate(_W_TEEN.split("|"))},
+    **{w: (i + 2) * 10 for i, w in enumerate(_W_TENS.split("|"))},
+    **{w: (i + 2) * 10 for i, w in enumerate(_W_TENS_PL.split("|"))},
+}
+# "fifteen hundred years", "nineteen hundred people" — a count, not a year.
+_QUANTITY_NOUNS = (r"years?|months?|weeks?|days?|hours?|people|men|women|miles?|"
+                   r"kilometres?|kilometers?|metres?|meters?|feet|foot|pounds?|"
+                   r"dollars?|euros?|words?|copies|times|fragments?|gears?|teeth")
+SPELLED_YEAR_RE = re.compile(
+    rf"\b(?P<c>{_W_CENTURY})[\s‐-―-]+(?:"
+    rf"hundred(?!\s+(?:and\s+[\w-]+\s+)?(?:{_QUANTITY_NOUNS})\b)"
+    rf"(?:\s+and)?(?:[\s‐-―-]+(?P<hu>{_W_TENS}(?:[\s‐-―-]+(?:{_W_UNIT}))?"
+    rf"|{_W_TEEN}|{_W_UNIT}))?"
+    rf"|(?:oh|o)[\s‐-―-]+(?P<oh>{_W_UNIT})"
+    rf"|(?P<pl>{_W_TENS_PL})"
+    rf"|(?P<t>{_W_TENS})(?:[\s‐-―-]+(?P<tu>{_W_UNIT}))?"
+    rf"|(?P<teen>{_W_TEEN})"
+    rf")\b", re.IGNORECASE)
+# "two thousand and four". A numeric tail is REQUIRED: "two thousand years in
+# seawater" (issue #18's own Long Read) is a duration, not the year 2000.
+THOUSAND_YEAR_RE = re.compile(
+    rf"\btwo\s+thousand(?:\s+and)?[\s‐-―-]+"
+    rf"(?P<n>(?:{_W_TENS})(?:[\s‐-―-]+(?:{_W_UNIT}))?|{_W_TEEN}|{_W_UNIT})\b",
+    re.IGNORECASE)
+_ORDINAL_CENTURIES = {
+    "fifteenth": 15, "sixteenth": 16, "seventeenth": 17, "eighteenth": 18,
+    "nineteenth": 19, "twentieth": 20, "twenty-first": 21, "twenty first": 21,
+}
+CENTURY_RE = re.compile(
+    r"\b(fifteenth|sixteenth|seventeenth|eighteenth|nineteenth|twentieth|"
+    r"twenty[\s-]first)\s+century\b", re.IGNORECASE)
+# Present-week deixis. In a weekly these are claims about the issue's own week.
+THIS_WEEK_RE = re.compile(
+    r"\bthis (?:week|weekend|morning|afternoon|evening|month)\b"
+    r"|\b(?:today|tonight|yesterday|tomorrow)\b"
+    r"|\blast night\b|\bas this is read\b|\bthis year\b", re.IGNORECASE)
+WEEKDAY_RE = re.compile(
+    r"\b(?:on|last|this|by|since|from)\s+"
+    r"(Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday)\b", re.IGNORECASE)
+# Recognisably a date expression, NOT resolvable to a year here.
+UNRESOLVED_DATE_RES = (
+    ("turn-of-century", re.compile(r"\bturn of the (?:century|millennium)\b", re.IGNORECASE)),
+    ("relative-span", re.compile(
+        rf"\b(?:\d{{1,4}}|{_W_UNIT}|{_W_TEEN}|(?:{_W_TENS})(?:[\s-]+(?:{_W_UNIT}))?"
+        rf"|(?:{_W_UNIT})\s+hundred(?:\s+and\s+(?:(?:{_W_TENS})(?:[\s-]+(?:{_W_UNIT}))?"
+        rf"|{_W_TEEN}|{_W_UNIT}))?)"
+        rf"[\s-]+(?:years?|decades?|centuries|century)\s+"
+        rf"(?:ago|after|since|before|earlier|later|prior)\b", re.IGNORECASE)),
+    ("bare-decade", re.compile(rf"\bthe\s+(?:{_W_TENS_PL})\b", re.IGNORECASE)),
+    ("vague-span", re.compile(
+        r"\b(?:half\s+)?a\s+(?:century|decade|millennium)\s+(?:ago|earlier|later|before)\b"
+        r"|\bdecades\s+(?:ago|earlier|later)\b", re.IGNORECASE)),
+)
+
+
+def _spelled_year(m: re.Match) -> int | None:
+    base = _WORD_VALUES[m.group("c").lower()] * 100
+    if m.group("oh"):
+        return base + _WORD_VALUES[m.group("oh").lower()]
+    if m.group("pl"):
+        return base + _WORD_VALUES[m.group("pl").lower()]          # decade START
+    if m.group("t"):                          # "nineteen sixty-five" → 1900+60+5
+        total = _WORD_VALUES[m.group("t").lower()]
+        if m.group("tu"):
+            total += _WORD_VALUES[m.group("tu").lower()]
+        return base + total
+    for grp in ("hu", "teen"):
+        val = m.group(grp)
+        if val:
+            parts = re.split(r"[\s‐-―-]+", val.strip().lower())
+            return base + sum(_WORD_VALUES.get(p, 0) for p in parts)
+    return base                                                     # "nineteen hundred"
+
+
+def band_claim_years(prose: str, issue_year: int | None) -> tuple[list[tuple[int, str]], list[str]]:
+    """(claim years with the evidence that produced each, unresolved date phrases).
+
+    Years are clamped to 1500–2100, the same window §3.9 gives the digit form.
+    """
+    claims: list[tuple[int, str]] = []
+    for m in YEAR_RE.finditer(prose):
+        claims.append((int(m.group(1)), f"digits {m.group(1)!r}"))
+    for m in SPELLED_YEAR_RE.finditer(prose):
+        y = _spelled_year(m)
+        if y and 1500 <= y <= 2100:
+            note = "spelled decade (start of decade)" if m.group("pl") else "spelled"
+            claims.append((y, f"{note} {m.group(0)!r} → {y}"))
+    for m in THOUSAND_YEAR_RE.finditer(prose):
+        parts = re.split(r"[\s‐-―-]+", m.group("n").strip().lower())
+        y = 2000 + sum(_WORD_VALUES.get(p, 0) for p in parts)
+        if 1500 <= y <= 2100:
+            claims.append((y, f"spelled {m.group(0)!r} → {y}"))
+    for m in CENTURY_RE.finditer(prose):
+        key = re.sub(r"\s+", " ", m.group(1).lower()).replace(" ", "-")
+        n = _ORDINAL_CENTURIES.get(key) or _ORDINAL_CENTURIES.get(m.group(1).lower())
+        if n:
+            claims.append(((n - 1) * 100, f"century {m.group(0)!r} → {(n - 1) * 100} (century start)"))
+    if issue_year is not None:
+        m = THIS_WEEK_RE.search(prose)
+        if m:
+            claims.append((issue_year, f"this-week deixis {m.group(0)!r} → the issue's year {issue_year}"))
+        else:
+            for wm in WEEKDAY_RE.finditer(prose):
+                # "on Monday 15 July 1965" is a historical date, not this week.
+                if YEAR_RE.search(prose[wm.end():wm.end() + 30]):
+                    continue
+                claims.append((issue_year,
+                               f"this-week deixis {wm.group(0)!r} → the issue's year {issue_year}"))
+                break
+    unresolved: list[str] = []
+    for label, rx in UNRESOLVED_DATE_RES:
+        for m in rx.finditer(prose):
+            phrase = re.sub(r"\s+", " ", m.group(0)).strip()
+            entry = f"{label}: {phrase!r}"
+            if entry not in unresolved:
+                unresolved.append(entry)
+    return claims, unresolved
+FOUR_DIGIT_RE = re.compile(r"^\d{4}$")
+# WP-3 normalises the Long Read byline to `· DD MON YYYY`; accept long month
+# names and unpadded days too, so this reads a writer's date as well as a
+# stitched one. ISO dates count as a date as well.
+BYLINE_DATE_RE = re.compile(
+    r"\b\d{1,2}\s+(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)[A-Za-z]*\.?\s+\d{4}\b"
+    r"|\b\d{4}-\d{2}-\d{2}\b",
+    re.IGNORECASE,
+)
+# SPEC §3.8: "any figure captioned as a concluded result must be event_photo".
+# Deliberately narrow — DECIDED outcomes only, so a preview caption ("on his way
+# to pole … the race is still hours from its first corner") cannot fire. Bare
+# "championship"/"title" are excluded on purpose: they appear in event NAMES.
+RESULT_CAPTION_RES = (
+    re.compile(r"\b(?:won|wins|beat|beats|beaten|defeat(?:ed|s)|"
+               r"victory|clinch(?:ed|es)|seal(?:ed|s)|retain(?:ed|s)|"
+               r"crowned|winner|runner-up|champion(?:s)?\b(?=[^A-Za-z]*$))\b",
+               re.IGNORECASE),
+    re.compile(r"\b\d{1,3}\s*[-–]\s*\d{1,3}\b"),                       # a scoreline
+    re.compile(r"\bby \d+ (?:shots?|strokes?|seconds?|points?|lengths?|laps?)\b",
+               re.IGNORECASE),
+)
+
+BAND_MARKER_RE = re.compile(r'\bdata-band\s*=\s*["\']([^"\']+)["\']')
+# The contract renders .plate-img as a <div>, but the tag is captured rather than
+# hardcoded: a writer who reaches for <figure class="plate-img"> must not slip
+# past the provenance and shape budgets on a technicality.
+FIGURE_OPEN_RE = re.compile(
+    r'<([a-z0-9]+)\b[^>]*\bclass\s*=\s*"[^"]*\bplate-img\b[^"]*"[^>]*>', re.IGNORECASE)
+ATTR_PAIR_RE = re.compile(r'([A-Za-z][A-Za-z0-9-]*)\s*=\s*"([^"]*)"')
+_CLASS_OPEN_TMPL = r'<([a-z0-9]+)\b[^>]*\bclass\s*=\s*"[^"]*\b{cls}\b[^"]*"[^>]*>'
+
+
+# ─── parsing helpers ─────────────────────────────────────────────────────────
+
+def _element_html(html: str, start: int, tag: str) -> str:
+    """Return the full HTML of the element whose opening tag begins at `start`.
+
+    Nesting-aware (counts same-tag opens), so a .plate-img containing nested
+    <div>s is not truncated at the first </div>. Regex cannot balance tags; this
+    small scanner can, and every element it is used on (div/span) is never
+    self-closing.
+    """
+    gt = html.find(">", start)
+    if gt == -1:
+        return html[start:]
+    open_re = re.compile(rf"<{tag}\b", re.IGNORECASE)
+    close_re = re.compile(rf"</{tag}\s*>", re.IGNORECASE)
+    pos, depth = gt + 1, 1
+    while depth:
+        c = close_re.search(html, pos)
+        if not c:
+            return html[start:]           # unbalanced markup — take the tail
+        o = open_re.search(html, pos)
+        if o and o.start() < c.start():
+            depth += 1
+            pos = o.end()
+        else:
+            depth -= 1
+            pos = c.end()
+    return html[start:pos]
+
+
+def _first_class_element(html: str, cls: str) -> str | None:
+    """HTML of the first element carrying class `cls`, or None."""
+    m = re.search(_CLASS_OPEN_TMPL.format(cls=re.escape(cls)), html, re.IGNORECASE)
+    if not m:
+        return None
+    return _element_html(html, m.start(), m.group(1))
+
+
+def _strip_class_blocks(html: str, cls: str) -> str:
+    """Remove every element carrying class `cls`, contents included."""
+    rx = re.compile(_CLASS_OPEN_TMPL.format(cls=re.escape(cls)), re.IGNORECASE)
+    out = html
+    while True:
+        m = rx.search(out)
+        if not m:
+            return out
+        frag = _element_html(out, m.start(), m.group(1))
+        out = out[:m.start()] + " " + out[m.start() + len(frag):]
+
+
+def _visible(html: str) -> str:
+    """Tags out, whitespace collapsed — the text a reader actually sees."""
+    return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html)).strip()
+
+
+def _tag_attrs(tag_text: str) -> dict[str, str]:
+    return {k.lower(): v for k, v in ATTR_PAIR_RE.findall(tag_text)}
+
+
+def band_regions(body: str) -> list[tuple[str, int, int]]:
+    """(band_id, start, end) for every data-band marker, in document order.
+
+    A band's region runs from its marker to the next band marker. That is the
+    same region model check_weekly_structure already uses for the release-radar
+    fold, and it is the right one here: in a rendered weekly the `.band` div
+    often closes right after the band-head, with the band's content following in
+    sibling <section>s (see the Colophon in issue #18), so "inside the .band
+    element" would find almost nothing.
+    """
+    marks = list(BAND_MARKER_RE.finditer(body))
+    out: list[tuple[str, int, int]] = []
+    for i, m in enumerate(marks):
+        end = marks[i + 1].start() if i + 1 < len(marks) else len(body)
+        out.append((m.group(1), m.start(), end))
+    return out
+
+
+def _band_at(regions: list[tuple[str, int, int]], idx: int) -> tuple[str, int, int] | None:
+    for band, start, end in regions:
+        if start <= idx < end:
+            return (band, start, end)
+    return None
+
+
+def collect_figures(body: str) -> list[dict]:
+    """Every .plate-img in the rendered body, parsed into a record.
+
+    Keys: band, is_lead, label, src, hash, attrs, cap_visible (the caption's
+    VISIBLE sentence — `.plate-cap .txt` with the nested `.credit` span removed,
+    which is exactly the scope SPEC §3.9 names), has_cap.
+    """
+    regions = band_regions(body)
+    figs: list[dict] = []
+    for i, m in enumerate(FIGURE_OPEN_RE.finditer(body)):
+        tag = m.group(0)
+        el = _element_html(body, m.start(), "div")
+        attrs = _tag_attrs(tag)
+        classes = (attrs.get("class") or "").split()
+        src_m = re.search(r'<img\b[^>]*\bsrc\s*=\s*"([^"]*)"', el, re.IGNORECASE)
+        src = src_m.group(1) if src_m else ""
+        cap = _first_class_element(el, "plate-cap")
+        label, cap_visible = "", None
+        if cap:
+            fig_span = _first_class_element(cap, "fig")
+            if fig_span:
+                label = _visible(fig_span)
+            txt = _first_class_element(cap, "txt")
+            if txt:
+                # The credit span is NESTED INSIDE .txt in the shipped markup, so
+                # excluding it means removing a child, not skipping a sibling.
+                cap_visible = _visible(_strip_class_blocks(txt, "credit"))
+            else:
+                cap_visible = _visible(_strip_class_blocks(cap, "credit"))
+        band = _band_at(regions, m.start())
+        figs.append({
+            "index": i + 1,
+            "label": label or f"figure #{i + 1}",
+            "src": src,
+            "hash": Path(urllib.parse.urlparse(src).path).stem if src else "",
+            "band": band[0] if band else "(no band)",
+            "band_span": (band[1], band[2]) if band else (0, len(body)),
+            "is_lead": "lead" in classes,
+            "attrs": attrs,
+            "has_cap": cap is not None,
+            "cap_visible": cap_visible,
+        })
+    return figs
+
+
+def _fig_id(fig: dict) -> str:
+    return f"{fig['label']} [{fig['band']}{'/lead' if fig['is_lead'] else ''}, {fig['src'] or 'no <img>'}]"
+
+
+# Date-bearing FURNITURE inside a band: the issue's own datestamps, not claims the
+# band makes about its subject. SPEC §3.9 keys on the band's PROSE, so these come
+# out before claim_max is measured. It matters: the Long Read's byline reads
+# "· 26 JUL 2026", and counting that as a claim would set claim_max to the issue
+# year in every band of every issue — turning "the prose claims 2021" into "the
+# issue was published in 2026" and making the failure message undiagnostic.
+# Ledger DATE CELLS are deliberately NOT excluded: "1901 Recovered / 2005 Scanned
+# / 2021 Modelled" are claims of record, which is exactly what the rule reads.
+BAND_FURNITURE_CLASSES = ("byline", "sigline", "dataline", "stamp", "lr-vintage",
+                          "colophon", "runtime", "bandhead")
+# `bandhead` joins the list with the deixis rule below: a band's own name plate is
+# not a claim it makes, and one of the weekly's bands is literally called "Do This
+# Week" — its band-head would otherwise date every figure in it to the issue year
+# on the strength of its title. (Measured: stripping it changes no verdict in the
+# archive, because those bands' prose says "this week" too. It is stripped anyway,
+# so the evidence quoted in a failure is always a sentence, never furniture.)
+
+
+def band_prose(body: str, span: tuple[int, int]) -> str:
+    """Visible prose of a band region, figure captions EXCLUDED (SPEC §3.9).
+
+    Excludes `.plate-cap` blocks, <figcaption> and <caption> — a caption is not a
+    claim the band is making, and including one would let a caption's own credit
+    line ("… 2007 · CC BY 2.5") satisfy the very rule it is the subject of — and
+    the dateline furniture above.
+    """
+    region = body[span[0]:span[1]]
+    region = _strip_class_blocks(region, "plate-cap")
+    for cls in BAND_FURNITURE_CLASSES:
+        region = _strip_class_blocks(region, cls)
+    region = re.sub(r"<figcaption\b[^>]*>.*?</figcaption>", " ", region,
+                    flags=re.DOTALL | re.IGNORECASE)
+    region = re.sub(r"<caption\b[^>]*>.*?</caption>", " ", region,
+                    flags=re.DOTALL | re.IGNORECASE)
+    return _visible(region)
+
+
+# ─── canonical vocabularies, loaded from their owners' files ──────────────────
+
+def load_shows_vocab() -> tuple[tuple[str, ...], tuple[str, ...], tuple[str, ...], str]:
+    """(shows enum, information-figure shapes, never-lead shapes, provenance note).
+
+    All three lists are READ FROM WP-6's references/image-source-types.json §
+    shows at runtime, never hardcoded — that file's `_derived_lists_doc` names
+    machine-vs-prose drift as a live failure mode (it already happened once:
+    `never_lead_shapes` omitted `portrait` while the rank-5 prose said "key art /
+    product shot / posed portrait — last resort, never a lead"). Reading the lists
+    means a doctrine change propagates instead of silently diverging from this
+    check. The SPEC literals remain only as a fallback, so there is no hard
+    dependency on another WP's file.
+    """
+    path = SKILL_ROOT / "references" / "image-source-types.json"
+    try:
+        shows = json.loads(path.read_text(encoding="utf-8"))["shows"]
+        enum = tuple(shows["values"].keys())
+        info = tuple(shows.get("information_figure_shapes") or INFORMATION_SHAPES_FALLBACK)
+        never = tuple(shows.get("never_lead_shapes") or NEVER_LEAD_FALLBACK)
+        if len(enum) >= 5:
+            return (enum, info, never,
+                    f"shows vocab from {path.name}: {len(enum)} values, "
+                    f"information={list(info)}, never_lead={list(never)}")
+    except Exception:
+        pass
+    return (SHOWS_ENUM_FALLBACK, INFORMATION_SHAPES_FALLBACK, NEVER_LEAD_FALLBACK,
+            "shows vocab from the SPEC §3.3/§3.8 literals (image-source-types.json unreadable)")
+
+
+def load_table_kinds() -> tuple[tuple[str, ...], str]:
+    """The legal `data-table-kind` values, READ FROM the structure of record.
+
+    `references/format-skeletons/weekly.json` § structural_hooks.table_kind states
+    the enum inline as `data-table-kind ∈ a|b|c…`. Parsing it means a seventh kind
+    propagates the moment WP-3 adds it, instead of hard-failing a legitimate card
+    because this file has not caught up — which is exactly what happened to the
+    sixth kind (`finance`): the enum was hardcoded here, so the Desk's financial
+    card could not be stamped without taking the golden to exit 1.
+    """
+    path = SKILL_ROOT / "references" / "format-skeletons" / "weekly.json"
+    keypaths = (("structural_hooks", "table_kind"),                    # canonical hook
+                ("furniture_layer", "components", "standings_card"))   # same list, restated
+    try:
+        doc = json.loads(path.read_text(encoding="utf-8"))
+        for keypath in keypaths:
+            node: object = doc
+            for key in keypath:
+                node = node.get(key) if isinstance(node, dict) else None
+                if node is None:
+                    break
+            if not isinstance(node, str):
+                continue
+            m = re.search(r"data-table-kind\s*∈\s*([a-z_]+(?:\s*\|\s*[a-z_]+)+)", node)
+            if m:
+                kinds = tuple(k.strip() for k in m.group(1).split("|") if k.strip())
+                if len(kinds) >= 3:
+                    return kinds, (f"{len(kinds)} table kind(s) from weekly.json § "
+                                   f"{'.'.join(keypath)}")
+    except Exception:
+        pass
+    return TABLE_KINDS_FALLBACK, (f"{len(TABLE_KINDS_FALLBACK)} table kind(s) from the "
+                                  "SPEC §3.4 literal (weekly.json unreadable)")
+
+
+def load_sport_tokens() -> tuple[tuple[str, ...], str]:
+    """The closed sport-token list, PARSED from its canonical home.
+
+    data-contracts.md § Sport tokens says adding a token is "a one-line change to
+    this list, by WP-1 … and no consumer needs a code change". That is only true
+    if consumers read the list rather than hardcoding it, so this parses the
+    `a` · `b` · `c` token paragraph out of the markdown and keeps the 22-token
+    literal only as a fallback.
+    """
+    path = SKILL_ROOT / "references" / "spec" / "data-contracts.md"
+    try:
+        text = path.read_text(encoding="utf-8")
+        sec = text.split("### The closed sport-token list", 1)[1].split("\n### ", 1)[0]
+        best: list[str] = []
+        for para in re.split(r"\n\s*\n", sec):
+            if para.count("·") < 5:
+                continue        # the prose paragraphs have backticks but no ·-list
+            toks = [t for t in re.findall(r"`([a-z][a-z_]*)`", para) if t != "snake_case"]
+            if len(toks) > len(best):
+                best = toks
+        if len(best) >= 10:
+            return tuple(dict.fromkeys(best)), f"{len(best)} sport tokens from {path.name}"
+    except Exception:
+        pass
+    return SPORT_TOKENS_FALLBACK, (f"{len(SPORT_TOKENS_FALLBACK)} sport tokens from the "
+                                   "data-contracts.md literal (file unreadable)")
+
+
+# ─── GATE 2 · markup contracts: Long Read vintage (SPEC §3.4/§3.4a, crit. #2) ─
+
+def long_read_section(body: str) -> tuple[str, dict] | None:
+    m = re.search(r'<section\b[^>]*\bdata-role\s*=\s*["\']long-read["\'][^>]*>',
+                  body, re.IGNORECASE)
+    if not m:
+        return None
+    return (_element_html(body, m.start(), "section"), _tag_attrs(m.group(0)))
+
+
+def check_long_read_vintage(body: str, report: Report) -> str | None:
+    """SPEC §3.4 + §3.4a · acceptance criterion #2.
+
+    `data-vintage` is ALWAYS present and is `news` or `evergreen`.
+      evergreen ⇒ `.lr-vintage` present AND the `.byline` carries no issue date.
+      news      ⇒ `.lr-vintage` absent  AND the `.byline` keeps its date.
+
+    WP-3's stitcher is the only writer of this attribute, so this asserts the
+    RENDERING rather than adjudicating a disagreement with the plan — which is
+    why it is worth asserting at all: acceptance criterion #2 is about what the
+    reader receives, and "the stitcher meant well" is not evidence.
+
+    Returns the vintage value (or None) so the caller can drive the
+    data-lr-framing check off it.
+    """
+    found = long_read_section(body)
+    if not found:
+        report.fail("long-read-vintage",
+                    "no <section data-role=\"long-read\"> in the rendered body — "
+                    "SPEC §3.4's vintage contract has nothing to attach to")
+        return None
+    section, attrs = found
+    vintage = attrs.get("data-vintage")
+    if vintage is None:
+        report.fail("long-read-vintage",
+                    "the Long Read section carries no data-vintage attribute. SPEC §3.4: "
+                    "data-vintage is ALWAYS present, 'news' or 'evergreen'. Without it "
+                    "nothing downstream can tell a standing story from this week's news "
+                    "(defect A), and the anchor reads as a discovery just made.")
+        return None
+    if vintage not in VINTAGE_VALUES:
+        report.fail("long-read-vintage",
+                    f"data-vintage=\"{vintage}\" is not one of {list(VINTAGE_VALUES)} (SPEC §3.4)")
+        return None
+
+    title = _first_class_element(section, "lr-title") or section
+    has_vintage_line = bool(_first_class_element(title, "lr-vintage"))
+    byline_el = _first_class_element(title, "byline")
+    byline = _visible(byline_el) if byline_el else ""
+    date_m = BYLINE_DATE_RE.search(byline)
+
+    problems: list[str] = []
+    if vintage == "evergreen":
+        if not has_vintage_line:
+            problems.append("no .lr-vintage line in .lr-title (SPEC §3.4: present when evergreen)")
+        if date_m:
+            problems.append(
+                f"the .byline carries an issue date ({date_m.group(0)!r}) — an evergreen "
+                "anchor's byline must NOT be dated, or the standing story is stamped as news")
+    else:
+        if has_vintage_line:
+            problems.append(".lr-vintage line present on a NEWS anchor (SPEC §3.4: absent when news)")
+        if not byline:
+            problems.append("no .byline found in .lr-title")
+        elif not date_m:
+            problems.append("the .byline carries no `· DD MON YYYY` date — a news anchor keeps its date")
+
+    if problems:
+        report.fail("long-read-vintage",
+                    f"data-vintage=\"{vintage}\" but the rendering disagrees: "
+                    + "; ".join(problems) + f". Byline reads: {byline or '(none)'!r}")
+    else:
+        report.ok("long-read-vintage",
+                  f"data-vintage=\"{vintage}\" with a matching rendering "
+                  f"(.lr-vintage {'present' if has_vintage_line else 'absent'}, "
+                  f"byline {'dated' if date_m else 'date-free'})")
+    return vintage
+
+
+def check_lr_framing(body: str, vintage: str | None, report: Report) -> None:
+    """SPEC §3.4 · The Letter frames an evergreen anchor as a feature.
+
+    The paragraph in The Letter that introduces the Long Read carries
+    data-lr-framing="feature". PRESENCE is what is checked; the wording stays
+    editorial. WP-3 can only warn here (it cannot know which writer paragraph
+    introduces the anchor), so the hard check is this one — but only when the
+    anchor is evergreen, because a news anchor needs no such framing.
+    """
+    if vintage != "evergreen":
+        return
+    letter = None
+    for band, start, end in band_regions(body):
+        if band == "the_letter":
+            letter = body[start:end]
+            break
+    scope, where = (letter, "The Letter band") if letter is not None else (body, "the issue")
+    if re.search(r'\bdata-lr-framing\s*=\s*["\']feature["\']', scope):
+        report.ok("lr-framing", f"data-lr-framing=\"feature\" present in {where} (evergreen anchor)")
+        return
+    stray = re.findall(r'\bdata-lr-framing\s*=\s*["\']([^"\']*)["\']', body)
+    report.fail("lr-framing",
+                f"the Long Read is evergreen but no data-lr-framing=\"feature\" paragraph is "
+                f"in {where} (SPEC §3.4)"
+                + (f" — found data-lr-framing={stray} instead" if stray else "")
+                + ". The Letter must frame a standing story as a feature; otherwise the issue's "
+                  "own introduction sells it as this week's news (defect A).")
+
+
+def check_cover_leads_on(body: str, report: Report) -> None:
+    """SPEC §3.4a note 1 · the cover declares what it leads on.
+
+    `data-cover-leads-on="news|long_read"` on <header class="cover">. WP-3 added
+    it beyond §3.4's list so the cover-lead decision is auditable in the rendered
+    object; an auditable decision nobody audits is just a longer attribute, so
+    presence + enum are checked here.
+    """
+    m = re.search(r'<header\b[^>]*\bclass\s*=\s*"[^"]*\bcover\b[^"]*"[^>]*>', body, re.IGNORECASE)
+    if not m:
+        report.warn("cover-leads-on", "no <header class=\"cover\"> found — nothing to assert")
+        return
+    val = _tag_attrs(m.group(0)).get("data-cover-leads-on")
+    if val is None:
+        report.fail("cover-leads-on",
+                    "<header class=\"cover\"> carries no data-cover-leads-on attribute "
+                    "(SPEC §3.4a note 1; values 'news' | 'long_read'). Without it the cover's "
+                    "lead decision leaves no machine record, which is half of defect C.")
+    elif val not in COVER_LEADS_ON_VALUES:
+        report.fail("cover-leads-on",
+                    f"data-cover-leads-on=\"{val}\" is not one of {list(COVER_LEADS_ON_VALUES)} "
+                    "(SPEC §3.4a note 1)")
+    else:
+        report.ok("cover-leads-on", f"cover declares data-cover-leads-on=\"{val}\"")
+
+
+def scorecards(body: str) -> list[dict]:
+    """Every `.mx-scorecard` CARD ELEMENT (not its `__child` classes), with the
+    band it sits in and its visible title — so an undeclared card can be named."""
+    regions = band_regions(body)
+    out: list[dict] = []
+    rx = re.compile(r'<([a-z0-9]+)\b[^>]*\bclass\s*=\s*"[^"]*\bmx-scorecard\b[^"]*"[^>]*>',
+                    re.IGNORECASE)
+    for m in rx.finditer(body):
+        el = _element_html(body, m.start(), m.group(1))
+        title_el = _first_class_element(el, "mx-scorecard__title")
+        band = _band_at(regions, m.start())
+        out.append({
+            "kind": _tag_attrs(m.group(0)).get("data-table-kind"),
+            "band": band[0] if band else "(no band)",
+            "title": _visible(title_el) if title_el else "(untitled)",
+        })
+    return out
+
+
+def check_table_kind(body: str, report: Report) -> None:
+    """SPEC §3.4 / §3.11 · `.mx-scorecard` is polymorphic, and the legal shapes are
+    the ones the structure of record names.
+
+    A value outside the set renders as the unstyled base card — the single
+    right-aligned gap column that was the reason only a weekly-table sport could
+    fill The Touchline's furniture. Value validity is a hard FAIL; a
+    `.mx-scorecard` with NO data-table-kind is a WARN, because every issue in the
+    archive predates the attribute and retro-failing them is not what the gate is
+    for.
+
+    Reported PER CARD, not per issue. WP-3b found the earlier per-issue form
+    effectively silent: one declared card suppressed the warning for every
+    undeclared one, so the Desk's financial card went unreported. Each card is
+    now named by band and title, which is what makes the warning actionable.
+    """
+    kinds, kinds_note = load_table_kinds()
+    cards = scorecards(body)
+    # Read the values from the DOM as well as from the cards, so a data-table-kind
+    # on something that is not a .mx-scorecard is still validated.
+    values = re.findall(r'\bdata-table-kind\s*=\s*["\']([^"\']*)["\']', body)
+    bad = sorted({v for v in values if v not in kinds})
+    if bad:
+        report.fail("table-kind",
+                    f"data-table-kind value(s) outside the legal shapes: {bad}. "
+                    f"Legal: {list(kinds)} ({kinds_note}). A value outside the set renders as "
+                    f"the unstyled base card — CSS exists for exactly these shapes. If the shape "
+                    f"is genuinely new, it is a weekly.json + CSS change (WP-3's files), not a "
+                    f"value a writer can invent.")
+        return
+    declared = [c for c in cards if c["kind"]]
+    undeclared = [c for c in cards if not c["kind"]]
+    if values:
+        report.ok("table-kind",
+                  f"{len(values)} data-table-kind value(s), all legal: {sorted(set(values))} "
+                  f"({kinds_note})")
+    if undeclared:
+        report.warn("table-kind/undeclared",
+                    f"{len(undeclared)} of {len(cards)} .mx-scorecard card(s) carry no "
+                    f"data-table-kind and render as the unstyled base shape:\n"
+                    + "\n".join(f"    • band '{c['band']}' — \"{c['title']}\"" for c in undeclared)
+                    + f"\n    Declare one of {list(kinds)} (SPEC §3.4 / §3.11). Reported per card: "
+                      f"{len(declared)} card(s) in this issue DO declare a kind, and a per-issue "
+                      f"check would have said nothing about these.")
+
+
+# ─── GATE 2 · markup contracts: sport tokens (SPEC §3.11, criterion #7) ──────
+
+def check_sport_tokens(body: str, report: Report) -> None:
+    """SPEC §3.11 + data-contracts.md § Sport tokens.
+
+    HARD FAIL on `data-sport="multi_sport"`: a result belongs to a sport, and
+    `[motorsport, multi_sport]` would satisfy "≥2 distinct" while telling the
+    reader nothing about breadth — the F1-saturation defect passing its own check.
+    WARN (never fail, even under --strict) on a token outside the closed list:
+    the list is closed-with-an-extension-path and a games long tail (lawn bowls,
+    para events) must not block a ship.
+    """
+    tokens = re.findall(r'\bdata-sport\s*=\s*["\']([^"\']*)["\']', body)
+    if not tokens:
+        return
+    allowed, vocab_note = load_sport_tokens()
+    multi = [t for t in tokens if t == "multi_sport"]
+    unknown = sorted({t for t in tokens if t != "multi_sport" and t not in allowed})
+    known = sorted({t for t in tokens if t in allowed})
+
+    if multi:
+        report.fail("sport-tokens",
+                    f"data-sport=\"multi_sport\" on {len(multi)} row(s) — FORBIDDEN in rendered "
+                    "HTML (SPEC §3.11; legal only in state.sports_calendar[].sport, where it "
+                    "classifies an EVENT). A result belongs to a specific sport: a Games "
+                    "swimming final is data-sport=\"swimming\", a Games 10,000m is "
+                    "data-sport=\"athletics\" — one row per sport, never one row for the games.")
+    else:
+        report.ok("sport-tokens",
+                  f"{len(tokens)} data-sport value(s), no multi_sport; "
+                  f"distinct: {known + unknown or ['(none)']} ({vocab_note})")
+    if unknown:
+        report.soft_warn(
+            "sport-tokens/vocabulary",
+            f"data-sport token(s) outside the closed list: {unknown}. Not a failure — the list "
+            f"is extended by appending to references/spec/data-contracts.md § Sport tokens (WP-1), "
+            f"and a check that blocks a genuinely new sport would block the breadth it exists to "
+            f"force. Confirm the token is a SPORT (not a competition) and add it there.")
+
+
+def _tracked_concluded_sports(state: dict, window_from: str | None, run_date: str) -> tuple[set[str], list[dict]]:
+    """Sports whose tracked event CONCLUDED in (window_from, run_date].
+
+    "Tracked" per data-contracts.md § interest_depth: a sport is tracked unless
+    its depth is explicitly "off". An ABSENT key is unset, never off — reading it
+    as off would recreate defect D's invisible-sport problem in a new place.
+    Returns (specific sport tokens, multi-sport games rows).
+    """
+    depth = state.get("interest_depth") or {}
+    specific: set[str] = set()
+    games: list[dict] = []
+    for ev in state.get("sports_calendar") or []:
+        end = ev.get("end") or ev.get("start")
+        if not isinstance(end, str) or not end:
+            continue
+        if end > run_date:
+            continue                                  # not concluded yet
+        if window_from and end <= window_from:
+            continue                                  # concluded before the window opened
+        if ev.get("reader_relevant") is False:
+            continue
+        sport = ev.get("sport")
+        if not isinstance(sport, str):
+            continue
+        if depth.get(sport) == "off":
+            continue
+        if sport == "multi_sport":
+            games.append(ev)
+        else:
+            specific.add(sport)
+    return specific, games
+
+
+def check_results_ledger_breadth(body: str, state: dict | None, window_from: str | None,
+                                 run_date: str | None, report: Report) -> None:
+    """SPEC §3.11 invariant `results_ledger_multi_sport` · acceptance criterion #7.
+
+    The results ledger must carry ≥2 distinct `data-sport` values whenever ≥2
+    tracked sports had an event conclude in-window. The HTML does not contain
+    either input, so this reads state's `sports_calendar` and `interest_depth`
+    (§3.4a note 7 — the reason --state exists) and the window
+    (state.research_cut_at, run_date].
+
+    A multi-sport games that concluded in-window counts as "≥2 sports concluded":
+    that is what a games IS, and its results are required to be tagged per sport.
+    Distinctness is counted over SPECIFIC tokens only.
+    """
+    if state is None or run_date is None:
+        report.warn("results-ledger-multi-sport",
+                    "skipped — needs --state (interest_depth + sports_calendar) and --run-date; "
+                    "SPEC §3.4a note 7. Neither input exists in the rendered HTML.")
+        return
+    specific, games = _tracked_concluded_sports(state, window_from, run_date)
+    applies = len(specific) >= 2 or bool(games)
+    window_note = f"window ({window_from or 'unbounded'}, {run_date}]"
+    if not applies:
+        report.ok("results-ledger-multi-sport",
+                  f"not applicable — {len(specific)} tracked sport(s) concluded in the "
+                  f"{window_note}: {sorted(specific) or '[]'}; the invariant needs ≥2")
+        return
+
+    ledger = None
+    m = re.search(r'<div\b[^>]*\bdata-role\s*=\s*["\']results-ledger["\'][^>]*>', body, re.IGNORECASE)
+    if m:
+        ledger = _element_html(body, m.start(), "div")
+    scope, where = (ledger, "the results ledger") if ledger else (body, "the issue (NO results ledger element)")
+    tokens = {t for t in re.findall(r'\bdata-sport\s*=\s*["\']([^"\']*)["\']', scope)
+              if t and t != "multi_sport"}
+    reason = (f"≥2 tracked sports concluded in the {window_note}: "
+              f"{sorted(specific) or '[]'}"
+              + (f" plus multi-sport event(s) {[g.get('event') for g in games]}" if games else ""))
+    if len(tokens) >= 2:
+        report.ok("results-ledger-multi-sport",
+                  f"{len(tokens)} distinct sport token(s) in {where} ({sorted(tokens)}) — {reason}")
+    else:
+        report.fail("results-ledger-multi-sport",
+                    f"{reason}, but {where} carries {len(tokens)} distinct data-sport value(s) "
+                    f"({sorted(tokens) or '[]'}). SPEC §3.11 invariant "
+                    f"results_ledger_multi_sport requires ≥2. One sport filling the band while "
+                    f"another's concluded event goes unreported IS defect D — five bands of one "
+                    f"race and a vanished World Cup final.")
+
+
+# ─── GATE 2 · markup contracts: resolved loops (SPEC §3.7, criterion #6) ─────
+
+def matured_loops(state: dict, run_date: str) -> list[dict]:
+    """SPEC §3.7: a loop is MATURED when status == "open" and
+    expected_resolution_date <= run_date. `dropped` and `resolved` do not mature
+    — `dropped` is an honest terminal state for a loop that was never reported.
+    """
+    out = []
+    for loop in state.get("open_loops") or []:
+        if loop.get("status") != "open":
+            continue
+        erd = loop.get("expected_resolution_date")
+        if isinstance(erd, str) and erd and erd <= run_date:
+            out.append(loop)
+    return out
+
+
+def check_resolved_loops(body: str, state: dict | None, run_date: str | None,
+                         report: Report) -> None:
+    """SPEC §3.7 · acceptance criterion #6.
+
+    FAIL if a matured loop's id has no `data-resolves-loop` in the rendered HTML.
+    Both layers check this (the bundle gate is WP-5's) because a bundle can carry
+    a resolving fact the writer then drops — which is exactly how the World Cup
+    final was gate-checked as an upcoming fact and then never reported.
+    """
+    if state is None or run_date is None:
+        report.warn("resolved-loops",
+                    "skipped — needs --state (open_loops) and --run-date (SPEC §3.7)")
+        return
+    loops = matured_loops(state, run_date)
+    rendered = set(re.findall(r'\bdata-resolves-loop\s*=\s*["\']([^"\']*)["\']', body))
+    all_ids = {l.get("id") for l in (state.get("open_loops") or [])}
+    orphans = sorted(v for v in rendered if v and v not in all_ids)
+    if not loops:
+        report.ok("resolved-loops",
+                  f"no matured open loop as of {run_date} "
+                  f"({len(state.get('open_loops') or [])} loop(s) in state; a 'dropped' or "
+                  f"'resolved' loop does not mature) — "
+                  f"{len(rendered)} data-resolves-loop attribute(s) rendered")
+    else:
+        missing = [l for l in loops if l.get("id") not in rendered]
+        if missing:
+            lines = [f"{len(missing)} of {len(loops)} matured open loop(s) have no "
+                     f"data-resolves-loop in the rendered HTML (run-date {run_date}, SPEC §3.7):"]
+            for l in missing:
+                lines.append(f"    • {l.get('id')} — due {l.get('expected_resolution_date')}, "
+                             f"band '{l.get('band')}', opened in issue {l.get('issue_opened')}: "
+                             f"{l.get('claim')}")
+            lines.append("    A carried-forward result must be reported and marked with "
+                         "data-resolves-loop=\"<id>\", or the loop silently vanishes (defect D).")
+            report.fail("resolved-loops", "\n".join(lines))
+        else:
+            report.ok("resolved-loops",
+                      f"all {len(loops)} matured loop(s) resolved in the HTML: "
+                      + ", ".join(sorted(l.get('id') or '?' for l in loops)))
+    if orphans:
+        report.warn("resolved-loops/unknown-id",
+                    f"data-resolves-loop id(s) not present in state.open_loops: {orphans}. "
+                    "The id is a foreign key, not a label (data-contracts.md § open_loops).")
+
+
+# ─── GATE 1 · image checks: figure provenance (SPEC §3.4 / §3.4a note 6) ─────
+
+def check_figure_provenance(figs: list[dict], shows_enum: tuple[str, ...],
+                            vocab_note: str, report: Report) -> None:
+    """SPEC §3.4 + §3.4a note 6 · every .plate-img carries the machine record.
+
+    This check is ENTIRELY WP-4's to make bite. WP-3's stitcher stamps
+    data-shows / data-capture-year / data-licence / data-allows-derivatives only
+    from assets/cached/manifest.json, and all 438 of WP-8's entries are honest
+    UNKNOWN back-fills, so today 0 of 14 figures get anything from the stitcher.
+    Until the manifest carries real records, every attribute comes from the
+    writer — and only this gate can fail its absence.
+
+    Value validity, per §3.4a note 3: `data-capture-year=""` is the LEGAL null
+    rendering (a synthetic diagram/chart has no capture year). A value that is
+    neither empty nor a 4-digit year in 1500–2100 FAILS — the stitcher never
+    emits one, so it came from a writer.
+    """
+    if not figs:
+        report.warn("figure-provenance", "no .plate-img figures found — nothing to assert")
+        return
+
+    gaps: list[str] = []
+    bad: list[str] = []
+    soft: list[str] = []
+    for f in figs:
+        a = f["attrs"]
+        missing = [k for k in FIGURE_PROVENANCE_ATTRS if k not in a]
+        if missing:
+            gaps.append(f"    • {_fig_id(f)} — missing {', '.join(missing)}")
+        shows = a.get("data-shows")
+        if shows is not None and shows not in shows_enum:
+            bad.append(f"    • {_fig_id(f)} — data-shows=\"{shows}\" is not in the shows enum")
+        cy = a.get("data-capture-year")
+        if cy is not None and cy != "":
+            if not FOUR_DIGIT_RE.match(cy) or not (1500 <= int(cy) <= 2100):
+                bad.append(f"    • {_fig_id(f)} — data-capture-year=\"{cy}\" is neither empty "
+                           f"nor a 4-digit year in 1500–2100")
+        ad = a.get("data-allows-derivatives")
+        if ad is not None and ad not in ("true", "false"):
+            bad.append(f"    • {_fig_id(f)} — data-allows-derivatives=\"{ad}\" is not true|false")
+        lic = a.get("data-licence")
+        if lic is not None and not lic.strip():
+            bad.append(f"    • {_fig_id(f)} — data-licence is empty")
+        elif lic is not None and lic.strip().upper() == "UNKNOWN":
+            soft.append(f"{_fig_id(f)}")
+
+    if gaps:
+        report.fail("figure-provenance",
+                    f"{len(gaps)} of {len(figs)} .plate-img figure(s) are short of the SPEC §3.4 "
+                    f"provenance record ({', '.join(FIGURE_PROVENANCE_ATTRS)}):\n"
+                    + "\n".join(gaps)
+                    + "\n    Fix upstream, not by hand: give the research bundle's image_candidate "
+                      "its `shows`, `capture_year` and `licence` (SPEC §3.2) so mirror-images.py "
+                      "writes them to assets/cached/manifest.json and the stitcher stamps them. "
+                      "A writer-authored attribute is honoured and never overwritten.")
+    else:
+        report.ok("figure-provenance",
+                  f"all {len(figs)} .plate-img figure(s) carry the four-attribute provenance "
+                  f"record ({vocab_note})")
+    if bad:
+        report.fail("figure-provenance/values",
+                    f"{len(bad)} invalid provenance value(s) — these came from a writer, because "
+                    f"the stitcher refuses to stamp a placeholder (SPEC §3.4a notes 3 and 6):\n"
+                    + "\n".join(bad)
+                    + f"\n    shows enum: {list(shows_enum)}")
+    if soft:
+        report.warn("figure-provenance/licence-unknown",
+                    f"{len(soft)} figure(s) render data-licence=\"UNKNOWN\": {'; '.join(soft[:4])}"
+                    + (f" (+{len(soft)-4} more)" if len(soft) > 4 else "")
+                    + ". UNKNOWN is legal in the research bundle as a signal not to build on the "
+                      "asset — it is not a licence to publish or crop (data-contracts.md § licence).")
+
+
+# ─── GATE 1 · image checks: caption vintage (SPEC §3.9, criterion #3) ────────
+
+def check_caption_vintage(body: str, figs: list[dict], issue_year: int | None,
+                          report: Report) -> None:
+    """SPEC §3.9 · fixes defect B mechanically. Acceptance criterion #3.
+
+    For each .plate-img with a NON-EMPTY 4-digit `data-capture-year`: let
+    claim_max be the largest year in 1500–2100 in the enclosing band's prose
+    (figure captions excluded). If capture_year < claim_max, the caption's
+    VISIBLE sentence — `.plate-cap .txt`, excluding the nested `.credit` span —
+    must contain the capture year as a 4-digit string.
+
+    Worked example this is calibrated on (issue #18, FIG 03): capture_year 2007,
+    the band claims 2021, and the `.txt` reads "A working modern reconstruction
+    of the front dial…" with the year only in `.credit` → fails, correctly.
+    Rewriting `.txt` to "a 2007 working reconstruction, built on the pre-2021
+    understanding" → passes.
+
+    `data-capture-year=""` means "no year to compare" and is skipped (§3.4a
+    note 3); an absent attribute is the provenance check's business, not this
+    one, so the two never double-report the same figure.
+    """
+    considered = 0
+    failures: list[str] = []
+    passes: list[str] = []
+    blind: list[str] = []
+    band_cache: dict[tuple[int, int], tuple[list[tuple[int, str]], list[str]]] = {}
+    for f in figs:
+        cy_raw = f["attrs"].get("data-capture-year")
+        if cy_raw is None or cy_raw == "":
+            continue
+        if not FOUR_DIGIT_RE.match(cy_raw):
+            continue                       # reported by check_figure_provenance
+        cy = int(cy_raw)
+        if not (1500 <= cy <= 2100):
+            continue                       # ditto
+        considered += 1
+        span = f["band_span"]
+        if span not in band_cache:
+            band_cache[span] = band_claim_years(band_prose(body, span), issue_year)
+        claims, unresolved = band_cache[span]
+        visible = f["cap_visible"]
+        stated = bool(visible and cy_raw in visible)
+        # A band's unresolvable date expressions only matter for a figure that
+        # would otherwise PASS — they are the reason the pass might be wrong. Two
+        # filters keep the warning meaningful rather than ambient: a caption that
+        # already states its year is safe whatever the prose says, and a capture
+        # year at or after the issue's own year cannot be beaten by an
+        # unresolved PAST expression ("two years ago", "the sixties") — every
+        # form in UNRESOLVED_DATE_RES looks backwards from something.
+        if unresolved and not stated and (issue_year is None or cy < issue_year):
+            blind.append(f"    • {_fig_id(f)} — capture {cy}; band '{f['band']}' contains a date "
+                         f"expression this check cannot resolve to a year: " + "; ".join(unresolved))
+        if not claims:
+            passes.append(f"{_fig_id(f)} — capture {cy}, band makes no dated claim")
+            continue
+        claim_max, evidence = max(claims, key=lambda c: c[0])
+        if cy >= claim_max:
+            passes.append(f"{_fig_id(f)} — capture {cy} ≥ band's latest claim {claim_max} ({evidence})")
+            continue
+        if stated:
+            passes.append(f"{_fig_id(f)} — capture {cy} < claim {claim_max}, and the visible "
+                          f"caption says so")
+        else:
+            failures.append(
+                f"    • {_fig_id(f)}\n"
+                f"        capture year {cy} is OLDER than the band's latest claim {claim_max} "
+                f"[{evidence}], and \"{cy}\" does not appear in the caption's visible sentence.\n"
+                f"        .plate-cap .txt (credit excluded) reads: "
+                f"{(visible if visible is not None else '(no .plate-cap .txt)')!r}")
+
+    if blind:
+        report.warn("caption-vintage/unparsed-dates",
+                    f"{len(blind)} dated figure(s) sit in a band whose prose carries a date "
+                    f"expression that cannot be resolved to a year, so §3.9's claim_max may be "
+                    f"UNDERSTATED and the verdict below may be a false pass:\n" + "\n".join(blind)
+                    + "\n    This is the documented blind spot, reported rather than hidden: a "
+                      "relative span ('one hundred and forty-nine years after the first "
+                      "Championships'), 'the turn of the century' or a bare decade ('the sixties') "
+                      "needs an anchor year this check does not have. Digits, spelled-out years and "
+                      "this-week deixis ARE resolved. Check by eye that the caption is not older "
+                      "than what the band claims — or write the year into the caption, which makes "
+                      "both the reader and this check certain.")
+    if failures:
+        report.fail("caption-vintage",
+                    f"{len(failures)} of {considered} dated figure(s) illustrate a later claim "
+                    f"without saying so (SPEC §3.9):\n" + "\n".join(failures)
+                    + "\n    A reader who is not told the picture is older than the claim reads it "
+                      "as a picture OF the claim — a 2007 reconstruction illustrating a 2021 "
+                      "breakthrough (defect B). Put the year in the sentence the reader sees; a "
+                      "year in the .credit span does not count, because nobody reads a credit as "
+                      "a date correction.")
+    elif considered:
+        report.ok("caption-vintage",
+                  f"{considered} figure(s) with a dated capture year, all consistent with their "
+                  f"band's claims: " + "; ".join(passes[:4])
+                  + (f" (+{len(passes)-4} more)" if len(passes) > 4 else ""))
+    else:
+        report.warn("caption-vintage",
+                    "no .plate-img carries a non-empty 4-digit data-capture-year, so SPEC §3.9 has "
+                    "nothing to compare. This is NOT a pass: without a capture year, nothing can "
+                    "tell that a photograph predates the claim it illustrates (defect B). See the "
+                    "figure-provenance check.")
+
+
+# ─── GATE 1 · image checks: shape budgets (SPEC §3.8, criterion #8) ──────────
+
+def _caption_reports_result(fig: dict) -> str | None:
+    if fig["attrs"].get("data-resolves-loop"):
+        return "carries data-resolves-loop (a carried-forward result)"
+    cap = fig["cap_visible"] or ""
+    for rx in RESULT_CAPTION_RES:
+        m = rx.search(cap)
+        if m:
+            return f"caption reports a decided result ({m.group(0)!r})"
+    return None
+
+
+def check_image_shape_budgets(figs: list[dict], info_shapes: tuple[str, ...],
+                              never_lead: tuple[str, ...],
+                              manifest: dict | None, issue_no: int | None,
+                              report: Report) -> None:
+    """SPEC §3.8 · acceptance criterion #8.
+
+    Six budgets, each a hard FAIL:
+      1. ≥3 distinct data-shows across the issue (min_distinct_shapes, §3.14).
+      2. Pixel & Byte: at most one key_art, and key_art is never the band's lead.
+      3. Never-lead, issue-wide: no lead figure may be a never_lead_shape
+         (§3.8 "Never-lead, resolved 2026-07-26"), with product_shot conditional.
+      4. The Long Read carries ≥1 of diagram|map|chart|artefact.
+      5. A Touchline figure captioned as a concluded result must be event_photo.
+      6. Cross-issue: a src that LED the previous issue may not lead this one.
+
+    (1) and (4) are counted over what the figures DECLARE, so an issue with no
+    data-shows at all fails them — correctly. The budget is a per-issue floor on
+    what the reader is shown; "we didn't say what the pictures are" is not a way
+    to satisfy it. (2), (3) and (5) can only speak about a declared value, so they
+    stay silent when the attribute is absent rather than double-reporting a
+    figure the provenance check has already failed.
+    """
+    if not figs:
+        report.warn("image-shapes", "no .plate-img figures found — nothing to assert")
+        return
+
+    declared = [f for f in figs if f["attrs"].get("data-shows")]
+    distinct = sorted({f["attrs"]["data-shows"] for f in declared})
+
+    # 1 · distinct shapes per issue
+    if len(distinct) < MIN_DISTINCT_SHOWS:
+        report.fail("image-shapes/distinct",
+                    f"{len(distinct)} distinct data-shows value(s) across {len(figs)} figure(s) "
+                    f"({distinct or '[]'}); the floor is {MIN_DISTINCT_SHOWS} "
+                    f"(SPEC §3.8 / §3.14 min_distinct_shapes)"
+                    + (f" — only {len(declared)} of {len(figs)} figures declare data-shows at all"
+                       if len(declared) < len(figs) else "")
+                    + ". This floor replaced the retired Wikimedia CEILINGS: a ceiling reads as a "
+                      "target, and nothing set a floor for the interesting shapes (defect E).")
+    else:
+        report.ok("image-shapes/distinct",
+                  f"{len(distinct)} distinct data-shows value(s) (floor {MIN_DISTINCT_SHOWS}): {distinct}")
+
+    # 2 · Pixel & Byte key-art budget
+    pb = [f for f in figs if f["band"] == "pixel_byte"]
+    if pb:
+        key_art = [f for f in pb if f["attrs"].get("data-shows") == "key_art"]
+        leads = [f for f in key_art if f["is_lead"]]
+        problems = []
+        if len(key_art) > 1:
+            problems.append(f"{len(key_art)} key_art figures (cap is 1): "
+                            + "; ".join(_fig_id(f) for f in key_art))
+        if leads:
+            problems.append("key_art is the band's LEAD figure (.plate-img.lead): "
+                            + "; ".join(_fig_id(f) for f in leads))
+        if problems:
+            report.fail("image-shapes/pixel-byte-key-art",
+                        "; ".join(problems)
+                        + ". SPEC §3.8: at most one key_art in Pixel & Byte and never as the lead. "
+                          "Key art with the logo composited in tells the reader nothing the "
+                          "headline didn't — Steam's appdetails API returns a screenshots[] array "
+                          "per game and shared.fastly.steamstatic.com is already in the domain map "
+                          "(SPEC §3.13).")
+        else:
+            report.ok("image-shapes/pixel-byte-key-art",
+                      f"Pixel & Byte: {len(key_art)} key_art figure(s), none leading "
+                      f"({len(pb)} figure(s) in the band)")
+
+    # 3 · never-lead shapes, issue-wide (SPEC §3.8, resolved 2026-07-26)
+    hard_never = tuple(s for s in never_lead if s not in CONDITIONAL_LEAD_SHAPES)
+    cond_never = tuple(s for s in never_lead if s in CONDITIONAL_LEAD_SHAPES)
+    lead_figs = [f for f in figs if f["is_lead"] and f["attrs"].get("data-shows")]
+    banned = [f for f in lead_figs if f["attrs"]["data-shows"] in hard_never]
+    if banned:
+        report.fail("image-shapes/never-lead",
+                    f"{len(banned)} band lead figure(s) use a never-lead shape "
+                    f"{list(hard_never)} (SPEC §3.8, resolved 2026-07-26 — issue-wide, any band):\n"
+                    + "\n".join(f"    • {_fig_id(f)} — data-shows=\"{f['attrs']['data-shows']}\""
+                                for f in banned)
+                    + "\n    Both substitute for showing the thing itself: key art is the logo, and "
+                      "a posed portrait is the person NOT doing the thing (the 'random Pope photo' "
+                      "failure). A lead figure is the band's establishing image — lead with the "
+                      "event, the gameplay, the diagram or the artefact.")
+    else:
+        report.ok("image-shapes/never-lead",
+                  f"none of the {len(lead_figs)} declared lead figure(s) use a never-lead shape "
+                  f"{list(hard_never)}")
+    # product_shot is the ONE conditional case and the condition — "the band's
+    # subject IS the product" — is not in the rendered HTML. A band carries no
+    # machine-readable subject type: `data-band="pixel_byte"` covers hardware,
+    # software, games and services alike, and inferring "this is a hardware
+    # review" from prose would be a guess. So this is reported, not enforced:
+    # per the SPEC's own reasoning, a check that guesses wrong on hardware
+    # coverage is worse than one that only enforces the unambiguous shapes.
+    cond_leads = [f for f in lead_figs if f["attrs"]["data-shows"] in cond_never]
+    if cond_leads:
+        report.warn("image-shapes/never-lead-conditional",
+                    f"{len(cond_leads)} band lead figure(s) are "
+                    f"{list(cond_never)}: "
+                    + "; ".join(_fig_id(f) for f in cond_leads)
+                    + f". SPEC §3.8 allows this ONLY when the band's subject IS the product (a "
+                      f"hardware launch or review) and forbids it for a software, game or service "
+                      f"band. The rendered HTML carries no machine-readable band subject, so this "
+                      f"cannot be decided mechanically — confirm it by eye at gate 3. Reported, "
+                      f"deliberately not failed: blocking it outright would break the legitimate "
+                      f"hardware coverage this reader gets.")
+
+    # 4 · Long Read information figure
+    lr = [f for f in figs if f["band"] == "long_read"]
+    if lr:
+        info = [f for f in lr if f["attrs"].get("data-shows") in info_shapes]
+        if not info:
+            report.fail("image-shapes/long-read-information",
+                        f"the Long Read's {len(lr)} figure(s) include none of "
+                        f"{list(info_shapes)} (SPEC §3.8). Declared: "
+                        + (", ".join(sorted({f["attrs"].get("data-shows") or "(no data-shows)"
+                                             for f in lr})))
+                        + ". The anchor piece needs at least one figure that carries information "
+                          "the prose cannot — the Antikythera Long Read needed the 2021 Freeth "
+                          "Scientific Reports figures (CC BY, already-whitelisted domain) and went "
+                          "to Commons for a perspex model instead (SPEC §3.14).")
+        else:
+            report.ok("image-shapes/long-read-information",
+                      f"the Long Read carries {len(info)} information figure(s): "
+                      + ", ".join(f"{f['label']}={f['attrs']['data-shows']}" for f in info))
+
+    # 5 · a concluded Touchline result is an event photo
+    tl = [f for f in figs if f["band"] == "touchline"]
+    result_figs = [(f, why) for f in tl for why in [_caption_reports_result(f)] if why]
+    offenders = [(f, why) for f, why in result_figs
+                 if f["attrs"].get("data-shows") and f["attrs"]["data-shows"] != "event_photo"]
+    if offenders:
+        report.fail("image-shapes/touchline-result",
+                    f"{len(offenders)} Touchline figure(s) report a concluded result but are not "
+                    f"event_photo (SPEC §3.8):\n"
+                    + "\n".join(f"    • {_fig_id(f)} — data-shows=\"{f['attrs']['data-shows']}\", {why}"
+                                for f, why in offenders)
+                    + "\n    A result that happened has a photograph of it happening.")
+    elif result_figs:
+        report.ok("image-shapes/touchline-result",
+                  f"{len(result_figs)} Touchline result figure(s), none mis-shaped "
+                  + "; ".join(f"{f['label']}={f['attrs'].get('data-shows') or '(undeclared)'}"
+                              for f, _ in result_figs))
+
+    # 6 · cross-issue: last week's lead cannot lead again
+    leads = [f for f in figs if f["is_lead"] and f["hash"]]
+    if manifest is None or issue_no is None:
+        report.warn("image-shapes/cross-issue-lead",
+                    "skipped — needs assets/cached/manifest.json and this issue's number "
+                    f"(manifest={'found' if manifest else 'missing'}, "
+                    f"issue_no={issue_no}). SPEC §3.8 reads the manifest's led[].")
+        return
+    prev = issue_no - 1
+    prev_led = {h for h, e in manifest.items() if isinstance(e, dict) and prev in (e.get("led") or [])}
+    repeats = [f for f in leads if f["hash"] in prev_led]
+    if repeats:
+        report.fail("image-shapes/cross-issue-lead",
+                    f"{len(repeats)} figure(s) led issue #{prev} and lead issue #{issue_no} again "
+                    f"(SPEC §3.8):\n"
+                    + "\n".join(f"    • {_fig_id(f)}" for f in repeats)
+                    + "\n    A lead image is the issue's face; reusing last week's makes two "
+                      "issues look like one.")
+    else:
+        report.ok("image-shapes/cross-issue-lead",
+                  f"none of the {len(leads)} lead figure(s) led issue #{prev} "
+                  f"({len(prev_led)} asset(s) recorded as leading #{prev})")
+
+
+# ─── inputs: repo root, state, manifest, run-date, issue number ──────────────
+
+def find_repo_root(html_path: Path) -> Path:
+    """The repo root — where state/ and assets/cached/ live.
+
+    Resolved from THIS SCRIPT's location first (the script always lives in the
+    repo at .claude/skills/the-signal/scripts/), so the state-dependent checks
+    still run when the HTML under test is a stitch in a temp directory — which is
+    how verify-weekly-golden.sh invokes the gate. Falls back to the html-relative
+    guess the image-URL check already uses.
+    """
+    for cand in [SKILL_ROOT, *SKILL_ROOT.parents]:
+        if (cand / "state" / "signal-state.json").is_file():
+            return cand
+    for cand in [html_path.resolve().parent, *html_path.resolve().parents]:
+        if (cand / "state" / "signal-state.json").is_file():
+            return cand
+    return html_path.resolve().parent.parent
+
+
+def load_json_file(path: Path) -> dict | None:
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        return data if isinstance(data, dict) else None
+    except Exception:
+        return None
+
+
+def resolve_run_date(arg: str | None, path: Path) -> tuple[str, str]:
+    """(YYYY-MM-DD, provenance). --run-date wins; then a date in the filename;
+    then today (UTC). Never guessed silently — the provenance is printed."""
+    if arg:
+        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", arg):
+            raise ValueError(f"--run-date must be YYYY-MM-DD, got {arg!r}")
+        return arg, "--run-date"
+    m = re.search(r"(\d{4}-\d{2}-\d{2})", path.name)
+    if m:
+        return m.group(1), f"parsed from the filename ({path.name})"
+    return (datetime.datetime.now(datetime.timezone.utc).date().isoformat(),
+            "today (UTC) — no --run-date and no date in the filename")
+
+
+def resolve_issue_number(body: str, path: Path, manifest: dict | None) -> tuple[int | None, str]:
+    """This issue's number, for the cross-issue lead budget.
+
+    FOLIO is the masthead's own numbering and appears exactly once; the №
+    stamps appear several times (masthead, colophon, and a "NEXT WEEK · №019"
+    forward reference), so they are resolved by majority. Last resort: the
+    filename slug looked up in the manifest's issue_slugs.
+    """
+    m = re.search(r"\bFOLIO\s+0*(\d+)\b", body)
+    if m:
+        return int(m.group(1)), "masthead FOLIO"
+    nums = [int(n) for n in re.findall(r"№\s*0*(\d+)", body)]
+    if nums:
+        return Counter(nums).most_common(1)[0][0], "№ stamp (majority)"
+    m = COLOPHON_SIGN_RE.search(body)
+    if m:
+        return int(m.group(1)), "colophon signature"
+    if manifest:
+        slug = path.stem
+        for e in manifest.values():
+            if isinstance(e, dict) and slug in (e.get("issue_slugs") or []):
+                issues = e.get("issues") or []
+                if issues:
+                    return int(issues[-1]), f"manifest issue_slugs match on {slug}"
+    return None, "not determinable"
+
+
+def run_coverage_checks(html: str, fmt: str, new_system: bool, path: Path,
+                        state_arg: str | None, run_date_arg: str | None,
+                        report: Report) -> None:
+    """Wire the coverage-rebuild checks into the two existing gates.
+
+    SCOPE. The weekly-structure contracts (§3.4, §3.4a, §3.7, §3.8, §3.11) are
+    asserted on NEW-SYSTEM WEEKLIES only — the same exemption the Law-3/Law-9/F-16
+    checks already use, and for the same reason: retro-failing the old-system
+    archive is not what the gate is for, and no special edition has a Long Read
+    band, a Touchline or a results ledger to check. Issue #18 IS a new-system
+    weekly, so it is fully in scope and is expected to fail (SPEC §1.3).
+
+    Two checks run on EVERY format because they are self-gating and format-blind:
+    caption vintage (§3.9 — inert unless a figure declares a capture year) and
+    the sport-token vocabulary (§3.11 — inert unless something declares
+    data-sport). A dated figure lying about its vintage is defect B wherever it
+    is printed.
+    """
+    body = body_text_only(html)          # the inlined <style> carries
+                                         # .mx-scorecard[data-table-kind="…"] and
+                                         # .lr-title .lr-vintage — scanning the raw
+                                         # document would read CSS as markup.
+    figs = collect_figures(body)
+    shows_enum, info_shapes, never_lead, vocab_note = load_shows_vocab()
+
+    repo_root = find_repo_root(path)
+    state_path = Path(state_arg) if state_arg else repo_root / "state" / "signal-state.json"
+    state = load_json_file(state_path)
+    manifest_path = repo_root / "assets" / "cached" / "manifest.json"
+    manifest = load_json_file(manifest_path)
+    run_date, rd_from = resolve_run_date(run_date_arg, path)
+    issue_no, issue_from = resolve_issue_number(body, path, manifest)
+    cut = (state or {}).get("research_cut_at")
+    window_from = cut[:10] if isinstance(cut, str) and len(cut) >= 10 else None
+    # The issue's own year, for §3.9's this-week deixis: in a weekly, "this week"
+    # or "on Monday" IS a claim about this year, and taking it from the resolved
+    # run-date is the only honest source (the masthead dateline is furniture that
+    # band_prose strips, and it is not always present).
+    issue_year = int(run_date[:4])
+
+    print("  ── coverage-rebuild inputs (SPEC 2026-07-26) ──")
+    print(f"     state:     {state_path} {'OK' if state else 'NOT READ'}")
+    print(f"     manifest:  {manifest_path} "
+          f"{f'OK ({len(manifest)} entries)' if manifest else 'NOT READ'}")
+    print(f"     run-date:  {run_date}  ({rd_from})")
+    print(f"     window:    ({window_from or 'unbounded'}, {run_date}]  "
+          f"from state.research_cut_at")
+    print(f"     issue no:  {issue_no}  ({issue_from})")
+    print(f"     figures:   {len(figs)} .plate-img")
+    print()
+
+    # In scope: a weekly that is either a new-system (data-mx) artifact or carries
+    # ANY post-rebuild attribute. The second clause closes a real hole: the mx
+    # layer is OPT-IN (stitch_weekly.py:541 — `data-mx` is written only when
+    # mx=True), so a weekly stitched on the legacy path is not "new-system" while
+    # still being post-WP-3 output that emits the whole contract. Keying on the
+    # presence of any rebuild-era attribute is not circular — one attribute
+    # anywhere puts the issue in scope for ALL of them, so an issue cannot escape
+    # the cover-leads-on check by omitting data-cover-leads-on.
+    rebuild_era = bool(re.search(
+        r'\bdata-(?:nav-band|cover-leads-on|vintage|shows|capture-year|licence|'
+        r'allows-derivatives|lr-framing|table-kind|resolves-loop|sport)\s*=', body))
+    weekly_new = (fmt == "weekly" and (new_system or rebuild_era))
+
+    # ── GATE 1 · image checks ────────────────────────────────────────────────
+    check_caption_vintage(body, figs, issue_year, report)           # §3.9, crit #3
+    if weekly_new:
+        check_figure_provenance(figs, shows_enum, vocab_note, report)   # §3.4a n6
+        check_image_shape_budgets(figs, info_shapes, never_lead, manifest,
+                                  issue_no, report)                        # §3.8, crit #8
+
+    # ── GATE 2 · markup contracts ───────────────────────────────────────────
+    check_sport_tokens(body, report)                               # §3.11, crit #7
+    check_table_kind(body, report)                                 # §3.4
+    if weekly_new:
+        vintage = check_long_read_vintage(body, report)             # §3.4, crit #2
+        check_lr_framing(body, vintage, report)                     # §3.4
+        check_cover_leads_on(body, report)                          # §3.4a note 1
+        check_results_ledger_breadth(body, state, window_from, run_date, report)  # §3.11, crit #7
+        check_resolved_loops(body, state, run_date, report)          # §3.7, crit #6
+    elif fmt == "weekly":
+        report.warn("coverage-rebuild",
+                    "pre-rebuild weekly (no data-mx marker and no rebuild-era attribute anywhere) "
+                    "— the SPEC §3.4/§3.7/§3.8/§3.11 structure contracts are not asserted against "
+                    "it, the same exemption the Law-3/Law-9/F-16 checks give the old-system "
+                    "archive. Caption vintage and the sport-token vocabulary still ran. Anything "
+                    "the current stitcher produces is in scope.")
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Main
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1714,6 +3166,16 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--image-timeout", type=float, default=5.0)
     ap.add_argument("--workers", type=int, default=16)
     ap.add_argument("--strict", action="store_true")
+    # Coverage-rebuild inputs (SPEC 2026-07-26 §3.4a note 7, §3.7). Both are
+    # auto-resolved when omitted so the gate keeps working for callers that
+    # cannot be edited from here (stitch-issue.sh / publish-gate.sh are WP-9's).
+    ap.add_argument("--state", default=None,
+                    help="state/signal-state.json (read-only). Needed by the open-loop and "
+                         "results-ledger-breadth checks. Auto-discovered from the repo root.")
+    ap.add_argument("--run-date", default=None,
+                    help="YYYY-MM-DD run/publish date: decides which open loops have MATURED "
+                         "and which calendar events concluded in-window. Defaults to a date in "
+                         "the filename, else today (UTC).")
     args = ap.parse_args(argv)
 
     path = Path(args.html_path)
@@ -1811,6 +3273,16 @@ def main(argv: list[str]) -> int:
         check_mx_component_variety(html, fmt, report)
     elif fmt in SPECIAL_FORMATS and fmt not in HOLIDAY_FORMATS:
         check_special_component_variety(html, fmt, report)
+
+    # ── Coverage-rebuild checks (SPEC docs/editorial-coverage-rebuild-SPEC-2026-07-26.md) ──
+    # Folded INTO the existing two mechanical gates — gate 1 image checks, gate 2
+    # markup contracts — per SPEC §0 (no fourth ship gate). See
+    # run_coverage_checks() for the scope rules.
+    try:
+        run_coverage_checks(html, fmt, new_system, path, args.state, args.run_date, report)
+    except ValueError as e:                      # bad --run-date: an invocation error
+        print(f"ERROR: {e}")
+        return 2
 
     # Image URL static check — runs ALWAYS, even in restricted environments.
     # Catches page URLs used as image src regardless of egress policy.

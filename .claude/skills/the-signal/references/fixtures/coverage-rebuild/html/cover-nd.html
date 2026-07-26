@@ -1,0 +1,11 @@
+<!doctype html><html><body>
+<!-- CRITERION #9, FIRING CASE. A minimal issue whose cover source is af9fc905ced8.jpg, which
+     json/cover-licences.json records as CC-BY-NC-ND-2.0 (allows_derivatives: false).
+     extract-covers.py must REFUSE to crop/resize it and exit non-zero: a cover thumbnail is a
+     derivative work. Issue #18's real cover source is CC BY-ND and IS currently smart-cropped
+     into assets/covers/ — a live violation the SPEC (§3.10) deliberately does not repair
+     retroactively, so this fixture is how the refusal gets demonstrated. -->
+<header class="cover" id="top">
+  <img src="/assets/cached/af9fc905ced8.jpg" alt="fixture ND cover">
+</header>
+</body></html>

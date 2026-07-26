@@ -51,7 +51,15 @@ function jaccard(a, b) {
 // on a SHARED proper-noun entity at a lower title threshold — but still require
 // real title overlap, so two DIFFERENT Juventus stories (different player) stay
 // separate. (Distinct rumours are thinned later by keyword demotion + roll-ups.)
-const RELAXED_DOMAINS = new Set(["football"]);
+// `cricket` added (WP-11): the BBC files several variants of the SAME match report
+// ("Phoenix beat Rockets in high-scoring thriller" / "Birmingham Phoenix beat Trent
+// Rockets in record-breaking thriller") which land in the 0.35–0.5 Jaccard band the
+// strict rule misses. Verified against the live feed before adding; `cycling`,
+// `athletics` and `golf` were measured the same way and deliberately left OUT —
+// there the same relaxation merged genuinely different stories (two Commonwealths
+// team-news stories that contradicted each other; The Open's third- and final-round
+// round-ups). See docs/editorial-coverage-rebuild-EVIDENCE/WP-11.md.
+const RELAXED_DOMAINS = new Set(["football", "cricket"]);
 const ENTITY_JACCARD = 0.35;
 
 // Prominent proper nouns in a title (capitalised tokens in the ORIGINAL casing,

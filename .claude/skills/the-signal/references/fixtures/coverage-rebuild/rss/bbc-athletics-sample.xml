@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  CRITERION #11 fixture. Same shape as bbc-cricket-sample.xml. Both item titles are live
+  athletics headlines WP-7 recorded while tuning the keyword sets (EVIDENCE/WP-7.md § 3.3) —
+  quoted evidence of what the feed publishes, not invented results. They are the reason bare
+  event distances ("mile", "heptathlon") are in the athletics keyword set: before that tuning
+  these scored 0 and would have sat below the fold forever.
+-->
+<rss version="2.0">
+  <channel>
+    <title>BBC Sport - Athletics</title>
+    <link>https://www.bbc.co.uk/sport/athletics</link>
+    <description>Fixture copy of the BBC Sport athletics feed shape.</description>
+    <item>
+      <title>'Following in the footsteps of legends' - Kerr smashes mile world record</title>
+      <link>https://www.bbc.co.uk/sport/athletics/articles/fixture-0001</link>
+      <description>A new world record over the mile.</description>
+      <pubDate>Sat, 25 Jul 2026 20:40:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Ehammer breaks men's heptathlon world record</title>
+      <link>https://www.bbc.co.uk/sport/athletics/articles/fixture-0002</link>
+      <description>A world record in the indoor heptathlon.</description>
+      <pubDate>Fri, 24 Jul 2026 21:15:00 GMT</pubDate>
+    </item>
+  </channel>
+</rss>

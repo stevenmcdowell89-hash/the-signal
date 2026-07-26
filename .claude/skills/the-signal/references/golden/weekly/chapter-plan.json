@@ -8,6 +8,12 @@
     "issue_number": 16,
     "location": "Northern Ireland",
     "reading_time": "31 min · one sitting",
+    "research_cut_at": "2026-07-13T00:00:00Z",
+    "window": { "from": "2026-07-05T00:00:00Z", "to": "2026-07-13T00:00:00Z" },
+    "window_note": "SPEC §3.1. The window is (previous cut, this cut]. `to` is this issue's own date (issue_meta.date) at 00:00:00Z; `from` is issue 15's date, 2026-07-05, read from state.cover_lead_ledger. Both are BOUNDS derived from the fixture's own dates, not measured instants — nothing in this repo recorded a research cut for issue 16, and WP-1 recorded the same limitation for the seeded state value. Midnight is used precisely so no minute-level precision is claimed that was never measured.",
+    "cover_leads_on": "long_read",
+    "cover_lead_topic_family": "space_exploration",
+    "lead_rationale": "Led on the Long Read, not the news. Sinner's Wimbledon defence and a World Cup narrowed to a heavyweight last four were both live and both were rejected for the cover: they are results-of-record that belong in The Touchline, and the two semi-finals were still UPCOMING as this went out, so the cover could not report them without guessing. The Gulf, where a June ceasefire was declared over, was the week's hardest news and was rejected too — it is a stalled story, and putting a holding pattern on the cover is the rut this issue is meant to avoid. Telstar's sixty-fourth anniversary takes the cover because it is the thread every other band rhymes with: a signal sent, tuned in, kept.",
     "word_budget": {
       "target_total": 6900,
       "allocated_total": 6875,
@@ -25,10 +31,22 @@
       "images_needed": [
         { "role": "issue cover plate — establishing image for the OPEN movement (the Pleumeur-Bodou horn antenna that received Telstar's first live picture)", "source_constraint": "Wikimedia Commons, CC BY-SA", "alt_required": true }
       ] },
-    { "chapter_id": "week_in_numbers", "chapter_num": 2, "target_word_count": 160, "images_needed": [] },
+    { "chapter_id": "week_in_numbers", "chapter_num": 2, "target_word_count": 160, "images_needed": [],
+      "rows_note": "SPEC §3.1. One row per .fig-row in chapters/week_in_numbers.html, in rendered order. `source_band` is the band where the datum can be audited, or the literal \"state\" for the personal strip (WP-1 handoff 2).",
+      "rows": [
+        { "key": "Lifting Sessions", "source_band": "state" },
+        { "key": "Protein Target", "source_band": "state" },
+        { "key": "Finals Watched", "source_band": "touchline" },
+        { "key": "Yellow-Jersey Gap", "source_band": "touchline" },
+        { "key": "Days Since Efteling", "source_band": "state" }
+      ] },
     { "chapter_id": "caught_up", "chapter_num": 3, "target_word_count": 200, "images_needed": [] },
     { "chapter_id": "long_read", "chapter_num": 4, "target_word_count": 2000,
       "nav_coverline_html": "<b>The Long Read:</b> the night the world went live", "nav_freq": "88.9", "nav_on": true,
+      "vintage": "evergreen",
+      "material_span": "1945–1984",
+      "latest_development": "1963-07",
+      "vintage_note": "SPEC §3.1/§3.4, defect A. Telstar 1 flew in 1962; the standfirst says 'Sixty-four years ago this week', so this anchor is a standing story and must not carry the issue date. Every year here is grounded in chapters/long_read.html itself. material_span opens at the EARLIEST date the piece cites — 'In 1945 the engineer and writer Arthur C. Clarke published a short paper' — and closes at the LATEST — FIG. 02's 'A later Telstar deploys from Space Shuttle Discovery in 1984', which is also what this chapter's own second image brief asks for. latest_development is the most recent dated claim the piece makes AT THE MONTH PRECISION THE FIELD REQUIRES: 'Then, in July 1963, a small satellite called Syncom 2 reached the high, slow orbit Clarke had described'. The piece's three later dates (the 1964 Tokyo Olympics, 'By 1965 … Early Bird', and 1984) are stated to the year only, so no later YYYY-MM can be grounded from the fixture and none is invented; see EVIDENCE/WP-3c.md § The one judgement.",
       "images_needed": [
         { "role": "Telstar 1 satellite — the 1962 sphere itself, solar-cell studded", "source_constraint": "NASA / Wikimedia Commons, public domain", "alt_required": true },
         { "role": "a later Telstar deploying from Space Shuttle Discovery, 1984 — the programme outliving the original", "source_constraint": "NASA Johnson Space Center, public domain", "alt_required": true }

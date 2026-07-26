@@ -24,9 +24,27 @@ injected. Renders complete with JS off.
 
 Usage:
   python3 stitch_weekly.py --plan PLAN.json --out OUT.html \
-      [--build-dir /tmp/signal-build] [--issue-number N] [--skill-dir DIR]
+      [--build-dir /tmp/signal-build] [--issue-number N] [--skill-dir DIR] \
+      [--asset-manifest assets/cached/manifest.json] [--strict-figure-provenance]
 
 Exit codes: 0 success; 1 assembly/input error (missing content, sp-* leak, etc.)
+
+── Coverage rebuild, 2026-07-26 (docs/editorial-coverage-rebuild-SPEC-2026-07-26.md)
+The stitcher additionally owns three machine records in the rendered markup
+(SPEC §3.4), because they are PLAN decisions the writer must not be able to
+contradict:
+
+  * data-vintage on the long-read <section>, plus the .lr-vintage mono line and
+    the date-free .byline that an evergreen anchor requires (defect A). The
+    .lr-title block itself is writer-authored in this pipeline, so the stitcher
+    NORMALISES it rather than generating it — see apply_long_read_vintage().
+  * data-cover-leads-on on the cover, and a station list that leads with the
+    Long Read when issue_meta.cover_leads_on == "long_read" (defect C).
+  * data-shows / data-capture-year / data-licence / data-allows-derivatives on
+    every .plate-img, joined from assets/cached/manifest.json (SPEC §3.10) on
+    the cached asset's hash (defects B/E). The stitcher can only FILL what the
+    manifest knows and REPORT what neither the manifest nor the writer supplied;
+    validate-issue.py (WP-4) is the gate. See stamp_figure_provenance().
 """
 
 import argparse
@@ -69,6 +87,267 @@ def esc(s):
     return htmlmod.escape(s or "", quote=True)
 
 
+# ── SPEC §3.4 markup contracts (coverage rebuild) ─────────────────────────────
+
+MONTH_ABBR = ("JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+              "JUL", "AUG", "SEP", "OCT", "NOV", "DEC")
+
+VINTAGE_VALUES = ("news", "evergreen")
+COVER_LEADS_ON_VALUES = ("news", "long_read")
+
+# the issue-date stamp inside a .byline — "19 JUL 2026", "5 July 2026"
+BYLINE_DATE_RE = re.compile(r"\b(\d{1,2})\s+([A-Za-z]{3,9})\.?\s+(\d{4})\b")
+
+# the .lr-vintage line the stitcher owns (idempotent re-stamping)
+LR_VINTAGE_RE = re.compile(r'[ \t]*<div class="mono lr-vintage">.*?</div>\n?',
+                           re.DOTALL)
+
+BYLINE_RE = re.compile(r'<p class="mono byline">(.*?)</p>', re.DOTALL)
+
+# a .plate-img opening tag — attributes may precede OR follow class=
+PLATE_OPEN_RE = re.compile(r'<div\b[^>]*\bclass="[^"]*\bplate-img\b[^"]*"[^>]*>')
+
+# mirror-images.py names cached files sha256(url)[:12] + extension
+CACHED_HASH_RE = re.compile(r"^([0-9a-fA-F]{12})\.[A-Za-z0-9]+$")
+
+FIGURE_PROVENANCE_KEYS = ("data-shows", "data-capture-year",
+                          "data-licence", "data-allows-derivatives")
+
+# SPEC §3.3 — the closed `shows` enum. Canonical home is
+# references/image-source-types.json → "shows" (WP-6); load_shows_enum() reads it
+# and falls back to this literal so the stitcher never depends on that file.
+SHOWS_ENUM_FALLBACK = frozenset({
+    "event_photo", "gameplay", "in_engine", "key_art", "product_shot", "portrait",
+    "diagram", "map", "chart", "artefact", "document",
+})
+
+
+def load_shows_enum(skill_dir):
+    try:
+        d = json.loads((skill_dir / "references/image-source-types.json").read_text())
+        shows = d.get("shows")
+        vals = None
+        if isinstance(shows, dict):
+            vals = shows.get("values") or shows.get("enum") or [
+                k for k in shows if not k.startswith("_")]
+        elif isinstance(shows, list):
+            vals = shows
+        vals = {str(v) for v in (vals or []) if isinstance(v, str)}
+        if vals:
+            return frozenset(vals)
+    except (OSError, ValueError, AttributeError):
+        pass
+    return SHOWS_ENUM_FALLBACK
+
+
+def _clean_capture_year(v):
+    """The rendering of data-capture-year, or None when there is no record.
+
+    Legal: an integer year (1500-2100) → "YYYY"; explicit JSON null → "" (SPEC
+    §3.2 allows a null capture year ONLY for a synthetic diagram/chart, and ""
+    is how §3.9 sees "no year to compare"). Anything else — notably the literal
+    "UNKNOWN" that mirror-images.py back-fills for assets cached before the
+    manifest existed — is NOT a record and must render as an ABSENT attribute,
+    so validate-issue.py fails the figure instead of reading a placeholder as
+    provenance.
+    """
+    if v is None:
+        return ""
+    if isinstance(v, bool):
+        return None
+    if isinstance(v, int):
+        return str(v) if 1500 <= v <= 2100 else None
+    if isinstance(v, str) and re.fullmatch(r"\d{4}", v.strip()):
+        return str(v.strip()) if 1500 <= int(v.strip()) <= 2100 else None
+    return None
+
+
+def month_year(ym):
+    """'2021-03' → 'MAR 2021' (the .lr-vintage tail, SPEC §3.4)."""
+    m = re.fullmatch(r"(\d{4})-(\d{2})", (ym or "").strip())
+    if not m:
+        return None
+    mo = int(m.group(2))
+    if not 1 <= mo <= 12:
+        return None
+    return f"{MONTH_ABBR[mo - 1]} {m.group(1)}"
+
+
+def _same_date(token, filed):
+    """Is a byline date token the issue's own FILED stamp? Tolerant of
+    zero-padding and month-name length ('5 July 2026' == '05 JUL 2026')."""
+    a = BYLINE_DATE_RE.search(token or "")
+    b = BYLINE_DATE_RE.search(filed or "")
+    if not a or not b:
+        return False
+    return (int(a.group(1)) == int(b.group(1))
+            and a.group(2)[:3].upper() == b.group(2)[:3].upper()
+            and a.group(3) == b.group(3))
+
+
+def apply_long_read_vintage(content, vintage, chapter, filed):
+    """Stamp the Long Read's vintage chrome into the .lr-title block (SPEC §3.4).
+
+    Defect A: with no vintage field the pipeline stamped the issue date on every
+    anchor, so an evergreen feature read as "they've just discovered this".
+
+    In THIS pipeline the writer authors the .lr-title block itself (see
+    references/golden/*/chapters/long_read.html) — the stitcher owns the
+    <section> wrapper, the band-head and the movement divider around it. The
+    vintage line and the byline date are plan decisions, not writing decisions,
+    so the stitcher normalises them here:
+
+      evergreen → insert `<div class="mono lr-vintage">NOT THIS WEEK · A STANDING
+                  STORY · <material_span> · LATEST DEVELOPMENT <MON YYYY></div>`
+                  immediately before the <h2>, and strip the issue date out of
+                  the .byline (replacing it with "· A STANDING STORY").
+      news      → no .lr-vintage; the .byline carries today's date.
+
+    Idempotent: any pre-existing .lr-vintage is removed before re-stamping.
+    """
+    content = LR_VINTAGE_RE.sub("", content)
+
+    if vintage == "evergreen":
+        span = str(chapter.get("material_span") or "").strip()
+        latest = str(chapter.get("latest_development") or "").strip()
+        my = month_year(latest)
+        if not span or not my:
+            die("The long_read chapter declares vintage='evergreen' but the plan "
+                "is missing a usable material_span / latest_development "
+                f"(material_span={span!r}, latest_development={latest!r}). "
+                "SPEC §3.1 requires both when evergreen; latest_development is "
+                "YYYY-MM. The .lr-vintage line (SPEC §3.4) cannot be built "
+                "without them.")
+        anchor = re.search(r"([ \t]*)<h2\b", content)
+        if anchor is None:
+            die("The long_read content has no <h2> — the stitcher cannot place "
+                "the .lr-vintage line (SPEC §3.4 puts it between the mono kicker "
+                "and the headline inside .lr-title).")
+        indent = anchor.group(1)
+        line = (f'{indent}<div class="mono lr-vintage">NOT THIS WEEK · '
+                f'A STANDING STORY · {esc(span)} · LATEST DEVELOPMENT {my}</div>\n')
+        content = content[:anchor.start()] + line + content[anchor.start():]
+
+    def _byline(m):
+        inner = m.group(1)
+        if vintage == "evergreen":
+            # SPEC §3.4: the byline MUST NOT contain the issue date.
+            inner = BYLINE_DATE_RE.sub("", inner)
+            inner = re.sub(r"(\s*·\s*)+", " · ", inner).strip().strip("·").strip()
+            if "A STANDING STORY" not in inner.upper():
+                inner = f"{inner} · A STANDING STORY"
+        else:
+            # SPEC §3.4: a news anchor keeps `· DD MON YYYY` as today. Strip any
+            # standing-story frame first, so data-vintage="news" can never render
+            # an evergreen byline (the normalisation is total in both directions).
+            inner = re.sub(r"\s*·\s*A STANDING STORY\b", "", inner, flags=re.IGNORECASE)
+            tok = BYLINE_DATE_RE.search(inner)
+            if tok is None:
+                inner = f"{inner.strip().strip('·').strip()} · {filed}"
+            elif not _same_date(tok.group(0), filed):
+                inner = BYLINE_DATE_RE.sub(filed, inner, count=1)
+        return f'<p class="mono byline">{inner}</p>'
+
+    content, n = BYLINE_RE.subn(_byline, content)
+    if n == 0:
+        print("  ! long_read has no <p class=\"mono byline\"> — the vintage "
+              "byline contract (SPEC §3.4) could not be applied.")
+    return content
+
+
+def load_asset_manifest(path):
+    """assets/cached/manifest.json (SPEC §3.10, written by WP-8's
+    mirror-images.py): {"<sha256[:12]>": {shows, capture_year, licence{…}, …}}.
+    Absent or unreadable → {} (the stitcher warns; it never invents provenance).
+    """
+    if not path or not Path(path).exists():
+        return {}, f"absent ({path})"
+    try:
+        data = json.loads(Path(path).read_text())
+    except (ValueError, OSError) as e:
+        return {}, f"unreadable ({e})"
+    if not isinstance(data, dict):
+        return {}, "not an object"
+    return data, f"{len(data)} asset[s]"
+
+
+def stamp_figure_provenance(body, manifest, shows_enum=SHOWS_ENUM_FALLBACK):
+    """Fill the §3.4 figure-provenance record on every .plate-img.
+
+    Defects B/E. The four attributes are a machine record of the *asset*, not of
+    the prose, so their home is assets/cached/manifest.json (SPEC §3.10) keyed by
+    the sha256(url)[:12] that mirror-images.py already uses as the cached
+    filename. The writer's <img src="/assets/cached/<hash>.jpg"> therefore joins
+    straight onto it, and the stitcher stamps the attributes rather than asking
+    the writer to hand-copy licence codes into markup.
+
+    Precedence: a writer-authored attribute ALWAYS wins (it is an explicit
+    authorial claim). The stitcher only fills what is absent, only from the
+    manifest, and never invents a value.
+
+    Returns (body, stamped_count, plate_count, gaps) where gaps is a list of
+    (src, [missing keys]) for every figure still short of the full record —
+    validate-issue.py (WP-4) is the gate that fails on those.
+    """
+    out, pos = [], 0
+    stamped = plates = 0
+    gaps = []
+    for m in PLATE_OPEN_RE.finditer(body):
+        plates += 1
+        tag = m.group(0)
+        im = re.search(r'<img\b[^>]*\bsrc="([^"]+)"', body[m.end():m.end() + 4000])
+        src = im.group(1) if im else ""
+        entry = {}
+        if src:
+            hm = CACHED_HASH_RE.match(src.split("/")[-1].split("?")[0])
+            if hm:
+                entry = manifest.get(hm.group(1).lower(), {}) or {}
+        if not isinstance(entry, dict):
+            entry = {}
+
+        # A PLACEHOLDER IS NOT A RECORD. mirror-images.py honestly back-fills
+        # "UNKNOWN" / null for the ~438 assets cached before the manifest existed
+        # (their source URLs are unrecoverable — sha256 is one-way). Stamping
+        # those would turn "we do not know" into a rendered provenance claim, and
+        # would hand WP-4 a data-capture-year it cannot compare and a
+        # data-allows-derivatives="false" nobody established. So each field is
+        # stamped ONLY when the manifest holds a real value; otherwise the
+        # attribute stays absent and the figure is reported as a gap, which is
+        # what makes validate-issue.py fail it.
+        fill = {}
+        shows = entry.get("shows")
+        if isinstance(shows, str) and shows in shows_enum:
+            fill["data-shows"] = shows
+        if "capture_year" in entry:
+            cy = _clean_capture_year(entry["capture_year"])
+            if cy is not None:
+                fill["data-capture-year"] = cy
+        lic = entry.get("licence") if isinstance(entry.get("licence"), dict) else {}
+        code = lic.get("code")
+        if isinstance(code, str) and code.strip() and code.strip().upper() != "UNKNOWN":
+            fill["data-licence"] = code.strip()
+        if isinstance(lic.get("allows_derivatives"), bool):
+            fill["data-allows-derivatives"] = "true" if lic["allows_derivatives"] else "false"
+
+        add = [f'{k}="{esc(v)}"' for k, v in
+               ((k, fill[k]) for k in FIGURE_PROVENANCE_KEYS if k in fill)
+               if not re.search(r"\s" + re.escape(k) + r"\s*=", tag)]
+        if add:
+            tag = tag[:-1].rstrip() + " " + " ".join(add) + ">"
+            stamped += 1
+
+        missing = [k for k in FIGURE_PROVENANCE_KEYS
+                   if not re.search(r"\s" + re.escape(k) + r"\s*=", tag)]
+        if missing:
+            gaps.append((src or "(no <img> found)", missing))
+
+        out.append(body[pos:m.start()])
+        out.append(tag)
+        pos = m.end()
+    out.append(body[pos:])
+    return "".join(out), stamped, plates, gaps
+
+
 def compute_dates(date_str):
     try:
         d = datetime.strptime(date_str, "%Y-%m-%d")
@@ -102,9 +381,15 @@ def render_head(title, body_attrs=""):
 """
 
 
-def render_cover(cover, meta, issue_no, stations, dates):
+def render_cover(cover, meta, issue_no, stations, dates, leads_on="news"):
     rng, pretty, _ = dates
-    eyebrow = cover.get("eyebrow", "BAND 01 — THE LEAD TRANSMISSION")
+    # SPEC §3.4/§3.1 (defect C): the cover declares what it leads on. The copy
+    # stays the planner's — the stitcher only supplies the eyebrow DEFAULT and
+    # the declaration, never editorial wording.
+    default_eyebrow = ("BAND 01 — THE LEAD TRANSMISSION · THE LONG READ"
+                       if leads_on == "long_read" else
+                       "BAND 01 — THE LEAD TRANSMISSION")
+    eyebrow = cover.get("eyebrow", default_eyebrow)
     lead_head = cover.get("lead_head_html") or esc(cover.get("lead_head", ""))
     standfirst = esc(cover.get("standfirst", ""))
     tagline = esc(cover.get("tagline", "tuning in to the week you lived"))
@@ -118,8 +403,14 @@ def render_cover(cover, meta, issue_no, stations, dates):
         oncls = " on" if s.get("on") else ""
         freq = esc(s.get("freq", ""))
         name = s.get("name_html") or esc(s.get("name", ""))
+        # NOTE: the attribute is data-NAV-band, not data-station-band. Any
+        # data-station* name would be double-counted by validate-issue.py's
+        # navigator tally (re.findall(r"\bdata-station\b") — "-" is a word
+        # boundary, so data-station-band matches it too and every station
+        # counted twice, tripping the <=13 ceiling on a 7-station issue).
+        band_attr = f' data-nav-band="{esc(s.get("band", ""))}"' if s.get("band") else ""
         st_rows.append(
-            f'        <div class="station{oncls}" data-station>\n'
+            f'        <div class="station{oncls}" data-station{band_attr}>\n'
             f'          <span class="freq">{freq}</span>\n'
             f'          <span class="name">{name}</span>\n'
             f'        </div>'
@@ -128,7 +419,7 @@ def render_cover(cover, meta, issue_no, stations, dates):
 
     return f"""
   <!-- ================= COVER ================= -->
-  <header class="cover">
+  <header class="cover" data-cover-leads-on="{esc(leads_on)}">
     <div class="cover__top">
       <span class="mono">A Personal Weekly · Received &amp; Tuned</span>
       <span class="mono price">Sunday Edition</span>
@@ -210,6 +501,14 @@ def main():
     ap.add_argument("--build-dir", default="/tmp/signal-build")
     ap.add_argument("--issue-number", default="")
     ap.add_argument("--skill-dir", default=str(Path(__file__).resolve().parent.parent))
+    ap.add_argument("--asset-manifest", default="",
+                    help="assets/cached/manifest.json (SPEC §3.10) — the source of "
+                         "the §3.4 figure-provenance attributes. Defaults to "
+                         "<repo>/assets/cached/manifest.json when it exists.")
+    ap.add_argument("--strict-figure-provenance", action="store_true",
+                    help="fail the stitch when any .plate-img is short of the full "
+                         "§3.4 provenance record (default: report and continue — "
+                         "validate-issue.py is the ship gate).")
     args = ap.parse_args()
 
     skill_dir = Path(args.skill_dir)
@@ -246,6 +545,33 @@ def main():
     present = {c["chapter_id"]: c for c in plan.get("chapters", [])}
     bands_def = skeleton["bands"]
 
+    # ── SPEC §3.1/§3.4 · cover lead (defect C) ───────────────────────────────
+    # issue_meta.cover_leads_on ∈ {news, long_read}. When long_read, the cover's
+    # station list LEADS with the Long Read (hoisted to the top of the tuner and
+    # tuned ON) and the eyebrow default names it. Absent → "news", which is the
+    # historical behaviour; validate-chapter-plan.py (WP-5) is the gate that
+    # requires the field on a real weekly plan.
+    leads_on = str(meta.get("cover_leads_on") or "news").strip().lower()
+    if leads_on not in COVER_LEADS_ON_VALUES:
+        die(f"issue_meta.cover_leads_on={meta.get('cover_leads_on')!r} is not one of "
+            f"{list(COVER_LEADS_ON_VALUES)} (SPEC §3.1).")
+    if "cover_leads_on" not in meta:
+        print("  ! issue_meta.cover_leads_on absent — defaulting to \"news\" "
+              "(SPEC §3.1 requires it on a weekly plan; WP-5's plan validator "
+              "is the gate).")
+
+    # ── SPEC §3.1/§3.4 · Long Read vintage (defect A) ────────────────────────
+    lr_chapter = present.get("long_read", {})
+    vintage = str(lr_chapter.get("vintage") or "").strip().lower()
+    if not vintage:
+        vintage = "news"
+        print("  ! long_read.vintage absent — defaulting to \"news\" (the "
+              "status-quo rendering: dated byline, no .lr-vintage). SPEC §3.1 "
+              "requires it; validate-chapter-plan.py (WP-5) is the gate.")
+    elif vintage not in VINTAGE_VALUES:
+        die(f"long_read.vintage={lr_chapter.get('vintage')!r} is not one of "
+            f"{list(VINTAGE_VALUES)} (SPEC §3.1).")
+
     # --- assemble body ---
     parts = [render_head(title, body_attrs)]
 
@@ -265,12 +591,28 @@ def main():
                 pc = present[band_id]
                 if pc.get("nav_coverline") or pc.get("nav_coverline_html"):
                     stations.append({
+                        "band": band_id,
                         "freq": pc.get("nav_freq", ""),
                         "name_html": pc.get("nav_coverline_html") or esc(pc.get("nav_coverline", "")),
                         "on": bool(pc.get("nav_on")),
                     })
 
-    parts.append(render_cover(plan.get("cover", {}), meta, issue_no, stations, dates))
+    # SPEC §3.1 · cover_leads_on="long_read": the station list leads with the
+    # Long Read rather than following skeleton order (defect C — a demoted news
+    # lead must not still occupy the top of the tuner).
+    if leads_on == "long_read":
+        lr_idx = next((i for i, s in enumerate(stations) if s.get("band") == "long_read"), None)
+        if lr_idx is None:
+            die("issue_meta.cover_leads_on=\"long_read\" but the plan gives the "
+                "long_read chapter no nav_coverline — the cover cannot lead on a "
+                "station that does not exist. Add nav_coverline/nav_freq to the "
+                "long_read chapter.")
+        lr_station = stations.pop(lr_idx)
+        lr_station["on"] = True
+        stations.insert(0, lr_station)
+
+    parts.append(render_cover(plan.get("cover", {}), meta, issue_no, stations, dates,
+                              leads_on=leads_on))
 
     # movements + bands, numbered sequentially (cover is BAND 01 conceptually)
     band_no = 1  # BAND 01 = the lead transmission on the cover
@@ -303,6 +645,19 @@ def main():
         # structural hooks: wrap content so the gate finds stable data-role anchors
         role = {"long_read": "long-read", "the_desk": "desk"}.get(band_id)
         section_attrs = f' data-role="{role}"' if role else ""
+        if band_id == "long_read":
+            # SPEC §3.4: data-vintage is ALWAYS present on the long-read section.
+            section_attrs += f' data-vintage="{esc(vintage)}"'
+            content = apply_long_read_vintage(content, vintage, lr_chapter, dates[2])
+        if band_id == "the_letter" and vintage == "evergreen" \
+                and 'data-lr-framing="feature"' not in content:
+            # SPEC §3.4: the Letter paragraph that introduces an evergreen anchor
+            # carries data-lr-framing="feature". It is a PROSE paragraph the
+            # writer authors — the stitcher cannot know which one, so it reports
+            # and validate-issue.py (WP-4) is the gate.
+            print("  ! the_letter carries no data-lr-framing=\"feature\" while the "
+                  "Long Read is evergreen (SPEC §3.4). The framing paragraph is "
+                  "writer-authored; validate-issue.py is the gate.")
         # section class from the band's content kind (mirrors the reference)
         sec_cls = {
             "letter": "letter", "figures": "", "digest": "caughtup",
@@ -318,6 +673,17 @@ def main():
     parts.append("\n</div>\n<!-- INJECT:JS -->\n</body>\n</html>\n")
 
     body = "".join(parts)
+
+    # --- SPEC §3.4/§3.10 · figure provenance on every .plate-img ---
+    manifest_path = args.asset_manifest
+    if not manifest_path:
+        # <repo>/assets/cached/manifest.json — skill_dir is <repo>/.claude/skills/the-signal
+        guess = skill_dir.parents[2] / "assets/cached/manifest.json" \
+            if len(skill_dir.resolve().parents) >= 3 else None
+        manifest_path = str(guess) if guess else ""
+    manifest, manifest_note = load_asset_manifest(manifest_path)
+    body, fig_stamped, fig_plates, fig_gaps = stamp_figure_provenance(
+        body, manifest, load_shows_enum(skill_dir))
 
     # --- inject the "Return to The Signal" back-link pill (self-styled) ---
     back_path = skill_dir / "assets/template-parts/back-link.html"
@@ -370,11 +736,30 @@ def main():
     if "<style>" not in body or "<div class=\"issue\">" not in body:
         die("Missing <style> or .issue wrapper in output.")
 
+    # --- SPEC §3.4 figure-provenance report (WP-4's gate is the ship gate) ---
+    if fig_gaps:
+        msg = (f"{len(fig_gaps)} of {fig_plates} .plate-img figure[s] are short of the "
+               f"SPEC §3.4 provenance record (data-shows / data-capture-year / "
+               f"data-licence / data-allows-derivatives). The stitcher fills these "
+               f"from the asset manifest ({manifest_note}); a figure whose src is "
+               f"not a mirrored /assets/cached/<hash> asset, or whose hash has no "
+               f"manifest entry, must carry them in the writer's own markup:\n"
+               + "\n".join(f"  • {src} — missing {', '.join(ks)}" for src, ks in fig_gaps))
+        if args.strict_figure_provenance:
+            die(msg)
+        print("  ! " + msg)
+
     kb = len(body.encode("utf-8")) / 1024
     print(f"=== weekly stitch OK ===")
     print(f"  Bands rendered: {len(band_order)} (+cover)")
     print(f"  Movements:      {', '.join(mv['id'] for mv in skeleton['movements'])}")
     print(f"  Furniture:      {'mx (design_system=mx)' if mx else 'legacy (none)'}")
+    print(f"  Cover leads on: {leads_on}")
+    print(f"  Long Read:      vintage={vintage}"
+          + (f" · {lr_chapter.get('material_span')} · latest {lr_chapter.get('latest_development')}"
+             if vintage == "evergreen" else ""))
+    print(f"  Fig provenance: {fig_plates - len(fig_gaps)}/{fig_plates} complete "
+          f"({fig_stamped} stamped from the manifest: {manifest_note})")
     print(f"  CSS:            {len(css_content.encode('utf-8'))/1024:.1f} KB ({len(css_files)} file[s])")
     print(f"  JS:             {len(js_content.encode('utf-8'))/1024:.1f} KB")
     print(f"  Output:         {out} ({kb:.1f} KB)")

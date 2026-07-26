@@ -18,6 +18,39 @@ GOLD="$SKILL_DIR/references/golden/weekly"
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
 
+PLAN_RC=0
+
+# ── plan validation, surfaced rather than swallowed (WP-3c, 2026-07-26) ───────
+# Both goldens' chapter-plan.json files are validated by the upstream production
+# aid (scripts/validate-chapter-plan.py, SPEC §3.1/§3.6), and a failure reaches
+# this script's exit code.
+#
+# It did not, until now. The legacy call sent the validator's report to
+# /dev/null, then neutralised its status with an `|| echo` whose message told the
+# reader the check had been passed over for a benign reason — so the script
+# printed PASS over a plan that was failing with 7 errors, and `set -e` never saw
+# it. The mx golden's plan was not checked at all: 21 errors that nobody had ever
+# looked for. See EVIDENCE/WP-10.md § 6 for the measurements and WP-3c.md for the
+# repair. A harness that hides a failure is worse than no harness, because it
+# converts red into green.
+#
+# Both plans are validated even when the first one fails (status accumulated in
+# PLAN_RC, checked at the end) rather than aborting on the first non-zero: the
+# whole point of the second call is that its errors were never seen, so stopping
+# short of it would reintroduce the same blind spot in a new shape.
+validate_plan() {
+  local label="$1" plan="$2" rc=0
+  echo "--- validate the $label golden plan against the skeleton ---"
+  python3 "$SKILL_DIR/scripts/validate-chapter-plan.py" "$plan" || rc=$?
+  if [ "$rc" -eq 0 ]; then
+    echo "  plan OK — validate-chapter-plan.py exit 0"
+  else
+    echo "  PLAN VALIDATION FAILED (exit $rc): $plan"
+    echo "  Not skipped, not swallowed — this fails the golden regression."
+    PLAN_RC=1
+  fi
+}
+
 echo "=== weekly golden regression ==="
 echo "  fixture: $GOLD"
 
@@ -39,9 +72,7 @@ echo "--- validate (all gates; golden carries real <img> markup — --skip-image
 python3 "$SKILL_DIR/scripts/validate-issue.py" "$OUT" --format weekly --skip-image-urls
 
 echo ""
-echo "--- validate the golden plan against the skeleton ---"
-python3 "$SKILL_DIR/scripts/validate-chapter-plan.py" "$GOLD/chapter-plan.json" 2>/dev/null \
-  || echo "  (validate-chapter-plan weekly branch not present or plan-arg differs — skipping plan check)"
+validate_plan "legacy" "$GOLD/chapter-plan.json"
 
 echo ""
 # ── mx-weekly golden (WP-8 densification) ────────────────────────────────────
@@ -74,6 +105,14 @@ if [ -d "$MXGOLD" ]; then
   echo "--- validate (weekly + mx gates: Law-3 6,000 / Law-9 ≥4 / mx-variety) ---"
   python3 "$SKILL_DIR/scripts/validate-issue.py" "$MXOUT" --format weekly --skip-image-urls
   echo ""
+  validate_plan "mx" "$MXGOLD/chapter-plan.json"
+  echo ""
+fi
+
+if [ "$PLAN_RC" -ne 0 ]; then
+  echo "=== GOLDEN REGRESSION FAIL — a golden chapter plan does not satisfy the plan"
+  echo "    contract (SPEC §3.1/§3.6). The report above says which fields and why. ==="
+  exit 1
 fi
 
 echo "=== GOLDEN REGRESSION PASS — the weekly generator produces a valid Transmission issue ==="

@@ -39,7 +39,13 @@ export const PROFILE = {
   //     so "confirmed/official" leads and "rumour/linked" sinks.
   // v7: per-topic `today_tonight` flag (which domains feed the dated-events strip)
   //     — replaces the hardcoded football/film/gaming gate in render.js.
-  profile_version: 7,
+  // v8: sport beyond football/golf — added `sport` (general catch-all), `cricket`,
+  //     `cycling`, `athletics`, `motorsport`. The daily had exactly two sport
+  //     domains, so every other sport was invisible to the whole system (cricket
+  //     appeared 0 times across 16 weekly issues). MUST bump: the new feeds in
+  //     feeds.js are union-merged into a saved config, but their domains would
+  //     score 0 without these topic_weights, so the feeds would be inert.
+  profile_version: 8,
 
   // ---- Signal tiers (content-led ranking) ----
   // Title words that mark an item as high- or low-signal, regardless of source.
@@ -185,6 +191,105 @@ export const PROFILE = {
         "leaderboard", "tee time", "major",
       ],
     },
+    // Sport beyond football/golf. Keyword sets are deliberately DISJOINT from each
+    // other and from football/golf, because re-homing in score.js only lets a
+    // foreign domain claim an item on ≥2 keyword hits AND a >1.25× score margin:
+    // shared generic words ("final", "champion", "medal", "world championships")
+    // would let the general `sport` catch-all steal cricket/cycling/athletics
+    // items, so they are left out and each domain carries its own vocabulary.
+    // The general catch-all: every sport with no domain of its own — rugby,
+    // tennis, boxing, snooker, darts, GAA, swimming, horse racing, and the
+    // multi-sport meets (Olympics, Commonwealth Games — the latter appeared once
+    // in 16 issues). Same tier as golf/cricket: enough to clear the fold, far
+    // enough below football (0.85) that it cannot crowd the brief.
+    sport: {
+      weight: 0.45,
+      keywords: [
+        "rugby", "six nations", "united rugby championship", "lions tour",
+        "tennis", "wimbledon", "atp", "wta", "davis cup",
+        "boxing", "heavyweight", "title fight", "undisputed", "ufc", "mma",
+        "knockout", "welterweight", "middleweight", "featherweight", "wbc", "wbo",
+        "olympics", "olympic", "paralympics", "paralympian",
+        "commonwealth games", "commonwealth", "commonwealths",
+        "snooker", "crucible", "darts", "pdc",
+        "gaa", "all-ireland", "hurling", "camogie",
+        "swimming", "swimmer", "diving", "gymnastics", "netball", "hockey",
+        "ice hockey", "horse racing", "cheltenham", "grand national", "nfl", "nba",
+        // Multi-word only: a bare "medal"/"gold" is cross-sport and would let the
+        // catch-all steal cricket/cycling/athletics items off a single word.
+        "gold medal", "silver medal", "bronze medal", "medal table",
+      ],
+    },
+    // Cricket — the flagship absence: ZERO mentions across all 16 published
+    // issues. Parity with golf (0.45): a summer results-and-majors sport, so an
+    // Ashes/Test/T20 result competes with a golf major on equal terms.
+    cricket: {
+      weight: 0.45,
+      keywords: [
+        "cricket", "test match", "test series", "the ashes", "t20", "odi",
+        "one-day international", "wicket", "wickets", "innings", "batter",
+        "batsman", "bowler", "bowling", "all-rounder", "spinner", "seamer",
+        "county championship", "the hundred", "ipl", "big bash",
+        "lord's", "edgbaston", "headingley", "trent bridge", "stumps",
+        "run chase", "century", "half-century", "double century", "fifty",
+        "duckworth", "follow-on", "test captain", "world test championship",
+        "knock", "knocks", "not out", "lbw", "powerplay", "super over",
+        "sixes", "boundary", "toss", "run-out", "declared", "maiden ton",
+      ],
+    },
+    // Cycling — the grand tours are the interest (the Tour de France appeared
+    // once in 16 issues); the daily peloton churn is not. 0.4 is the world/
+    // fitness tier: a stage win or GC swing surfaces, a team press release does
+    // not. Named riders follow the golf precedent (mcilroy/scheffler are keywords).
+    cycling: {
+      weight: 0.4,
+      keywords: [
+        "cycling", "tour de france", "giro d'italia", "vuelta a espana",
+        "peloton", "yellow jersey", "maillot jaune", "general classification",
+        "time trial", "sprint stage", "mountain stage", "summit finish",
+        "paris-roubaix", "tour of flanders", "milan-san remo", "uci",
+        "cyclocross", "track cycling", "velodrome", "road race world",
+        "pogacar", "vingegaard", "evenepoel",
+      ],
+    },
+    // Athletics — championship-shaped, same as cycling: the Worlds, the Olympic
+    // and Commonwealth track programme, Diamond League finals. Bare "running"/
+    // "marathon" are deliberately absent — they belong to `fitness` (training
+    // content) and would drag coaching articles into a results domain.
+    athletics: {
+      weight: 0.4,
+      keywords: [
+        "athletics", "track and field", "diamond league", "world athletics",
+        "sprinter", "sprint", "sprint final", "middle-distance",
+        // Bare event distances are how results headlines are actually written
+        // ("Lyles wins 100m in 9.79"). They collide with money shorthand ("£100m
+        // bid"), but a foreign domain needs ≥2 keyword hits AND a >1.25× margin to
+        // claim an item, and football (0.85) outweighs athletics anyway.
+        "100m", "200m", "400m", "800m", "1500m", "5000m", "10,000m", "mile",
+        "steeplechase", "hurdles", "high jump", "long jump", "triple jump",
+        "pole vault", "shot put", "javelin", "discus", "heptathlon", "decathlon",
+        "relay", "relay final", "world record", "world records",
+        "world record holder", "personal best", "race walk",
+      ],
+    },
+    // Motorsport — the LOWEST weight of any sport, on the owner's stated
+    // position: "F1 is at best a passing interest, nice to know big results, I
+    // don't need a minute by minute" (interest_depth: results_only). 0.3 is the
+    // file's floor tier: a race win, a title decider or a corroborated
+    // confirmed/official story clears the bar; a Friday-practice item does not.
+    // No `today_tonight` either (see DOMAIN_META) — the dated-events strip would
+    // fill with session times, which is precisely the minute-by-minute he
+    // doesn't want. Big results reach him via Headlines and the Sport edition.
+    motorsport: {
+      weight: 0.3,
+      keywords: [
+        "formula 1", "f1", "grand prix", "pole position", "qualifying",
+        "constructors' championship", "drivers' championship", "chequered flag",
+        "safety car", "pit stop", "verstappen", "norris", "red bull racing",
+        "mclaren", "wrc", "world rally", "motogp", "indycar", "le mans",
+        "world endurance", "formula e", "british grand prix",
+      ],
+    },
     lego: {
       weight: 0.45,
       keywords: [
@@ -304,6 +409,19 @@ const DOMAIN_META = {
     signal_low: ["eyeing", "eye", "considering", "consider", "monitoring", "target", "interested", "interest", "talks", "weighing", "tracking", "keen", "race for", "battle for", "swoop", "move for"],
   },
   golf: { label: "Golf", edition: "sport" },
+  // Sport beyond football/golf. `today_tonight` is the dated-events strip
+  // (render.js todayAndTonight): an item only reaches it with a real time signal
+  // in the title ("tonight", "kick-off", "3pm"), fresh inside ~18h, and features/
+  // previews rejected. Cricket (a day's play starting), cycling (today's stage),
+  // athletics (tonight's final) and the multi-sport meets are genuinely
+  // dated-event sports, so they opt in. MOTORSPORT DOES NOT: a race weekend's
+  // dated items are mostly practice and qualifying session times, and
+  // results_only means those must never take a strip slot.
+  sport: { label: "More Sport", edition: "sport", today_tonight: true },
+  cricket: { label: "Cricket", edition: "sport", today_tonight: true },
+  cycling: { label: "Cycling", edition: "sport", today_tonight: true },
+  athletics: { label: "Athletics", edition: "sport", today_tonight: true },
+  motorsport: { label: "Motorsport", edition: "sport" },
   gaming: { label: "Gaming", edition: "gaming_tech", today_tonight: true },
   tech_devices: { label: "Tech & Devices", edition: "gaming_tech" },
   ai_engineering: { label: "Tech / AI", edition: "gaming_tech" },

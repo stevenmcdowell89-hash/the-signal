@@ -1,0 +1,11 @@
+<!doctype html><html><body>
+<!-- CRITERION #12, FIRING CASE (enum validity). Three DISTINCT shapes, so the floor is met,
+     but one is the plausible typo `screenshot`, which is outside the canonical `shows` enum.
+     A typo'd shape is invisible to every §3.8/§3.9 budget, so it must hard-fail. -->
+<div class="plate-img lead" data-shows="gameplay" data-licence="PRESS-KIT-EDITORIAL" data-allows-derivatives="true">
+  <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1/ss_1.jpg" alt="a"></div>
+<div class="plate-img" data-shows="screenshot" data-licence="CC-BY-4.0" data-allows-derivatives="true">
+  <img src="https://images.nasa.gov/x.jpg" alt="b"></div>
+<div class="plate-img" data-shows="event_photo" data-licence="CC-BY-4.0" data-allows-derivatives="true">
+  <img src="https://gallica.bnf.fr/iiif/ark:/12148/x/f1/full/full/0/native.jpg" alt="c"></div>
+</body></html>

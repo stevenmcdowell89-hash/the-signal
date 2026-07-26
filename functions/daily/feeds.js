@@ -88,6 +88,39 @@ export const STARTER_FEEDS = [
   { id: "bunkered", type: "rss", domain: "golf", weight: 0.45, url: "https://www.bunkered.co.uk/feed", name: "bunkered" },
   { id: "golf-digest", type: "rss", domain: "golf", weight: 0.45, url: "https://www.golfdigest.com/feed/rss", name: "Golf Digest" },
 
+  // ---- Sport — general (0.45) ----
+  // The catch-all for every sport with no domain of its own (rugby, tennis,
+  // boxing, snooker, darts, GAA, swimming, the Olympics / Commonwealth Games).
+  // Without it those sports are invisible to the whole system — the weekly can
+  // only cover what the daily surfaces. Its keywords in profile.js are
+  // deliberately DISJOINT from the per-sport domains below, so a cricket or
+  // cycling item carried by this feed re-homes to its own domain at scoring
+  // (score.js: a foreign domain claims an item on ≥2 keyword hits).
+  { id: "bbc-sport", type: "rss", domain: "sport", weight: 0.45, url: "https://feeds.bbci.co.uk/sport/rss.xml", stable: true, name: "BBC Sport" },
+
+  // ---- Cricket (0.45) ----
+  { id: "bbc-cricket", type: "rss", domain: "cricket", weight: 0.45, url: "https://feeds.bbci.co.uk/sport/cricket/rss.xml", stable: true, name: "BBC Sport Cricket" },
+  { id: "espn-cricinfo", type: "rss", domain: "cricket", weight: 0.45, url: "https://www.espncricinfo.com/rss/content/story/feeds/0.xml", stable: true, name: "ESPNcricinfo" },
+
+  // ---- Cycling (0.4) ----
+  { id: "bbc-cycling", type: "rss", domain: "cycling", weight: 0.4, url: "https://feeds.bbci.co.uk/sport/cycling/rss.xml", stable: true, name: "BBC Sport Cycling" },
+  { id: "cyclingnews", type: "rss", domain: "cycling", weight: 0.4, url: "https://www.cyclingnews.com/feeds.xml", stable: true, name: "Cyclingnews" },
+
+  // ---- Athletics (0.4) ----
+  { id: "bbc-athletics", type: "rss", domain: "athletics", weight: 0.4, url: "https://feeds.bbci.co.uk/sport/athletics/rss.xml", stable: true, name: "BBC Sport Athletics" },
+  { id: "athletics-weekly", type: "rss", domain: "athletics", weight: 0.4, url: "https://athleticsweekly.com/feed/", stable: true, name: "Athletics Weekly" },
+
+  // ---- Motorsport (0.3) ----
+  // Deliberately the lowest sport weight: "F1 is at best a passing interest, nice
+  // to know big results, I don't need a minute by minute" (interest_depth:
+  // results_only). Materially below football (0.85) and below golf (0.45), so a
+  // race win or title decider still clears the bar while practice/qualifying
+  // chatter does not. NO specialist feed on purpose — Autosport's all-news RSS
+  // verifies fine (HTTP 200, ~50 items) but a session-by-session firehose is
+  // exactly what made F1 saturate the weekly's Touchline.
+  { id: "bbc-motorsport", type: "rss", domain: "motorsport", weight: 0.3, url: "https://feeds.bbci.co.uk/sport/motorsport/rss.xml", stable: true, name: "BBC Sport Motorsport" },
+  { id: "bbc-formula1", type: "rss", domain: "motorsport", weight: 0.3, url: "https://feeds.bbci.co.uk/sport/formula1/rss.xml", stable: true, name: "BBC Sport Formula 1" },
+
   // ---- LEGO (0.45) ----
   { id: "brickset", type: "rss", domain: "lego", weight: 0.45, url: "https://brickset.com/feed", name: "Brickset" },
   { id: "brothers-brick", type: "rss", domain: "lego", weight: 0.45, url: "https://www.brothers-brick.com/feed/", name: "Brothers Brick" },
@@ -204,4 +237,9 @@ export const STARTER_REDDIT = [
   RS("trailrunning", "fitness", 0.45, "small"), RS("kettlebell", "fitness", 0.45, "small"),
   RS("kobo", "tech_devices", 0.7, "small"), RS("UKInvesting", "finance", 0.5, "small"),
   RS("Efteling", "travel", 0.4, "small"),
+  // SMALL — the new sport domains. Sparingly and tier:small per the note above:
+  // one community per sport, and NONE for motorsport (r/formula1 is a
+  // session-by-session firehose and would undo the low motorsport weight).
+  RS("Cricket", "cricket", 0.45, "small"), RS("peloton", "cycling", 0.4, "small"),
+  RS("trackandfield", "athletics", 0.4, "small"),
 ];

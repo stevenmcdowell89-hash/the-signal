@@ -13,6 +13,13 @@ const DOMAIN_LABELS = {
   tech_devices: "Tech & Devices",
   ai_engineering: "Tech / AI",
   golf: "Golf",
+  // Sport beyond football/golf (WP-11). Labels mirror profile.js DOMAIN_META
+  // exactly, so the fallback reads the same as the config-driven path.
+  sport: "More Sport",
+  cricket: "Cricket",
+  cycling: "Cycling",
+  athletics: "Athletics",
+  motorsport: "Motorsport",
   lego: "LEGO",
   books: "Books",
   film_tv: "Film & TV",
@@ -383,7 +390,16 @@ export function buildState(items, meta, now, config) {
   // domain (confidence ≥ headline_strong_conf). The ≤2/domain cap + dedup keep it a
   // real headline set — a spread of the day's biggest things — not "top scores
   // across everything", while still letting a strong Gaming/Books/Tech story lead.
-  const NEWS_SPORT = new Set(["world", "local", "finance", "football", "golf"]);
+  // WP-11: the sport half of this set was football+golf only, so a Test match, a
+  // grand-tour GC swing or a world record could not qualify as a big Sport story
+  // however big it was. `motorsport` is deliberately EXCLUDED: `interest_depth:
+  // "results_only"` means a race win still reaches Headlines via corroboration
+  // (≥2 feeds) or a confirmed/official title, but a session-by-session item does
+  // not get the free pass the other sports get.
+  const NEWS_SPORT = new Set([
+    "world", "local", "finance",
+    "football", "golf", "sport", "cricket", "cycling", "athletics",
+  ]);
   // Importance = breadth-lifted confidence + a bonus for a high-signal (confirmed/
   // official) story, so a genuinely consequential item leads — not whatever the
   // firehose pushed up. confidence already folds in the content-led signal tiers.

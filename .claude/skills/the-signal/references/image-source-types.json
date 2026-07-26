@@ -1,13 +1,80 @@
 {
- "version": 1,
- "_doc": "Lookup table mapping image-source domain → source type, per the 5-type shippable taxonomy in references/spec/global.md image-integrity plus the 'restricted' quarantine type (F-17, 2026-07 WP-0: Getty/Shutterstock were mislabeled press_kit; restricted sources draw a warning and never count toward diversity). Maintained alongside the editorial spec. Add a one-line mapping when a new source appears in research. The validate-research-bundle.py and check-image-diversity.sh scripts both read this file.",
+ "version": 2,
+ "_doc": "Two orthogonal taxonomies for images. (1) `types` + `domains` classify WHERE an image came from (provenance/licensing posture). (2) `shows` classifies WHAT THE IMAGE DEPICTS — this file is the CANONICAL HOME of the `shows` enum (SPEC 2026-07-26 §3.3; documented for consumers in references/spec/data-contracts.md § The `shows` enum, which defers to this file). Both are REQUIRED on every research-bundle image_candidate, and both are rendered onto the DOM (data-shows / data-licence / data-capture-year / data-allows-derivatives on .plate-img). WHY BOTH: until 2026-07 the taxonomy classified by source domain ONLY, so 'a press kit supplied it' scored full marks and the safest, most-available press-kit asset — key art with the logo composited in — passed every check. Issue #18's Halo lead art cleared min_distinct_source_types: 3 comfortably while telling the reader nothing the headline hadn't (defect E). The domain never tells you whether a press kit handed you key_art or gameplay. Add a one-line domain mapping when a new source actually appears in research — a WRONG host mapping is worse than a missing one (a missing host draws an advisory; a wrong one silently launders provenance). Consumers: scripts/validate-research-bundle.py (bundle gate), scripts/check-image-diversity.sh (Phase 7.7), scripts/validate-issue.py (rendered shape budgets, SPEC §3.8).",
  "types": {
   "press_kit": "Official press kits and brand CDNs",
   "government": "Government / public-sector Flickr + media libraries",
-  "archive": "Museum / archive direct hosts",
+  "archive": "Museum / archive / library direct hosts, incl. open-access collections (Getty Open Content, Rijksmuseum, Smithsonian, Europeana, Gallica, NYPL, Wellcome, David Rumsey)",
   "news_cdn": "News-agency / publication CDNs (editorial use cleared, or carried from prior published issues)",
-  "wikimedia": "Wikimedia Commons (supplement; capped per thresholds)",
-  "restricted": "Licensed stock agencies (Getty, Shutterstock) — F-17: NOT press kits. Watermarked/preview URLs must never ship; consumers warn on sight and exclude this type from diversity counting."
+  "open_access_journal": "Open-access scholarly publishers serving the PAPER'S OWN FIGURES (Springer Nature / Scientific Reports, PLOS, eLife, MDPI, PMC, Frontiers). SPEC §3.14: for any science piece the reflex is the paper's own figure, not a hobbyist reconstruction on Commons. Licence is per-article — read the article's licence line and record it in licence.code; PMC free-to-read is NOT the same as CC-reusable.",
+  "wikimedia": "Wikimedia Commons (a supplement, not a default — see `shows` and thresholds.min_distinct_shapes)",
+  "restricted": "Licensed stock agencies (Getty IMAGES, Shutterstock) — F-17: NOT press kits. Watermarked/preview URLs must never ship; consumers warn on sight and exclude this type from diversity counting. NOTE: `media.gettyimages.com` (the agency) is restricted; `media.getty.edu` / `www.getty.edu` (the MUSEUM's Open Content programme) is `archive`. Different organisations, one word apart."
+ },
+ "shows": {
+  "_doc": "CANONICAL. What the image DEPICTS — orthogonal to source_type. REQUIRED on every image_candidate; rendered as data-shows on every .plate-img. Eleven values, closed set. WP-4's validate-issue.py enforces the SPEC §3.8 per-band budgets against this enum; check-image-diversity.sh enforces thresholds.min_distinct_shapes against it and hard-fails any value not listed here (a typo'd value is invisible to every downstream budget). The ranking in `specificity_hierarchy` is the information-gained order written out in prose in references/compliance-checklist.md § Image specificity check (SPEC §3.13).",
+  "values": {
+   "event_photo": {
+    "means": "A photograph or still of the actual thing happening.",
+    "checks": "Touchline: any figure captioned as a concluded result MUST be event_photo (SPEC §3.8). Rank 1 of the specificity hierarchy."
+   },
+   "gameplay": {
+    "means": "The player's view, in-game HUD present.",
+    "checks": "Rank 1 for games. Steam's appdetails API returns a screenshots[] array per game; shared.fastly.steamstatic.com is already mapped below."
+   },
+   "in_engine": {
+    "means": "Cutscene or engine render, no HUD. Better than key art, not gameplay.",
+    "checks": "Rank 4. Acceptable as a band lead; key_art is not."
+   },
+   "key_art": {
+    "means": "Marketing art, usually with the logo composited in.",
+    "checks": "Pixel & Byte: at most ONE per band, and NEVER the band's lead figure (.plate-img.lead) — SPEC §3.8. Last resort."
+   },
+   "product_shot": {
+    "means": "A posed shot of hardware or an object against a set or seamless background.",
+    "checks": "Last resort, alongside key_art. Never a lead."
+   },
+   "portrait": {
+    "means": "A posed photograph of a person.",
+    "checks": "Last resort — this is the 'random Pope photo'. A candid at an event is event_photo, not portrait."
+   },
+   "diagram": {
+    "means": "An explanatory drawing carrying information the prose cannot.",
+    "checks": "Rank 2. Satisfies the Long Read information-figure requirement. capture_year MAY be null when the asset is synthetic."
+   },
+   "map": {
+    "means": "A geographic figure.",
+    "checks": "Rank 2. Satisfies the Long Read information-figure requirement."
+   },
+   "chart": {
+    "means": "A data figure.",
+    "checks": "Rank 2. Satisfies the Long Read information-figure requirement. capture_year MAY be null when the asset is synthetic."
+   },
+   "artefact": {
+    "means": "The physical object itself (museum / archive).",
+    "checks": "Rank 3. Satisfies the Long Read information-figure requirement."
+   },
+   "document": {
+    "means": "A page, screen, listing or record (e.g. a store listing).",
+    "checks": "Rank 3 (the primary-document rung). Counts as a distinct shape."
+   }
+  },
+  "specificity_hierarchy": [
+   {"rank": 1, "shapes": ["event_photo", "gameplay"], "gloss": "A photograph or still of the actual thing happening."},
+   {"rank": 2, "shapes": ["diagram", "map", "chart"], "gloss": "A figure carrying information the prose cannot."},
+   {"rank": 3, "shapes": ["artefact", "document"], "gloss": "The artefact or the primary document itself."},
+   {"rank": 4, "shapes": ["in_engine"], "gloss": "In-engine or in-context still."},
+   {"rank": 5, "shapes": ["key_art", "product_shot", "portrait"], "gloss": "Marketing art, product shot, posed portrait — LAST RESORT, never a lead."}
+  ],
+  "information_figure_shapes": ["diagram", "map", "chart", "artefact"],
+  "last_resort_shapes": ["key_art", "product_shot", "portrait"],
+  "never_lead_shapes": ["key_art", "product_shot", "portrait"],
+  "_derived_lists_doc": {
+   "_why": "These four lists are the MACHINE-READABLE form of the prose hierarchy in references/compliance-checklist.md § Image specificity check. WP-4 implements against the lists, humans read the prose, so the two drifting apart is a live failure mode — it already happened once: `never_lead_shapes` omitted `portrait` while the rank-5 prose said 'key art / product shot / posed portrait — last resort, never a lead' (found by WP-9, fixed 2026-07-26). Reconciled in BOTH directions below; if you change one, change the other in the same commit.",
+   "specificity_hierarchy": "Ranks 1-5, and it partitions the enum EXACTLY — all eleven values appear once and only once. Identical membership and order to the numbered list in the checklist prose.",
+   "information_figure_shapes": "diagram, map, chart, artefact — the four shapes that satisfy the Long Read's ≥1-information-figure requirement, fixed by SPEC §3.8. DELIBERATE ASYMMETRY, not drift: `document` shares rank 3 with `artefact` in the hierarchy but is NOT an information figure, because SPEC §3.8 names four shapes and `document` is not among them. A store listing is a primary source; it is not a figure that explains a mechanism. The checklist prose states the same four.",
+   "last_resort_shapes": "key_art, product_shot, portrait — rank 5. Identical to the prose.",
+   "never_lead_shapes": "key_art, product_shot, portrait — the same three as rank 5, because 'last resort' and 'never the lead figure' are one rule in the prose. `portrait` belongs here: a POSED portrait is `portrait`, while a photograph of a person actually doing the thing is `event_photo`, which may lead freely. So the restriction costs nothing legitimate — a profile or an obituary can and should lead on the subject in action. It is also precisely the shape the 'random Pope photo' rule exists to reject: a profile portrait standing in for a story about what someone actually did. NOTE FOR WP-4: this list is DOCTRINE-derived and is BROADER than SPEC §3.8's mechanical minimum, which names only `key_art` and only in Pixel & Byte. Implementing the whole list is the intent; implementing only §3.8's letter is defensible; silently implementing something in between is not."
+  }
  },
  "domains": {
   "commons.wikimedia.org": "wikimedia",
@@ -37,6 +104,7 @@
   "www.flickr.com/photos/whitehouse": "government",
   "www.flickr.com/photos/ukparliament": "government",
   "www.flickr.com/photos/defenseimagery": "government",
+  "www.flickr.com/photos/britishlibrary": "archive",
   "iwm.org.uk": "archive",
   "media.iwm.org.uk": "archive",
   "rafmuseum.org.uk": "archive",
@@ -143,7 +211,7 @@
   "www.droid-life.com": "news_cdn",
   "icdn.juvefc.com": "news_cdn",
   "platform.blackwhitereadallover.com": "news_cdn",
-  "media.springernature.com": "news_cdn",
+  "media.springernature.com": "open_access_journal",
   "d3i6fh83elv35t.cloudfront.net": "news_cdn",
   "www.cdc.gov": "government",
   "cdc.gov": "government",
@@ -152,23 +220,83 @@
   "www.loc.gov": "archive",
   "shared.fastly.steamstatic.com": "press_kit",
   "cdn.fastly.steamstatic.com": "press_kit",
+  "shared.akamai.steamstatic.com": "press_kit",
   "assets.science.nasa.gov": "government",
   "covers.openlibrary.org": "archive",
   "openlibrary.org": "archive",
   "xboxwire.thesourcemediaassets.com": "press_kit",
   "thesourcemediaassets.com": "press_kit",
-  "variety.com": "news_cdn"
+  "variety.com": "news_cdn",
+  "media.getty.edu": "archive",
+  "www.getty.edu": "archive",
+  "getty.edu": "archive",
+  "www.rijksmuseum.nl": "archive",
+  "rijksmuseum.nl": "archive",
+  "ids.si.edu": "archive",
+  "www.si.edu": "archive",
+  "si.edu": "archive",
+  "www.europeana.eu": "archive",
+  "api.europeana.eu": "archive",
+  "gallica.bnf.fr": "archive",
+  "digitalcollections.nypl.gov": "archive",
+  "images.nypl.org": "archive",
+  "www.davidrumsey.com": "archive",
+  "davidrumsey.com": "archive",
+  "journals.plos.org": "open_access_journal",
+  "iiif.elifesciences.org": "open_access_journal",
+  "pmc.ncbi.nlm.nih.gov": "open_access_journal",
+  "cdn.ncbi.nlm.nih.gov": "open_access_journal",
+  "www.mdpi.com": "open_access_journal",
+  "mdpi.com": "open_access_journal",
+  "www.frontiersin.org": "open_access_journal",
+  "frontiersin.org": "open_access_journal"
+ },
+ "_domains_added_2026_07_26": {
+  "_doc": "SPEC §3.14 (WP-6). Provenance for the entries added on 2026-07-26, with honest confidence. The file's rule is that a mapping is added when a source actually APPEARS in research; these are added ahead of that to make open-access collections and journal figures reachable, so every one is flagged. VERIFIED = an asset URL on that host was fetched and returned an image content-type during WP-6. LIVE-HOST = the host answered but no asset was fetched. UNVERIFIED-IN-THE-WILD = classification is confident, the exact asset path is not, and no candidate has yet used it. Delete an entry rather than keep it wrong.",
+  "verified_asset_fetched": {
+   "gallica.bnf.fr": "200 image/jpeg — IIIF: /iiif/ark:/12148/<ark>/f1/full/full/0/native.jpg",
+   "images.nypl.org": "200 image/jpeg — NYPL legacy image delivery: /index.php?id=<id>&t=w",
+   "journals.plos.org": "200 image/png — /plosone/article/figure/image?size=large&id=<doi>.g001",
+   "iiif.elifesciences.org": "200 image/jpeg — /lax/<id>%2Felife-<id>-fig1-v1.tif/full/full/0/default.jpg",
+   "shared.akamai.steamstatic.com": "200 image/jpeg — REAL GAP FOUND WHILE WRITING THE HALO WORKED EXAMPLE. store.steampowered.com/api/appdetails?appids=976730 (Halo: The Master Chief Collection) returned 15 screenshots[] entries, and the path_full host it hands back is shared.AKAMAI.steamstatic.com, which was NOT mapped — only the fastly twin was. Both hosts serve the identical path (verified 200 image/jpeg on each). An unmapped host would have classified every Steam gameplay screenshot as `unknown` and excluded it from source-type diversity, i.e. penalised the correct image.",
+   "media.springernature.com": "200 image/png — RECLASSIFIED news_cdn -> open_access_journal. The Antikythera worked example: art%3A10.1038%2Fs41598-021-84310-w is the Freeth 2021 Scientific Reports paper whose own CAD gearing render (CC BY) was the correct Long Read figure. Already whitelisted; the taxonomy, not the source list, was the bottleneck."
+  },
+  "live_host_no_asset_fetched": {
+   "ids.si.edu": "Smithsonian Open Access image delivery service (/ids/deliveryService?id=<id>). Host answered 200; a fabricated id 404'd as expected.",
+   "pmc.ncbi.nlm.nih.gov": "PubMed Central. LICENCE CAVEAT: free-to-read on PMC is NOT reuse-licensed. Read the article's licence line; record UNKNOWN rather than guess.",
+   "cdn.ncbi.nlm.nih.gov": "PMC blob/figure CDN. Same licence caveat.",
+   "www.davidrumsey.com": "David Rumsey Map Collection (LUNA servlet). Maps — the `map` shape's best single source.",
+   "www.getty.edu": "Getty MUSEUM Open Content. NOT Getty Images (media.gettyimages.com stays `restricted`).",
+   "www.europeana.eu": "Aggregator. CAVEAT: the asset usually lives on the CONTRIBUTING institution's host; credit the holding institution, never 'Europeana'.",
+   "api.europeana.eu": "Europeana thumbnail/record API. Same aggregator caveat.",
+   "www.frontiersin.org": "Frontiers (fully open access, CC BY). Guessed figure path 404'd; classification is not in doubt.",
+   "www.mdpi.com": "MDPI (CC BY). Root returns 403 to HEAD (bot protection), which is not evidence either way."
+  },
+  "unverified_in_the_wild": {
+   "media.getty.edu": "Getty's IIIF image server. Answered 503/404 to probes during WP-6 — mapped on knowledge, not observation.",
+   "www.rijksmuseum.nl": "LOWEST CONFIDENCE HERE. Rijksmuseum API responses have historically pointed at third-party hosts (Google-hosted, micr.io); those are deliberately NOT mapped. If a Rijksmuseum candidate resolves off-site, set source_type explicitly in the bundle.",
+   "digitalcollections.nypl.gov": "NYPL Digital Collections item pages (unreachable from this sandbox). Item pages are not image srcs — follow through to images.nypl.org.",
+   "www.flickr.com/photos/britishlibrary": "British Library's Flickr (public-domain scans). Path-qualified exactly like the existing government Flickr accounts; the ACTUAL image bytes come from *.staticflickr.com, so see ambiguous_domains and set source_type explicitly."
+  }
  },
  "ambiguous_domains": {
-  "live.staticflickr.com": "Direct Flickr image host serves any user. Classify per the Flickr user (whitehouse, number10gov, ukparliament → government). When a researcher cites a live.staticflickr.com URL, the image_candidate entry MUST include an explicit source_type field — the validator cannot infer it from the URL."
+  "live.staticflickr.com": "Direct Flickr image host serves any user. Classify per the Flickr user (whitehouse, number10gov, ukparliament -> government; britishlibrary -> archive). When a researcher cites a live.staticflickr.com URL, the image_candidate entry MUST include an explicit source_type field — the validator cannot infer it from the URL.",
+  "doi.org": "A DOI is a RESOLVER, never an image. Never use a doi.org URL as an <img src>. Resolve it, then take the figure from the publisher's own figure CDN (see the open_access_journal type) and record THAT host. SPEC §3.14: for any science piece, 'the paper's own figures' is the reflex.",
+  "dx.doi.org": "Legacy DOI resolver. Same rule as doi.org.",
+  "lh3.googleusercontent.com": "Shared Google host — serves museum collections (Google Arts & Culture partners incl. Rijksmuseum) and arbitrary user content alike. Deliberately NOT mapped: the host carries no provenance signal. Prefer the institution's own host; if there is no alternative, set source_type explicitly and name the holding institution in the credit."
  },
  "thresholds": {
   "single_domain_max_pct": 50,
-  "wikimedia_max_pct": 30,
-  "wikimedia_max_count": 4,
   "min_distinct_source_types": 3,
+  "min_distinct_shapes": 3,
   "min_unique_candidates": 16,
   "max_uses_per_url": 1,
-  "_doc": "single_domain_max_pct is the RT-5 hard fail. wikimedia_max_pct and wikimedia_max_count are tighter editorial guidance (the lower of the two wins). min_distinct_source_types enforces the 3-of-5 menu. min_unique_candidates (v8.13.7) is the floor on distinct verified URLs the researcher must surface so writers can fill every chapter slot without reuse. max_uses_per_url (v8.13.7) is enforced against the rendered DOM by auto-repair-images.py (Phase 9 round 0, which rotates out duplicates), not the bundle. (v8.38: the old visual-smoke-test.py D6 gate is deleted; its intent lives in auto-repair-images.py + the Gate 1F manual no-duplicate-src backstop.)"
+  "_doc": "single_domain_max_pct is the RT-5 hard fail. min_distinct_source_types enforces the 3-of-menu source spread. min_distinct_shapes (SPEC §3.8/§3.14, 2026-07-26) is the FLOOR that replaces the retired Wikimedia CEILINGS: at least 3 distinct `shows` values per rendered issue, checked against data-shows by check-image-diversity.sh and by validate-issue.py's per-band budgets. A floor on interesting shapes is the check the ceiling was standing in for and failing to be. min_unique_candidates (v8.13.7) is the floor on distinct verified URLs the researcher must surface so writers can fill every chapter slot without reuse. max_uses_per_url (v8.13.7) is enforced against the rendered DOM by auto-repair-images.py (Phase 9 round 0, which rotates out duplicates), not the bundle. (v8.38: the old visual-smoke-test.py D6 gate is deleted; its intent lives in auto-repair-images.py + the Gate 1F manual no-duplicate-src backstop.)"
+ },
+ "retired_thresholds": {
+  "_doc": "RETIRED 2026-07-26 (SPEC §3.14, WP-6). DO NOT REINSTATE and do not read these as live thresholds — they are recorded here as history, outside `thresholds`, so the retirement is auditable.",
+  "wikimedia_max_pct": {"was": 30, "why": "A ceiling with no matching floor reads as a target. Commons became the thing to fill up to — 'four Wikimedia images allowed' — while nothing at all required an image that showed the mechanism working. The Antikythera Long Read used three Wikimedia images including a 2007 hobbyist model, and passed. Replaced by thresholds.min_distinct_shapes."},
+  "wikimedia_max_count": {"was": 4, "why": "Same defect, expressed as a count. Replaced by thresholds.min_distinct_shapes."},
+  "consumer_handoff": "scripts/validate-research-bundle.py (WP-5's file, not WP-6's) still read thresholds['wikimedia_max_count'] and ['wikimedia_max_pct'] UNGUARDED at its Rule 2 (~lines 456-466) when WP-6 landed. Those two reads must be deleted and replaced with a min_distinct_shapes check over image_candidates[].shows. Until WP-5 does that, the bundle gate raises KeyError. WP-5 runs after WP-6 in the SPEC dependency order, which is why this retirement lands first."
  }
 }

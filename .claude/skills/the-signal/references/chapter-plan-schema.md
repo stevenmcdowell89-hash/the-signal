@@ -32,6 +32,22 @@
 > deliberate legacy back-compat weekly (the `references/golden/weekly/` fixture);
 > new issues are `mx`.
 
+> **WP-1 (2026-07-26) — EDITORIAL COVERAGE REBUILD: coverage window, cover-lead
+> accountability, and Long Read vintage.** Per
+> `docs/editorial-coverage-rebuild-SPEC-2026-07-26.md` §3.1, a weekly plan now
+> declares (a) **when research stopped** — `issue_meta.research_cut_at` and
+> `issue_meta.window` — so a validator can tell "in the calendar range" from
+> "knowable at research time"; (b) **what the cover leads on and why** —
+> `issue_meta.cover_leads_on`, `issue_meta.cover_lead_topic_family`,
+> `issue_meta.lead_rationale`, and
+> `issue_meta.lead_override_reason` (the rut rule, SPEC §3.6); (c) the Long Read's
+> **vintage** — `long_read.vintage` plus `material_span` / `latest_development`
+> when evergreen, so an evergreen feature stops being stamped as breaking news;
+> and (d) per-row provenance on the stat strip — `week_in_numbers.rows[].source_band`.
+> All of these are enforced by `scripts/validate-chapter-plan.py` (WP-5). The
+> machine records that cross the *phase* boundaries (research bundle, state file)
+> are documented in `references/spec/data-contracts.md`.
+
 The planner subagent writes `/tmp/signal-build/chapter-plan.json`. This file defines the contract between the planner and the writer subagents. Every field here is required unless marked optional.
 
 The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan that fails validation cannot proceed to Phase 5 (writer subagents).
@@ -116,6 +132,44 @@ The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan
             "target_total": { "type": "integer", "description": "The issue target the planner is aiming at (weekly: 6,800-7,500)." },
             "allocated_total": { "type": "integer", "description": "Sum of all chapters' target_word_count. Weekly: MUST be >= 6,000 (validator hard-fails below)." }
           }
+        },
+
+        "research_cut_at": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+          "description": "WP-1 (SPEC §3.1) — REQUIRED on weekly plans. ISO8601 UTC instant at which research for THIS issue stopped. Copied from `research_cut_at` in state/signal-state.json, which the previous publish wrote (see references/spec/data-contracts.md § State additions). It is the closing bound of this issue's coverage window and the opening bound of the next one. Its point: the coverage window is an INSTANT-bounded range, not a calendar range — an event that concluded after the cut is not 'covered' just because its date falls inside the week, it is an open loop (§3.7). validate-chapter-plan.py hard-fails a weekly plan that omits it, whose value is not a UTC ISO8601 instant, or that disagrees with issue_meta.window.to."
+        },
+
+        "window": {
+          "type": "object",
+          "description": "WP-1 (SPEC §3.1) — REQUIRED on weekly plans. The issue's coverage window as two instants. `from` is the PREVIOUS issue's research cut (so nothing falls between issues); `to` equals this plan's issue_meta.research_cut_at. Enforced by validate-chapter-plan.py (WP-5).",
+          "required": ["from", "to"],
+          "properties": {
+            "from": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$", "description": "Opening bound — the previous issue's research cut. Must be < `to`." },
+            "to": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$", "description": "Closing bound — identical to issue_meta.research_cut_at." }
+          }
+        },
+
+        "cover_leads_on": {
+          "type": "string",
+          "enum": ["news", "long_read"],
+          "description": "WP-1 (SPEC §3.1) — REQUIRED on weekly plans. What the cover's lead transmission leads on: `news` (a development from this week) or `long_read` (the standing anchor piece). This is the value written to `cover_lead_ledger[].led_on` in state at publish (WP-9), and the value the rut rule (SPEC §3.6) counts. validate-chapter-plan.py hard-fails a weekly plan that omits it or uses a value outside the enum."
+        },
+
+        "lead_rationale": {
+          "type": "string",
+          "minLength": 120,
+          "description": "WP-1 (SPEC §3.1) — REQUIRED on weekly plans, >= 120 characters. Prose stating why this cover lead won, NAMING what was considered and rejected. Not a summary of the chosen story — an account of the choice ('the Commonwealth Games opening and the BoE call were both live; the Games ran to 2 Aug so its results are next week's, the BoE is Thursday's'). It exists because defect C was a planner that never had to argue for the lead. validate-chapter-plan.py hard-fails a weekly plan whose lead_rationale is absent or under 120 chars."
+        },
+
+        "cover_lead_topic_family": {
+          "type": "string",
+          "description": "WP-1 (SPEC §3.6 amendment, 2026-07-26, WP-5 finding) — REQUIRED on weekly plans. The `topic_family` of the story the cover leads on, drawn from the closed enumeration in § Topic Family Enumeration below (which includes `cyber_privacy`). It exists because the rut rule (SPEC §3.6) compares 'this plan's topic_family' against `state.cover_lead_ledger[].topic_family` and NO field carried it: `cover_leads_on` says news-vs-long_read only, and the ledger's family is written at publish (Phase 10) from the orchestrator's reading of the cover, so the validator could not be handed the value. MUST use the SAME enumeration as `cover_lead_ledger[].topic_family` — if the two vocabularies drift the rule silently stops matching. Written by the planner in Phase 4; consumed by `validate-chapter-plan.py`'s rut rule; copied to the ledger at publish (WP-9). COMPATIBILITY: `validate-chapter-plan.py` as shipped resolves the family through a fallback chain — (1) this field, trimmed, if a non-empty string; (2) otherwise the union of every chapter's `pieces[role='lead'].topic_family`; (3) otherwise it WARNS and skips the rut rule (never fails, because demanding prose about a choice the plan never stated is worse than skipping). That chain stays as the compatibility path for plans written before this field existed, so an older plan warns rather than crashing. New plans set the field explicitly: it is the only value that is stated rather than inferred from the piece pool."
+        },
+
+        "lead_override_reason": {
+          "type": "string",
+          "description": "WP-1 (SPEC §3.1) — CONDITIONALLY REQUIRED, >= 80 characters: required only when the rut rule (SPEC §3.6) trips, i.e. when this plan sets cover_leads_on:'news' on a topic_family that already appears as led_on:'news' in >= 3 of the last 4 state `cover_lead_ledger` entries. Not suppression — a forced conscious choice: the planner may always lead with it again, it just has to say in writing why this week's development earns the cover over everything else available. Omit entirely when the rule does not trip. validate-chapter-plan.py hard-fails only the rutted case (absent or under 80 chars)."
         }
       }
     },
@@ -368,6 +422,40 @@ The validator at `scripts/validate-chapter-plan.py` enforces this schema. A plan
             "description": "v8.17 — Optional sub-format mode for specific chapters. Allowed values: null (default standard mode), 'directors_cut' (Screen & Sound only — Lead is a 550-750 word essay; Lead.word_count_target.min must be >= 550), 'closer_look' (History only — single 600-800 word narrative; chapter must have a featured_item with word_count_target.min >= 600 and NO items/also_items array). Validator rejects: sub_format='directors_cut' on any chapter other than screen_sound; sub_format='closer_look' on any chapter other than history; word floors not met; also_items present on closer_look."
           },
 
+          "vintage": {
+            "type": "string",
+            "enum": ["news", "evergreen"],
+            "description": "WP-1 (SPEC §3.1) — REQUIRED for chapter_id 'long_read' on a weekly plan; forbidden on every other chapter. Declares whether the anchor piece is a development of THIS week (`news`) or a standing story whose material predates the issue (`evergreen`). Fixes defect A: with no vintage field the stitcher stamped the issue date on every anchor, so an evergreen feature read as 'they've just discovered this'. The value is rendered as `data-vintage` on the long-read section (SPEC §3.4, WP-3) and checked there by validate-issue.py (WP-4). validate-chapter-plan.py hard-fails a weekly plan whose long_read omits it (acceptance criterion #1)."
+          },
+
+          "material_span": {
+            "type": "string",
+            "pattern": "^\\d{4}–\\d{4}$",
+            "description": "WP-1 (SPEC §3.1) — REQUIRED on the 'long_read' chapter when vintage='evergreen'; forbidden when vintage='news'. The years the piece's material covers, as `YYYY–YYYY` with an EN-DASH (U+2013), e.g. '1901–2021'. Rendered into the `.lr-vintage` line (WP-3). Its editorial job is to tell the reader up front that the story is not this week's."
+          },
+
+          "latest_development": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}$",
+            "description": "WP-1 (SPEC §3.1) — REQUIRED on the 'long_read' chapter when vintage='evergreen'; forbidden when vintage='news'. `YYYY-MM` of the most recent real development in the story (e.g. '2021-03' for the Freeth reconstruction). Rendered into `.lr-vintage` as 'LATEST DEVELOPMENT MAR 2021'. Must fall inside material_span. This is the field that stops an evergreen anchor implying the news is fresh."
+          },
+
+          "rows": {
+            "type": "array",
+            "description": "WP-1 (SPEC §3.1) — REQUIRED for chapter_id 'week_in_numbers' on a weekly plan; forbidden on every other chapter. The stat strip's rows, each declaring WHERE its datum came from. Per-row provenance exists because an unattributed stat strip silently re-reports whatever the dominant band already said (defect D: five of six Touchline furniture objects came off one race). validate-chapter-plan.py hard-fails a week_in_numbers chapter with no rows, or any row missing `key` or `source_band`, or a `source_band` that is neither the literal 'state' nor the chapter_id of a chapter present in this plan.",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["key", "source_band"],
+              "properties": {
+                "key": { "type": "string", "description": "The row label as the reader sees it. E.g. 'Pole Margin'." },
+                "source_band": { "type": "string", "description": "Provenance of the datum: the `chapter_id` of the band this number came from (e.g. 'touchline', 'ledger', 'pixel_byte'), or the literal string 'state' when the datum is drawn from state/signal-state.json rather than from a band (the personal rows — training_phase, upcoming_trips, streaks). WP-1 clarification: 'state' is part of the value set because The Week in Numbers is defined in this file (v8.36) as the personal stat strip rendering from state, so a band-only vocabulary would be unsatisfiable." },
+                "value": { "type": "string", "description": "Optional — the planned value, when the planner already knows it. Writers may refine; the row's provenance may not change." },
+                "note": { "type": "string", "description": "Optional one-line gloss for the writer." }
+              }
+            }
+          },
+
           "featured_item": {
             "type": "object",
             "description": "REQUIRED for chapter_id 'history' with sub_format='closer_look'. The single narrative deep-dive piece. Forbidden for other chapters.",
@@ -564,10 +652,14 @@ The validator enforces this table. If `execution_mode` does not match the format
 
 Every `pieces[*].topic_family` MUST be one of the values below. The enumeration is closed — adding a new family requires a spec amendment. Validator (`scripts/validate-chapter-plan.py`) hard-fails any plan with an unrecognised `topic_family`.
 
+**WP-1 (2026-07-26):** this enumeration is also the vocabulary for `cover_lead_ledger[].topic_family` in `state/signal-state.json` and therefore for the rut rule (SPEC §3.6). There is exactly one topic-family vocabulary in the system and it is this list — do not maintain a parallel set in state, in the planner, or in a validator. See `references/spec/data-contracts.md`.
+
 Families are grouped by cluster for readability; the cluster name is editorial shorthand only — the validator checks against the flat union of all values.
 
 ### news_geopolitics
-`iran_war`, `ukraine`, `russia`, `china_geopolitics`, `us_politics`, `uk_politics`, `eu_politics`, `africa`, `middle_east_non_iran`, `asia_pacific`, `climate_environment`, `space_exploration`, `pandemics_health`, `ni_politics`
+`iran_war`, `ukraine`, `russia`, `china_geopolitics`, `us_politics`, `uk_politics`, `eu_politics`, `africa`, `middle_east_non_iran`, `asia_pacific`, `climate_environment`, `space_exploration`, `pandemics_health`, `ni_politics`, `cyber_privacy`
+
+> **`cyber_privacy` (added 2026-07-26 by SPEC amendment, `docs/editorial-coverage-rebuild-SPEC-2026-07-26.md` §3.5).** A breach, ransomware attack, state-backed intrusion, surveillance programme or privacy/data-protection ruling, where the *story is the compromise or the regulation of personal data at scale* — the Instructure/Canvas breach (275M records, Issue #8) is the type case. Deliberately narrow: a product launch, app feature, AI tool or platform policy change belongs in `tablets_phones` / `consumer_ai` / `generative_ai_consumer` / `ai_search` / `streaming_tech` / `smart_home` as before, even when it has a security or privacy angle. Sits in the news cluster because the reader meets these as world news, not as consumer tech.
 
 ### tech_gaming
 `switch_2`, `playstation`, `xbox`, `nintendo_other`, `pc_gaming`, `steam_deck`, `geforce_now`, `consumer_ai`, `generative_ai_consumer`, `ai_search`, `tablets_phones`, `wearables_consumer`, `e_readers`, `lego`, `streaming_tech`, `smart_home`
@@ -663,6 +755,80 @@ A fixed section that genuinely runs short omits `catch_up` and sets a `yield_rea
   "yield_reason": "Thin consumer-tech week; running a single discovery Lead rather than padding a roundup."
 }
 ```
+
+## Coverage-Window / Cover-Lead / Vintage Example (WP-1, SPEC §3.1)
+
+`issue_meta` on a weekly whose cover leads on news, with an evergreen Long Read behind it — the
+exact shape issue #18 lacked. `lead_override_reason` is absent because the rut rule did not trip.
+
+```json
+{
+  "issue_meta": {
+    "format": "weekly",
+    "date": "2026-08-02",
+    "topic": "…",
+    "special_id": null,
+    "execution_mode": "parallel",
+    "research_cut_at": "2026-08-02T02:10:00Z",
+    "window": { "from": "2026-07-26T02:10:00Z", "to": "2026-08-02T02:10:00Z" },
+    "cover_leads_on": "news",
+    "cover_lead_topic_family": "olympics",
+    "lead_rationale": "The Commonwealth Games close on 2 Aug and the BoE held on 30 Jul; the Games' medal ledger is the week's biggest reader-relevant result, so the rate call runs in The Ledger and the Games take the cover.",
+    "word_budget": { "target_total": 7200, "allocated_total": 7250 }
+  }
+}
+```
+
+The Long Read chapter and the stat strip in the same plan:
+
+```json
+[
+  {
+    "chapter_id": "long_read",
+    "chapter_num": 8,
+    "chapter_type": "literary",
+    "chapter_title": "Two Thousand Years, One Crank",
+    "chapter_arc": "A corroded lump of bronze turns out to be a computer",
+    "ground": "paper",
+    "is_hype": false,
+    "data_venue": null,
+    "target_word_count": 1800,
+    "images_needed": [
+      { "role": "front-dial gearing diagram from the 2021 reconstruction paper", "source_constraint": "open-access journal figure (CC BY)", "alt_required": true }
+    ],
+    "key_facts": [],
+    "forbidden_topics": [],
+    "cross_refs": [],
+    "vintage": "evergreen",
+    "material_span": "1901–2021",
+    "latest_development": "2021-03"
+  },
+  {
+    "chapter_id": "week_in_numbers",
+    "chapter_num": 12,
+    "chapter_type": "interlude",
+    "chapter_title": "The Week in Numbers",
+    "chapter_arc": "The week, counted",
+    "ground": "ink",
+    "is_hype": false,
+    "data_venue": null,
+    "target_word_count": 150,
+    "images_needed": [],
+    "key_facts": [],
+    "forbidden_topics": [],
+    "cross_refs": [],
+    "rows": [
+      { "key": "Pole Margin", "source_band": "touchline", "value": "0.012s" },
+      { "key": "Bank Rate", "source_band": "ledger", "value": "3.75%" },
+      { "key": "Sessions Logged", "source_band": "state", "value": "4" }
+    ]
+  }
+]
+```
+
+A `news` Long Read carries `"vintage": "news"` and **no** `material_span` / `latest_development`.
+
+---
 
 ## Long Shelf Example (v8.15)
 
