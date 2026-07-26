@@ -10,7 +10,7 @@ Each WP appends to its own section. Do not rewrite another WP's entry.
 | WP | Title | Status | Defects | Notes |
 |----|-------|--------|---------|-------|
 | WP-1 | Data contracts (foundation) | DONE | A B C D E | 3 rounds; contracts + state seed + `cyber_privacy` + 22 sport tokens. 9 handoffs, 1 resolved, 8 routed |
-| WP-2 | Editorial prose spec | IN PROGRESS | A C D E | |
+| WP-2 | Editorial prose spec | DONE | A C D E | 13 blocks across 2 files, `(v8.44, WP-2)`; ~50 identifiers verified byte-for-byte. Raises R-2 + 2 naming divergences |
 | WP-3 | Structure of record + stitcher + CSS | IN PROGRESS | A C D | |
 | WP-4 | Rendered-issue checks | PENDING | A B D E | queued behind WP-3; owes handoffs 1, 6, 8 |
 | WP-5 | Upstream production aids | PENDING | A C D E | queued behind WP-3; owes handoffs 1, 2, 6, 7 |
@@ -29,6 +29,7 @@ because of it. Recorded rather than silently fixed — each needs an owner decis
 
 | # | Risk | Raised by | Status |
 |---|------|-----------|--------|
+| R-2 | **`source_band` legitimises a drift nobody decided on.** The Week in Numbers was specified (v8.36) as the *personal* stat strip rendered from `state/signal-state.json` — training volume, spending, the reader's own week in figures. Issue #18's table is mostly news datums instead: pole margin, Bank Rate, leaders-in-a-decade. SPEC §3.1's `source_band` field, added so an evergreen datum can be kept out of "Datums of the Week", quietly *ratifies* that drift by making a news-band source a legal value. The mechanical fix for defect A works either way, but whether the section should be personal again is an editorial question this build should not answer by accident. | WP-2 | **open — owner decision** |
 | R-1 | **The daily's Headlines has no guaranteed news slot**, and now has four more eligible sport domains (`sport`, `cricket`, `cycling`, `athletics`). The crowding is bounded but not zero, so a heavy sport day could push world news off the front. This is a pre-existing property of `render.js`'s Headlines composition, not something WP-11 introduced — WP-11 correctly declined to change the `NEWS = {world, finance}` guarantee, because adding sport there would let a cricket item satisfy the news slot and make *world* evictable, which is worse. Fixing it properly means a guaranteed-news-slot design, which is a product decision about the daily brief and outside this SPEC's scope. | WP-11 | **open — owner decision** |
 
 **Orchestrator owns this file from 2026-07-26.** WP-1 wrote here during rounds 1–2 while it was the
