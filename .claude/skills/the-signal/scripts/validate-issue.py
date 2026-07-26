@@ -1894,7 +1894,12 @@ def _spelled_year(m: re.Match) -> int | None:
         return base + _WORD_VALUES[m.group("oh").lower()]
     if m.group("pl"):
         return base + _WORD_VALUES[m.group("pl").lower()]          # decade START
-    for grp in ("hu", "t", "teen"):
+    if m.group("t"):                          # "nineteen sixty-five" → 1900+60+5
+        total = _WORD_VALUES[m.group("t").lower()]
+        if m.group("tu"):
+            total += _WORD_VALUES[m.group("tu").lower()]
+        return base + total
+    for grp in ("hu", "teen"):
         val = m.group(grp)
         if val:
             parts = re.split(r"[\s‐-―-]+", val.strip().lower())
@@ -2718,6 +2723,8 @@ def check_caption_vintage(body: str, figs: list[dict], issue_year: int | None,
     considered = 0
     failures: list[str] = []
     passes: list[str] = []
+    blind: list[str] = []
+    band_cache: dict[tuple[int, int], tuple[list[tuple[int, str]], list[str]]] = {}
     for f in figs:
         cy_raw = f["attrs"].get("data-capture-year")
         if cy_raw is None or cy_raw == "":
@@ -2728,27 +2735,47 @@ def check_caption_vintage(body: str, figs: list[dict], issue_year: int | None,
         if not (1500 <= cy <= 2100):
             continue                       # ditto
         considered += 1
-        prose = band_prose(body, f["band_span"])
-        years = [int(y) for y in YEAR_RE.findall(prose)]
-        if not years:
+        span = f["band_span"]
+        if span not in band_cache:
+            band_cache[span] = band_claim_years(band_prose(body, span), issue_year)
+        claims, unresolved = band_cache[span]
+        visible = f["cap_visible"]
+        stated = bool(visible and cy_raw in visible)
+        # A band's unresolvable date expressions only matter for a figure that
+        # would otherwise PASS — they are the reason the pass might be wrong.
+        if unresolved and not stated:
+            blind.append(f"    • {_fig_id(f)} — capture {cy}; band '{f['band']}' contains a date "
+                         f"expression this check cannot resolve to a year: " + "; ".join(unresolved))
+        if not claims:
             passes.append(f"{_fig_id(f)} — capture {cy}, band makes no dated claim")
             continue
-        claim_max = max(years)
+        claim_max, evidence = max(claims, key=lambda c: c[0])
         if cy >= claim_max:
-            passes.append(f"{_fig_id(f)} — capture {cy} ≥ band's latest claim {claim_max}")
+            passes.append(f"{_fig_id(f)} — capture {cy} ≥ band's latest claim {claim_max} ({evidence})")
             continue
-        visible = f["cap_visible"]
-        if visible and cy_raw in visible:
+        if stated:
             passes.append(f"{_fig_id(f)} — capture {cy} < claim {claim_max}, and the visible "
                           f"caption says so")
         else:
             failures.append(
                 f"    • {_fig_id(f)}\n"
-                f"        capture year {cy} is OLDER than the band's latest claim {claim_max}, "
-                f"and \"{cy}\" does not appear in the caption's visible sentence.\n"
+                f"        capture year {cy} is OLDER than the band's latest claim {claim_max} "
+                f"[{evidence}], and \"{cy}\" does not appear in the caption's visible sentence.\n"
                 f"        .plate-cap .txt (credit excluded) reads: "
                 f"{(visible if visible is not None else '(no .plate-cap .txt)')!r}")
 
+    if blind:
+        report.warn("caption-vintage/unparsed-dates",
+                    f"{len(blind)} dated figure(s) sit in a band whose prose carries a date "
+                    f"expression that cannot be resolved to a year, so §3.9's claim_max may be "
+                    f"UNDERSTATED and the verdict below may be a false pass:\n" + "\n".join(blind)
+                    + "\n    This is the documented blind spot, reported rather than hidden: a "
+                      "relative span ('one hundred and forty-nine years after the first "
+                      "Championships'), 'the turn of the century' or a bare decade ('the sixties') "
+                      "needs an anchor year this check does not have. Digits, spelled-out years and "
+                      "this-week deixis ARE resolved. Check by eye that the caption is not older "
+                      "than what the band claims — or write the year into the caption, which makes "
+                      "both the reader and this check certain.")
     if failures:
         report.fail("caption-vintage",
                     f"{len(failures)} of {considered} dated figure(s) illustrate a later claim "
@@ -3055,6 +3082,11 @@ def run_coverage_checks(html: str, fmt: str, new_system: bool, path: Path,
     issue_no, issue_from = resolve_issue_number(body, path, manifest)
     cut = (state or {}).get("research_cut_at")
     window_from = cut[:10] if isinstance(cut, str) and len(cut) >= 10 else None
+    # The issue's own year, for §3.9's this-week deixis: in a weekly, "this week"
+    # or "on Monday" IS a claim about this year, and taking it from the resolved
+    # run-date is the only honest source (the masthead dateline is furniture that
+    # band_prose strips, and it is not always present).
+    issue_year = int(run_date[:4])
 
     print("  ── coverage-rebuild inputs (SPEC 2026-07-26) ──")
     print(f"     state:     {state_path} {'OK' if state else 'NOT READ'}")
@@ -3081,7 +3113,7 @@ def run_coverage_checks(html: str, fmt: str, new_system: bool, path: Path,
     weekly_new = (fmt == "weekly" and (new_system or rebuild_era))
 
     # ── GATE 1 · image checks ────────────────────────────────────────────────
-    check_caption_vintage(body, figs, report)                       # §3.9, crit #3
+    check_caption_vintage(body, figs, issue_year, report)           # §3.9, crit #3
     if weekly_new:
         check_figure_provenance(figs, shows_enum, vocab_note, report)   # §3.4a n6
         check_image_shape_budgets(figs, info_shapes, never_lead, manifest,
