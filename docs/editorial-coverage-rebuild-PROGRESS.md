@@ -121,16 +121,67 @@ which is **WP-7 working in parallel** — not touched by WP-1).
 
 **Left undone / deliberate scope calls:**
 
-- Issue #8 (2026-05-10) is **not** in `cover_lead_ledger` (so the ledger holds 10, not 12): its cover
+- ~~Issue #8 (2026-05-10) is **not** in `cover_lead_ledger` (so the ledger holds 10, not 12): its cover
   led on the Instructure/Canvas breach and the closed topic-family enumeration has **no family for a
   cybersecurity/data-breach story**. Mis-filing it would have corrupted the rut rule's input. The
-  ledger therefore starts at #9. The enumeration gap is a real finding — see § Handoff notes.
+  ledger therefore starts at #9. The enumeration gap is a real finding — see § Handoff notes.~~
+  **RESOLVED by the follow-up below (SPEC §3.5 amendment, authorised 2026-07-26).**
 - `sports_calendar` is deliberately short (4 entries). Per SPEC §3.12 nothing was seeded that could
   not be grounded, so the UEFA Champions League 2026-27 league phase, the remaining F1 rounds after
   the August break, and autumn athletics/cricket set-pieces are **listed as Phase-0 gaps inside
   `data-contracts.md`** instead of being invented. Note two grounded absences: the Ryder Cup is
   biennial (2027), and all four men's golf majors concluded before the research cut.
 - No fixtures were written for WP-10; `state/quality-log.jsonl` and issue #18 were read only.
+
+### Follow-up (2026-07-26, WP-1 resumed) — `cyber_privacy` + issue #8 backfill
+
+Authorised by the SPEC §3.5 amendment "Topic-family enumeration gap (WP-1 finding, authorised
+2026-07-26)", which accepts handoff note 3 and keeps the change with WP-1 because both files are
+WP-1-owned. Rationale of record: leaving #8 unclassified silently narrowed the rut rule's input,
+which is the exact mechanism the rule exists to catch — a ledger with a hole in it under-reports
+repetition.
+
+1. `.claude/skills/the-signal/references/chapter-plan-schema.md` (+3/−1) — added **`cyber_privacy`**
+   to the closed Topic Family Enumeration, in the `news_geopolitics` cluster, with a scoped
+   definition: *a breach, ransomware attack, state-backed intrusion, surveillance programme or
+   privacy/data-protection ruling, where the story is the compromise or the regulation of personal
+   data at scale* (Instructure/Canvas, 275M records, Issue #8 = the type case). Explicitly narrow:
+   a product launch, app feature, AI tool or platform-policy change stays in `tablets_phones` /
+   `consumer_ai` / `generative_ai_consumer` / `ai_search` / `streaming_tech` / `smart_home` even when
+   it has a security or privacy angle, so the new family cannot swallow ordinary consumer-tech or AI
+   stories. Placed in the news cluster because the reader meets these as world news.
+2. `state/signal-state.json` (+7/−0) — backfilled issue **#8** (`2026-05-10`,
+   `topic_family: "cyber_privacy"`, `one_line: "Finals week, no platform — 275 million student
+   records claimed in the Canvas breach"`, `led_on: "news"`) as the oldest entry. `one_line` is read
+   off that issue's World lead ("Finals week, no platform", "275 million records claimed"). The
+   ledger now holds **11 entries, #18 → #8**, newest first.
+
+**Re-run verification:**
+
+```
+$ python3 -c "import json; json.load(open('state/signal-state.json')); print('JSON OK')"
+JSON OK
+$ python3 -m json.tool state/signal-state.json > /dev/null && echo "json.tool OK"
+json.tool OK
+
+# key-set diff vs the PRE-WP-1 baseline (01e5fdf), not just HEAD
+pre-WP-1 baseline keys: 36 now: 42
+missing vs baseline: []
+altered vs baseline: []
+added vs baseline: ['research_cut_at', 'open_loops', 'cover_lead_ledger', 'sports_calendar', 'used_image_urls', 'interest_depth']
+$ git diff 01e5fdf --numstat -- state/signal-state.json
+144	0	state/signal-state.json          # still purely additive: 0 deletions
+
+ledger len: 11 order: [18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8]
+newest-first: OK
+ledger families not in doc enum: set()
+ledger families not in validator enum (WP-5 handoff): {'cyber_privacy'}
+```
+
+The last line is the one open consequence: `validate-chapter-plan.py` carries its own hardcoded
+`TOPIC_FAMILIES` set (line ~153) and does not yet contain `cyber_privacy`. That file is WP-5's —
+recorded as handoff note 7. Issue #18 untouched; `functions/daily/*`, `scripts/*` and
+`assets/cached/*` in the working tree are WP-7/WP-8 in flight, not WP-1.
 
 ## WP-2 — Editorial prose spec
 
@@ -191,11 +242,15 @@ orchestrator routes it.
    originating band. WP-1 documented the value set as **the `chapter_id` of a chapter present in the
    plan, or the literal `"state"`**. `validate-chapter-plan.py` must accept `"state"`, otherwise the
    contract is unsatisfiable for the section as specified elsewhere.
-3. **→ orchestrator / owner (no WP owns this): the closed topic-family enumeration has no family for
-   cybersecurity / data-breach news.** Issue #8's cover lead (the Instructure/Canvas breach, 275M
-   records) cannot be classified, so it was left out of `cover_lead_ledger`. Adding a family is a spec
-   amendment (`chapter-plan-schema.md` § Topic Family Enumeration says so explicitly) and is outside
-   the SPEC's scope, so WP-1 did not invent one. If it is wanted, candidate name: `cyber_privacy`.
+3. **RESOLVED 2026-07-26 — → orchestrator / owner (no WP owns this): the closed topic-family
+   enumeration has no family for cybersecurity / data-breach news.** Issue #8's cover lead (the
+   Instructure/Canvas breach, 275M records) cannot be classified, so it was left out of
+   `cover_lead_ledger`. Adding a family is a spec amendment (`chapter-plan-schema.md` § Topic Family
+   Enumeration says so explicitly) and is outside the SPEC's scope, so WP-1 did not invent one. If it
+   is wanted, candidate name: `cyber_privacy`.
+   → **Authorised** in SPEC §3.5 ("Topic-family enumeration gap", 2026-07-26) and implemented by WP-1
+   (resumed): `cyber_privacy` added to the enumeration, issue #8 backfilled, ledger now 11 entries
+   #18 → #8. See § WP-1 → Follow-up. Leaves note 7 below as its only open consequence.
 4. **→ WP-9: `interest_depth` has three keys, and an absent key is not `off`.** Only the sports the
    owner has weighted are seeded (motorsport, football, golf). The reader profile
    (`references/spec/global.md` § The Reader) lists only football and golf as sport interests, so the
@@ -211,3 +266,11 @@ orchestrator routes it.
    history (never reported; #18 is frozen), and a dropped loop does not mature — so they will **not**
    by themselves make the §3.7 gates fire. A fixture with `status: "open"` and a past
    `expected_resolution_date` is needed to demonstrate acceptance criteria #5 and #6.
+7. **→ WP-5: add `cyber_privacy` to `TOPIC_FAMILIES` in `validate-chapter-plan.py` (~line 153).** The
+   validator carries its own hardcoded copy of the closed enumeration. WP-1 added the family to
+   `chapter-plan-schema.md` § Topic Family Enumeration (news_geopolitics cluster) under the SPEC §3.5
+   amendment and used it for issue #8 in `cover_lead_ledger`, so until the validator's set is updated
+   the two copies disagree: a plan (or a rut-rule cross-check) using `cyber_privacy` would hard-fail as
+   "not in the closed enumeration". One-line change; `validate-chapter-plan.py` is WP-5's file, so
+   WP-1 did not touch it. Verified divergence:
+   `ledger families not in validator enum: {'cyber_privacy'}`.
