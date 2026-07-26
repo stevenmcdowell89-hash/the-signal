@@ -70,6 +70,13 @@ No file appears twice. Anything not listed is unowned — report before touching
 | **WP-9** | Pipeline phase wiring | `.claude/skills/the-signal/SKILL.md` |
 | **WP-10** | Verification harness | `.claude/skills/the-signal/scripts/test-coverage-gates.sh` *(new)*, `.claude/skills/the-signal/references/fixtures/coverage-rebuild/**` *(new)* |
 | **WP-11** | Daily routing (added 2026-07-26) | `functions/daily/render.js`, `functions/daily/dedup.js` |
+| **WP-12** | Skill version + changelog (added 2026-07-26) | `.claude/skills/the-signal/CHANGELOG.md`, and the skill-version marker wherever it lives |
+
+**WP-12 exists because the map had a second gap.** WP-9 reported it: the skill keeps a `CHANGELOG.md`
+and a version convention (`v8.43` at time of writing), and no WP owned either — so a rebuild touching
+the plan schema, the structure of record, the stitcher, both validators and the phase wiring would
+have shipped with no version bump and no changelog entry. WP-12 runs **last**, after WP-10, so it can
+describe what actually landed rather than what was planned.
 
 **WP-11 exists because the original map had a gap.** WP-7 added sport feeds and domains but the code
 that *routes* them was unowned, so its work is partially inert: `render.js:386`'s `NEWS_SPORT` set
@@ -91,7 +98,13 @@ These are normative. Field names, attribute names and enum values are exact.
 
 ```jsonc
 "issue_meta": {
-  "research_cut_at": "2026-07-26T02:10:00Z",   // ISO8601, from state; the window's opening bound
+  // CORRECTED 2026-07-26 (WP-9 finding). The original comment here read "the window's opening
+  // bound", which contradicted this very example. To be unambiguous:
+  //   research_cut_at  = THIS issue's cut  == window.to   (the newly measured instant)
+  //   window.from      = the PREVIOUS issue's research_cut_at, read from state
+  // So the window is (previous cut, this cut]. The same wrong phrasing was mirrored into
+  // chapter-plan-schema.md and is corrected there too.
+  "research_cut_at": "2026-07-26T02:10:00Z",   // ISO8601; == window.to
   "window": { "from": "2026-07-19T02:14:00Z", "to": "2026-07-26T02:10:00Z" },
   "cover_leads_on": "news" | "long_read",       // REQUIRED
   "lead_rationale": "…",                        // REQUIRED, ≥120 chars, names what was considered and rejected
