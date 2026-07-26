@@ -1585,8 +1585,9 @@ body[data-skin="transmission"] {
 .mx-ledger__row[data-resolves-loop] .mx-ledger__result { color: var(--mx-accent-2); }
 
 /* --- 04 · POLYMORPHIC STANDINGS CARD — data-table-kind ∈ league · medal · gc ·
-   leaderboard · championship. Shared: numerals line up whatever the sport, and
-   any kind may carry a head row (a medal table needs G/S/B heads). --- */
+   leaderboard · championship · finance. Shared: numerals line up whatever the
+   subject, and any kind may carry a head row (a medal table needs G/S/B heads).
+   `finance` is the sixth and only non-sport kind (SPEC §3.11 amendment). --- */
 .mx-scorecard[data-table-kind] td,
 .mx-scorecard[data-table-kind] th { font-variant-numeric: tabular-nums; }
 .mx-scorecard[data-table-kind] th {
@@ -1645,6 +1646,25 @@ body[data-skin="transmission"] {
 }
 .mx-scorecard[data-table-kind="leaderboard"] tr.is-cut td {
   border-bottom: 1.5px dashed var(--mx-card-ink);   /* the cut line, when shown */
+}
+
+/* finance — a REFERENCE card, not a ranking: label · figure, "as of" a date. No
+   position column, no podium rule-off — nothing in it is winning. The label
+   column wraps; the figure column is atomic and mixed-unit ("3.75%", "−0.16pp",
+   "30 JUL"), so it shrink-wraps and never splits a value. */
+.mx-scorecard[data-table-kind="finance"] .mx-scorecard__gap,
+.mx-scorecard[data-table-kind="finance"] td:last-child {
+  width: 1%;
+  text-align: right;
+  white-space: nowrap;
+  letter-spacing: 0.04em;
+}
+/* The highlighted row is the reference figure the others are read against, not a
+   leader: vermilion belongs to what leads or wins (same doctrine as
+   data-role="demoted-lead"), so the anchor takes signal blue. */
+.mx-scorecard[data-table-kind="finance"] tr.is-lead .mx-scorecard__gap,
+.mx-scorecard[data-table-kind="finance"] tr.is-lead td:last-child {
+  color: var(--mx-support-1);
 }
 
 /* --- 05 · NARROW WIDTHS (the card is already width:100% under 640px) --- */
@@ -1803,11 +1823,11 @@ body[data-skin="transmission"] {
   </div>
   <section class="letter">
 <!-- Issue cover plate — the OPEN movement's establishing image. Transmission worked real-<img> plate form: .plate-img.lead > img (alt + loading="lazy") + .plate-cap (.fig/.txt/.credit). -->
-    <div data-mx-event="figure" class="plate-img lead" style="margin-top:18px;" data-shows="event_photo" data-capture-year="2026" data-licence="UNKNOWN" data-allows-derivatives="false">
+    <div data-mx-event="figure" class="plate-img lead" style="margin-top:18px;" data-shows="event_photo" data-capture-year="2026" data-licence="CC-BY-4.0" data-allows-derivatives="true">
       <img src="/assets/cached/c0fbc060b733.jpg" alt="The exterior of MetLife Stadium in East Rutherford, New Jersey, host venue of the 2026 World Cup final, its ribbed silver facade rising against the sky" loading="lazy">
       <div class="plate-cap">
         <span class="mono fig">COVER</span>
-        <span class="txt">MetLife Stadium in East Rutherford, New Jersey — where the largest World Cup ever hands over its trophy this afternoon. A week of handovers, caught at the moment of transfer: power in Westminster, a Cup here, the grid reshuffled at Spa.<span class="credit">Wikimedia Commons</span></span>
+        <span class="txt">MetLife Stadium in East Rutherford, New Jersey — where the largest World Cup ever hands over its trophy this afternoon. A week of handovers, caught at the moment of transfer: power in Westminster, a Cup here, the grid reshuffled at Spa.<span class="credit">MiracleMiles · CC BY 4.0 · via Wikimedia Commons</span></span>
       </div>
     </div>
 
@@ -1815,11 +1835,11 @@ body[data-skin="transmission"] {
     <p class="kicker">Power changes hands in Westminster, a trophy in New Jersey, the grid at Spa — and the two that matter most are still being decided as the coffee cools.</p>
     <p class="first">Two landscapes shifted on the same Sunday, and I couldn't pull them apart. This morning Britain has a Prime Minister-in-waiting who reached No.10 without a public vote: Andy Burnham, declared Labour leader on Friday, sworn in tomorrow. This afternoon in New Jersey the largest World Cup ever ends — 48 teams, 104 matches, 39 days — with Spain and Argentina, the two best-ranked sides on the planet, kicking off as this issue is read.</p>
 
-    <div data-mx-event="figure" class="plate-img" style="max-width:420px;margin:26px auto 14px;" data-shows="portrait" data-capture-year="" data-licence="CC-BY-SA-3.0" data-allows-derivatives="true">
+    <div data-mx-event="figure" class="plate-img" style="max-width:420px;margin:26px auto 14px;" data-shows="portrait" data-capture-year="2024" data-licence="CC-BY-2.0" data-allows-derivatives="true">
       <img src="/assets/cached/2a9d4f29c684.jpg" alt="A portrait of Andy Burnham in dark-rimmed glasses and a navy jacket over a black tee, against wood panelling" loading="lazy">
       <div class="plate-cap">
         <span class="mono fig">FIG. 01</span>
-        <span class="txt">Andy Burnham — sworn in as prime minister on Monday, the Westminster half of a week of handovers.<span class="credit">Wikimedia Commons · CC BY-SA</span></span>
+        <span class="txt">Andy Burnham, pictured in 2024 — sworn in as prime minister on Monday, the Westminster half of a week of handovers.<span class="credit">Scottish Government · CC BY 2.0 · via Wikimedia Commons</span></span>
       </div>
     </div>
 
@@ -1978,11 +1998,11 @@ body[data-skin="transmission"] {
 
       <p>The handover itself is almost startlingly quick. On the day, Starmer travels to the Palace and formally tenders his resignation to the King. Burnham follows, is asked to form a government, and accepts — the old ceremony still described as "kissing hands." He walks out a prime minister the same afternoon. There is no transition period, no confirmation hearing, no interregnum. The country does not spend a day without a head of government, and it does not spend a minute asking the country's permission. The seamlessness is the whole design: the point of the system is that power never drops, that there is always someone who commands the Commons, and that the change of face costs the machinery of state nothing. What the design does not price in is what it costs the public's sense that it chose any of this.</p>
 
-      <div data-mx-event="figure" class="plate-img" data-shows="portrait" data-capture-year="" data-licence="UNKNOWN" data-allows-derivatives="false">
+      <div data-mx-event="figure" class="plate-img" data-shows="portrait" data-capture-year="2026" data-licence="CC-BY-3.0" data-allows-derivatives="true">
         <img src="/assets/cached/65aa827ae471.jpg" alt="Andy Burnham's official parliamentary portrait — a head-and-shoulders photograph of the Labour politician in a dark suit against a plain background" loading="lazy">
         <div class="plate-cap">
           <span class="mono fig">FIG. 01</span>
-          <span class="txt">Andy Burnham, the incoming prime minister, in his official parliamentary portrait — he returned to the Commons only weeks before taking the top job.<span class="credit">Official parliamentary portrait · Wikimedia Commons</span></span>
+          <span class="txt">Andy Burnham, the incoming prime minister, in his official parliamentary portrait, taken this month — he returned to the Commons only weeks before taking the top job.<span class="credit">House of Commons · CC BY 3.0 · via Wikimedia Commons</span></span>
         </div>
       </div>
 
@@ -2052,9 +2072,9 @@ body[data-skin="transmission"] {
     </div>
   </div>
   <section class="round">
-    <div data-mx-event="figure" class="plate-img lead" data-shows="event_photo" data-capture-year="2026" data-licence="UNKNOWN" data-allows-derivatives="false">
+    <div data-mx-event="figure" class="plate-img lead" data-shows="event_photo" data-capture-year="2026" data-licence="CC-BY-SA-4.0" data-allows-derivatives="true">
       <img src="/assets/cached/f37adaa87280.jpg" alt="Jannik Sinner on Centre Court during the 2026 Wimbledon men's singles final, racket in hand mid-point on the grass" loading="lazy">
-      <div class="plate-cap"><span class="mono fig">FIG.</span><span class="txt">Jannik Sinner on his way to defending the Wimbledon title — one of the week's few verdicts already signed and sealed, while sport's two biggest prizes are still to be handed over tonight.<span class="credit">Wikimedia Commons</span></span></div>
+      <div class="plate-cap"><span class="mono fig">FIG.</span><span class="txt">Jannik Sinner on his way to defending the Wimbledon title — one of the week's few verdicts already signed and sealed, while sport's two biggest prizes are still to be handed over tonight.<span class="credit">Daniel Cooper · CC BY-SA 4.0 · via Wikimedia Commons</span></span></div>
     </div>
 
     <p class="lead"><span class="drop">The week sport handed its trophies over</span> — and the two biggest are still being decided as this is read. There is a bluntness to sport I find restful on a Sunday: a tennis final ends when the last ball drops, a race ends at the line, and no verdict sits waiting on a committee. This week alone crowned two champions on the grass at Wimbledon and settled a ten-goal bronze match — yet the two prizes that matter most, a World Cup and a Grand Prix, are both still to come. As I write, neither has a winner. By tonight, both will.</p>
@@ -2455,11 +2475,11 @@ body[data-skin="transmission"] {
           <h3>The ceasefire that wouldn't set</h3>
           <p class="prev">Previously: Washington had called the June understanding over, with Qatari mediators shuttling to Tehran to keep a diplomatic channel alive.</p>
           <p>The truce is now firmly dead. The US declared it over on 8 July after Iranian attacks on commercial ships, and on 15 July said fresh strikes on Iranian targets were aimed at protecting vessels in the Strait of Hormuz — imposing new sanctions on Tehran alongside them. The 60-day window opened by June's Islamabad Memorandum, meant to settle Hormuz navigation, Iran's nuclear and missile programmes and sanctions, has collapsed, and traffic through the strait stays well down from the roughly 110 ships a day it normally carries. <b>Next:</b> whether any negotiating channel reopens, or the strikes and the shipping squeeze harden into a longer standoff.</p>
-          <div data-mx-event="figure" class="plate-img" style="margin:24px 0 6px;max-width:580px;" data-shows="map" data-capture-year="" data-licence="UNKNOWN" data-allows-derivatives="false">
+          <div data-mx-event="figure" class="plate-img" style="margin:24px 0 6px;max-width:580px;" data-shows="map" data-capture-year="2004" data-licence="PUBLIC-DOMAIN" data-allows-derivatives="true">
             <img src="/assets/cached/e5e95fd4612f.jpg" alt="A labelled map of the Strait of Hormuz, showing the narrow shipping lanes between Iran and the Musandam Peninsula of Oman, with the Persian Gulf to the west and the Gulf of Oman to the east" loading="lazy">
             <div class="plate-cap">
               <span class="mono fig">FIG.</span>
-              <span class="txt">The Strait of Hormuz — the choke-point the strikes are meant to keep open, where the marked shipping lanes run within a few miles of the Iranian coast.<span class="credit">Map · via Wikimedia Commons</span></span>
+              <span class="txt">The Strait of Hormuz on a 2004 US government chart — the choke-point the strikes are meant to keep open, where the marked shipping lanes run within a few miles of the Iranian coast.<span class="credit">US Government · public domain · via Wikimedia Commons</span></span>
             </div>
           </div>
           <div data-mx-event="figure" class="plate-img" style="margin:22px 0 6px;" data-shows="event_photo" data-capture-year="" data-licence="UNKNOWN" data-allows-derivatives="false">

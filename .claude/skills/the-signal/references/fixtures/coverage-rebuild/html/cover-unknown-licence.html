@@ -1,0 +1,10 @@
+<!doctype html><html><body>
+<!-- CRITERION #9, BOUNDARY CASE. Same permissive asset, but this fixture is used with a
+     manifest entry whose licence is UNKNOWN. Default behaviour is WARN-and-proceed (exit 0):
+     all 438 back-filled manifest entries are UNKNOWN, so refusing on unknown by default would
+     block every cover in the archive. --strict-licence promotes it to a refusal (exit 2).
+     UNKNOWN is a signal not to build on the asset — not a licence to crop it. -->
+<header class="cover" id="top">
+  <img src="/assets/cached/1a2d67f3ca02.jpg" alt="fixture unknown-licence cover">
+</header>
+</body></html>

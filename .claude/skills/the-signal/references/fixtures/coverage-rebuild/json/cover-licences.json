@@ -1,0 +1,54 @@
+{
+  "_doc": "CRITERION #9 fixture manifest (SPEC §3.10 shape). Staged into a throwaway repo root by test-coverage-gates.sh together with html/cover-*.html and two REAL images copied read-only out of assets/cached/. The two hashes are genuine cached assets; the licence records are fixture data. The third entry has no bytes in the cache on purpose — it proves the manifest merge never prunes orphans, i.e. provenance survives a cache eviction.",
+  "af9fc905ced8": {
+    "url": "https://example.invalid/fixture-nd.jpg",
+    "fetched_at": "2026-08-02T00:00:00Z",
+    "licence": {
+      "holder": "No 10 Downing Street",
+      "code": "CC-BY-NC-ND-2.0",
+      "url": "https://creativecommons.org/licenses/by-nc-nd/2.0/",
+      "allows_derivatives": false
+    },
+    "shows": "event_photo",
+    "capture_year": 2026,
+    "issues": [],
+    "led": [],
+    "issue_slugs": ["cover-nd"],
+    "led_slugs": ["cover-nd"],
+    "notes": "coverage-rebuild fixture: the ND source extract-covers.py must refuse"
+  },
+  "1a2d67f3ca02": {
+    "url": "https://example.invalid/fixture-permissive.jpg",
+    "fetched_at": "2026-08-09T00:00:00Z",
+    "licence": {
+      "holder": "Mogi Vicentini",
+      "code": "CC-BY-2.5",
+      "url": "https://creativecommons.org/licenses/by/2.5/",
+      "allows_derivatives": true
+    },
+    "shows": "artefact",
+    "capture_year": 2007,
+    "issues": [],
+    "led": [],
+    "issue_slugs": ["cover-permissive"],
+    "led_slugs": ["cover-permissive"],
+    "notes": "coverage-rebuild fixture: the permissive source extract-covers.py must derive"
+  },
+  "deadbeef0000": {
+    "url": "UNKNOWN",
+    "fetched_at": "UNKNOWN",
+    "licence": {
+      "holder": "UNKNOWN",
+      "code": "UNKNOWN",
+      "url": "UNKNOWN",
+      "allows_derivatives": null
+    },
+    "shows": "UNKNOWN",
+    "capture_year": "UNKNOWN",
+    "issues": [],
+    "led": [],
+    "issue_slugs": [],
+    "led_slugs": [],
+    "notes": "coverage-rebuild fixture: an entry with no bytes in the cache, so the merge is shown never to prune orphans"
+  }
+}

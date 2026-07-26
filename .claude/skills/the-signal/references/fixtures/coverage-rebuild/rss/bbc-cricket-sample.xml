@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  CRITERION #11 fixture. A minimal but structurally real RSS 2.0 feed, shaped exactly as
+  BBC Sport's cricket feed is (channel > item > title/link/description/pubDate), so the REAL
+  parser (functions/daily/ingest.js parseFeed) is what reads it. Offline by design: this
+  demonstrates "the feed parses and the domain routes" without egress. The two item titles are
+  the live cricket headlines WP-7 recorded while tuning the keyword sets (see EVIDENCE/WP-7.md
+  § 3.3) — they are quoted evidence of what the feed publishes, not invented results.
+-->
+<rss version="2.0">
+  <channel>
+    <title>BBC Sport - Cricket</title>
+    <link>https://www.bbc.co.uk/sport/cricket</link>
+    <description>Fixture copy of the BBC Sport cricket feed shape.</description>
+    <item>
+      <title>'A brutal innings' - Seifert's best strikes of his half-century</title>
+      <link>https://www.bbc.co.uk/sport/cricket/videos/fixture-0001</link>
+      <description>Watch the best shots from a rapid half-century.</description>
+      <pubDate>Sat, 25 Jul 2026 18:20:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>'That is some brutal hitting' - Marsh hits six sixes in huge innings</title>
+      <link>https://www.bbc.co.uk/sport/cricket/videos/fixture-0002</link>
+      <description>Six sixes in an over during a T20 innings.</description>
+      <pubDate>Sat, 25 Jul 2026 12:05:00 GMT</pubDate>
+    </item>
+  </channel>
+</rss>

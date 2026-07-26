@@ -48,8 +48,9 @@
 .mx-ledger__row[data-resolves-loop] .mx-ledger__result { color: var(--mx-accent-2); }
 
 /* --- 04 · POLYMORPHIC STANDINGS CARD — data-table-kind ∈ league · medal · gc ·
-   leaderboard · championship. Shared: numerals line up whatever the sport, and
-   any kind may carry a head row (a medal table needs G/S/B heads). --- */
+   leaderboard · championship · finance. Shared: numerals line up whatever the
+   subject, and any kind may carry a head row (a medal table needs G/S/B heads).
+   `finance` is the sixth and only non-sport kind (SPEC §3.11 amendment). --- */
 .mx-scorecard[data-table-kind] td,
 .mx-scorecard[data-table-kind] th { font-variant-numeric: tabular-nums; }
 .mx-scorecard[data-table-kind] th {
@@ -108,6 +109,25 @@
 }
 .mx-scorecard[data-table-kind="leaderboard"] tr.is-cut td {
   border-bottom: 1.5px dashed var(--mx-card-ink);   /* the cut line, when shown */
+}
+
+/* finance — a REFERENCE card, not a ranking: label · figure, "as of" a date. No
+   position column, no podium rule-off — nothing in it is winning. The label
+   column wraps; the figure column is atomic and mixed-unit ("3.75%", "−0.16pp",
+   "30 JUL"), so it shrink-wraps and never splits a value. */
+.mx-scorecard[data-table-kind="finance"] .mx-scorecard__gap,
+.mx-scorecard[data-table-kind="finance"] td:last-child {
+  width: 1%;
+  text-align: right;
+  white-space: nowrap;
+  letter-spacing: 0.04em;
+}
+/* The highlighted row is the reference figure the others are read against, not a
+   leader: vermilion belongs to what leads or wins (same doctrine as
+   data-role="demoted-lead"), so the anchor takes signal blue. */
+.mx-scorecard[data-table-kind="finance"] tr.is-lead .mx-scorecard__gap,
+.mx-scorecard[data-table-kind="finance"] tr.is-lead td:last-child {
+  color: var(--mx-support-1);
 }
 
 /* --- 05 · NARROW WIDTHS (the card is already width:100% under 640px) --- */
