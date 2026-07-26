@@ -213,6 +213,7 @@
   "www.loc.gov": "archive",
   "shared.fastly.steamstatic.com": "press_kit",
   "cdn.fastly.steamstatic.com": "press_kit",
+  "shared.akamai.steamstatic.com": "press_kit",
   "assets.science.nasa.gov": "government",
   "covers.openlibrary.org": "archive",
   "openlibrary.org": "archive",
@@ -250,6 +251,7 @@
    "images.nypl.org": "200 image/jpeg — NYPL legacy image delivery: /index.php?id=<id>&t=w",
    "journals.plos.org": "200 image/png — /plosone/article/figure/image?size=large&id=<doi>.g001",
    "iiif.elifesciences.org": "200 image/jpeg — /lax/<id>%2Felife-<id>-fig1-v1.tif/full/full/0/default.jpg",
+   "shared.akamai.steamstatic.com": "200 image/jpeg — REAL GAP FOUND WHILE WRITING THE HALO WORKED EXAMPLE. store.steampowered.com/api/appdetails?appids=976730 (Halo: The Master Chief Collection) returned 15 screenshots[] entries, and the path_full host it hands back is shared.AKAMAI.steamstatic.com, which was NOT mapped — only the fastly twin was. Both hosts serve the identical path (verified 200 image/jpeg on each). An unmapped host would have classified every Steam gameplay screenshot as `unknown` and excluded it from source-type diversity, i.e. penalised the correct image.",
    "media.springernature.com": "200 image/png — RECLASSIFIED news_cdn -> open_access_journal. The Antikythera worked example: art%3A10.1038%2Fs41598-021-84310-w is the Freeth 2021 Scientific Reports paper whose own CAD gearing render (CC BY) was the correct Long Read figure. Already whitelisted; the taxonomy, not the source list, was the bottleneck."
   },
   "live_host_no_asset_fetched": {
