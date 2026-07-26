@@ -99,6 +99,8 @@ The completeness digest: `<ol class="digest">` with **≤ 8 `<li>`** — one mis
 
 ### The Long Read — `long_read` (content: `longread`, exactly one per issue)
 The single feature: a `.lr-title` block then a `.lr-body` prose column. Optional inline breaks — `.pullquote`, `.plate-img`, `.aside-note`.
+
+> **Do not hand-write the vintage line.** The writer authors `.lr-title`, but `stitch_weekly.py` **stamps the vintage chrome into it** from the plan (SPEC §3.4, defect A): when `long_read.vintage` is `evergreen` it inserts `<div class="mono lr-vintage">NOT THIS WEEK · A STANDING STORY · …</div>` immediately before the `<h2>` **and strips the issue date out of your `.byline`**; when `news` it leaves no `.lr-vintage` and the byline keeps today's date. It is idempotent (any existing `.lr-vintage` is removed first), so writing one yourself is at best redundant. Vintage is a *plan* decision, not a writing decision — put it in the plan, not the markup.
 ```html
 <div class="lr-title">
   <div class="mono" style="color:var(--signal);">[EYEBROW]</div>
@@ -227,7 +229,29 @@ The compact table dressed as card stock. It is **polymorphic**: `data-table-kind
   </table>
 </div>
 ```
-`data-table-kind` ∈ `league` · `medal` · `gc` · `leaderboard` · `championship` (SPEC §3.4) — a football table, a medal table, a cycling general classification, a golf leaderboard, a drivers'/constructors' championship. **Mandatory; no sixth value.** Pick the kind that matches what led the band, not whichever sport has a weekly table.
+`data-table-kind` ∈ `league` · `medal` · `gc` · `leaderboard` · `championship` · `finance` (SPEC §3.4, extended by the §3.11 amendment) — a football table, a medal table, a cycling general classification, a golf leaderboard, a drivers'/constructors' championship, and a financial reference card. **Mandatory, and the list is closed at these six** — but treat "closed" as of this document's date, not as a law: the enum grew from five to six precisely because a closed list outlived its scope (below). Pick the kind that matches what led the band, not whichever sport has a weekly table.
+
+**`finance` — the sixth kind, and the only non-sport one (added 2026-07-26, SPEC §3.11).** The original five were *all sport*, while The Desk already used `.mx-scorecard` for a financial card (the mx golden's "The Rate War · As of 19 Jul"). The enum could not name an existing legitimate use of the component: a "polymorphic" table whose vocabulary admits only sport reproduces, one level down, exactly the single-shape mistake polymorphism was introduced to fix.
+
+A finance card is **a reference, not a ranking**, and its markup and styling say so:
+```html
+<div class="mx-scorecard deskcol__card" data-mx-event="ledger" data-table-kind="finance">
+  <h4 class="mx-scorecard__title">The Rate War · As of 19 Jul</h4>
+  <table>
+    <tr class="is-lead"><td>BoE base rate</td><td class="mx-scorecard__gap">3.75%</td></tr>
+    <tr><td>Nationwide cuts, 1 mo</td><td class="mx-scorecard__gap">×4</td></tr>
+    <tr><td>Avg 2-yr fix, June</td><td class="mx-scorecard__gap">−0.16pp</td></tr>
+    <tr><td>MPC decision</td><td class="mx-scorecard__gap">30 JUL</td></tr>
+  </table>
+</div>
+```
+- **Label · figure. No `.mx-scorecard__pos` column** — nothing in the card is in first place — **and no podium rule-off** (the `championship` kind's rule under the top three is meaningless here).
+- The label column **wraps**; the figure column is **atomic and mixed-unit** (`3.75%`, `×4`, `−0.16pp`, `30 JUL`), shrink-wrapped so a value never splits across lines.
+- `tr.is-lead` marks **the reference figure the others are read against**, and it renders in **signal blue, not vermilion**. Vermilion belongs to what leads or wins — the same doctrine as `data-role="demoted-lead"`. Carrying sport's visual grammar into a rate card would be the same category error as the sport-only enum, one level down.
+- Title convention: name the thing, then `· As of <DD MON>`. A rate card without an as-of date is undated data pretending to be current.
+- Lives in **The Desk** (`.deskcol__card` inside a `[data-desk-column]`), not the Touchline.
+
+> **`finance` is not stampable yet — declared and styled, not yet legal (as of 2026-07-26).** `validate-issue.py` **hardcodes the original five** (`TABLE_KINDS` at ~line 1764) and hard-fails any value outside them, so stamping `data-table-kind="finance"` on a real card today fails gate 2, while leaving it off only WARNs. That is why the golden's Rate War card still carries a bare `.mx-scorecard`. **Until WP-4 extends `TABLE_KINDS`, write the finance card without `data-table-kind` and accept the warning.** The CSS (`weekly-mx/11-mx-coverage-rebuild.css`) and `weekly.json` already carry the sixth kind, so the stamp becomes correct the moment the validator does — nothing else needs to change.
 
 ### Pixel & Byte — `pixel_byte` (content: `round` — `items`)
 Gaming. A plain `.items` list — same row shape as The Touchline's items (`.freq` + `<div><h3>…</h3><p>…</p></div>`).

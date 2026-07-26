@@ -397,3 +397,83 @@ $ git diff --stat d907035 -- <WP-6's four files>
 1. **→ WP-9 (stale citation, one clause).** `SKILL.md:274` currently works *around* the bug: *"`key_art` and `product_shot` may never lead a band (`shows.never_lead_shapes` in the lookup file; the checklist prose puts `portrait` in the same rung, so do not lead on one either)."* The parenthetical is now obsolete — the lookup and the prose agree, and all three shapes are in the list. It should read: *"`key_art`, `product_shot` and `portrait` may never lead a band (`shows.never_lead_shapes`)."* Not edited: `SKILL.md` is WP-9's. `SKILL.md:311` quotes the rank-5 prose correctly and needs no change.
 2. **→ WP-4 (scope, needs a conscious choice).** `never_lead_shapes` is doctrine-derived and **broader** than SPEC §3.8's mechanical minimum, which names only `key_art` and only in Pixel & Byte. Implementing the whole list is the intent and is now recorded in the file; implementing only §3.8's letter is defensible; silently implementing something in between is the outcome to avoid. Flagged inside the JSON as well as here.
 3. Unchanged from the main report: the **blocking** `validate-research-bundle.py` `KeyError` handoff to WP-5 (§7.1).
+
+---
+
+# WP-6 follow-up 2 (2026-07-26) — `data-table-kind` gains a sixth value
+
+**Raised by:** WP-3b (complete), via the coordinator. **Baseline for diffs:** commit `d10d34c`. **Files touched:** `component-contracts.md` only (one of WP-6's four). `weekly.json`, the CSS and `validate-issue.py` were read as sources of truth, not edited.
+
+## G1. The stale line
+
+`component-contracts.md:230` read *"**Mandatory; no sixth value.**"* There now is one. SPEC §3.11 added **`finance`** because the original five (`league`, `medal`, `gc`, `leaderboard`, `championship`) were **all sport**, while The Desk already used `.mx-scorecard` for a financial card — the mx golden's *"The Rate War · As of 19 Jul"*. The enum could not describe an existing, legitimate use of the component it governed.
+
+Worth stating plainly, because it is the same category error twice: a *polymorphic* table whose vocabulary admits only sport reproduces, one level down, the single-shape mistake polymorphism was introduced to fix.
+
+## G2. The contract, updated
+
+`data-table-kind` ∈ `league` · `medal` · `gc` · `leaderboard` · `championship` · **`finance`** — six values. The absolute is reworded rather than deleted: *"Mandatory, and the list is closed at these six — but treat 'closed' as of this document's date, not as a law: the enum grew from five to six precisely because a closed list outlived its scope."*
+
+The `finance` entry documents the design intent WP-3b implemented, since this file is what writers copy from — with the golden's Rate War card as the worked markup:
+- **Label · figure. No `.mx-scorecard__pos` column** (nothing in the card is in first place) **and no podium rule-off** (the `championship` kind's rule under the top three is meaningless here).
+- Label column **wraps**; the figure column is **atomic and mixed-unit** (`3.75%`, `×4`, `−0.16pp`, `30 JUL`), shrink-wrapped so a value never splits.
+- `tr.is-lead` is **the reference figure the others are read against**, rendered in **signal blue, not vermilion** — vermilion belongs to what leads or wins, the same doctrine as `data-role="demoted-lead"`. Carrying sport's visual grammar into a rate card would be the sport-only enum's error again, one level down.
+- Title convention `<thing> · As of <DD MON>` — a rate card without an as-of date is undated data pretending to be current.
+- Lives in **The Desk** (`.deskcol__card` inside a `[data-desk-column]`), not the Touchline.
+
+## G3. How `finance`'s availability is worded — the judgement call
+
+I took the option of **wording it as not-yet-usable**, in a blockquote directly under the contract:
+
+> **`finance` is not stampable yet — declared and styled, not yet legal (as of 2026-07-26).** `validate-issue.py` hardcodes the original five (`TABLE_KINDS` at ~line 1764) and hard-fails any value outside them, so stamping `data-table-kind="finance"` on a real card today fails gate 2, while leaving it off only WARNs. That is why the golden's Rate War card still carries a bare `.mx-scorecard`. **Until WP-4 extends `TABLE_KINDS`, write the finance card without `data-table-kind` and accept the warning.**
+
+Reasoning: this file is copied from, so a contract that reads as available would hand a writer a gate-2 failure. Verified against source, not assumed — `validate-issue.py:1764` is `TABLE_KINDS = ("league", "medal", "gc", "leaderboard", "championship")` and `check_table_kind` fails on an unlisted value while only warning on a missing one; the golden's Desk card at `references/golden/weekly-mx/chapters/the_desk.html:18` is indeed a bare `.mx-scorecard`. The note also says the CSS and `weekly.json` already carry the sixth kind, so the stamp becomes correct the moment the validator does and nothing else needs to change.
+
+## G4. Sweep for the same class of stale absolute
+
+Every count, closed list and "no other value" claim in `component-contracts.md`, checked against the current source of truth rather than against memory:
+
+| Claim in the file | Source of truth | Verdict |
+|---|---|---|
+| `data-table-kind` — "no sixth value" | SPEC §3.11, `weekly.json`, CSS | **STALE — fixed above.** |
+| Caught Up — "HARD cap 8 `<li>`" | `weekly.json` → `invariants.caught_up_cap` ("at most 8 `<li>`") | Current ✓ |
+| The Desk — "1–2 `.deskcol` total, never 3+" | `invariants.desk_is_one_nested_department` ("fail on 0 or 3+ columns") | Current ✓ |
+| Long Read — "exactly one per issue" | `invariants.exactly_one_long_read` | Current ✓ |
+| Long Read — "MUST carry ≥1 real image plate"; weekly floor 8 `<img>` | `invariants.long_read_has_image`, `image-floor` | Current ✓ |
+| Results ledger — "≥2 distinct `data-sport`" | `invariants.results_ledger_multi_sport` | Current ✓ |
+| `shows` / `data-shows` — 11 values, closed | `image-source-types.json` (canonical) | Current ✓ (reconciled in follow-up 1) |
+| Season Review `.scorecard` — "`data-tier` accepts `hot \| warm \| cold`" | CSS: `body.is-special[data-special="season-review"] .scorecard[data-tier=…]` | Current ✓. **Near-miss worth recording:** the stylesheet also defines `data-tier` = `top`/`strong`/`wildcard`/`wait`/`skip`, but those belong to *other* components (Shortlist verdict pills, Next tier rows), not `.scorecard`. Checked the selectors rather than grepping the value list — the value-list grep alone would have produced a false positive. |
+| `.mx-ledger` `data-role` — results-ledger / demoted-lead | grep of `weekly.json` + stitcher + CSS returns exactly those two; `validate-issue.py` also knows `long-read`, `desk`, `release-radar` (all documented elsewhere in this file) | Current ✓ — the file makes no closed-list claim about `data-role`, which is why it did not go stale. |
+| Colophon "exactly 4 `.cell`", Week in Numbers "4–6 `.fig-row`" | Not mechanically enforced anywhere; editorial shape only | Current ✓ (nothing to drift from) |
+
+**One gap of the same class found and fixed** (an omission rather than a wrong absolute): the Long Read contract showed `.lr-title` as pure writer markup and said nothing about the vintage stamp. `stitch_weekly.py` **stamps `.lr-vintage` into the writer's `.lr-title`** when the plan says `evergreen`, **and strips the issue date out of the writer's `.byline`** (idempotently — it removes any existing `.lr-vintage` first). A writer copying this contract could have hand-written a vintage line, or fought the stitcher over the byline. Added as a blockquote note: vintage is a *plan* decision, not a writing decision.
+
+## G5. Verification
+
+```
+$ grep -n "no sixth value" …/component-contracts.md
+  stale claim removed ✓
+$ grep -n 'data-table-kind` ∈' …/component-contracts.md
+232: … `league` · `medal` · `gc` · `leaderboard` · `championship` · `finance` (SPEC §3.4, extended by the §3.11 amendment) …
+$ grep -c '^```' …/component-contracts.md
+80        (even — code fences balanced)
+
+$ git diff --stat d10d34c -- <WP-6's four files>
+ .../the-signal/references/component-contracts.md   | 26 +++++++++++++++++++++-
+ 1 file changed, 25 insertions(+), 1 deletion(-)
+$ git diff --name-only d10d34c
+ .claude/skills/the-signal/references/component-contracts.md      (only file changed since the baseline)
+```
+
+Unchanged-file regression check (the other three files were not touched this round, confirmed above):
+```
+$ python3 -c "import json; json.load(open('…/image-source-types.json'))"   → json OK
+$ bash -n …/check-image-diversity.sh                                       → bash -n OK
+$ …/check-image-diversity.sh …/fail-min-distinct-shapes.html               → exit 1
+$ …/check-image-diversity.sh …/pass-min-distinct-shapes.html               → exit 0
+```
+
+## G6. Handoffs
+
+1. **→ WP-4 (already routed, restated with the exact site).** `validate-issue.py:1764` `TABLE_KINDS` needs `"finance"` appended, and the failure message at ~2197 says *"outside the five legal shapes"* — that count needs to move to six too, or the message will misreport the rule it enforces. Until then `finance` is styled and declared but not stampable, and `component-contracts.md` says so explicitly (§G3).
+2. Carried forward from follow-up 1: `SKILL.md:274`'s obsolete `never_lead_shapes` parenthetical (→ WP-9), and the blocking `validate-research-bundle.py` `KeyError` (→ WP-5, §7.1).

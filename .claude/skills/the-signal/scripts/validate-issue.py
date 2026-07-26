@@ -1760,8 +1760,15 @@ SKILL_ROOT = Path(__file__).resolve().parent.parent   # .claude/skills/the-signa
 
 VINTAGE_VALUES = ("news", "evergreen")
 COVER_LEADS_ON_VALUES = ("news", "long_read")
-# SPEC §3.4 / §3.11: five legal shapes. A sixth renders as the unstyled base card.
-TABLE_KINDS = ("league", "medal", "gc", "leaderboard", "championship")
+# SPEC §3.4 / §3.11: the legal `.mx-scorecard` shapes. A value outside the set
+# renders as the unstyled base card. READ FROM weekly.json at runtime (see
+# load_table_kinds) — the structure of record is the single source. This literal
+# is the fallback only, and it carries `finance`, the sixth kind added by the
+# 2026-07-26 §3.11 amendment: the first five were all sport, while The Desk
+# already used .mx-scorecard for a financial card, so the enum could not name an
+# existing legitimate use. A hardcoded enum here is what stopped WP-3b from
+# stamping that card without taking the golden to exit 1.
+TABLE_KINDS_FALLBACK = ("league", "medal", "gc", "leaderboard", "championship", "finance")
 # SPEC §3.4 / §3.4a note 6 — the machine record every .plate-img must carry.
 FIGURE_PROVENANCE_ATTRS = (
     "data-shows", "data-capture-year", "data-licence", "data-allows-derivatives",
@@ -1790,6 +1797,154 @@ SPORT_TOKENS_FALLBACK = (
 
 MIN_DISTINCT_SHOWS = 3       # SPEC §3.8 / §3.14 min_distinct_shapes
 YEAR_RE = re.compile(r"\b(1[5-9]\d{2}|20\d{2}|2100)\b")
+
+# ─────────────────────────────────────────────────────────────────────────────
+# §3.9 claim-year extraction — digits are not the only way prose dates a claim.
+#
+# WP-3b's finding, and it is the important one: THREE captions in the mx golden
+# PASSED §3.9 while being wrong, because a first version of this check measured
+# claim_max as the largest 4-DIGIT year in the band's prose. A band that writes
+# "one hundred and forty-nine years after the first Championships" or "sixty-four
+# years ago this week" contributes nothing, so the check reported "band makes no
+# dated claim" for a 2009 photograph captioned as THIS WEEK's Wimbledon final —
+# a live defect-B instance, invisible to the gate that exists for defect B.
+#
+# Three sources of a claim year are now read, and every failure quotes the
+# evidence phrase so the reasoning is auditable rather than magic:
+#   1. digits            — "In March 2021 a team at UCL…"
+#   2. spelled-out forms — "nineteen sixty-five", "two thousand and four",
+#                          "the nineteen-seventies", "the twentieth century"
+#   3. this-week deixis  — "this week", "today", "on Monday": in a weekly, a
+#                          present-tense claim IS a claim about the issue's own
+#                          year, which is taken from --run-date. This is the class
+#                          that produced the miss above.
+# Anything recognisably a date expression but NOT resolvable to a year (a
+# relative span, "the turn of the century", a bare decade) is reported as a
+# WARNING that quotes what could not be parsed — see check_caption_vintage. A
+# check that explains its own blind spot is worth more than one that pretends not
+# to have one; silently passing and falsely failing are both worse.
+# ─────────────────────────────────────────────────────────────────────────────
+_W_UNIT = "one|two|three|four|five|six|seven|eight|nine"
+_W_TEEN = "ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen"
+_W_TENS = "twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety"
+_W_TENS_PL = "twenties|thirties|forties|fifties|sixties|seventies|eighties|nineties"
+# Only these can open a spelled year, which is what keeps "sixty-four years ago"
+# and "one hundred and forty-nine years" out of the year parser entirely.
+_W_CENTURY = "fifteen|sixteen|seventeen|eighteen|nineteen|twenty"
+_WORD_VALUES = {
+    **{w: i + 1 for i, w in enumerate(_W_UNIT.split("|"))},
+    **{w: i + 10 for i, w in enumerate(_W_TEEN.split("|"))},
+    **{w: (i + 2) * 10 for i, w in enumerate(_W_TENS.split("|"))},
+    **{w: (i + 2) * 10 for i, w in enumerate(_W_TENS_PL.split("|"))},
+}
+# "fifteen hundred years", "nineteen hundred people" — a count, not a year.
+_QUANTITY_NOUNS = (r"years?|months?|weeks?|days?|hours?|people|men|women|miles?|"
+                   r"kilometres?|kilometers?|metres?|meters?|feet|foot|pounds?|"
+                   r"dollars?|euros?|words?|copies|times|fragments?|gears?|teeth")
+SPELLED_YEAR_RE = re.compile(
+    rf"\b(?P<c>{_W_CENTURY})[\s‐-―-]+(?:"
+    rf"hundred(?!\s+(?:and\s+[\w-]+\s+)?(?:{_QUANTITY_NOUNS})\b)"
+    rf"(?:\s+and)?(?:[\s‐-―-]+(?P<hu>{_W_TENS}(?:[\s‐-―-]+(?:{_W_UNIT}))?"
+    rf"|{_W_TEEN}|{_W_UNIT}))?"
+    rf"|(?:oh|o)[\s‐-―-]+(?P<oh>{_W_UNIT})"
+    rf"|(?P<pl>{_W_TENS_PL})"
+    rf"|(?P<t>{_W_TENS})(?:[\s‐-―-]+(?P<tu>{_W_UNIT}))?"
+    rf"|(?P<teen>{_W_TEEN})"
+    rf")\b", re.IGNORECASE)
+# "two thousand and four". A numeric tail is REQUIRED: "two thousand years in
+# seawater" (issue #18's own Long Read) is a duration, not the year 2000.
+THOUSAND_YEAR_RE = re.compile(
+    rf"\btwo\s+thousand(?:\s+and)?[\s‐-―-]+"
+    rf"(?P<n>(?:{_W_TENS})(?:[\s‐-―-]+(?:{_W_UNIT}))?|{_W_TEEN}|{_W_UNIT})\b",
+    re.IGNORECASE)
+_ORDINAL_CENTURIES = {
+    "fifteenth": 15, "sixteenth": 16, "seventeenth": 17, "eighteenth": 18,
+    "nineteenth": 19, "twentieth": 20, "twenty-first": 21, "twenty first": 21,
+}
+CENTURY_RE = re.compile(
+    r"\b(fifteenth|sixteenth|seventeenth|eighteenth|nineteenth|twentieth|"
+    r"twenty[\s-]first)\s+century\b", re.IGNORECASE)
+# Present-week deixis. In a weekly these are claims about the issue's own week.
+THIS_WEEK_RE = re.compile(
+    r"\bthis (?:week|weekend|morning|afternoon|evening|month)\b"
+    r"|\b(?:today|tonight|yesterday|tomorrow)\b"
+    r"|\blast night\b|\bas this is read\b|\bthis year\b", re.IGNORECASE)
+WEEKDAY_RE = re.compile(
+    r"\b(?:on|last|this|by|since|from)\s+"
+    r"(Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday)\b", re.IGNORECASE)
+# Recognisably a date expression, NOT resolvable to a year here.
+UNRESOLVED_DATE_RES = (
+    ("turn-of-century", re.compile(r"\bturn of the (?:century|millennium)\b", re.IGNORECASE)),
+    ("relative-span", re.compile(
+        rf"\b(?:\d{{1,4}}|{_W_UNIT}|{_W_TEEN}|(?:{_W_TENS})(?:[\s-]+(?:{_W_UNIT}))?"
+        rf"|(?:{_W_UNIT})\s+hundred(?:\s+and\s+(?:(?:{_W_TENS})(?:[\s-]+(?:{_W_UNIT}))?"
+        rf"|{_W_TEEN}|{_W_UNIT}))?)"
+        rf"[\s-]+(?:years?|decades?|centuries|century)\s+"
+        rf"(?:ago|after|since|before|earlier|later|prior)\b", re.IGNORECASE)),
+    ("bare-decade", re.compile(rf"\bthe\s+(?:{_W_TENS_PL})\b", re.IGNORECASE)),
+    ("vague-span", re.compile(
+        r"\b(?:half\s+)?a\s+(?:century|decade|millennium)\s+(?:ago|earlier|later|before)\b"
+        r"|\bdecades\s+(?:ago|earlier|later)\b", re.IGNORECASE)),
+)
+
+
+def _spelled_year(m: re.Match) -> int | None:
+    base = _WORD_VALUES[m.group("c").lower()] * 100
+    if m.group("oh"):
+        return base + _WORD_VALUES[m.group("oh").lower()]
+    if m.group("pl"):
+        return base + _WORD_VALUES[m.group("pl").lower()]          # decade START
+    for grp in ("hu", "t", "teen"):
+        val = m.group(grp)
+        if val:
+            parts = re.split(r"[\s‐-―-]+", val.strip().lower())
+            return base + sum(_WORD_VALUES.get(p, 0) for p in parts)
+    return base                                                     # "nineteen hundred"
+
+
+def band_claim_years(prose: str, issue_year: int | None) -> tuple[list[tuple[int, str]], list[str]]:
+    """(claim years with the evidence that produced each, unresolved date phrases).
+
+    Years are clamped to 1500–2100, the same window §3.9 gives the digit form.
+    """
+    claims: list[tuple[int, str]] = []
+    for m in YEAR_RE.finditer(prose):
+        claims.append((int(m.group(1)), f"digits {m.group(1)!r}"))
+    for m in SPELLED_YEAR_RE.finditer(prose):
+        y = _spelled_year(m)
+        if y and 1500 <= y <= 2100:
+            note = "spelled decade (start of decade)" if m.group("pl") else "spelled"
+            claims.append((y, f"{note} {m.group(0)!r} → {y}"))
+    for m in THOUSAND_YEAR_RE.finditer(prose):
+        parts = re.split(r"[\s‐-―-]+", m.group("n").strip().lower())
+        y = 2000 + sum(_WORD_VALUES.get(p, 0) for p in parts)
+        if 1500 <= y <= 2100:
+            claims.append((y, f"spelled {m.group(0)!r} → {y}"))
+    for m in CENTURY_RE.finditer(prose):
+        key = re.sub(r"\s+", " ", m.group(1).lower()).replace(" ", "-")
+        n = _ORDINAL_CENTURIES.get(key) or _ORDINAL_CENTURIES.get(m.group(1).lower())
+        if n:
+            claims.append(((n - 1) * 100, f"century {m.group(0)!r} → {(n - 1) * 100} (century start)"))
+    if issue_year is not None:
+        m = THIS_WEEK_RE.search(prose)
+        if m:
+            claims.append((issue_year, f"this-week deixis {m.group(0)!r} → the issue's year {issue_year}"))
+        else:
+            for wm in WEEKDAY_RE.finditer(prose):
+                # "on Monday 15 July 1965" is a historical date, not this week.
+                if YEAR_RE.search(prose[wm.end():wm.end() + 30]):
+                    continue
+                claims.append((issue_year,
+                               f"this-week deixis {wm.group(0)!r} → the issue's year {issue_year}"))
+                break
+    unresolved: list[str] = []
+    for label, rx in UNRESOLVED_DATE_RES:
+        for m in rx.finditer(prose):
+            phrase = re.sub(r"\s+", " ", m.group(0)).strip()
+            entry = f"{label}: {phrase!r}"
+            if entry not in unresolved:
+                unresolved.append(entry)
+    return claims, unresolved
 FOUR_DIGIT_RE = re.compile(r"^\d{4}$")
 # WP-3 normalises the Long Read byline to `· DD MON YYYY`; accept long month
 # names and unpadded days too, so this reads a writer's date as well as a
@@ -2017,6 +2172,41 @@ def load_shows_vocab() -> tuple[tuple[str, ...], tuple[str, ...], tuple[str, ...
             "shows vocab from the SPEC §3.3/§3.8 literals (image-source-types.json unreadable)")
 
 
+def load_table_kinds() -> tuple[tuple[str, ...], str]:
+    """The legal `data-table-kind` values, READ FROM the structure of record.
+
+    `references/format-skeletons/weekly.json` § structural_hooks.table_kind states
+    the enum inline as `data-table-kind ∈ a|b|c…`. Parsing it means a seventh kind
+    propagates the moment WP-3 adds it, instead of hard-failing a legitimate card
+    because this file has not caught up — which is exactly what happened to the
+    sixth kind (`finance`): the enum was hardcoded here, so the Desk's financial
+    card could not be stamped without taking the golden to exit 1.
+    """
+    path = SKILL_ROOT / "references" / "format-skeletons" / "weekly.json"
+    keypaths = (("structural_hooks", "table_kind"),                    # canonical hook
+                ("furniture_layer", "components", "standings_card"))   # same list, restated
+    try:
+        doc = json.loads(path.read_text(encoding="utf-8"))
+        for keypath in keypaths:
+            node: object = doc
+            for key in keypath:
+                node = node.get(key) if isinstance(node, dict) else None
+                if node is None:
+                    break
+            if not isinstance(node, str):
+                continue
+            m = re.search(r"data-table-kind\s*∈\s*([a-z_]+(?:\s*\|\s*[a-z_]+)+)", node)
+            if m:
+                kinds = tuple(k.strip() for k in m.group(1).split("|") if k.strip())
+                if len(kinds) >= 3:
+                    return kinds, (f"{len(kinds)} table kind(s) from weekly.json § "
+                                   f"{'.'.join(keypath)}")
+    except Exception:
+        pass
+    return TABLE_KINDS_FALLBACK, (f"{len(TABLE_KINDS_FALLBACK)} table kind(s) from the "
+                                  "SPEC §3.4 literal (weekly.json unreadable)")
+
+
 def load_sport_tokens() -> tuple[tuple[str, ...], str]:
     """The closed sport-token list, PARSED from its canonical home.
 
@@ -2179,33 +2369,69 @@ def check_cover_leads_on(body: str, report: Report) -> None:
         report.ok("cover-leads-on", f"cover declares data-cover-leads-on=\"{val}\"")
 
 
-def check_table_kind(body: str, report: Report) -> None:
-    """SPEC §3.4 · `.mx-scorecard` is polymorphic, and only five shapes exist.
+def scorecards(body: str) -> list[dict]:
+    """Every `.mx-scorecard` CARD ELEMENT (not its `__child` classes), with the
+    band it sits in and its visible title — so an undeclared card can be named."""
+    regions = band_regions(body)
+    out: list[dict] = []
+    rx = re.compile(r'<([a-z0-9]+)\b[^>]*\bclass\s*=\s*"[^"]*\bmx-scorecard\b[^"]*"[^>]*>',
+                    re.IGNORECASE)
+    for m in rx.finditer(body):
+        el = _element_html(body, m.start(), m.group(1))
+        title_el = _first_class_element(el, "mx-scorecard__title")
+        band = _band_at(regions, m.start())
+        out.append({
+            "kind": _tag_attrs(m.group(0)).get("data-table-kind"),
+            "band": band[0] if band else "(no band)",
+            "title": _visible(title_el) if title_el else "(untitled)",
+        })
+    return out
 
-    A sixth value renders as the unstyled base card — the single-gap-column table
-    that was the reason only a weekly-table sport could fill The Touchline. Value
-    validity is a hard FAIL; a `.mx-scorecard` with NO data-table-kind is a WARN,
-    because every issue in the archive predates the attribute and retro-failing
-    them is not what the gate is for.
+
+def check_table_kind(body: str, report: Report) -> None:
+    """SPEC §3.4 / §3.11 · `.mx-scorecard` is polymorphic, and the legal shapes are
+    the ones the structure of record names.
+
+    A value outside the set renders as the unstyled base card — the single
+    right-aligned gap column that was the reason only a weekly-table sport could
+    fill The Touchline's furniture. Value validity is a hard FAIL; a
+    `.mx-scorecard` with NO data-table-kind is a WARN, because every issue in the
+    archive predates the attribute and retro-failing them is not what the gate is
+    for.
+
+    Reported PER CARD, not per issue. WP-3b found the earlier per-issue form
+    effectively silent: one declared card suppressed the warning for every
+    undeclared one, so the Desk's financial card went unreported. Each card is
+    now named by band and title, which is what makes the warning actionable.
     """
+    kinds, kinds_note = load_table_kinds()
+    cards = scorecards(body)
+    # Read the values from the DOM as well as from the cards, so a data-table-kind
+    # on something that is not a .mx-scorecard is still validated.
     values = re.findall(r'\bdata-table-kind\s*=\s*["\']([^"\']*)["\']', body)
-    bad = sorted({v for v in values if v not in TABLE_KINDS})
-    # Count CARD ELEMENTS, not every .mx-scorecard__* child class.
-    n_cards = len(re.findall(r'\bclass\s*=\s*"[^"]*\bmx-scorecard\b[^"]*"', body, re.IGNORECASE))
+    bad = sorted({v for v in values if v not in kinds})
     if bad:
         report.fail("table-kind",
-                    f"data-table-kind value(s) outside the five legal shapes: {bad}. "
-                    f"Legal: {list(TABLE_KINDS)} (SPEC §3.4). A sixth value renders as the "
-                    f"unstyled base card — CSS exists for exactly these five.")
+                    f"data-table-kind value(s) outside the legal shapes: {bad}. "
+                    f"Legal: {list(kinds)} ({kinds_note}). A value outside the set renders as "
+                    f"the unstyled base card — CSS exists for exactly these shapes. If the shape "
+                    f"is genuinely new, it is a weekly.json + CSS change (WP-3's files), not a "
+                    f"value a writer can invent.")
         return
+    declared = [c for c in cards if c["kind"]]
+    undeclared = [c for c in cards if not c["kind"]]
     if values:
         report.ok("table-kind",
-                  f"{len(values)} data-table-kind value(s), all legal: {sorted(set(values))}")
-    elif n_cards:
-        report.warn("table-kind",
-                    f"{n_cards} .mx-scorecard element(s) carry no data-table-kind — the card "
-                    f"renders as the unstyled base shape. Declare one of {list(TABLE_KINDS)} "
-                    f"(SPEC §3.4 / §3.11).")
+                  f"{len(values)} data-table-kind value(s), all legal: {sorted(set(values))} "
+                  f"({kinds_note})")
+    if undeclared:
+        report.warn("table-kind/undeclared",
+                    f"{len(undeclared)} of {len(cards)} .mx-scorecard card(s) carry no "
+                    f"data-table-kind and render as the unstyled base shape:\n"
+                    + "\n".join(f"    • band '{c['band']}' — \"{c['title']}\"" for c in undeclared)
+                    + f"\n    Declare one of {list(kinds)} (SPEC §3.4 / §3.11). Reported per card: "
+                      f"{len(declared)} card(s) in this issue DO declare a kind, and a per-issue "
+                      f"check would have said nothing about these.")
 
 
 # ─── GATE 2 · markup contracts: sport tokens (SPEC §3.11, criterion #7) ──────
@@ -2469,7 +2695,8 @@ def check_figure_provenance(figs: list[dict], shows_enum: tuple[str, ...],
 
 # ─── GATE 1 · image checks: caption vintage (SPEC §3.9, criterion #3) ────────
 
-def check_caption_vintage(body: str, figs: list[dict], report: Report) -> None:
+def check_caption_vintage(body: str, figs: list[dict], issue_year: int | None,
+                          report: Report) -> None:
     """SPEC §3.9 · fixes defect B mechanically. Acceptance criterion #3.
 
     For each .plate-img with a NON-EMPTY 4-digit `data-capture-year`: let
