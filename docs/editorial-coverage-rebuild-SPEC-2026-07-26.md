@@ -41,9 +41,12 @@ image checks, gate 2 = `validate-issue.py` markup contracts, gate 3 = the holist
    the proof they work, and it is recorded, not fixed.
 4. **No silent scope reduction.** If part of a WP can't be done, finish the rest and say exactly
    what you left and why.
-5. **Every WP updates PROGRESS.** Append your row to `docs/editorial-coverage-rebuild-PROGRESS.md`
-   under your WP heading: what changed, files touched, how it was verified, what's left. Do not
-   rewrite other WPs' entries.
+5. **Every WP writes its own evidence file.** Write
+   `docs/editorial-coverage-rebuild-EVIDENCE/WP-<N>.md`: what changed, files touched, the exact
+   verification commands and their output, what's left, and any handoff notes. **Do not edit
+   `docs/editorial-coverage-rebuild-PROGRESS.md`** — WPs run concurrently and a shared file loses
+   writes. The orchestrator merges the evidence files into the PROGRESS ledger.
+   *(Exception: WP-1 ran alone before this rule and wrote to PROGRESS directly.)*
 6. **Verification is evidence, not assertion.** "I added the check" is not done. Done is: the check
    fires on a known-bad input and passes on a known-good one, with the command and its output
    recorded in PROGRESS.
