@@ -1,5 +1,71 @@
 # The Signal — Changelog
 
+8.44.0 — **The coverage rebuild: knowability windows, open loops, cover demotion,
+  sport breadth, and images typed by what they show** (from
+  `docs/editorial-coverage-rebuild-SPEC-2026-07-26.md`; build ledger in
+  `docs/editorial-coverage-rebuild-PROGRESS.md`, per-package evidence in
+  `docs/editorial-coverage-rebuild-EVIDENCE/`).
+  Owner review of issue #18 surfaced five defects. Every one had a structural cause in the
+  pipeline rather than a writing cause, so this rebuild fixes the structures. Diagnosis and
+  evidence are in the SPEC; the short version is that the magazine was losing Sunday results,
+  repeating its cover lead, letting one motorsport round crowd out every other sport, presenting a
+  2,000-year-old subject as breaking news, and choosing images by who published them rather than
+  by what they show.
+
+  - **Coverage is bounded by instants, not calendar days (defect D).** The window is
+    `(previous research_cut_at, now]` — a *knowability* window. Before this, a day could sit
+    "inside the covered week" while its results were unknowable at research time, so the 2026
+    World Cup final and The Open both concluded on a publication Sunday, were correctly gate-checked
+    as `upcoming`, and were then **never reported at all**. Five verification layers refusing to
+    guess a result, and no counterpart obligation to report it once it happened.
+  - **`upcoming` facts open loops the next issue must close.** `state.open_loops`, read at Phase 0a
+    and written at Phase 10; enforced upstream by `validate-research-bundle.py --state` and
+    downstream by `data-resolves-loop` in `validate-issue.py`. The decorative
+    `[CARRIED FORWARD…]` placeholder now has data behind it.
+  - **Long Read vintage (defect A).** `long_read.vintage` is a required plan field. An evergreen
+    anchor renders a standing-story dateline and a date-free byline, The Letter must introduce it as
+    a feature (`data-lr-framing="feature"`), and its datums may not appear in "Datums of the Week".
+  - **Caption vintage (defect B).** If a figure predates a dated claim in its band, the caption's
+    visible sentence must state the image's year — the credit line does not count. Handles
+    spelled-out years, and warns naming what it could not parse rather than passing silently.
+  - **Cover demotion + the rut rule (defect C).** `cover_lead_ledger` gives the planner more than
+    one week of memory; a family that led 3 of the last 4 requires a written
+    `lead_override_reason`. **Not** a return of the retired `check-topic-lock.py` — it never
+    prevents a lead, it asks for a sentence. Demoted leads fall to THE CLOSE as a Threads recap
+    plus a `data-role="demoted-lead"` ledger. `cover_leads_on` lets a feature take the cover on a
+    thin news week.
+  - **The Touchline splits results-of-record from the one story worth reading (defect D).** A
+    calendar-driven results ledger (`data-sport` per row, ≥2 sports when ≥2 concluded) plus one lead
+    story that may yield. `target_words` 350–600 → 500–800, because five furniture objects in ≤600
+    words is what forced single-competition coverage. `standings_card` is polymorphic
+    (`data-table-kind`, six values incl. `finance`). The fixed scan list that named F1 is replaced
+    by three calendar questions against `state.sports_calendar`. `interest_depth` records depth, and
+    an **absent key means unset, never off**.
+  - **The daily can see other sports at all.** It carried 10 football and 5 golf feeds and nothing
+    else, so cricket appeared **zero** times across 16 issues. Adds BBC Sport plus cricket, cycling,
+    athletics and motorsport feeds and domains; `render.js`'s headline gate and `dedup.js`'s relaxed
+    matching updated to match. Motorsport is deliberately excluded from headline eligibility and
+    given no specialist feed — results-only.
+  - **Images are typed by what they show, not who published them (defect E).** An 11-value `shows`
+    enum, a specificity hierarchy ranked by information gained (key art, product shots and posed
+    portraits are rank 5 and may not lead), and per-band shape budgets. The Wikimedia ceiling is
+    **retired** for a `min_distinct_shapes: 3` floor — a ceiling with no floor reads as a target.
+    The old checklist ranked "official art/press kit" second and instructed "find official art for
+    that game", so the researcher fetched key art because the spec told it to.
+  - **Provenance survives publish, and licences are typed.** `assets/cached/manifest.json` records
+    url + licence + shows + capture_year per asset; `mirror-images.py` previously discarded the
+    source URL entirely. `extract-covers.py` refuses to crop an `allows_derivatives: false` source.
+  - **Gate count unchanged.** Still exactly three ship gates. Every new mechanical check lives
+    inside gate 1 or 2, or in the upstream production aids. No fourth gate was added.
+  - **Verification.** `scripts/test-coverage-gates.sh` demonstrates all 12 acceptance criteria with
+    both a firing and a passing case (187 assertions, exit 0), over permanent fixtures in
+    `references/fixtures/coverage-rebuild/`. Five items are recorded as **not demonstrable** in this
+    environment rather than counted as passes. `verify-weekly-golden.sh` now surfaces plan
+    validation instead of swallowing it, and validates **both** goldens' plans.
+  - **Issue #18 is frozen as the regression fixture** and now fails the ship gate with 5 failures.
+    It is deliberately **not** repaired. 14 of 16 archived issues also fail, because they predate
+    these attributes — the gate is for new issues.
+
 8.42.0 — **The weekly redesign: "Transmission" identity + deterministic spine +
   reliability gate** (from `docs/weekly-redesign-HANDOFF.md` and its five reference docs).
   The weekly had three compounding problems — a malformed four-movement structure, no real

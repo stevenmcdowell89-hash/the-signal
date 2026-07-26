@@ -11,16 +11,41 @@ Each WP appends to its own section. Do not rewrite another WP's entry.
 |----|-------|--------|---------|-------|
 | WP-1 | Data contracts (foundation) | DONE | A B C D E | 3 rounds; contracts + state seed + `cyber_privacy` + 22 sport tokens. 9 handoffs, 1 resolved, 8 routed |
 | WP-2 | Editorial prose spec | DONE | A C D E | 13 blocks across 2 files, `(v8.44, WP-2)`; ~50 identifiers verified byte-for-byte. Raises R-2 + 2 naming divergences |
-| WP-3 | Structure of record + stitcher + CSS | DONE | A C D | golden regenerated, `verify-weekly-golden.sh` exits 0 (re-run by orchestrator). Caught WP-8's placeholder-stamping bug |
-| WP-4 | Rendered-issue checks | IN PROGRESS | A B D E | owns 6 of 12 acceptance criteria; implements against §3.4a as-built |
+| WP-3 | Structure of record + stitcher + CSS | DONE | A C D | golden regenerated + green; caught WP-8 placeholder-stamping bug. WP-3b/3c completed the tail |
+| WP-4 | Rendered-issue checks | DONE | A B D E | 6 criteria; corrected 2 of my 3 #18 predictions; TABLE_KINDS made dynamic; spelled-out years handled |
 | WP-5 | Upstream production aids | DONE | A C D E | 2 rounds; `KeyError` fixed, criteria #1/#4/#5 firing, 6 handoffs closed, 76/76 self-tests |
 | WP-6 | Image taxonomy + specificity doctrine | DONE | E | `shows` enum canonical; found the missing Steam akamai host and the mistyped Springer domain |
 | WP-7 | Daily inputs | DONE | D | 9 feeds + 5 domains, all URLs 200-verified; keyword sets regressed over 3286 titles |
 | WP-8 | Asset provenance + licence safety | DONE | E | manifest 438 entries, 13 URLs recovered from git history; ND refusal armed but cannot fire on #18 (frozen, licences unpopulated) |
 | WP-9 | Pipeline phase wiring | DONE | C D | 4 rounds; window + open loops wired, 4 stale cap claims retired, researcher brief gained shape intent |
-| WP-10 | Verification harness | PENDING | all | last; owes handoff 6 (needs an `open` loop fixture) |
+| WP-10 | Verification harness | DONE | all | 12/12 criteria, 187 assertions, exit 0; found the unvalidated mx plan nobody had looked for |
 | WP-11 | Daily routing | DONE | D | 3 lists changed, 4 audited and left alone; behaviourally verified against real blobs. Raises open risk R-1 |
-| WP-12 | Skill version + changelog | PENDING | — | added mid-build; runs last, after WP-10 |
+| WP-12 | Skill version + changelog | DONE | — | 8.44.0 stamped; written by the orchestrator after subagents hit the session limit |
+
+## Final state (2026-07-26)
+
+All 12 work packages complete, plus 3 unplanned ones the build itself exposed (WP-11 daily routing,
+WP-3b/WP-3c golden tail). Verified by the orchestrator, not taken on report:
+
+```
+verify-weekly-golden.sh   EXIT 0   both goldens' plans validated and valid
+test-coverage-gates.sh    EXIT 0   12/12 criteria (firing + passing), 187 ok, 0 failed,
+                                   5 honestly not demonstrable in this environment
+issue #18 (frozen)        5 failures — the intended regression fixture, NOT repaired
+archive                   14 of 16 fail; identical on the pre-WP-4 tree, so not a
+                          regression — those issues predate the new attributes
+```
+
+**Open for owner decision:** R-1 (the daily's Headlines has no guaranteed news slot) and R-2
+(`source_band` ratifies Week in Numbers' drift from personal to news datums). Both recorded above,
+neither silently settled.
+
+**Not demonstrable here, and not counted as passing:** `product_shot`'s conditional lead (no band
+declares a subject type in markup), the ND refusal on #18's frozen cover, a manifest entry from a
+live bundle, the nine feed URLs returning 200 (egress), the daily rendering a brief (Worker/KV/D1).
+
+**Carried debt:** the ND gate is armed but cannot fire on #18's CC BY-NC-ND cover, because licences
+only arrive through the research bundle from #19 onward.
 
 ## Open risks
 
@@ -41,8 +66,6 @@ only agent running; with several WPs now reporting concurrently, all others writ
 Issue #18 (`issues/signal_weekly_2026-07-26.html`) is the regression fixture and is **frozen**.
 These failures are the proof the checks work and are **not** to be repaired.
 
-| Check | Expected on #18 | Recorded |
-|-------|-----------------|----------|
 **Result: Issue #18 now exits 1 with 5 failures (was 0).** Two of the three predictions were **wrong**, and
 WP-4 corrected them rather than forcing the predicted outcome. Recorded as measured, not as hoped:
 
@@ -59,8 +82,13 @@ figure attributes**, so every check keyed to them is inert on it rather than fai
 still catches it by counting *declared* shapes against the floor — which is the more robust route, since
 it fails on absence rather than requiring a specific bad value to be present.
 
-**Archive sweep: 34 files, 0 regressions on pre-existing checks.** #16/#17 stay green via an archive
-exemption (no rebuild-era attribute present at all).
+**Archive sweep — two different numbers, both correct, so read them together.** WP-4 measured
+**0 regressions on pre-existing checks** across 34 files: nothing that passed before this rebuild
+fails because of it. Separately, the orchestrator measured **14 of 16 weekly issues failing overall**,
+because they fail the *new* checks — they predate `data-shows`, `data-capture-year`, `data-vintage`
+and `data-cover-leads-on` entirely. That count is **identical on the pre-WP-4 committed tree**
+(verified at `cec62e7`), which is what makes it a property of the archive rather than a regression.
+The ship gate is for new issues; the archive is not retro-certified and should not be.
 
 ---
 
