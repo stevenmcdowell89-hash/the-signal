@@ -651,7 +651,9 @@ Every `pieces[*].topic_family` MUST be one of the values below. The enumeration 
 Families are grouped by cluster for readability; the cluster name is editorial shorthand only — the validator checks against the flat union of all values.
 
 ### news_geopolitics
-`iran_war`, `ukraine`, `russia`, `china_geopolitics`, `us_politics`, `uk_politics`, `eu_politics`, `africa`, `middle_east_non_iran`, `asia_pacific`, `climate_environment`, `space_exploration`, `pandemics_health`, `ni_politics`
+`iran_war`, `ukraine`, `russia`, `china_geopolitics`, `us_politics`, `uk_politics`, `eu_politics`, `africa`, `middle_east_non_iran`, `asia_pacific`, `climate_environment`, `space_exploration`, `pandemics_health`, `ni_politics`, `cyber_privacy`
+
+> **`cyber_privacy` (added 2026-07-26 by SPEC amendment, `docs/editorial-coverage-rebuild-SPEC-2026-07-26.md` §3.5).** A breach, ransomware attack, state-backed intrusion, surveillance programme or privacy/data-protection ruling, where the *story is the compromise or the regulation of personal data at scale* — the Instructure/Canvas breach (275M records, Issue #8) is the type case. Deliberately narrow: a product launch, app feature, AI tool or platform policy change belongs in `tablets_phones` / `consumer_ai` / `generative_ai_consumer` / `ai_search` / `streaming_tech` / `smart_home` as before, even when it has a security or privacy angle. Sits in the news cluster because the reader meets these as world news, not as consumer tech.
 
 ### tech_gaming
 `switch_2`, `playstation`, `xbox`, `nintendo_other`, `pc_gaming`, `steam_deck`, `geforce_now`, `consumer_ai`, `generative_ai_consumer`, `ai_search`, `tablets_phones`, `wearables_consumer`, `e_readers`, `lego`, `streaming_tech`, `smart_home`
