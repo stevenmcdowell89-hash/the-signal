@@ -595,3 +595,270 @@ Stated precisely, because pretending otherwise is worse than a gap.
 8. **→ orchestrator: mid-task WIP commits made `git stash` an unreliable baseline** and cost me a
    mis-diagnosis (§4). If a WP is asked to prove "pre-existing vs mine", it needs a stable
    pre-WP ref to diff against.
+
+---
+
+# WP-3 — REOPENED: golden fixtures given real §3.4 figure provenance
+
+**Trigger:** WP-4 landed and `verify-weekly-golden.sh` went to **exit 1** — both goldens failed three
+image checks because their writer chapters predate SPEC §3.4.
+**Outcome: exit 0, 73 PASS / 0 FAIL / 3 WARN.** No check was weakened; `validate-issue.py` untouched.
+Baseline for every diff below is **`68230f2`** ("WP-4 DONE"), not `git stash`.
+
+## Files touched — golden fixtures only
+
+```
+$ git diff --stat 68230f2 -- <WP-3's four owned paths + references/golden>
+ .../golden/weekly-mx/chapters/{long_read,pixel_byte,screen_sound,the_letter,
+                                the_threads,this_week_in_history,touchline}.html
+ .../golden/weekly-mx/expected.html
+ .../golden/weekly/chapters/{long_read,pixel_byte,screen_sound,the_letter,
+                             this_week_in_history,touchline}.html
+ 14 files changed, 61 insertions(+), 61 deletions(-)
+
+$ git diff --name-only 68230f2 | grep -v <WP-3 ownership>
+(empty — nothing outside WP-3's files)
+$ git status --short assets/cached
+(empty — no new asset written)
+```
+
+`stitch_weekly.py`, `weekly.json` and both stylesheets are **unchanged** since `68230f2`: this was
+purely a stale-fixture fix.
+
+## What the three failures actually were
+
+```
+[FAIL] figure-provenance: 7 of 7 .plate-img figure(s) are short of the SPEC §3.4 provenance record
+[FAIL] image-shapes/distinct: 0 distinct data-shows value(s) across 7 figure(s) ([]); the floor is 3
+[FAIL] image-shapes/long-read-information: the Long Read's 2 figure(s) include none of
+       ['diagram','map','chart','artefact']
+```
+
+**WP-4's handoff called this a minimal fixture fix. It is not, and the reason matters.** Declaring
+`data-shows` *honestly* wakes two checks that were silent while the attribute was absent (by design —
+"(2), (3) and (5) can only speak about a declared value"). Adding attributes alone would have traded
+three failures for two new ones:
+
+- `image-shapes/never-lead` — **three** band lead figures across the two goldens are genuinely
+  `key_art`: Palworld's Steam header capsule (legacy Pixel & Byte), the Project Hail Mary poster
+  (legacy Screen & Sound), the Halo: Campaign Evolved key art (mx Pixel & Byte).
+- `image-shapes/pixel-byte-key-art` — mx Pixel & Byte carried **two** `key_art` (cap is 1).
+- `image-shapes/long-read-information` — the mx Long Read had only a `portrait` and an `event_photo`.
+
+The goldens were, in other words, carrying live instances of **defect E** — the thing this rebuild
+exists to fix. WP-4's checks are right; the fixtures were stale.
+
+## §2b · The honesty basis for every `data-shows` value
+
+**I looked at each image**, not just its alt text. Six were visually inspected because their shape was
+genuinely ambiguous; the rest are unambiguous photographs whose alt text describes them accurately.
+
+| Asset | Value | Basis |
+|---|---|---|
+| `e1d80d7ae3a7` | `artefact` | **Viewed:** object shot of the Telstar 1 sphere on black — the physical object, not an event |
+| `161e21e690fa` | `artefact` | **Viewed:** the preserved Pleumeur-Bodou horn antenna indoors — a museum installation |
+| `407d2c022a03` | `document` | **Viewed:** the first Mars image reproduced twice, annotated "Edge of Mars"/"Clouds Over Mars" — the primary *record*, not a museum object |
+| `7652b526eda5` | `diagram` | **Viewed:** graticule, labelled LIMB/TERMINATOR, 22 numbered frame footprints overlaid — an explanatory overlay on a map base; its payload is the coverage footprint |
+| `42906603647c` | `event_photo` | **Viewed:** production still, no logo or title treatment. WP-6's canonical wording settles it: `event_photo` = "A photograph **or still** of the actual thing happening" |
+| `c0fbc060b733` | `event_photo` | **Viewed:** MetLife Stadium in its actual FIFA World Cup 26 dressing (tournament banners, "WE ARE NEW YORK NEW JERSEY") — a documentary photograph of the real subject |
+| `63a71c18c1e3` · `8ff67aa0126f` · `de0cff9fdf9c` | `key_art` | **Viewed:** all three have the logo composited in (the first is a 460×215 Steam header capsule). Textbook §3.13 rank-5 |
+| `5c81e72a0f95` | `key_art` | **Viewed:** film poster with title treatment |
+| `df664fac69a2` · `ac225d893976` · `f37adaa87280` · `ebecfdf2c5a9` · `d2f4e531313a` · `61aac2156d95` · `0d3de2610c28` | `event_photo` | photographs of the thing happening (satellite deployment, Centre Court in play, chamber speech, a candid outside a doorway, a tanker under way, a resident in rubble) |
+| `a7143c11f458` · `2a9d4f29c684` · `65aa827ae471` | `portrait` | posed studio/official portraits — per WP-6, "a candid at an event is event_photo, not portrait", and these are not candids |
+| `e5e95fd4612f` | `map` | a labelled geographic figure of the Strait of Hormuz |
+
+**Nothing was chosen to satisfy a floor.** The distinct-shape counts (4 legacy, 7 mx) are a
+*consequence* of the honest values, not an input to them. The Long Read information figure the legacy
+golden needed was already there — Telstar 1 is honestly `artefact`, so no swap was required.
+
+### `data-capture-year` — where the honest answer is "unknown"
+
+**None of the 27 golden asset hashes has a recoverable source URL.** Verified:
+
+```
+manifest entries with a real url: 13   (all Efteling/Beekse Bergen restaurant photos)
+golden asset hashes: 27
+golden hashes WITH a real url in the manifest: NONE
+```
+
+So a capture year can only be honest where the asset's own content or the fixture's own caption dates
+it. I set a year in exactly those 11 cases — 1962 (Telstar 1 existed only in 1962 and was never
+recovered; caption says "the 1962 sphere"), 1984 (caption and alt name the Discovery deployment), 1965
+(Mariner 4 flyby, the band's own "This week in 1965"), 2026 (World Cup 26 banners visible on the
+stadium; "the 2026 film"; "the 2026 Wimbledon final"; games released 2026 per the prose) — and left the
+other 9 as `data-capture-year=""`.
+
+`""` is the legal null rendering and WP-4 skips §3.9 on it. **I am flagging that as a real limitation,
+not presenting it as a fix:** §3.9 cannot bite on those 9 figures, so for them defect B remains
+undetectable. The alternative was to guess 9 years, which is the fabrication I was told not to commit.
+The durable fix is re-sourcing the fixture's assets so their URLs and dates are known — see handoff 11.
+
+### `data-licence` / `data-allows-derivatives`
+
+Taken from each figure's own `.credit` line — the fixture's existing provenance claim. Where the credit
+names a licence it is used (`CC-BY-SA-3.0`, `PUBLIC-DOMAIN`); where it names only a wire or publisher
+("AP Photo · via CBS News", "Reuters · via PBS", "Wikimedia Commons" with no licence) the honest token
+is `UNKNOWN` with `allows-derivatives="false"` — legal, and WP-4 reports it as a **warning**, which is
+the correct visible state:
+
+```
+[WARN] figure-provenance/licence-unknown: 8 figure(s) render data-licence="UNKNOWN" …
+```
+
+Press-kit material (game key art, the poster, the Netflix still) is `PRESS-KIT-EDITORIAL` /
+`allows-derivatives="false"`.
+
+## §2c · The three key-art leads: no image was swapped, and why
+
+**I tried to swap them.** SPEC §3.13 names the path explicitly, and it works: Steam's `appdetails`
+returned real screenshots for both games, and I downloaded and inspected candidates —
+Palworld players flying mounted Pals over the Paldium sky islands (exactly the 1.0 features the prose
+names) and a Warthog firing in an ice cavern for Halo. Both are **`in_engine`** (no HUD), which the
+enum explicitly permits as a lead.
+
+**Writing them to `assets/cached/` was blocked by the sandbox**, and on reflection that is the right
+outcome: `assets/cached/**` is not a WP-3 file, and adding assets also implies writing WP-8's
+`manifest.json`. I did not work around it.
+
+So the three key_art figures were fixed the other honest way — **the doctrine's own remedy**: key art
+is last resort and may never establish a band, so the band no longer opens on it. Each figure was
+**genuinely relocated** into the item it illustrates, so the reader now meets prose first:
+
+```
+  weekly     item «Palworld hits 1.0»              hosts figure «Palworld leaves early access at 1.0…»
+  weekly     item «Project Hail Mary lands on Prime» hosts figure «Project Hail Mary reaches Prime Video…»
+  weekly-mx  item «Halo comes to PlayStation»      hosts figure «Halo: Campaign Evolved — the remade…»
+  band-lead figures remaining in all three bands: 0
+```
+
+This is a real structural change with a reader-visible effect, not a class rename — I specifically
+rejected "drop `.lead` but leave the image opening the band", which would have been gaming the check.
+Div/`<li>` balance verified in every edited file ("all balanced").
+
+**mx Pixel & Byte's two-`key_art` cap** was resolved by removing the duplicate marketing image (the
+Black Flag key art), keeping its prose. That is the budget doing its job rather than a workaround: per
+§3.13 a logo "tells the reader nothing the headline didn't", and a band with marketing art for both
+games should show one piece of it, not two.
+
+## §2d · The mx Long Read's information figure — a self-made chart
+
+The mx Long Read had only a `portrait` and an `event_photo`, and no photographic information figure
+exists for a piece about the mechanics of prime-ministerial succession. Rather than mislabel one, I
+added a **self-made `chart`** — SPEC §3.13 rank 2 / §3.14 "the paper's own figures", and the shape
+`weekly.json`'s own `chart_card` component already prescribes. It is an inline `data:` URI SVG, so **no
+new asset file was needed**.
+
+Every name, count and date in it is stated **verbatim in that fixture's own prose** (grep-verified
+before drawing): the seven-name sequence and "a decade that ought to hold two or three"; "By CNN's
+count, four of the most recent handovers happened with no general election at all"; "Labour won the
+last general election, in 2024". Election-vs-handover status is deliberately **not** assigned per name,
+because the prose does not — the count is a standalone annotation instead of a bracket over specific
+segments. `data-capture-year=""` is correct here on the contract's own terms (§3.2 allows a null
+capture year for a synthetic chart).
+
+```
+well-formed XML: True | viewBox: 0 0 760 214
+out-of-bounds elements: none
+colours used: ['#16151A', '#243F5C', '#8A8578', '#EFE8D9', '#F5F0E6', '#FF3B2F']   ← the six Transmission palette hexes, nothing else
+```
+
+**Not verified:** no rasteriser (`rsvg-convert`/`convert`/`inkscape`) is available in this sandbox, so
+the chart was validated structurally and never *rendered*. Someone should look at it once.
+
+## Stylesheet injection — the coordinator's explicit question
+
+Both stylesheets are in the injected `<style>` of the rendered goldens, and the layering is correct:
+the legacy (non-mx) golden gets the core file only; the mx golden gets both.
+
+```
+=== LEGACY golden (design_system absent) ===
+  injected <style>: 28.7 KB  (file 88.8 KB)
+  weekly/01-coverage-rebuild.css header present: True
+  weekly-mx/11-mx-coverage-rebuild.css header present: False  (expected: False)
+  all 4 core selectors in the injected CSS: True
+  all 9 mx selectors in the injected CSS: False  (expected: False)
+  markup in THIS document: data-vintage=True data-cover-leads-on=True data-table-kind=False data-shows×7
+
+=== MX golden expected.html ===
+  injected <style>: 56.6 KB  (file 157.7 KB)
+  weekly/01-coverage-rebuild.css header present: True
+  weekly-mx/11-mx-coverage-rebuild.css header present: True  (expected: True)
+  all 4 core selectors in the injected CSS: True
+  all 9 mx selectors in the injected CSS: True  (expected: True)
+  markup in THIS document: data-vintage=True data-cover-leads-on=True data-table-kind=True data-shows×14
+```
+
+Selectors probed by literal text include `.lr-title .lr-vintage{`, `.items > li[data-resolves-loop]`,
+`.mx-ledger[data-role="results-ledger"] .mx-ledger__row[data-sport]`,
+`.mx-ledger[data-role="demoted-lead"] {`, and all five `data-table-kind` variants. Each document also
+contains markup those rules bind to.
+
+## Verification — real output
+
+```
+$ bash .claude/skills/the-signal/scripts/verify-weekly-golden.sh ; echo $?
+### verify-weekly-golden.sh REAL EXIT=0 ###
+  PASS: 73   FAIL: 0   WARN: 3
+=== GOLDEN REGRESSION PASS — the weekly generator produces a valid Transmission issue ===
+```
+
+Legacy golden (was 3 FAIL, now 0):
+```
+[PASS] figure-provenance: all 7 .plate-img figure(s) carry the four-attribute provenance record
+[PASS] image-shapes/distinct: 4 distinct data-shows value(s) (floor 3): ['artefact','event_photo','key_art','portrait']
+[PASS] image-shapes/never-lead: none of the 2 declared lead figure(s) use a never-lead shape
+[PASS] image-shapes/pixel-byte-key-art: 1 key_art figure(s), none leading
+[PASS] image-shapes/long-read-information: the Long Read carries 1 information figure(s): FIG. 01=artefact
+[PASS] caption-vintage: 4 figure(s) with a dated capture year, all consistent … capture 1962 < claim 1965, and the visible caption says so
+1 warning(s). PASS.
+```
+
+mx golden:
+```
+  byte-identical ✓
+[PASS] figure-provenance: all 14 .plate-img figure(s) carry the four-attribute provenance record
+[PASS] image-shapes/distinct: 7 distinct data-shows value(s): ['chart','diagram','document','event_photo','key_art','map','portrait']
+[PASS] image-shapes/long-read-information: the Long Read carries 1 information figure(s): FIG.=chart
+[PASS] image-shapes/touchline-result: 1 Touchline result figure(s), none mis-shaped FIG.=event_photo
+[PASS] table-kind: 1 data-table-kind value(s), all legal: ['championship']
+2 warning(s). PASS.
+```
+
+**No new failures on either golden.** The 3 warnings are: `image-urls` skipped (offline, ×2) and
+`figure-provenance/licence-unknown` (×8, the honest state of those credits).
+
+I also added `data-table-kind="championship"` to the mx Touchline `.mx-scorecard` (the World Cup's
+final placings — a championship standing; my CSS rules off after the podium, which is apt here),
+clearing a `table-kind` warning.
+
+## Handoff notes (continued)
+
+9. **→ coordinator: `data-table-kind`'s enum has no non-sport value, and `.mx-scorecard` is used for
+   non-sport cards.** The mx golden's Desk carries `.mx-scorecard` "The Rate War · As of 19 Jul" (BoE
+   base rate, lender cuts, MPC date) — a **financial reference card**. None of §3.4's five values
+   (league/medal/gc/leaderboard/championship) honestly describes it, so I left it undeclared and WP-4
+   warns. §3.4's enum is a fixed cross-WP contract, so I did not add a sixth value unilaterally. Either
+   add a non-sport value, or scope WP-4's warning to Touchline scorecards, or stop using
+   `.mx-scorecard` outside sport. **Currently a WARN, so nothing is blocked.**
+10. **→ coordinator / WP-5 / WP-10: the LEGACY golden's `chapter-plan.json` now FAILS
+    `validate-chapter-plan.py` with 7 errors** (missing `research_cut_at`, `window`, `cover_leads_on`,
+    `cover_lead_topic_family`, `lead_rationale`, `long_read.vintage`, `week_in_numbers.rows`).
+    `verify-weekly-golden.sh` **swallows** it (`|| echo "… skipping plan check"`), so the gate is green
+    — but it is a real staleness of the same class I just fixed, and it will bite WP-10. I deliberately
+    did **not** fix it: it needs `lead_rationale` prose authored into the fixture (≥120 chars) and a
+    `latest_development` month I **cannot ground** — the Telstar piece is plainly `evergreen` with
+    material spanning 1945–1984, but nothing in the fixture dates the 1984 deployment to a month, and
+    guessing one is exactly the fabrication I refused elsewhere. Needs a decision on what the fixture
+    should assert. (Note the harness swallowing this failure is itself worth fixing.)
+11. **→ WP-8 + coordinator: the real fix for the goldens' provenance is re-sourcing, and I have the
+    replacement images ready.** 9 of 21 golden figures carry `data-capture-year=""` and 8 carry
+    `data-licence="UNKNOWN"` because their source URLs are unrecoverable. Two verified `in_engine`
+    Steam screenshots (Palworld sky-islands traversal; Halo Warthog ice cavern) are downloaded and
+    inspected in the scratchpad and would upgrade both Pixel & Byte bands from relocated key art to
+    rank-4 leads with known URL, licence and year. Blocked only on write access to `assets/cached/**`
+    plus WP-8 recording them in `manifest.json`. Say the word and it is a small change.
+12. **→ WP-4: nothing needs changing, and two of your checks earned their keep.** `never-lead` and
+    `pixel-byte-key-art` caught genuine defect-E instances in the fixtures the moment shapes were
+    declared — that is the checks working, not fixture noise. One correction for your handoff 1: adding
+    the four attributes is *not* sufficient on its own; honest values also require the fixture's
+    key-art leads and the mx Long Read's missing information figure to be dealt with.
