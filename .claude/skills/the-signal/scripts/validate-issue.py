@@ -2914,6 +2914,16 @@ def main(argv: list[str]) -> int:
     elif fmt in SPECIAL_FORMATS and fmt not in HOLIDAY_FORMATS:
         check_special_component_variety(html, fmt, report)
 
+    # ── Coverage-rebuild checks (SPEC docs/editorial-coverage-rebuild-SPEC-2026-07-26.md) ──
+    # Folded INTO the existing two mechanical gates — gate 1 image checks, gate 2
+    # markup contracts — per SPEC §0 (no fourth ship gate). See
+    # run_coverage_checks() for the scope rules.
+    try:
+        run_coverage_checks(html, fmt, new_system, path, args.state, args.run_date, report)
+    except ValueError as e:                      # bad --run-date: an invocation error
+        print(f"ERROR: {e}")
+        return 2
+
     # Image URL static check — runs ALWAYS, even in restricted environments.
     # Catches page URLs used as image src regardless of egress policy.
     static_image_url_check(html, report)

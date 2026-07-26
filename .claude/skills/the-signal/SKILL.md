@@ -303,7 +303,10 @@ Run `python3 scripts/validate-research-bundle.py /tmp/signal-build/research-bund
 
 - Every `url_or_keyword` must be an `http(s)://` URL (keywords are rejected — they force writers to invent URLs, the RT-16 trap).
 - ≥3 of the 5 source types represented (press_kit / government / archive / news_cdn / wikimedia — see `references/image-source-types.json`).
-- Wikimedia ≤4 entries AND ≤30% of total (whichever is smaller). Any single domain >50% is RT-5 hard fail.
+- Any single domain >50% is RT-5 hard fail (`thresholds.single_domain_max_pct` — **not** retired).
+- **≥3 distinct `shows` values across `image_candidates[]`** (`thresholds.min_distinct_shapes`, SPEC §3.8/§3.14). The axis is the 11-value `shows` enum — `event_photo` · `gameplay` · `in_engine` · `key_art` · `product_shot` · `portrait` · `diagram` · `map` · `chart` · `artefact` · `document` — canonicalised in `references/image-source-types.json` and mirrored in `references/spec/data-contracts.md`. A value outside the enum is a hard fail: an unlabelled or typo'd shape cannot be counted.
+- **The Wikimedia caps are RETIRED (SPEC §3.14, 2026-07-26) — do not reinstate them and do not brief a researcher as though they existed.** `wikimedia_max_pct: 30` and `wikimedia_max_count: 4` are gone from `thresholds` (recorded in `retired_thresholds` so the retirement is auditable) and no script reads them. The reason is the whole of defect E: **a ceiling with no matching floor reads as a target.** Commons became the thing to fill *up to* — "four Wikimedia images allowed" — while nothing required an image that showed the mechanism working. `min_distinct_shapes` is the floor the ceiling was standing in for and failing to be. A bundle of eleven Commons images with three distinct shapes is better research than four Commons images that are all key art.
+- **Shape quality is judged by information gained, not by provenance** (`references/compliance-checklist.md` § Image specificity check, rewritten by SPEC §3.13): (1) a photo/still of the actual thing happening (`event_photo`, `gameplay`), (2) a diagram/map/chart carrying information the prose cannot, (3) the artefact or primary document itself, (4) in-engine or in-context still, (5) **key art / product shot / posed portrait — last resort, and never a lead figure.** Issue #18's Pixel & Byte lead was Halo key art with the logo composited in; the old spec ranked press-kit art at 2 and instructed "find official art for that game", so the researcher obeyed the spec. Do not hand writers a bundle whose only shapes are rank 5.
 - Ambiguous domains like `live.staticflickr.com` require an explicit `source_type` field on the candidate.
 
 It **also** enforces the `facts` provenance rules (v8.29 — see Phase 3a and `references/spec/global.md` § fact-provenance): each fact carries `claim`/`status`/`date`/`source_url`; a `status:"happened"` fact dated after `--run-date` is rejected (it can't have happened yet); a `type:"opinion"` fact must carry a real `speaker` + `quote`. An absent/empty `facts` array warns (acceptable for a fact-thin issue) but a malformed entry hard-fails.
@@ -442,9 +445,10 @@ This phase replaces what was previously an implicit "browse the issue manually" 
 ### Phase 7.7 — Image-source diversity (mandatory before publish)
 Run `bash scripts/check-image-diversity.sh <stitched-html-path>`. The script classifies every `<img src>` and `background-image` URL via `references/image-source-types.json` and enforces:
 
-- No single domain >50% of images (RT-5 hard fail)
-- Wikimedia ≤30% of images AND ≤4 entries (whichever is smaller)
-- ≥3 distinct source types from the 5-type menu
+- No single domain >50% of images (RT-5 hard fail — `single_domain_max_pct`, not retired)
+- ≥3 distinct source types from the 5-type menu (`min_distinct_source_types`)
+- **≥3 distinct `data-shows` values across the issue** (`min_distinct_shapes`, SPEC §3.8/§3.14), read off the `data-shows` attribute the stitcher emits on every `.plate-img`. An issue with **no** `data-shows` at all fails — unlabelled figures cannot be counted — and a value outside the canonical `shows` enum is a hard fail (a typo'd shape is drift, not a new shape).
+- **The Wikimedia caps are RETIRED here too (SPEC §3.14)** — `wikimedia_max_pct` / `wikimedia_max_count` are gone from the lookup file and this script no longer reads them. Domain diversity was never the problem: issue #18 cleared `min_distinct_source_types: 3` comfortably while leading Pixel & Byte on key art. Diversity of *domains* does not fix a boring issue; only different *kinds of picture* do.
 
 Unknown domains (not in the lookup) trigger an advisory rather than a hard fail — extend `references/image-source-types.json` when a new recurring source appears.
 
