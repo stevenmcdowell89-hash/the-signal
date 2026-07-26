@@ -596,3 +596,307 @@ things are worth reading out of that:
    fixtures' invented rows are prefixed `FIXTURE DATA — not a real event` so they can never be
    mistaken for facts of record. Deliberately **not** in the repo:
    `references/fixtures/coverage-rebuild/**` is yours.
+
+---
+---
+
+# WP-4 round 2 — closing the §3.9 blind spot; `finance` and per-card table kinds
+
+**Status: DONE.** Both fixes shipped in the same exclusive file, `scripts/validate-issue.py`
+(+303/−33 against **`d10d34c`**, the named baseline). Everything below is re-run output, including the
+39-case matrix, Issue #18, both goldens and the full archive sweep.
+
+Headline: **on the real mx golden, with WP-3b's editorial caption fix reverted, `d10d34c` PASSES and
+this version FAILS.** That is the blind spot, closed, demonstrated on the artifact it was found in.
+
+```
+$ python3 <d10d34c copy>  fx/golden-unfixed-caption.html --format weekly --skip-image-urls --run-date 2026-07-19
+[PASS] caption-vintage: 10 figure(s) with a dated capture year, all consistent with their band's claims…
+$ python3 scripts/validate-issue.py fx/golden-unfixed-caption.html --format weekly --skip-image-urls --run-date 2026-07-19
+[FAIL] caption-vintage: 1 of 10 dated figure(s) illustrate a later claim without saying so (SPEC §3.9):
+```
+
+(The fixture is the committed golden with one edit: `Andy Burnham, pictured in 2024 —` → `Andy Burnham —`.
+That figure is `data-capture-year="2024"`, and its band's only dated claim is "This morning" / "sixty-four
+years ago this week". Under the old rule the band "made no dated claim" and a 2024 portrait sailed
+through a paragraph about this week's handover.)
+
+## 1 · `claim_max` now reads three kinds of dated claim, and quotes its evidence
+
+WP-3b was right that this mattered more than a normal gap: caption vintage is *the* check for the
+defect that prompted the rebuild, and a version that only works when the prose happens to use digits
+gives false assurance exactly where a reader would be misled. Three sources are now read, and **every
+verdict quotes the phrase that produced the year**, so the reasoning is auditable instead of magic:
+
+| Source | Example | Resolved to |
+|---|---|---|
+| digits (as before) | "In March **2021** a team at UCL…" | 2021 |
+| spelled year | "**nineteen sixty-five**", "**nineteen oh six**", "**nineteen hundred and one**", "**eighteen seventy-seven**", "**twenty twenty-one**", "**nineteen fourteen**", "**two thousand and four**", "**seventeen seventy-six**" | 1965 · 1906 · 1901 · 1877 · 2021 · 1914 · 2004 · 1776 |
+| spelled decade | "the **nineteen-seventies**" | 1970 — the decade **start**, deliberately conservative: a decade names a range, and the low end is the reading that cannot manufacture a false failure |
+| century | "the **twentieth century**", "the **twenty-first century**" | 1900 · 2000 (century start, same reasoning) |
+| **this-week deixis** | "**this week**", "**today**", "**tonight**", "**yesterday**", "**this afternoon/morning/evening/weekend/month/year**", "**last night**", "**as this is read**", "on/last/this **Monday**…" | the issue's own year, from the resolved `--run-date` |
+
+Deixis is the source that fixes WP-3b's actual case, and it is not a guess: in a weekly, "this week"
+**is** a claim about the issue's year. Weekday hits are skipped when a 4-digit year follows within 30
+characters, so "on Monday 15 July 1965" stays a historical date and does not become 2026. Verified
+unit-by-unit:
+
+```
+$ python3 -c "…band_claim_years(phrase, issue_year=2026)…"
+In March 2021 a team at UCL published…                 -> 2021 [digits '2021']
+the machine was raised in nineteen hundred and one…    -> 1901 [spelled 'nineteen hundred and one' → 1901]
+a nineteen sixty-five flyby…                           -> 1965 [spelled 'nineteen sixty-five' → 1965]
+eighteen seventy-seven, the first Championships         -> 1877 [spelled 'eighteen seventy-seven' → 1877]
+twenty twenty-one brought the first complete model      -> 2021 [spelled 'twenty twenty-one' → 2021]
+the deal closed in two thousand and four                -> 2004 [spelled 'two thousand and four' → 2004]
+the nineteen-seventies changed everything               -> 1970 [spelled decade (start of decade) → 1970]
+the twentieth century had barely started                -> 1900 [century 'twentieth century' → 1900 (century start)]
+the twenty-first century's first great remake            -> 2000 [century → 2000 (century start)]
+sworn in as prime minister on Monday, the Westminster…  -> 2026 [this-week deixis 'on Monday' → the issue's year 2026]
+the race is still to run this afternoon                 -> 2026 [this-week deixis 'this afternoon' → 2026]
+on Monday 15 July 1965 the craft reached Mars            -> 1965 [digits '1965']   <- weekday guard works
+```
+
+**Three false-positive traps, closed and tested** (all three are phrases from real issues):
+
+```
+crushed and fused by two thousand years in seawater      -> NONE   # a duration, not the year 2000
+fifteen hundred years of lost workshops                  -> NONE   # ditto (quantity-noun guard)
+nineteen hundred people watched                          -> NONE   # ditto
+```
+
+`two thousand …` requires a numeric tail, and the `<century> hundred` form is refused when a quantity
+noun follows (`years|months|people|miles|…`). Without those guards issue #18's own Long Read —
+"two thousand years in seawater" — would have manufactured a claim of 2000.
+
+### What remains unparseable, and how it is reported
+
+Four forms are recognisably dates but cannot be resolved to a year here, because each needs an anchor
+this check does not have. Rather than pass silently or fail falsely, they raise
+**`caption-vintage/unparsed-dates`** — a WARNING that quotes exactly what it could not parse:
+
+| Form | Example | Why not resolved |
+|---|---|---|
+| relative span | "**one hundred and forty-nine years after** the first Championships", "**sixty-four years ago**", "**twenty-five years after** Halo shipped" | needs the anchor event's year (1877, the issue's week, 2001) — not in the band |
+| turn of the century | "at the **turn of the century**" | 1900 or 2000, genuinely ambiguous |
+| bare decade | "the **sixties**" | 1960s or 1860s; a *prefixed* decade ("the nineteen-sixties") **is** resolved |
+| vague span | "**half a century ago**", "**decades ago**" | no arithmetic available |
+
+The warning is filtered so it is diagnostic and not ambient: it fires only for a figure that would
+otherwise **pass**, whose caption does **not** already state its year, and whose capture year is
+**before** the issue's year (every unresolved form above looks backwards, so a current-year capture
+cannot be beaten by one). Real output, on the fixture built from #18's Letter with the deixis removed
+and WP-3b's own phrase inserted:
+
+```
+### capvintage-unparsed-warn   (exit=0)
+[PASS] caption-vintage: 10 figure(s) with a dated capture year, all consistent with their band's claims…
+[WARN] caption-vintage/unparsed-dates: 1 dated figure(s) sit in a band whose prose carries a date
+       expression that cannot be resolved to a year, so §3.9's claim_max may be UNDERSTATED and the
+       verdict below may be a false pass:
+    • COVER [the_letter/lead, /assets/cached/af9fc905ced8.jpg] — capture 2024; band 'the_letter'
+      contains a date expression this check cannot resolve to a year:
+      relative-span: 'one hundred and forty-nine years after'; relative-span: 'twenty-five years after'
+    This is the documented blind spot, reported rather than hidden: … Digits, spelled-out years and
+    this-week deixis ARE resolved. Check by eye that the caption is not older than what the band
+    claims — or write the year into the caption, which makes both the reader and this check certain.
+```
+
+It took **four** separate edits to that fixture to strip every deixis marker out of one band
+("this week", "the week", "this afternoon", "on Tuesday"), which is itself a result: the rule does not
+hang on a single phrase.
+
+**One further correctness fix, measured:** `.bandhead` joined the furniture stripped from band prose.
+One of the weekly's bands is literally called *Do This Week*, and its band-head would otherwise date
+every figure in it to the issue year on the strength of its own title. Stripping it changed no verdict
+anywhere in the archive (those bands' prose says "this week" too), so the only effect is that the
+evidence quoted in a failure is always a sentence, never furniture.
+
+### Firing and passing cases (real output, with the `d10d34c` verdict alongside)
+
+```
+### capvintage-spelled-claim        d10d34c exit=0   NOW exit=1
+    # #18's Long Read with its digit years spelled out (2021→"twenty twenty-one", 2005→"two thousand
+    # and five", 1901→"nineteen oh one") and FIG 03 back to its shipped caption. That band carries NO
+    # deixis, so this isolates the spelled-year parser.
+    NOW  [FAIL] caption-vintage: 1 of 10 dated figure(s) illustrate a later claim without saying so:
+         • FIG. 03 […fb560e553feb.jpg] capture year 2007 is OLDER than the band's latest claim 2021
+           [spelled 'twenty twenty-one' → 2021], and "2007" does not appear in the caption's visible sentence.
+    WAS  [PASS] caption-vintage: 10 figure(s) … all consistent with their band's claims
+### capvintage-spelled-claim-ok     d10d34c exit=0   NOW exit=0     # same band, caption corrected
+### capvintage-deixis-fire          d10d34c exit=0   NOW exit=1
+    # The Letter's cover plate at data-capture-year="2024"; that band has no year in its prose at all.
+    NOW  [FAIL] … capture year 2024 is OLDER than the band's latest claim 2026 [this-week deixis
+           'this afternoon' → the issue's year 2026], and "2024" does not appear in the caption…
+    WAS  [PASS] … COVER — capture 2024, band makes no dated claim          <- the blind spot, exactly
+### capvintage-deixis-ok            d10d34c exit=0   NOW exit=0     # caption says "in 2024"
+```
+
+And on the committed golden, the same figure is now *checked* rather than waved through — the check
+validates WP-3b's editorial fix instead of ignoring it:
+
+```
+NOW  [PASS] caption-vintage: … FIG. 01 [the_letter, /assets/cached/2a9d4f29c684.jpg] — capture 2024
+     < claim 2026, and the visible caption says so; COVER […] — capture 2026 ≥ band's latest claim
+     2026 (this-week deixis 'This morning' → the issue's year 2026); …
+WAS  [PASS] caption-vintage: … FIG. 01 [the_letter, …] — capture 2024, band makes no dated claim; …
+```
+
+## 2 · `data-table-kind` is read from `weekly.json`, and reported per card
+
+**Moved to runtime, as suggested.** `load_table_kinds()` parses the enum out of
+`weekly.json § structural_hooks.table_kind` (the inline `data-table-kind ∈ a|b|c…` list), falling back
+to `furniture_layer.components.standings_card` and then to a literal — which now includes `finance`.
+The provenance is printed, so a fallback is visible rather than silent:
+
+```
+### table-kind-finance             d10d34c exit=1   NOW exit=0
+    NOW  [PASS] table-kind: 2 data-table-kind value(s), all legal: ['championship', 'finance']
+                (6 table kind(s) from weekly.json § structural_hooks.table_kind)
+    WAS  [FAIL] table-kind: data-table-kind value(s) outside the five legal shapes: ['finance'].
+                Legal: ['league', 'medal', 'gc', 'leaderboard', 'championship']
+### table-kind-bad                 NOW exit=1      # 'table' is still rejected
+    [FAIL] table-kind: data-table-kind value(s) outside the legal shapes: ['table']. Legal: ['league',
+    'medal', 'gc', 'leaderboard', 'championship', 'finance'] (6 table kind(s) from weekly.json …).
+    … If the shape is genuinely new, it is a weekly.json + CSS change (WP-3's files), not a value a
+    writer can invent.
+```
+
+A seventh kind will now propagate the moment WP-3 adds it. The hardcoded enum was the whole reason
+WP-3b could not stamp the Desk card without taking the golden to exit 1, and it should not be able to
+happen again.
+
+**Per-card reporting: yes, worth it.** WP-3b is right that the per-issue form was effectively silent —
+one declared card suppressed the warning for every undeclared one. The card is now named by band and
+title, which is what makes it actionable, and the message says explicitly that a per-issue check would
+have said nothing. The noise is bounded (a weekly carries two cards):
+
+```
+# the mx golden — the case the old form hid completely
+[WARN] table-kind/undeclared: 1 of 2 .mx-scorecard card(s) carry no data-table-kind and render as the
+       unstyled base shape:
+    • band 'the_desk' — "The Rate War · As of 19 Jul"
+    Declare one of ['league', 'medal', 'gc', 'leaderboard', 'championship', 'finance'] (SPEC §3.4 /
+    §3.11). Reported per card: 1 card(s) in this issue DO declare a kind, and a per-issue check would
+    have said nothing about these.
+
+# issue #18 — both cards, both named
+[WARN] table-kind/undeclared: 2 of 2 .mx-scorecard card(s) …
+    • band 'touchline' — "Drivers' Championship · Into Round 11"
+    • band 'the_desk' — "The Rate War · As of 26 Jul"
+```
+
+The check is split so the two findings can never mask each other: `table-kind` (value validity, FAIL)
+and `table-kind/undeclared` (absence, WARN).
+
+## 3 · Re-runs — no regression anywhere
+
+**39-case matrix** (the original 32 plus 7 new: 5 caption-vintage year-form cases, 2 table-kind).
+Every one of the original 32 verdicts is unchanged; all 39 behave as documented.
+
+```
+$ bash run_matrix.sh          # 39 cases
+### pass.html (the corrected fixture)              (exit=0)
+### vintage-missing / -bad-enum / -news-with-lrvintage / -evergreen-dated-byline /
+    -evergreen-no-lrvintage / -evergreen-no-framing (exit=1 each, one FAIL each)
+### vintage-evergreen-ok                           (exit=0)
+### capvintage-fire                                (exit=1)  caption-vintage
+### capvintage-null-year                           (exit=0)  data-capture-year="" still legal
+### capvintage-bad-year                            (exit=1)  figure-provenance/values
+### capvintage-spelled-claim                       (exit=1)  NEW
+### capvintage-spelled-claim-ok                    (exit=0)  NEW
+### capvintage-deixis-fire                         (exit=1)  NEW
+### capvintage-deixis-ok                           (exit=0)  NEW
+### capvintage-unparsed-warn                       (exit=0)  NEW — WARN only, no false failure
+### provenance-missing                             (exit=1)
+### shapes-keyart-leads-pb / -two-keyart-pb / -lr-no-information-figure /
+    -two-distinct-shapes / -repeat-lead / -touchline-result-keyart /
+    -portrait-lead / -keyart-lead-nonpb              (exit=1 each)
+### shapes-productshot-lead                        (exit=0)  WARN (conditional never-lead)
+### shapes-touchline-result-ok                     (exit=0)
+### table-kind-bad                                 (exit=1)
+### table-kind-finance                             (exit=0)  NEW — was exit=1 at d10d34c
+### table-kind-one-undeclared                      (exit=0)  NEW — per-card WARN
+### ledger-multi-sport-token                       (exit=1)
+### ledger-unknown-token                           (exit=0)  soft WARN
+### ledger-one-sport + state-two-sports            (exit=1)
+### ledger-two-sports + state-two-sports           (exit=0)
+### ledger-one-sport + state-golf-off              (exit=0)  not applicable
+### pass.html + state-matured-loop                 (exit=1)  resolved-loops
+### loop-resolved + state-matured-loop             (exit=0)
+### pass.html + state-matured-loop @ 2026-07-18    (exit=0)  not yet matured
+### ledger-unknown-token --strict                  (exit=1 — image-urls only; token stayed a WARN)
+```
+
+**Archive sweep, 34 files, `d10d34c` vs now, comparing every check's verdict by name.** Only three
+rows changed at all, all of them the intended rename of one warning:
+
+```
+FILE                                     d10d34c  NOW      verdict changes
+signal_season-review_2026-07-20.html     exit=0   exit=0   < [WARN] table-kind > [WARN] table-kind/undeclared
+signal_weekly_2026-07-26.html            exit=1   exit=1   < [WARN] table-kind > [WARN] table-kind/undeclared
+expected.html                            exit=0   exit=0   > [WARN] table-kind/undeclared
+(rows shown = changed; 31 files identical)
+```
+
+**No exit code changed anywhere.** No issue newly fails `caption-vintage` — the spelled-year and deixis
+rules found nothing in the archive to fail, because the archive's captions either state their years
+(WP-3b's corrections) or carry no capture year at all. The one *new* finding is the golden's
+`table-kind/undeclared`, which the per-issue form had hidden.
+
+**Issue #18: unchanged, still exit 1, still 5 failures** — `figure-provenance` (11/11),
+`image-shapes/distinct`, `image-shapes/long-read-information`, `long-read-vintage`, `cover-leads-on`;
+warnings `caption-vintage` (still inert: #18 declares no capture year, so §3.9 still has nothing to
+compare — the round-2 work does not change that), `table-kind/undeclared` (now naming both cards) and
+`image-urls`. **Not repaired**, per SPEC §1.3.
+
+**Both goldens: `verify-weekly-golden.sh` REAL EXIT=0**, and the mx golden validates at exit 0
+directly. WP-3's fixture repair (`fa8c80c`) plus WP-3b's provenance recovery mean the golden now
+passes every check I own, with three warnings (`figure-provenance/licence-unknown` ×4,
+`table-kind/undeclared` ×1, `image-urls`). The § handoff-1 item from round 1 is **closed** — by the
+fixture being fixed, not by a check being weakened.
+
+```
+$ bash .claude/skills/the-signal/scripts/verify-weekly-golden.sh > golden2.txt 2>&1 ; echo "REAL EXIT=$?"
+REAL EXIT=0
+$ python3 -m py_compile .claude/skills/the-signal/scripts/validate-issue.py && echo OK
+OK
+$ git status --short
+ M .claude/skills/the-signal/references/golden/weekly/chapter-plan.json   <- not mine (concurrent WP)
+ M .claude/skills/the-signal/scripts/validate-issue.py                    <- mine
+ M .claude/skills/the-signal/scripts/verify-weekly-golden.sh              <- not mine (concurrent WP)
+ M docs/editorial-coverage-rebuild-EVIDENCE/WP-4.md                       <- this file
+```
+
+(The two files marked *not mine* appeared during this round — another WP working the golden harness
+concurrently. Untouched here; `git diff --numstat d10d34c` shows my footprint is `303 33
+.claude/skills/the-signal/scripts/validate-issue.py` and nothing else.)
+
+*One artefact of the baseline method, so nobody misreads it:* the `d10d34c` copy runs from the
+scratchpad, so its `SKILL_ROOT` cannot find `references/`, and it prints
+`shows vocab from the SPEC §3.3/§3.8 literals (image-source-types.json unreadable)`. That is the
+fallback doing its job, not a difference between the two versions — the literals and the file agree on
+all three shape lists, and no verdict differs because of it. `TABLE_KINDS` at `d10d34c` was genuinely
+hardcoded with no file read at all, so the `table-kind-finance` failure above is real, not a path
+artefact.
+
+## Round-2 handoff notes
+
+1. **→ WP-3 / WP-3b: the Desk's finance card is now stampable and is being asked for by name.**
+   `finance` is legal (read from your `weekly.json`), and `table-kind/undeclared` names
+   `band 'the_desk' — "The Rate War · As of 19 Jul"` in the golden. Adding `data-table-kind="finance"`
+   there clears the last warning I raise against the golden's furniture.
+2. **→ WP-2 / WP-6: the remaining §3.9 exposure is editorial, not mechanical.** A relative span
+   ("*one hundred and forty-nine years after the first Championships*") cannot be resolved by any
+   check, so the durable fix is the writing rule: **if a figure is older than the week it illustrates,
+   the year goes in the visible sentence.** That single sentence in the editorial spec makes the
+   caption right for the reader *and* makes this check certain, which is why the warning says so.
+3. **→ WP-10: seven new fixtures, same script.** `build_fixtures.py` now emits 35 HTML fixtures
+   (including `golden-unfixed-caption.html`, built from the committed golden by reverting one caption —
+   the cleanest possible regression test for the blind spot) and 3 state fixtures. `run_matrix.sh` runs
+   all 39 cases in one command.
+4. **→ coordinator: the deixis rule makes `--run-date` load-bearing for §3.9, not just §3.7.** It is
+   still auto-resolved (filename, then today UTC) and its provenance is printed every run, but a
+   pipeline that passes a wrong `--run-date` now moves `claim_max` for every band that says "this
+   week". Passing it explicitly from the publish step (WP-9's `stitch-issue.sh`) would remove the
+   fallback entirely.

@@ -2125,7 +2125,13 @@ def _fig_id(fig: dict) -> str:
 # Ledger DATE CELLS are deliberately NOT excluded: "1901 Recovered / 2005 Scanned
 # / 2021 Modelled" are claims of record, which is exactly what the rule reads.
 BAND_FURNITURE_CLASSES = ("byline", "sigline", "dataline", "stamp", "lr-vintage",
-                          "colophon", "runtime")
+                          "colophon", "runtime", "bandhead")
+# `bandhead` joins the list with the deixis rule below: a band's own name plate is
+# not a claim it makes, and one of the weekly's bands is literally called "Do This
+# Week" — its band-head would otherwise date every figure in it to the issue year
+# on the strength of its title. (Measured: stripping it changes no verdict in the
+# archive, because those bands' prose says "this week" too. It is stripped anyway,
+# so the evidence quoted in a failure is always a sentence, never furniture.)
 
 
 def band_prose(body: str, span: tuple[int, int]) -> str:
@@ -2742,8 +2748,13 @@ def check_caption_vintage(body: str, figs: list[dict], issue_year: int | None,
         visible = f["cap_visible"]
         stated = bool(visible and cy_raw in visible)
         # A band's unresolvable date expressions only matter for a figure that
-        # would otherwise PASS — they are the reason the pass might be wrong.
-        if unresolved and not stated:
+        # would otherwise PASS — they are the reason the pass might be wrong. Two
+        # filters keep the warning meaningful rather than ambient: a caption that
+        # already states its year is safe whatever the prose says, and a capture
+        # year at or after the issue's own year cannot be beaten by an
+        # unresolved PAST expression ("two years ago", "the sixties") — every
+        # form in UNRESOLVED_DATE_RES looks backwards from something.
+        if unresolved and not stated and (issue_year is None or cy < issue_year):
             blind.append(f"    • {_fig_id(f)} — capture {cy}; band '{f['band']}' contains a date "
                          f"expression this check cannot resolve to a year: " + "; ".join(unresolved))
         if not claims:

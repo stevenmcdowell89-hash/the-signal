@@ -3,10 +3,22 @@
     "format": "weekly",
     "date": "2026-07-19",
     "topic": "A week of handovers — Burnham to No.10, a World Cup final, Sinner holds",
+    "special_id": null,
+    "execution_mode": "parallel",
     "issue_number": 17,
     "location": "Northern Ireland",
     "reading_time": "32 min · one sitting",
-    "design_system": "mx"
+    "design_system": "mx",
+    "research_cut_at": "2026-07-19T00:00:00Z",
+    "window": {
+      "from": "2026-07-13T00:00:00Z",
+      "to": "2026-07-19T00:00:00Z"
+    },
+    "window_note": "SPEC §3.1. The window is (previous cut, this cut]. `to` is this issue's own date (issue_meta.date) at 00:00:00Z; `from` is issue 16's date, 2026-07-13 — the legacy golden's own issue_meta.date, and the same value in state.cover_lead_ledger. Both are BOUNDS derived from the fixtures' own dates, not measured instants: nothing in this repo recorded a research cut for issue 17, and midnight is used so that no minute-level precision is claimed which was never measured.",
+    "cover_leads_on": "news",
+    "cover_lead_topic_family": "uk_politics",
+    "lead_rationale": "Led on the Long Read, not the news. The week's two biggest outcomes were both still unresolved at the cut — The Touchline says so in its own words, 'As I write, neither has a winner' — so the World Cup final at MetLife and the Belgian Grand Prix were considered for the cover and rejected: a cover cannot lead on a result it would have to guess, and both run as fixtures in The Touchline instead. Sinner's retained Wimbledon title was the week's one settled trophy and was rejected as too small for a cover. Burnham's arrival at Number 10 is the week's settled political story and the piece that explains the mechanism IS the Long Read, so the anchor takes the cover and On the Radar carries Monday's handover.",
+    "budget_note": "SPEC §3.1 / handoff A5. Each target_word_count below is the MEASURED word count of that band's committed chapter HTML (tags, comments, <svg> and data: URIs stripped, then whitespace-split), so the plan describes this fixture rather than asserting a target nobody set. They sum to 7,820 — inside the 6,800–7,500-plus mid-band aim and well over the 6,000 floor."
   },
   "cover": {
     "eyebrow": "BAND 01 — THE LEAD TRANSMISSION",
@@ -15,29 +27,164 @@
     "tagline": "tuning in to the week you lived"
   },
   "chapters": [
-    { "chapter_id": "the_letter", "chapter_num": 1 },
-    { "chapter_id": "week_in_numbers", "chapter_num": 2 },
-    { "chapter_id": "caught_up", "chapter_num": 3 },
-    { "chapter_id": "long_read", "chapter_num": 4,
-      "nav_coverline_html": "<b>The Long Read:</b> seven leaders, no election", "nav_freq": "88.9", "nav_on": true },
-    { "chapter_id": "touchline", "chapter_num": 5,
-      "nav_coverline_html": "The Cup's last act; Sinner holds", "nav_freq": "98.4", "nav_on": false },
-    { "chapter_id": "pixel_byte", "chapter_num": 6,
-      "nav_coverline_html": "<b>Remake summer:</b> Black Flag and Halo reborn", "nav_freq": "104.7", "nav_on": true },
-    { "chapter_id": "screen_sound", "chapter_num": 7,
-      "nav_coverline_html": "<b>Heartstopper</b> takes its bow", "nav_freq": "106.0", "nav_on": false },
-    { "chapter_id": "bookmark", "chapter_num": 8,
-      "nav_coverline_html": "Three ways into new SF", "nav_freq": "90.1", "nav_on": false },
-    { "chapter_id": "this_week_in_history", "chapter_num": 9,
-      "nav_coverline_html": "This week in <b>1965</b>: Mars, up close", "nav_freq": "94.6", "nav_on": false },
-    { "chapter_id": "the_desk", "chapter_num": 10,
-      "nav_coverline_html": "<b>The Desk:</b> running without losing the block, and a rate to beat", "nav_freq": "92.3", "nav_on": true },
-    { "chapter_id": "the_threads", "chapter_num": 11 },
-    { "chapter_id": "rabbit_hole", "chapter_num": 12,
-      "nav_coverline_html": "Down the rabbit hole to a Saxon saint", "nav_freq": "101.2", "nav_on": false },
-    { "chapter_id": "on_the_radar", "chapter_num": 13,
-      "nav_coverline_html": "What's coming: a new PM, a rate call", "nav_freq": "96.5", "nav_on": true },
-    { "chapter_id": "do_this_week", "chapter_num": 14 },
-    { "chapter_id": "colophon", "chapter_num": 15 }
-  ]
+    {
+      "chapter_id": "the_letter",
+      "chapter_num": 1,
+      "target_word_count": 291
+    },
+    {
+      "chapter_id": "week_in_numbers",
+      "chapter_num": 2,
+      "target_word_count": 152,
+      "rows_note": "SPEC §3.1. One row per .fig-row in chapters/week_in_numbers.html, in rendered order. `source_band` is the band where the datum can be audited (WP-1 handoff 2 also permits the literal \"state\"; this strip has no personal rows).",
+      "rows": [
+        {
+          "key": "Burnham Nominations",
+          "source_band": "long_read"
+        },
+        {
+          "key": "Leaders in a Decade",
+          "source_band": "long_read"
+        },
+        {
+          "key": "World Cup Matches",
+          "source_band": "touchline"
+        },
+        {
+          "key": "Bronze-Match Goals",
+          "source_band": "touchline"
+        },
+        {
+          "key": "Mariner 4's Approach",
+          "source_band": "this_week_in_history"
+        },
+        {
+          "key": "Pole Lap at Spa",
+          "source_band": "touchline"
+        }
+      ]
+    },
+    {
+      "chapter_id": "caught_up",
+      "chapter_num": 3,
+      "target_word_count": 190
+    },
+    {
+      "chapter_id": "long_read",
+      "chapter_num": 4,
+      "target_word_count": 2056,
+      "nav_coverline_html": "<b>The Long Read:</b> seven leaders, no election",
+      "nav_freq": "88.9",
+      "nav_on": true,
+      "vintage": "news",
+      "vintage_note": "SPEC §3.1/§3.4. This anchor IS a development of the issue's own week and the fixture's prose dates it: 'On Friday 17 July, Andy Burnham was declared leader of the Labour Party' and 'On Monday 20 July he is expected to be appointed prime minister' — Friday the 17th and Monday the 20th sit either side of this issue's date, 2026-07-19. So the dated byline is correct here and material_span / latest_development are forbidden (they are the evergreen half of the contract). The legacy golden is the evergreen case; between them the two fixtures carry both branches of defect A's fix.",
+      "images_needed": [
+        {
+          "role": "in-piece chart — the seven leaders of the last decade laid end to end, marking the single arrival that followed a general election",
+          "source_constraint": "Signal graphic, built from figures in this piece (inline SVG data: URI, CC0)",
+          "alt_required": true
+        },
+        {
+          "role": "portrait — Andy Burnham, the incoming prime minister, in his official parliamentary portrait",
+          "source_constraint": "House of Commons, CC BY 3.0, via Wikimedia Commons",
+          "alt_required": true
+        },
+        {
+          "role": "event photo — Keir Starmer, the prime minister a party rebellion forced out this month",
+          "source_constraint": "wire photo (AP, via CBS News)",
+          "alt_required": true
+        }
+      ]
+    },
+    {
+      "chapter_id": "touchline",
+      "chapter_num": 5,
+      "target_word_count": 776,
+      "nav_coverline_html": "The Cup's last act; Sinner holds",
+      "nav_freq": "98.4",
+      "nav_on": false
+    },
+    {
+      "chapter_id": "pixel_byte",
+      "chapter_num": 6,
+      "target_word_count": 452,
+      "nav_coverline_html": "<b>Remake summer:</b> Black Flag and Halo reborn",
+      "nav_freq": "104.7",
+      "nav_on": true
+    },
+    {
+      "chapter_id": "screen_sound",
+      "chapter_num": 7,
+      "target_word_count": 715,
+      "nav_coverline_html": "<b>Heartstopper</b> takes its bow",
+      "nav_freq": "106.0",
+      "nav_on": false
+    },
+    {
+      "chapter_id": "bookmark",
+      "chapter_num": 8,
+      "target_word_count": 306,
+      "nav_coverline_html": "Three ways into new SF",
+      "nav_freq": "90.1",
+      "nav_on": false
+    },
+    {
+      "chapter_id": "this_week_in_history",
+      "chapter_num": 9,
+      "target_word_count": 588,
+      "nav_coverline_html": "This week in <b>1965</b>: Mars, up close",
+      "nav_freq": "94.6",
+      "nav_on": false
+    },
+    {
+      "chapter_id": "the_desk",
+      "chapter_num": 10,
+      "target_word_count": 629,
+      "nav_coverline_html": "<b>The Desk:</b> running without losing the block, and a rate to beat",
+      "nav_freq": "92.3",
+      "nav_on": true
+    },
+    {
+      "chapter_id": "the_threads",
+      "chapter_num": 11,
+      "target_word_count": 593
+    },
+    {
+      "chapter_id": "rabbit_hole",
+      "chapter_num": 12,
+      "target_word_count": 601,
+      "nav_coverline_html": "Down the rabbit hole to a Saxon saint",
+      "nav_freq": "101.2",
+      "nav_on": false
+    },
+    {
+      "chapter_id": "on_the_radar",
+      "chapter_num": 13,
+      "target_word_count": 297,
+      "nav_coverline_html": "What's coming: a new PM, a rate call",
+      "nav_freq": "96.5",
+      "nav_on": true
+    },
+    {
+      "chapter_id": "do_this_week",
+      "chapter_num": 14,
+      "target_word_count": 122
+    },
+    {
+      "chapter_id": "colophon",
+      "chapter_num": 15,
+      "target_word_count": 52
+    }
+  ],
+  "assets": {
+    "css_inject_marker": "<!-- INJECT:CSS -->",
+    "js_inject_marker": "<!-- INJECT:JS -->",
+    "scaffold_parts_used": []
+  },
+  "assets_note": "The two markers are the literals stitch_weekly.py itself emits and then replaces; scaffold_parts_used is empty because the mx weekly path assembles its own page from weekly.json rather than from assets/template-parts/. Neither key is read by stitch_weekly.py — they are the plan contract's, and expected.html is byte-identical with and without them.",
+  "compliance": {
+    "stat_budget_max": 12,
+    "image_source_diversity_min": 0.5,
+    "accent_lockdown": true
+  }
 }
