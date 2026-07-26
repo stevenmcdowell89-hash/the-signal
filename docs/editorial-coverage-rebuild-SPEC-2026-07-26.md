@@ -69,6 +69,14 @@ No file appears twice. Anything not listed is unowned — report before touching
 | **WP-8** | Asset provenance + licence safety | `scripts/mirror-images.py`, `scripts/extract-covers.py` |
 | **WP-9** | Pipeline phase wiring | `.claude/skills/the-signal/SKILL.md` |
 | **WP-10** | Verification harness | `.claude/skills/the-signal/scripts/test-coverage-gates.sh` *(new)*, `.claude/skills/the-signal/references/fixtures/coverage-rebuild/**` *(new)* |
+| **WP-11** | Daily routing (added 2026-07-26) | `functions/daily/render.js`, `functions/daily/dedup.js` |
+
+**WP-11 exists because the original map had a gap.** WP-7 added sport feeds and domains but the code
+that *routes* them was unowned, so its work is partially inert: `render.js:386`'s `NEWS_SPORT` set
+gates headline eligibility and lists only `world, local, finance, football, golf`, so a cricket or
+athletics story cannot lead Headlines however big it is; `render.js`'s `DOMAIN_LABELS` has no label
+for the new domains; and `dedup.js:54`'s `RELAXED_DOMAINS` contains only `football`, while the BBC
+publishes 3–4 variants of every cricket match report.
 
 **Dependency order:** WP-1 first, alone. Then WP-2, WP-3, WP-6, WP-7, WP-8, WP-9 in parallel. Then
 WP-4, WP-5 (they check what WP-3 renders). Then WP-10.
@@ -326,6 +334,25 @@ In `weekly.json`:
   whatever leads.
 - New invariant `results_ledger_multi_sport`: the results ledger must carry **≥2 distinct
   `data-sport` values** whenever ≥2 tracked sports had an event conclude in-window.
+
+**Sport tokens — one vocabulary, and `multi_sport` is not a result (added 2026-07-26).** WP-7 reported
+that `state.sports_calendar[].sport` uses `multi_sport` for the Commonwealth Games while the daily's
+new catch-all domain is `sport`. Left alone this opens a hole in the invariant above: a games whose
+rows all carry `data-sport="multi_sport"` would collapse ten sports into one token, and a ledger of
+`[motorsport, multi_sport]` would pass "≥2 distinct" while telling the reader nothing about breadth.
+
+Resolution — three namespaces, explicitly related, canonicalised by **WP-1** in
+`references/spec/data-contracts.md`:
+- **Sport token** (canonical): a specific sport — `football`, `golf`, `cricket`, `cycling`,
+  `athletics`, `motorsport`, `swimming`, `boxing`, `rugby`, `tennis`, … This is what `data-sport`
+  carries.
+- **`sports_calendar[].sport`**: may additionally take `multi_sport`, because it classifies an *event*
+  (a games), not a result.
+- **Daily domain** (`functions/daily/profile.js`): a separate routing namespace that may differ
+  (`sport` as a catch-all); document the mapping, do not force the names to match.
+
+**`data-sport="multi_sport"` is forbidden — WP-4 must reject it.** A result belongs to a sport; rows
+derived from a multi-sport games carry the specific sport (`athletics`, `swimming`, …).
 
 ### 3.12 Sports calendar seeding (WP-1)
 
