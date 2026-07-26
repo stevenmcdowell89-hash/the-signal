@@ -1945,15 +1945,30 @@ def _fig_id(fig: dict) -> str:
     return f"{fig['label']} [{fig['band']}{'/lead' if fig['is_lead'] else ''}, {fig['src'] or 'no <img>'}]"
 
 
+# Date-bearing FURNITURE inside a band: the issue's own datestamps, not claims the
+# band makes about its subject. SPEC §3.9 keys on the band's PROSE, so these come
+# out before claim_max is measured. It matters: the Long Read's byline reads
+# "· 26 JUL 2026", and counting that as a claim would set claim_max to the issue
+# year in every band of every issue — turning "the prose claims 2021" into "the
+# issue was published in 2026" and making the failure message undiagnostic.
+# Ledger DATE CELLS are deliberately NOT excluded: "1901 Recovered / 2005 Scanned
+# / 2021 Modelled" are claims of record, which is exactly what the rule reads.
+BAND_FURNITURE_CLASSES = ("byline", "sigline", "dataline", "stamp", "lr-vintage",
+                          "colophon", "runtime")
+
+
 def band_prose(body: str, span: tuple[int, int]) -> str:
     """Visible prose of a band region, figure captions EXCLUDED (SPEC §3.9).
 
-    Excludes `.plate-cap` blocks, <figcaption> and <caption> — a caption is not
-    a claim the band is making, and including one would let a caption's own
-    credit line ("… 2007 · CC BY 2.5") satisfy the very rule it is the subject of.
+    Excludes `.plate-cap` blocks, <figcaption> and <caption> — a caption is not a
+    claim the band is making, and including one would let a caption's own credit
+    line ("… 2007 · CC BY 2.5") satisfy the very rule it is the subject of — and
+    the dateline furniture above.
     """
     region = body[span[0]:span[1]]
     region = _strip_class_blocks(region, "plate-cap")
+    for cls in BAND_FURNITURE_CLASSES:
+        region = _strip_class_blocks(region, cls)
     region = re.sub(r"<figcaption\b[^>]*>.*?</figcaption>", " ", region,
                     flags=re.DOTALL | re.IGNORECASE)
     region = re.sub(r"<caption\b[^>]*>.*?</caption>", " ", region,

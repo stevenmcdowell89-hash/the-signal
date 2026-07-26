@@ -67,7 +67,14 @@
   ],
   "information_figure_shapes": ["diagram", "map", "chart", "artefact"],
   "last_resort_shapes": ["key_art", "product_shot", "portrait"],
-  "never_lead_shapes": ["key_art", "product_shot"]
+  "never_lead_shapes": ["key_art", "product_shot", "portrait"],
+  "_derived_lists_doc": {
+   "_why": "These four lists are the MACHINE-READABLE form of the prose hierarchy in references/compliance-checklist.md § Image specificity check. WP-4 implements against the lists, humans read the prose, so the two drifting apart is a live failure mode — it already happened once: `never_lead_shapes` omitted `portrait` while the rank-5 prose said 'key art / product shot / posed portrait — last resort, never a lead' (found by WP-9, fixed 2026-07-26). Reconciled in BOTH directions below; if you change one, change the other in the same commit.",
+   "specificity_hierarchy": "Ranks 1-5, and it partitions the enum EXACTLY — all eleven values appear once and only once. Identical membership and order to the numbered list in the checklist prose.",
+   "information_figure_shapes": "diagram, map, chart, artefact — the four shapes that satisfy the Long Read's ≥1-information-figure requirement, fixed by SPEC §3.8. DELIBERATE ASYMMETRY, not drift: `document` shares rank 3 with `artefact` in the hierarchy but is NOT an information figure, because SPEC §3.8 names four shapes and `document` is not among them. A store listing is a primary source; it is not a figure that explains a mechanism. The checklist prose states the same four.",
+   "last_resort_shapes": "key_art, product_shot, portrait — rank 5. Identical to the prose.",
+   "never_lead_shapes": "key_art, product_shot, portrait — the same three as rank 5, because 'last resort' and 'never the lead figure' are one rule in the prose. `portrait` belongs here: a POSED portrait is `portrait`, while a photograph of a person actually doing the thing is `event_photo`, which may lead freely. So the restriction costs nothing legitimate — a profile or an obituary can and should lead on the subject in action. It is also precisely the shape the 'random Pope photo' rule exists to reject: a profile portrait standing in for a story about what someone actually did. NOTE FOR WP-4: this list is DOCTRINE-derived and is BROADER than SPEC §3.8's mechanical minimum, which names only `key_art` and only in Pixel & Byte. Implementing the whole list is the intent; implementing only §3.8's letter is defensible; silently implementing something in between is not."
+  }
  },
  "domains": {
   "commons.wikimedia.org": "wikimedia",

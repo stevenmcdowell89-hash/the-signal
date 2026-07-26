@@ -94,6 +94,7 @@ domain_map = lookup["domains"]
 shows_enum = list(lookup["shows"]["values"].keys())
 info_shapes = lookup["shows"].get("information_figure_shapes", [])
 last_resort = lookup["shows"].get("last_resort_shapes", [])
+never_lead = lookup["shows"].get("never_lead_shapes", [])
 
 failures = []
 warnings = []
@@ -132,8 +133,8 @@ if valid_shapes and len(valid_shapes) < min_shapes:
         "shape (all key art, all portraits, all Commons artefacts) tells the reader "
         "nothing the headlines didn't. Reach up the hierarchy — "
         f"information figures {info_shapes} and photographs of the actual thing "
-        "happening are the fix; "
-        f"{last_resort} are the last resort and never a lead."
+        "happening are the fix. "
+        f"{last_resort} are the last resort, and {never_lead} may never be a lead figure."
     )
 
 # ------------------------------------------------------------ provenance axis

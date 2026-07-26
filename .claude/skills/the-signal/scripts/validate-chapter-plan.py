@@ -25,7 +25,8 @@ ship. The report prints that distinction. Do not promote this to a fourth ship g
 
 2026-07-26 (coverage rebuild, SPEC §3.1/§3.6/§3.11) — adds, for WEEKLY plans only:
   • the coverage-window / cover-lead / vintage record: `issue_meta.research_cut_at`,
-    `.window{from,to}`, `.cover_leads_on`, `.lead_rationale` (>=120 chars),
+    `.window{from,to}`, `.cover_leads_on`, `.cover_lead_topic_family` (closed
+    enumeration, hard-failed), `.lead_rationale` (>=120 chars),
     `.lead_override_reason`; `long_read.vintage` (+ `material_span` /
     `latest_development` iff evergreen); `week_in_numbers.rows[].key` + `.source_band`.
   • the RUT RULE (§3.6) — read from state's `cover_lead_ledger`. Not suppression: the
@@ -1028,6 +1029,39 @@ def check_weekly_coverage_meta(meta):
         err(f"[COVER-LEAD] {path}.cover_leads_on={clo!r} must be one of "
             f"{list(COVER_LEADS_ON_VALUES)}.")
 
+    # cover_lead_topic_family (SPEC §3.6 amendment, 2026-07-26 — WP-1 round 4).
+    # REQUIRED on weekly plans, and enum-checked HARD. Both halves matter for the
+    # same reason: the rut rule intersects this value with
+    # state.cover_lead_ledger[].topic_family, and the two sides must speak ONE
+    # vocabulary (references/chapter-plan-schema.md § Topic Family Enumeration).
+    # If they drift — a typo, a family invented locally, a parallel set in state —
+    # the intersection silently empties and the rut rule KEEPS PASSING WHILE
+    # CHECKING NOTHING. A green no-op is worse than an absent check because it
+    # reads as coverage, so an out-of-enum value is a hard fail, never a warning.
+    clf = meta.get("cover_lead_topic_family")
+    if clf is None:
+        err(f"[COVER-LEAD] {path}.cover_lead_topic_family is missing (SPEC §3.6 amendment, "
+            f"REQUIRED on weekly plans). The `topic_family` of the story the cover leads on, from the "
+            f"closed enumeration in references/chapter-plan-schema.md § Topic Family Enumeration. It "
+            f"is the rut rule's other half: `cover_leads_on` says news-vs-long_read only, and the "
+            f"ledger's family is written at publish, so without this field the validator has to INFER "
+            f"the family from the plan's lead pieces (it still will, as a compatibility path for "
+            f"plans written before the field existed — but an inferred family is not a stated one).")
+    elif not isinstance(clf, str) or not clf.strip():
+        err(f"[COVER-LEAD] {path}.cover_lead_topic_family={clf!r} must be a non-empty string from the "
+            f"closed Topic Family Enumeration.")
+    elif clf.strip() not in TOPIC_FAMILIES:
+        err(f"[COVER-LEAD] {path}.cover_lead_topic_family='{clf.strip()}' is not in the closed Topic "
+            f"Family Enumeration (references/chapter-plan-schema.md § Topic Family Enumeration; "
+            f"adding a family is a spec amendment by WP-1, not a local edit).\n"
+            f"        This is a HARD fail on purpose. The rut rule (SPEC §3.6) intersects this value "
+            f"with state.cover_lead_ledger[].topic_family, which is drawn from the same enumeration. "
+            f"An out-of-enum value here cannot match anything in the ledger, so the intersection is "
+            f"always empty and the rut rule would pass while checking nothing — a green no-op that "
+            f"reads as coverage. If this is a real editorial category with no home in the list (as "
+            f"cybersecurity had none before `cyber_privacy` was added), say so and amend the "
+            f"enumeration; do not file it under an approximate family.")
+
     # lead_rationale
     lr = meta.get("lead_rationale")
     if lr is None:
@@ -1370,9 +1404,11 @@ def check_weekly_plan(plan, state=None):
          planner routes >= 1 verified bundle image_candidate to the Long Read.
      13. (A6, WARN) any feature/round band allocated > 350 words with an empty
          images_needed draws a warning — feature bands should open on an image.
-     14. (SPEC §3.1) issue_meta carries the coverage window and the cover-lead
+     14. (SPEC §3.1/§3.6) issue_meta carries the coverage window and the cover-lead
          record: research_cut_at (== window.to), window{from,to}, cover_leads_on,
-         lead_rationale >= 120 chars, and a well-formed lead_override_reason.
+         cover_lead_topic_family (required, and enum-checked against the closed
+         Topic Family Enumeration), lead_rationale >= 120 chars, and a well-formed
+         lead_override_reason.
      15. (SPEC §3.1, acceptance criterion #1) the long_read chapter declares
          `vintage`; `material_span` + `latest_development` iff evergreen.
      16. (SPEC §3.1) week_in_numbers carries `rows[]`, each with `key` and a
