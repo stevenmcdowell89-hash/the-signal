@@ -868,16 +868,23 @@ plain_section "P" "PLAN-VALIDATION HOLE  (WP-3's finding — surfaced here, not 
   run bash "$GOLDEN_GATE"
   GG_RC="$LAST_RC"
   printf '   %sinfo%s verify-weekly-golden.sh real exit code: %s\n' "$C_D" "$C_0" "$GG_RC"
-  has 'skipping plan check' "verify-weekly-golden.sh prints a reassuring skip notice"
+  # DEBT PAID 2026-07-26 (WP-3c). This asserted the PRESENCE of the reassuring
+  # skip notice, because at the time the notice was there and the errors were
+  # swallowed. WP-3c closed the hole, so the assertion is inverted: the notice must
+  # now be ABSENT. Kept rather than deleted — an assertion that the hole stays
+  # closed is worth more than one that recorded it was open.
+  hasnt 'skipping plan check' "verify-weekly-golden.sh no longer prints a reassuring skip notice"
 
   # 3. the same validator, invoked directly, on the same plan
   run python3 "$VALIDATE_PLAN" "$GOLD_PLAN"
   LEG_RC="$LAST_RC"
   LEG_ERRS="$(printf '%s\n' "$LAST_OUT" | grep -cE '^  \[[0-9]+\] \[' || true)"
-  truth "$( [ "$LEG_RC" = 1 ] && echo 1 || echo 0)" \
-        "MEASURED: validate-chapter-plan.py on the LEGACY golden plan exits 1" "got $LEG_RC"
-  truth "$( [ "$LEG_ERRS" = 7 ] && echo 1 || echo 0)" \
-        "MEASURED: with exactly 7 errors, as WP-3 reported" "counted $LEG_ERRS"
+  # DEBT PAID 2026-07-26 (WP-3c): was `exits 1` / `exactly 7 errors`. Inverted to
+  # assert the plan is now valid, so a regression re-breaks the harness.
+  truth "$( [ "$LEG_RC" = 0 ] && echo 1 || echo 0)" \
+        "the LEGACY golden plan is VALID (was 7 errors, swallowed)" "got $LEG_RC"
+  truth "$( [ "$LEG_ERRS" = 0 ] && echo 1 || echo 0)" \
+        "with 0 plan errors" "counted $LEG_ERRS"
   printf '%s\n' "$LAST_OUT" | grep -E '^  \[[0-9]+\] \[' | cut -c1-104 \
     | sed "s/^/        ${C_D}> /;s/\$/${C_0}/"
 
@@ -886,8 +893,11 @@ plain_section "P" "PLAN-VALIDATION HOLE  (WP-3's finding — surfaced here, not 
   run python3 "$VALIDATE_PLAN" "$MXGOLD_PLAN"
   MX_RC="$LAST_RC"
   MX_ERRS="$(printf '%s\n' "$LAST_OUT" | grep -cE '^  \[[0-9]+\] \[' || true)"
-  truth "$( [ "$MX_RC" = 1 ] && echo 1 || echo 0)" \
-        "MEASURED: the MX golden plan also fails, and nothing validates it today" "got $MX_RC"
+  # DEBT PAID 2026-07-26 (WP-3c): was `also fails, and nothing validates it today`
+  # (21 errors, unlooked-for — WP-10 found this hole; nobody else had looked).
+  # WP-3c fixed the plan AND wired it into verify-weekly-golden.sh.
+  truth "$( [ "$MX_RC" = 0 ] && echo 1 || echo 0)" \
+        "the MX golden plan is VALID and is now validated by the golden gate (was 21 errors, unlooked-for)" "got $MX_RC"
   info "verify-weekly-golden.sh validates only the LEGACY golden's plan. The mx"
   info "fixture's plan is stitched, byte-compared and gate-checked, but never"
   info "plan-validated — so its $MX_ERRS errors are not merely swallowed, they are unlooked-for."
