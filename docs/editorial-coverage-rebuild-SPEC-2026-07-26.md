@@ -222,7 +222,13 @@ editorial.
 ```
 
 **Polymorphic table.** `.mx-scorecard` gains `data-table-kind` ∈
-`league` · `medal` · `gc` · `leaderboard` · `championship`.
+`league` · `medal` · `gc` · `leaderboard` · `championship` · `finance`.
+
+*`finance` added 2026-07-26 (WP-3 finding).* The original five were **all sport**, but The Desk already
+uses `.mx-scorecard` for a financial card — so the enum could not describe an existing, legitimate use
+and the golden only escaped with a WARN. The point of making the table polymorphic was to stop one
+competition's shape dictating the component; shipping a "polymorphic" enum that only admits sport would
+have reproduced the same mistake one level down.
 
 **Resolved loop.** Any element reporting a carried-forward result carries
 `data-resolves-loop="<loop id>"`.
