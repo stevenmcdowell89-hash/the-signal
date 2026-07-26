@@ -161,6 +161,74 @@ will be tagged per sport. `state/signal-state.json` was **not** modified in roun
 
 ---
 
+## Round 4 — `issue_meta.cover_lead_topic_family` (authorised, SPEC §3.6 amendment)
+
+WP-5, building the rut rule, found that §3.6 compares *this plan's* cover-lead `topic_family` against
+`state.cover_lead_ledger` while **no contract field carried it**: `cover_leads_on` answers
+news-vs-long_read only, and the ledger's family is written at publish (Phase 10) from the
+orchestrator's reading of the cover. WP-5 shipped a fallback chain rather than guess and flagged the
+field. Baseline for this round: `796a4d5`.
+
+**Changed (WP-1's two files only; `state/signal-state.json` untouched):**
+
+1. `chapter-plan-schema.md` (+8/−1) — added **`issue_meta.cover_lead_topic_family`**, weekly-required,
+   drawn from the closed § Topic Family Enumeration (which now includes `cyber_privacy`). Requirement
+   is stated in the field `description` and enforced by `validate-chapter-plan.py` — the file's
+   existing conditional-requirement convention, since `issue_meta.required[]` is format-agnostic and
+   the field is weekly-only. Also added to the top WP-1 note block and to the § Coverage-Window /
+   Cover-Lead / Vintage worked example (`"cover_lead_topic_family": "olympics"`).
+2. `data-contracts.md` (+38/−2) — new subsection *§ `issue_meta.cover_lead_topic_family` — the rut
+   rule's other half*, recording producer (**planner, Phase 4**, per WP-9's wiring; copied to
+   `cover_lead_ledger[].topic_family` at publish), consumer (**`validate-chapter-plan.py`'s rut rule**,
+   and nothing else), and the load-bearing constraint: **it must draw on the same closed enumeration as
+   `cover_lead_ledger[].topic_family`.** The rule is a set intersection between the plan's family and
+   the ledger's families, so if the vocabularies drift the intersection silently empties and the rule
+   keeps reporting success while no longer checking anything. The validator already warns when a ledger
+   entry uses a family its own copy of the enumeration does not know — documented as a build break, not
+   noise. Cross-referenced from the contract table and from § `cover_lead_ledger[]`.
+
+### Matching WP-5's shipped behaviour (read, not assumed)
+
+`validate-chapter-plan.py` is WP-5's and was **not edited**. Its `_plan_cover_lead_families()`
+(line ~1204) resolves in this order, which is exactly what the schema description now documents:
+
+1. `issue_meta.cover_lead_topic_family`, trimmed, if a non-empty string — explicit always wins;
+2. otherwise the union of every chapter's `pieces[role="lead"].topic_family`;
+3. otherwise **warn and skip** — never fail, because demanding 80 chars of prose about a choice the
+   plan never stated is worse than skipping the check.
+
+Steps 2–3 are recorded as the compatibility path for plans written before the field existed, so an
+older plan warns rather than crashing. Constants confirmed from the source, not the SPEC prose:
+`RUT_LEDGER_WINDOW = 4`, `RUT_LEDGER_THRESHOLD = 3`, `LEAD_OVERRIDE_MIN_CHARS = 80`,
+`LEAD_RATIONALE_MIN_CHARS = 120`.
+
+**Smoke-test of all three branches** (fixtures in scratchpad only — the live state file was copied,
+not modified; its ledger was edited *in the copy* so `uk_politics` reads 3-of-4):
+
+```
+$ python3 .../validate-chapter-plan.py plan-A-explicit.json --state state-rut-fixture.json
+[3] [RUT] cover-lead rut (SPEC §3.6): topic_family ['uk_politics'] appears as led_on='news' in [3]
+    of the last 4 cover_lead_ledger entries, and this plan sets cover_leads_on='news' on the same
+    family [family resolved from issue_meta.cover_lead_topic_family (explicit)], with no
+    lead_override_reason (>= 80 chars required).          ← branch 1: explicit field honoured, FAILS
+
+$ python3 .../validate-chapter-plan.py plan-C-derived.json --state state-rut-fixture.json
+family resolved from chapters[].pieces[role='lead'].topic_family (derived)   ← branch 2: fallback
+
+$ python3 .../validate-chapter-plan.py plan-B-legacy.json --state state-rut-fixture.json
+(1) [RUT] ... the plan declares no topic_family for its cover lead, so the rut rule (SPEC §3.6)
+    could not be evaluated.                               ← branch 3: warn-and-skip, never fail
+```
+
+### Did state need changing?
+
+**No.** `cover_lead_ledger` already carries `topic_family` on every one of its 11 entries (verified),
+which is the ledger side of the comparison; round 4 adds only the plan side.
+`git diff 796a4d5 -- state/signal-state.json` is empty, and the additive-only check against baseline
+`01e5fdf` still holds (below).
+
+---
+
 ## Verification (all rounds, final re-run)
 
 ```
@@ -185,6 +253,11 @@ ledger families not in validator enum (WP-5 handoff): {'cyber_privacy'}
 
 # every fenced ```json block in chapter-plan-schema.md still parses
 json blocks: 7 → all OK
+
+# round 4: state untouched, ledger side already present
+$ git diff 796a4d5 --numstat -- state/signal-state.json
+(empty — no change)
+ledger carries topic_family on every entry: True
 
 # sport tokens: parse the list out of data-contracts.md and check every state value against it
 token count: 22   (no duplicates)
@@ -211,3 +284,5 @@ Issue #18 and `state/quality-log.jsonl` were read only, never modified.
 | 7 | WP-5 | Add `cyber_privacy` to `TOPIC_FAMILIES` in `validate-chapter-plan.py` (~line 153). |
 | 8 | WP-4 | Hard-fail `data-sport="multi_sport"`; warn (do not fail) on a `data-sport` outside the 22-token list in `data-contracts.md` § Sport tokens. |
 | 9 | WP-3 | Writers/stitcher must emit a specific sport token on every `.mx-ledger__row`, including rows derived from a multi-sport games. |
+| 10 | WP-5 | `issue_meta.cover_lead_topic_family` is now a weekly-**required** contract field drawn from the closed enumeration. The shipped validator accepts it but neither requires it nor enum-checks it — add both, keeping the derive/warn fallback for pre-field plans. |
+| 11 | WP-9 | At publish, copy `issue_meta.cover_lead_topic_family` into the new `cover_lead_ledger[]` entry's `topic_family` rather than re-deriving it from the rendered cover — same value on both sides of the rut rule, by construction. |

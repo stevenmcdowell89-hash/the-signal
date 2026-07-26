@@ -38,7 +38,8 @@
 > declares (a) **when research stopped** — `issue_meta.research_cut_at` and
 > `issue_meta.window` — so a validator can tell "in the calendar range" from
 > "knowable at research time"; (b) **what the cover leads on and why** —
-> `issue_meta.cover_leads_on`, `issue_meta.lead_rationale`, and
+> `issue_meta.cover_leads_on`, `issue_meta.cover_lead_topic_family`,
+> `issue_meta.lead_rationale`, and
 > `issue_meta.lead_override_reason` (the rut rule, SPEC §3.6); (c) the Long Read's
 > **vintage** — `long_read.vintage` plus `material_span` / `latest_development`
 > when evergreen, so an evergreen feature stops being stamped as breaking news;
@@ -771,6 +772,7 @@ exact shape issue #18 lacked. `lead_override_reason` is absent because the rut r
     "research_cut_at": "2026-08-02T02:10:00Z",
     "window": { "from": "2026-07-26T02:10:00Z", "to": "2026-08-02T02:10:00Z" },
     "cover_leads_on": "news",
+    "cover_lead_topic_family": "olympics",
     "lead_rationale": "The Commonwealth Games close on 2 Aug and the BoE held on 30 Jul; the Games' medal ledger is the week's biggest reader-relevant result, so the rate call runs in The Ledger and the Games take the cover.",
     "word_budget": { "target_total": 7200, "allocated_total": 7250 }
   }

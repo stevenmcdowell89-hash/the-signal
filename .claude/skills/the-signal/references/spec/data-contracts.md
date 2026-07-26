@@ -149,6 +149,7 @@ Documented in full in `references/chapter-plan-schema.md` (WP-1 owns it; WP-5's
 | `issue_meta.research_cut_at` | issue meta | weekly |
 | `issue_meta.window` `{from, to}` | issue meta | weekly |
 | `issue_meta.cover_leads_on` — `"news"` \| `"long_read"` | issue meta | weekly |
+| `issue_meta.cover_lead_topic_family` — closed topic-family enumeration | issue meta | weekly |
 | `issue_meta.lead_rationale` — ≥120 chars | issue meta | weekly |
 | `issue_meta.lead_override_reason` — ≥80 chars | issue meta | only when the rut rule (SPEC §3.6) trips |
 | `vintage` — `"news"` \| `"evergreen"` | the `long_read` chapter | weekly |
@@ -164,6 +165,38 @@ Documented in full in `references/chapter-plan-schema.md` (WP-1 owns it; WP-5's
 > stat strip rendering from state, so a band-only vocabulary cannot express its personal rows. The
 > value set is therefore: **the `chapter_id` of a chapter present in this plan, or the literal
 > `"state"`**. WP-5 must accept `"state"`.
+
+### `issue_meta.cover_lead_topic_family` — the rut rule's other half (SPEC §3.6 amendment)
+
+Added 2026-07-26 on WP-5's finding: the rut rule compares *this plan's* cover-lead `topic_family`
+against `state.cover_lead_ledger[].topic_family`, and no field carried the plan's side.
+`cover_leads_on` answers news-vs-long_read only, and the ledger's family is written at **publish**
+(Phase 10) from the orchestrator's reading of the cover — so the validator had nothing to compare at
+plan time.
+
+- **Produced by** the planner in **Phase 4** (WP-9's wiring), alongside `cover_leads_on` and
+  `lead_rationale`. **Copied to `cover_lead_ledger[].topic_family` at publish**, so the field the rule
+  reads next week is the field the planner stated this week.
+- **Consumed by** `validate-chapter-plan.py`'s rut rule (WP-5) — and by nothing else.
+- **It MUST draw on the same closed enumeration as `cover_lead_ledger[].topic_family`**: the one list
+  in `references/chapter-plan-schema.md` § Topic Family Enumeration. This is the load-bearing part. The
+  rule is a set-intersection between the plan's family and the ledger's families, so if the two
+  vocabularies can drift the intersection silently empties and the rule stops firing while still
+  reporting success — a check that has quietly stopped checking. `validate-chapter-plan.py` already
+  warns when a ledger entry uses a family its own copy of the enumeration does not know; treat that
+  warning as a build break, not noise. (This is the same failure mode as issue #8's unfiled breach
+  story, from the other direction.)
+- **Compatibility path, as shipped.** `validate-chapter-plan.py` resolves the family in this order:
+  1. `issue_meta.cover_lead_topic_family`, trimmed, if a non-empty string — an explicit declaration
+     always wins;
+  2. otherwise the union of every chapter's `pieces[role="lead"].topic_family` — the pool the cover
+     lead is drawn from;
+  3. otherwise **warn and skip** the rut rule — never fail, because demanding 80 chars of prose about
+     a choice the plan never stated is worse than skipping the check.
+
+  Steps 2–3 remain the compatibility path for plans written before the field existed: an older plan
+  warns rather than crashing. New plans state it explicitly — it is the only cover-lead family that is
+  declared rather than inferred from the piece pool.
 
 ---
 
@@ -228,8 +261,11 @@ covered. Copied into the plan as `issue_meta.window.from` (previous value) and
   Also read by the planner in Phase 4 — seeing nine weeks of lead history is the fix for defect C,
   where `last_cover_lead` (one week) was all the planner could see.
 - `topic_family` **vocabulary comes from `references/chapter-plan-schema.md` § Topic Family
-  Enumeration** — the same closed list that governs `pieces[*].topic_family`. There is one
-  topic-family vocabulary in the system; do not create a parallel set for state.
+  Enumeration** — the same closed list that governs `pieces[*].topic_family` and
+  `issue_meta.cover_lead_topic_family`. There is one topic-family vocabulary in the system; do not
+  create a parallel set for state. At publish this value is **copied from the plan's
+  `issue_meta.cover_lead_topic_family`** (WP-9), which is what keeps the plan side and the ledger side
+  of the rut rule speaking the same language.
 - `cover_lead_ledger` supersedes nothing: `last_cover_lead` (prose) and `ongoing_stories[].lead_history`
   stay as they are. Note that `lead_history` is a *story-thread* record and is **not** interchangeable
   with this ledger — see § Seed provenance.
