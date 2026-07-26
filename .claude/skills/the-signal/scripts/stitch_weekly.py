@@ -113,6 +113,54 @@ CACHED_HASH_RE = re.compile(r"^([0-9a-fA-F]{12})\.[A-Za-z0-9]+$")
 FIGURE_PROVENANCE_KEYS = ("data-shows", "data-capture-year",
                           "data-licence", "data-allows-derivatives")
 
+# SPEC §3.3 — the closed `shows` enum. Canonical home is
+# references/image-source-types.json → "shows" (WP-6); load_shows_enum() reads it
+# and falls back to this literal so the stitcher never depends on that file.
+SHOWS_ENUM_FALLBACK = frozenset({
+    "event_photo", "gameplay", "in_engine", "key_art", "product_shot", "portrait",
+    "diagram", "map", "chart", "artefact", "document",
+})
+
+
+def load_shows_enum(skill_dir):
+    try:
+        d = json.loads((skill_dir / "references/image-source-types.json").read_text())
+        shows = d.get("shows")
+        vals = None
+        if isinstance(shows, dict):
+            vals = shows.get("values") or shows.get("enum") or [
+                k for k in shows if not k.startswith("_")]
+        elif isinstance(shows, list):
+            vals = shows
+        vals = {str(v) for v in (vals or []) if isinstance(v, str)}
+        if vals:
+            return frozenset(vals)
+    except (OSError, ValueError, AttributeError):
+        pass
+    return SHOWS_ENUM_FALLBACK
+
+
+def _clean_capture_year(v):
+    """The rendering of data-capture-year, or None when there is no record.
+
+    Legal: an integer year (1500-2100) → "YYYY"; explicit JSON null → "" (SPEC
+    §3.2 allows a null capture year ONLY for a synthetic diagram/chart, and ""
+    is how §3.9 sees "no year to compare"). Anything else — notably the literal
+    "UNKNOWN" that mirror-images.py back-fills for assets cached before the
+    manifest existed — is NOT a record and must render as an ABSENT attribute,
+    so validate-issue.py fails the figure instead of reading a placeholder as
+    provenance.
+    """
+    if v is None:
+        return ""
+    if isinstance(v, bool):
+        return None
+    if isinstance(v, int):
+        return str(v) if 1500 <= v <= 2100 else None
+    if isinstance(v, str) and re.fullmatch(r"\d{4}", v.strip()):
+        return str(v.strip()) if 1500 <= int(v.strip()) <= 2100 else None
+    return None
+
 
 def month_year(ym):
     """'2021-03' → 'MAR 2021' (the .lr-vintage tail, SPEC §3.4)."""
@@ -220,7 +268,7 @@ def load_asset_manifest(path):
     return data, f"{len(data)} asset[s]"
 
 
-def stamp_figure_provenance(body, manifest):
+def stamp_figure_provenance(body, manifest, shows_enum=SHOWS_ENUM_FALLBACK):
     """Fill the §3.4 figure-provenance record on every .plate-img.
 
     Defects B/E. The four attributes are a machine record of the *asset*, not of
@@ -254,16 +302,28 @@ def stamp_figure_provenance(body, manifest):
         if not isinstance(entry, dict):
             entry = {}
 
+        # A PLACEHOLDER IS NOT A RECORD. mirror-images.py honestly back-fills
+        # "UNKNOWN" / null for the ~438 assets cached before the manifest existed
+        # (their source URLs are unrecoverable — sha256 is one-way). Stamping
+        # those would turn "we do not know" into a rendered provenance claim, and
+        # would hand WP-4 a data-capture-year it cannot compare and a
+        # data-allows-derivatives="false" nobody established. So each field is
+        # stamped ONLY when the manifest holds a real value; otherwise the
+        # attribute stays absent and the figure is reported as a gap, which is
+        # what makes validate-issue.py fail it.
         fill = {}
-        if entry.get("shows"):
-            fill["data-shows"] = str(entry["shows"])
+        shows = entry.get("shows")
+        if isinstance(shows, str) and shows in shows_enum:
+            fill["data-shows"] = shows
         if "capture_year" in entry:
-            cy = entry["capture_year"]
-            fill["data-capture-year"] = "" if cy is None else str(cy)
+            cy = _clean_capture_year(entry["capture_year"])
+            if cy is not None:
+                fill["data-capture-year"] = cy
         lic = entry.get("licence") if isinstance(entry.get("licence"), dict) else {}
-        if lic.get("code"):
-            fill["data-licence"] = str(lic["code"])
-        if "allows_derivatives" in lic:
+        code = lic.get("code")
+        if isinstance(code, str) and code.strip() and code.strip().upper() != "UNKNOWN":
+            fill["data-licence"] = code.strip()
+        if isinstance(lic.get("allows_derivatives"), bool):
             fill["data-allows-derivatives"] = "true" if lic["allows_derivatives"] else "false"
 
         add = [f'{k}="{esc(v)}"' for k, v in
@@ -340,7 +400,12 @@ def render_cover(cover, meta, issue_no, stations, dates, leads_on="news"):
         oncls = " on" if s.get("on") else ""
         freq = esc(s.get("freq", ""))
         name = s.get("name_html") or esc(s.get("name", ""))
-        band_attr = f' data-station-band="{esc(s.get("band", ""))}"' if s.get("band") else ""
+        # NOTE: the attribute is data-NAV-band, not data-station-band. Any
+        # data-station* name would be double-counted by validate-issue.py's
+        # navigator tally (re.findall(r"\bdata-station\b") — "-" is a word
+        # boundary, so data-station-band matches it too and every station
+        # counted twice, tripping the <=13 ceiling on a 7-station issue).
+        band_attr = f' data-nav-band="{esc(s.get("band", ""))}"' if s.get("band") else ""
         st_rows.append(
             f'        <div class="station{oncls}" data-station{band_attr}>\n'
             f'          <span class="freq">{freq}</span>\n'
@@ -614,7 +679,8 @@ def main():
             if len(skill_dir.resolve().parents) >= 3 else None
         manifest_path = str(guess) if guess else ""
     manifest, manifest_note = load_asset_manifest(manifest_path)
-    body, fig_stamped, fig_plates, fig_gaps = stamp_figure_provenance(body, manifest)
+    body, fig_stamped, fig_plates, fig_gaps = stamp_figure_provenance(
+        body, manifest, load_shows_enum(skill_dir))
 
     # --- inject the "Return to The Signal" back-link pill (self-styled) ---
     back_path = skill_dir / "assets/template-parts/back-link.html"

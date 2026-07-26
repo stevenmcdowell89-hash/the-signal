@@ -873,6 +873,57 @@
     .issue{box-shadow:0 1px 0 rgba(0,0,0,.20), 0 24px 60px -24px rgba(0,0,0,.70);}
   }
 
+/* ============================================================================
+   WEEKLY · COVERAGE-REBUILD COMPONENTS (core)                 WP-3, 2026-07-26
+   The SPEC §3.4 markup contracts that must style with or without the mx
+   furniture layer. The mx-only variants (results ledger, demoted-lead ledger,
+   polymorphic .mx-scorecard) are in weekly-mx/11-mx-coverage-rebuild.css.
+   Rationale for every rule: weekly.json § structural_hooks + EVIDENCE/WP-3.md.
+   Identity: no font, no colour, no new token — only the eight Transmission
+   tokens, so the warm-night variant needs no restatement. No .sp-* / .hol-*.
+   ============================================================================ */
+
+  /* ---------- Long Read vintage stamp (§3.4, defect A) ----------
+     An evergreen anchor declares itself above the headline. Ruled mono band —
+     the same "stamped on the paper" gesture as .bandhead, so it reads as
+     furniture, not as a sentence the Editor wrote. Signal-BLUE, not vermilion:
+     vermilion is the one accent and the kicker directly above already spends it.
+     A news anchor emits no .lr-vintage, so there is nothing to style. */
+  .lr-title .lr-vintage{
+    margin:12px 0 0;
+    padding:7px 0 8px;
+    border-top:1px solid var(--hair);
+    border-bottom:1px solid var(--hair);
+    color:var(--blue);
+    letter-spacing:.14em;
+    line-height:1.55;
+  }
+  .lr-title .lr-vintage + h2{ margin-top:18px; }   /* give the headline its air back */
+
+  /* ---------- resolved loops (§3.4, defect D) ----------
+     data-resolves-loop marks a carried-forward result being CLOSED this week.
+     Blue spine = the continuity cue, so a closure reads the same wherever it
+     lands. Core components only; the .mx-ledger row form is in the mx layer. */
+  .items > li[data-resolves-loop],
+  .digest > li[data-resolves-loop],
+  .threads [data-resolves-loop]{
+    box-shadow:inset 2px 0 0 var(--blue);
+    padding-left:14px;
+  }
+  .score[data-resolves-loop]{
+    border-left:2px solid var(--blue);
+    padding-left:14px;
+  }
+  [data-resolves-loop] .num{ color:var(--blue); }
+
+  @media (max-width:640px){
+    .lr-title .lr-vintage{ letter-spacing:.1em; line-height:1.6; }
+    .items > li[data-resolves-loop],
+    .digest > li[data-resolves-loop],
+    .threads [data-resolves-loop],
+    .score[data-resolves-loop]{ padding-left:10px; }
+  }
+
 /* ============================================================
    MX SKIN · skin-transmission.css                    (L1, WP-3)
    Alias block ONLY: maps the weekly's EXISTING Transmission
@@ -1484,6 +1535,126 @@ body[data-skin="transmission"] {
   [data-mx-motion-ready] [data-motion="tier1"] .mx-seq:not(.is-in) .mx-row { opacity: 1; }
 }
 
+/* ============================================================
+   MX WEEKLY · COVERAGE-REBUILD FURNITURE       WP-3, 2026-07-26
+   SPEC §3.4/§3.11 contracts whose base component lives in
+   10-mx-weekly.css and therefore reads the --mx-* alias:
+     .mx-ledger[data-role="results-ledger"]   (defect D)
+     .mx-ledger[data-role="demoted-lead"]     (defect C)
+     .mx-ledger__row[data-resolves-loop]      (defect D)
+     .mx-scorecard[data-table-kind="…"]       (defect D)
+   Full rationale: weekly.json § furniture_layer.components +
+   § structural_hooks, and EVIDENCE/WP-3.md. Every value resolves
+   through the transmission alias (Law 11) — no new colour, font
+   or token. Attribute-scoped: markup without these attributes
+   renders exactly as before.
+   ============================================================ */
+
+/* --- 01 · RESULTS LEDGER — results of record, nothing provisional.
+   data-sport is required on every row (a SPECIFIC sport token; never
+   multi_sport). Hairline sport gutter so rows from different sports do not
+   read as one long run of the same competition; the leading row is the week's
+   biggest result and gets the accent. --- */
+.mx-ledger[data-role="results-ledger"] .mx-ledger__caption { border-bottom-width: 2px; }
+.mx-ledger[data-role="results-ledger"] .mx-ledger__row[data-sport] {
+  padding-left: 12px;
+  box-shadow: inset 2px 0 0 var(--mx-hair);
+}
+.mx-ledger[data-role="results-ledger"] .mx-ledger__row:first-of-type[data-sport] {
+  box-shadow: inset 2px 0 0 var(--mx-accent);
+}
+
+/* --- 02 · DEMOTED LEAD — a story that held the cover and no longer does.
+   The demotion has to be visible, and this identity says "no longer the loudest
+   thing here" by withdrawing the accent: light top rule, pencil-grey caption,
+   signal-blue result column. Vermilion belongs to what leads. --- */
+.mx-ledger[data-role="demoted-lead"] { border-top: 1px solid var(--mx-ink); margin: 40px 0; }
+.mx-ledger[data-role="demoted-lead"] .mx-ledger__caption {
+  color: var(--mx-ink-soft);
+  border-bottom-style: dotted;
+}
+.mx-ledger[data-role="demoted-lead"] .mx-ledger__result { color: var(--mx-support-1); }
+.mx-ledger[data-role="demoted-lead"] .mx-ledger__date { color: var(--mx-ink-soft); }
+
+/* --- 03 · RESOLVED LOOP — same blue spine as the core weekly, so a closure
+   reads identically wherever it lands. --- */
+.mx-ledger__row[data-resolves-loop] {
+  padding-left: 12px;
+  box-shadow: inset 2px 0 0 var(--mx-accent-2);
+}
+.mx-ledger__row[data-resolves-loop] .mx-ledger__result { color: var(--mx-accent-2); }
+
+/* --- 04 · POLYMORPHIC STANDINGS CARD — data-table-kind ∈ league · medal · gc ·
+   leaderboard · championship. Shared: numerals line up whatever the sport, and
+   any kind may carry a head row (a medal table needs G/S/B heads). --- */
+.mx-scorecard[data-table-kind] td,
+.mx-scorecard[data-table-kind] th { font-variant-numeric: tabular-nums; }
+.mx-scorecard[data-table-kind] th {
+  font-weight: 700;
+  color: var(--mx-accent);
+  letter-spacing: 0.12em;
+  border-bottom: 1.5px solid var(--mx-card-ink);
+}
+
+/* league / championship — position · name · points. A season table's story is
+   the podium, so championship rules off after third. */
+.mx-scorecard[data-table-kind="league"] td:last-child,
+.mx-scorecard[data-table-kind="championship"] td:last-child {
+  text-align: right;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.mx-scorecard[data-table-kind="championship"] tr:nth-child(3) td {
+  border-bottom: 1.5px solid var(--mx-card-ink);
+}
+
+/* medal — rank · nation · G · S · B (· total): three-to-four narrow numeric
+   columns instead of one gap column, the shape the old card could not hold.
+   Gold is the sort key, so it takes the weight; silver/bronze stay quiet. */
+.mx-scorecard[data-table-kind="medal"] td,
+.mx-scorecard[data-table-kind="medal"] th { padding-right: 8px; }
+.mx-scorecard[data-table-kind="medal"] td:nth-child(n + 3),
+.mx-scorecard[data-table-kind="medal"] th:nth-child(n + 3) {
+  width: 30px;
+  text-align: right;
+  padding-right: 0;
+  white-space: nowrap;
+}
+.mx-scorecard[data-table-kind="medal"] td:nth-child(3) {
+  font-weight: 700;
+  color: var(--mx-accent);
+}
+.mx-scorecard[data-table-kind="medal"] td:nth-child(4),
+.mx-scorecard[data-table-kind="medal"] td:nth-child(5) { color: var(--mx-ink-soft); }
+
+/* gc / leaderboard — a time gap or a score to par: mono breathing room, never
+   wraps mid-value, and the leader's figure is the headline number. */
+.mx-scorecard[data-table-kind="gc"] .mx-scorecard__gap,
+.mx-scorecard[data-table-kind="gc"] td:last-child,
+.mx-scorecard[data-table-kind="leaderboard"] .mx-scorecard__gap,
+.mx-scorecard[data-table-kind="leaderboard"] td:last-child {
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.mx-scorecard[data-table-kind="gc"] tr:first-child .mx-scorecard__gap,
+.mx-scorecard[data-table-kind="gc"] tr:first-child td:last-child,
+.mx-scorecard[data-table-kind="leaderboard"] tr:first-child .mx-scorecard__gap,
+.mx-scorecard[data-table-kind="leaderboard"] tr:first-child td:last-child {
+  color: var(--mx-accent);
+  font-weight: 700;
+}
+.mx-scorecard[data-table-kind="leaderboard"] tr.is-cut td {
+  border-bottom: 1.5px dashed var(--mx-card-ink);   /* the cut line, when shown */
+}
+
+/* --- 05 · NARROW WIDTHS (the card is already width:100% under 640px) --- */
+@media (max-width: 640px) {
+  .mx-scorecard[data-table-kind="medal"] td:nth-child(n + 3),
+  .mx-scorecard[data-table-kind="medal"] th:nth-child(n + 3) { width: 26px; }
+  .mx-ledger[data-role="results-ledger"] .mx-ledger__row[data-sport],
+  .mx-ledger__row[data-resolves-loop] { padding-left: 9px; }
+}
+
 </style>
 </head>
 <body data-skin="transmission" data-mx data-motion="tier1" data-format="weekly" data-mx-chrome="pill">
@@ -1526,7 +1697,7 @@ body[data-skin="transmission"] {
 <div class="issue">
 
   <!-- ================= COVER ================= -->
-  <header class="cover">
+  <header class="cover" data-cover-leads-on="news">
     <div class="cover__top">
       <span class="mono">A Personal Weekly · Received &amp; Tuned</span>
       <span class="mono price">Sunday Edition</span>
@@ -1555,39 +1726,39 @@ body[data-skin="transmission"] {
           <span class="mono">STATION LIST</span>
           <span class="mono">№017</span>
         </div>
-        <div class="station on" data-station>
+        <div class="station on" data-station data-nav-band="long_read">
           <span class="freq">88.9</span>
           <span class="name"><b>The Long Read:</b> seven leaders, no election</span>
         </div>
-        <div class="station" data-station>
+        <div class="station" data-station data-nav-band="touchline">
           <span class="freq">98.4</span>
           <span class="name">The Cup's last act; Sinner holds</span>
         </div>
-        <div class="station on" data-station>
+        <div class="station on" data-station data-nav-band="pixel_byte">
           <span class="freq">104.7</span>
           <span class="name"><b>Remake summer:</b> Black Flag and Halo reborn</span>
         </div>
-        <div class="station" data-station>
+        <div class="station" data-station data-nav-band="screen_sound">
           <span class="freq">106.0</span>
           <span class="name"><b>Heartstopper</b> takes its bow</span>
         </div>
-        <div class="station" data-station>
+        <div class="station" data-station data-nav-band="bookmark">
           <span class="freq">90.1</span>
           <span class="name">Three ways into new SF</span>
         </div>
-        <div class="station" data-station>
+        <div class="station" data-station data-nav-band="this_week_in_history">
           <span class="freq">94.6</span>
           <span class="name">This week in <b>1965</b>: Mars, up close</span>
         </div>
-        <div class="station on" data-station>
+        <div class="station on" data-station data-nav-band="the_desk">
           <span class="freq">92.3</span>
           <span class="name"><b>The Desk:</b> running without losing the block, and a rate to beat</span>
         </div>
-        <div class="station" data-station>
+        <div class="station" data-station data-nav-band="rabbit_hole">
           <span class="freq">101.2</span>
           <span class="name">Down the rabbit hole to a Saxon saint</span>
         </div>
-        <div class="station on" data-station>
+        <div class="station on" data-station data-nav-band="on_the_radar">
           <span class="freq">96.5</span>
           <span class="name">What's coming: a new PM, a rate call</span>
         </div>
@@ -1777,7 +1948,7 @@ body[data-skin="transmission"] {
       <span class="mono runtime">SIGNAL STRONG</span>
     </div>
   </div>
-  <section class="longread" data-role="long-read">
+  <section class="longread" data-role="long-read" data-vintage="news">
     <div class="lr-title">
       <div class="mono" style="color:var(--signal);">SEVEN LEADERS, NO ELECTION</div>
       <h2>How Britain hands over <em>power</em></h2>

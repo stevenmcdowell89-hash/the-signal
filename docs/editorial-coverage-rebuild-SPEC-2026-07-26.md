@@ -72,6 +72,13 @@ No file appears twice. Anything not listed is unowned — report before touching
 | **WP-11** | Daily routing (added 2026-07-26) | `functions/daily/render.js`, `functions/daily/dedup.js` |
 | **WP-12** | Skill version + changelog (added 2026-07-26) | `.claude/skills/the-signal/CHANGELOG.md`, and the skill-version marker wherever it lives |
 
+**Ownership correction (2026-07-26): `references/golden/weekly-mx/**` belongs to WP-3.** The map's third
+gap. WP-3's brief told it to handle golden parity deliberately, but the golden fixture itself was left
+unowned — so a file the build was always going to have to regenerate had no owner. It is WP-3's,
+because WP-3 owns the stitcher that produces it. WP-10 (verification harness) must therefore treat the
+regenerated golden as an **input it checks**, never a file it edits: a harness that can rewrite its own
+expected output proves nothing.
+
 **WP-12 exists because the map had a second gap.** WP-9 reported it: the skill keeps a `CHANGELOG.md`
 and a version convention (`v8.43` at time of writing), and no WP owned either — so a rebuild touching
 the plan schema, the structure of record, the stitcher, both validators and the phase wiring would
