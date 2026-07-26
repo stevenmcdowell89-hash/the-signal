@@ -149,7 +149,13 @@ These are normative. Field names, attribute names and enum values are exact.
   // `source_type`, `context`, optional `direct_cdn`. `role` and `source_constraint` belong to the
   // CHAPTER PLAN's `images_needed[]`, not the bundle. WP-5/WP-8 must read `url_or_keyword`.
   "shows": "event_photo",        // REQUIRED, enum §3.3
-  "capture_year": 2007,          // REQUIRED; null ONLY when shows ∈ {diagram, chart} and the asset is synthetic
+  // SIMPLIFIED 2026-07-26 (WP-5 finding). This originally read "null ONLY when shows ∈ {diagram,
+  // chart} AND the asset is synthetic" — but nothing recorded synthetic-ness, so half the condition
+  // was unverifiable and WP-5 had to hard-fail the enum half and merely warn on the rest. Resolved by
+  // DELETING the synthetic clause rather than adding a field for it: a diagram or a chart is
+  // synthetic by nature, so the enum was already doing all the work. null is legal iff
+  // shows ∈ {diagram, chart}. No `synthetic` field exists or should be added.
+  "capture_year": 2007,          // REQUIRED; null legal iff shows ∈ {diagram, chart}
   "licence": {                   // REQUIRED, replaces the free-text credit as the machine record
     "holder": "Mogi Vicentini",
     "code": "CC-BY-2.5",         // SPDX-ish token, or "PRESS-KIT-EDITORIAL" | "PUBLIC-DOMAIN" | "CC0" | "UNKNOWN"
@@ -321,6 +327,14 @@ all of:
 - `issue_meta.lead_override_reason` is absent or under 80 chars.
 
 The planner can always lead with it again — it just has to say why in writing.
+
+**Missing field, added 2026-07-26 (WP-5 finding).** The rule above compares "this plan's
+`topic_family`" against the ledger — but **no contract field carried it**. §3.1 defined
+`cover_leads_on` and `lead_rationale` and never the family itself, so the rule had nothing to compare.
+WP-5 shipped a fallback chain (explicit if supplied → `pieces[role=lead]` → warn) to avoid guessing.
+**Add `issue_meta.cover_lead_topic_family`** (required for weeklies, drawn from the closed Topic Family
+Enumeration in `chapter-plan-schema.md`, which now includes `cyber_privacy`). WP-1 owns the schema;
+WP-5's fallback stays as a compatibility path for plans written before the field existed.
 
 ### 3.7 Open-loop resolution rule (WP-5 upstream, WP-4 rendered)
 
