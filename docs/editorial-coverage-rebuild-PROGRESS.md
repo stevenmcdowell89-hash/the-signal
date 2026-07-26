@@ -19,7 +19,17 @@ Each WP appends to its own section. Do not rewrite another WP's entry.
 | WP-8 | Asset provenance + licence safety | DONE | E | manifest 438 entries, 13 URLs recovered from git history; ND refusal armed but cannot fire on #18 (frozen, licences unpopulated) |
 | WP-9 | Pipeline phase wiring | IN PROGRESS | C D | owes handoffs 4, 5 |
 | WP-10 | Verification harness | PENDING | all | last; owes handoff 6 (needs an `open` loop fixture) |
-| WP-11 | Daily routing | IN PROGRESS | D | added mid-build — original ownership map left `render.js`/`dedup.js` unowned, leaving WP-7 partly inert |
+| WP-11 | Daily routing | DONE | D | 3 lists changed, 4 audited and left alone; behaviourally verified against real blobs. Raises open risk R-1 |
+| WP-12 | Skill version + changelog | PENDING | — | added mid-build; runs last, after WP-10 |
+
+## Open risks
+
+Things the build surfaced that are **not** defects in this work but are now more consequential
+because of it. Recorded rather than silently fixed — each needs an owner decision.
+
+| # | Risk | Raised by | Status |
+|---|------|-----------|--------|
+| R-1 | **The daily's Headlines has no guaranteed news slot**, and now has four more eligible sport domains (`sport`, `cricket`, `cycling`, `athletics`). The crowding is bounded but not zero, so a heavy sport day could push world news off the front. This is a pre-existing property of `render.js`'s Headlines composition, not something WP-11 introduced — WP-11 correctly declined to change the `NEWS = {world, finance}` guarantee, because adding sport there would let a cricket item satisfy the news slot and make *world* evictable, which is worse. Fixing it properly means a guaranteed-news-slot design, which is a product decision about the daily brief and outside this SPEC's scope. | WP-11 | **open — owner decision** |
 
 **Orchestrator owns this file from 2026-07-26.** WP-1 wrote here during rounds 1–2 while it was the
 only agent running; with several WPs now reporting concurrently, all others write
