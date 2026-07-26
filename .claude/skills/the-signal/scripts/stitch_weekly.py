@@ -237,7 +237,10 @@ def apply_long_read_vintage(content, vintage, chapter, filed):
             if "A STANDING STORY" not in inner.upper():
                 inner = f"{inner} · A STANDING STORY"
         else:
-            # SPEC §3.4: a news anchor keeps `· DD MON YYYY` as today.
+            # SPEC §3.4: a news anchor keeps `· DD MON YYYY` as today. Strip any
+            # standing-story frame first, so data-vintage="news" can never render
+            # an evergreen byline (the normalisation is total in both directions).
+            inner = re.sub(r"\s*·\s*A STANDING STORY\b", "", inner, flags=re.IGNORECASE)
             tok = BYLINE_DATE_RE.search(inner)
             if tok is None:
                 inner = f"{inner.strip().strip('·').strip()} · {filed}"

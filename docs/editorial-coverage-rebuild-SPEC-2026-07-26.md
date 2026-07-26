@@ -226,6 +226,41 @@ editorial.
 <div class="mx-ledger" data-mx-event="ledger" data-role="demoted-lead">
 ```
 
+### 3.4a As-built reconciliation (WP-3 complete, 2026-07-26) — **WP-4 implements against THIS**
+
+WP-3 has shipped. Where the as-built differs from §3.4 above, the as-built wins; §3.4's *values* are
+all unchanged.
+
+1. **Two attributes beyond §3.4's list.** `data-cover-leads-on="news|long_read"` on
+   `<header class="cover">`, and `data-nav-band="<band_id>"` on every `[data-station]`. Documented in
+   `weekly.json` § `structural_hooks.cover_leads_on`.
+2. **Never name a new attribute `data-station*`.** `validate-issue.py`'s navigator tally is
+   `re.findall(r'\bdata-station\b')`, which double-counted WP-3's first attempt (`data-station-band`)
+   and failed the nav-count invariant. Renamed to `data-nav-band`.
+3. **`data-capture-year=""` is the legal null rendering** — empty string, not `"UNKNOWN"`, not absent.
+   §3.9's caption-vintage rule applies **only to a non-empty 4-digit value**; treat `""` as "no year to
+   compare". A value that is neither empty nor 4 digits must fail: the stitcher never emits one, so it
+   came from a writer.
+4. **`.lr-title` is writer-authored, not stitcher-generated.** §3.4 assumed otherwise. The stitcher
+   *normalises* the block instead. No contract value changed. Moving generation into the stitcher is
+   the cleaner end-state but needs both goldens' `chapters/long_read.html` and a decision about whether
+   writers keep the headline and standfirst — deliberately out of scope.
+5. **`fixtures_ledger` is renamed.** The Touchline object is now `results_ledger` (concluded results)
+   plus a separate `fixtures_lookahead` (forward fixtures, moved to On the Radar). §3.11's prose still
+   says `fixtures_ledger`; the live skeleton is authoritative.
+6. **Figure provenance is 0-of-14 today, by construction.** WP-3 stamps figure attributes only from
+   `assets/cached/manifest.json`, and all 438 of WP-8's entries are `UNKNOWN`/`null` back-fills — so
+   **every `.plate-img` attribute must currently come from the writer**, and only WP-4 can fail its
+   absence. WP-3 hard-fails via `--strict-figure-provenance`, off by default because it would fail
+   every current fixture.
+   *Cross-WP bug caught here and worth remembering:* WP-3 initially stamped those placeholders
+   literally, rendering `data-shows="UNKNOWN"` and `data-allows-derivatives="false"` — which would have
+   made the entire legacy archive look ND-restricted and poisoned WP-8's licence gate. Placeholders are
+   now never stamped: the attribute stays absent and is reported as a gap.
+7. **`results_ledger_multi_sport` needs two inputs the HTML does not contain** — state's
+   `interest_depth` and `sports_calendar` — to know whether ≥2 tracked sports concluded in-window. WP-4
+   therefore needs `--state`.
+
 ### 3.5 State additions (WP-1 owns the file; WP-9 wires the reads/writes)
 
 ```jsonc
