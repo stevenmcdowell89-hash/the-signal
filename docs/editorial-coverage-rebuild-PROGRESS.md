@@ -11,10 +11,10 @@ Each WP appends to its own section. Do not rewrite another WP's entry.
 |----|-------|--------|---------|-------|
 | WP-1 | Data contracts (foundation) | DONE | A B C D E | 3 rounds; contracts + state seed + `cyber_privacy` + 22 sport tokens. 9 handoffs, 1 resolved, 8 routed |
 | WP-2 | Editorial prose spec | DONE | A C D E | 13 blocks across 2 files, `(v8.44, WP-2)`; ~50 identifiers verified byte-for-byte. Raises R-2 + 2 naming divergences |
-| WP-3 | Structure of record + stitcher + CSS | IN PROGRESS | A C D | |
-| WP-4 | Rendered-issue checks | PENDING | A B D E | queued behind WP-3; owes handoffs 1, 6, 8 |
-| WP-5 | Upstream production aids | PENDING | A C D E | queued behind WP-3; owes handoffs 1, 2, 6, 7 |
-| WP-6 | Image taxonomy + specificity doctrine | IN PROGRESS | E | |
+| WP-3 | Structure of record + stitcher + CSS | DONE | A C D | golden regenerated, `verify-weekly-golden.sh` exits 0 (re-run by orchestrator). Caught WP-8's placeholder-stamping bug |
+| WP-4 | Rendered-issue checks | IN PROGRESS | A B D E | owns 6 of 12 acceptance criteria; implements against §3.4a as-built |
+| WP-5 | Upstream production aids | IN PROGRESS | A C D E | launched ahead of queue to fix the in-tree `KeyError` |
+| WP-6 | Image taxonomy + specificity doctrine | DONE | E | `shows` enum canonical; found the missing Steam akamai host and the mistyped Springer domain |
 | WP-7 | Daily inputs | DONE | D | 9 feeds + 5 domains, all URLs 200-verified; keyword sets regressed over 3286 titles |
 | WP-8 | Asset provenance + licence safety | DONE | E | manifest 438 entries, 13 URLs recovered from git history; ND refusal armed but cannot fire on #18 (frozen, licences unpopulated) |
 | WP-9 | Pipeline phase wiring | IN PROGRESS | C D | owes handoffs 4, 5 |
