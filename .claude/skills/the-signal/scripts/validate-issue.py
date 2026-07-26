@@ -2779,7 +2779,18 @@ def run_coverage_checks(html: str, fmt: str, new_system: bool, path: Path,
     print(f"     figures:   {len(figs)} .plate-img")
     print()
 
-    weekly_new = (fmt == "weekly" and new_system)
+    # In scope: a weekly that is either a new-system (data-mx) artifact or carries
+    # ANY post-rebuild attribute. The second clause closes a real hole: the mx
+    # layer is OPT-IN (stitch_weekly.py:541 — `data-mx` is written only when
+    # mx=True), so a weekly stitched on the legacy path is not "new-system" while
+    # still being post-WP-3 output that emits the whole contract. Keying on the
+    # presence of any rebuild-era attribute is not circular — one attribute
+    # anywhere puts the issue in scope for ALL of them, so an issue cannot escape
+    # the cover-leads-on check by omitting data-cover-leads-on.
+    rebuild_era = bool(re.search(
+        r'\bdata-(?:nav-band|cover-leads-on|vintage|shows|capture-year|licence|'
+        r'allows-derivatives|lr-framing|table-kind|resolves-loop|sport)\s*=', body))
+    weekly_new = (fmt == "weekly" and (new_system or rebuild_era))
 
     # ── GATE 1 · image checks ────────────────────────────────────────────────
     check_caption_vintage(body, figs, report)                       # §3.9, crit #3
@@ -2798,9 +2809,11 @@ def run_coverage_checks(html: str, fmt: str, new_system: bool, path: Path,
         check_resolved_loops(body, state, run_date, report)          # §3.7, crit #6
     elif fmt == "weekly":
         report.warn("coverage-rebuild",
-                    "old-system weekly — the SPEC §3.4/§3.7/§3.8/§3.11 structure contracts are "
-                    "asserted on new-system (data-mx) weeklies only, as with the Law-3/Law-9/F-16 "
-                    "checks. Caption vintage and the sport-token vocabulary still ran.")
+                    "pre-rebuild weekly (no data-mx marker and no rebuild-era attribute anywhere) "
+                    "— the SPEC §3.4/§3.7/§3.8/§3.11 structure contracts are not asserted against "
+                    "it, the same exemption the Law-3/Law-9/F-16 checks give the old-system "
+                    "archive. Caption vintage and the sport-token vocabulary still ran. Anything "
+                    "the current stitcher produces is in scope.")
 
 
 # ─────────────────────────────────────────────────────────────────────────────

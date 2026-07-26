@@ -351,6 +351,19 @@ Per rendered issue:
 - **≥3 distinct** `data-shows` values across the issue.
 - **Pixel & Byte:** at most **one** `key_art` in the band, and `key_art` **may not** be the band's
   lead figure (`.plate-img.lead`).
+- **Never-lead, resolved 2026-07-26 (WP-6 finding).** WP-6's reconciliation made
+  `never_lead_shapes = {key_art, product_shot, portrait}` (all of rank 5), which is **broader than
+  this section's original letter** (Pixel & Byte + `key_art` only), and it correctly asked for a
+  conscious choice rather than guessing. The resolution, which WP-4 implements:
+  - **`key_art` and `portrait`: never a lead, issue-wide, any band.** Both are substitutes for showing
+    the thing itself — key art is the logo, a posed portrait is the person not doing the thing. This is
+    exactly the "random Pope photo" failure, and it is the defect the owner named ("every time we talk
+    about a game we just get cover art").
+  - **`product_shot`: may lead only when the band's subject IS the product** — a hardware launch or
+    review, where the device genuinely is the most informative image. It may **not** lead a software,
+    game or service band, where it is a box standing in for a thing that moves.
+  A blanket issue-wide ban on all three would have been simpler and wrong: it would break legitimate
+  hardware coverage, which this reader gets (Garmin, Whoop, Pixel, Xiaomi, e-readers).
 - **Long Read:** **≥1** figure with `data-shows` ∈ {`diagram`, `map`, `chart`, `artefact`}.
 - **Touchline:** any figure captioned as a concluded result must be `event_photo`.
 - **Cross-issue:** a `src` that `led` the previous issue may not lead this one (reads

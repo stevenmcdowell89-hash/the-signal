@@ -481,3 +481,165 @@ no content dropped. Nothing committed; the orchestrator commits.
 5. **Issue #18 was not touched**, and no check here reads it: #18 is a rendered artefact, and both of
    my scripts run before any HTML exists.
 6. **No version bump / CHANGELOG entry** — WP-12 owns those.
+
+---
+
+# WP-5 round 2 — `issue_meta.cover_lead_topic_family` required + enum-checked
+
+**Trigger:** WP-1 round 4 (`370341e`) closed the contract gap this WP reported in § Findings 1. The
+field now exists in `chapter-plan-schema.md` (weekly-REQUIRED, closed Topic Family Enumeration) and in
+`data-contracts.md` § Chapter plan. WP-5's shipped code *accepted* it but neither required nor
+enum-checked it.
+
+**File touched:** `.claude/skills/the-signal/scripts/validate-chapter-plan.py` only.
+Baseline for every diff below: commit `370341e`.
+
+## R2.1 The two checks, as implemented
+
+Both live in `check_weekly_coverage_meta()`, immediately after `cover_leads_on`, following the same
+convention as the other §3.1 weekly-required fields (`err()` on absence, then a type check, then the
+value check):
+
+1. **Required** — `issue_meta.cover_lead_topic_family` absent on a weekly plan is a hard fail. The
+   message says what the field is for: `cover_leads_on` answers news-vs-long_read only and the
+   ledger's family is written at publish, so without this the validator has to *infer* the family, and
+   an inferred family is not a stated one.
+2. **Enum-checked, HARD** — a value outside `TOPIC_FAMILIES` (this validator's copy of the closed
+   enumeration, which carries `cyber_privacy` from round 1) is a hard fail, not a warning. The message
+   states the reason in the terms that make it non-negotiable: the rut rule **intersects** this value
+   with `state.cover_lead_ledger[].topic_family`, drawn from the same enumeration, so an out-of-enum
+   value can never match anything in the ledger — the intersection is always empty and **the rut rule
+   would pass while checking nothing.** A green no-op reads as coverage, which is worse than an absent
+   check. A non-string / empty-string value fails the same way.
+
+**The fallback chain is untouched** — same order, same semantics, same code:
+`explicit → pieces[role='lead'] → warn-and-skip`. It is now documented as the *compatibility path*
+for plans written before the field existed: such a plan draws the new missing-field error **and** still
+gets a real rut verdict rather than a crash. The only other edit is one stale sentence in the branch-3
+warning ("No §3.1 field carries the cover lead's family — see the WP-5 handoff note"), which was true
+for one round and is not now; it points at the new field instead and still says the rule was **skipped,
+not satisfied**. § Findings 1 above stands as the historical record of why the field exists.
+
+## R2.2 Evidence
+
+**(i) A weekly omitting the field — hard fail.** `plan-weekly-valid.json`, the round-1 baseline that
+passed before this change:
+
+```
+$ python3 .claude/skills/the-signal/scripts/validate-chapter-plan.py $S/plan-weekly-valid.json
+FAIL — 1 error(s) found in '…/plan-weekly-valid.json':
+
+  [1] [COVER-LEAD] issue_meta.cover_lead_topic_family is missing (SPEC §3.6 amendment, REQUIRED on
+      weekly plans). The `topic_family` of the story the cover leads on, from the closed enumeration
+      in references/chapter-plan-schema.md § Topic Family Enumeration. It is the rut rule's other
+      half: `cover_leads_on` says news-vs-long_read only, and the ledger's family is written at
+      publish, so without this field the validator has to INFER the family from the plan's lead pieces
+      (it still will, as a compatibility path for plans written before the field existed — but an
+      inferred family is not a stated one).
+exit=1
+```
+
+**(ii) An out-of-enum value — hard fail.** `plan-clf-out-of-enum.json` carries `"uk_polotics"`, the
+typo that would silently disable the rule:
+
+```
+$ python3 … $S/plan-clf-out-of-enum.json
+FAIL — 1 error(s) found in '…/plan-clf-out-of-enum.json':
+
+  [1] [COVER-LEAD] issue_meta.cover_lead_topic_family='uk_polotics' is not in the closed Topic Family
+      Enumeration (references/chapter-plan-schema.md § Topic Family Enumeration; adding a family is a
+      spec amendment by WP-1, not a local edit).
+        This is a HARD fail on purpose. The rut rule (SPEC §3.6) intersects this value with
+      state.cover_lead_ledger[].topic_family, which is drawn from the same enumeration. An out-of-enum
+      value here cannot match anything in the ledger, so the intersection is always empty and the rut
+      rule would pass while checking nothing — a green no-op that reads as coverage. If this is a real
+      editorial category with no home in the list (as cybersecurity had none before `cyber_privacy`
+      was added), say so and amend the enumeration; do not file it under an approximate family.
+exit=1
+```
+
+**(iii) In-enum values pass**, including the family round 1 added:
+
+```
+$ python3 … $S/plan-clf-valid.json           (cover_lead_topic_family: "uk_politics")   → PASS  exit=0
+$ python3 … $S/plan-clf-cyber-privacy.json   (cover_lead_topic_family: "cyber_privacy") → PASS  exit=0
+```
+
+**(iv) Criterion #4 re-run, not assumed — all three resolution branches.**
+
+Branch 1, the field stated (note the message now names the explicit source):
+
+```
+$ python3 … $S/plan-clf-valid.json --state $S/state-rutted.json
+FAIL — 1 error(s):
+  [1] [RUT] cover-lead rut (SPEC §3.6): topic_family ['uk_politics'] appears as led_on='news' in [3]
+      of the last 4 cover_lead_ledger entries, and this plan sets cover_leads_on='news' on the same
+      family [family resolved from issue_meta.cover_lead_topic_family (explicit)], with no
+      lead_override_reason (>= 80 chars required).                                          exit=1
+
+$ python3 … $S/plan-clf-rut-overridden.json --state $S/state-rutted.json
+  (9) [RUT] rut acknowledged and overridden in writing: ['uk_politics'] led on news in [3] of the last
+      4 covers … lead_override_reason is present (164 chars), so the plan PASSES …
+PASS — '…/plan-clf-rut-overridden.json' is valid.                                           exit=0
+
+$ python3 … $S/plan-clf-valid.json --state $S/state-rutted-other.json    # rut on us_politics
+PASS — '…/plan-clf-valid.json' is valid.                                                    exit=0
+```
+
+Branch 2, a pre-amendment plan (no field, lead pieces present) — the rut verdict is **identical** to
+round 1, now accompanied by the new missing-field error:
+
+```
+$ python3 … $S/plan-weekly-valid.json --state $S/state-rutted.json
+  [1] [COVER-LEAD] issue_meta.cover_lead_topic_family is missing …
+  [2] [RUT] cover-lead rut (SPEC §3.6): topic_family ['uk_politics'] appears as led_on='news' in [3] …
+      [family resolved from chapters[].pieces[role='lead'].topic_family (derived)] …            exit=1
+
+$ python3 … $S/plan-weekly-valid.json --state $S/state-rutted-other.json
+1 error(s)   # the missing-field error only — no [RUT] line: the rule correctly does not fire
+```
+
+Branch 3, no field and no lead pieces (`plan-no-family-at-all.json`) — still warn-and-skip, never a
+rut failure:
+
+```
+  (9) [RUT] ['uk_politics'] led on news in >= 3 of the last 4 covers and this plan leads on news, but
+      the plan declares no topic_family for its cover lead, so the rut rule (SPEC §3.6) could not be
+      evaluated. Set issue_meta.cover_lead_topic_family (now weekly-required, and separately reported
+      above) … The rule is SKIPPED here, not satisfied.
+```
+
+**(v) Self-tests and compile — the count held:**
+
+```
+$ python3 .claude/skills/the-signal/scripts/validate-chapter-plan.py --test
+76/76 tests passed.
+PIPELINE TEST: PASS
+$ python3 -m py_compile .claude/skills/the-signal/scripts/validate-chapter-plan.py
+COMPILE_OK
+```
+
+## R2.3 Repo state
+
+```
+$ git diff --numstat 370341e -- .claude/skills/the-signal/scripts/validate-chapter-plan.py \
+                                .claude/skills/the-signal/scripts/validate-research-bundle.py
+60  15  .claude/skills/the-signal/scripts/validate-chapter-plan.py
+
+$ git status --short
+ M .claude/skills/the-signal/SKILL.md                        (WP-9 follow-up, parallel)
+ M .claude/skills/the-signal/scripts/check-image-diversity.sh (WP-6 follow-up, parallel)
+ M .claude/skills/the-signal/scripts/validate-chapter-plan.py ← WP-5
+```
+
+`validate-research-bundle.py` is unchanged in round 2 (0 lines) — the field is a plan-side contract.
+The 15 deleted lines are the two docstring passages rewritten in place (the module header's §3.1 field
+list, and `_plan_cover_lead_families`'s "reported contract gap" note, now a history note) plus the one
+stale branch-3 warning sentence. No check was removed or weakened. `PROGRESS.md` untouched; nothing
+committed.
+
+**Round-2 handoff notes:** none new. WP-10's fixture list in § 11 gains `plan-clf-valid.json`,
+`plan-clf-rut-overridden.json`, `plan-clf-out-of-enum.json` (the typo that would have produced a green
+no-op — the most valuable regression of the three) and `plan-no-family-at-all.json`; the round-1
+`plan-weekly-valid.json` / `plan-rut-overridden.json` pair is worth keeping **as the pre-amendment
+compatibility fixture**, since it is the only thing exercising branch 2.

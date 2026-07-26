@@ -1238,16 +1238,24 @@ def check_week_in_numbers_rows(chapters, present_ids):
 def _plan_cover_lead_families(plan, meta):
     """Resolve the topic_family this plan's cover leads on, for the rut rule.
 
-    **Reported contract gap (SPEC §3.6 / §3.1).** The rut rule is specified against
-    "this plan sets cover_leads_on: 'news' with that same topic_family", but no
-    §3.1 field carries the plan's cover-lead topic_family: `cover_leads_on` says
-    news-vs-long_read only, and `cover_lead_ledger[].topic_family` is written at
-    publish (SKILL.md Phase 10) from the orchestrator's reading of the cover. So
-    this validator cannot be handed the family; it has to resolve it. Order:
+    **History (SPEC §3.6 / §3.1).** The rut rule is specified against "this plan
+    sets cover_leads_on: 'news' with that same topic_family", and for one round of
+    this build NO field carried it: `cover_leads_on` says news-vs-long_read only,
+    and `cover_lead_ledger[].topic_family` is written at publish (SKILL.md Phase
+    10) from the orchestrator's reading of the cover. WP-1 round 4 closed that on
+    WP-5's finding — `issue_meta.cover_lead_topic_family` is now a weekly-REQUIRED,
+    enum-checked contract field (check_weekly_coverage_meta enforces both), and
+    WP-9 copies it into the ledger at publish so the two sides of the intersection
+    carry the same value by construction.
 
-      1. `issue_meta.cover_lead_topic_family`, if the planner supplies it. Not a
-         contract field today — accepted so an explicit declaration always wins, and
-         raised as a handoff for WP-1 to add. Nothing is rejected for omitting it.
+    The resolution order below is unchanged, and stays as the COMPATIBILITY PATH
+    for plans written before the field existed — such a plan draws the missing-field
+    error above and still gets a meaningful rut verdict rather than a crash:
+
+      1. `issue_meta.cover_lead_topic_family`, trimmed, if a non-empty string — an
+         explicit declaration always wins. (Enum-checked in
+         check_weekly_coverage_meta, which hard-fails an out-of-enum value: it could
+         never intersect the ledger, so the rule would pass while checking nothing.)
       2. otherwise the families of the plan's `role: "lead"` pieces — the pool the
          cover lead is drawn from.
 
@@ -1342,8 +1350,9 @@ def check_rut_rule(plan, meta, state):
         warn(f"[RUT] {sorted(rutted)} led on news in >= {RUT_LEDGER_THRESHOLD} of the last "
              f"{RUT_LEDGER_WINDOW} covers and this plan leads on news, but the plan declares no "
              f"topic_family for its cover lead, so the rut rule (SPEC §3.6) could not be evaluated. "
-             f"No §3.1 field carries the cover lead's family — see the WP-5 handoff note. Declare "
-             f"the leading band's piece with role='lead' and its topic_family.")
+             f"Set issue_meta.cover_lead_topic_family (now weekly-required, and separately reported "
+             f"above) — or, on a pre-amendment plan, declare the leading band's piece with "
+             f"role='lead' and its topic_family. The rule is SKIPPED here, not satisfied.")
         return
 
     hit = sorted(rutted & families)

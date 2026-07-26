@@ -296,3 +296,104 @@ $ git status --short      # at the close of WP-6
 5. **Not done, deliberately:** `min_distinct_shapes` is not enforced against the *research bundle* — that is WP-5's Rule 2 replacement, and duplicating it here would put the same rule in two owners' files. Per-band shape budgets are WP-4's; this script stays issue-wide.
 6. **Watch item.** `min_distinct_shapes: 3` is a floor that a lazy issue can satisfy with `key_art` + `portrait` + `product_shot` — three shapes, all rank 5. Only WP-4's per-band budgets (no `key_art` lead, Long Read information figure) close that. If those land weakened, this floor is weaker than it looks; consider a rank-weighted floor next iteration.
 7. **`www.rijksmuseum.nl` is the weakest entry in the file** and the first candidate for deletion if it ever misclassifies. Flagged in `_domains_added_2026_07_26.unverified_in_the_wild`.
+
+---
+
+# WP-6 follow-up (2026-07-26) — machine/prose list reconciliation
+
+**Raised by:** WP-9, via the coordinator. **Baseline for diffs:** commit `d907035`. **Files touched:** all four are WP-6's; nothing else.
+
+## F1. The bug
+
+`image-source-types.json` → `shows.never_lead_shapes` was `["key_art", "product_shot"]`, while the rank-5 prose in `compliance-checklist.md` read *"key art / product shot / **posed portrait** — last resort, and never a lead figure."* WP-4 implements the never-lead check **against the machine list**, so as it stood a posed portrait could legitimately have led an issue while the written doctrine forbade it — and that is exactly the shape the "random Pope photo" rule exists to reject: a profile portrait standing in for a story about what someone actually did.
+
+**Fixed:** `never_lead_shapes` = `["key_art", "product_shot", "portrait"]`.
+
+**Rationale, now recorded in the file:** a *posed* portrait is `portrait`; a photograph of a person actually *doing* the thing is `event_photo`, which may lead freely. The restriction therefore costs nothing legitimate — including for a profile or an obituary, where a picture of the subject in action is both available and better.
+
+## F2. Full reconciliation of every derived list, both directions
+
+The prose ranks were parsed **out of `compliance-checklist.md` itself** (not retyped from memory) and compared to the JSON, so the reconciliation is a measurement rather than an assertion:
+
+```
+PROSE ranks parsed from compliance-checklist.md:      MACHINE specificity_hierarchy:
+  rank 1 ['event_photo', 'gameplay']                    rank 1 ['event_photo', 'gameplay']
+  rank 2 ['diagram', 'map', 'chart']                    rank 2 ['diagram', 'map', 'chart']
+  rank 3 ['artefact', 'document']                       rank 3 ['artefact', 'document']
+  rank 4 ['in_engine']                                  rank 4 ['in_engine']
+  rank 5 ['key_art', 'product_shot', 'portrait']        rank 5 ['key_art', 'product_shot', 'portrait']
+
+RECONCILIATION
+  ranks identical both directions: True
+  hierarchy partitions the enum exactly (each value once): True | count 11 of 11
+  last_resort_shapes == rank 5: True ['key_art', 'product_shot', 'portrait']
+  never_lead_shapes  == rank 5: True ['key_art', 'product_shot', 'portrait']
+  information_figure_shapes: ['diagram', 'map', 'chart', 'artefact']
+  compliance-checklist.md: info-figure set stated as diagram/map/chart/artefact x2
+  component-contracts.md:  info-figure set stated as diagram/map/chart/artefact x2
+  'document' in information_figure_shapes: False (SPEC §3.8 names four; asymmetry documented)
+```
+
+**Final membership, audited:**
+
+| List | Members | Authority |
+|---|---|---|
+| `specificity_hierarchy` | 1 `event_photo`,`gameplay` · 2 `diagram`,`map`,`chart` · 3 `artefact`,`document` · 4 `in_engine` · 5 `key_art`,`product_shot`,`portrait` | SPEC §3.13. Partitions the 11-value enum exactly once — no value missing, none duplicated. |
+| `information_figure_shapes` | `diagram`, `map`, `chart`, `artefact` | SPEC §3.8 (Long Read requirement). |
+| `last_resort_shapes` | `key_art`, `product_shot`, `portrait` | = rank 5. |
+| `never_lead_shapes` | `key_art`, `product_shot`, `portrait` | = rank 5, because in the prose "last resort" and "never the lead figure" are **one** rule. |
+
+## F3. The other drift found — the `artefact` / `document` asymmetry
+
+`document` shares rank 3 with `artefact` in the hierarchy but is **not** in `information_figure_shapes`. That is correct — SPEC §3.8 names four shapes for the Long Read requirement and `document` is not among them (a store listing is a primary source, not a figure that explains a mechanism) — but nothing said so, and a reader comparing the two lists would reasonably have read it as the same class of bug as F1. **Now stated explicitly in both places**: as `_derived_lists_doc.information_figure_shapes` in the JSON ("DELIBERATE ASYMMETRY, not drift") and as an italic note on rank 3 in the checklist prose. No membership changed.
+
+No other machine/prose divergence found. The two `_doc` strings and the three files' info-figure statements all agree.
+
+## F4. Consequential edits
+
+- **`image-source-types.json`** — `portrait` added to `never_lead_shapes`; new `shows._derived_lists_doc` block recording, per list, what it means, which document is its authority, and the instruction to change prose and list in the same commit. It also names F1 as the drift that already happened, so the next reader knows the failure mode is real.
+- **`compliance-checklist.md`** — rank 5 now carries the posed-portrait-vs-`event_photo` rationale and points at `shows.never_lead_shapes` ("the prose and the machine list are the same rule written twice"); rank 3 carries the asymmetry note.
+- **`component-contracts.md`** — the plate contract said only "Key art is rank 5 of 5", which was true but narrower than the doctrine. It now reads: `key_art`, `product_shot` and `portrait` are all rank 5, last resort, and **never a `.plate-img.lead` in any band**, with §3.8's narrower mechanical minimum called out so a writer is not misled about what the validator currently enforces.
+- **`check-image-diversity.sh`** — the remediation message asserted "…are the last resort and never a lead" while printing only `last_resort_shapes`. It now reads `never_lead_shapes` too and prints one clause when the lists coincide, two when they diverge. The message can no longer claim a rule the lookup does not hold.
+
+## F5. Criterion #12 re-run — nothing regressed
+
+```
+$ bash -n .claude/skills/the-signal/scripts/check-image-diversity.sh
+bash -n OK
+$ python3 -c "import json; json.load(open('.claude/skills/the-signal/references/image-source-types.json'))"
+json OK
+
+$ bash …/check-image-diversity.sh …/fail-min-distinct-shapes.html
+Labelled figures (data-shows): 3
+Distinct shapes: 1 (floor 3)
+By shape (what the pictures SHOW): {'key_art': 3}
+FAIL — rule violations:
+  Shape diversity: 1 distinct shape(s) (['key_art']) < minimum of 3. […] Reach up the hierarchy —
+  information figures ['diagram', 'map', 'chart', 'artefact'] and photographs of the actual thing
+  happening are the fix. ['key_art', 'product_shot', 'portrait'] are the last resort and may never
+  be a lead figure.
+EXIT=1
+
+$ bash …/check-image-diversity.sh …/pass-min-distinct-shapes.html
+Distinct shapes: 3 (floor 3)
+By shape (what the pictures SHOW): {'gameplay': 1, 'diagram': 1, 'event_photo': 1}
+PASS — image diversity within thresholds on both axes (provenance + shape).
+EXIT=0
+```
+The failure text now names all three rank-5 shapes, which is the fix showing up in the operator-facing output. Other fixtures unchanged: `fail-bad-enum-value.html` exit 1, `issue18-shaped-all-key-art.html` exit 1, `issues/signal_weekly_2026-07-26.html` exit 1.
+
+```
+$ git diff --stat d907035 -- <WP-6's four files>
+ .claude/skills/the-signal/references/compliance-checklist.md | 4 ++--
+ .claude/skills/the-signal/references/component-contracts.md  | 2 +-
+ .claude/skills/the-signal/references/image-source-types.json | 9 ++++++++-
+ .claude/skills/the-signal/scripts/check-image-diversity.sh   | 5 +++--
+ 4 files changed, 14 insertions(+), 6 deletions(-)
+```
+
+## F6. Handoffs
+
+1. **→ WP-9 (stale citation, one clause).** `SKILL.md:274` currently works *around* the bug: *"`key_art` and `product_shot` may never lead a band (`shows.never_lead_shapes` in the lookup file; the checklist prose puts `portrait` in the same rung, so do not lead on one either)."* The parenthetical is now obsolete — the lookup and the prose agree, and all three shapes are in the list. It should read: *"`key_art`, `product_shot` and `portrait` may never lead a band (`shows.never_lead_shapes`)."* Not edited: `SKILL.md` is WP-9's. `SKILL.md:311` quotes the rank-5 prose correctly and needs no change.
+2. **→ WP-4 (scope, needs a conscious choice).** `never_lead_shapes` is doctrine-derived and **broader** than SPEC §3.8's mechanical minimum, which names only `key_art` and only in Pixel & Byte. Implementing the whole list is the intent and is now recorded in the file; implementing only §3.8's letter is defensible; silently implementing something in between is the outcome to avoid. Flagged inside the JSON as well as here.
+3. Unchanged from the main report: the **blocking** `validate-research-bundle.py` `KeyError` handoff to WP-5 (§7.1).

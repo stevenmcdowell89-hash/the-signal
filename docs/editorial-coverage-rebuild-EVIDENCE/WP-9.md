@@ -412,3 +412,74 @@ needed. `--run-date` also matches (line 576).
    `product_shot` may never lead) and adds that a portrait should not lead either, so the doc is
    honest either way. If the intent is that a posed portrait cannot lead a band, `portrait` belongs
    in `never_lead_shapes` so WP-4 can enforce it; today it is prose-only. Both files are WP-6's.
+
+---
+
+# WP-9 follow-up 2 (2026-07-26) — `cover_lead_topic_family` copied into the ledger
+
+Coordinator follow-up after WP-1 completed. `issue_meta.cover_lead_topic_family` is a new
+weekly-required plan field (WP-1 in `chapter-plan-schema.md`; WP-5 enforcing it). Read as source of
+truth, not edited: the schema's field description (line ~165) and
+`validate-chapter-plan.py:_plan_cover_lead_families` (line ~1237 ff.).
+
+## Phase 10 wording (item 3 of the Coverage continuity writes)
+
+The ledger entry is now `{issue, date, topic_family, one_line, led_on}` where **`topic_family` is
+COPIED VERBATIM from `issue_meta.cover_lead_topic_family`** and `led_on` from
+`issue_meta.cover_leads_on`. Added a paragraph headed **"Copied — not re-derived from the rendered
+cover, and not inferred from the lead piece,"** which states the failure mode rather than just the
+rule: the rut rule **intersects** the plan's family against the ledger's families, so if the two
+sides are produced by different routes they can disagree on any week where a story has two
+defensible families (`uk_politics` vs `economy_markets`; `olympics` vs `football`) — and when they
+disagree the intersection empties, so the rule **passes having checked nothing**. A green no-op is
+worse than an absent check because it reads as coverage. Copying makes both sides carry the same
+value by construction rather than by coincidence. The paragraph also records that the field is
+**weekly-required and enum-checked** (omitted or out-of-enum hard-fails the plan), that the
+validator's resolution chain — explicit field, else the `role: "lead"` piece families — survives
+only as the compatibility path for pre-field plans, and that because the value is copied, the
+Phase-4 enum check *is* the ledger's guarantee: an unrecognised family cannot reach state without
+failing the plan first (the route by which issue #8's breach fell out of the ledger before
+`cyber_privacy` existed).
+
+## The two consistency checks
+
+1. **Phase 4 — the field list DID predate the field. Fixed.** The list emitted
+   `research_cut_at`, `window`, `cover_leads_on`, `lead_rationale`, `lead_override_reason` and no
+   family. Added `cover_lead_topic_family` as a bullet between `cover_leads_on` and
+   `lead_rationale`, naming it as the field the rut rule matches against the ledger, noting Phase 10
+   copies it, and recording the weekly-required + enum-checked enforcement.
+   *Correction made during this pass:* a first draft said an omitted field lets a plan "sail past"
+   the rut rule. That is wrong against what WP-5 shipped — `check_weekly_coverage_meta` hard-fails
+   the omission, and the fallback chain only prevents a crash for older plans. Both the Phase 4 and
+   Phase 10 wordings were corrected to match the shipped validator.
+2. **Phase 0a-ledger — checked, and genuinely needs no change.** It reads
+   `state.cover_lead_ledger[]`, tallies `topic_family` where `led_on == "news"` across the last 4,
+   and passes ledger + tally to the planner. That logic is provenance-agnostic: it consumes whatever
+   value the row carries, and the change makes those values *more* reliable, not different in shape
+   or vocabulary (same closed enumeration on both sides). Nothing edited in that sub-section.
+   **Two related descriptions elsewhere were stale, though, and grep found them:**
+   - § Coverage continuity called `cover_lead_ledger` a *"rendered-cover record"* — true of the
+     seeded rows #18→#9 (which had to be read off the covers, since those issues shipped before the
+     field existed) but false going forward, and precisely the phrasing that would license someone
+     to re-derive the family. Rewritten to "cover-lead-of-record — one row per rendered weekly
+     cover, but each row's `topic_family` copied from that issue's
+     `issue_meta.cover_lead_topic_family`", with the #19-onward cutover stated.
+   - The "After generation, update:" bullet and the Phase-0a key table now both name the copy source.
+
+## Checks run
+
+```
+$ python3 - # field + enum presence
+  cover_lead_topic_family in schema: True | hits in SKILL.md: 5
+  cyber_privacy in schema enum: True | in SKILL.md: True
+$ grep -n "cover_lead_ledger" SKILL.md   → 9 hits; every one that describes provenance now says
+                                            "copied from issue_meta.cover_lead_topic_family".
+$ sed -n '1246,1262p' validate-chapter-plan.py   # shipped resolution order read, not assumed:
+    explicit field wins (enum-checked, hard-fail out-of-enum) → role="lead" piece families
+    → compatibility path only; WP-5's own comment names WP-9's Phase 10 copy as the reason
+    both sides "carry the same value by construction".
+$ git diff --numstat 370341e -- SKILL.md   → 9  4   (baselined on the named commit, not stash)
+$ git status --short → SKILL.md (WP-9) + WP-5/WP-6 script paths (parallel WPs, untouched here).
+```
+
+No new handoff notes. WP-1's field, WP-5's enforcement and WP-9's copy now agree.

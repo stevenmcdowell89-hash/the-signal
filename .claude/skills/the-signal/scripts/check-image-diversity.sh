@@ -134,7 +134,9 @@ if valid_shapes and len(valid_shapes) < min_shapes:
         "nothing the headlines didn't. Reach up the hierarchy — "
         f"information figures {info_shapes} and photographs of the actual thing "
         "happening are the fix. "
-        f"{last_resort} are the last resort, and {never_lead} may never be a lead figure."
+        + (f"{last_resort} are the last resort and may never be a lead figure."
+           if set(last_resort) == set(never_lead)
+           else f"{last_resort} are the last resort, and {never_lead} may never be a lead figure.")
     )
 
 # ------------------------------------------------------------ provenance axis
