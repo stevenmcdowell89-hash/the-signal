@@ -103,15 +103,23 @@ These are normative. Field names, attribute names and enum values are exact.
 ```jsonc
 // on the week_in_numbers chapter brief — each row declares where its datum came from
 "week_in_numbers": {
-  "rows": [ { "key": "Pole Margin", "source_band": "touchline" } ]   // source_band REQUIRED
+  "rows": [ { "key": "Pole Margin", "source_band": "touchline" },
+            { "key": "Training Volume", "source_band": "state" } ]   // source_band REQUIRED
 }
+// source_band value set (WP-1 correction, 2026-07-26): the `chapter_id` of a chapter present in
+// this plan, OR the literal "state". The Week in Numbers is partly a PERSONAL stat strip rendered
+// from state/signal-state.json, so those rows have no originating band. WP-5 MUST accept "state"
+// or the contract is unsatisfiable for the section as specified in chapter-plan-schema.md (v8.36).
 ```
 
 ### 3.2 Research-bundle additions (WP-1 defines; WP-5 enforces)
 
 ```jsonc
 "image_candidates": [{
-  // …existing fields (url, verified, source_constraint, role) unchanged…
+  // …existing bundle fields unchanged. NOTE (WP-1 correction, 2026-07-26): the bundle's URL key is
+  // `url_or_keyword`, NOT `url`. The real existing keys are `url_or_keyword`, `verified`,
+  // `source_type`, `context`, optional `direct_cdn`. `role` and `source_constraint` belong to the
+  // CHAPTER PLAN's `images_needed[]`, not the bundle. WP-5/WP-8 must read `url_or_keyword`.
   "shows": "event_photo",        // REQUIRED, enum §3.3
   "capture_year": 2007,          // REQUIRED; null ONLY when shows ∈ {diagram, chart} and the asset is synthetic
   "licence": {                   // REQUIRED, replaces the free-text credit as the machine record
@@ -221,6 +229,25 @@ editorial.
 ```
 
 `interest_depth` values: `full` · `majors_only` · `results_only` · `off`.
+
+**An absent key is `unset`, never `off` (WP-1 correction, 2026-07-26).** Only the sports the owner has
+explicitly weighted are seeded (motorsport, football, golf). The sports WP-7 adds feeds for — cricket,
+cycling, athletics — have no key. An absent key means *cover on news value*; reading it as `off` would
+recreate defect D's invisible-sport problem in a new place. WP-9 must implement it that way.
+
+**`research_cut_at` must be a measured write (WP-1 correction, 2026-07-26).** The seeded value is the
+§3.5 literal, which the repo can bound but not confirm. WP-9 must overwrite it with a real instant at
+publish, and Phase 0 must copy the *previous* value into `issue_meta.window.from`. Until that write
+exists, D1 is inert — the window still cannot open where the last one closed.
+
+**Topic-family enumeration gap (WP-1 finding, authorised 2026-07-26).** The closed enumeration in
+`chapter-plan-schema.md` § Topic Family Enumeration has no family for cybersecurity / data-breach
+news, so issue #8's cover lead (the Instructure/Canvas breach) could not be classified and was left
+out of `cover_lead_ledger` — which silently narrows the rut rule's input. **Add family `cyber_privacy`**
+and backfill issue #8 into the ledger. This is a `chapter-plan-schema.md` + `state` change, so it
+stays with WP-1 (resumed), preserving the ownership map. Flagged for the owner as a judgement call:
+it is a new editorial category, chosen because the reader profile carries world news, consumer tech
+and AI, and a 275M-record breach has no other home.
 
 ### 3.6 The rut rule (WP-5)
 
@@ -376,6 +403,13 @@ A WP is done when its checks demonstrably fire. WP-10 builds the harness and rec
 
 **Expected-failure ledger.** Issue #18 must fail #3 and #8 after this work. Those failures get
 recorded in PROGRESS as evidence. **#18 is not to be repaired.**
+
+**Fixtures for #5 and #6 (WP-1 correction, 2026-07-26).** The two `open_loops` seeded in state are
+`status: "dropped"` — honest history, since neither the World Cup final nor The Open was ever reported
+and #18 is frozen. **A dropped loop does not mature**, so those seeds will not by themselves make the
+§3.7 gates fire. WP-10 must build a fixture carrying `status: "open"` with a past
+`expected_resolution_date` to demonstrate #5 and #6, and must show both the firing case and the
+passing case (loop resolved by a fact / by `data-resolves-loop` in the HTML).
 
 ---
 
