@@ -1,0 +1,2698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Signal — Transmission №018</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================================
+   THE SIGNAL — "TRANSMISSION" WEEKLY DESIGN SYSTEM
+   ----------------------------------------------------------------------------
+   The single token layer + every component the weekly issue uses. This is the
+   ONLY stylesheet a weekly loads — it is fully self-contained. No @imports, no
+   per-section palette tokens, no holiday/special (.sp-* / .hol-*) rules.
+
+   PALETTE (light / default)
+     --paper   #F5F0E6  warm paper ground        --signal #FF3B2F  vermilion accent
+     --paper-2 #EFE8D9  second paper stock       --blue   #243F5C  signal blue
+     --ink     #16151A  primary body ink         --muted  #8A8578  pencil grey
+     --ink-2   #2C2A30  secondary body ink       --hair   #DDD5C3  hairline
+
+   FONTS (loaded via <link> in the head template — NOT imported here)
+     Instrument Serif · Newsreader · JetBrains Mono
+
+   DARK VARIANT
+     A warm-night mode is appended at the bottom via
+     @media (prefers-color-scheme: dark). It overrides ONLY the token values
+     (warm charcoal ground, warm off-white text, warm-brown hairlines, lightened
+     accents) plus the desk tone behind the page — "night reading, still paper."
+     Every component reads through the tokens, so no component rules are restated.
+   ============================================================================ */
+
+  :root{
+    --paper:#F5F0E6;
+    --paper-2:#EFE8D9;
+    --ink:#16151A;
+    --ink-2:#2C2A30;
+    --signal:#FF3B2F;
+    --blue:#243F5C;
+    --muted:#8A8578;
+    --hair:#DDD5C3;
+    --measure:64ch;
+  }
+
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:var(--muted);
+    color:var(--ink);
+    font-family:"Newsreader",Georgia,serif;
+    font-size:19px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+
+  /* The "printed object" — a tablet-portrait page floating on a desk tone */
+  .issue{
+    max-width:800px;
+    margin:0 auto;
+    background:var(--paper);
+    box-shadow:0 1px 0 rgba(0,0,0,.04), 0 24px 60px -24px rgba(0,0,0,.45);
+    overflow:hidden;
+  }
+
+  /* ---------- shared type ---------- */
+  .mono{
+    font-family:"JetBrains Mono",ui-monospace,monospace;
+    text-transform:uppercase;
+    letter-spacing:.16em;
+    font-size:11px;
+    font-weight:500;
+    color:var(--muted);
+  }
+  .serif{font-family:"Instrument Serif",Georgia,serif;font-weight:400;}
+
+  /* ---------- the waveform / frequency rule ---------- */
+  .wave{
+    height:26px;
+    width:100%;
+    color:var(--signal);
+    display:block;
+  }
+  .wave svg{display:block;width:100%;height:100%;}
+  .wave--blue{color:var(--blue);}
+  .wave--ink{color:var(--ink);}
+
+  /* thin frequency tick rule (repeating gradient) */
+  .tickrule{
+    height:12px;
+    background-image:repeating-linear-gradient(90deg,
+      var(--ink) 0, var(--ink) 1px,
+      transparent 1px, transparent 7px);
+    opacity:.55;
+  }
+  .hair{height:1px;background:var(--hair);border:0;margin:0;}
+
+  /* ================= COVER ================= */
+  .cover{
+    padding:26px 40px 30px;
+    position:relative;
+  }
+  .cover__top{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    padding-bottom:12px;
+  }
+  .cover__top .mono{color:var(--ink);opacity:.75;}
+  .cover__top .price{color:var(--signal);}
+
+  .dataline{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:12px;
+    padding:14px 0 6px;
+  }
+  .dataline .dot{color:var(--signal);}
+
+  .masthead{
+    font-family:"Instrument Serif",Georgia,serif;
+    font-weight:400;
+    line-height:.86;
+    letter-spacing:-.02em;
+    font-size:118px;
+    margin:2px 0 0;
+    color:var(--ink);
+  }
+  .masthead em{
+    font-style:italic;
+    color:var(--signal);
+  }
+  .masthead__sub{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-top:8px;
+    border-bottom:2px solid var(--ink);
+    padding-bottom:12px;
+  }
+  .masthead__sub .tag{
+    font-family:"Newsreader",serif;
+    font-style:italic;
+    font-size:20px;
+    color:var(--blue);
+  }
+
+  /* lead + tuner two-column area */
+  .cover__body{
+    display:grid;
+    grid-template-columns:1.55fr .95fr;
+    gap:34px;
+    margin-top:26px;
+  }
+  .lead__eyebrow{margin-bottom:14px;color:var(--signal);}
+  .lead__head{
+    font-family:"Instrument Serif",Georgia,serif;
+    font-weight:400;
+    font-size:47px;
+    line-height:1.02;
+    letter-spacing:-.01em;
+    margin:0;
+  }
+  .lead__head .hl{color:var(--signal);font-style:italic;}
+  .lead__stand{
+    font-style:italic;
+    color:var(--blue);
+    font-size:20px;
+    line-height:1.35;
+    margin-top:18px;
+    max-width:34ch;
+  }
+
+  /* tuner / station list of coverlines */
+  .tuner{
+    border-top:2px solid var(--ink);
+    padding-top:10px;
+  }
+  .tuner__label{
+    display:flex;justify-content:space-between;align-items:baseline;
+    margin-bottom:6px;
+  }
+  .station{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:12px;
+    align-items:baseline;
+    padding:9px 0;
+    border-bottom:1px solid var(--hair);
+  }
+  .station:last-child{border-bottom:0;}
+  .station .freq{
+    font-family:"JetBrains Mono",monospace;
+    font-size:11px;
+    letter-spacing:.06em;
+    color:var(--muted);
+    padding-top:3px;
+  }
+  .station .name{
+    font-family:"Newsreader",serif;
+    font-size:18px;
+    line-height:1.24;
+    color:var(--ink);
+  }
+  .station .name b{font-weight:600;}
+  .station.on .freq{color:var(--signal);}
+  .station.on .name{color:var(--blue);}
+
+  /* oversized folio */
+  .folio{
+    position:absolute;
+    right:34px;
+    bottom:14px;
+    font-family:"Instrument Serif",Georgia,serif;
+    font-size:150px;
+    line-height:.7;
+    color:var(--signal);
+    opacity:.12;
+    letter-spacing:-.04em;
+    pointer-events:none;
+  }
+
+  /* ================= MOVEMENT DIVIDER ================= */
+  .movement{
+    padding:56px 40px 8px;
+  }
+  .movement__rule{
+    display:flex;
+    align-items:baseline;
+    gap:16px;
+    border-top:2px solid var(--ink);
+    padding-top:12px;
+  }
+  .movement__no{
+    font-family:"Instrument Serif",serif;
+    font-size:40px;
+    line-height:.8;
+    color:var(--signal);
+  }
+  .movement__name{
+    font-family:"Instrument Serif",serif;
+    font-size:34px;
+    line-height:.9;
+    color:var(--ink);
+  }
+  .movement__meta{margin-left:auto;color:var(--muted);}
+
+  /* ================= SECTION SCAFFOLD ================= */
+  section{padding:0 40px;}
+  .band{
+    padding:52px 40px 0;
+  }
+  .bandhead{
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+    margin-bottom:6px;
+  }
+  .bandhead .code{color:var(--signal);}
+  .bandhead .code b{color:var(--ink);font-weight:700;}
+  .bandhead .runtime{margin-left:auto;color:var(--muted);}
+  /* accent tick — the one section marker */
+  .bandhead::before{
+    content:"";
+    width:9px;height:9px;
+    background:var(--signal);
+    display:inline-block;
+    align-self:center;
+    flex:0 0 auto;
+    transform:translateY(-1px);
+  }
+
+  /* ================= THE LETTER ================= */
+  .letter{max-width:var(--measure);margin:0 auto;padding-top:22px;padding-bottom:8px;}
+  .letter h2{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:34px;line-height:1.05;margin:0 0 4px;
+  }
+  .letter .kicker{color:var(--blue);font-style:italic;font-size:19px;margin-bottom:22px;}
+  .letter p{margin:0 0 18px;}
+  .letter p.first{text-indent:0;}
+  .letter p.first::first-letter{
+    font-family:"Instrument Serif",serif;
+    float:left;
+    font-size:82px;
+    line-height:.72;
+    padding:8px 12px 0 0;
+    color:var(--signal);
+  }
+  .letter .sig{
+    font-family:"Instrument Serif",serif;
+    font-style:italic;
+    font-size:26px;
+    color:var(--ink);
+    margin-top:26px;
+  }
+  .letter .sigline{margin-top:2px;}
+
+  /* ================= THE WEEK IN NUMBERS (ledger data panel) ================= */
+  .figures{max-width:var(--measure);margin:14px auto 0;}
+  .figures-frame{
+    border:1.5px solid var(--ink);
+    position:relative;
+    background:var(--paper-2);
+  }
+  .figures-frame::after{
+    content:""; position:absolute; inset:4px;
+    border:.75px solid var(--signal); opacity:.4; pointer-events:none;
+  }
+  .fig-caption{
+    display:flex;justify-content:space-between;align-items:baseline;
+    font-family:"JetBrains Mono",monospace;
+    text-transform:uppercase; letter-spacing:.16em;
+    font-size:11px; color:var(--muted); font-weight:500;
+    padding:12px 0 10px;
+    border-bottom:1px solid var(--hair);
+    margin:0 20px;
+  }
+  .fig-caption b{color:var(--signal);font-weight:700;}
+  .fig-row{
+    display:grid;
+    grid-template-columns:1fr auto;
+    align-items:baseline;
+    gap:16px;
+    padding:16px 20px;
+    border-bottom:1px solid var(--hair);
+  }
+  .fig-row:last-of-type{border-bottom:0;}
+  .fig-label .k{
+    font-family:"JetBrains Mono",monospace;
+    text-transform:uppercase; letter-spacing:.1em;
+    font-size:12px; color:var(--blue); font-weight:500;
+    display:block;
+  }
+  .fig-label .d{
+    font-style:italic; color:var(--muted); font-size:15px;
+  }
+  .fig-val{
+    font-family:"Instrument Serif",serif;
+    font-size:52px;
+    line-height:.82;
+    text-align:right;
+    letter-spacing:-.01em;
+    white-space:nowrap;
+    color:var(--ink);
+  }
+  .fig-val small{
+    font-size:20px;
+    font-style:italic;
+    font-family:"Newsreader",serif;
+    color:var(--muted);
+    margin-left:3px;
+  }
+  .fig-val .win{color:var(--signal);}
+  .fig-foot{
+    display:flex;justify-content:space-between;align-items:baseline;
+    font-family:"JetBrains Mono",monospace;
+    text-transform:uppercase;letter-spacing:.12em;
+    color:var(--muted);
+    font-size:10.5px;
+    padding:12px 20px 14px;
+    border-top:1px solid var(--hair);
+  }
+
+  /* ================= CAUGHT UP ================= */
+  .caughtup{padding-top:20px;}
+  .digest{
+    max-width:var(--measure);
+    margin:14px auto 0;
+    list-style:none;
+    padding:0;
+    counter-reset:d;
+  }
+  .digest li{
+    counter-increment:d;
+    display:grid;
+    grid-template-columns:38px 1fr;
+    gap:16px;
+    align-items:baseline;
+    padding:13px 0;
+    border-bottom:1px solid var(--hair);
+  }
+  .digest li:first-child{border-top:1px solid var(--ink);}
+  .digest li::before{
+    content:counter(d,decimal-leading-zero);
+    font-family:"JetBrains Mono",monospace;
+    font-size:12px;
+    color:var(--signal);
+    letter-spacing:.05em;
+    padding-top:4px;
+  }
+  .digest li p{margin:0;font-size:18px;line-height:1.4;}
+  .digest li b{font-weight:600;color:var(--blue);}
+
+  /* ================= THE LONG READ ================= */
+  .longread{padding-top:24px;padding-bottom:8px;}
+  .lr-title{
+    max-width:var(--measure);
+    margin:6px auto 0;
+  }
+  .lr-title h2{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:58px;line-height:1.0;letter-spacing:-.015em;
+    margin:14px 0 0;
+  }
+  .lr-title h2 em{font-style:italic;color:var(--signal);}
+  .lr-title .stand{
+    font-style:italic;color:var(--blue);
+    font-size:23px;line-height:1.34;
+    margin:20px 0 0;max-width:44ch;
+  }
+  .lr-title .byline{
+    margin-top:20px;color:var(--muted);
+  }
+  .lr-body{
+    max-width:var(--measure);
+    margin:0 auto;
+    font-size:20px;
+    line-height:1.72;
+  }
+  .lr-body p{margin:0 0 22px;}
+  .lr-body p.first{text-indent:0;}
+  .lr-body p.first::first-letter{
+    font-family:"Instrument Serif",serif;
+    float:left;
+    font-size:96px;
+    line-height:.68;
+    padding:10px 14px 0 0;
+    color:var(--signal);
+  }
+  .lr-body p + p{text-indent:1.4em;}
+  .lr-body p.first, .lr-body p.noindent{text-indent:0;}
+
+  .pullquote{
+    margin:34px 0;
+    padding:6px 0 6px 26px;
+    border-left:3px solid var(--signal);
+    font-family:"Instrument Serif",serif;
+    font-size:34px;
+    line-height:1.14;
+    color:var(--blue);
+    text-indent:0;
+  }
+  .pullquote .attr{
+    display:block;
+    font-family:"JetBrains Mono",monospace;
+    text-transform:uppercase;letter-spacing:.14em;
+    font-size:11px;color:var(--muted);
+    margin-top:14px;
+  }
+
+  /* captioned image — real <img> or the drawn placeholder box */
+  .plate-img{
+    max-width:var(--measure);
+    margin:38px auto;
+  }
+  .plate-img img{
+    display:block;
+    width:100%;
+    height:auto;
+    border:1px solid var(--hair);
+    background:var(--paper-2);
+  }
+  /* a wider "plate" for a section-opening lead image */
+  .plate-img.lead{ margin:8px auto 26px; }
+  .plate-box{
+    aspect-ratio:16/9;
+    border:1px solid var(--hair);
+    background:
+      repeating-linear-gradient(135deg, transparent 0, transparent 13px, rgba(36,63,92,.06) 13px, rgba(36,63,92,.06) 14px),
+      var(--paper-2);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+  }
+  .plate-box::after{
+    content:"";
+    position:absolute;inset:8px;
+    border:1px dashed var(--hair);
+    pointer-events:none;
+  }
+  .plate-box .glyph{
+    font-family:"JetBrains Mono",monospace;
+    text-transform:uppercase;letter-spacing:.2em;
+    font-size:11px;color:var(--muted);
+  }
+  .plate-cap{
+    display:flex;gap:12px;align-items:baseline;
+    margin-top:10px;
+  }
+  .plate-cap .fig{color:var(--signal);flex:0 0 auto;}
+  .plate-cap .txt{font-style:italic;color:var(--muted);font-size:15px;line-height:1.35;}
+  .plate-cap .credit{
+    font-family:"JetBrains Mono",monospace;
+    text-transform:uppercase;letter-spacing:.1em;
+    font-size:10px;color:var(--muted);font-style:normal;
+    display:block;margin-top:4px;
+  }
+
+  /* case-against aside — a warm planner note, ground-disciplined */
+  .aside-note{
+    max-width:var(--measure);
+    margin:34px auto;
+    background:var(--paper-2);
+    border-top:2px solid var(--ink);
+    border-bottom:1px solid var(--hair);
+    padding:18px 22px 20px;
+  }
+  .aside-note .lbl{
+    display:flex;gap:10px;align-items:baseline;
+    color:var(--signal);margin-bottom:10px;
+  }
+  .aside-note .lbl b{color:var(--ink);}
+  .aside-note h4{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:25px;line-height:1.08;margin:0 0 8px;
+  }
+  .aside-note p{margin:0;font-size:17px;line-height:1.5;color:var(--ink-2);}
+
+  /* ================= THE ROUNDS — compact rhythm ================= */
+  .round{padding-top:20px;padding-bottom:4px;}
+  .round .lead{
+    max-width:var(--measure);
+    margin:12px auto 22px;
+    font-size:19px;
+  }
+  .round .lead .drop{color:var(--signal);font-weight:600;}
+
+  /* two-column score grid (touchline) */
+  .scores{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:1px;
+    background:var(--hair);
+    border:1px solid var(--hair);
+    max-width:var(--measure);
+    margin:0 auto;
+  }
+  .score{
+    background:var(--paper);
+    padding:20px 22px 22px;
+  }
+  .score.wide{grid-column:1 / -1;}
+  .score .tag{color:var(--signal);margin-bottom:10px;display:block;}
+  .score h3{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:27px;line-height:1.04;margin:0 0 8px;
+  }
+  .score.wide h3{font-size:33px;}
+  .score p{margin:0;font-size:17px;line-height:1.42;color:var(--ink-2);}
+  .score .num{color:var(--blue);font-weight:600;}
+
+  /* items list — brisk scannable rows for rounds */
+  .items{
+    max-width:var(--measure);
+    margin:6px auto 0;
+    list-style:none;padding:0;
+  }
+  .items li{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:16px;
+    align-items:baseline;
+    padding:14px 0;
+    border-bottom:1px solid var(--hair);
+  }
+  .items li:first-child{border-top:1px solid var(--ink);}
+  .items .freq{
+    font-family:"JetBrains Mono",monospace;
+    font-size:11px;letter-spacing:.06em;
+    color:var(--signal);padding-top:5px;
+    white-space:nowrap;
+  }
+  .items h3{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:24px;line-height:1.06;margin:0 0 4px;
+  }
+  .items p{margin:0;font-size:16.5px;line-height:1.44;color:var(--ink-2);}
+  .items p b{color:var(--blue);font-weight:600;}
+
+  /* section with a side rail (screen & sound / bookmark) */
+  .with-rail{
+    max-width:var(--measure);
+    margin:6px auto 0;
+    display:grid;
+    grid-template-columns:1.5fr .9fr;
+    gap:30px;
+    align-items:start;
+  }
+  .rail{
+    border-top:2px solid var(--ink);
+    padding-top:10px;
+  }
+  .rail__label{
+    display:flex;justify-content:space-between;align-items:baseline;
+    margin-bottom:10px;
+  }
+  .rail__label .t{color:var(--signal);}
+  .rail-item{
+    padding:10px 0;
+    border-bottom:1px solid var(--hair);
+  }
+  .rail-item:last-child{border-bottom:0;}
+  .rail-item .when{
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;letter-spacing:.1em;
+    color:var(--blue);text-transform:uppercase;
+    display:block;margin-bottom:3px;
+  }
+  .rail-item .what{
+    font-family:"Newsreader",serif;
+    font-size:17px;line-height:1.24;
+  }
+  .rail-item .what b{font-weight:600;}
+  .rail-item .what i{font-style:italic;color:var(--muted);font-size:14.5px;display:block;margin-top:1px;}
+
+  /* bookmark picks */
+  .picks{list-style:none;padding:0;margin:6px 0 0;}
+  /* spine · jacket · copy on ONE row (three columns) so the tall cover never
+     strands the copy onto a second row with a blank column beside it. */
+  .picks li{
+    display:grid;
+    grid-template-columns:8px 205px 1fr;
+    gap:22px;
+    padding:26px 0;
+    border-bottom:1px solid var(--hair);
+    align-items:start;
+  }
+  .picks li:first-child{border-top:1px solid var(--ink);}
+  .picks .spine{
+    width:8px;align-self:stretch;
+    background:var(--blue);
+    min-height:52px;
+  }
+  .picks .jacket{display:block;}
+  .picks .jacket img{
+    display:block;width:100%;height:auto;
+    box-shadow:0 8px 20px -10px rgba(0,0,0,.55);
+  }
+  .picks li:nth-child(2) .spine{background:var(--signal);}
+  .picks li:nth-child(3) .spine{background:var(--muted);}
+  .picks h3{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:23px;line-height:1.05;margin:0 0 2px;
+  }
+  .picks .meta{color:var(--muted);font-style:italic;font-size:14.5px;margin-bottom:5px;}
+  .picks p{margin:0;font-size:16.5px;line-height:1.42;color:var(--ink-2);}
+
+  /* ================= THE DESK — service columns w/ planner pins ================= */
+  .desk{
+    max-width:var(--measure);
+    margin:8px auto 0;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:30px;
+  }
+  .deskcol h3{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:27px;line-height:1.04;margin:0 0 4px;
+    border-top:2px solid var(--ink);padding-top:12px;
+  }
+  .deskcol .sub{color:var(--signal);margin-bottom:12px;display:block;}
+  .deskcol p{margin:0 0 14px;font-size:17px;line-height:1.5;}
+  .deskcol p b{color:var(--blue);font-weight:600;}
+
+  /* the shared planner-note device: "Do This Week" pin */
+  .pin{
+    background:var(--paper-2);
+    border-left:3px solid var(--signal);
+    padding:13px 16px 15px;
+    margin-top:6px;
+  }
+  .pin .pinlbl{
+    display:flex;gap:8px;align-items:center;
+    color:var(--signal);margin-bottom:6px;
+  }
+  .pin .pinlbl::before{
+    content:"";width:7px;height:7px;background:var(--signal);
+    display:inline-block;transform:rotate(45deg);
+  }
+  .pin .pinlbl b{color:var(--ink);}
+  .pin .act{
+    font-family:"Newsreader",serif;
+    font-size:18px;line-height:1.32;font-weight:600;
+    color:var(--ink);margin:0 0 5px;
+  }
+  .pin .why{margin:0;font-size:15px;line-height:1.4;font-style:italic;color:var(--muted);}
+
+  /* ================= THE THREADS ================= */
+  .threads{max-width:var(--measure);margin:14px auto 0;}
+  .thread{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:18px;
+    padding:16px 0;
+    border-bottom:1px solid var(--hair);
+    align-items:baseline;
+  }
+  .thread:first-child{border-top:1px solid var(--ink);}
+  .thread .ep{
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;letter-spacing:.08em;
+    color:var(--signal);text-transform:uppercase;
+    padding-top:5px;white-space:nowrap;
+  }
+  .thread h3{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:24px;line-height:1.06;margin:0 0 4px;
+  }
+  .thread .prev{
+    font-style:italic;color:var(--muted);font-size:15px;
+    margin:0 0 6px;
+  }
+  .thread p{margin:0;font-size:16.5px;line-height:1.44;color:var(--ink-2);}
+  .thread p b{color:var(--blue);font-weight:600;}
+
+  /* ================= RABBIT HOLE ================= */
+  .rabbit{
+    max-width:var(--measure);
+    margin:16px auto 0;
+    background:var(--paper-2);
+    border:1.5px solid var(--ink);
+    position:relative;
+    padding:26px 28px 28px;
+  }
+  .rabbit::after{
+    content:"";position:absolute;inset:5px;
+    border:.75px solid var(--signal);opacity:.35;pointer-events:none;
+  }
+  .rabbit .lbl{color:var(--signal);margin-bottom:14px;display:block;}
+  .rabbit .chain{
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    gap:16px;
+    align-items:center;
+    margin-bottom:18px;
+  }
+  .rabbit .node .cap{color:var(--muted);display:block;margin-bottom:4px;}
+  .rabbit .node .nm{
+    font-family:"Instrument Serif",serif;font-size:26px;line-height:1.02;
+  }
+  .rabbit .arrow{
+    font-family:"Instrument Serif",serif;font-style:italic;
+    color:var(--signal);font-size:30px;line-height:1;
+  }
+  .rabbit p{margin:0;font-size:18px;line-height:1.56;}
+  .rabbit p em{font-style:italic;color:var(--blue);}
+
+  /* ================= ON THE RADAR ================= */
+  .radar{max-width:var(--measure);margin:14px auto 0;list-style:none;padding:0;}
+  .radar li{
+    display:grid;
+    grid-template-columns:120px 1fr;
+    gap:18px;
+    padding:13px 0;
+    border-bottom:1px solid var(--hair);
+    align-items:baseline;
+  }
+  .radar li:first-child{border-top:1px solid var(--ink);}
+  .radar .date{
+    font-family:"JetBrains Mono",monospace;
+    font-size:11px;letter-spacing:.06em;color:var(--signal);
+  }
+  .radar .ev{font-size:17px;line-height:1.34;}
+  .radar .ev b{color:var(--blue);font-weight:600;}
+
+  /* closing "do this week" — the strongest single pin */
+  .closepin{
+    max-width:var(--measure);
+    margin:20px auto 0;
+    background:var(--paper-2);
+    border-top:3px solid var(--signal);
+    border-bottom:1px solid var(--hair);
+    padding:22px 26px 24px;
+  }
+  .closepin .pinlbl{display:flex;gap:10px;align-items:baseline;color:var(--signal);margin-bottom:10px;}
+  .closepin .pinlbl b{color:var(--ink);}
+  .closepin .act{
+    font-family:"Instrument Serif",serif;font-size:32px;line-height:1.08;
+    margin:0 0 8px;color:var(--ink);
+  }
+  .closepin .why{margin:0;font-size:17px;line-height:1.46;font-style:italic;color:var(--muted);}
+
+  /* ================= COLOPHON ================= */
+  .endnumbers{
+    max-width:var(--measure);
+    margin:20px auto 0;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:1px;background:var(--hair);border:1px solid var(--hair);
+  }
+  .endnumbers .cell{
+    background:var(--paper);padding:16px 18px;
+  }
+  .endnumbers .cell .k{color:var(--muted);display:block;margin-bottom:4px;}
+  .endnumbers .cell .v{
+    font-family:"Instrument Serif",serif;font-size:30px;line-height:1;color:var(--ink);
+  }
+  .endnumbers .cell .v em{color:var(--signal);font-style:italic;}
+
+  .colophon{
+    padding:26px 40px 20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-top:2px solid var(--ink);
+    margin-top:32px;
+  }
+  .colophon .serif{font-size:30px;}
+  .colophon .serif em{font-style:italic;color:var(--signal);}
+  .signoff-line{
+    padding:6px 40px 44px;
+    text-align:center;
+  }
+  .signoff-line .big{
+    font-family:"Instrument Serif",serif;
+    font-size:30px;line-height:1.16;
+    color:var(--ink);
+    max-width:30ch;margin:14px auto 0;
+  }
+  .signoff-line .big em{font-style:italic;color:var(--signal);}
+  .signoff-line .stamp{margin-top:16px;color:var(--muted);}
+
+  /* ---- portrait tablet niceties ---- */
+  @media (max-width:640px){
+    .cover{padding:22px 24px 26px;}
+    .masthead{font-size:78px;}
+    .cover__body{grid-template-columns:1fr;gap:26px;}
+    .lead__head{font-size:38px;}
+    section{padding:0 24px;}
+    .band{padding:44px 24px 0;}
+    .movement{padding:48px 24px 8px;}
+    .colophon,.signoff-line{padding-left:24px;padding-right:24px;}
+    .scores{grid-template-columns:1fr;}
+    .score.wide{grid-column:auto;}
+    .folio{font-size:110px;}
+    .lr-title h2{font-size:44px;}
+    .with-rail,.desk{grid-template-columns:1fr;gap:26px;}
+    .rabbit .chain{grid-template-columns:1fr;gap:8px;text-align:center;}
+    .rabbit .arrow{transform:rotate(90deg);}
+    .endnumbers{grid-template-columns:1fr;}
+    .radar li{grid-template-columns:1fr;gap:2px;}
+    .picks li{grid-template-columns:6px 108px 1fr;gap:14px;}
+  }
+
+  /* ============================================================================
+     WARM-NIGHT DARK VARIANT
+     ----------------------------------------------------------------------------
+     "Night reading, still paper." Overrides ONLY the token values plus the desk
+     tone behind the page. Every component reads through the tokens above, so no
+     component rule is restated here. Warm charcoal ground (never cold/black),
+     warm off-white text, warm-brown hairlines, accents lightened for the ground.
+     ============================================================================ */
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#1A1613;    /* warm charcoal ground */
+      --paper-2:#221D18;  /* slightly lifted second stock */
+      --ink:#ECE4D4;      /* warm off-white primary text */
+      --ink-2:#C9C1B2;    /* muted warm secondary text */
+      --signal:#FF5A47;   /* vermilion, lightened for dark ground */
+      --blue:#93B4D6;     /* signal-blue lightened to read on charcoal */
+      --muted:#9A9484;    /* pencil grey, nudged lighter */
+      --hair:#3A3227;     /* warm-brown hairline */
+    }
+    /* the desk tone behind the floating page (light mode keeps var(--muted)) */
+    body{background:#0F0D0B;}
+    /* soften the drop shadow so it reads as depth, not a black halo, on charcoal */
+    .issue{box-shadow:0 1px 0 rgba(0,0,0,.20), 0 24px 60px -24px rgba(0,0,0,.70);}
+  }
+
+/* ============================================================
+   MX SKIN · skin-transmission.css                    (L1, WP-3)
+   Alias block ONLY: maps the weekly's EXISTING Transmission
+   tokens (assets/css/weekly/00-transmission.css) onto the mx
+   contract so core furniture can drop into a weekly without
+   restyling it (Law 11 / WP-8). Loads AFTER the weekly bundle;
+   the weekly's own CSS stays byte-identical. No components, no
+   :not(), no new colours — every value is a weekly token or a
+   direct derivative.  ACTIVATION: <body … data-skin="transmission">
+   ============================================================ */
+body[data-skin="transmission"] {
+  --mx-paper: var(--paper);         --mx-ink: var(--ink);
+  --mx-ink-soft: var(--muted);      --mx-hair: var(--hair);
+  --mx-accent: var(--signal);       --mx-accent-ink: var(--paper);
+  --mx-accent-2: var(--blue);       --mx-accent-2-ink: var(--paper);
+  --mx-support-1: var(--blue);      --mx-support-2: var(--muted);
+  --mx-card: var(--paper-2);        --mx-card-ink: var(--ink);
+  --mx-card-window: var(--paper-2); --mx-card-edge: var(--hair);
+  --mx-quote-bg: var(--paper-2);    --mx-ghost: rgba(22, 21, 26, 0.08);
+  --mx-tape: rgba(221, 213, 195, 0.8);
+  --mx-shadow: rgba(0, 0, 0, 0.35);
+  --mx-hand-ink: var(--signal);     --mx-stamp-ink: var(--signal);
+  --mx-chrome-bg: var(--ink);       --mx-chrome-ink: var(--paper);
+  --mx-t-chunk: "Instrument Serif", Georgia, serif;   /* weekly display voice */
+  --mx-t-tall: "Instrument Serif", Georgia, serif;
+  --mx-t-script: "Instrument Serif", Georgia, serif;  /* weekly has no script voice */
+  --mx-t-hand: "Instrument Serif", Georgia, serif;
+  --mx-t-serif: "Newsreader", Georgia, serif;
+  --mx-t-mono: "JetBrains Mono", ui-monospace, monospace;
+  --mx-t-body: "Newsreader", Georgia, serif;
+  --mx-tilt: -1deg;  --mx-grain: 0.03;  --mx-measure: var(--measure, 64ch);
+  --mx-wrap: 720px;                 /* sits inside the 800px printed object */
+  --mx-micro: 0.72rem;              /* Law-8 mono micro-label floor (core 00-contract
+                                       is NOT bundled into the weekly; the components
+                                       read --mx-micro, so the alias must supply it) */
+}
+
+/* ============================================================
+   MX WEEKLY FURNITURE  ·  weekly-mx/10-mx-weekly.css        (WP-8)
+   Transmission weekly's core-furniture add-on. Bundled ONLY when
+   issue_meta.design_system == "mx"; a legacy weekly never loads
+   it and renders byte-identical to before. Law 11: every value
+   resolves through the transmission alias onto the weekly's own
+   tokens, so objects arrive dressed in Transmission paper/ink/
+   signal + the three faces (Instrument Serif / Newsreader /
+   JetBrains Mono). NO display fonts (chunk/tall/script/hand all
+   alias to Instrument Serif). CURATED SUBSET of the furniture
+   core (10-ephemera/11-ledgers/14-motion/15-responsive): only
+   the five deployed components (mx-ledger fixtures · mx-ticket ·
+   mx-scorecard standings · mx-quote voices · mx-card--chart) +
+   the radio-dial signature. Neutral mx- classes; class-scoped,
+   so a band with no mx- object renders exactly as today.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   00a · FIXED-CHROME RESERVATION (Law 10 — the back pill never
+   overlaps content). The archive pill is fixed top-left; fade it
+   out once the reader scrolls past the masthead (pure CSS scroll-
+   driven animation, no JS), and reserve the top zone where scroll-
+   timeline is unsupported. Body carries data-mx-chrome="pill".
+   Extracted from core/15-responsive.css §01.
+   ------------------------------------------------------------ */
+@supports (animation-timeline: scroll()) {
+  [data-mx-chrome~="pill"] .signal-back-to-archive {
+    animation: mx-pill-recede linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0px 300px;
+  }
+}
+@keyframes mx-pill-recede {
+  0%   { opacity: 1; }
+  55%  { opacity: 0; }
+  100% { opacity: 0; visibility: hidden; pointer-events: none; }
+}
+@supports not (animation-timeline: scroll()) {
+  [data-mx-chrome~="pill"] .signal-back-to-archive { opacity: 0.85; }
+}
+
+/* ------------------------------------------------------------
+   00 · SHELF + TWO-COLUMN SURFACES (un-grid scatter beside copy)
+   ------------------------------------------------------------ */
+.mx-shelf {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 34px 40px;
+  align-items: flex-start;
+  justify-content: center;
+  margin: 54px 0;
+}
+.mx-shelf > * { flex: 0 1 auto; }
+.mx-shelf > *:nth-child(2n) { margin-top: 22px; }
+.mx-shelf > *:nth-child(3n) { margin-top: -8px; }
+
+.mx-twocol {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 36px;
+  align-items: start;
+  margin: 34px 0;
+}
+.mx-twocol__aside { display: grid; gap: 26px; justify-items: center; }
+
+/* a furniture card homed inside a service column (The Desk / The Ledger):
+   fills the column measure so the tall body-text column beside it never
+   leaves a blank right stretch. Sits directly under the column's kicker as
+   the section's lead data object. */
+.deskcol .deskcol__card { width: 100%; margin: 15px 0 22px; }
+
+/* ------------------------------------------------------------
+   01 · CARD CHASSIS + CHART CARD (self-made sparkline/bar SVG)
+   scenography defaults: tilt + washi tape + drop shadow (Law 1)
+   ------------------------------------------------------------ */
+.mx-card {
+  background: var(--mx-card);
+  color: var(--mx-card-ink);
+  border: 1px solid var(--mx-card-edge);
+  box-shadow: 0 18px 30px -16px var(--mx-shadow), 0 2px 0 rgba(0, 0, 0, 0.05);
+  padding: 12px 12px 14px;
+  width: min(340px, 100%);
+  position: relative;
+  margin: 0;
+  transform: rotate(var(--mx-tilt, -1deg));
+}
+.mx-card:nth-of-type(2n) { --mx-tilt: 1.6deg; }
+.mx-card::before {
+  content: "";
+  position: absolute;
+  top: -11px; left: 50%;
+  transform: translateX(-50%) rotate(-3.5deg);
+  width: 92px; height: 22px;
+  background: var(--mx-tape);
+  border-left: 1px dashed rgba(255, 255, 255, 0.5);
+  border-right: 1px dashed rgba(255, 255, 255, 0.5);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  pointer-events: none; z-index: 3;
+}
+.mx-card:nth-of-type(2n)::before { transform: translateX(-50%) rotate(4deg); }
+.mx-card__window {
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  background: var(--mx-card-window);
+  padding: 14px 14px 10px;
+  overflow: hidden;
+}
+.mx-card__caption {
+  font-family: var(--mx-t-hand);          /* aliases to Instrument Serif */
+  font-style: italic;
+  font-size: 1.18rem;
+  line-height: 1.2;
+  text-align: center;
+  margin-top: 10px;
+  color: var(--mx-card-ink);
+}
+.mx-card__credit {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  display: block;
+  margin-top: 6px;
+  opacity: 0.6;
+}
+
+/* chart card — the week-in-numbers sparkline/bars, drawn in SVG */
+.mx-card--chart { width: min(420px, 100%); }
+.mx-card--chart .mx-card__window { padding: 16px 16px 12px; }
+.mx-chart { display: block; width: 100%; }
+.mx-chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.mx-chartline { fill: none; stroke: var(--mx-accent); stroke-width: 2.4; }
+.mx-chart__bar { fill: var(--mx-accent); }
+.mx-chart__bar--2 { fill: var(--mx-accent-2); }
+.mx-chart__base { stroke: var(--mx-hair); stroke-width: 1; }
+.mx-chart__dot { fill: var(--mx-accent-2); }
+.mx-chart__label {
+  font-family: var(--mx-t-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  fill: var(--mx-ink-soft);
+}
+.mx-chart__cap {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mx-accent);
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* ------------------------------------------------------------
+   02 · TICKET — perforated stub, punch holes, hard shadow
+   (the week's Do-This-Week pick, as a physical object)
+   ------------------------------------------------------------ */
+.mx-ticket {
+  display: grid;
+  grid-template-columns: 1fr 96px;
+  width: min(360px, 100%);
+  background: var(--mx-card);
+  color: var(--mx-card-ink);
+  border: 1.5px solid var(--mx-card-ink);
+  box-shadow: 5px 5px 0 var(--mx-shadow);
+  transform: rotate(var(--mx-tilt, -1.5deg));
+  position: relative;
+  margin: 0;
+}
+.mx-ticket:nth-of-type(2n) { --mx-tilt: 1.6deg; }
+.mx-ticket::before, .mx-ticket::after {
+  content: "";
+  position: absolute;
+  right: 89px;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--mx-paper);
+  border: 1.5px solid var(--mx-card-ink);
+}
+.mx-ticket::before { top: -8px; }
+.mx-ticket::after  { bottom: -8px; }
+.mx-ticket__main { padding: 15px 16px 13px; }
+.mx-ticket__event {
+  display: block;
+  font-family: var(--mx-t-serif);          /* Newsreader */
+  font-weight: 600;
+  font-size: 1.4rem;
+  line-height: 1.05;
+  margin: 3px 0 8px;
+}
+.mx-ticket__meta {
+  display: block;
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mx-ink-soft);
+}
+.mx-ticket__row { display: flex; justify-content: space-between; gap: 10px; margin-top: 6px; }
+.mx-ticket__row > span:last-child { color: var(--mx-card-ink); }
+.mx-ticket__stub {
+  border-left: 2px dashed var(--mx-card-ink);
+  display: grid;
+  place-items: center;
+  padding: 10px 6px;
+  background: repeating-linear-gradient(45deg, transparent 0 6px, var(--mx-quote-bg) 6px 12px);
+}
+
+/* ------------------------------------------------------------
+   03 · STAMP / SEAL — currentColor roundel (the ticket stub)
+   ------------------------------------------------------------ */
+.mx-stamp {
+  display: inline-grid;
+  place-items: center;
+  width: 82px; height: 82px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  color: var(--mx-stamp-ink);              /* aliases to --signal */
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 8px;
+  line-height: 1.25;
+  transform: rotate(8deg);
+  position: relative;
+  background: transparent;
+}
+.mx-stamp::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  opacity: 0.85;
+}
+.mx-stamp b {
+  display: block;
+  font-family: var(--mx-t-serif);
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1;
+  margin: 3px 0 2px;
+}
+
+/* ------------------------------------------------------------
+   04 · QUOTE OBJECT — a named voice, never a floating italic
+   line. Attribution mandatory (Law 9).
+   ------------------------------------------------------------ */
+.mx-quote {
+  margin: 54px 0;
+  padding: 24px 24px 18px;
+  border-left: 5px solid var(--mx-accent);
+  background: var(--mx-quote-bg);
+  position: relative;
+}
+.mx-quote::before {
+  content: "\201C";
+  position: absolute;
+  top: -20px; left: 12px;
+  font-family: var(--mx-t-serif);
+  font-size: 4.6rem;
+  line-height: 1;
+  color: var(--mx-accent);
+  opacity: 0.85;
+  pointer-events: none;
+}
+.mx-quote blockquote {
+  font-family: var(--mx-t-serif);          /* Newsreader italic */
+  font-style: italic;
+  font-size: clamp(1.14rem, 2.4vw, 1.4rem);
+  line-height: 1.42;
+  color: var(--mx-ink);
+  margin: 0;
+  border: none;
+  padding: 0;
+}
+.mx-quote figcaption {
+  margin-top: 12px;
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mx-ink-soft);
+}
+.mx-quote figcaption b { color: var(--mx-accent); font-weight: 700; }
+
+/* ------------------------------------------------------------
+   05 · FIXTURES LEDGER — sport results as a mono ledger
+   (row form; the dl form of core/11-ledgers is unused here)
+   ------------------------------------------------------------ */
+.mx-ledger {
+  --mxl-rule: var(--mx-hair);
+  border-top: 3px solid var(--mx-ink);
+  border-bottom: 1px solid var(--mxl-rule);
+  margin: 52px 0;
+}
+.mx-ledger__caption {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--mx-accent);
+  padding: 10px 0 9px;
+  border-bottom: 1px solid var(--mxl-rule);
+}
+.mx-ledger__row {
+  display: grid;
+  grid-template-columns: 68px 1fr auto;
+  gap: 6px 14px;
+  padding: 11px 0 12px;
+  border-bottom: 1px dotted var(--mxl-rule);
+  align-items: baseline;
+}
+.mx-ledger__row:last-child { border-bottom: none; }
+.mx-ledger__date {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mx-ink-soft);
+}
+.mx-ledger__match { font-size: 0.98rem; line-height: 1.4; color: var(--mx-ink); }
+.mx-ledger__match b { font-weight: 700; }
+.mx-ledger__result {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mx-accent);
+  white-space: nowrap;
+}
+.mx-ledger__note {
+  grid-column: 2 / -1;
+  font-size: 0.86rem;
+  line-height: 1.4;
+  color: var(--mx-ink-soft);
+  margin-top: 2px;
+}
+
+/* ------------------------------------------------------------
+   06 · SCORECARD — standings on card stock (a table dressed as
+   an object). Cells wrap at word boundaries (never truncate).
+   ------------------------------------------------------------ */
+.mx-scorecard {
+  width: min(320px, 100%);
+  background: var(--mx-card);
+  color: var(--mx-card-ink);
+  border: 1.5px solid var(--mx-card-ink);
+  box-shadow: 5px 5px 0 var(--mx-shadow);
+  transform: rotate(var(--mx-tilt, 1.2deg));
+  padding: 14px 16px 12px;
+  margin: 0;
+}
+.mx-scorecard:nth-of-type(2n) { --mx-tilt: -1.4deg; }
+.mx-scorecard__title {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mx-accent);
+  border-bottom: 2px solid var(--mx-card-ink);
+  padding-bottom: 8px;
+  margin: 0 0 2px;
+}
+.mx-scorecard table { width: 100%; border-collapse: collapse; }
+.mx-scorecard td, .mx-scorecard th {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  text-align: left;
+  padding: 8px 16px 7px 0;
+  border-bottom: 1px dotted color-mix(in srgb, var(--mx-card-ink) 38%, transparent);
+  color: var(--mx-card-ink);
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+.mx-scorecard tr:last-child td { border-bottom: none; }
+.mx-scorecard__pos { width: 26px; font-weight: 700; color: var(--mx-ink-soft); }
+.mx-scorecard__gap { text-align: right; font-weight: 700; white-space: nowrap; }
+.mx-scorecard tr.is-lead td { font-weight: 700; }
+.mx-scorecard tr.is-lead .mx-scorecard__gap { color: var(--mx-accent); }
+
+/* ------------------------------------------------------------
+   07 · RADIO DIAL — the weekly's signature furniture object.
+   A tuning scale with a needle that sweeps to the band frequency
+   on entry (Law 5: Weekly = dial-needle sweep). Pure Transmission
+   (the radio conceit), CSS-drawn, aria-hidden.
+   ------------------------------------------------------------ */
+.mx-dial {
+  --mx-dial-h: 42px;
+  position: relative;
+  width: min(360px, 100%);
+  height: var(--mx-dial-h);
+  margin: 10px 0 6px;
+  border-bottom: 2px solid var(--mx-ink);
+  background:
+    repeating-linear-gradient(90deg,
+      var(--mx-hair) 0 1px, transparent 1px 12px);
+  background-position: 0 100%;
+  background-size: 100% 60%;
+  background-repeat: no-repeat;
+}
+.mx-dial::after {                          /* a few taller ticks */
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 78%;
+  background: repeating-linear-gradient(90deg,
+    var(--mx-ink) 0 1.5px, transparent 1.5px 60px);
+  opacity: 0.5;
+  pointer-events: none;
+}
+.mx-dial__needle {
+  position: absolute;
+  bottom: 0;
+  left: var(--mx-needle-x, 68%);
+  width: 2px;
+  height: 100%;
+  background: var(--mx-accent);
+  transform-origin: 50% 100%;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+.mx-dial__needle::before {
+  content: "";
+  position: absolute;
+  top: -5px; left: -3px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--mx-accent);
+}
+.mx-freq {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mx-accent);
+  display: block;
+  margin-top: 8px;
+}
+
+/* ------------------------------------------------------------
+   08 · MOTION — tier1 calm (rise / settle / row-tick / chart-
+   draw / dial-sweep). Extracted from core/14-motion.css. All
+   start-states are gated behind [data-mx-motion-ready] so JS-off
+   renders 100% of content; the controller (mx-motion.js) is the
+   only thing that stamps it. Motion attaches to furniture, never
+   running text (Law 5).
+   ------------------------------------------------------------ */
+[data-mx] {
+  --mx-m-rise: 32px;                                   /* was 20 — a clearer lift */
+  --mx-m-dur: 720ms;                                   /* was 640 */
+  --mx-m-settle: 1.8deg;                               /* settle unit; the tape-down swing */
+  --mx-m-ease: cubic-bezier(0.22, 0.9, 0.3, 1);
+  --mx-m-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --mx-m-stagger: 100ms;                               /* was 80 */
+}
+@keyframes mx-rise-in {
+  from { opacity: 0; transform: translateY(var(--mx-m-rise)); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+/* TAPE-DOWN SETTLE — the object drops in lifted and over-rotated (~5.4° off
+   its rest tilt), fades in, tips just past level the other way, then settles
+   onto its resting tilt. A clearly-visible placed-by-hand motion, still calm
+   (no slam/flip). Overshoot is built into the keyframes, so it rides the
+   smooth ease, not the spring. */
+@keyframes mx-settle-in {
+  0%   { opacity: 0;
+         transform: translateY(var(--mx-m-rise))
+           rotate(calc(var(--mx-tilt, -1deg) + var(--mx-m-settle) * 3)); }
+  52%  { opacity: 1; }
+  76%  { transform: translateY(0)
+           rotate(calc(var(--mx-tilt, -1deg) - var(--mx-m-settle) * 0.9)); }
+  100% { opacity: 1; transform: translateY(0) rotate(var(--mx-tilt, -1deg)); }
+}
+@keyframes mx-row-tick {
+  from { opacity: 0; transform: translateY(15px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes mx-chart-draw {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
+}
+@keyframes mx-dial-sweep { from { transform: rotate(-104deg); } }
+
+[data-mx-motion-ready] [data-motion="tier1"] .mx-rise:not(.is-in) {
+  opacity: 0; transform: translateY(var(--mx-m-rise));
+}
+[data-mx-motion-ready] [data-motion="tier1"] .mx-rise.is-in {
+  animation: mx-rise-in var(--mx-m-dur) var(--mx-m-ease) backwards;
+  animation-delay: min(calc(var(--mx-i, 0) * var(--mx-m-stagger)), 420ms);
+}
+[data-mx-motion-ready] [data-motion="tier1"] .mx-settle:not(.is-in) { opacity: 0; }
+[data-mx-motion-ready] [data-motion="tier1"] .mx-settle.is-in {
+  animation: mx-settle-in calc(var(--mx-m-dur) + 240ms) var(--mx-m-ease) backwards;
+  animation-delay: min(calc(var(--mx-i, 0) * var(--mx-m-stagger)), 420ms);
+}
+/* sequenced rows tick in --mx-i order (fixtures ledger, standings, datums) —
+   larger lift + wider stagger so the cascade reads clearly on a real scroll */
+[data-mx-motion-ready] [data-motion="tier1"] .mx-seq:not(.is-in) .mx-row { opacity: 0; }
+[data-mx-motion-ready] [data-motion="tier1"] .mx-seq.is-in .mx-row {
+  animation: mx-row-tick 480ms var(--mx-m-ease) backwards;
+  animation-delay: min(calc(var(--mx-i, 0) * 95ms), 760ms);
+}
+/* sparkline / chart line draws on reveal */
+[data-mx-motion-ready] [data-motion="tier1"] .mx-chart.is-in .mx-chartline {
+  stroke-dasharray: 1;
+  animation: mx-chart-draw 1250ms var(--mx-m-ease) backwards;
+}
+[data-mx-motion-ready] [data-motion="tier1"] .mx-chart:not(.is-in) .mx-chart__dot { opacity: 0; }
+[data-mx-motion-ready] [data-motion="tier1"] .mx-chart.is-in .mx-chart__dot {
+  animation: mx-rise-in 360ms var(--mx-m-ease) 1050ms backwards;
+}
+/* signature: dial needle sweeps to its frequency on band entry */
+[data-mx-motion-ready] [data-motion="tier1"] .mx-sig-dial-sweep.is-in .mx-dial__needle {
+  animation: mx-dial-sweep 1000ms var(--mx-m-spring) backwards;
+}
+/* hover settles — furniture acknowledges the hand */
+[data-motion="tier1"] .mx-card,
+[data-motion="tier1"] .mx-ticket,
+[data-motion="tier1"] .mx-scorecard { transition: transform 0.35s var(--mx-m-ease); }
+[data-motion="tier1"] .mx-card:hover { transform: rotate(0deg) scale(1.015); }
+[data-motion="tier1"] .mx-ticket:hover,
+[data-motion="tier1"] .mx-scorecard:hover { transform: rotate(0deg); }
+
+/* ------------------------------------------------------------
+   09 · RESPONSIVE — 390px stacking; Law-8 type floors held.
+   ------------------------------------------------------------ */
+@media (max-width: 720px) {
+  .mx-twocol { grid-template-columns: 1fr; }
+  .mx-twocol__aside { justify-items: center; }
+}
+@media (max-width: 560px) {
+  .mx-shelf { gap: 28px 20px; margin: 34px 0; }
+  .mx-shelf > *:nth-child(2n) { margin-top: 12px; }
+  .mx-card, .mx-card--chart { width: min(320px, 100%); }
+  .mx-ticket { width: 100%; grid-template-columns: 1fr 84px; }
+  .mx-ticket::before, .mx-ticket::after { right: 77px; }
+  .mx-scorecard { width: 100%; }
+  .mx-ledger__row { grid-template-columns: 56px 1fr; }
+  .mx-ledger__result { grid-column: 2; justify-self: start; margin-top: 2px; }
+  .mx-quote { padding: 20px 18px 16px; margin: 28px 0; }
+  .mx-dial { width: 100%; }
+  /* Law-8 floors reasserted at phone width */
+  .mx-ledger__caption, .mx-ledger__date, .mx-ledger__result,
+  .mx-ticket__meta, .mx-card__credit, .mx-scorecard__title,
+  .mx-scorecard td, .mx-scorecard th, .mx-quote figcaption,
+  .mx-freq, .mx-chart__cap { font-size: max(0.72rem, var(--mx-micro)); }
+}
+
+/* ------------------------------------------------------------
+   99 · REDUCED-MOTION GATE — kills every mx animation/transition
+   under [data-mx]; content is simply present, never held hidden.
+   The controller additionally no-ops when the preference is set.
+   ------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  [data-mx] *, [data-mx] *::before, [data-mx] *::after {
+    animation-duration: 0.001s !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001s !important;
+  }
+  [data-mx-motion-ready] [data-motion="tier1"] .mx-rise:not(.is-in),
+  [data-mx-motion-ready] [data-motion="tier1"] .mx-settle:not(.is-in) {
+    opacity: 1; transform: rotate(var(--mx-tilt, 0deg));
+  }
+  [data-mx-motion-ready] [data-motion="tier1"] .mx-seq:not(.is-in) .mx-row { opacity: 1; }
+}
+
+</style>
+</head>
+<body data-skin="transmission" data-mx data-motion="tier1" data-format="weekly" data-mx-chrome="pill">
+<!-- the-signal:back -->
+<style data-signal-back>
+  .signal-back-to-archive {
+    position: fixed;
+    top: max(0.75rem, env(safe-area-inset-top, 0px));
+    left: max(0.75rem, env(safe-area-inset-left, 0px));
+    z-index: 9999;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.85rem 0.45rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(20, 20, 30, 0.72);
+    color: #fff;
+    font-family: 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    backdrop-filter: saturate(140%) blur(10px);
+    -webkit-backdrop-filter: saturate(140%) blur(10px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.22);
+    transition: transform 0.15s ease, background 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .signal-back-to-archive:hover { background: rgba(20, 20, 30, 0.88); }
+  .signal-back-to-archive:active { transform: scale(0.96); }
+  .signal-back-to-archive svg { display: block; opacity: 0.9; }
+  @media print { .signal-back-to-archive { display: none; } }
+</style>
+<a href="../" class="signal-back-to-archive" aria-label="Back to The Signal archive">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+  <span>The Signal</span>
+</a>
+<!-- /the-signal:back -->
+<div class="issue">
+
+  <!-- ================= COVER ================= -->
+  <header class="cover">
+    <div class="cover__top">
+      <span class="mono">A Personal Weekly · Received &amp; Tuned</span>
+      <span class="mono price">Sunday Edition</span>
+    </div>
+  <div class="wave wave--ink" aria-hidden="true">
+    <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+      <path d="M0 13 H60 l6 -10 6 20 6 -20 6 20 6 -20 6 10 H160 l5 -8 5 16 5 -16 5 16 5 -8 H280 l7 -12 7 24 7 -24 7 24 7 -12 H420 l4 -6 4 12 4 -12 4 12 4 -6 H540 l6 -11 6 22 6 -22 6 22 6 -11 H680 l5 -7 5 14 5 -14 5 14 5 -7 H800" fill="none" stroke="currentColor" stroke-width="2.0"/>
+    </svg>
+  </div>
+
+    <h1 class="masthead">The <em>Signal</em></h1>
+    <div class="masthead__sub">
+      <span class="tag">tuning in to the week you lived</span>
+      <span class="mono">EST. 2026</span>
+    </div>
+
+    <div class="cover__body">
+      <div class="lead">
+        <div class="mono lead__eyebrow">BAND 01 — THE LEAD TRANSMISSION</div>
+        <h2 class="lead__head">The first ordinary week under a Prime Minister <span class="hl">nobody elected</span>.</h2>
+        <p class="lead__stand">Andy Burnham has done a full week in No.10 — cabinet finished, an electricity-bill tax cut, a £2 bus cap, a part-time desk in Manchester — and Britain&#x27;s seventh leader of the decade still has no mandate from a ballot box. Meanwhile F1 rolls into Budapest with the title all but Antonelli&#x27;s, Halo lands on a PlayStation 25 years late, and a lump of corroded Greek bronze turns out to have been a computer.</p>
+      </div>
+
+      <nav class="tuner" aria-label="In this transmission">
+        <div class="tuner__label">
+          <span class="mono">STATION LIST</span>
+          <span class="mono">№018</span>
+        </div>
+        <div class="station on" data-station>
+          <span class="freq">88.9</span>
+          <span class="name"><b>The Long Read:</b> the 2,000-year-old computer</span>
+        </div>
+        <div class="station" data-station>
+          <span class="freq">98.4</span>
+          <span class="name">Norris on pole; the title maths says otherwise</span>
+        </div>
+        <div class="station on" data-station>
+          <span class="freq">104.7</span>
+          <span class="name"><b>Halo</b> lands on PlayStation, 25 years late</span>
+        </div>
+        <div class="station" data-station>
+          <span class="freq">106.0</span>
+          <span class="name"><b>Strange New Worlds</b> back; Charli drops</span>
+        </div>
+        <div class="station" data-station>
+          <span class="freq">90.1</span>
+          <span class="name">Three ways in, one straight off the Long Read</span>
+        </div>
+        <div class="station on" data-station>
+          <span class="freq">92.3</span>
+          <span class="name"><b>The Desk:</b> ramping back in, and a rate to beat</span>
+        </div>
+        <div class="station" data-station>
+          <span class="freq">95.8</span>
+          <span class="name">Previously on: Hormuz, Westminster, a title run</span>
+        </div>
+        <div class="station on" data-station>
+          <span class="freq">101.2</span>
+          <span class="name">How 'clue' is literally a ball of thread</span>
+        </div>
+        <div class="station on" data-station>
+          <span class="freq">96.5</span>
+          <span class="name">What's coming: a race, a launch, a rate call</span>
+        </div>
+      </nav>
+    </div>
+
+    <div class="dataline">
+      <span class="mono">TRANSMISSION №018</span>
+      <span class="dot" aria-hidden="true">·</span>
+      <span class="mono">20–26 JUL 2026</span>
+      <span class="dot" aria-hidden="true">·</span>
+      <span class="mono">UNITED KINGDOM</span>
+      <span class="dot" aria-hidden="true">·</span>
+      <span class="mono">FOLIO 018</span>
+      <span class="dot" aria-hidden="true">·</span>
+      <span class="mono">31 MIN · ONE SITTING</span>
+    </div>
+
+    <div class="folio" aria-hidden="true">018</div>
+  </header>
+
+  <div class="wave wave--blue" aria-hidden="true" style="padding:0 40px;">
+    <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+      <path d="M0 13 H40 l5 -9 5 18 5 -18 5 18 5 -9 H120 l7 -13 7 26 7 -26 7 26 7 -13 H260 l4 -6 4 12 4 -12 4 12 4 -6 H360 l6 -11 6 22 6 -22 6 22 6 -11 H500 l5 -8 5 16 5 -16 5 16 5 -8 H620 l7 -13 7 26 7 -26 7 26 7 -13 H800" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    </svg>
+  </div>
+
+  <!-- MOVEMENT I · THE OPEN -->
+  <div class="movement" data-movement="open">
+    <div class="movement__rule">
+      <span class="movement__no">I</span>
+      <span class="movement__name">The Open</span>
+      <span class="mono movement__meta">LETTER · NUMBERS · DIGEST</span>
+    </div>
+  </div>
+
+  <div class="band" data-band="the_letter">
+    <div class="bandhead">
+      <span class="mono code">BAND 02 — <b>THE LETTER</b></span>
+      <span class="mono runtime">FROM THE EDITOR</span>
+    </div>
+  </div>
+  <section class="letter">
+<!-- Issue cover plate — the OPEN movement's establishing image. Transmission worked real-<img> plate form: .plate-img.lead > img (alt + loading="lazy") + .plate-cap (.fig/.txt/.credit). -->
+    <div data-mx-event="figure" class="plate-img lead" style="margin-top:18px;">
+      <img src="/assets/cached/af9fc905ced8.jpg" alt="Prime Minister Andy Burnham greeting members of the public outside the new 'No10 North' office in Manchester" loading="lazy">
+      <div class="plate-cap">
+        <span class="mono fig">COVER</span>
+        <span class="txt">Andy Burnham outside the new 'No10 North' office in Manchester — the first full week of ordinary government, run by a man no election put in charge of it.<span class="credit">No 10 Downing Street · CC BY-NC-ND</span></span>
+      </div>
+    </div>
+
+    <h2>The first ordinary week under a PM nobody elected.</h2>
+    <p class="kicker">Andy Burnham has run the country for a week now. Nobody voted for him to — and the machinery ran anyway.</p>
+    <p class="first">Britain's seventh leader in a decade took office on 20 July without a general election, and spent this week doing the plainest things a government does. The cabinet was finished on 23 July — John Healey to the Treasury, Ed Miliband to the Foreign Office, Rachel Reeves sacked. Then a run of small, tangible moves: a tax cut on household electricity bills, a £2 cap on bus fares, a tax break for pubs, and a part-time 'No10 North' office opened in Manchester. The ordinary machinery of government, running smoothly, under a man no ballot chose.</p>
+
+    <p>The rest of the week was the one everyone else lived. Formula 1 rolled into Budapest with the championship all but Kimi Antonelli's — he leads by 45 points, and the race is still to run this afternoon. Halo arrives on PlayStation on Tuesday, twenty-five years after it was built to sell a rival console. And a corroded lump of bronze pulled from a Greek shipwreck turned out, once the X-rays got into it, to have been a computer.</p>
+    <p class="sig">— The Editor</p>
+    <p class="mono sigline">TRANSMITTED SUNDAY · 26 JUL 2026</p>
+  </section>
+
+  <div class="band" data-band="week_in_numbers">
+    <div class="bandhead">
+      <span class="mono code">BAND 03 — <b>THE WEEK IN NUMBERS</b></span>
+      <span class="mono runtime">THE LEDGER · SIGNAL METERED</span>
+    </div>
+  </div>
+  <section>
+    <div class="figures">
+      <div class="figures-frame" data-mx-event="statband">
+        <div class="fig-caption"><span>TABLE I · <b>DATUMS OF THE WEEK</b></span><span>№018</span></div>
+
+        <div class="fig-row">
+          <div class="fig-label">
+            <span class="k">Pole Margin</span>
+            <span class="d">Norris's edge over Hamilton for the Hungarian GP — a McLaren-Ferrari split settled in Saturday qualifying, the race still to run on Sunday</span>
+          </div>
+          <div class="fig-val">0.012<small>s</small></div>
+        </div>
+
+        <div class="fig-row">
+          <div class="fig-label">
+            <span class="k">Championship Lead</span>
+            <span class="d">Antonelli's points going into Sunday's race — 45 clear of Hamilton, 50 clear of Russell, with six wins and six poles this season</span>
+          </div>
+          <div class="fig-val">204<small>pts</small></div>
+        </div>
+
+        <div class="fig-row">
+          <div class="fig-label">
+            <span class="k">Bank Rate</span>
+            <span class="d">where the Bank of England sits before its 30 July vote; markets price roughly an 86% chance of a hold, unchanged since the 18 June meeting</span>
+          </div>
+          <div class="fig-val">3.75<small>%</small></div>
+        </div>
+
+        <div class="fig-row">
+          <div class="fig-label">
+            <span class="k">Leaders in a Decade</span>
+            <span class="d">Britain's tally once Andy Burnham took office on 20 July — the seventh, installed without a general election</span>
+          </div>
+          <div class="fig-val">7</div>
+        </div>
+
+        <div class="fig-row">
+          <div class="fig-label">
+            <span class="k">Antikythera Fragments</span>
+            <span class="d">surviving pieces of the oldest known analogue computer — about a third of the original, holding some 30 corroded bronze gears, dated to roughly 150-100 BCE</span>
+          </div>
+          <div class="fig-val">82</div>
+        </div>
+
+        <div class="fig-row">
+          <div class="fig-label">
+            <span class="k">Iran's SCO Deals</span>
+            <span class="d">cooperation agreements Tehran signed at the Shanghai bloc's foreign-ministers summit in Cholpon-Ata, Kyrgyzstan</span>
+          </div>
+          <div class="fig-val">25</div>
+        </div>
+
+        <div class="fig-foot"><span>CARRIED FORWARD TO №019</span><span>THE RACE STILL TO RUN</span></div>
+      </div>
+    </div>
+
+    <div class="mx-card mx-card--chart" data-mx-event="chart" style="margin:30px auto 6px;">
+      <div class="mx-card__window">
+        <span class="mx-chart__cap">Drivers' title lead · Antonelli, 2026 season to round 11</span>
+        <div class="mx-chart">
+          <svg viewBox="0 0 260 96" preserveAspectRatio="xMidYMid meet" role="img" aria-label="A rising line showing Antonelli's championship lead widening across the 2026 season to 45 points by round 11 — a schematic of the trend, not per-round data.">
+            <line class="mx-chart__base" x1="0" y1="84" x2="260" y2="84"/>
+            <path class="mx-chartline" pathLength="1" d="M6,80 C70,74 150,52 254,20"/>
+            <circle class="mx-chart__dot" cx="254" cy="20" r="3.4"/>
+            <text class="mx-chart__label" x="6" y="94">R1</text>
+            <text class="mx-chart__label" x="188" y="94">R11 · +45</text>
+          </svg>
+        </div>
+      </div>
+      <div class="mx-card__caption">the lead has widened to 45 points by round 11 — a schematic of the season trend, not per-round figures</div>
+      <span class="mx-card__credit">Chart · The Signal · F1 2026 standings</span>
+    </div>
+  </section>
+
+  <div class="band" data-band="caught_up">
+    <div class="bandhead">
+      <span class="mono code">BAND 04 — <b>CAUGHT UP</b></span>
+      <span class="mono runtime">EVERYTHING THAT MOVED, IN EIGHT LINES</span>
+    </div>
+  </div>
+  <section class="caughtup">
+    <ol class="digest">
+      <li><p><b>Westminster.</b> Andy Burnham closed his first full week as prime minister with the cabinet completed on 23 July — John Healey installed as Chancellor and Ed Miliband as Foreign Secretary, Rachel Reeves sacked, and a flurry of early moves in an electricity-bill tax cut, a £2 bus-fare cap and a tax break for pubs.</p></li>
+      <li><p><b>Budapest.</b> Lando Norris snatched pole at the Hungaroring by 0.012s over Lewis Hamilton, but three-place grid penalties for Hamilton and Kimi Antonelli reshuffle the front ahead of today's race.</p></li>
+      <li><p><b>The title.</b> Antonelli goes into that race leading the drivers' championship on 204 points, 45 clear of Hamilton, even as he starts compromised.</p></li>
+      <li><p><b>The Gulf.</b> Iran's foreign minister Abbas Araghchi signed 25 cooperation deals at the SCO ministerial in Cholpon-Ata, Kyrgyzstan, and warned over the Strait of Hormuz — Tehran leaning east after June's collapsed ceasefire and July's US strikes.</p></li>
+      <li><p><b>The ledger.</b> The Bank of England decides rates on 30 July, with markets pricing roughly an 86% chance of a hold at 3.75% as lenders keep cutting fixes.</p></li>
+      <li><p><b>Halo.</b> Halo: Campaign Evolved lands on Tuesday 28 July, the first mainline Halo campaign ever playable on a PlayStation, 25 years on.</p></li>
+      <li><p><b>The fixtures.</b> The summer window keeps rolling — João Gomes to Aston Villa for about £38m — with the Premier League restarting 21 August and Serie A on 23 August.</p></li>
+      <li><p><b>Screen.</b> Star Trek: Strange New Worlds returned for its fourth season on 23 July, the same week Charli xcx dropped 'Music, Fashion, Film'.</p></li>
+    </ol>
+  </section>
+  <div class="wave wave--ink" aria-hidden="true" style="margin-top:26px;color:var(--signal);">
+    <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+      <path d="M0 13 H70 l6 -11 6 22 6 -22 6 22 6 -11 H180 l5 -9 5 18 5 -18 5 18 5 -9 H300 l8 -14 8 28 8 -28 8 28 8 -14 H460 l4 -7 4 14 4 -14 4 14 4 -7 H580 l6 -11 6 22 6 -22 6 22 6 -11 H720 l5 -8 5 16 5 -16 5 16 5 -8 H800" fill="none" stroke="currentColor" stroke-width="2.0"/>
+    </svg>
+  </div>
+
+  <!-- MOVEMENT II · THE LONG READ -->
+  <div class="movement" data-movement="long-read">
+    <div class="movement__rule">
+      <span class="movement__no">II</span>
+      <span class="movement__name">The Long Read</span>
+      <span class="mono movement__meta">ONE PIECE · SETTLE IN</span>
+    </div>
+  </div>
+
+  <div class="band" data-band="long_read">
+    <div class="bandhead">
+      <span class="mono code">BAND 05 — <b>THE LONG READ</b></span>
+      <span class="mono runtime">SIGNAL STRONG</span>
+    </div>
+  </div>
+  <section class="longread" data-role="long-read">
+    <div class="lr-title">
+      <div class="mono" style="color:var(--signal);">TWO THOUSAND YEARS, ONE CRANK</div>
+      <h2>The Greeks who built a <em>cosmos</em> in bronze</h2>
+      <p class="stand">A lump of corroded metal hauled from a shipwreck in 1901 turned out to be a hand-cranked model of the sky — the oldest known computer in the world. It took the rest of us a century, and a particle-fine X-ray beam, to read a machine its makers could operate by turning a knob.</p>
+      <p class="mono byline">BY THE EDITOR · THE LONG READ · 26 JUL 2026</p>
+    </div>
+
+    <div class="lr-body">
+      <p class="first">In 1901, sponge divers working a wreck off the small Greek island of Antikythera brought up a lump of corroded bronze about the size of a thick book. It had been on the seabed since a Roman-era cargo ship went down there, some time around the turn of the first century BCE. For years it sat in the National Archaeological Museum in Athens as a green, calcified puzzle. Then people worked out that the shapes fused inside it were gears — dozens of them — and that the object was a machine for modelling the heavens. It is now regarded as the oldest known analogue computer in the world, built roughly 150 to 100 BCE, more than a thousand years before anything of comparable complexity appears again anywhere on Earth.</p>
+
+      <div data-mx-event="figure" class="plate-img lead">
+        <img src="/assets/cached/bf64e308503b.png" alt="Fragment A of the Antikythera Mechanism, the largest surviving piece of corroded green bronze, showing the remains of its gear-wheels" loading="lazy">
+        <div class="plate-cap">
+          <span class="mono fig">FIG. 01</span>
+          <span class="txt">Fragment A, the largest surviving piece of the mechanism — most of the machine's gear-train, crushed and fused by two thousand years in seawater.<span class="credit">National Archaeological Museum, Athens · via Wikimedia Commons</span></span>
+        </div>
+      </div>
+
+      <p>Strip away the corrosion and what the Greeks made becomes clear. The Antikythera Mechanism was a hand-cranked calculator built from interlocking bronze gearwheels. You turned a knob on the side, and the gear train did the arithmetic of the sky: pointers on its dials moved to show where the Sun and the Moon stood against the stars, and where the five planets known in antiquity — Mercury, Venus, Mars, Jupiter and Saturn — would be found. One turn of the handle advanced the whole model by a fixed span of time, and each body moved at its own correct rate, because the ratio of teeth between two meshing gears encoded the ratio between two astronomical cycles. The mathematics of the heavens was carried, quite literally, in the count of the teeth.</p>
+
+      <p>The cleverest single part answered a problem the Greeks understood well: the Moon does not travel at a steady pace. It runs faster at some points in its orbit and slower at others. The makers reproduced that variation with a pin-and-slot mechanism — one gear carrying a small pin that rode in a slot cut into a second gear, the two mounted slightly off-centre from one another, so that as the pair turned the output sped up and slowed down exactly as the real Moon does across a month. It is a piece of astronomy solved in metal, a physical device standing in for a mathematical wobble that would not be written down as an equation for many centuries.</p>
+
+      <p>The front face was not the whole machine. Where that display showed the cosmos, other dials tracked the long calendar cycles. The mechanism followed the Metonic cycle — the nineteen-year span over which the Moon's phases fall back into step with the solar year — and the Saros cycle, the roughly eighteen-year rhythm on which eclipses repeat. Read the Saros dial and you could say, years in advance, when the Sun or the Moon would be eclipsed. A device you could hold in two hands told you the state of the sky on a date that had not yet arrived. Nothing else from the ancient world does anything close to this, which is exactly why it has been so hard to believe.</p>
+
+      <div class="pullquote" data-mx-event="quote">
+        A device you could hold in two hands told you the state of the sky on a date that had not yet arrived.
+      </div>
+
+      <figure class="mx-quote" data-mx-event="quote">
+        <blockquote>Ancient Greek mechanicians were able to design and build highly complex devices, on a remarkably small scale, on mathematical principles and serving a scientific agenda.</blockquote>
+        <figcaption>— <cite><b>Alexander Jones</b></cite> · historian of ancient science, NYU · <em>A Portable Cosmos</em></figcaption>
+      </figure>
+
+      <p class="noindent">What survives is only a fraction of it. The mechanism comes down to us as 82 fragments — about a third of the original object — including some thirty corroded bronze gearwheels. The largest piece, known as Fragment A, holds most of the surviving gear-train, its wheels crushed and welded into a solid mass by twenty centuries underwater. For most of the twentieth century that damage kept the machine unreadable. You could see that there were gears; you could not see how many there were, how they meshed, or what the assembly as a whole was built to compute. The object was plainly extraordinary and almost entirely mute.</p>
+
+      <div data-mx-event="figure" class="plate-img">
+        <img src="/assets/cached/5a78b1b6198a.png" alt="The reverse of Fragment A, a mass of corroded green-brown bronze gearing, the wheels fused together after two thousand years on the seabed" loading="lazy">
+        <div class="plate-cap">
+          <span class="mono fig">FIG. 02</span>
+          <span class="txt">The reverse of Fragment A — the corroded bronze gearing that stayed unreadable until X-rays powerful enough to see through solid metal arrived.<span class="credit">National Archaeological Museum, Athens · via Wikimedia Commons</span></span>
+        </div>
+      </div>
+
+      <p>Reading it took a century and a technology its makers could never have imagined. The internal structure was only decoded after 2005, when researchers turned microfocus X-ray computed tomography on the fragments — CT scanning fine enough to see straight through the bronze and map every buried tooth in three dimensions. The scans let scholars count the gears, measure their teeth one by one, and rebuild the trains that had been fused into a single block of metal. In March 2021 a team at University College London, led by the engineer and mathematician Tony Freeth, published the first complete model of the machine's front display — the "Cosmos" face that carried the Sun, the Moon and the planets together on one set of dials.</p>
+
+      <figure class="mx-quote" data-mx-event="quote">
+        <blockquote>Ours is the first model that conforms to all the physical evidence and matches the descriptions in the scientific inscriptions engraved on the mechanism itself.</blockquote>
+        <figcaption>— <cite><b>Tony Freeth</b></cite> · UCL, lead author of the 2021 reconstruction</figcaption>
+      </figure>
+
+      <p>That test matters, because the mechanism came with its own instructions. Its plates are covered in thousands of tiny Greek letters — a description and a user's guide, engraved straight into the bronze. Any proposed reconstruction is only convincing if the gears it invents actually produce the astronomy the inscriptions promise. Freeth's model was the first to reconcile the two at once: the surviving hardware, and the words the makers themselves wrote across it. The machine and its manual finally agreed.</p>
+
+      <div class="mx-ledger" data-mx-event="ledger">
+        <div class="mx-ledger__caption">Reading the Machine · A Century of Work</div>
+        <div class="mx-ledger__row"><span class="mx-ledger__date">1901</span><span class="mx-ledger__match"><b>Recovered</b> — sponge divers raise a corroded bronze lump from the Antikythera wreck</span><span class="mx-ledger__result">FOUND</span><span class="mx-ledger__note">Built c. 150–100 BCE; the oldest known analogue computer.</span></div>
+        <div class="mx-ledger__row"><span class="mx-ledger__date">2005</span><span class="mx-ledger__match"><b>Scanned</b> — microfocus X-ray CT begins mapping every buried tooth in three dimensions</span><span class="mx-ledger__result">CT</span><span class="mx-ledger__note">The imaging that finally saw through fused metal.</span></div>
+        <div class="mx-ledger__row"><span class="mx-ledger__date">2021</span><span class="mx-ledger__match"><b>Modelled</b> — Tony Freeth's UCL team publishes a complete model of the front "Cosmos" display</span><span class="mx-ledger__result">MAR</span><span class="mx-ledger__note">First reconstruction matching both the hardware and the inscriptions.</span></div>
+      </div>
+
+      <p>This is where the popular version of the story goes wrong. The Antikythera Mechanism is usually sold as an impossible object — a computer that fell out of the sky into the ancient world, a genius's leap so far ahead of its era that it has to be explained away. Alexander Jones, a historian of ancient science at New York University, argues the opposite in his book <em>A Portable Cosmos</em>. The device is not an anomaly. It is the one physical survivor of a Hellenistic tradition of geared instruments that ancient writers mention but that otherwise rotted away, melted down or was lost. Bronze corrodes, and bronze gets recycled. That we happen to have one such machine, dragged up by luck from a shipwreck, is no reason to think there was only ever one.</p>
+
+      <p>Jones reads the object's purpose more soberly than the legend does, too. He takes it to be a display and teaching instrument for an astronomically literate public — a way to show an educated layman how the cosmos ran — rather than a navigation aid for sailors or a working observatory. It modelled the sky; it did not steer ships. Seen that way, the mechanism becomes less a miracle and more a measure of how much ordinary Greek technical culture we have simply lost. The astonishing thing is not that one workshop could build this. It is that we have almost nothing else from all the workshops that plainly could.</p>
+
+      <div data-mx-event="figure" class="plate-img">
+        <img src="/assets/cached/fb560e553feb.jpg" alt="A modern reconstruction of the mechanism's front dial, showing the pointers that tracked Sun, Moon and planets" loading="lazy">
+        <div class="plate-cap">
+          <span class="mono fig">FIG. 03</span>
+          <span class="txt">A working modern reconstruction of the front dial — the pointers that tracked the Sun, Moon and planets, turned by a single crank.<span class="credit">Reconstruction by Mogi Vicentini, 2007 · CC BY 2.5 · via Wikimedia Commons</span></span>
+        </div>
+      </div>
+
+      <div class="aside-note">
+        <div class="lbl mono">THE CASE AGAINST · <b>THE IMPOSSIBLE MACHINE</b></div>
+        <h4>The wonder survives the myth being punctured.</h4>
+        <p>The romantic reading insists the mechanism is out of time — proof that someone, somehow, vaulted a thousand years past everyone around them. The evidence points the other way. Its gearing is sophisticated but fully explicable: the product of a real Greek tradition of precision instrument-making, working on mathematical principles, and nothing inside it demands knowledge the Hellenistic world did not already have. It is true that nothing of comparable geared complexity appears again until the astronomical clocks of the medieval Islamic and European worlds, over a millennium later — but that gap is a story about what was lost and never rebuilt, not about ancient magic. Take the mysticism out and the real marvel gets sharper. Nothing impossible happened here. A Greek workshop two thousand years ago built this within the ordinary reach of its craft, and we have only just become clever enough to read what they made.</p>
+      </div>
+
+      <p>That is the quiet joke of the Antikythera Mechanism. Its makers could work it with one hand, turning a crank to run the heavens forward or back and read the answer off a dial. It took the rest of us two thousand years, a shipwreck, and a beam of X-rays fine enough to count teeth inside solid metal to work out what the crank actually did. The machine was never waiting to be understood by the future. It was already understood, completely, by the people who built it. We are the ones who had to catch up.</p>
+    </div>
+  </section>
+  <div class="wave wave--ink" aria-hidden="true" style="margin-top:26px;color:var(--signal);">
+    <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+      <path d="M0 13 H50 l6 -11 6 22 6 -22 6 22 6 -11 H160 l5 -9 5 18 5 -18 5 18 5 -9 H280 l7 -12 7 24 7 -24 7 24 7 -12 H420 l4 -7 4 14 4 -14 4 14 4 -7 H540 l6 -11 6 22 6 -22 6 22 6 -11 H680 l5 -8 5 16 5 -16 5 16 5 -8 H800" fill="none" stroke="currentColor" stroke-width="2.0"/>
+    </svg>
+  </div>
+
+  <!-- MOVEMENT III · THE ROUNDS -->
+  <div class="movement" data-movement="rounds">
+    <div class="movement__rule">
+      <span class="movement__no">III</span>
+      <span class="movement__name">The Rounds</span>
+      <span class="mono movement__meta">BRISK · SCANNABLE</span>
+    </div>
+  </div>
+
+  <div class="band" data-band="touchline">
+    <div class="bandhead">
+      <span class="mono code">BAND 06 — <b>THE TOUCHLINE</b></span>
+      <span class="mono runtime">SPORT</span>
+    </div>
+  </div>
+  <section class="round">
+    <div data-mx-event="figure" class="plate-img lead">
+      <img src="/assets/cached/2601e4c02103.webp" alt="Lando Norris's McLaren on track during qualifying for the 2026 Hungarian Grand Prix at the Hungaroring" loading="lazy">
+      <div class="plate-cap"><span class="mono fig">FIG.</span><span class="txt">Lando Norris on his way to pole at the Hungaroring — the grid he helped set is not the grid that will line up, and the race itself is still hours from its first corner as this is read.<span class="credit">Formula 1</span></span></div>
+    </div>
+
+    <p class="lead"><span class="drop">Sport's summer pivot lands</span> on a single afternoon. Lando Norris put his McLaren on pole for the Hungarian Grand Prix on Saturday, and as this is read the cars are gathering at the Hungaroring for the last round before Formula 1 breaks for August. The pole came down to millimetres — twelve-thousandths of a second over Lewis Hamilton's Ferrari — but pole is not the grid, and the grid is not the championship. That gap between the three is the whole shape of the day, and none of it has a winner yet.</p>
+
+
+    <div class="mx-sig-dial-sweep" data-mx-event="chart" style="display:flex;flex-direction:column;align-items:center;margin:24px 0 8px;">
+      <div class="mx-dial" aria-hidden="true" style="--mx-needle-x:52%;"><span class="mx-dial__needle"></span></div>
+      <span class="mx-freq">Tuned · 98.4 · The Hungaroring</span>
+    </div>
+
+    <div class="scores">
+      <div class="score wide">
+        <span class="mono tag">98.4 · HUNGARIAN GP · RACE DAY</span>
+        <h3>Pole is Norris's. The grid is not.</h3>
+        <p>Norris took pole with a <a href="https://www.formula1.com/en/latest/article/norris-snatches-pole-position-from-hamilton-in-gripping-hungarian-gp-qualifying.6FcjwTeRfUdjidtY0vkKZN">1:17.207</a>, edging Hamilton by 0.012s, with Charles Leclerc third and Kimi Antonelli fourth. Then the stewards rearranged the front: Hamilton picked up a <a href="https://www.si.com/onsi/f1/news/f1-qualifying-results-for-the-2026-hungarian-grand-prix-hamilton-antonelli-handed-grid-drops">three-place grid penalty</a> for impeding Oscar Piastri, and Antonelli a three-place drop for a yellow-flag infringement — so the order the drivers qualified in is not the order they start from. The title maths is quieter and heavier. Antonelli leads the drivers' championship on 204 points, 45 clear of Hamilton and 50 clear of George Russell, six wins and six poles already banked, with Mercedes runaway constructors' leaders on 358. This is the last race before the August shutdown, which makes it the season's held breath — and it is <a href="https://en.wikipedia.org/wiki/2026_Hungarian_Grand_Prix">still to be run</a> as this goes out. I'm not calling it. <span class="num">Lights out today.</span></p>
+      </div>
+    </div>
+
+
+    <div class="mx-ledger" data-mx-event="ledger">
+      <div class="mx-ledger__caption">Fixtures &amp; Results · Week 30</div>
+      <div class="mx-ledger__row"><span class="mx-ledger__date">SAT 25</span><span class="mx-ledger__match"><b>Norris</b> takes pole · Hungarian GP, Qualifying</span><span class="mx-ledger__result">1:17.207</span><span class="mx-ledger__note">0.012s over Hamilton; Leclerc 3rd, Antonelli 4th, before penalties.</span></div>
+      <div class="mx-ledger__row"><span class="mx-ledger__date">TODAY</span><span class="mx-ledger__match"><b>Hungarian Grand Prix</b> · The Hungaroring</span><span class="mx-ledger__result">RACE DAY</span><span class="mx-ledger__note">Round 11, the last before F1's August break. No winner yet.</span></div>
+      <div class="mx-ledger__row"><span class="mx-ledger__date">FRI 21 AUG</span><span class="mx-ledger__match"><b>Premier League</b> · 2026-27 opens</span><span class="mx-ledger__result">WK 1</span><span class="mx-ledger__note">Fixtures out since 19 June; window shuts 1 September.</span></div>
+      <div class="mx-ledger__row"><span class="mx-ledger__date">22–23 AUG</span><span class="mx-ledger__match"><b>Torino v Milan</b> · Serie A, 2026-27 opens</span><span class="mx-ledger__result">WK 1</span><span class="mx-ledger__note">Juventus start away at newly promoted Frosinone.</span></div>
+    </div>
+
+    <ul class="items">
+      <li>
+        <span class="freq">102.6</span>
+        <div>
+          <h3>Serie A draws its map for August</h3>
+          <p>With the international calendar closing, the domestic one is set: the <a href="https://en.legaseriea.it/serie-a/news/looking-forward-to-the-2026-27-serie-a-fixture-list">2026-27 Serie A fixture list</a> is out, the season opening the weekend of 22–23 August with Torino hosting AC Milan. Juventus begin away at newly promoted Frosinone — a gentle-looking start on paper, though those rarely stay gentle — and step down into the Europa League this season, the storyline that colours their whole autumn. <b>Kick-off 22 Aug.</b></p>
+        </div>
+      </li>
+      <li>
+        <span class="freq">104.7</span>
+        <div>
+          <h3>The Premier League gets its dates</h3>
+          <p>The <a href="https://en.wikipedia.org/wiki/2026%E2%80%9327_Premier_League">2026-27 Premier League fixtures</a> landed on 19 June, with the season kicking off Friday 21 August and the summer window — open since 15 June — closing on 1 September. Pre-season friendlies and the slow build to deadline day are the only football on offer for now; the tables are blank and stay that way for a few more weeks. <b>Opens 21 Aug.</b></p>
+        </div>
+      </li>
+      <li>
+        <span class="freq">106.0</span>
+        <div>
+          <h3>The window warms up</h3>
+          <p>Business is quietly firming. Wolves midfielder João Gomes joined <a href="https://en.wikipedia.org/wiki/List_of_English_football_transfers_summer_2026">Aston Villa for around £38m</a> on 20 July; Arsenal completed Greece forward Christos Tzolis from Club Brugge for about £34m; and Abdul Fatawu moved from Leicester to <a href="https://www.espn.com/soccer/story/_/id/48955344/premier-league-2026-summer-transfers-all-confirmed-ins-outs-every-club">Ipswich for roughly £20m</a> on 21 July. Six weeks of this still to run. <b>Window open to 1 Sep.</b></p>
+        </div>
+      </li>
+    </ul>
+
+    <div class="mx-shelf">
+      <div class="mx-ticket" data-mx-event="ephemera">
+        <div class="mx-ticket__main">
+          <span class="mx-ticket__meta">The Hungaroring · Qualifying</span>
+          <span class="mx-ticket__event">Norris on Pole</span>
+          <span class="mx-ticket__meta mx-ticket__row"><span>Lap</span><span>1:17.207</span></span>
+          <span class="mx-ticket__meta mx-ticket__row"><span>Margin</span><span>0.012s</span></span>
+          <span class="mx-ticket__meta mx-ticket__row"><span>Race</span><span>Still to run</span></span>
+        </div>
+        <div class="mx-ticket__stub"><div class="mx-stamp"><span>RND 11</span><b>RACE&#8203;DAY</b><span>last before break</span></div></div>
+      </div>
+      <div class="mx-scorecard" data-mx-event="ledger">
+        <h4 class="mx-scorecard__title">Drivers' Championship · Into Round 11</h4>
+        <table>
+          <tr class="is-lead"><td class="mx-scorecard__pos">1</td><td>ANTONELLI</td><td class="mx-scorecard__gap">204</td></tr>
+          <tr><td class="mx-scorecard__pos">2</td><td>HAMILTON</td><td class="mx-scorecard__gap">−45</td></tr>
+          <tr><td class="mx-scorecard__pos">3</td><td>RUSSELL</td><td class="mx-scorecard__gap">−50</td></tr>
+          <tr><td class="mx-scorecard__pos">C</td><td>MERCEDES</td><td class="mx-scorecard__gap">358</td></tr>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <div class="band" data-band="pixel_byte">
+    <div class="bandhead">
+      <span class="mono code">BAND 07 — <b>PIXEL &amp; BYTE</b></span>
+      <span class="mono runtime">GAMING</span>
+    </div>
+  </div>
+  <section class="round">
+    <div data-mx-event="figure" class="plate-img lead">
+      <img src="/assets/cached/8ff67aa0126f.jpg" alt="Key art for Halo: Campaign Evolved showing Master Chief in green Mjolnir armour" loading="lazy">
+      <div class="plate-cap"><span class="mono fig">FIG.</span><span class="txt">Halo: Campaign Evolved — a from-the-ground-up remake of the 2001 original, and the first mainline Halo to arrive on a PlayStation console. Out 28 July.<span class="credit">Xbox Wire press kit · Microsoft / Halo Studios</span></span></div>
+    </div>
+
+    <p class="lead"><span class="drop">A Halo game on a PlayStation</span> — read that sentence back to anyone who owned a console in the 2000s and watch them do a double-take. For twenty-five years, Master Chief was the reason you bought an Xbox and the one thing a Sony machine could never give you. That wall comes down on 28 July, when Halo: Campaign Evolved launches on PlayStation 5 alongside Xbox Series X|S and PC on Steam. It is a full remake of Halo: Combat Evolved, the game that launched the original Xbox in 2001, rebuilt in Unreal Engine 5 and shipped a quarter-century to the year after the first one. The remake is the small story here. The end of a 25-year exclusivity era is the big one.</p>
+
+    <div data-mx-event="figure" class="plate-img">
+      <img src="/assets/cached/1a2d67f3ca02.jpg" alt="Master Chief and Sergeant Johnson in a new Halo: Campaign Evolved mission" loading="lazy">
+      <div class="plate-cap"><span class="mono fig">FIG.</span><span class="txt">Operation: METEORITE — three new missions bolt onto the remade campaign, with four-player online co-op running through the lot.<span class="credit">Xbox Wire press kit · Microsoft / Halo Studios</span></span></div>
+    </div>
+
+    <ul class="items">
+      <li>
+        <span class="freq">104.9</span>
+        <div>
+          <h3>Halo comes to PlayStation</h3>
+          <p><a href="https://news.xbox.com/en-us/2026/06/07/halo-campaign-evolved-launch-preorder-xbox-games-showcase-2026/">Halo: Campaign Evolved</a> is not just a fresh coat of paint. Alongside the rebuilt Combat Evolved campaign, it adds three brand-new missions under the banner Operation: METEORITE, four-player online co-op, and cross-play with cross-progression so your save travels between machines. Standard price is 49.99 US dollars; anyone who bought the Premium Edition has been in since 23 July, five days ahead of the full launch. The campaign is what made this series matter in the first place — the ring, the Flood, the drive across the map — and putting it in front of an audience that has spent two decades locked out is the genuinely interesting move. <b>28 July, everywhere.</b></p>
+        </div>
+      </li>
+      <li>
+        <span class="freq">107.7</span>
+        <div>
+          <h3>An August worth clearing space for</h3>
+          <p>If July was thin, August is stacked. On the Switch 2, the ports keep landing: <a href="https://www.gamerant.com/switch-2-new-games-coming-out-soon-list-august-2026/">Lies of P: Complete Edition</a> arrives 6 August and — the headline for anyone with a handheld — Elden Ring follows on 28 August. The end of the month is heavier still: the <a href="https://www.videogameschronicle.com/guide/upcoming-game-release-dates-schedule/">27 August wave</a> brings the Metal Gear Solid Master Collection Vol. 2, the tactics game Star Wars: Zero Company, and Resonance: A Plague Tale Legacy, all due the same day. None of these has shipped yet, so treat the dates as promises rather than receipts — but it is a lot to fit into four weeks. <b>Backlog, meet its match.</b></p>
+        </div>
+      </li>
+      <li>
+        <span class="freq">98.1</span>
+        <div>
+          <h3>E.T. phones the brick shelf</h3>
+          <p>One for the collectors. LEGO Ideas 21370, a build of <a href="https://www.thebrickfan.com/lego-ideas-e-t-the-extra-terrestrial-21370-officially-announced/">E.T. the Extra-Terrestrial</a>, is due to release on 1 August, part of a large summer wave that also includes the 21372 La Catrina set and the debut of LEGO Pokémon SMART Play. The Ideas line is where fan submissions graduate into official kits, and it has quietly become the home of geek-culture furniture — the sort of thing you build once and leave on a shelf as a statement of allegiance. A 1982 alien rendered in studs is exactly that: less a toy than a nod across the room to anyone who catches the reference. <b>Due 1 August.</b></p>
+        </div>
+      </li>
+    </ul>
+
+    <div data-mx-event="figure" class="plate-img">
+      <img src="/assets/cached/c0e890a4c08e.jpg" alt="Halo: Campaign Evolved store art on the PlayStation 5 storefront — the first Halo on a PlayStation console" loading="lazy">
+      <div class="plate-cap"><span class="mono fig">FIG.</span><span class="txt">The tell: a Halo listing on the PlayStation Store. A few years ago this image would have read as a mock-up.<span class="credit">PlayStation Store · Sony / Xbox Game Studios</span></span></div>
+    </div>
+
+    <div data-mx-event="figure" class="plate-img">
+      <img src="/assets/cached/b43955d3d330.jpg" alt="Box art for the LEGO Ideas 21370 E.T. the Extra-Terrestrial set" loading="lazy">
+      <div class="plate-cap"><span class="mono fig">FIG.</span><span class="txt">LEGO Ideas 21370 E.T. the Extra-Terrestrial — one of two Ideas sets landing 1 August.<span class="credit">LEGO Group · via The Brick Fan</span></span></div>
+    </div>
+  </section>
+
+  <div class="band" data-band="screen_sound">
+    <div class="bandhead">
+      <span class="mono code">BAND 08 — <b>SCREEN &amp; SOUND</b></span>
+      <span class="mono runtime">WATCH &amp; LISTEN · + RELEASE RADAR</span>
+    </div>
+  </div>
+  <section class="round">
+<div class="with-rail">
+      <ul class="items" style="margin-top:0;">
+        <li>
+          <span class="freq">88.5</span>
+          <div>
+            <h3>Strange New Worlds settles back in as modern Trek's safest bet</h3>
+            <p>Star Trek: Strange New Worlds returned for its fourth season on Paramount+ this week, dropping back into the pre-Kirk era with Captain Pike's Enterprise and a crew the show has spent three seasons making the most likeable in the current Trek stable. The new run leans into returning faces and, per the pre-season trailers, a thread of twisty timelines — the kind of continuity-bending premise the series has learned to play for both spectacle and character rather than pure puzzle-box. That instinct is why Strange New Worlds has become the reference point for how to do this franchise now: where its siblings have swung between grimdark and fan-service, this is the one that reliably lands the tonal middle — episodic adventure, a clear moral shape to each hour, and a cast the writing actually trusts. Set in the decade before Kirk takes the centre seat, it has room to tell new stories inside a history the audience already half-knows, and the fourth season leans on that by folding familiar faces back in. Four seasons in, the interesting question is less whether it holds its quality than whether the season-long timeline arc pulls it away from the standalone-episode format that made its name — the discipline of a self-contained hour has been as much a part of its identity as the crew. Either way it arrives as the steadiest ongoing draw in a crowded sci-fi TV field, and the season is now airing week to week on Paramount+. <a href="https://www.space.com/upcoming-sci-fi-tv-shows">More on the new run</a>.</p>
+          </div>
+        </li>
+        <li>
+          <div class="mx-ledger" data-mx-event="ledger" style="margin:4px 0;">
+            <div class="mx-ledger__caption">This Week · Watch &amp; Listen</div>
+            <div class="mx-ledger__row"><span class="mx-ledger__date">TV</span><span class="mx-ledger__match"><b>Strange New Worlds</b> S4 · Paramount+</span><span class="mx-ledger__result">NOW</span><span class="mx-ledger__note">Modern Trek's steadiest hour, back for a fourth run.</span></div>
+            <div class="mx-ledger__row"><span class="mx-ledger__date">LP</span><span class="mx-ledger__match"><b>Charli xcx</b> — 'Music, Fashion, Film'</span><span class="mx-ledger__result">24 JUL</span><span class="mx-ledger__note">The week's marquee release, streaming now.</span></div>
+            <div class="mx-ledger__row"><span class="mx-ledger__date">LP</span><span class="mx-ledger__match"><b>Tyla</b> — 'A*Pop' · <b>WILLOW</b> — 'The Thread'</span><span class="mx-ledger__result">24 JUL</span><span class="mx-ledger__note">Two discovery bets stacked behind the headliner.</span></div>
+          </div>
+        </li>
+        <li>
+          <span class="freq">104.2</span>
+          <div>
+            <h3>Charli xcx headlines a loaded New Music Friday</h3>
+            <p>On the music side, the week's centre of gravity was New Music Friday on 24 July, and pop's biggest current name anchored it: Charli xcx released a new album, 'Music, Fashion, Film', her follow-up to the culture-swallowing run of the past two years. It landed the same day as two of the more watched records from the next tier down — Tyla's 'A*Pop' and WILLOW's 'The Thread' — making for a Friday with a genuine headliner and a couple of discovery bets stacked behind it. The spread is the point of a week like this one: the Charli release is the appointment listen that will pull the numbers and the coverage, while the Tyla and WILLOW records are the ones worth cueing up next if you want to hear where the edges of mainstream pop are moving rather than just its centre. All three dropped together on 24 July and are streaming now, which makes this an unusually easy week to sample the top of the pop pile in one sitting — the marquee record and the two that map the ground either side of it, back to back. <a href="https://www.npr.org/2026/07/24/nx-s1-5902954/new-music-friday-best-albums-july-24-2026">The full Friday rundown</a>.</p>
+          </div>
+        </li>
+      </ul>
+
+      <aside class="rail" data-role="release-radar" data-mx-event="ledger" aria-label="Release Radar">
+        <div class="rail__label">
+          <span class="mono t">RELEASE RADAR</span>
+          <span class="mono">DATED</span>
+        </div>
+        <div class="rail-item">
+          <span class="when">NOW · 23 JUL</span>
+          <span class="what"><b>Star Trek: Strange New Worlds — Season 4</b><i>tv · Paramount+, now airing</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">OUT · 24 JUL</span>
+          <span class="what"><b>Charli xcx — 'Music, Fashion, Film'</b><i>music · new album, out now</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">OUT · 24 JUL</span>
+          <span class="what"><b>Tyla — 'A*Pop'</b><i>music · New Music Friday</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 28 JUL</span>
+          <span class="what"><b>Halo: Campaign Evolved</b><i>game · UE5 remake · Xbox/PS5/PC</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 31 JUL</span>
+          <span class="what"><b>Garmin CIRQA</b><i>tech · 24/7 smart band</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 1 AUG</span>
+          <span class="what"><b>LEGO Ideas 21370 E.T. the Extra-Terrestrial</b><i>lego · Ideas set</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 1 AUG</span>
+          <span class="what"><b>LEGO Ideas 21372 La Catrina</b><i>lego · Ideas set</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 1 AUG</span>
+          <span class="what"><b>LEGO Botanicals 11512 Hanging Golden Pothos</b><i>lego · Botanicals</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 4 AUG</span>
+          <span class="what"><b>Richard Swan — 'The Infinite State'</b><i>book · space-opera saga opener</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 6 AUG</span>
+          <span class="what"><b>Lies of P: Complete Edition</b><i>game · Switch 2 port</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 21 AUG</span>
+          <span class="what"><b>Premier League 2026-27</b><i>football · season opens</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 23 AUG</span>
+          <span class="what"><b>Serie A 2026-27</b><i>football · season opens</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 27 AUG</span>
+          <span class="what"><b>Metal Gear Solid Master Collection Vol. 2</b><i>game · multiplatform</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 27 AUG</span>
+          <span class="what"><b>Resonance: A Plague Tale Legacy</b><i>game · new entry</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 27 AUG</span>
+          <span class="what"><b>Star Wars: Zero Company</b><i>game · tactics</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 28 AUG</span>
+          <span class="what"><b>Elden Ring</b><i>game · Switch 2 port</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">EXP · 30 SEP</span>
+          <span class="what"><b>Garmin Fenix 9</b><i>tech · expected H2 2026</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">EXP · 1 OCT</span>
+          <span class="what"><b>Google Pixel Watch</b><i>tech · expected with Pixel 11</i></span>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <div class="band" data-band="bookmark">
+    <div class="bandhead">
+      <span class="mono code">BAND 09 — <b>BOOKMARK</b></span>
+      <span class="mono runtime">BOOKS · ON THE NIGHTSTAND</span>
+    </div>
+  </div>
+  <section class="round">
+<ul class="picks">
+      <li data-mx-event="figure">
+        <span class="spine" aria-hidden="true"></span>
+        <div>
+          <h3>A Portable Cosmos</h3>
+          <p class="meta">History of science · Oxford University Press · the Long Read in book form</p>
+          <p>This week's Long Read is the Antikythera Mechanism — a corroded lump of bronze hauled from a shipwreck in 1901 that turned out to be a hand-cranked model of the heavens. Alexander Jones's A Portable Cosmos is the readable, definitive account of it: how some thirty surviving gearwheels tracked the Sun, the Moon at its variable speed, and the five classical planets, ran the Metonic and Saros cycles, and predicted eclipses — and why it took modern X-ray tomography a century to read a machine its makers operated by turning a knob. Jones's real argument is the bracing one: this was not a genius leaping ahead of history but the lone survivor of a lost Hellenistic engineering tradition, a whole technical culture rotted away with only this third of a device left to prove it existed. The clearest way into deep time, ancient machinery and hidden systems.</p>
+        </div>
+      </li>
+      <li data-mx-event="figure">
+        <span class="spine" aria-hidden="true"></span>
+        <div>
+          <h3>The Infinite State</h3>
+          <p class="meta">Political space opera · out 4 August 2026</p>
+          <p>Richard Swan made his name with the Empire of the Wolf trilogy, a dark legal-fantasy series; here he pivots to science fiction with the opening of a new political space-opera saga, one of August's most-anticipated genre debuts. The draw is the same instinct that ran through his fantasy — power, institutions and the machinery of the state, now scaled up to interstellar politics. If your way into SF is the big canvas, the palace intrigue and the question of who actually runs things, this is the one to pre-order ahead of its 4 August landing.</p>
+        </div>
+      </li>
+      <li data-mx-event="figure">
+        <span class="spine" aria-hidden="true"></span>
+        <div>
+          <h3>Time Travel for Beginners</h3>
+          <p class="meta">Speculative fiction · August 2026</p>
+          <p>For the lighter way in, Jaclyn Moriarty's Time Travel for Beginners takes one of SF's oldest engines and drives it on feeling rather than physics. It's an accessible, emotionally driven take on time travel — a deliberate step outside the doorstop-fantasy comfort zone, and proof that the genre's best ideas don't always arrive wrapped in hard science. A palate-cleanser between heavier reads, and a reminder that a time-travel story can be as much about the people it strands as the paradoxes it sets running.</p>
+        </div>
+      </li>
+    </ul>
+
+    <div class="mx-ledger" data-mx-event="ledger" style="margin-top:22px;">
+      <div class="mx-ledger__caption">On the Nightstand · Three Ways In</div>
+      <div class="mx-ledger__row"><span class="mx-ledger__date">01</span><span class="mx-ledger__match"><b>A Portable Cosmos</b> — Alexander Jones</span><span class="mx-ledger__result">NON-FIC</span><span class="mx-ledger__note">The Long Read in book form: the definitive Antikythera account.</span></div>
+      <div class="mx-ledger__row"><span class="mx-ledger__date">02</span><span class="mx-ledger__match"><b>The Infinite State</b> — Richard Swan</span><span class="mx-ledger__result">4 AUG</span><span class="mx-ledger__note">Political space opera; the big-canvas way in.</span></div>
+      <div class="mx-ledger__row"><span class="mx-ledger__date">03</span><span class="mx-ledger__match"><b>Time Travel for Beginners</b> — Jaclyn Moriarty</span><span class="mx-ledger__result">AUG</span><span class="mx-ledger__note">The lighter, character-first palate-cleanser.</span></div>
+    </div>
+  </section>
+
+  <div class="band" data-band="the_desk">
+    <div class="bandhead">
+      <span class="mono code">BAND 10 — <b>THE DESK</b></span>
+      <span class="mono runtime">SERVICE</span>
+    </div>
+  </div>
+  <section class="round" data-role="desk">
+<div class="desk">
+      <div class="deskcol" data-desk-column>
+        <h3>The Session</h3>
+        <span class="mono sub">FITNESS · BLOCK 3, HYPERTROPHY</span>
+        <p>Two weeks off and the instinct is to pick up exactly where you left the barbell — same weights, same set counts, same session. Resist it, but not out of fear: the good news first. You have not lost what you think you have. Training builds extra nuclei inside muscle fibres, and those myonuclei stick around long after the fibre itself shrinks — which is why size and strength come back far faster the second time than they took to earn in the first place. That is the plain mechanism to hang the whole ramp on. You are <b>reconditioning, not rebuilding</b>, and your muscle remembers.</p>
+        <p>The catch is that tendons, ligaments and connective tissue detrain quicker and re-adapt slower than muscle does. After a layoff your muscles are ready to pull harder than your joints are ready to be pulled — and that gap is exactly where a tweak happens. So a sensible ramp protects the slow tissue while the fast tissue catches up: start about <b>two sets below</b> your pre-break working volume on each lift, then add roughly <b>one set per movement per week</b> back toward where you were. Keep a couple of reps in reserve rather than chasing old maxes in week one. Spend your first week's attention on the lifts that regressed most — usually the big compounds and anything single-leg — not the ones that held. And because Block 3 runs at a small surplus, the surplus only pays off if recovery keeps up: land the roughly 1.6g of protein per kg of bodyweight the muscle-building research settles on, and treat sleep as non-negotiable — most of the repair you buy in the kitchen is banked overnight.</p>
+        <div class="plate-img">
+          <img src="/assets/cached/85eacdc20d4a.jpg" alt="Garmin's 2026 wearable line, the CIRQA and Fenix 9, used to track training load" loading="lazy">
+          <div class="plate-cap">
+            <span class="mono fig">FIG.</span>
+            <span class="txt"><i>Garmin's 2026 line — the always-on CIRQA band due this month, a Fenix 9 expected later in the year — leans hard on training-load metrics. A running load tally is the simplest guardrail on a ramp.</i><span class="credit">Notebookcheck</span></span>
+          </div>
+        </div>
+        <div class="pin">
+          <div class="pinlbl mono">DO THIS WEEK · <b>THE SESSION</b></div>
+          <p class="act">Cap every lift two sets under your pre-break working volume and log it. Next week, add one set per movement — no more — and hold the same restraint on load.</p>
+          <p class="why">Muscle comes back fast because the nuclei never left; tendons and connective tissue re-adapt slower, so easing volume up week by week keeps the injury off the tissue that hasn't caught up yet.</p>
+        </div>
+      </div>
+
+
+      <div class="deskcol" data-desk-column>
+        <h3>The Ledger</h3>
+        <span class="mono sub">MONEY · MORTGAGE RATES</span>
+        <div class="mx-scorecard deskcol__card" data-mx-event="ledger">
+          <h4 class="mx-scorecard__title">The Rate War · As of 26 Jul</h4>
+          <table>
+            <tr class="is-lead"><td>BoE base rate</td><td class="mx-scorecard__gap">3.75%</td></tr>
+            <tr><td>Hold priced, 30 Jul</td><td class="mx-scorecard__gap">~86%</td></tr>
+            <tr><td>June MPC vote</td><td class="mx-scorecard__gap">7–2</td></tr>
+            <tr><td>Next decision</td><td class="mx-scorecard__gap">30 JUL</td></tr>
+          </table>
+        </div>
+        <p>The Bank of England meets on Thursday <b>30 July</b>, and the near-certain outcome is nothing. The base rate has sat at <b>3.75%</b> since the 18 June vote — itself a tight 7–2 hold — and markets price roughly an <b>86% chance</b> it stays there. Yet the deals landing in front of remortgagers have kept getting cheaper anyway. If you have been waiting for the Bank to cut before you move, you may be watching the wrong scoreboard.</p>
+        <p>Here is the mechanism. A lender's fixed-rate price is not set by today's base rate — it is set by where the money markets expect rates to sit over the next few years (the swap rates lenders pay to fund fixed loans) and, on top of that, by how hard each lender is fighting for business. When the big lenders decide they want more of the market, they trim margins and undercut each other, and fixed rates drift down independently of anything the committee does on the day. <b>Competition, not the Bank, is doing most of the work right now.</b> There is no single announcement to wait for — the good rate is the one on the table today, and a better one may or may not follow.</p>
+        <p>That turns the move from "wait and see" into "lock and watch." Most lenders let you reserve a new fixed rate up to about <b>six months ahead</b> of your current deal ending, and — the part that matters — if a cheaper rate appears before you complete, you can usually switch onto it. You bank a secured rate as your floor and keep the upside if the price war keeps running. It is about as close to a free option as this market offers.</p>
+        <div class="pin">
+          <div class="pinlbl mono">DO THIS WEEK · <b>THE LEDGER</b></div>
+          <p class="act">If a fix expires within about six months, get a new deal quoted and locked this week — most can be reserved up to six months ahead and swapped down if a cheaper one lands before you complete.</p>
+          <p class="why">The cheaper fixed deals are coming from lenders competing, not the Bank easing on 30 July — so there is no rate decision to wait on. Locking now sets a floor and still lets you trade down.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div class="wave wave--ink" aria-hidden="true" style="margin-top:26px;color:var(--signal);">
+    <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+      <path d="M0 13 H60 l6 -10 6 20 6 -20 6 20 6 -20 6 10 H160 l5 -8 5 16 5 -16 5 16 5 -8 H280 l7 -12 7 24 7 -24 7 24 7 -12 H420 l4 -6 4 12 4 -12 4 12 4 -6 H540 l6 -11 6 22 6 -22 6 22 6 -11 H680 l5 -7 5 14 5 -14 5 14 5 -7 H800" fill="none" stroke="currentColor" stroke-width="2.0"/>
+    </svg>
+  </div>
+
+  <!-- MOVEMENT IV · THE CLOSE -->
+  <div class="movement" data-movement="close">
+    <div class="movement__rule">
+      <span class="movement__no">IV</span>
+      <span class="movement__name">The Close</span>
+      <span class="mono movement__meta">THREADS · RABBIT HOLE · RADAR</span>
+    </div>
+  </div>
+
+  <div class="band" data-band="the_threads">
+    <div class="bandhead">
+      <span class="mono code">BAND 11 — <b>THE THREADS</b></span>
+      <span class="mono runtime">PREVIOUSLY ON · STILL RUNNING</span>
+    </div>
+  </div>
+  <section>
+
+    <div class="mx-ledger" data-mx-event="ledger">
+      <div class="mx-ledger__caption">Previously On · Still Running</div>
+      <div class="mx-ledger__row"><span class="mx-ledger__date">WMIN</span><span class="mx-ledger__match"><b>The unelected premier</b> — cabinet complete, cost-of-living moves out</span><span class="mx-ledger__result">LIVE</span></div>
+      <div class="mx-ledger__row"><span class="mx-ledger__date">GULF</span><span class="mx-ledger__match"><b>The ceasefire that wouldn't set</b> — Iran takes its case east to the SCO</span><span class="mx-ledger__result">HOT</span></div>
+      <div class="mx-ledger__row"><span class="mx-ledger__date">F1</span><span class="mx-ledger__match"><b>The Antonelli title run</b> — 204 points, but a grid drop for Hungary</span><span class="mx-ledger__result">LEADS</span></div>
+    </div>
+
+    <div class="threads">
+      <div class="thread">
+        <span class="ep">SAGA · WESTMINSTER</span>
+        <div>
+          <h3>The unelected premier</h3>
+          <p class="prev">Previously: Andy Burnham was declared Labour leader unopposed on 17 July, then appointed Prime Minister on 20 July — replacing Keir Starmer without a general election, Britain's seventh leader in a decade.</p>
+          <p>The first full week gave the new government its shape. Ministerial appointments were completed on 23 July, with John Healey installed as Chancellor of the Exchequer and Ed Miliband as Foreign Secretary; Rachel Reeves was removed from the Treasury and a number of Starmer loyalists sacked. Then came a flurry of cost-of-living signals: a tax cut on household electricity bills, a £2 cap on bus fares, and a tax break for pubs. Burnham travelled to the south-east, south-west and north-west of England and to Scotland, spoke with more than a dozen world leaders, and worked partly from a new "No10 North" office in Manchester — governing from the city he still leads as mayor. <b>Next:</b> whether an unelected premier faces pressure to go to the country early, and how he holds off the Reform UK challenge.</p>
+          <figure class="mx-quote" data-mx-event="quote">
+            <blockquote>I want to make this moment a circuit-breaker for Britain, bringing forward the biggest changes in the last 40 years.</blockquote>
+            <figcaption>— <cite><b>Andy Burnham</b></cite> · in his first speech as prime minister, 20 July</figcaption>
+          </figure>
+          <div data-mx-event="figure" class="plate-img" style="margin:22px 0 6px;">
+            <img src="/assets/cached/b47a4ae1b7e0.jpg" alt="Prime Minister Andy Burnham working at his desk in the new 'No10 North' office in Manchester" loading="lazy">
+            <div class="plate-cap">
+              <span class="mono fig">FIG.</span>
+              <span class="txt">Burnham at his desk in the new "No10 North" office in Manchester, part of a first week run partly from the city he still leads as mayor.<span class="credit">No 10 Downing Street · CC BY-NC-ND</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="thread">
+        <span class="ep">SAGA · THE GULF</span>
+        <div>
+          <h3>The ceasefire that wouldn't set</h3>
+          <p class="prev">Previously: June's Islamabad understanding opened a 60-day window on Hormuz navigation, but it fell apart — the US declared the June ceasefire over on 8 July and followed with strikes on Iranian targets and fresh sanctions on 15 July.</p>
+          <p>This week Iran took its case east rather than back to the table. Foreign Minister Abbas Araghchi attended the Shanghai Cooperation Organisation's council of foreign ministers at the lakeside resort of Cholpon-Ata in Kyrgyzstan on 23–24 July, alongside his Russian and Chinese counterparts, where Iran signed 25 cooperation agreements. Araghchi's message was pointed: "Protecting the Iranian people and safeguarding Iran's national interests in the Strait of Hormuz are among our fundamental priorities," he said, framing the standoff as a matter of stopping Washington from exploiting the choke-point. With the June window collapsed and no negotiating channel visibly reopening, the gathering read as Tehran shoring up its partners rather than seeking a way back to a truce. <b>Next:</b> whether any channel reopens, or the Hormuz rhetoric hardens into a longer standoff.</p>
+          <figure class="mx-quote" data-mx-event="quote">
+            <blockquote>Protecting the Iranian people and safeguarding Iran's national interests in the Strait of Hormuz are among our fundamental priorities.</blockquote>
+            <figcaption>— <cite><b>Abbas Araghchi</b></cite> · Iran's foreign minister, at the SCO summit in Kyrgyzstan</figcaption>
+          </figure>
+        </div>
+      </div>
+      <div class="thread">
+        <span class="ep">SAGA · FORMULA 1</span>
+        <div>
+          <h3>The Antonelli title run</h3>
+          <p class="prev">Previously: Kimi Antonelli turned a strong start into a commanding 2026 lead for Mercedes, building a season-long grip on the drivers' championship.</p>
+          <p>Going into this weekend's Hungarian Grand Prix, the numbers are his: Antonelli leads on 204 points, 45 clear of Lewis Hamilton and 50 clear of team-mate George Russell, with six wins and six poles already banked, while Mercedes sit top of the constructors' on 358. But the Hungaroring weekend has tangled the front of the grid. Lando Norris snatched Saturday pole from Hamilton by just 0.012 seconds; Hamilton was then handed a three-place grid penalty for impeding Oscar Piastri, and Antonelli a three-place drop of his own for a yellow-flag infringement — reshuffling him from fourth on the timesheet back to seventh for the race. The championship arithmetic still points one way; the Sunday start does not. <b>Next:</b> whether Mercedes can turn a constructors' romp into a maiden drivers' title, and how much a P7 start costs Antonelli today.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="band" data-band="rabbit_hole">
+    <div class="bandhead">
+      <span class="mono code">BAND 12 — <b>DOWN THE RABBIT HOLE</b></span>
+      <span class="mono runtime">CURIOSITY · SIGNAL FAINT, FOLLOW IT</span>
+    </div>
+  </div>
+  <section>
+    <div class="rabbit">
+      <span class="mono lbl">FROM THIS WEEK'S LONG READ → TUMBLE INTO</span>
+      <div class="chain">
+        <div class="node">
+          <span class="mono cap">FROM THIS WEEK'S LONG READ</span>
+          <span class="nm serif">A Greek machine for finding your way through the heavens</span>
+        </div>
+        <div class="arrow" aria-hidden="true">→</div>
+        <div class="node">
+          <span class="mono cap">TUMBLE INTO</span>
+          <span class="nm serif">A Greek thread for finding your way out of a maze</span>
+        </div>
+      </div>
+
+      <div class="mx-ledger" data-mx-event="ledger">
+        <div class="mx-ledger__caption">The Word's Descent · Thread to Hint</div>
+        <div class="mx-ledger__row"><span class="mx-ledger__date">OE</span><span class="mx-ledger__match">Old English <b>cliewen</b> — a ball of thread or yarn, later <b>clew</b></span><span class="mx-ledger__result">a ball of thread</span></div>
+        <div class="mx-ledger__row"><span class="mx-ledger__date">myth</span><span class="mx-ledger__match">Ariadne hands <b>Theseus a ball of thread</b> to unwind through the Labyrinth</span><span class="mx-ledger__result">the way out</span></div>
+        <div class="mx-ledger__row"><span class="mx-ledger__date">1620s</span><span class="mx-ledger__match">a clew becomes <b>a guiding thread</b> through any difficulty or mystery</span><span class="mx-ledger__result">a guiding thread</span></div>
+        <div class="mx-ledger__row"><span class="mx-ledger__date">C19</span><span class="mx-ledger__match">the detective story fixes the sense; the spelling settles <b>clew → clue</b></span><span class="mx-ledger__result">CLUE</span></div>
+      </div>
+
+      <p>To read the Antikythera Mechanism, the scientists at UCL had to trace a single thread of logic through a labyrinth of corroded bronze — following the teeth of one gearwheel to the next until the whole machine made sense. There is a word for exactly that act of following a thread out of a maze, and it turns out to be the most ordinary word we have for a hint. A <em>clue</em>. The word is a fossil of the very thing the Antikythera team were doing, and to open it up is to walk straight back into ancient Greek myth.</p>
+      <p>Start with the spelling that got sanded away. "Clue" was once "clew," and before that the Old English <em>cliewen</em> — a ball of thread or yarn, the kind you would wind for weaving. That is the whole original meaning: not a hint, not a sign, just a physical ball of wool. For most of the word's life it had nothing to do with mysteries at all. It meant thread, and only thread.</p>
+      <p>The leap from a ball of yarn to the thing that solves a puzzle runs through one story — the oldest maze in the Western imagination. Theseus goes into the Labyrinth on Crete to kill the Minotaur, and the real danger is not the monster but the maze: even if he wins, he will never find the way back out. Ariadne gives him a ball of thread — a clew — to tie at the entrance and unwind as he goes. He kills the Minotaur, then follows the thread back to the door. To "follow the clue," in the plainest and most literal sense, was to follow that unspooling line of yarn out of a place designed to trap you.</p>
+      <p>From there the meaning does what live metaphors do: it loosens. By around the 1620s a clew had become a guiding thread through any difficulty — any problem you could get lost inside — and the ball of wool started to fade behind the idea of guidance. The detective story finished the job, narrowing "a guiding thread through a mystery" down to the single hard fact that leads you to the answer: the fingerprint, the misplaced train ticket, the thing that solves the case. Somewhere in that shift the spelling settled too, clew hardening into clue. The Antikythera scholars followed a thread of gearing out of a labyrinth of rust — which is, etymologically, the only kind of clue there has ever been.</p>
+    </div>
+  </section>
+
+  <div class="band" data-band="on_the_radar">
+    <div class="bandhead">
+      <span class="mono code">BAND 13 — <b>ON THE RADAR</b></span>
+      <span class="mono runtime">FORWARD CALENDAR · WHAT&#x27;S COMING</span>
+    </div>
+  </div>
+  <section>
+<ul class="radar" data-mx-event="ledger">
+  <li>
+    <span class="date">TODAY · SUN 26 JUL</span>
+    <span class="ev"><b><a href="https://en.wikipedia.org/wiki/2026_Hungarian_Grand_Prix">Hungarian Grand Prix</a></b> — the last race before F1 shuts down for its August summer break goes green this afternoon at the Hungaroring, the tight, twisting circuit outside Budapest where track position is everything and overtaking is scarce. Lando Norris lines up on pole after edging Lewis Hamilton by twelve-thousandths of a second in Saturday qualifying, though post-qualifying penalties for Hamilton and Kimi Antonelli have reshuffled the grid behind him. Antonelli still leads the championship by 45 points, so a clean afternoon matters more to him than a win.</span>
+  </li>
+  <li>
+    <span class="date">TUE · 28 JUL</span>
+    <span class="ev"><b><a href="https://news.xbox.com/en-us/2026/06/07/halo-campaign-evolved-launch-preorder-xbox-games-showcase-2026/">Halo: Campaign Evolved</a></b> — a ground-up Unreal Engine 5 remake of the story that launched the franchise 25 years ago lands on Xbox, PC and, for the first time for any mainline Halo, PlayStation 5. It adds three new missions, four-player online co-op and cross-play; Premium Edition owners have been playing early since 23 July.</span>
+  </li>
+  <li>
+    <span class="date">THU · 30 JUL</span>
+    <span class="ev"><b><a href="https://www.bankofengland.co.uk/monetary-policy/the-interest-rate-bank-rate">Bank of England rate decision</a></b> — the Monetary Policy Committee announces at noon, alongside a Monetary Policy Report. The rate was last set at 3.75% on 18 June in a 7-2 vote, and markets now put a hold at roughly 86% — so the interest is less in the headline number than in whether the split widens.</span>
+  </li>
+  <li>
+    <span class="date">SAT · 1 AUG</span>
+    <span class="ev"><b><a href="https://www.thebrickfan.com/lego-ideas-e-t-the-extra-terrestrial-21370-officially-announced/">LEGO's August wave</a></b> — a big month opens with two Ideas sets, 21370 E.T. the Extra-Terrestrial and 21372 La Catrina, headlining the release calendar.</span>
+  </li>
+  <li>
+    <span class="date">TUE · 4 AUG</span>
+    <span class="ev"><b><a href="https://www.thatlovepodcast.com/post/10-most-anticipated-science-fiction-and-fantasy-books-coming-in-august-2026">The Infinite State</a></b> — Richard Swan, author of the Empire of the Wolf trilogy, opens a new political space-opera saga in print.</span>
+  </li>
+  <li>
+    <span class="date">FRI · 21 AUG</span>
+    <span class="ev"><b><a href="https://en.wikipedia.org/wiki/2026%E2%80%9327_Premier_League">Premier League returns</a></b> — the 2026-27 season kicks off, the first weekend of English top-flight football after the summer and the start of the nine-month grind that runs to next May.</span>
+  </li>
+  <li>
+    <span class="date">SUN · 23 AUG</span>
+    <span class="ev"><b><a href="https://en.wikipedia.org/wiki/2026%E2%80%9327_Serie_A">Serie A opens</a></b> — Italy's 2026-27 campaign gets going two days after the Premier League. Juventus, in the Europa League this season, will be looking to open with a statement.</span>
+  </li>
+</ul>
+  </section>
+
+  <div class="band" data-band="do_this_week">
+    <div class="bandhead">
+      <span class="mono code">BAND 14 — <b>DO THIS WEEK</b></span>
+      <span class="mono runtime">THE ONE THING · PINNED</span>
+    </div>
+  </div>
+  <section>
+    <div class="closepin">
+      <div class="pinlbl mono">THE STRONGEST ACTION · <b>PIN IT TO THE FRIDGE</b></div>
+      <p class="act">Before the Bank of England decides on Thursday, check your easy-access savings rate against the best buy — and move the money if you're trailing by more than half a percent.</p>
+      <p class="why">A hold at 3.75% is the near-certain call — markets price it at about 86% — and a hold means the top savings rates have stopped climbing rather than being about to jump. So there is no reward for leaving cash in a laggard account, only lost interest, month after month. Ten minutes to switch, and you keep the gap whichever way the vote splits.</p>
+    </div>
+
+    <div class="mx-shelf" style="margin:24px 0 8px;">
+      <div class="mx-ticket" data-mx-event="ephemera">
+        <div class="mx-ticket__main">
+          <span class="mx-ticket__meta">The One Thing · Pin to the fridge</span>
+          <span class="mx-ticket__event">Move a lazy savings account</span>
+          <span class="mx-ticket__meta mx-ticket__row"><span>When</span><span>Before Thursday</span></span>
+          <span class="mx-ticket__meta mx-ticket__row"><span>Base rate</span><span>3.75%, likely held</span></span>
+          <span class="mx-ticket__meta mx-ticket__row"><span>Move if</span><span>Over 0.5% behind</span></span>
+        </div>
+        <div class="mx-ticket__stub"><div class="mx-stamp"><span>Do</span><b>THIS<br>WEEK</b><span>10 min</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="band" data-band="colophon">
+    <div class="bandhead">
+      <span class="mono code">BAND 15 — <b>COLOPHON</b></span>
+      <span class="mono runtime">THE ISSUE, ACCOUNTED FOR</span>
+    </div>
+  </div>
+  <section>
+    <div class="endnumbers" data-mx-event="statband">
+      <div class="cell">
+        <span class="mono k">ISSUE IN NUMBERS</span>
+        <span class="v serif">No. <em>18</em> · 4 movements</span>
+      </div>
+      <div class="cell">
+        <span class="mono k">WORDS SET</span>
+        <span class="v serif">6,800 <em>words</em> · one sitting</span>
+      </div>
+      <div class="cell">
+        <span class="mono k">READING TIME</span>
+        <span class="v serif">31 <em>min</em> · with coffee</span>
+      </div>
+      <div class="cell">
+        <span class="mono k">IN THE FRAME</span>
+        <span class="v serif">11 <em>images</em> · all sourced</span>
+      </div>
+      <div class="cell">
+        <span class="mono k">A FACT</span>
+        <span class="v serif">Oxford was teaching students two centuries before the Aztecs founded <em>Tenochtitlán</em></span>
+      </div>
+      <div class="cell">
+        <span class="mono k">NEXT WEEK · №019</span>
+        <span class="v serif">F1 breaks for August; a new <em>season</em> nears</span>
+      </div>
+    </div>
+  </section>
+  <div class="wave wave--ink" aria-hidden="true" style="margin-top:30px;color:var(--signal);">
+    <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+      <path d="M0 13 H40 l5 -9 5 18 5 -18 5 18 5 -9 H120 l7 -13 7 26 7 -26 7 26 7 -13 H260 l4 -6 4 12 4 -12 4 12 4 -6 H360 l6 -11 6 22 6 -22 6 22 6 -11 H500 l5 -8 5 16 5 -16 5 16 5 -8 H620 l7 -13 7 26 7 -26 7 26 7 -13 H800" fill="none" stroke="currentColor" stroke-width="2.0"/>
+    </svg>
+  </div>
+
+  <div class="colophon">
+    <span class="serif">The <em>Signal</em></span>
+    <span class="mono">END OF TRANSMISSION №018 · UNTIL NEXT SUNDAY</span>
+  </div>
+
+  <div class="signoff-line">
+  <div class="wave wave--blue" aria-hidden="true" style="max-width:200px;margin:0 auto;">
+    <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+      <path d="M0 13 H50 l6 -11 6 22 6 -22 6 22 6 -11 H160 l5 -9 5 18 5 -18 5 18 5 -9 H280 l7 -12 7 24 7 -24 7 24 7 -12 H420 l4 -7 4 14 4 -14 4 14 4 -7 H540 l6 -11 6 22 6 -22 6 22 6 -11 H680 l5 -8 5 16 5 -16 5 16 5 -8 H800" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    </svg>
+  </div>
+
+    <p class="big">Until next Sunday — the week will <em>keep</em>.</p>
+    <p class="mono stamp">SET IN INSTRUMENT SERIF, NEWSREADER &amp; JETBRAINS MONO · FILED 26 JUL 2026 · FOR ONE READER</p>
+  </div>
+
+</div>
+<script>
+/* The Signal — weekly (Transmission) JavaScript bundle.
+ *
+ * The weekly is a PAPER OBJECT: it renders complete and beautiful with
+ * JavaScript OFF (the paper-and-ink contract). No progress rails, no
+ * scroll-triggered reveals, no motion, no bead rail — the reference issue
+ * (docs/mockups/reference-issue-transmission.html) proves none are needed.
+ *
+ * The ONLY script the weekly ships is a defensive, invisible image-error
+ * fallback: if a fabricated or expired image URL fails to load, hide the
+ * broken <img> (and its caption/figure) so a bad asset never renders a
+ * broken-image icon. This is progressive enhancement — with JS off, a
+ * broken image is the browser's problem, not a layout break, because the
+ * Transmission layout never depends on an image being present.
+ */
+(function () {
+  document.addEventListener(
+    'error',
+    function (e) {
+      var t = e.target;
+      if (!t || t.tagName !== 'IMG') return;
+      t.style.display = 'none';
+      var p = t.parentElement;
+      if (!p) return;
+      var next = t.nextElementSibling;
+      if (next && next.classList && next.classList.contains('plate-cap')) {
+        next.style.display = 'none';
+      }
+      if (p.classList && p.classList.contains('plate-img')) {
+        p.style.display = 'none';
+      }
+      if (p.tagName === 'FIGURE') {
+        p.style.display = 'none';
+      }
+    },
+    true
+  );
+})();
+
+/* mx-motion.js — WP-5 motion controller (Law 5). data-mx issues only; the
+   stitcher swaps it in for legacy script.js on the mx path. JS-off = 100%
+   content (initial-hidden CSS is gated on [data-mx-motion-ready], stamped
+   only here); reduced-motion → no-op (CSS gate is belt #2); IO reveals add
+   .is-in + data-mx-inview, stagger via --mx-i; no scroll-jacking; motion
+   attaches to furniture, never prose. */
+(function () {
+  'use strict';
+  var d = document, root = d.documentElement, rm = null;
+
+  function $$(sel, ctx) {
+    return Array.prototype.slice.call((ctx || d).querySelectorAll(sel));
+  }
+  function reduced() { return rm ? rm.matches : false; }
+
+  function init() {
+    var body = d.body;
+    if (!body || !body.hasAttribute('data-mx')) return;
+    var tier = body.getAttribute('data-motion');
+    if (tier !== 'tier0' && tier !== 'tier1' && tier !== 'tier2') return;
+    rm = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+    if (reduced()) return;
+    if (rm && rm.addEventListener) {
+      rm.addEventListener('change', function (e) {
+        if (e.matches) root.removeAttribute('data-mx-motion-ready');
+      });
+    }
+    if (!('IntersectionObserver' in window)) return;
+
+    var CHROME = '.mx-mast, .mx-footer, .mx-colophon, nav';
+    var pending = [], scrollFns = [];
+
+    function reveal(el) {
+      el.classList.add('is-in');
+      el.setAttribute('data-mx-inview', '');
+      var i = pending.indexOf(el);
+      if (i >= 0) pending.splice(i, 1);
+    }
+    var io = new IntersectionObserver(function (entries) {
+      for (var i = 0; i < entries.length; i++) {
+        if (entries[i].isIntersecting) {
+          reveal(entries[i].target);
+          io.unobserve(entries[i].target);
+        }
+      }
+    }, { rootMargin: '0px 0px -9% 0px', threshold: 0.04 });
+
+    function watch(el, cls) {
+      if (el.closest && el.closest(CHROME)) return;
+      if (cls) el.classList.add(cls);
+      pending.push(el);
+      io.observe(el);
+    }
+    function stagger(el) { /* index among animated siblings → CSS delay */
+      var p = el.parentNode;
+      if (p) { p.__mxn = p.__mxn || 0; el.style.setProperty('--mx-i', '' + p.__mxn++); }
+    }
+
+    if (tier === 'tier0') {
+      /* tier0: hairline draw-ins + ghost parallax ONLY */
+      $$('.mx-plate, .mx-actopen, .mx-pull, .mx-ledger, .mx-numbers, .mx-quote, .mx-sources')
+        .forEach(function (el) { watch(el, 'mx-draw'); });
+      var plates = $$('.mx-plate');
+      scrollFns.push(function (vh) {
+        for (var i = 0; i < plates.length; i++) {
+          var r = plates[i].getBoundingClientRect();
+          if (r.bottom < -120 || r.top > vh + 120) continue;
+          var p = ((vh / 2) - (r.top + r.height / 2)) / vh;
+          if (p > 1) p = 1; else if (p < -1) p = -1;
+          plates[i].style.setProperty('--mx-par', p.toFixed(3));
+        }
+      });
+    } else {
+      /* tier1/tier2: rise-on-scroll + object settles */
+      $$('.mx-card, .mx-ticket, .mx-coaster, .mx-note' + (tier === 'tier1' ? ', .mx-stamp' : ''))
+        .forEach(function (el) { stagger(el); watch(el, 'mx-settle'); });
+      $$('.mx-quote, .mx-pull, .mx-anchor, .mx-plate, .mx-actopen, .mx-zig__entry, .mx-chart')
+        .forEach(function (el) { stagger(el); watch(el, 'mx-rise'); });
+      if (tier === 'tier2') {
+        $$('.mx-stamp').forEach(function (el) { stagger(el); watch(el, 'mx-slam'); });
+      }
+      $$('.mx-sig-stamp-slam').forEach(function (el) { watch(el, 'mx-slam'); });
+      /* weekly signature: the radio dial's needle sweeps on band entry
+         (the CSS keys the sweep off .mx-sig-dial-sweep.is-in). Additive —
+         no other tier uses this hook. */
+      $$('.mx-sig-dial-sweep').forEach(function (el) { watch(el); });
+
+      /* sequences: rows tick in order */
+      [['.mx-ranked', '.mx-ranked__entry'],
+       ['.mx-scorecard', 'tr'],
+       ['.mx-numbers', '.mx-numbers__cell'],
+       ['.figures-frame', '.fig-row'],
+       ['.mx-cheat', '.mx-cheat__col'],
+       ['.mx-dontmiss', 'li'],
+       ['.mx-countdown', '.mx-countdown__cell'],
+       ['.mx-sig-rows-climb', 'tr, li, .mx-ranked__entry'],
+       ['.mx-sig-cols-reveal', '.mx-cheat__col, .mx-col']
+      ].forEach(function (pair) {
+        $$(pair[0]).forEach(function (c) {
+          if (c.classList.contains('mx-seq')) return;
+          var rows = $$(pair[1], c).filter(function (r) { return r.closest(pair[0]) === c; });
+          if (!rows.length) return;
+          for (var i = 0; i < rows.length; i++) {
+            rows[i].classList.add('mx-row');
+            rows[i].style.setProperty('--mx-i', String(i));
+          }
+          watch(c, 'mx-seq');
+        });
+      });
+      /* facts ledgers: dt+dd pairs share one index */
+      $$('.mx-ledger').forEach(function (c) {
+        var kids = $$('dl > dt, dl > dd', c), n = -1;
+        if (!kids.length) return;
+        for (var i = 0; i < kids.length; i++) {
+          if (kids[i].tagName === 'DT') n++;
+          kids[i].classList.add('mx-row');
+          kids[i].style.setProperty('--mx-i', String(Math.max(0, n)));
+        }
+        watch(c, 'mx-seq');
+      });
+
+      if (tier === 'tier2') {
+        /* act crossfade at transit seams (endpoint colors = act tokens) */
+        var seams = [];
+        $$('.mx-transit').forEach(function (t) {
+          function seamEl(host, dir) {
+            if (!host || !host.hasAttribute || !host.hasAttribute('data-act')) return null;
+            if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
+            var s = d.createElement('div');
+            s.className = 'mx-seam mx-seam--' + dir;
+            s.setAttribute('aria-hidden', 'true');
+            host.appendChild(s);
+            return s;
+          }
+          seams.push({ t: t, a: seamEl(t.previousElementSibling, 'out'), b: seamEl(t.nextElementSibling, 'in') });
+        });
+        if (seams.length) {
+          scrollFns.push(function (vh) {
+            for (var i = 0; i < seams.length; i++) {
+              var r = seams[i].t.getBoundingClientRect();
+              var p = 1 - Math.abs(r.top + r.height / 2 - vh / 2) / (vh * 1.15);
+              if (p < 0) p = 0; else if (p > 1) p = 1;
+              var v = p.toFixed(3);
+              if (seams[i].a) seams[i].a.style.setProperty('--mx-seam', v);
+              if (seams[i].b) seams[i].b.style.setProperty('--mx-seam', v);
+            }
+          });
+        }
+        $$('.mx-countdown[data-mx-target]').forEach(bindCountdown);
+      }
+    }
+
+    /* activate: only now may CSS hold start states */
+    root.setAttribute('data-mx-motion-ready', '');
+
+    /* safety reveal: pending-but-on-screen can never stay blank */
+    scrollFns.push(function (vh) {
+      for (var i = pending.length - 1; i >= 0; i--) {
+        var r = pending[i].getBoundingClientRect();
+        if (r.top < vh * 0.94 && r.bottom > 0) {
+          io.unobserve(pending[i]);
+          reveal(pending[i]);
+        }
+      }
+    });
+    var ticking = false;
+    function onScroll() {
+      if (ticking || reduced()) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        ticking = false;
+        var vh = window.innerHeight;
+        for (var i = 0; i < scrollFns.length; i++) scrollFns[i](vh);
+      });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    onScroll();
+    setTimeout(onScroll, 2500);
+  }
+
+  /* opt-in live countdown; numerals re-flip on change */
+  function bindCountdown(box) {
+    var target = Date.parse(box.getAttribute('data-mx-target'));
+    if (isNaN(target)) return;
+    var cells = {};
+    $$('[data-cd]', box).forEach(function (el) { cells[el.getAttribute('data-cd')] = el; });
+    function pad(n) { return n < 10 ? '0' + n : String(n); }
+    function set(el, v) {
+      if (!el || el.textContent === v) return;
+      el.textContent = v;
+      el.classList.remove('mx-flip-tick');
+      void el.offsetWidth;
+      el.classList.add('mx-flip-tick');
+    }
+    function tick() {
+      var ms = target - Date.now();
+      if (ms < 0) ms = 0;
+      var s = Math.floor(ms / 1000);
+      set(cells.days, pad(Math.floor(s / 86400)));
+      set(cells.hours, pad(Math.floor(s / 3600) % 24));
+      set(cells.mins, pad(Math.floor(s / 60) % 60));
+      set(cells.secs, pad(s % 60));
+      if (ms > 0 && !reduced()) setTimeout(tick, 1000);
+    }
+    tick();
+  }
+
+  if (d.readyState === 'loading') d.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+
+</script>
+</body>
+</html>
