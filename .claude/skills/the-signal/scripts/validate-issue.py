@@ -2190,7 +2190,7 @@ def check_table_kind(body: str, report: Report) -> None:
     """
     values = re.findall(r'\bdata-table-kind\s*=\s*["\']([^"\']*)["\']', body)
     bad = sorted({v for v in values if v not in TABLE_KINDS})
-    cards = re.findall(_CLASS_OPEN_TMPL.format(cls="mx-scorecard"), body, re.IGNORECASE)
+    # Count CARD ELEMENTS, not every .mx-scorecard__* child class.
     n_cards = len(re.findall(r'\bclass\s*=\s*"[^"]*\bmx-scorecard\b[^"]*"', body, re.IGNORECASE))
     if bad:
         report.fail("table-kind",

@@ -43,9 +43,24 @@ These failures are the proof the checks work and are **not** to be repaired.
 
 | Check | Expected on #18 | Recorded |
 |-------|-----------------|----------|
-| caption-vintage (SPEC §3.9) | FAIL at Long Read FIG 03 — `capture_year` 2007, band claims 2021, year absent from `.plate-cap .txt` | pending |
-| image shape budget (SPEC §3.8) | FAIL — Pixel & Byte leads on `key_art`; Long Read carries no `diagram\|map\|chart\|artefact` | pending |
-| long-read vintage (SPEC §3.4) | FAIL — no `data-vintage` attribute | pending |
+**Result: Issue #18 now exits 1 with 5 failures (was 0).** Two of the three predictions were **wrong**, and
+WP-4 corrected them rather than forcing the predicted outcome. Recorded as measured, not as hoped:
+
+| Check | Predicted | **Measured** |
+|-------|-----------|--------------|
+| caption-vintage (§3.9) | FAIL at FIG 03 | **WRONG — inert.** #18 declares *no figure attributes at all*, so there is no `data-capture-year` to compare and the check correctly WARNs that it cannot speak. Criterion #3 is instead proven on #18's **own FIG 03 caption wording** with only the capture year added: `2007 < claim 2021` fires, the credit-span year is correctly not counted, the SPEC's suggested rewrite passes, `""` is legal, `"c. 2007"` fails |
+| image shape budget (§3.8) | FAIL via Pixel & Byte `key_art` lead | **FAIL, different route.** Distinct-shapes 0/3 and the Long Read's missing information figure. The `key_art` clause also cannot speak — same root cause: no declared shapes |
+| long-read vintage (§3.4) | FAIL — no `data-vintage` | **FAIL as predicted** |
+| — | *(unpredicted)* | **FAIL `figure-provenance` 11/11** |
+| — | *(unpredicted)* | **FAIL `cover-leads-on`** |
+
+The common root cause behind both wrong predictions is worth keeping: **#18 carries no rebuild-era
+figure attributes**, so every check keyed to them is inert on it rather than failing. The shape budget
+still catches it by counting *declared* shapes against the floor — which is the more robust route, since
+it fails on absence rather than requiring a specific bad value to be present.
+
+**Archive sweep: 34 files, 0 regressions on pre-existing checks.** #16/#17 stay green via an archive
+exemption (no rebuild-era attribute present at all).
 
 ---
 
