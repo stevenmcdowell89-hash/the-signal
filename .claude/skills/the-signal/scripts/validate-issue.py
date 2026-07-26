@@ -1773,6 +1773,14 @@ SHOWS_ENUM_FALLBACK = (
     "diagram", "map", "chart", "artefact", "document",
 )                                                                    # SPEC §3.3
 INFORMATION_SHAPES_FALLBACK = ("diagram", "map", "chart", "artefact")  # SPEC §3.8
+NEVER_LEAD_FALLBACK = ("key_art", "product_shot", "portrait")          # SPEC §3.8
+# SPEC §3.8 "Never-lead, resolved 2026-07-26": every never-lead shape is an
+# issue-wide hard FAIL as a lead figure, with ONE conditional exception —
+# product_shot may lead a band whose subject IS the product (a hardware launch or
+# review). The exception is named here rather than the ban list, so if WP-6 adds a
+# shape to never_lead_shapes it propagates as a hard fail (the plain reading of
+# "never lead") instead of quietly needing a code change.
+CONDITIONAL_LEAD_SHAPES = ("product_shot",)
 SPORT_TOKENS_FALLBACK = (
     "football", "golf", "cricket", "cycling", "athletics", "motorsport", "rugby",
     "tennis", "boxing", "mma", "snooker", "darts", "gaelic_games", "swimming",
@@ -1806,8 +1814,11 @@ RESULT_CAPTION_RES = (
 )
 
 BAND_MARKER_RE = re.compile(r'\bdata-band\s*=\s*["\']([^"\']+)["\']')
+# The contract renders .plate-img as a <div>, but the tag is captured rather than
+# hardcoded: a writer who reaches for <figure class="plate-img"> must not slip
+# past the provenance and shape budgets on a technicality.
 FIGURE_OPEN_RE = re.compile(
-    r'<div\b[^>]*\bclass\s*=\s*"[^"]*\bplate-img\b[^"]*"[^>]*>', re.IGNORECASE)
+    r'<([a-z0-9]+)\b[^>]*\bclass\s*=\s*"[^"]*\bplate-img\b[^"]*"[^>]*>', re.IGNORECASE)
 ATTR_PAIR_RE = re.compile(r'([A-Za-z][A-Za-z0-9-]*)\s*=\s*"([^"]*)"')
 _CLASS_OPEN_TMPL = r'<([a-z0-9]+)\b[^>]*\bclass\s*=\s*"[^"]*\b{cls}\b[^"]*"[^>]*>'
 
@@ -1978,24 +1989,32 @@ def band_prose(body: str, span: tuple[int, int]) -> str:
 
 # ─── canonical vocabularies, loaded from their owners' files ──────────────────
 
-def load_shows_vocab() -> tuple[tuple[str, ...], tuple[str, ...], str]:
-    """(shows enum, information-figure shapes, provenance note).
+def load_shows_vocab() -> tuple[tuple[str, ...], tuple[str, ...], tuple[str, ...], str]:
+    """(shows enum, information-figure shapes, never-lead shapes, provenance note).
 
-    Canonical home is WP-6's references/image-source-types.json § shows
-    (data-contracts.md § The `shows` enum names it as the machine-readable source
-    of truth for consumers). Falls back to the SPEC §3.3 / §3.8 literals.
+    All three lists are READ FROM WP-6's references/image-source-types.json §
+    shows at runtime, never hardcoded — that file's `_derived_lists_doc` names
+    machine-vs-prose drift as a live failure mode (it already happened once:
+    `never_lead_shapes` omitted `portrait` while the rank-5 prose said "key art /
+    product shot / posed portrait — last resort, never a lead"). Reading the lists
+    means a doctrine change propagates instead of silently diverging from this
+    check. The SPEC literals remain only as a fallback, so there is no hard
+    dependency on another WP's file.
     """
     path = SKILL_ROOT / "references" / "image-source-types.json"
     try:
         shows = json.loads(path.read_text(encoding="utf-8"))["shows"]
         enum = tuple(shows["values"].keys())
         info = tuple(shows.get("information_figure_shapes") or INFORMATION_SHAPES_FALLBACK)
+        never = tuple(shows.get("never_lead_shapes") or NEVER_LEAD_FALLBACK)
         if len(enum) >= 5:
-            return enum, info, f"shows enum from {path.name} ({len(enum)} values)"
+            return (enum, info, never,
+                    f"shows vocab from {path.name}: {len(enum)} values, "
+                    f"information={list(info)}, never_lead={list(never)}")
     except Exception:
         pass
-    return (SHOWS_ENUM_FALLBACK, INFORMATION_SHAPES_FALLBACK,
-            "shows enum from the SPEC §3.3 literal (image-source-types.json unreadable)")
+    return (SHOWS_ENUM_FALLBACK, INFORMATION_SHAPES_FALLBACK, NEVER_LEAD_FALLBACK,
+            "shows vocab from the SPEC §3.3/§3.8 literals (image-source-types.json unreadable)")
 
 
 def load_sport_tokens() -> tuple[tuple[str, ...], str]:
