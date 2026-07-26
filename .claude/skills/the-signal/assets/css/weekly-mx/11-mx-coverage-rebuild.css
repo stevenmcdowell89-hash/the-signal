@@ -1,0 +1,195 @@
+/* ============================================================
+   MX WEEKLY · COVERAGE-REBUILD FURNITURE      (WP-3, 2026-07-26)
+   weekly-mx/11-mx-coverage-rebuild.css
+   ------------------------------------------------------------
+   The SPEC §3.4 / §3.11 markup contracts that belong to the mx
+   furniture layer, i.e. the ones whose base component lives in
+   10-mx-weekly.css and therefore reads the --mx-* alias:
+
+     · .mx-ledger[data-role="results-ledger"]  — the Touchline's
+       results-of-record, one row per concluded event, data-sport
+       on every row (defect D).
+     · .mx-ledger[data-role="demoted-lead"]    — The Close's
+       policy ledger for a story that no longer leads (defect C).
+     · .mx-ledger__row[data-resolves-loop]     — a carried-forward
+       result being closed (defect D).
+     · .mx-scorecard[data-table-kind="…"]      — the standings card
+       made polymorphic: league · medal · gc · leaderboard ·
+       championship (defect D — a single-competition-shaped table
+       is what made every sport but F1 unrenderable).
+
+   Every value resolves through the transmission alias onto the
+   weekly's own tokens (Law 11): no new colour, no new font, no
+   --mx-* token invented here. Class/attribute-scoped, so a band
+   with none of these attributes renders exactly as before.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   01 · RESULTS LEDGER (SPEC §3.11) — results of record.
+   The base .mx-ledger is unchanged; the results role only makes
+   the ledger read as CLOSED business. Forward fixtures no longer
+   live here (they moved to On the Radar), so nothing in this
+   object is provisional.
+   ------------------------------------------------------------ */
+.mx-ledger[data-role="results-ledger"] .mx-ledger__caption {
+  border-bottom-width: 2px;
+}
+/* A multi-sport ledger is the whole point of the restructure: rows from
+   different sports must not read as one long run of the same competition, so
+   each row gets a hairline sport gutter. data-sport is REQUIRED on every row
+   (SPEC §3.4) and validate-issue.py checks it — this is the visual half. */
+.mx-ledger[data-role="results-ledger"] .mx-ledger__row[data-sport] {
+  padding-left: 12px;
+  box-shadow: inset 2px 0 0 var(--mx-hair);
+}
+/* the sport that leads the ledger is the week's biggest result */
+.mx-ledger[data-role="results-ledger"] .mx-ledger__row:first-of-type[data-sport] {
+  box-shadow: inset 2px 0 0 var(--mx-accent);
+}
+
+/* ------------------------------------------------------------
+   02 · DEMOTED LEAD (SPEC §3.4) — the policy ledger in The Close
+   for a story that held the cover and no longer does. Defect C
+   was a holding-pattern story keeping the lead; the demotion has
+   to be VISIBLE, and the way this identity says "no longer the
+   loudest thing here" is to withdraw the accent: the top rule
+   goes light, the caption drops to pencil grey, and the result
+   column speaks in signal-blue instead of vermilion (§ Accent
+   lockdown — vermilion belongs to what leads).
+   ------------------------------------------------------------ */
+.mx-ledger[data-role="demoted-lead"] {
+  border-top: 1px solid var(--mx-ink);
+  margin: 40px 0;
+}
+.mx-ledger[data-role="demoted-lead"] .mx-ledger__caption {
+  color: var(--mx-ink-soft);
+  border-bottom-style: dotted;
+}
+.mx-ledger[data-role="demoted-lead"] .mx-ledger__result {
+  color: var(--mx-support-1);
+}
+.mx-ledger[data-role="demoted-lead"] .mx-ledger__date {
+  color: var(--mx-ink-soft);
+}
+
+/* ------------------------------------------------------------
+   03 · RESOLVED LOOP (SPEC §3.4) — a ledger row closing an open
+   loop carried forward from a previous issue. Blue spine, the
+   same continuity cue the core weekly uses (weekly/01-coverage-
+   rebuild.css), so a closure reads identically wherever it lands.
+   ------------------------------------------------------------ */
+.mx-ledger__row[data-resolves-loop] {
+  padding-left: 12px;
+  box-shadow: inset 2px 0 0 var(--mx-accent-2);
+}
+.mx-ledger__row[data-resolves-loop] .mx-ledger__result {
+  color: var(--mx-accent-2);
+}
+
+/* ------------------------------------------------------------
+   04 · POLYMORPHIC STANDINGS CARD (SPEC §3.4 / §3.11)
+   .mx-scorecard gains data-table-kind ∈ league · medal · gc ·
+   leaderboard · championship. Shared first: numerals in a table
+   must line up whatever the sport, and any kind may carry a head
+   row (a medal table needs G/S/B heads; a league table does not).
+   ------------------------------------------------------------ */
+.mx-scorecard[data-table-kind] td,
+.mx-scorecard[data-table-kind] th {
+  font-variant-numeric: tabular-nums;
+}
+.mx-scorecard[data-table-kind] th {
+  font-weight: 700;
+  color: var(--mx-accent);
+  letter-spacing: 0.12em;
+  border-bottom: 1.5px solid var(--mx-card-ink);
+}
+
+/* league — a football/rugby table: position · club · points. The default
+   shape; the card only asserts that the last column is the points column. */
+.mx-scorecard[data-table-kind="league"] td:last-child {
+  text-align: right;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* championship — a drivers'/constructors' season table. Same points shape as a
+   league, but a season table's story is the podium, so rule off after third. */
+.mx-scorecard[data-table-kind="championship"] td:last-child {
+  text-align: right;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.mx-scorecard[data-table-kind="championship"] tbody tr:nth-child(3) td,
+.mx-scorecard[data-table-kind="championship"] tr:nth-child(3) td {
+  border-bottom: 1.5px solid var(--mx-card-ink);
+}
+
+/* medal — a multi-sport medal table: rank · nation · G · S · B (· total).
+   Three-to-four narrow numeric columns instead of one gap column, which is
+   exactly the shape the old single-gap card could not hold. */
+.mx-scorecard[data-table-kind="medal"] td,
+.mx-scorecard[data-table-kind="medal"] th {
+  padding-right: 8px;
+}
+.mx-scorecard[data-table-kind="medal"] td:nth-child(n + 3),
+.mx-scorecard[data-table-kind="medal"] th:nth-child(n + 3) {
+  width: 30px;
+  text-align: right;
+  padding-right: 0;
+  white-space: nowrap;
+}
+/* gold is the sort key — give it the weight, leave silver/bronze quiet */
+.mx-scorecard[data-table-kind="medal"] td:nth-child(3) {
+  font-weight: 700;
+  color: var(--mx-accent);
+}
+.mx-scorecard[data-table-kind="medal"] td:nth-child(4),
+.mx-scorecard[data-table-kind="medal"] td:nth-child(5) {
+  color: var(--mx-ink-soft);
+}
+
+/* gc — a cycling general classification: rank · rider · time gap. The gap is a
+   duration, so it needs mono breathing room and must never wrap mid-time. */
+.mx-scorecard[data-table-kind="gc"] .mx-scorecard__gap,
+.mx-scorecard[data-table-kind="gc"] td:last-child {
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.mx-scorecard[data-table-kind="gc"] tr:first-child .mx-scorecard__gap,
+.mx-scorecard[data-table-kind="gc"] tr:first-child td:last-child {
+  color: var(--mx-accent);
+  font-weight: 700;
+}
+
+/* leaderboard — a golf/tournament board: position · player · score to par. The
+   leader's score is the headline number; everything else is a chase. */
+.mx-scorecard[data-table-kind="leaderboard"] .mx-scorecard__gap,
+.mx-scorecard[data-table-kind="leaderboard"] td:last-child {
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.mx-scorecard[data-table-kind="leaderboard"] tr:first-child .mx-scorecard__gap,
+.mx-scorecard[data-table-kind="leaderboard"] tr:first-child td:last-child {
+  color: var(--mx-accent);
+  font-weight: 700;
+}
+/* a cut line, when the board shows one */
+.mx-scorecard[data-table-kind="leaderboard"] tr.is-cut td {
+  border-bottom: 1.5px dashed var(--mx-card-ink);
+}
+
+/* ------------------------------------------------------------
+   05 · NARROW WIDTHS — the card is already width:100% under
+   640px (10-mx-weekly.css §08); a medal table is the only kind
+   that can run out of room, so let its counts compress.
+   ------------------------------------------------------------ */
+@media (max-width: 640px) {
+  .mx-scorecard[data-table-kind="medal"] td:nth-child(n + 3),
+  .mx-scorecard[data-table-kind="medal"] th:nth-child(n + 3) {
+    width: 26px;
+  }
+  .mx-ledger[data-role="results-ledger"] .mx-ledger__row[data-sport],
+  .mx-ledger__row[data-resolves-loop] {
+    padding-left: 9px;
+  }
+}

@@ -77,10 +77,16 @@ The personal ledger panel — the reader's week, metered. `.figures` > `.figures
       <div class="fig-val">31.2<small>mi</small></div>
     </div>
     <!-- 4–6 .fig-row total. Use <small> for the unit; wrap the number in .win for the signal-red highlight -->
-    <div class="fig-foot"><span>[CARRIED FORWARD…]</span><span>[TOTALS SINCE…]</span></div>
+    <div class="fig-foot"><span>CARRIED FORWARD · [WHAT IS ACTUALLY OPEN]</span><span>[TOTALS SINCE…]</span></div>
   </div>
 </div>
 ```
+
+**The `.fig-foot` left span is no longer decorative (2026-07-26).** It read `[CARRIED FORWARD…]` — the only hint of continuity anywhere in the format, with nothing behind it. There is now data behind it: `state/signal-state.json` → `open_loops[]`, the list of things this magazine said were coming and has not yet reported. Fill the span from it:
+- **Name what is genuinely open**, in the reader's words, from the `claim` of an `open_loops` entry whose `status` is `open` — e.g. `CARRIED FORWARD · THE OPEN, FINAL ROUND`. Prefer the loop maturing soonest.
+- **Nothing open?** Then it is a totals/continuity line (`CARRIED FORWARD TO №019`), not an invented cliffhanger. Never promise a thread the issue does not hold.
+- **When a `.fig-row` in this panel reports the resolution of a loop**, that row carries `data-resolves-loop="<loop id>"` (see § Carried-forward results in the Close contracts). The `.fig-foot` announces the debt; `data-resolves-loop` is how it gets paid.
+- Each row's datum also declares where it came from in the *plan* (`week_in_numbers.rows[].source_band` — a `chapter_id` present in the plan, or the literal `"state"` for the personal stats). That is a plan-side field with no markup counterpart; it exists so a figure can always be traced back to the band that produced it.
 
 ### Caught Up — `caught_up` (content: `digest`, HARD cap 8)
 The completeness digest: `<ol class="digest">` with **≤ 8 `<li>`** — one missable item each, a bolded dateline/label then a flat factual line. The cap is structural: never a ninth `<li>`, never collapsible. Wire-headline register, no synthesis.
@@ -111,7 +117,8 @@ The single feature: a `.lr-title` block then a `.lr-body` prose column. Optional
 
   <p class="noindent">[first paragraph after a break — .noindent suppresses the run-on indent]</p>
 
-  <div class="plate-img">
+  <div data-mx-event="figure" class="plate-img" data-shows="diagram" data-capture-year="2021"
+       data-licence="CC-BY-4.0" data-allows-derivatives="true">
     <img src="[verified bundle URL or /assets/cached/<hash>.jpg]" alt="[What the picture shows, concretely — a reader with images off must lose nothing]" loading="lazy">
     <div class="plate-cap">
       <span class="mono fig">FIG. 01</span>
@@ -129,9 +136,10 @@ The single feature: a `.lr-title` block then a `.lr-body` prose column. Optional
 `.aside-note` is the weekly's honest counter-argument device (the old "case against"), used only where there is a real argument to answer — usually here. The Long Read MUST carry ≥1 real image plate (validator invariant `long_read_has_image`; the golden carries two) — see the `.plate-img` contract below.
 
 ### The image plate — `.plate-img` (the weekly's image component, all bands)
-**A plate is a real `<img>`, captioned and credited.** This is the form the shipped exemplar (`issues/signal_weekly_2026-07-13.html`, 10 worked plates) and the golden fixture use everywhere an image appears — Long Read figures, the issue's cover plate, and the lead image on a Round:
+**A plate is a real `<img>`, captioned and credited, carrying its machine provenance record.** This is the form the shipped exemplar (`issues/signal_weekly_2026-07-13.html`, 10 worked plates) and the golden fixture use everywhere an image appears — Long Read figures, the issue's cover plate, and the lead image on a Round:
 ```html
-<div class="plate-img">
+<div data-mx-event="figure" class="plate-img" data-shows="in_engine" data-capture-year="2007"
+     data-licence="CC-BY-2.5" data-allows-derivatives="true">
   <img src="[verified bundle URL or mirrored /assets/cached/<hash>.jpg]" alt="[Meaningful description of the picture]" loading="lazy">
   <div class="plate-cap">
     <span class="mono fig">FIG. 01</span>
@@ -139,6 +147,18 @@ The single feature: a `.lr-title` block then a `.lr-body` prose column. Optional
   </div>
 </div>
 ```
+
+**The four provenance attributes (SPEC 2026-07-26 §3.4) are MANDATORY on every plate.** The `.credit` span is for the reader; these are for the machine, and a caption's claim cannot be audited after publish without them (`mirror-images.py` renames files to `sha256(url)[:12]`).
+
+| Attribute | Value | Why |
+|---|---|---|
+| `data-shows` | one of the eleven `shows` values — `event_photo` · `gameplay` · `in_engine` · `key_art` · `product_shot` · `portrait` · `diagram` · `map` · `chart` · `artefact` · `document` | **What the picture depicts**, which the source domain never tells you. Canonical enum + definitions: `references/image-source-types.json` → `shows`. Never invent a value: `validate-issue.py` and `check-image-diversity.sh` both hard-fail an off-enum value, because a typo is invisible to every budget. |
+| `data-capture-year` | 4-digit year, or `null` **only** when `data-shows` ∈ {`diagram`, `chart`} and the asset is synthetic | Defect B: a 2007 reconstruction photo illustrated a 2021 breakthrough. If the capture year predates the band's dated claims, the **visible** caption (`.plate-cap .txt`, not the `.credit`) must contain that year as a 4-digit string (SPEC §3.9). |
+| `data-licence` | SPDX-ish token, or `PRESS-KIT-EDITORIAL` \| `PUBLIC-DOMAIN` \| `CC0` \| `UNKNOWN` | The machine licence record. Copy it from the bundle's `licence.code` — do not paraphrase the credit line into it. |
+| `data-allows-derivatives` | `"true"` \| `"false"` — `false` for **any** ND licence | `extract-covers.py` refuses to crop or resize a source with `false`. Issue #18's cover source is CC BY-**ND** and was smart-cropped; that is the violation this attribute exists to stop. |
+
+**Shape budgets the writer must plan around (SPEC §3.8, enforced by `validate-issue.py`):** ≥3 distinct `data-shows` values across the issue; Pixel & Byte carries at most one `key_art` and **never** as its `.plate-img.lead`; the Long Read carries ≥1 of `diagram`/`map`/`chart`/`artefact`; a Touchline figure captioned as a concluded result must be `event_photo`; and a `src` that led the previous issue may not lead this one. The information-gained hierarchy behind those numbers — and the worked Halo/Antikythera examples — is in `references/compliance-checklist.md` § Image specificity check. **Key art is rank 5 of 5.**
+
 Rules:
 - **The `<img>` is mandatory in the plate and always wrapped** — `.plate-img > img`, never a bare `<img>` floating in prose. Every image carries a non-empty, concrete `alt` and `loading="lazy"`.
 - **Every plate is captioned + credited**: `.plate-cap` holds a mono `.fig` tag (`FIG. 01` / `FIG. 02` numbered in the Long Read; a plain `FIG.` on Round lead plates; `COVER` on the cover plate) and an italic `.txt` caption whose last child is a `<span class="credit">` naming source and licence.
@@ -183,6 +203,31 @@ Sport. An intro `.lead` (opening with a `.drop` clause), an optional `.scores` g
   <!-- more .items li -->
 </ul>
 ```
+
+#### The results ledger — `.mx-ledger[data-role="results-ledger"]` (Touchline furniture)
+**Results of record, not fixtures.** The ledger lists what *concluded* since the research cut — one row per event — and **every row declares its sport**. Forward fixtures belong in On the Radar, not here (SPEC §3.11). The `data-role` and the per-row `data-sport` are the validator's hooks:
+```html
+<div class="mx-ledger" data-mx-event="ledger" data-role="results-ledger">
+  <div class="mx-ledger__row" data-sport="football">…</div>
+  <div class="mx-ledger__row" data-sport="golf">…</div>
+```
+Row interior keeps the established shape — `.mx-ledger__date` + `.mx-ledger__match` + `.mx-ledger__result` + optional `.mx-ledger__note`; an `.mx-ledger__caption` may open the block. Worked example: `references/golden/weekly-mx/chapters/touchline.html`.
+- `data-role="results-ledger"` on the block: **mandatory.** Without it the ledger is invisible to the multi-sport invariant.
+- `data-sport` on **every** `.mx-ledger__row`: mandatory, lowercase, one sport per row (`football` · `golf` · `motorsport` · `cricket` · `cycling` · `athletics` · `tennis` …).
+- **`results_ledger_multi_sport` invariant:** the ledger must carry **≥2 distinct `data-sport` values** whenever ≥2 tracked sports had an event conclude in-window. Six rows of one race weekend is the density failure that made F1 fill five bands in Issue #18 — six rows across four sports is the *same* density and a different magazine.
+- A row reporting a result that closes a carried-forward loop also carries `data-resolves-loop` (see below).
+
+#### The standings card — `.mx-scorecard[data-table-kind]` (Touchline furniture)
+The compact table dressed as card stock. It is **polymorphic**: `data-table-kind` declares which kind of table it is, so a league ladder is not the only shape the band can hold.
+```html
+<div class="mx-scorecard" data-mx-event="ledger" data-table-kind="gc">
+  <h4 class="mx-scorecard__title">Tour de France · GC, Rest Day 1</h4>
+  <table>
+    <tr class="is-lead"><td class="mx-scorecard__pos">01</td><td>POGAČAR</td><td class="mx-scorecard__gap">YELLOW</td></tr>
+  </table>
+</div>
+```
+`data-table-kind` ∈ `league` · `medal` · `gc` · `leaderboard` · `championship` (SPEC §3.4) — a football table, a medal table, a cycling general classification, a golf leaderboard, a drivers'/constructors' championship. **Mandatory; no sixth value.** Pick the kind that matches what led the band, not whichever sport has a weekly table.
 
 ### Pixel & Byte — `pixel_byte` (content: `round` — `items`)
 Gaming. A plain `.items` list — same row shape as The Touchline's items (`.freq` + `<div><h3>…</h3><p>…</p></div>`).
@@ -274,6 +319,24 @@ The service department: **ONE** `.desk` container holding **1–2** `.deskcol` c
   <!-- typically 3–6 threads -->
 </div>
 ```
+
+#### The demoted-lead ledger — `.mx-ledger[data-role="demoted-lead"]` (Close movement)
+The policy record for a story that **was** the cover lead and no longer is. It exists because there was previously no shape for demotion: UK politics led the cover in 6 of 9 issues, and a holding-pattern story kept the lead because the only alternative to leading with it was dropping it (defect C). This ledger is the third option — the story stays visible and accounted for, in the Close, without occupying the cover. Same `.mx-ledger` component, different declared role:
+```html
+<div class="mx-ledger" data-mx-event="ledger" data-role="demoted-lead">
+```
+- Lives in the **Close** movement (movement IV), inside the `the_threads` band content unless the plan says otherwise. It is not a Touchline object and must not be confused with the results ledger — `data-role` is what tells them apart, so never emit a bare `.mx-ledger` in a band that also carries a roled one.
+- Rows use the standard `.mx-ledger__row` interior. `data-sport` is a *results-ledger* attribute and does not belong here.
+- One per issue at most. Its presence is a claim that the planner consciously moved something off the cover — the written reason lives in the plan's `issue_meta.lead_override_reason`, not in the markup.
+
+#### Carried-forward results — `data-resolves-loop` (any band, any element)
+**The attribute that closes a loop.** When an event was flagged as coming (`status: "upcoming"`) in an earlier issue, state carries it as an entry in `open_loops[]`; when this issue finally reports the result, the element carrying that result declares which loop it closes:
+```html
+<div class="mx-ledger__row" data-sport="football" data-resolves-loop="loop_2026-07-19_wc-final">…</div>
+```
+- The value MUST equal an `id` in `state/signal-state.json` → `open_loops[]`. It is a join key, not a label — no free text.
+- Goes on the **element reporting the result** — a ledger row, an `.items` li, a `.thread`, a `.fig-row`, a `.plate-cap`. Any element; the validator searches the whole document.
+- A loop is **matured** when its `status` is `open` and its `expected_resolution_date` is on or before the run date. `validate-issue.py` **fails** the issue when a matured loop's id appears nowhere in the rendered HTML (SPEC §3.7), and `validate-research-bundle.py` fails upstream when no fact carries a matching `resolves_loop` — both layers, because a bundle can carry a fact the writer then drops. This is what stops Sunday-concluding events (the World Cup final, The Open) from vanishing between issues.
 
 ### Down the Rabbit Hole — `rabbit_hole` (content: `rabbit`)
 The discovery ritual. A framed `.rabbit` block: a `.lbl`, a two-node `.chain` (from what you love → where you fall), then the prose invitation.

@@ -18,17 +18,28 @@
     "desk": "The Desk section carries data-role='desk'; each column carries data-desk-column",
     "release_radar": "the Release Radar rail inside Screen & Sound carries data-role='release-radar' (never its own band)",
     "station": "each cover tuner coverline carries data-station (these are the reader-facing navigator entries)",
-    "mx_event": "on the furniture layer (design_system='mx') every designed visual event carries data-mx-event on its outermost element — one of the Law-2 census types: figure|ephemera|ledger|statband|quote|plate|chart|marquee|cheatsheet. tools/measure-issue.mjs prefers these markers; the weekly's captioned photo plates carry data-mx-event='figure' so they still count."
+    "mx_event": "on the furniture layer (design_system='mx') every designed visual event carries data-mx-event on its outermost element — one of the Law-2 census types: figure|ephemera|ledger|statband|quote|plate|chart|marquee|cheatsheet. tools/measure-issue.mjs prefers these markers; the weekly's captioned photo plates carry data-mx-event='figure' so they still count.",
+    "coverage_rebuild_note": "The seven hooks below are the rendered-markup contracts of docs/editorial-coverage-rebuild-SPEC-2026-07-26.md §3.4 — emitted by stitch_weekly.py (WP-3), checked by validate-issue.py (WP-4). They are the machine record the old pipeline had nowhere to put, which is why an evergreen Long Read read as breaking news (defect A), a 2007 photograph illustrated a 2021 breakthrough (defect B), a holding-pattern story kept the cover (defect C) and Sunday-concluding results vanished (defect D).",
+    "long_read_vintage": "the long-read section ALWAYS carries data-vintage='news|evergreen', taken from the plan's long_read.vintage. When evergreen the stitcher also emits, inside .lr-title between the mono kicker and the <h2>, a `<div class=\"mono lr-vintage\">NOT THIS WEEK · A STANDING STORY · <material_span> · LATEST DEVELOPMENT <MON YYYY></div>` and REMOVES the issue date from the `.byline` (replacing it with '· A STANDING STORY'). When news there is no .lr-vintage and the .byline carries today's date. NOTE: the .lr-title block itself is writer-authored in this pipeline (see references/golden/*/chapters/long_read.html) — the stitcher normalises it, it does not generate it.",
+    "figure_provenance": "every .plate-img carries data-shows, data-capture-year, data-licence and data-allows-derivatives (SPEC §3.4). The stitcher FILLS these from assets/cached/manifest.json (SPEC §3.10) by joining on the sha256(url)[:12] that mirror-images.py already uses as the cached filename, so `<img src=\"/assets/cached/<hash>.jpg\">` resolves automatically; a writer-authored attribute always wins, and a figure whose asset is not in the manifest MUST carry them in the writer's own markup. data-capture-year='' is the rendering of a null capture year (legal only for a synthetic diagram/chart).",
+    "letter_lr_framing": "when the Long Read is evergreen, the paragraph of The Letter that introduces it carries data-lr-framing='feature'. It is a prose paragraph the WRITER authors — the stitcher cannot know which one, so it only reports its absence; validate-issue.py is the gate.",
+    "results_ledger": "the Touchline's ledger carries data-role='results-ledger' and every .mx-ledger__row inside it carries data-sport='<sport token>'. The vocabulary is the canonical SPORT-TOKEN list in references/spec/data-contracts.md § Sport tokens (22 tokens, lowercase snake_case, the SPORT and never the competition — 'football' not 'premier_league', 'motorsport' not 'f1'). data-sport='multi_sport' is FORBIDDEN in rendered HTML and validate-issue.py hard-fails it: a result belongs to a specific sport, so rows derived from a multi-sport games carry 'athletics', 'swimming', 'boxing' and so on — one row per sport, never one row for the games. multi_sport is legal ONLY in state's sports_calendar[].sport, where it classifies an EVENT. A data-sport value outside the 22 only WARNS (the games long tail — lawn bowls, para events — must never block a ship; the warning is the prompt for WP-1 to append to the list). See invariants.results_ledger_multi_sport.",
+    "table_kind": "every .mx-scorecard carries data-table-kind ∈ league|medal|gc|leaderboard|championship — the standings card is polymorphic, so a medal table, a general classification or a golf board are all renderable (defect D: the old single-competition shape meant only a weekly-table sport could fill the Touchline's furniture).",
+    "resolves_loop": "any element reporting a carried-forward result carries data-resolves-loop='<loop id>', the id of an entry in state's open_loops[] (SPEC §3.5/§3.7).",
+    "demoted_lead": "a policy ledger in THE CLOSE reporting a story that has lost the cover carries data-role='demoted-lead' on its .mx-ledger.",
+    "cover_leads_on": "the cover carries data-cover-leads-on='news|long_read' from issue_meta.cover_leads_on, and each cover station additionally carries data-station-band='<band_id>'. When cover_leads_on='long_read' the stitcher hoists the long_read station to the top of the tuner and tunes it ON, so the station list leads with the Long Read rather than following skeleton order. (These two attributes are WP-3 additions beyond the §3.4 list — they exist so the cover-lead decision is auditable in the rendered object; they are additive and inert to any check that ignores them.)"
   },
   "furniture_layer": {
     "note": "WP-8 / v8.43 — the weekly IS upgraded (spec Law 11) and the core furniture layer is now ON BY DEFAULT for every weekly: it reaches its Law-2 density budget (0.8-1.0 events/screen, no 3+ dead-screen run) by distributing CORE FURNITURE across bands via the transmission alias, without touching the identity (same masthead, 800px chassis, palette, three faces, radio conceit). DEFAULT: weekly plans set issue_meta.design_system='mx' — the stitcher then loads skins/skin-transmission.css (the --mx-* alias) + assets/css/weekly-mx/*.css and mx-motion.js (data-motion='tier1'), and emits <body data-skin='transmission' data-mx data-motion='tier1' data-format='weekly'>. The canonical worked example is the mx golden at references/golden/weekly-mx/chapters/. The legacy path (design_system absent -> byte-identical pre-WP-8 generator) is RETAINED ONLY for the back-compat golden references/golden/weekly/; do not use it for new issues. The writer fills these component interiors inside the relevant band's content file; the stitcher still owns ALL chrome. Reference rhythm: docs/mockups/unification-furniture-kit-mockup.html spread 2. DISTRIBUTE — never cluster all furniture in one band (that reintroduces the dead-run failure at the other width) and never strand a short furniture object in a rigid column beside tall text (the WP-8.1 Desk blank-column fix: balance the columns or float the object). Motion attaches to furniture only, never running text; JS-off renders 100% of content.",
     "components": {
-      "fixtures_ledger": ".mx-ledger (data-mx-event='ledger') — the week's sport results/fixtures as mono ledger rows (.mx-ledger__row: date/match/result[/note]). Lives in The Touchline.",
+      "results_ledger": ".mx-ledger (data-mx-event='ledger', data-role='results-ledger') — THE RESULTS OF RECORD: every event that CONCLUDED since the previous issue's research cut (issue_meta.window.from), one row per event, as mono ledger rows (.mx-ledger__row: date/match/result[/note]). Lives in The Touchline. EVERY row carries data-sport='<sport token>' — a SPECIFIC sport from the canonical 22-token list in references/spec/data-contracts.md § Sport tokens, never the container value 'multi_sport' (forbidden in rendered HTML, hard-failed by validate-issue.py). A multi-sport games contributes ONE ROW PER SPORT: a Commonwealth Games swimming final is data-sport='swimming', a Games 10,000m is data-sport='athletics'. Forward fixtures do NOT belong here — they moved to On the Radar (see fixtures_lookahead), because a ledger mixing concluded results with pending kick-offs is how issue #17 reported a World Cup final as 'still to be played' and then never reported the result at all (defect D). Renamed from `fixtures_ledger` by SPEC §3.11; no script keyed on the old name.",
+      "fixtures_lookahead": ".mx-ledger (data-mx-event='ledger') carrying the WEEK AHEAD's dated sport fixtures, in On the Radar. This is the other half of the fixtures/results split: it is NOT the results ledger and must NOT carry data-role='results-ledger'. Anything in it is unresolved by definition, and anything in it that concludes before the next research cut should open an entry in state's open_loops[] so the following issue owes a result (SPEC §3.5/§3.7).",
       "ticket": ".mx-ticket (data-mx-event='ephemera') — a physical ticket-stub object for the week's single Do-This-Week pick (perforated stub + .mx-stamp seal). Lives in Do This Week (and/or a marquee result in The Touchline).",
-      "standings_card": ".mx-scorecard (data-mx-event='ledger') — a compact standings/table dressed as card stock (tilt + hard shadow), cells wrap (never truncate). Lives in The Touchline.",
+      "standings_card": ".mx-scorecard (data-mx-event='ledger') — a compact standings/table dressed as card stock (tilt + hard shadow), cells wrap (never truncate). Lives in The Touchline. POLYMORPHIC (SPEC §3.4/§3.11): it carries data-table-kind ∈ league|medal|gc|leaderboard|championship, and assets/css/weekly-mx/11-mx-coverage-rebuild.css styles each shape — league/championship = position·name·points (championship rules off after the podium), medal = rank·nation·G·S·B(·total) with narrow right-aligned counts, gc = rank·rider·time gap, leaderboard = position·player·score-to-par (optional tr.is-cut for the cut line). Before this the card had exactly ONE shape — a single right-aligned gap column — so a medal table, a general classification or a golf board could not be rendered at all, and the Touchline's furniture only fitted a weekly-table sport (defect D).",
       "quote_objects": ".mx-quote (data-mx-event='quote') — the week's named verbatim voices lifted out of inline prose into objects (blockquote + attributed figcaption). Law-9 weekly floor is >=4 distinct named external voices; each quote max 2 renderings. Distribute across The Touchline / Screen & Sound / the Long Read.",
       "chart_card": ".mx-card--chart (data-mx-event='chart') — one self-made sparkline/bar SVG (.mx-chart .mx-chartline, pathLength='1' to draw in) for The Week in Numbers.",
-      "dial_signature": ".mx-dial inside a .mx-sig-dial-sweep wrapper — the weekly's Law-5 signature moment: the radio dial's needle sweeps to the band frequency on entry. Optional but recommended in The Touchline (the radio conceit). No needle dial elsewhere in the weekly."
+      "dial_signature": ".mx-dial inside a .mx-sig-dial-sweep wrapper — the weekly's Law-5 signature moment: the radio dial's needle sweeps to the band frequency on entry. OPTIONAL, and RETARGETABLE to whatever leads the band — it is not the Touchline's property (SPEC §3.11 drops the 'recommended in The Touchline' framing: a standing recommendation on a single-competition dial is part of what made one sport saturate the band). No needle dial elsewhere in the weekly.",
+      "demoted_lead_ledger": ".mx-ledger (data-mx-event='ledger', data-role='demoted-lead') — the policy ledger for a story that HELD the cover and no longer does: what moved, what did not, what the story is now waiting on. Lives in THE CLOSE, normally The Threads (the continuity band). It is the shape defect C had no home for — a story in a holding pattern kept the lead because demotion had no rendering. Set in the quieter voice (light top rule, pencil-grey caption, signal-blue rather than vermilion result column) because vermilion belongs to what leads."
     },
     "band_slots": {
       "week_in_numbers": [
@@ -36,7 +47,7 @@
       ],
       "touchline": [
         "dial_signature",
-        "fixtures_ledger",
+        "results_ledger",
         "ticket",
         "standings_card",
         "quote_objects"
@@ -46,6 +57,12 @@
       ],
       "long_read": [
         "quote_objects (a pulled voice or a dated mini-ledger to break the long prose run)"
+      ],
+      "the_threads": [
+        "demoted_lead_ledger"
+      ],
+      "on_the_radar": [
+        "fixtures_lookahead"
       ],
       "do_this_week": [
         "ticket"
@@ -171,9 +188,10 @@
       "content": "round",
       "component": "scores+items",
       "target_words": {
-        "min": 350,
-        "max": 600
-      }
+        "min": 500,
+        "max": 800
+      },
+      "note": "Budget RAISED from 350-600 by SPEC §3.11 (2026-07-26). The Touchline carries five of the six furniture objects; five objects in <=600 words is what forced single-competition coverage, because only one competition's worth of prose fitted around them. THIS RAISES PROSE, IT DOES NOT CUT FURNITURE — density is events-per-screen, and a 6-row results ledger across 4 sports is the same density as 6 rows of one race. Do not reduce the band_slots list to compensate. The band is MULTI-SPORT by construction: see furniture_layer.components.results_ledger and invariants.results_ledger_multi_sport."
     },
     "pixel_byte": {
       "name": "Pixel & Byte",
@@ -363,7 +381,8 @@
         "tuner",
         "dataline",
         "folio"
-      ]
+      ],
+      "leads_on": "issue_meta.cover_leads_on ∈ news|long_read (SPEC §3.1, REQUIRED on a weekly plan; the stitcher defaults to 'news' and warns, validate-chapter-plan.py is the gate). The stitcher renders it as data-cover-leads-on on <header class=\"cover\">. On 'long_read' the tuner's station list is REORDERED so the long_read station leads and is tuned ON, and the .lead__eyebrow DEFAULT becomes 'BAND 01 — THE LEAD TRANSMISSION · THE LONG READ'. The cover COPY (lead_head/lead_head_html, standfirst, an explicit eyebrow) stays the planner's in plan.cover — the stitcher supplies the declaration and the ordering, never editorial wording."
     },
     "colophon_footer": {
       "component": "colophon+signoff-line"
@@ -378,7 +397,8 @@
     "release_radar_inside_screen_sound": "data-role='release-radar' must exist and be a descendant of the screen_sound band's section; it must NEVER be its own band (no data-band='release_radar') or nav station",
     "navigator_ceiling": "reader-facing navigator entries (data-station on cover) must be between 4 and 13",
     "caught_up_cap": "the digest carries at most 8 <li> items",
-    "long_read_has_image": "the section carrying data-role='long-read' must contain >=1 real <img> tag — the anchor piece is illustrated; an empty .plate-box glyph placeholder does NOT count (2026-07-13 handoff A2)"
+    "long_read_has_image": "the section carrying data-role='long-read' must contain >=1 real <img> tag — the anchor piece is illustrated; an empty .plate-box glyph placeholder does NOT count (2026-07-13 handoff A2)",
+    "results_ledger_multi_sport": "the Touchline's results ledger (.mx-ledger[data-role='results-ledger']) must carry >=2 DISTINCT data-sport values whenever >=2 tracked sports had an event conclude in-window. 'Tracked' = a sport with a key in state's interest_depth other than 'off', PLUS any sport with a sports_calendar entry whose end falls inside issue_meta.window — and remember an ABSENT interest_depth key is unset, i.e. cover on news value, never 'off' (SPEC §3.5, WP-1 correction). SPEC §3.11/§3.4; acceptance criterion #7. This is the invariant that makes defect D unrepeatable: issue #18 spent 5 of 6 furniture objects on one Grand Prix while the World Cup final and The Open went unreported. DISTINCTNESS IS COUNTED OVER SPECIFIC SPORT TOKENS ONLY: data-sport='multi_sport' is forbidden and hard-fails (SPEC §3.11 § Sport tokens), because a container token collapses ten sports into one and a ledger of [motorsport, multi_sport] would satisfy '>=2 distinct' while delivering none of the breadth this invariant exists to force — the F1-saturation defect passing its own check. A multi-sport games is therefore rendered as one row PER SPORT (athletics, swimming, …), never one row for the games. A token outside the canonical 22 warns but does not fail."
   },
   "visual_consistency": {
     "note": "Also HARD-CHECKED by validate-issue.py --format weekly — the weekly must wear the constant warm Transmission identity, never the special/holiday costume. See docs/weekly-visual-identity-groundup-2026-07.md Part 7.4.",
