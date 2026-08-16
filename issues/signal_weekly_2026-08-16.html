@@ -1,0 +1,2908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Signal — Transmission №021</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================================
+   THE SIGNAL — "TRANSMISSION" WEEKLY DESIGN SYSTEM
+   ----------------------------------------------------------------------------
+   The single token layer + every component the weekly issue uses. This is the
+   ONLY stylesheet a weekly loads — it is fully self-contained. No @imports, no
+   per-section palette tokens, no holiday/special (.sp-* / .hol-*) rules.
+
+   PALETTE (light / default)
+     --paper   #F5F0E6  warm paper ground        --signal #FF3B2F  vermilion accent
+     --paper-2 #EFE8D9  second paper stock       --blue   #243F5C  signal blue
+     --ink     #16151A  primary body ink         --muted  #8A8578  pencil grey
+     --ink-2   #2C2A30  secondary body ink       --hair   #DDD5C3  hairline
+
+   FONTS (loaded via <link> in the head template — NOT imported here)
+     Instrument Serif · Newsreader · JetBrains Mono
+
+   DARK VARIANT
+     A warm-night mode is appended at the bottom via
+     @media (prefers-color-scheme: dark). It overrides ONLY the token values
+     (warm charcoal ground, warm off-white text, warm-brown hairlines, lightened
+     accents) plus the desk tone behind the page — "night reading, still paper."
+     Every component reads through the tokens, so no component rules are restated.
+   ============================================================================ */
+
+  :root{
+    --paper:#F5F0E6;
+    --paper-2:#EFE8D9;
+    --ink:#16151A;
+    --ink-2:#2C2A30;
+    --signal:#FF3B2F;
+    --blue:#243F5C;
+    --muted:#8A8578;
+    --hair:#DDD5C3;
+    --measure:64ch;
+  }
+
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:var(--muted);
+    color:var(--ink);
+    font-family:"Newsreader",Georgia,serif;
+    font-size:19px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+
+  /* The "printed object" — a tablet-portrait page floating on a desk tone */
+  .issue{
+    max-width:800px;
+    margin:0 auto;
+    background:var(--paper);
+    box-shadow:0 1px 0 rgba(0,0,0,.04), 0 24px 60px -24px rgba(0,0,0,.45);
+    overflow:hidden;
+  }
+
+  /* ---------- shared type ---------- */
+  .mono{
+    font-family:"JetBrains Mono",ui-monospace,monospace;
+    text-transform:uppercase;
+    letter-spacing:.16em;
+    font-size:11px;
+    font-weight:500;
+    color:var(--muted);
+  }
+  .serif{font-family:"Instrument Serif",Georgia,serif;font-weight:400;}
+
+  /* ---------- the waveform / frequency rule ---------- */
+  .wave{
+    height:26px;
+    width:100%;
+    color:var(--signal);
+    display:block;
+  }
+  .wave svg{display:block;width:100%;height:100%;}
+  .wave--blue{color:var(--blue);}
+  .wave--ink{color:var(--ink);}
+
+  /* thin frequency tick rule (repeating gradient) */
+  .tickrule{
+    height:12px;
+    background-image:repeating-linear-gradient(90deg,
+      var(--ink) 0, var(--ink) 1px,
+      transparent 1px, transparent 7px);
+    opacity:.55;
+  }
+  .hair{height:1px;background:var(--hair);border:0;margin:0;}
+
+  /* ================= COVER ================= */
+  .cover{
+    padding:26px 40px 30px;
+    position:relative;
+  }
+  .cover__top{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    padding-bottom:12px;
+  }
+  .cover__top .mono{color:var(--ink);opacity:.75;}
+  .cover__top .price{color:var(--signal);}
+
+  .dataline{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:12px;
+    padding:14px 0 6px;
+  }
+  .dataline .dot{color:var(--signal);}
+
+  .masthead{
+    font-family:"Instrument Serif",Georgia,serif;
+    font-weight:400;
+    line-height:.86;
+    letter-spacing:-.02em;
+    font-size:118px;
+    margin:2px 0 0;
+    color:var(--ink);
+  }
+  .masthead em{
+    font-style:italic;
+    color:var(--signal);
+  }
+  .masthead__sub{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-top:8px;
+    border-bottom:2px solid var(--ink);
+    padding-bottom:12px;
+  }
+  .masthead__sub .tag{
+    font-family:"Newsreader",serif;
+    font-style:italic;
+    font-size:20px;
+    color:var(--blue);
+  }
+
+  /* lead + tuner two-column area */
+  .cover__body{
+    display:grid;
+    grid-template-columns:1.55fr .95fr;
+    gap:34px;
+    margin-top:26px;
+  }
+  .lead__eyebrow{margin-bottom:14px;color:var(--signal);}
+  .lead__head{
+    font-family:"Instrument Serif",Georgia,serif;
+    font-weight:400;
+    font-size:47px;
+    line-height:1.02;
+    letter-spacing:-.01em;
+    margin:0;
+  }
+  .lead__head .hl{color:var(--signal);font-style:italic;}
+  .lead__stand{
+    font-style:italic;
+    color:var(--blue);
+    font-size:20px;
+    line-height:1.35;
+    margin-top:18px;
+    max-width:34ch;
+  }
+
+  /* tuner / station list of coverlines */
+  .tuner{
+    border-top:2px solid var(--ink);
+    padding-top:10px;
+  }
+  .tuner__label{
+    display:flex;justify-content:space-between;align-items:baseline;
+    margin-bottom:6px;
+  }
+  .station{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:12px;
+    align-items:baseline;
+    padding:9px 0;
+    border-bottom:1px solid var(--hair);
+  }
+  .station:last-child{border-bottom:0;}
+  .station .freq{
+    font-family:"JetBrains Mono",monospace;
+    font-size:11px;
+    letter-spacing:.06em;
+    color:var(--muted);
+    padding-top:3px;
+  }
+  .station .name{
+    font-family:"Newsreader",serif;
+    font-size:18px;
+    line-height:1.24;
+    color:var(--ink);
+  }
+  .station .name b{font-weight:600;}
+  .station.on .freq{color:var(--signal);}
+  .station.on .name{color:var(--blue);}
+
+  /* oversized folio */
+  .folio{
+    position:absolute;
+    right:34px;
+    bottom:14px;
+    font-family:"Instrument Serif",Georgia,serif;
+    font-size:150px;
+    line-height:.7;
+    color:var(--signal);
+    opacity:.12;
+    letter-spacing:-.04em;
+    pointer-events:none;
+  }
+
+  /* ================= MOVEMENT DIVIDER ================= */
+  .movement{
+    padding:56px 40px 8px;
+  }
+  .movement__rule{
+    display:flex;
+    align-items:baseline;
+    gap:16px;
+    border-top:2px solid var(--ink);
+    padding-top:12px;
+  }
+  .movement__no{
+    font-family:"Instrument Serif",serif;
+    font-size:40px;
+    line-height:.8;
+    color:var(--signal);
+  }
+  .movement__name{
+    font-family:"Instrument Serif",serif;
+    font-size:34px;
+    line-height:.9;
+    color:var(--ink);
+  }
+  .movement__meta{margin-left:auto;color:var(--muted);}
+
+  /* ================= SECTION SCAFFOLD ================= */
+  section{padding:0 40px;}
+  .band{
+    padding:52px 40px 0;
+  }
+  .bandhead{
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+    margin-bottom:6px;
+  }
+  .bandhead .code{color:var(--signal);}
+  .bandhead .code b{color:var(--ink);font-weight:700;}
+  .bandhead .runtime{margin-left:auto;color:var(--muted);}
+  /* accent tick — the one section marker */
+  .bandhead::before{
+    content:"";
+    width:9px;height:9px;
+    background:var(--signal);
+    display:inline-block;
+    align-self:center;
+    flex:0 0 auto;
+    transform:translateY(-1px);
+  }
+
+  /* ================= THE LETTER ================= */
+  .letter{max-width:var(--measure);margin:0 auto;padding-top:22px;padding-bottom:8px;}
+  .letter h2{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:34px;line-height:1.05;margin:0 0 4px;
+  }
+  .letter .kicker{color:var(--blue);font-style:italic;font-size:19px;margin-bottom:22px;}
+  .letter p{margin:0 0 18px;}
+  .letter p.first{text-indent:0;}
+  .letter p.first::first-letter{
+    font-family:"Instrument Serif",serif;
+    float:left;
+    font-size:82px;
+    line-height:.72;
+    padding:8px 12px 0 0;
+    color:var(--signal);
+  }
+  .letter .sig{
+    font-family:"Instrument Serif",serif;
+    font-style:italic;
+    font-size:26px;
+    color:var(--ink);
+    margin-top:26px;
+  }
+  .letter .sigline{margin-top:2px;}
+
+  /* ================= THE WEEK IN NUMBERS (ledger data panel) ================= */
+  .figures{max-width:var(--measure);margin:14px auto 0;}
+  .figures-frame{
+    border:1.5px solid var(--ink);
+    position:relative;
+    background:var(--paper-2);
+  }
+  .figures-frame::after{
+    content:""; position:absolute; inset:4px;
+    border:.75px solid var(--signal); opacity:.4; pointer-events:none;
+  }
+  .fig-caption{
+    display:flex;justify-content:space-between;align-items:baseline;
+    font-family:"JetBrains Mono",monospace;
+    text-transform:uppercase; letter-spacing:.16em;
+    font-size:11px; color:var(--muted); font-weight:500;
+    padding:12px 0 10px;
+    border-bottom:1px solid var(--hair);
+    margin:0 20px;
+  }
+  .fig-caption b{color:var(--signal);font-weight:700;}
+  .fig-row{
+    display:grid;
+    grid-template-columns:1fr auto;
+    align-items:baseline;
+    gap:16px;
+    padding:16px 20px;
+    border-bottom:1px solid var(--hair);
+  }
+  .fig-row:last-of-type{border-bottom:0;}
+  .fig-label .k{
+    font-family:"JetBrains Mono",monospace;
+    text-transform:uppercase; letter-spacing:.1em;
+    font-size:12px; color:var(--blue); font-weight:500;
+    display:block;
+  }
+  .fig-label .d{
+    font-style:italic; color:var(--muted); font-size:15px;
+  }
+  .fig-val{
+    font-family:"Instrument Serif",serif;
+    font-size:52px;
+    line-height:.82;
+    text-align:right;
+    letter-spacing:-.01em;
+    white-space:nowrap;
+    color:var(--ink);
+  }
+  .fig-val small{
+    font-size:20px;
+    font-style:italic;
+    font-family:"Newsreader",serif;
+    color:var(--muted);
+    margin-left:3px;
+  }
+  .fig-val .win{color:var(--signal);}
+  .fig-foot{
+    display:flex;justify-content:space-between;align-items:baseline;
+    font-family:"JetBrains Mono",monospace;
+    text-transform:uppercase;letter-spacing:.12em;
+    color:var(--muted);
+    font-size:10.5px;
+    padding:12px 20px 14px;
+    border-top:1px solid var(--hair);
+  }
+
+  /* ================= CAUGHT UP ================= */
+  .caughtup{padding-top:20px;}
+  .digest{
+    max-width:var(--measure);
+    margin:14px auto 0;
+    list-style:none;
+    padding:0;
+    counter-reset:d;
+  }
+  .digest li{
+    counter-increment:d;
+    display:grid;
+    grid-template-columns:38px 1fr;
+    gap:16px;
+    align-items:baseline;
+    padding:13px 0;
+    border-bottom:1px solid var(--hair);
+  }
+  .digest li:first-child{border-top:1px solid var(--ink);}
+  .digest li::before{
+    content:counter(d,decimal-leading-zero);
+    font-family:"JetBrains Mono",monospace;
+    font-size:12px;
+    color:var(--signal);
+    letter-spacing:.05em;
+    padding-top:4px;
+  }
+  .digest li p{margin:0;font-size:18px;line-height:1.4;}
+  .digest li b{font-weight:600;color:var(--blue);}
+
+  /* ================= THE LONG READ ================= */
+  .longread{padding-top:24px;padding-bottom:8px;}
+  .lr-title{
+    max-width:var(--measure);
+    margin:6px auto 0;
+  }
+  .lr-title h2{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:58px;line-height:1.0;letter-spacing:-.015em;
+    margin:14px 0 0;
+  }
+  .lr-title h2 em{font-style:italic;color:var(--signal);}
+  .lr-title .stand{
+    font-style:italic;color:var(--blue);
+    font-size:23px;line-height:1.34;
+    margin:20px 0 0;max-width:44ch;
+  }
+  .lr-title .byline{
+    margin-top:20px;color:var(--muted);
+  }
+  .lr-body{
+    max-width:var(--measure);
+    margin:0 auto;
+    font-size:20px;
+    line-height:1.72;
+  }
+  .lr-body p{margin:0 0 22px;}
+  .lr-body p.first{text-indent:0;}
+  .lr-body p.first::first-letter{
+    font-family:"Instrument Serif",serif;
+    float:left;
+    font-size:96px;
+    line-height:.68;
+    padding:10px 14px 0 0;
+    color:var(--signal);
+  }
+  .lr-body p + p{text-indent:1.4em;}
+  .lr-body p.first, .lr-body p.noindent{text-indent:0;}
+
+  .pullquote{
+    margin:34px 0;
+    padding:6px 0 6px 26px;
+    border-left:3px solid var(--signal);
+    font-family:"Instrument Serif",serif;
+    font-size:34px;
+    line-height:1.14;
+    color:var(--blue);
+    text-indent:0;
+  }
+  .pullquote .attr{
+    display:block;
+    font-family:"JetBrains Mono",monospace;
+    text-transform:uppercase;letter-spacing:.14em;
+    font-size:11px;color:var(--muted);
+    margin-top:14px;
+  }
+
+  /* captioned image — real <img> or the drawn placeholder box */
+  .plate-img{
+    max-width:var(--measure);
+    margin:38px auto;
+  }
+  .plate-img img{
+    display:block;
+    width:100%;
+    height:auto;
+    border:1px solid var(--hair);
+    background:var(--paper-2);
+  }
+  /* a wider "plate" for a section-opening lead image */
+  .plate-img.lead{ margin:8px auto 26px; }
+  .plate-box{
+    aspect-ratio:16/9;
+    border:1px solid var(--hair);
+    background:
+      repeating-linear-gradient(135deg, transparent 0, transparent 13px, rgba(36,63,92,.06) 13px, rgba(36,63,92,.06) 14px),
+      var(--paper-2);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+  }
+  .plate-box::after{
+    content:"";
+    position:absolute;inset:8px;
+    border:1px dashed var(--hair);
+    pointer-events:none;
+  }
+  .plate-box .glyph{
+    font-family:"JetBrains Mono",monospace;
+    text-transform:uppercase;letter-spacing:.2em;
+    font-size:11px;color:var(--muted);
+  }
+  .plate-cap{
+    display:flex;gap:12px;align-items:baseline;
+    margin-top:10px;
+  }
+  .plate-cap .fig{color:var(--signal);flex:0 0 auto;}
+  .plate-cap .txt{font-style:italic;color:var(--muted);font-size:15px;line-height:1.35;}
+  .plate-cap .credit{
+    font-family:"JetBrains Mono",monospace;
+    text-transform:uppercase;letter-spacing:.1em;
+    font-size:10px;color:var(--muted);font-style:normal;
+    display:block;margin-top:4px;
+  }
+
+  /* case-against aside — a warm planner note, ground-disciplined */
+  .aside-note{
+    max-width:var(--measure);
+    margin:34px auto;
+    background:var(--paper-2);
+    border-top:2px solid var(--ink);
+    border-bottom:1px solid var(--hair);
+    padding:18px 22px 20px;
+  }
+  .aside-note .lbl{
+    display:flex;gap:10px;align-items:baseline;
+    color:var(--signal);margin-bottom:10px;
+  }
+  .aside-note .lbl b{color:var(--ink);}
+  .aside-note h4{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:25px;line-height:1.08;margin:0 0 8px;
+  }
+  .aside-note p{margin:0;font-size:17px;line-height:1.5;color:var(--ink-2);}
+
+  /* ================= THE ROUNDS — compact rhythm ================= */
+  .round{padding-top:20px;padding-bottom:4px;}
+  .round .lead{
+    max-width:var(--measure);
+    margin:12px auto 22px;
+    font-size:19px;
+  }
+  .round .lead .drop{color:var(--signal);font-weight:600;}
+
+  /* two-column score grid (touchline) */
+  .scores{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:1px;
+    background:var(--hair);
+    border:1px solid var(--hair);
+    max-width:var(--measure);
+    margin:0 auto;
+  }
+  .score{
+    background:var(--paper);
+    padding:20px 22px 22px;
+  }
+  .score.wide{grid-column:1 / -1;}
+  .score .tag{color:var(--signal);margin-bottom:10px;display:block;}
+  .score h3{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:27px;line-height:1.04;margin:0 0 8px;
+  }
+  .score.wide h3{font-size:33px;}
+  .score p{margin:0;font-size:17px;line-height:1.42;color:var(--ink-2);}
+  .score .num{color:var(--blue);font-weight:600;}
+
+  /* items list — brisk scannable rows for rounds */
+  .items{
+    max-width:var(--measure);
+    margin:6px auto 0;
+    list-style:none;padding:0;
+  }
+  .items li{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:16px;
+    align-items:baseline;
+    padding:14px 0;
+    border-bottom:1px solid var(--hair);
+  }
+  .items li:first-child{border-top:1px solid var(--ink);}
+  .items .freq{
+    font-family:"JetBrains Mono",monospace;
+    font-size:11px;letter-spacing:.06em;
+    color:var(--signal);padding-top:5px;
+    white-space:nowrap;
+  }
+  .items h3{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:24px;line-height:1.06;margin:0 0 4px;
+  }
+  .items p{margin:0;font-size:16.5px;line-height:1.44;color:var(--ink-2);}
+  .items p b{color:var(--blue);font-weight:600;}
+
+  /* section with a side rail (screen & sound / bookmark) */
+  .with-rail{
+    max-width:var(--measure);
+    margin:6px auto 0;
+    display:grid;
+    grid-template-columns:1.5fr .9fr;
+    gap:30px;
+    align-items:start;
+  }
+  .rail{
+    border-top:2px solid var(--ink);
+    padding-top:10px;
+  }
+  .rail__label{
+    display:flex;justify-content:space-between;align-items:baseline;
+    margin-bottom:10px;
+  }
+  .rail__label .t{color:var(--signal);}
+  .rail-item{
+    padding:10px 0;
+    border-bottom:1px solid var(--hair);
+  }
+  .rail-item:last-child{border-bottom:0;}
+  .rail-item .when{
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;letter-spacing:.1em;
+    color:var(--blue);text-transform:uppercase;
+    display:block;margin-bottom:3px;
+  }
+  .rail-item .what{
+    font-family:"Newsreader",serif;
+    font-size:17px;line-height:1.24;
+  }
+  .rail-item .what b{font-weight:600;}
+  .rail-item .what i{font-style:italic;color:var(--muted);font-size:14.5px;display:block;margin-top:1px;}
+
+  /* bookmark picks */
+  .picks{list-style:none;padding:0;margin:6px 0 0;}
+  /* spine · jacket · copy on ONE row (three columns) so the tall cover never
+     strands the copy onto a second row with a blank column beside it. */
+  .picks li{
+    display:grid;
+    grid-template-columns:8px 205px 1fr;
+    gap:22px;
+    padding:26px 0;
+    border-bottom:1px solid var(--hair);
+    align-items:start;
+  }
+  .picks li:first-child{border-top:1px solid var(--ink);}
+  .picks .spine{
+    width:8px;align-self:stretch;
+    background:var(--blue);
+    min-height:52px;
+  }
+  .picks .jacket{display:block;}
+  .picks .jacket img{
+    display:block;width:100%;height:auto;
+    box-shadow:0 8px 20px -10px rgba(0,0,0,.55);
+  }
+  .picks li:nth-child(2) .spine{background:var(--signal);}
+  .picks li:nth-child(3) .spine{background:var(--muted);}
+  .picks h3{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:23px;line-height:1.05;margin:0 0 2px;
+  }
+  .picks .meta{color:var(--muted);font-style:italic;font-size:14.5px;margin-bottom:5px;}
+  .picks p{margin:0;font-size:16.5px;line-height:1.42;color:var(--ink-2);}
+
+  /* ================= THE DESK — service columns w/ planner pins ================= */
+  .desk{
+    max-width:var(--measure);
+    margin:8px auto 0;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:30px;
+  }
+  .deskcol h3{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:27px;line-height:1.04;margin:0 0 4px;
+    border-top:2px solid var(--ink);padding-top:12px;
+  }
+  .deskcol .sub{color:var(--signal);margin-bottom:12px;display:block;}
+  .deskcol p{margin:0 0 14px;font-size:17px;line-height:1.5;}
+  .deskcol p b{color:var(--blue);font-weight:600;}
+
+  /* the shared planner-note device: "Do This Week" pin */
+  .pin{
+    background:var(--paper-2);
+    border-left:3px solid var(--signal);
+    padding:13px 16px 15px;
+    margin-top:6px;
+  }
+  .pin .pinlbl{
+    display:flex;gap:8px;align-items:center;
+    color:var(--signal);margin-bottom:6px;
+  }
+  .pin .pinlbl::before{
+    content:"";width:7px;height:7px;background:var(--signal);
+    display:inline-block;transform:rotate(45deg);
+  }
+  .pin .pinlbl b{color:var(--ink);}
+  .pin .act{
+    font-family:"Newsreader",serif;
+    font-size:18px;line-height:1.32;font-weight:600;
+    color:var(--ink);margin:0 0 5px;
+  }
+  .pin .why{margin:0;font-size:15px;line-height:1.4;font-style:italic;color:var(--muted);}
+
+  /* ================= THE THREADS ================= */
+  .threads{max-width:var(--measure);margin:14px auto 0;}
+  .thread{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:18px;
+    padding:16px 0;
+    border-bottom:1px solid var(--hair);
+    align-items:baseline;
+  }
+  .thread:first-child{border-top:1px solid var(--ink);}
+  .thread .ep{
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;letter-spacing:.08em;
+    color:var(--signal);text-transform:uppercase;
+    padding-top:5px;white-space:nowrap;
+  }
+  .thread h3{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:24px;line-height:1.06;margin:0 0 4px;
+  }
+  .thread .prev{
+    font-style:italic;color:var(--muted);font-size:15px;
+    margin:0 0 6px;
+  }
+  .thread p{margin:0;font-size:16.5px;line-height:1.44;color:var(--ink-2);}
+  .thread p b{color:var(--blue);font-weight:600;}
+
+  /* ================= RABBIT HOLE ================= */
+  .rabbit{
+    max-width:var(--measure);
+    margin:16px auto 0;
+    background:var(--paper-2);
+    border:1.5px solid var(--ink);
+    position:relative;
+    padding:26px 28px 28px;
+  }
+  .rabbit::after{
+    content:"";position:absolute;inset:5px;
+    border:.75px solid var(--signal);opacity:.35;pointer-events:none;
+  }
+  .rabbit .lbl{color:var(--signal);margin-bottom:14px;display:block;}
+  .rabbit .chain{
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    gap:16px;
+    align-items:center;
+    margin-bottom:18px;
+  }
+  .rabbit .node .cap{color:var(--muted);display:block;margin-bottom:4px;}
+  .rabbit .node .nm{
+    font-family:"Instrument Serif",serif;font-size:26px;line-height:1.02;
+  }
+  .rabbit .arrow{
+    font-family:"Instrument Serif",serif;font-style:italic;
+    color:var(--signal);font-size:30px;line-height:1;
+  }
+  .rabbit p{margin:0;font-size:18px;line-height:1.56;}
+  .rabbit p em{font-style:italic;color:var(--blue);}
+
+  /* ================= ON THE RADAR ================= */
+  .radar{max-width:var(--measure);margin:14px auto 0;list-style:none;padding:0;}
+  .radar li{
+    display:grid;
+    grid-template-columns:120px 1fr;
+    gap:18px;
+    padding:13px 0;
+    border-bottom:1px solid var(--hair);
+    align-items:baseline;
+  }
+  .radar li:first-child{border-top:1px solid var(--ink);}
+  .radar .date{
+    font-family:"JetBrains Mono",monospace;
+    font-size:11px;letter-spacing:.06em;color:var(--signal);
+  }
+  .radar .ev{font-size:17px;line-height:1.34;}
+  .radar .ev b{color:var(--blue);font-weight:600;}
+
+  /* closing "do this week" — the strongest single pin */
+  .closepin{
+    max-width:var(--measure);
+    margin:20px auto 0;
+    background:var(--paper-2);
+    border-top:3px solid var(--signal);
+    border-bottom:1px solid var(--hair);
+    padding:22px 26px 24px;
+  }
+  .closepin .pinlbl{display:flex;gap:10px;align-items:baseline;color:var(--signal);margin-bottom:10px;}
+  .closepin .pinlbl b{color:var(--ink);}
+  .closepin .act{
+    font-family:"Instrument Serif",serif;font-size:32px;line-height:1.08;
+    margin:0 0 8px;color:var(--ink);
+  }
+  .closepin .why{margin:0;font-size:17px;line-height:1.46;font-style:italic;color:var(--muted);}
+
+  /* ================= COLOPHON ================= */
+  .endnumbers{
+    max-width:var(--measure);
+    margin:20px auto 0;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:1px;background:var(--hair);border:1px solid var(--hair);
+  }
+  .endnumbers .cell{
+    background:var(--paper);padding:16px 18px;
+  }
+  .endnumbers .cell .k{color:var(--muted);display:block;margin-bottom:4px;}
+  .endnumbers .cell .v{
+    font-family:"Instrument Serif",serif;font-size:30px;line-height:1;color:var(--ink);
+  }
+  .endnumbers .cell .v em{color:var(--signal);font-style:italic;}
+
+  .colophon{
+    padding:26px 40px 20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-top:2px solid var(--ink);
+    margin-top:32px;
+  }
+  .colophon .serif{font-size:30px;}
+  .colophon .serif em{font-style:italic;color:var(--signal);}
+  .signoff-line{
+    padding:6px 40px 44px;
+    text-align:center;
+  }
+  .signoff-line .big{
+    font-family:"Instrument Serif",serif;
+    font-size:30px;line-height:1.16;
+    color:var(--ink);
+    max-width:30ch;margin:14px auto 0;
+  }
+  .signoff-line .big em{font-style:italic;color:var(--signal);}
+  .signoff-line .stamp{margin-top:16px;color:var(--muted);}
+
+  /* ---- portrait tablet niceties ---- */
+  @media (max-width:640px){
+    .cover{padding:22px 24px 26px;}
+    .masthead{font-size:78px;}
+    .cover__body{grid-template-columns:1fr;gap:26px;}
+    .lead__head{font-size:38px;}
+    section{padding:0 24px;}
+    .band{padding:44px 24px 0;}
+    .movement{padding:48px 24px 8px;}
+    .colophon,.signoff-line{padding-left:24px;padding-right:24px;}
+    .scores{grid-template-columns:1fr;}
+    .score.wide{grid-column:auto;}
+    .folio{font-size:110px;}
+    .lr-title h2{font-size:44px;}
+    .with-rail,.desk{grid-template-columns:1fr;gap:26px;}
+    .rabbit .chain{grid-template-columns:1fr;gap:8px;text-align:center;}
+    .rabbit .arrow{transform:rotate(90deg);}
+    .endnumbers{grid-template-columns:1fr;}
+    .radar li{grid-template-columns:1fr;gap:2px;}
+    .picks li{grid-template-columns:6px 108px 1fr;gap:14px;}
+  }
+
+  /* ============================================================================
+     WARM-NIGHT DARK VARIANT
+     ----------------------------------------------------------------------------
+     "Night reading, still paper." Overrides ONLY the token values plus the desk
+     tone behind the page. Every component reads through the tokens above, so no
+     component rule is restated here. Warm charcoal ground (never cold/black),
+     warm off-white text, warm-brown hairlines, accents lightened for the ground.
+     ============================================================================ */
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#1A1613;    /* warm charcoal ground */
+      --paper-2:#221D18;  /* slightly lifted second stock */
+      --ink:#ECE4D4;      /* warm off-white primary text */
+      --ink-2:#C9C1B2;    /* muted warm secondary text */
+      --signal:#FF5A47;   /* vermilion, lightened for dark ground */
+      --blue:#93B4D6;     /* signal-blue lightened to read on charcoal */
+      --muted:#9A9484;    /* pencil grey, nudged lighter */
+      --hair:#3A3227;     /* warm-brown hairline */
+    }
+    /* the desk tone behind the floating page (light mode keeps var(--muted)) */
+    body{background:#0F0D0B;}
+    /* soften the drop shadow so it reads as depth, not a black halo, on charcoal */
+    .issue{box-shadow:0 1px 0 rgba(0,0,0,.20), 0 24px 60px -24px rgba(0,0,0,.70);}
+  }
+
+/* ============================================================================
+   WEEKLY · COVERAGE-REBUILD COMPONENTS (core)                 WP-3, 2026-07-26
+   The SPEC §3.4 markup contracts that must style with or without the mx
+   furniture layer. The mx-only variants (results ledger, demoted-lead ledger,
+   polymorphic .mx-scorecard) are in weekly-mx/11-mx-coverage-rebuild.css.
+   Rationale for every rule: weekly.json § structural_hooks + EVIDENCE/WP-3.md.
+   Identity: no font, no colour, no new token — only the eight Transmission
+   tokens, so the warm-night variant needs no restatement. No .sp-* / .hol-*.
+   ============================================================================ */
+
+  /* ---------- Long Read vintage stamp (§3.4, defect A) ----------
+     An evergreen anchor declares itself above the headline. Ruled mono band —
+     the same "stamped on the paper" gesture as .bandhead, so it reads as
+     furniture, not as a sentence the Editor wrote. Signal-BLUE, not vermilion:
+     vermilion is the one accent and the kicker directly above already spends it.
+     A news anchor emits no .lr-vintage, so there is nothing to style. */
+  .lr-title .lr-vintage{
+    margin:12px 0 0;
+    padding:7px 0 8px;
+    border-top:1px solid var(--hair);
+    border-bottom:1px solid var(--hair);
+    color:var(--blue);
+    letter-spacing:.14em;
+    line-height:1.55;
+  }
+  .lr-title .lr-vintage + h2{ margin-top:18px; }   /* give the headline its air back */
+
+  /* ---------- resolved loops (§3.4, defect D) ----------
+     data-resolves-loop marks a carried-forward result being CLOSED this week.
+     Blue spine = the continuity cue, so a closure reads the same wherever it
+     lands. Core components only; the .mx-ledger row form is in the mx layer. */
+  .items > li[data-resolves-loop],
+  .digest > li[data-resolves-loop],
+  .threads [data-resolves-loop]{
+    box-shadow:inset 2px 0 0 var(--blue);
+    padding-left:14px;
+  }
+  .score[data-resolves-loop]{
+    border-left:2px solid var(--blue);
+    padding-left:14px;
+  }
+  [data-resolves-loop] .num{ color:var(--blue); }
+
+  @media (max-width:640px){
+    .lr-title .lr-vintage{ letter-spacing:.1em; line-height:1.6; }
+    .items > li[data-resolves-loop],
+    .digest > li[data-resolves-loop],
+    .threads [data-resolves-loop],
+    .score[data-resolves-loop]{ padding-left:10px; }
+  }
+
+/* ============================================================
+   MX SKIN · skin-transmission.css                    (L1, WP-3)
+   Alias block ONLY: maps the weekly's EXISTING Transmission
+   tokens (assets/css/weekly/00-transmission.css) onto the mx
+   contract so core furniture can drop into a weekly without
+   restyling it (Law 11 / WP-8). Loads AFTER the weekly bundle;
+   the weekly's own CSS stays byte-identical. No components, no
+   :not(), no new colours — every value is a weekly token or a
+   direct derivative.  ACTIVATION: <body … data-skin="transmission">
+   ============================================================ */
+body[data-skin="transmission"] {
+  --mx-paper: var(--paper);         --mx-ink: var(--ink);
+  --mx-ink-soft: var(--muted);      --mx-hair: var(--hair);
+  --mx-accent: var(--signal);       --mx-accent-ink: var(--paper);
+  --mx-accent-2: var(--blue);       --mx-accent-2-ink: var(--paper);
+  --mx-support-1: var(--blue);      --mx-support-2: var(--muted);
+  --mx-card: var(--paper-2);        --mx-card-ink: var(--ink);
+  --mx-card-window: var(--paper-2); --mx-card-edge: var(--hair);
+  --mx-quote-bg: var(--paper-2);    --mx-ghost: rgba(22, 21, 26, 0.08);
+  --mx-tape: rgba(221, 213, 195, 0.8);
+  --mx-shadow: rgba(0, 0, 0, 0.35);
+  --mx-hand-ink: var(--signal);     --mx-stamp-ink: var(--signal);
+  --mx-chrome-bg: var(--ink);       --mx-chrome-ink: var(--paper);
+  --mx-t-chunk: "Instrument Serif", Georgia, serif;   /* weekly display voice */
+  --mx-t-tall: "Instrument Serif", Georgia, serif;
+  --mx-t-script: "Instrument Serif", Georgia, serif;  /* weekly has no script voice */
+  --mx-t-hand: "Instrument Serif", Georgia, serif;
+  --mx-t-serif: "Newsreader", Georgia, serif;
+  --mx-t-mono: "JetBrains Mono", ui-monospace, monospace;
+  --mx-t-body: "Newsreader", Georgia, serif;
+  --mx-tilt: -1deg;  --mx-grain: 0.03;  --mx-measure: var(--measure, 64ch);
+  --mx-wrap: 720px;                 /* sits inside the 800px printed object */
+  --mx-micro: 0.72rem;              /* Law-8 mono micro-label floor (core 00-contract
+                                       is NOT bundled into the weekly; the components
+                                       read --mx-micro, so the alias must supply it) */
+}
+
+/* ============================================================
+   MX WEEKLY FURNITURE  ·  weekly-mx/10-mx-weekly.css        (WP-8)
+   Transmission weekly's core-furniture add-on. Bundled ONLY when
+   issue_meta.design_system == "mx"; a legacy weekly never loads
+   it and renders byte-identical to before. Law 11: every value
+   resolves through the transmission alias onto the weekly's own
+   tokens, so objects arrive dressed in Transmission paper/ink/
+   signal + the three faces (Instrument Serif / Newsreader /
+   JetBrains Mono). NO display fonts (chunk/tall/script/hand all
+   alias to Instrument Serif). CURATED SUBSET of the furniture
+   core (10-ephemera/11-ledgers/14-motion/15-responsive): only
+   the five deployed components (mx-ledger fixtures · mx-ticket ·
+   mx-scorecard standings · mx-quote voices · mx-card--chart) +
+   the radio-dial signature. Neutral mx- classes; class-scoped,
+   so a band with no mx- object renders exactly as today.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   00a · FIXED-CHROME RESERVATION (Law 10 — the back pill never
+   overlaps content). The archive pill is fixed top-left; fade it
+   out once the reader scrolls past the masthead (pure CSS scroll-
+   driven animation, no JS), and reserve the top zone where scroll-
+   timeline is unsupported. Body carries data-mx-chrome="pill".
+   Extracted from core/15-responsive.css §01.
+   ------------------------------------------------------------ */
+@supports (animation-timeline: scroll()) {
+  [data-mx-chrome~="pill"] .signal-back-to-archive {
+    animation: mx-pill-recede linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0px 300px;
+  }
+}
+@keyframes mx-pill-recede {
+  0%   { opacity: 1; }
+  55%  { opacity: 0; }
+  100% { opacity: 0; visibility: hidden; pointer-events: none; }
+}
+@supports not (animation-timeline: scroll()) {
+  [data-mx-chrome~="pill"] .signal-back-to-archive { opacity: 0.85; }
+}
+
+/* ------------------------------------------------------------
+   00 · SHELF + TWO-COLUMN SURFACES (un-grid scatter beside copy)
+   ------------------------------------------------------------ */
+.mx-shelf {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 34px 40px;
+  align-items: flex-start;
+  justify-content: center;
+  margin: 54px 0;
+}
+.mx-shelf > * { flex: 0 1 auto; }
+.mx-shelf > *:nth-child(2n) { margin-top: 22px; }
+.mx-shelf > *:nth-child(3n) { margin-top: -8px; }
+
+.mx-twocol {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 36px;
+  align-items: start;
+  margin: 34px 0;
+}
+.mx-twocol__aside { display: grid; gap: 26px; justify-items: center; }
+
+/* a furniture card homed inside a service column (The Desk / The Ledger):
+   fills the column measure so the tall body-text column beside it never
+   leaves a blank right stretch. Sits directly under the column's kicker as
+   the section's lead data object. */
+.deskcol .deskcol__card { width: 100%; margin: 15px 0 22px; }
+
+/* ------------------------------------------------------------
+   01 · CARD CHASSIS + CHART CARD (self-made sparkline/bar SVG)
+   scenography defaults: tilt + washi tape + drop shadow (Law 1)
+   ------------------------------------------------------------ */
+.mx-card {
+  background: var(--mx-card);
+  color: var(--mx-card-ink);
+  border: 1px solid var(--mx-card-edge);
+  box-shadow: 0 18px 30px -16px var(--mx-shadow), 0 2px 0 rgba(0, 0, 0, 0.05);
+  padding: 12px 12px 14px;
+  width: min(340px, 100%);
+  position: relative;
+  margin: 0;
+  transform: rotate(var(--mx-tilt, -1deg));
+}
+.mx-card:nth-of-type(2n) { --mx-tilt: 1.6deg; }
+.mx-card::before {
+  content: "";
+  position: absolute;
+  top: -11px; left: 50%;
+  transform: translateX(-50%) rotate(-3.5deg);
+  width: 92px; height: 22px;
+  background: var(--mx-tape);
+  border-left: 1px dashed rgba(255, 255, 255, 0.5);
+  border-right: 1px dashed rgba(255, 255, 255, 0.5);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  pointer-events: none; z-index: 3;
+}
+.mx-card:nth-of-type(2n)::before { transform: translateX(-50%) rotate(4deg); }
+.mx-card__window {
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  background: var(--mx-card-window);
+  padding: 14px 14px 10px;
+  overflow: hidden;
+}
+.mx-card__caption {
+  font-family: var(--mx-t-hand);          /* aliases to Instrument Serif */
+  font-style: italic;
+  font-size: 1.18rem;
+  line-height: 1.2;
+  text-align: center;
+  margin-top: 10px;
+  color: var(--mx-card-ink);
+}
+.mx-card__credit {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  display: block;
+  margin-top: 6px;
+  opacity: 0.6;
+}
+
+/* chart card — the week-in-numbers sparkline/bars, drawn in SVG */
+.mx-card--chart { width: min(420px, 100%); }
+.mx-card--chart .mx-card__window { padding: 16px 16px 12px; }
+.mx-chart { display: block; width: 100%; }
+.mx-chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.mx-chartline { fill: none; stroke: var(--mx-accent); stroke-width: 2.4; }
+.mx-chart__bar { fill: var(--mx-accent); }
+.mx-chart__bar--2 { fill: var(--mx-accent-2); }
+.mx-chart__base { stroke: var(--mx-hair); stroke-width: 1; }
+.mx-chart__dot { fill: var(--mx-accent-2); }
+.mx-chart__label {
+  font-family: var(--mx-t-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  fill: var(--mx-ink-soft);
+}
+.mx-chart__cap {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mx-accent);
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* ------------------------------------------------------------
+   02 · TICKET — perforated stub, punch holes, hard shadow
+   (the week's Do-This-Week pick, as a physical object)
+   ------------------------------------------------------------ */
+.mx-ticket {
+  display: grid;
+  grid-template-columns: 1fr 96px;
+  width: min(360px, 100%);
+  background: var(--mx-card);
+  color: var(--mx-card-ink);
+  border: 1.5px solid var(--mx-card-ink);
+  box-shadow: 5px 5px 0 var(--mx-shadow);
+  transform: rotate(var(--mx-tilt, -1.5deg));
+  position: relative;
+  margin: 0;
+}
+.mx-ticket:nth-of-type(2n) { --mx-tilt: 1.6deg; }
+.mx-ticket::before, .mx-ticket::after {
+  content: "";
+  position: absolute;
+  right: 89px;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--mx-paper);
+  border: 1.5px solid var(--mx-card-ink);
+}
+.mx-ticket::before { top: -8px; }
+.mx-ticket::after  { bottom: -8px; }
+.mx-ticket__main { padding: 15px 16px 13px; }
+.mx-ticket__event {
+  display: block;
+  font-family: var(--mx-t-serif);          /* Newsreader */
+  font-weight: 600;
+  font-size: 1.4rem;
+  line-height: 1.05;
+  margin: 3px 0 8px;
+}
+.mx-ticket__meta {
+  display: block;
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mx-ink-soft);
+}
+.mx-ticket__row { display: flex; justify-content: space-between; gap: 10px; margin-top: 6px; }
+.mx-ticket__row > span:last-child { color: var(--mx-card-ink); }
+.mx-ticket__stub {
+  border-left: 2px dashed var(--mx-card-ink);
+  display: grid;
+  place-items: center;
+  padding: 10px 6px;
+  background: repeating-linear-gradient(45deg, transparent 0 6px, var(--mx-quote-bg) 6px 12px);
+}
+
+/* ------------------------------------------------------------
+   03 · STAMP / SEAL — currentColor roundel (the ticket stub)
+   ------------------------------------------------------------ */
+.mx-stamp {
+  display: inline-grid;
+  place-items: center;
+  width: 82px; height: 82px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  color: var(--mx-stamp-ink);              /* aliases to --signal */
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 8px;
+  line-height: 1.25;
+  transform: rotate(8deg);
+  position: relative;
+  background: transparent;
+}
+.mx-stamp::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  opacity: 0.85;
+}
+.mx-stamp b {
+  display: block;
+  font-family: var(--mx-t-serif);
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1;
+  margin: 3px 0 2px;
+}
+
+/* ------------------------------------------------------------
+   04 · QUOTE OBJECT — a named voice, never a floating italic
+   line. Attribution mandatory (Law 9).
+   ------------------------------------------------------------ */
+.mx-quote {
+  margin: 54px 0;
+  padding: 24px 24px 18px;
+  border-left: 5px solid var(--mx-accent);
+  background: var(--mx-quote-bg);
+  position: relative;
+}
+.mx-quote::before {
+  content: "\201C";
+  position: absolute;
+  top: -20px; left: 12px;
+  font-family: var(--mx-t-serif);
+  font-size: 4.6rem;
+  line-height: 1;
+  color: var(--mx-accent);
+  opacity: 0.85;
+  pointer-events: none;
+}
+.mx-quote blockquote {
+  font-family: var(--mx-t-serif);          /* Newsreader italic */
+  font-style: italic;
+  font-size: clamp(1.14rem, 2.4vw, 1.4rem);
+  line-height: 1.42;
+  color: var(--mx-ink);
+  margin: 0;
+  border: none;
+  padding: 0;
+}
+.mx-quote figcaption {
+  margin-top: 12px;
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mx-ink-soft);
+}
+.mx-quote figcaption b { color: var(--mx-accent); font-weight: 700; }
+
+/* ------------------------------------------------------------
+   05 · FIXTURES LEDGER — sport results as a mono ledger
+   (row form; the dl form of core/11-ledgers is unused here)
+   ------------------------------------------------------------ */
+.mx-ledger {
+  --mxl-rule: var(--mx-hair);
+  border-top: 3px solid var(--mx-ink);
+  border-bottom: 1px solid var(--mxl-rule);
+  margin: 52px 0;
+}
+.mx-ledger__caption {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--mx-accent);
+  padding: 10px 0 9px;
+  border-bottom: 1px solid var(--mxl-rule);
+}
+.mx-ledger__row {
+  display: grid;
+  grid-template-columns: 68px 1fr auto;
+  gap: 6px 14px;
+  padding: 11px 0 12px;
+  border-bottom: 1px dotted var(--mxl-rule);
+  align-items: baseline;
+}
+.mx-ledger__row:last-child { border-bottom: none; }
+.mx-ledger__date {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mx-ink-soft);
+}
+.mx-ledger__match { font-size: 0.98rem; line-height: 1.4; color: var(--mx-ink); }
+.mx-ledger__match b { font-weight: 700; }
+.mx-ledger__result {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mx-accent);
+  white-space: nowrap;
+}
+.mx-ledger__note {
+  grid-column: 2 / -1;
+  font-size: 0.86rem;
+  line-height: 1.4;
+  color: var(--mx-ink-soft);
+  margin-top: 2px;
+}
+
+/* ------------------------------------------------------------
+   06 · SCORECARD — standings on card stock (a table dressed as
+   an object). Cells wrap at word boundaries (never truncate).
+   ------------------------------------------------------------ */
+.mx-scorecard {
+  width: min(320px, 100%);
+  background: var(--mx-card);
+  color: var(--mx-card-ink);
+  border: 1.5px solid var(--mx-card-ink);
+  box-shadow: 5px 5px 0 var(--mx-shadow);
+  transform: rotate(var(--mx-tilt, 1.2deg));
+  padding: 14px 16px 12px;
+  margin: 0;
+}
+.mx-scorecard:nth-of-type(2n) { --mx-tilt: -1.4deg; }
+.mx-scorecard__title {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mx-accent);
+  border-bottom: 2px solid var(--mx-card-ink);
+  padding-bottom: 8px;
+  margin: 0 0 2px;
+}
+.mx-scorecard table { width: 100%; border-collapse: collapse; }
+.mx-scorecard td, .mx-scorecard th {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  text-align: left;
+  padding: 8px 16px 7px 0;
+  border-bottom: 1px dotted color-mix(in srgb, var(--mx-card-ink) 38%, transparent);
+  color: var(--mx-card-ink);
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+.mx-scorecard tr:last-child td { border-bottom: none; }
+.mx-scorecard__pos { width: 26px; font-weight: 700; color: var(--mx-ink-soft); }
+.mx-scorecard__gap { text-align: right; font-weight: 700; white-space: nowrap; }
+.mx-scorecard tr.is-lead td { font-weight: 700; }
+.mx-scorecard tr.is-lead .mx-scorecard__gap { color: var(--mx-accent); }
+
+/* ------------------------------------------------------------
+   07 · RADIO DIAL — the weekly's signature furniture object.
+   A tuning scale with a needle that sweeps to the band frequency
+   on entry (Law 5: Weekly = dial-needle sweep). Pure Transmission
+   (the radio conceit), CSS-drawn, aria-hidden.
+   ------------------------------------------------------------ */
+.mx-dial {
+  --mx-dial-h: 42px;
+  position: relative;
+  width: min(360px, 100%);
+  height: var(--mx-dial-h);
+  margin: 10px 0 6px;
+  border-bottom: 2px solid var(--mx-ink);
+  background:
+    repeating-linear-gradient(90deg,
+      var(--mx-hair) 0 1px, transparent 1px 12px);
+  background-position: 0 100%;
+  background-size: 100% 60%;
+  background-repeat: no-repeat;
+}
+.mx-dial::after {                          /* a few taller ticks */
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 78%;
+  background: repeating-linear-gradient(90deg,
+    var(--mx-ink) 0 1.5px, transparent 1.5px 60px);
+  opacity: 0.5;
+  pointer-events: none;
+}
+.mx-dial__needle {
+  position: absolute;
+  bottom: 0;
+  left: var(--mx-needle-x, 68%);
+  width: 2px;
+  height: 100%;
+  background: var(--mx-accent);
+  transform-origin: 50% 100%;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+.mx-dial__needle::before {
+  content: "";
+  position: absolute;
+  top: -5px; left: -3px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--mx-accent);
+}
+.mx-freq {
+  font-family: var(--mx-t-mono);
+  font-size: max(0.72rem, var(--mx-micro));
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mx-accent);
+  display: block;
+  margin-top: 8px;
+}
+
+/* ------------------------------------------------------------
+   08 · MOTION — tier1 calm (rise / settle / row-tick / chart-
+   draw / dial-sweep). Extracted from core/14-motion.css. All
+   start-states are gated behind [data-mx-motion-ready] so JS-off
+   renders 100% of content; the controller (mx-motion.js) is the
+   only thing that stamps it. Motion attaches to furniture, never
+   running text (Law 5).
+   ------------------------------------------------------------ */
+[data-mx] {
+  --mx-m-rise: 32px;                                   /* was 20 — a clearer lift */
+  --mx-m-dur: 720ms;                                   /* was 640 */
+  --mx-m-settle: 1.8deg;                               /* settle unit; the tape-down swing */
+  --mx-m-ease: cubic-bezier(0.22, 0.9, 0.3, 1);
+  --mx-m-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --mx-m-stagger: 100ms;                               /* was 80 */
+}
+@keyframes mx-rise-in {
+  from { opacity: 0; transform: translateY(var(--mx-m-rise)); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+/* TAPE-DOWN SETTLE — the object drops in lifted and over-rotated (~5.4° off
+   its rest tilt), fades in, tips just past level the other way, then settles
+   onto its resting tilt. A clearly-visible placed-by-hand motion, still calm
+   (no slam/flip). Overshoot is built into the keyframes, so it rides the
+   smooth ease, not the spring. */
+@keyframes mx-settle-in {
+  0%   { opacity: 0;
+         transform: translateY(var(--mx-m-rise))
+           rotate(calc(var(--mx-tilt, -1deg) + var(--mx-m-settle) * 3)); }
+  52%  { opacity: 1; }
+  76%  { transform: translateY(0)
+           rotate(calc(var(--mx-tilt, -1deg) - var(--mx-m-settle) * 0.9)); }
+  100% { opacity: 1; transform: translateY(0) rotate(var(--mx-tilt, -1deg)); }
+}
+@keyframes mx-row-tick {
+  from { opacity: 0; transform: translateY(15px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes mx-chart-draw {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
+}
+@keyframes mx-dial-sweep { from { transform: rotate(-104deg); } }
+
+[data-mx-motion-ready] [data-motion="tier1"] .mx-rise:not(.is-in) {
+  opacity: 0; transform: translateY(var(--mx-m-rise));
+}
+[data-mx-motion-ready] [data-motion="tier1"] .mx-rise.is-in {
+  animation: mx-rise-in var(--mx-m-dur) var(--mx-m-ease) backwards;
+  animation-delay: min(calc(var(--mx-i, 0) * var(--mx-m-stagger)), 420ms);
+}
+[data-mx-motion-ready] [data-motion="tier1"] .mx-settle:not(.is-in) { opacity: 0; }
+[data-mx-motion-ready] [data-motion="tier1"] .mx-settle.is-in {
+  animation: mx-settle-in calc(var(--mx-m-dur) + 240ms) var(--mx-m-ease) backwards;
+  animation-delay: min(calc(var(--mx-i, 0) * var(--mx-m-stagger)), 420ms);
+}
+/* sequenced rows tick in --mx-i order (fixtures ledger, standings, datums) —
+   larger lift + wider stagger so the cascade reads clearly on a real scroll */
+[data-mx-motion-ready] [data-motion="tier1"] .mx-seq:not(.is-in) .mx-row { opacity: 0; }
+[data-mx-motion-ready] [data-motion="tier1"] .mx-seq.is-in .mx-row {
+  animation: mx-row-tick 480ms var(--mx-m-ease) backwards;
+  animation-delay: min(calc(var(--mx-i, 0) * 95ms), 760ms);
+}
+/* sparkline / chart line draws on reveal */
+[data-mx-motion-ready] [data-motion="tier1"] .mx-chart.is-in .mx-chartline {
+  stroke-dasharray: 1;
+  animation: mx-chart-draw 1250ms var(--mx-m-ease) backwards;
+}
+[data-mx-motion-ready] [data-motion="tier1"] .mx-chart:not(.is-in) .mx-chart__dot { opacity: 0; }
+[data-mx-motion-ready] [data-motion="tier1"] .mx-chart.is-in .mx-chart__dot {
+  animation: mx-rise-in 360ms var(--mx-m-ease) 1050ms backwards;
+}
+/* signature: dial needle sweeps to its frequency on band entry */
+[data-mx-motion-ready] [data-motion="tier1"] .mx-sig-dial-sweep.is-in .mx-dial__needle {
+  animation: mx-dial-sweep 1000ms var(--mx-m-spring) backwards;
+}
+/* hover settles — furniture acknowledges the hand */
+[data-motion="tier1"] .mx-card,
+[data-motion="tier1"] .mx-ticket,
+[data-motion="tier1"] .mx-scorecard { transition: transform 0.35s var(--mx-m-ease); }
+[data-motion="tier1"] .mx-card:hover { transform: rotate(0deg) scale(1.015); }
+[data-motion="tier1"] .mx-ticket:hover,
+[data-motion="tier1"] .mx-scorecard:hover { transform: rotate(0deg); }
+
+/* ------------------------------------------------------------
+   09 · RESPONSIVE — 390px stacking; Law-8 type floors held.
+   ------------------------------------------------------------ */
+@media (max-width: 720px) {
+  .mx-twocol { grid-template-columns: 1fr; }
+  .mx-twocol__aside { justify-items: center; }
+}
+@media (max-width: 560px) {
+  .mx-shelf { gap: 28px 20px; margin: 34px 0; }
+  .mx-shelf > *:nth-child(2n) { margin-top: 12px; }
+  .mx-card, .mx-card--chart { width: min(320px, 100%); }
+  .mx-ticket { width: 100%; grid-template-columns: 1fr 84px; }
+  .mx-ticket::before, .mx-ticket::after { right: 77px; }
+  .mx-scorecard { width: 100%; }
+  .mx-ledger__row { grid-template-columns: 56px 1fr; }
+  .mx-ledger__result { grid-column: 2; justify-self: start; margin-top: 2px; }
+  .mx-quote { padding: 20px 18px 16px; margin: 28px 0; }
+  .mx-dial { width: 100%; }
+  /* Law-8 floors reasserted at phone width */
+  .mx-ledger__caption, .mx-ledger__date, .mx-ledger__result,
+  .mx-ticket__meta, .mx-card__credit, .mx-scorecard__title,
+  .mx-scorecard td, .mx-scorecard th, .mx-quote figcaption,
+  .mx-freq, .mx-chart__cap { font-size: max(0.72rem, var(--mx-micro)); }
+}
+
+/* ------------------------------------------------------------
+   99 · REDUCED-MOTION GATE — kills every mx animation/transition
+   under [data-mx]; content is simply present, never held hidden.
+   The controller additionally no-ops when the preference is set.
+   ------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  [data-mx] *, [data-mx] *::before, [data-mx] *::after {
+    animation-duration: 0.001s !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001s !important;
+  }
+  [data-mx-motion-ready] [data-motion="tier1"] .mx-rise:not(.is-in),
+  [data-mx-motion-ready] [data-motion="tier1"] .mx-settle:not(.is-in) {
+    opacity: 1; transform: rotate(var(--mx-tilt, 0deg));
+  }
+  [data-mx-motion-ready] [data-motion="tier1"] .mx-seq:not(.is-in) .mx-row { opacity: 1; }
+}
+
+/* ============================================================
+   MX WEEKLY · COVERAGE-REBUILD FURNITURE       WP-3, 2026-07-26
+   SPEC §3.4/§3.11 contracts whose base component lives in
+   10-mx-weekly.css and therefore reads the --mx-* alias:
+     .mx-ledger[data-role="results-ledger"]   (defect D)
+     .mx-ledger[data-role="demoted-lead"]     (defect C)
+     .mx-ledger__row[data-resolves-loop]      (defect D)
+     .mx-scorecard[data-table-kind="…"]       (defect D)
+   Full rationale: weekly.json § furniture_layer.components +
+   § structural_hooks, and EVIDENCE/WP-3.md. Every value resolves
+   through the transmission alias (Law 11) — no new colour, font
+   or token. Attribute-scoped: markup without these attributes
+   renders exactly as before.
+   ============================================================ */
+
+/* --- 01 · RESULTS LEDGER — results of record, nothing provisional.
+   data-sport is required on every row (a SPECIFIC sport token; never
+   multi_sport). Hairline sport gutter so rows from different sports do not
+   read as one long run of the same competition; the leading row is the week's
+   biggest result and gets the accent. --- */
+.mx-ledger[data-role="results-ledger"] .mx-ledger__caption { border-bottom-width: 2px; }
+.mx-ledger[data-role="results-ledger"] .mx-ledger__row[data-sport] {
+  padding-left: 12px;
+  box-shadow: inset 2px 0 0 var(--mx-hair);
+}
+.mx-ledger[data-role="results-ledger"] .mx-ledger__row:first-of-type[data-sport] {
+  box-shadow: inset 2px 0 0 var(--mx-accent);
+}
+
+/* --- 02 · DEMOTED LEAD — a story that held the cover and no longer does.
+   The demotion has to be visible, and this identity says "no longer the loudest
+   thing here" by withdrawing the accent: light top rule, pencil-grey caption,
+   signal-blue result column. Vermilion belongs to what leads. --- */
+.mx-ledger[data-role="demoted-lead"] { border-top: 1px solid var(--mx-ink); margin: 40px 0; }
+.mx-ledger[data-role="demoted-lead"] .mx-ledger__caption {
+  color: var(--mx-ink-soft);
+  border-bottom-style: dotted;
+}
+.mx-ledger[data-role="demoted-lead"] .mx-ledger__result { color: var(--mx-support-1); }
+.mx-ledger[data-role="demoted-lead"] .mx-ledger__date { color: var(--mx-ink-soft); }
+
+/* --- 03 · RESOLVED LOOP — same blue spine as the core weekly, so a closure
+   reads identically wherever it lands. --- */
+.mx-ledger__row[data-resolves-loop] {
+  padding-left: 12px;
+  box-shadow: inset 2px 0 0 var(--mx-accent-2);
+}
+.mx-ledger__row[data-resolves-loop] .mx-ledger__result { color: var(--mx-accent-2); }
+
+/* --- 04 · POLYMORPHIC STANDINGS CARD — data-table-kind ∈ league · medal · gc ·
+   leaderboard · championship · finance. Shared: numerals line up whatever the
+   subject, and any kind may carry a head row (a medal table needs G/S/B heads).
+   `finance` is the sixth and only non-sport kind (SPEC §3.11 amendment). --- */
+.mx-scorecard[data-table-kind] td,
+.mx-scorecard[data-table-kind] th { font-variant-numeric: tabular-nums; }
+.mx-scorecard[data-table-kind] th {
+  font-weight: 700;
+  color: var(--mx-accent);
+  letter-spacing: 0.12em;
+  border-bottom: 1.5px solid var(--mx-card-ink);
+}
+
+/* league / championship — position · name · points. A season table's story is
+   the podium, so championship rules off after third. */
+.mx-scorecard[data-table-kind="league"] td:last-child,
+.mx-scorecard[data-table-kind="championship"] td:last-child {
+  text-align: right;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.mx-scorecard[data-table-kind="championship"] tr:nth-child(3) td {
+  border-bottom: 1.5px solid var(--mx-card-ink);
+}
+
+/* medal — rank · nation · G · S · B (· total): three-to-four narrow numeric
+   columns instead of one gap column, the shape the old card could not hold.
+   Gold is the sort key, so it takes the weight; silver/bronze stay quiet. */
+.mx-scorecard[data-table-kind="medal"] td,
+.mx-scorecard[data-table-kind="medal"] th { padding-right: 8px; }
+.mx-scorecard[data-table-kind="medal"] td:nth-child(n + 3),
+.mx-scorecard[data-table-kind="medal"] th:nth-child(n + 3) {
+  width: 30px;
+  text-align: right;
+  padding-right: 0;
+  white-space: nowrap;
+}
+.mx-scorecard[data-table-kind="medal"] td:nth-child(3) {
+  font-weight: 700;
+  color: var(--mx-accent);
+}
+.mx-scorecard[data-table-kind="medal"] td:nth-child(4),
+.mx-scorecard[data-table-kind="medal"] td:nth-child(5) { color: var(--mx-ink-soft); }
+
+/* gc / leaderboard — a time gap or a score to par: mono breathing room, never
+   wraps mid-value, and the leader's figure is the headline number. */
+.mx-scorecard[data-table-kind="gc"] .mx-scorecard__gap,
+.mx-scorecard[data-table-kind="gc"] td:last-child,
+.mx-scorecard[data-table-kind="leaderboard"] .mx-scorecard__gap,
+.mx-scorecard[data-table-kind="leaderboard"] td:last-child {
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.mx-scorecard[data-table-kind="gc"] tr:first-child .mx-scorecard__gap,
+.mx-scorecard[data-table-kind="gc"] tr:first-child td:last-child,
+.mx-scorecard[data-table-kind="leaderboard"] tr:first-child .mx-scorecard__gap,
+.mx-scorecard[data-table-kind="leaderboard"] tr:first-child td:last-child {
+  color: var(--mx-accent);
+  font-weight: 700;
+}
+.mx-scorecard[data-table-kind="leaderboard"] tr.is-cut td {
+  border-bottom: 1.5px dashed var(--mx-card-ink);   /* the cut line, when shown */
+}
+
+/* finance — a REFERENCE card, not a ranking: label · figure, "as of" a date. No
+   position column, no podium rule-off — nothing in it is winning. The label
+   column wraps; the figure column is atomic and mixed-unit ("3.75%", "−0.16pp",
+   "30 JUL"), so it shrink-wraps and never splits a value. */
+.mx-scorecard[data-table-kind="finance"] .mx-scorecard__gap,
+.mx-scorecard[data-table-kind="finance"] td:last-child {
+  width: 1%;
+  text-align: right;
+  white-space: nowrap;
+  letter-spacing: 0.04em;
+}
+/* The highlighted row is the reference figure the others are read against, not a
+   leader: vermilion belongs to what leads or wins (same doctrine as
+   data-role="demoted-lead"), so the anchor takes signal blue. */
+.mx-scorecard[data-table-kind="finance"] tr.is-lead .mx-scorecard__gap,
+.mx-scorecard[data-table-kind="finance"] tr.is-lead td:last-child {
+  color: var(--mx-support-1);
+}
+
+/* --- 05 · NARROW WIDTHS (the card is already width:100% under 640px) --- */
+@media (max-width: 640px) {
+  .mx-scorecard[data-table-kind="medal"] td:nth-child(n + 3),
+  .mx-scorecard[data-table-kind="medal"] th:nth-child(n + 3) { width: 26px; }
+  .mx-ledger[data-role="results-ledger"] .mx-ledger__row[data-sport],
+  .mx-ledger__row[data-resolves-loop] { padding-left: 9px; }
+}
+
+</style>
+</head>
+<body data-skin="transmission" data-mx data-motion="tier1" data-format="weekly" data-mx-chrome="pill">
+<!-- the-signal:back -->
+<style data-signal-back>
+  .signal-back-to-archive {
+    position: fixed;
+    top: max(0.75rem, env(safe-area-inset-top, 0px));
+    left: max(0.75rem, env(safe-area-inset-left, 0px));
+    z-index: 9999;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.85rem 0.45rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(20, 20, 30, 0.72);
+    color: #fff;
+    font-family: 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    backdrop-filter: saturate(140%) blur(10px);
+    -webkit-backdrop-filter: saturate(140%) blur(10px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.22);
+    transition: transform 0.15s ease, background 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .signal-back-to-archive:hover { background: rgba(20, 20, 30, 0.88); }
+  .signal-back-to-archive:active { transform: scale(0.96); }
+  .signal-back-to-archive svg { display: block; opacity: 0.9; }
+  @media print { .signal-back-to-archive { display: none; } }
+</style>
+<a href="../" class="signal-back-to-archive" aria-label="Back to The Signal archive">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+  <span>The Signal</span>
+</a>
+<!-- /the-signal:back -->
+<div class="issue">
+
+  <!-- ================= COVER ================= -->
+  <header class="cover" data-cover-leads-on="long_read">
+    <div class="cover__top">
+      <span class="mono">A Personal Weekly · Received &amp; Tuned</span>
+      <span class="mono price">Sunday Edition</span>
+    </div>
+  <div class="wave wave--ink" aria-hidden="true">
+    <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+      <path d="M0 13 H60 l6 -10 6 20 6 -20 6 20 6 -20 6 10 H160 l5 -8 5 16 5 -16 5 16 5 -8 H280 l7 -12 7 24 7 -24 7 24 7 -12 H420 l4 -6 4 12 4 -12 4 12 4 -6 H540 l6 -11 6 22 6 -22 6 22 6 -11 H680 l5 -7 5 14 5 -14 5 14 5 -7 H800" fill="none" stroke="currentColor" stroke-width="2.0"/>
+    </svg>
+  </div>
+
+    <h1 class="masthead">The <em>Signal</em></h1>
+    <div class="masthead__sub">
+      <span class="tag">tuning in to the week you lived</span>
+      <span class="mono">EST. 2026</span>
+    </div>
+
+    <div class="cover__body">
+      <div class="lead">
+        <div class="mono lead__eyebrow">BAND 01 — THE LEAD TRANSMISSION · THE LONG READ</div>
+        <h2 class="lead__head">The morning readiness score just went medical-grade. <span class="hl">The evidence it works hasn't.</span></h2>
+        <p class="lead__stand">Google&#x27;s new Pixel Watch 5 hands out a daily Readiness Score and reads for blood-pressure patterns and insulin resistance, pushing the wrist toward the clinic. The validation science, meanwhile, says consumer heart-rate variability is only trustworthy near rest — and often disagrees with how recovered people actually feel.</p>
+      </div>
+
+      <nav class="tuner" aria-label="In this transmission">
+        <div class="tuner__label">
+          <span class="mono">STATION LIST</span>
+          <span class="mono">№021</span>
+        </div>
+        <div class="station on" data-station data-nav-band="long_read">
+          <span class="freq">88.9</span>
+          <span class="name"><b>The Long Read:</b> can a watch really call recovery?</span>
+        </div>
+        <div class="station" data-station data-nav-band="touchline">
+          <span class="freq">98.4</span>
+          <span class="name">The title race on ice; the season stirs</span>
+        </div>
+        <div class="station on" data-station data-nav-band="pixel_byte">
+          <span class="freq">104.7</span>
+          <span class="name"><b>The Lands Between</b> come to Switch 2</span>
+        </div>
+        <div class="station" data-station data-nav-band="screen_sound">
+          <span class="freq">106.0</span>
+          <span class="name"><b>Made by Google</b>, and Ted's divided return</span>
+        </div>
+        <div class="station" data-station data-nav-band="bookmark">
+          <span class="freq">90.1</span>
+          <span class="name">Three ways onto the nightstand</span>
+        </div>
+        <div class="station on" data-station data-nav-band="the_desk">
+          <span class="freq">92.3</span>
+          <span class="name"><b>The Desk:</b> training off the number, and a rate to beat</span>
+        </div>
+        <div class="station" data-station data-nav-band="rabbit_hole">
+          <span class="freq">101.2</span>
+          <span class="name">Down the rabbit hole to a Sanskrit scholar</span>
+        </div>
+        <div class="station on" data-station data-nav-band="on_the_radar">
+          <span class="freq">96.5</span>
+          <span class="name">What's coming: the season kicks off</span>
+        </div>
+      </nav>
+    </div>
+
+    <div class="dataline">
+      <span class="mono">TRANSMISSION №021</span>
+      <span class="dot" aria-hidden="true">·</span>
+      <span class="mono">10–16 AUG 2026</span>
+      <span class="dot" aria-hidden="true">·</span>
+      <span class="mono">NORTHERN IRELAND</span>
+      <span class="dot" aria-hidden="true">·</span>
+      <span class="mono">FOLIO 021</span>
+      <span class="dot" aria-hidden="true">·</span>
+      <span class="mono">34 MIN · ONE SITTING</span>
+    </div>
+
+    <div class="folio" aria-hidden="true">021</div>
+  </header>
+
+  <div class="wave wave--blue" aria-hidden="true" style="padding:0 40px;">
+    <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+      <path d="M0 13 H40 l5 -9 5 18 5 -18 5 18 5 -9 H120 l7 -13 7 26 7 -26 7 26 7 -13 H260 l4 -6 4 12 4 -12 4 12 4 -6 H360 l6 -11 6 22 6 -22 6 22 6 -11 H500 l5 -8 5 16 5 -16 5 16 5 -8 H620 l7 -13 7 26 7 -26 7 26 7 -13 H800" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    </svg>
+  </div>
+
+  <!-- MOVEMENT I · THE OPEN -->
+  <div class="movement" data-movement="open">
+    <div class="movement__rule">
+      <span class="movement__no">I</span>
+      <span class="movement__name">The Open</span>
+      <span class="mono movement__meta">LETTER · NUMBERS · DIGEST</span>
+    </div>
+  </div>
+
+  <div class="band" data-band="the_letter">
+    <div class="bandhead">
+      <span class="mono code">BAND 02 — <b>THE LETTER</b></span>
+      <span class="mono runtime">FROM THE EDITOR</span>
+    </div>
+  </div>
+  <section class="letter">
+<h2>The quiet week, and the question inside it.</h2>
+    <p class="kicker">August emptied the calendar — but the thread worth carrying out of it sits on a wrist, not in the headlines.</p>
+    <p class="first">The loudest thing this week happened in the dark. The Perseids peaked on the night of 12–13 August under a new moon, the clearest skies the shower will get until 2045. Around it, a proper August lull: Hormuz still simmering after Iran struck two ADNOC tankers on the 13th and a third the next evening, though that story led this magazine a fortnight ago and so sits lower down today.</p>
+    <p>The thread I couldn't put down is smaller and closer to home. On 12 August Google gave the Pixel Watch 5 a daily Readiness Score, plus blood-pressure patterns and insulin-resistance reads — the wrist edging toward the clinic. Whether the science behind that number actually holds is this issue's Long Read. And a fortnight of sport is loading behind it: the Premier League opens on the 21st, F1 restarts at Zandvoort on the 23rd.</p>
+    <p class="sig">— The Editor</p>
+    <p class="mono sigline">TRANSMITTED SUNDAY · 16 AUG 2026</p>
+  </section>
+
+  <div class="band" data-band="week_in_numbers">
+    <div class="bandhead">
+      <span class="mono code">BAND 03 — <b>THE WEEK IN NUMBERS</b></span>
+      <span class="mono runtime">THE LEDGER · SIGNAL METERED</span>
+    </div>
+  </div>
+  <section>
+    <div class="figures">
+      <div class="figures-frame" data-mx-event="statband">
+        <div class="fig-caption"><span>TABLE II · <b>DATUMS OF THE WEEK</b></span><span>№021</span></div>
+
+        <div class="fig-row">
+          <div class="fig-label">
+            <span class="k">F1 Title Gap</span>
+            <span class="d">Antonelli 219, Hamilton 169 at the August break — 50 points clear, the lead the summer shutdown now freezes in place until racing resumes</span>
+          </div>
+          <div class="fig-val"><span class="win">+50</span></div>
+        </div>
+
+        <div class="fig-row">
+          <div class="fig-label">
+            <span class="k">Pixel Watch 5</span>
+            <span class="d">41mm starting price; on sale 20 Aug, the first to carry the Readiness Score</span>
+          </div>
+          <div class="fig-val">$399</div>
+        </div>
+
+        <div class="fig-row">
+          <div class="fig-label">
+            <span class="k">Elden Ring on Switch 2</span>
+            <span class="d">the Tarnished Edition lands at $79.99 — the full game bundled with the Shadow of the Erdtree expansion</span>
+          </div>
+          <div class="fig-val">28 Aug</div>
+        </div>
+
+        <div class="fig-row">
+          <div class="fig-label">
+            <span class="k">Device HRV vs ECG</span>
+            <span class="d">concordance near rest — Oura 0.99, WHOOP 0.94, Garmin 0.87, Polar 0.82</span>
+          </div>
+          <div class="fig-val">0.82–0.99</div>
+        </div>
+
+        <div class="fig-row">
+          <div class="fig-label">
+            <span class="k">Bank Rate Decision</span>
+            <span class="d">the BoE is expected to hold on the path to this date; VAT on domestic electricity falls to 0% from 1 Oct</span>
+          </div>
+          <div class="fig-val">17 Sep</div>
+        </div>
+
+        <div class="fig-row">
+          <div class="fig-label">
+            <span class="k">Training Block</span>
+            <span class="d">hypertrophy held at maintenance-to-surplus, running since 8 July — the personal block the week's readiness numbers feed into</span>
+          </div>
+          <div class="fig-val">Block 3</div>
+        </div>
+
+        <div class="fig-foot"><span>CARRIED FORWARD TO №022</span><span>NUMBERS OFF THE WEEK</span></div>
+      </div>
+    </div>
+
+    <div class="mx-card mx-card--chart" data-mx-event="chart" style="margin:30px auto 6px;">
+      <div class="mx-card__window">
+        <span class="mx-chart__cap">Device HRV vs ECG · concordance near rest</span>
+        <div class="mx-chart">
+          <svg viewBox="0 0 260 96" preserveAspectRatio="xMidYMid meet" role="img" aria-label="A descending line of agreement with ECG across four wearables: Oura 0.99, WHOOP 0.94, Garmin 0.87, Polar 0.82.">
+            <line class="mx-chart__base" x1="0" y1="84" x2="260" y2="84"/>
+            <path class="mx-chartline" pathLength="1" d="M6,19 L88,36 L170,60 L252,77"/>
+            <circle class="mx-chart__dot" cx="6" cy="19" r="3.4"/>
+            <text class="mx-chart__label" x="6" y="94">OURA · 0.99</text>
+            <text class="mx-chart__label" x="196" y="94">POLAR · 0.82</text>
+          </svg>
+        </div>
+      </div>
+      <div class="mx-card__caption">a 0.17 spread — all four track the trend, not every beat</div>
+      <span class="mx-card__credit">Chart · The Signal · concordance vs clinical ECG</span>
+    </div>
+  </section>
+
+  <div class="band" data-band="caught_up">
+    <div class="bandhead">
+      <span class="mono code">BAND 04 — <b>CAUGHT UP</b></span>
+      <span class="mono runtime">EVERYTHING THAT MOVED, IN EIGHT LINES</span>
+    </div>
+  </div>
+  <section class="caughtup">
+    <ol class="digest">
+      <li><p><b><a href="https://www.foxnews.com/live-news/iran-war-trump-strait-of-hormuz-08-14-26">The Gulf.</a></b> Iran struck ADNOC-affiliated tankers on the Omani route on 13-14 Aug, with no casualties reported; Iran and Oman are said to be near a shipping framework that would not automatically reopen the strait, as the IEA warns on depleting oil stockpiles.</p></li>
+      <li><p><b><a href="https://www.usnews.com/news/world/articles/2026-08-13/lebanon-has-not-agreed-to-shortlist-of-countries-that-could-verify-hezbollahs-disarmament-official-says">The Levant.</a></b> A Lebanese official said on 13 Aug that Beirut has not agreed a shortlist of countries to verify Hezbollah's disarmament, contradicting earlier reports; Israel ties any withdrawal from southern Lebanon to that disarmament happening first.</p></li>
+      <li><p><b><a href="https://multipluralworld.com/world-news-headlines-and-analysis-for-august-2026/">The heat.</a></b> Europe sweltered through its fifth heatwave of the summer while deadly flooding struck Japan across early-to-mid August — two ends of an extreme-weather fortnight.</p></li>
+      <li><p><b><a href="https://en.wikipedia.org/wiki/2026_in_United_Kingdom_politics_and_government">Westminster.</a></b> Andy Burnham's cost-of-living package firms up, with VAT on domestic electricity set to fall from 5% to zero on 1 October.</p></li>
+      <li><p><b><a href="https://www.androidcentral.com/phones/live/made-by-google-2026-launch-live-pixel-11-pixel-11-pro-fold-pixel-watch-5-gemini-and-all-the-news">The launch.</a></b> Made by Google (12 Aug) unveiled the Pixel 11 line on the 2nm Tensor G6, alongside a health-heavy Pixel Watch 5 that pushes the wrist toward the clinic.</p></li>
+      <li><p><b><a href="https://earthsky.org/astronomy-essentials/everything-you-need-to-know-perseid-meteor-shower/">Dark skies.</a></b> The Perseids peaked under moonless skies overnight on 12-13 Aug — the best viewing conditions the shower will offer until 2045.</p></li>
+      <li><p><b><a href="https://www.forbes.com/sites/timlammers/2026/08/14/ted-lasso-season-4-release-schedule-is-bolstered-by-record-breaking-premiere/">Streaming.</a></b> Ted Lasso's fourth season set an Apple TV+ premiere record at 296.6m minutes viewed, on the franchise's most divided reviews to date.</p></li>
+      <li><p><b><a href="https://www.premierleague.com/en/news/4468487/dates-for-202627-premier-league-season-confirmed">The whistle.</a></b> The domestic season reopens this week — the Community Shield today, the Premier League from Friday 21 Aug, and Serie A plus the Dutch GP across 22-23 Aug.</p></li>
+    </ol>
+  </section>
+  <div class="wave wave--ink" aria-hidden="true" style="margin-top:26px;color:var(--signal);">
+    <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+      <path d="M0 13 H70 l6 -11 6 22 6 -22 6 22 6 -11 H180 l5 -9 5 18 5 -18 5 18 5 -9 H300 l8 -14 8 28 8 -28 8 28 8 -14 H460 l4 -7 4 14 4 -14 4 14 4 -7 H580 l6 -11 6 22 6 -22 6 22 6 -11 H720 l5 -8 5 16 5 -16 5 16 5 -8 H800" fill="none" stroke="currentColor" stroke-width="2.0"/>
+    </svg>
+  </div>
+
+  <!-- MOVEMENT II · THE LONG READ -->
+  <div class="movement" data-movement="long-read">
+    <div class="movement__rule">
+      <span class="movement__no">II</span>
+      <span class="movement__name">The Long Read</span>
+      <span class="mono movement__meta">ONE PIECE · SETTLE IN</span>
+    </div>
+  </div>
+
+  <div class="band" data-band="long_read">
+    <div class="bandhead">
+      <span class="mono code">BAND 05 — <b>THE LONG READ</b></span>
+      <span class="mono runtime">SIGNAL STRONG</span>
+    </div>
+  </div>
+  <section class="longread" data-role="long-read" data-vintage="news">
+    <div class="lr-title">
+      <div class="mono" style="color:var(--signal);">A NUMBER FOR HOW YOU FEEL</div>
+      <h2>Can a watch call your <em>recovery</em>?</h2>
+      <p class="stand">On 12 August, Google gave the Pixel Watch 5 a daily Readiness Score — a single figure that tells you how recovered you are before you have decided anything yourself. It is the latest wrist to make a medical-grade promise. The science underneath it is less settled than the number pretends.</p>
+      <p class="mono byline">BY THE EDITOR · THE LONG READ · 16 AUG 2026</p>
+    </div>
+
+    <div class="lr-body">
+      <p class="first">On 12 August, Google unveiled the Pixel Watch 5 with a feature it wants you to check before you decide how hard to train: a daily Readiness Score. The number weighs your recent sleep and exertion and hands back one verdict on how recovered your body is. It arrives on a watch that starts at $399 for the 41mm case and $429 for the 45mm, reaches shelves on 20 August, and does not travel alone — the same device now tracks blood-pressure patterns and insulin-resistance trends, watches for a breathing emergency, and can flag a loss of pulse from its first day on the wrist. The pitch is no longer about counting steps. It is a sensor that reads your physiology and tells you what to do about it, and the Readiness Score is the sharpest form of that claim: not data, but a decision.</p>
+
+      <p>Google is not first to make it. Whoop built its entire brand on a morning Recovery percentage; Garmin ships a Training Readiness figure on its watches; Oura sells a Readiness Score on a ring. Every one of them rests on the same promise and, underneath, the same biological signal. A launch this loud is worth using to ask the question the whole category depends on and rarely answers plainly: can a device strapped to your wrist overnight really tell you, the next morning, that you are recovered?</p>
+
+      <p>The signal all of these scores are built from is heart-rate variability, or HRV — the small, constant fluctuation in the time between one heartbeat and the next. A resting heart does not tick like a metronome; the gap between beats stretches and shrinks from one beat to the next, and that variation is governed by the autonomic nervous system, the same machinery that runs the balance between stress and recovery. More variability, broadly, means a body in a rested, parasympathetic state; a flattened, more regular rhythm can mark strain, illness or poor sleep. A readiness score is a proprietary transform of that overnight variability, together with resting heart rate, sleep and recent training load, compressed into one figure the marketing invites you to obey.</p>
+
+      <div data-mx-event="figure" class="plate-img" data-shows="diagram" data-capture-year="2011" data-licence="CC-BY-3.0" data-allows-derivatives="true">
+        <img src="/assets/cached/e02047dda61b.jpg" alt="An electrocardiogram trace showing a run of heartbeats, with the tall R-wave spikes marked and the varying time gaps between consecutive beats labelled as RR intervals — the beat-to-beat variation in the gaps is heart-rate variability, the raw signal every readiness score is calculated from." loading="lazy">
+        <div class="plate-cap">
+          <span class="mono fig">FIG. 01</span>
+          <span class="txt">Heart-rate variability shown on the electrocardiogram: the variation in the RR interval — the gap between successive R-wave peaks — is the raw signal every readiness score is computed from. This reference figure dates from 2011.<span class="credit">George Billman · CC BY 3.0 · via Wikimedia Commons</span></span>
+        </div>
+      </div>
+
+      <div class="mx-ledger" data-mx-event="ledger" style="margin-top:8px;">
+        <div class="mx-ledger__caption">The Watch on Test · Pixel Watch 5, as launched 12 Aug 2026</div>
+        <div class="mx-ledger__row"><span class="mx-ledger__date">41MM</span><span class="mx-ledger__match">Smaller case, starting price</span><span class="mx-ledger__result">$399</span></div>
+        <div class="mx-ledger__row"><span class="mx-ledger__date">45MM</span><span class="mx-ledger__match">Larger case, starting price</span><span class="mx-ledger__result">$429</span></div>
+        <div class="mx-ledger__row"><span class="mx-ledger__date">ON SALE</span><span class="mx-ledger__match">Reaches shelves</span><span class="mx-ledger__result">20 AUG</span></div>
+        <div class="mx-ledger__row"><span class="mx-ledger__date">READS</span><span class="mx-ledger__match">Daily Readiness Score, blood-pressure patterns, insulin-resistance trends, loss-of-pulse</span><span class="mx-ledger__result">NEW</span></div>
+      </div>
+
+      <p class="noindent">The gold standard for measuring that variation is the electrocardiogram — the chest electrodes that read the heart's electrical activity directly, the trace in the figure above. A watch cannot do that. It measures blood flow optically instead: green LEDs shine into the skin and a photodetector infers each pulse from the light that bounces back, a technique called photoplethysmography, or PPG. The readiness number is therefore an estimate built on an estimate — a wrist sensor standing in for the ECG, and a closed formula standing in for the clinical judgement it claims to make. Two things have to hold for the verdict to be trustworthy: the sensor has to measure the signal accurately, and the formula has to interpret it correctly. The evidence treats those as separate questions, and it answers them differently.</p>
+
+      <p>The manufacturers' case is the confident one. A low reading in the morning is a signal to ease off; a high one is a green light to push. Google's own framing for the Pixel Watch 5 puts the Readiness Score at the centre of the day's training decision, and the whole consumer-wearable market has spent years teaching people to check the number first and consult how they feel second. Cast that way, the watch becomes a coach that never sleeps and never flatters you.</p>
+
+      <p>That confidence used to be low-stakes. A miscounted step, an over-generous calorie estimate — nobody was hurt by a step tracker that flattered them. The Pixel Watch 5 launch marks a category that has stopped being low-stakes. The same watch that hands you a Readiness Score now claims to surface blood-pressure patterns, flag insulin-resistance trends and detect a loss of pulse, and the Readiness Score itself is pitched as guidance you act on — resting a body it says is strained, driving one it says is fresh. Once a wrist device is trusted to make calls with physiological consequences, the accuracy of the reading behind the call stops being an academic point. A number that is wrong in the direction of "you're recovered, push harder" is a different kind of error from a badly counted step.</p>
+
+      <p>The validation literature is more careful, and it starts with the measurement. When researchers put consumer devices next to a clinical ECG, the agreement varies a great deal by brand. In one comparison, Oura's fourth-generation ring reached near-reference agreement with the ECG, at a concordance of 0.99; Whoop landed at a moderate 0.94; Garmin came in at 0.87 and Polar at 0.82 — a spread wide enough that "a wearable measured my HRV" means materially different things depending on which wearable you strapped on. More important still, that accuracy is conditional: it holds up overnight, when the wearer is still and at rest, and degrades sharply the moment there is motion. The sensor is at its best in exactly the conditions a readiness score is captured — asleep, unmoving — and at its worst everywhere else.</p>
+
+      <div class="mx-ledger" data-mx-event="ledger" style="margin-top:8px;">
+        <div class="mx-ledger__caption">By the Numbers · Device vs. clinical ECG (HRV agreement)</div>
+        <div class="mx-ledger__row"><span class="mx-ledger__date">OURA</span><span class="mx-ledger__match">Gen 4 ring — near-reference agreement with the ECG</span><span class="mx-ledger__result">0.99</span></div>
+        <div class="mx-ledger__row"><span class="mx-ledger__date">WHOOP</span><span class="mx-ledger__match">Moderate agreement</span><span class="mx-ledger__result">0.94</span></div>
+        <div class="mx-ledger__row"><span class="mx-ledger__date">GARMIN</span><span class="mx-ledger__match">Poorer agreement</span><span class="mx-ledger__result">0.87</span></div>
+        <div class="mx-ledger__row"><span class="mx-ledger__date">POLAR</span><span class="mx-ledger__match">Weakest of the four tested</span><span class="mx-ledger__result">0.82</span><span class="mx-ledger__note">Concordance with a clinical ECG; all measured still and at rest — accuracy falls away once there is motion.</span></div>
+      </div>
+
+      <p class="noindent">The researchers who run these comparisons put the trade-off plainly.</p>
+
+      <figure class="mx-quote" data-mx-event="quote">
+        <blockquote>While PPG may offer a cheaper and more user-friendly alternative, it introduces greater measurement error, which may limit its application in elite sport settings where precision is critical.</blockquote>
+        <figcaption>— <cite><b>Hedvig Johansson</b></cite> · lead author, Frontiers in Physiology HRV-device validation study, 2025</figcaption>
+      </figure>
+
+      <p>A second strand of research questions the number from the other end — not whether the watch measures HRV accurately, but whether the resulting verdict corresponds to anything the wearer experiences. A 2026 study in the journal Sensors reported a disconnection between wearable-derived HRV and users' own self-reported wellbeing: subjective feelings of readiness frequently did not match the tracker's biometric verdict, and the authors urged caution before acting on HRV-based recommendations to guide health decisions. That finding cuts at the heart of the product, because the entire proposition is that the number knows something about your state that you do not. If the figure and the feeling routinely part ways, at least one of them is not measuring readiness in any sense that a person can use.</p>
+
+      <p>The people who work with HRV professionally tend to converge on a narrower claim than the watches make. Marco Altini, an HRV researcher whose <a href="https://medium.com/@altini_marco/on-heart-rate-variability-hrv-and-readiness-394a499ed05b">widely-read essay on the subject</a> is a standard reference, has argued that HRV is meaningful as a trend followed over weeks and read against your own established baseline, and close to useless as a single-morning verdict. Day-to-day HRV is noisy; one night tells you very little, while the direction of travel across many nights tells you a great deal. On that reading, the failure is not the sensor but the presentation: the opaque, proprietary scores that crush a trend into one confident figure overclaim what a single figure can honestly carry. The number is real; the certainty it is displayed with is manufactured.</p>
+
+      <figure class="mx-quote" data-mx-event="quote">
+        <blockquote>This means that a good HRV is defined as a stable value with respect to our history, not a slightly higher one.</blockquote>
+        <figcaption>— <cite><b>Marco Altini</b></cite> · HRV scientist and founder, HRV4Training</figcaption>
+      </figure>
+
+      <p>Those four positions are not really arguing about the same thing, which is why they can all be right at once. The manufacturers are selling an interpretation. The validation studies are testing a measurement. The Sensors study is testing whether the interpretation matches lived experience. And the researchers are describing the timescale on which the whole exercise makes sense. Stack them and the disagreement resolves into a division of labour: the hardware has largely earned its claims, the software layered on top has not, and the honest use of the device sits somewhere between what the box promises and what the sceptics allow.</p>
+
+      <div class="pullquote" data-mx-event="quote">
+        A watch can measure the beat-to-beat flicker of your heart with clinical accuracy and still be wrong about whether you are recovered. Those are two different problems, and only the first one is solved.
+        <span class="attr">TRANSMISSION №021 · THE LONG READ</span>
+      </div>
+
+      <p class="noindent">So can a watch call your recovery? The four positions do not cancel out; laid end to end, they point at a single, unhedged answer. A good wearable can measure the raw signal well — for the best devices, in the conditions they are validated in — and it cannot reliably deliver the verdict it prints on the screen each morning. The measurement is largely solved for a top-tier device worn overnight; the interpretation is not. A readiness score is a real physiological measurement wearing the costume of a diagnosis, and the gap between those two things is exactly where the overclaim lives.</p>
+
+      <div class="aside-note">
+        <div class="lbl mono">THE CASE AGAINST · <b>THE OTHER READING</b></div>
+        <h4>Do not throw the number out with the verdict.</h4>
+        <p>The sceptical reading can be pushed too far. At rest and overnight — the conditions a readiness score is actually captured in — the best devices reach near-reference agreement with a clinical ECG; Oura's 0.99 is not noise, and Whoop's 0.94 is genuinely useful. For someone who wears the same device every night and reads the trend rather than the daily verdict, that number tracks something real: accumulating training load, a poor night's sleep, the early hours of an infection before it announces itself. The measurement is sound where the marketing says it is. The failure mode is over-reading one morning's figure, not the technology that produced it.</p>
+      </div>
+
+      <p>What the evidence supports, then, is a plain and slightly deflating conclusion. Device agreement with the clinical standard is device-dependent, running from 0.82 to 0.99, so the brand on the strap changes how much the reading is worth. That accuracy is conditional on stillness and rest, and falls away in motion. The resulting score frequently disconnects from how the wearer actually feels. And across all four findings, the number is most trustworthy read as a trend against your own baseline and least trustworthy read as a one-morning oracle. The Pixel Watch 5's Readiness Score, like Whoop's Recovery and Garmin's Training Readiness before it, is a real measurement dressed as a decision. Followed as a trend line over weeks, it earns its place on the wrist. Obeyed as a verdict handed down each morning, it will tell you, with total confidence, things it does not actually know.</p>
+    </div>
+  </section>
+  <div class="wave wave--ink" aria-hidden="true" style="margin-top:26px;color:var(--signal);">
+    <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+      <path d="M0 13 H50 l6 -11 6 22 6 -22 6 22 6 -11 H160 l5 -9 5 18 5 -18 5 18 5 -9 H280 l7 -12 7 24 7 -24 7 24 7 -12 H420 l4 -7 4 14 4 -14 4 14 4 -7 H540 l6 -11 6 22 6 -22 6 22 6 -11 H680 l5 -8 5 16 5 -16 5 16 5 -8 H800" fill="none" stroke="currentColor" stroke-width="2.0"/>
+    </svg>
+  </div>
+
+  <!-- MOVEMENT III · THE ROUNDS -->
+  <div class="movement" data-movement="rounds">
+    <div class="movement__rule">
+      <span class="movement__no">III</span>
+      <span class="movement__name">The Rounds</span>
+      <span class="mono movement__meta">BRISK · SCANNABLE</span>
+    </div>
+  </div>
+
+  <div class="band" data-band="touchline">
+    <div class="bandhead">
+      <span class="mono code">BAND 06 — <b>THE TOUCHLINE</b></span>
+      <span class="mono runtime">SPORT</span>
+    </div>
+  </div>
+  <section class="round">
+    <div data-mx-event="figure" class="plate-img lead" data-shows="event_photo" data-capture-year="2025" data-licence="CC-BY-SA-4.0" data-allows-derivatives="true">
+      <img src="/assets/cached/65c301f73f0a.jpg" alt="Kimi Antonelli in Mercedes race gear at the 2025 United States Grand Prix in Austin, Texas" loading="lazy">
+      <div class="plate-cap"><span class="mono fig">FIG.</span><span class="txt">Kimi Antonelli, pictured at the 2025 US Grand Prix — nineteen years old, and the first teenager ever to carry the Formula One drivers' championship into an August break, fifty points clear of the field.<span class="credit">Kuyper · CC BY-SA 4.0 · via Wikimedia Commons</span></span></div>
+    </div>
+
+    <p class="lead"><span class="drop">Nothing was decided this week</span> — and in sport that is its own kind of news. Football is still in pre-season, and Formula One is deep in its August shutdown, so no line was crossed and no whistle blown for keeps. What the break leaves behind is a table, frozen: Kimi Antonelli sits on top of the drivers' championship on 219 points, fifty clear, waiting out the only stretch of the calendar when no one can take a single point off him. When the lights next go on, at Zandvoort on 23 August, that lead is the whole story — and at nineteen, Antonelli is the youngest driver ever to hold it.</p>
+
+
+    <div class="mx-sig-dial-sweep" data-mx-event="chart" style="display:flex;flex-direction:column;align-items:center;margin:24px 0 8px;">
+      <div class="mx-dial" aria-hidden="true" style="--mx-needle-x:80%;"><span class="mx-dial__needle"></span></div>
+      <span class="mx-freq">Tuned · 98.4 · The August break</span>
+    </div>
+
+
+    <div class="scores">
+      <div class="score wide">
+        <span class="mono tag">98.4 · F1 DRIVERS' TITLE · THE BREAK</span>
+        <h3>A lead parked, not spent</h3>
+        <p>Antonelli goes into the shutdown fifty points up on Lewis Hamilton, the widest margin at the top all season. Nothing about it was earned this week — the sport is dark until 23 August — and nothing was lost either, which is exactly what a leader wants from three empty weekends. The chasers have to find fifty points and a way past a car that has led since the spring; Antonelli only has to keep doing what already works. <span class="num">+50, on ice.</span></p>
+      </div>
+    </div>
+
+
+    <div class="mx-ledger" data-mx-event="ledger" data-role="results-ledger">
+      <div class="mx-ledger__caption">Results of record · nothing concluded in-window. Football is in pre-season and F1 on its August break, so the ledger is honestly quiet this week; the season proper begins over the next seven days and the record fills from there.</div>
+    </div>
+
+    <figure class="mx-quote" data-mx-event="quote">
+      <blockquote>A nineteen-year-old holding a fifty-point lead through the one part of the year when nobody can lay a glove on it.</blockquote>
+      <figcaption>— <cite>The state of the title race</cite>, into the shutdown</figcaption>
+    </figure>
+
+    <div class="mx-scorecard" data-mx-event="ledger" data-table-kind="championship">
+      <h4 class="mx-scorecard__title">F1 Drivers' Championship · Into the break</h4>
+      <table>
+        <tr class="is-lead"><td class="mx-scorecard__pos">1</td><td>ANTONELLI</td><td class="mx-scorecard__gap">219</td></tr>
+        <tr><td class="mx-scorecard__pos">2</td><td>HAMILTON</td><td class="mx-scorecard__gap">169</td></tr>
+        <tr><td class="mx-scorecard__pos">3</td><td>RUSSELL</td><td class="mx-scorecard__gap">160</td></tr>
+        <tr><td class="mx-scorecard__pos">4</td><td>LECLERC</td><td class="mx-scorecard__gap">138</td></tr>
+        <tr><td class="mx-scorecard__pos">5</td><td>NORRIS</td><td class="mx-scorecard__gap">128</td></tr>
+      </table>
+    </div>
+
+    <ul class="items">
+      <li>
+        <span class="freq">98.4</span>
+        <div>
+          <h3>The order behind him is Ferrari's problem</h3>
+          <p>Hamilton leads the chase in second on <a href="https://www.news.gp/en/f1-standings-after-the-hungarian-gp-antonelli-heads-into-summer-break-with-50-point-lead">169</a>, his Ferrari the closest thing Antonelli has to a rival; George Russell keeps the other Mercedes third on 160, and Charles Leclerc is fourth on 138. Lando Norris sits fifth on 128 after winning the Hungarian Grand Prix just before the break — a reminder that form and the standings don't always point the same way, and that the gap at the front flatters no one behind it. Note where Mercedes sits: first and third, with the two silver cars book-ending Hamilton's Ferrari, which is the shape of a team that has quietly won the first half of the year. <b>Five drivers, one clear leader.</b></p>
+        </div>
+      </li>
+      <li>
+        <span class="freq">98.4</span>
+        <div>
+          <h3>Zandvoort restarts the argument</h3>
+          <p>The season <a href="https://en.wikipedia.org/wiki/2026_Dutch_Grand_Prix">resumes at the Dutch Grand Prix</a>, Circuit Zandvoort, with the race on Sunday 23 August — run this year as a Sprint weekend, the first in the venue's history and the last under its current contract. A Sprint puts a second set of points on the table across the weekend, which is either the opening the chasers need or the chance for Antonelli to stretch further out of reach before the run-in. Fifty points is a cushion, not a coronation, and Zandvoort is where the second half of the year decides which. <b>Lights out 23 Aug.</b></p>
+          <div data-mx-event="figure" class="plate-img" style="margin:16px 0 6px;max-width:600px;" data-shows="map" data-capture-year="2022" data-licence="CC-BY-SA-4.0" data-allows-derivatives="true">
+            <img src="/assets/cached/12ae80ad0cf2.png" alt="A layout map of Circuit Zandvoort, the Dutch Grand Prix track, showing the sequence of corners and the banked Arie Luyendyk final turn onto the main straight" loading="lazy">
+            <div class="plate-cap">
+              <span class="mono fig">FIG.</span>
+              <span class="txt">Circuit Zandvoort, mapped in 2022 — the banked corners that make the Dutch track a nerve test, and the ground where the frozen title race restarts on 23 August.<span class="credit">Anthony Alessio Tralongo · CC BY-SA 4.0 · via Wikimedia Commons</span></span>
+            </div>
+          </div>
+        </div>
+      </li>
+      <li>
+        <span class="freq">98.4</span>
+        <div>
+          <h3>The domestic season clears its throat</h3>
+          <p>Football wakes up this weekend. The <a href="https://en.wikipedia.org/wiki/2026_FA_Community_Shield">Community Shield</a>, Arsenal against Manchester City, opens the English calendar in Cardiff today — its first staging there in twenty years, with Wembley given over to concerts — though as a curtain-raiser it settles nothing that carries. The leagues that matter start in earnest next week; On the Radar has the fixtures. <b>Season, warming up.</b></p>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <div class="band" data-band="pixel_byte">
+    <div class="bandhead">
+      <span class="mono code">BAND 07 — <b>PIXEL &amp; BYTE</b></span>
+      <span class="mono runtime">GAMING</span>
+    </div>
+  </div>
+  <section class="round">
+
+    <p class="lead"><span class="drop">The autumn stampede starts early, and it starts in the Lands Between</span> — for two years <a href="https://www.shanethegamer.com/nintendo/elden-ring-tarnished-edition-confirmed-for-switch-2-on-august-28-2026-at-79-99/">Elden Ring</a> was the one modern giant Nintendo owners could only watch from the outside. That changes on 28 August, when Elden Ring: Tarnished Edition brings FromSoftware's open world to Switch 2 — a game once defined by beefy console hardware, now heading for a machine you can fold into a bag. And it does not arrive alone. Behind it sits a September slate stacked deep enough to make the usual quiet late summer feel like the busiest run of the year, with the year's most-watched reveal wedged in between.</p>
+
+    <div data-mx-event="figure" class="plate-img lead" data-shows="gameplay" data-capture-year="2022" data-licence="PRESS-KIT-EDITORIAL" data-allows-derivatives="false">
+      <img src="/assets/cached/483e2b9d433e.jpg" alt="Elden Ring gameplay — a lone armoured warrior on horseback crossing a vast open landscape beneath a distant golden tree" loading="lazy">
+      <div class="plate-cap"><span class="mono fig">FIG.</span><span class="txt">Elden Ring in motion — the base game first shipped in 2022; the Tarnished Edition carries it, plus Shadow of the Erdtree, to Switch 2 on 28 August.<span class="credit">Bandai Namco / FromSoftware · Press-kit editorial</span></span></div>
+    </div>
+
+    <div class="mx-ticket" data-mx-event="ephemera">
+      <div class="mx-ticket__main">
+        <span class="mx-ticket__meta">Nintendo Switch 2 · FromSoftware</span>
+        <span class="mx-ticket__event">Elden Ring: Tarnished Edition</span>
+        <span class="mx-ticket__meta mx-ticket__row"><span>Out</span><span>28 Aug 2026</span></span>
+        <span class="mx-ticket__meta mx-ticket__row"><span>Price</span><span>$79.99 · as of Aug 2026</span></span>
+      </div>
+      <div class="mx-ticket__stub"><div class="mx-stamp"><span>SW2</span><b>SADDLE UP</b><span>+ Erdtree</span></div></div>
+    </div>
+
+    <ul class="items">
+      <li data-resolves-loop="loop_2026-08-28_elden-ring-switch2">
+        <span class="freq">104.7</span>
+        <div>
+          <h3>The Lands Between, on the handheld</h3>
+          <p><a href="https://www.shanethegamer.com/nintendo/elden-ring-tarnished-edition-confirmed-for-switch-2-on-august-28-2026-at-79-99/">Elden Ring: Tarnished Edition</a> is due 28 August on Switch 2 at $79.99, and it is the complete package: the base game plus the Shadow of the Erdtree expansion in one box, with genuinely new content on top. Two new starting classes arrive — the strength-focused Heavy Knight and the dexterity-and-shield Idus Knight — alongside fresh armour and new customisation options for Torrent, the spectral steed. The smart move is for existing owners: rather than force a re-buy, everything new lands the same day as the standalone Tarnished Pack for $4.99 on other platforms, so the Switch 2 debut doubles as a small content drop everywhere else. It means the port is not a straight rerun — anyone who cleared the Erdtree last year still has a fresh reason to saddle up. <b>28 August.</b></p>
+        </div>
+      </li>
+      <li>
+        <span class="freq">106.9</span>
+        <div>
+          <h3>September does the heavy lifting</h3>
+          <p>Then the month that usually coasts turns into a gauntlet. <a href="https://www.vice.com/en/article/september-2026-is-a-massive-month-for-new-game-releases/">September</a> opens with Insomniac's Marvel's Wolverine on 15 September, the studio's first crack at the character after its run of Spider-Man games. A week later, 24 September stacks two at once — Remedy's Control Resonant and Silent Hill: Townfall share a date, an unusually direct collision of atmospheric horror. Capcom closes the run on 25 September with Onimusha: Way of the Sword, reviving a series that had sat dormant for years. Four marquee releases inside eleven days — a superhero swing, a doubled-up horror night and a revived samurai action series — is not a lull; it is the stampede proper, and it will force some hard choices about what waits. <b>Clear the calendar.</b></p>
+        </div>
+      </li>
+      <li>
+        <span class="freq">109.2</span>
+        <div>
+          <h3>A first proper look at GTA VI</h3>
+          <p>Bridging the two is the one everyone is waiting on. Netflix will stream <a href="https://www.hollywoodreporter.com/tv/tv-news/netflix-august-2026-new-releases-movies-tv-1236661354/">Grand Theft Auto VI: An Extended Look</a> on 27 August — a longer, hosted showcase rather than another thirty-second teaser, and the most substantial glimpse of Rockstar's next game to date. It lands ahead of the 19 November launch on PS5 and Xbox Series X|S, close enough now that the marketing has shifted from tease to walkthrough. If you want a sense of what the back half of the year actually looks like, this is the appointment. <b>27 August, Netflix.</b></p>
+        </div>
+      </li>
+    </ul>
+
+    <div class="mx-ledger" data-mx-event="ledger" style="margin-top:14px;">
+      <div class="mx-ledger__caption">The September Slate · dated</div>
+      <div class="mx-ledger__row"><span class="mx-ledger__date">27 AUG</span><span class="mx-ledger__match"><b>GTA VI: An Extended Look</b> · Netflix showcase</span><span class="mx-ledger__result">STREAM</span></div>
+      <div class="mx-ledger__row"><span class="mx-ledger__date">15 SEP</span><span class="mx-ledger__match"><b>Marvel's Wolverine</b> · Insomniac</span><span class="mx-ledger__result">PS5</span></div>
+      <div class="mx-ledger__row"><span class="mx-ledger__date">24 SEP</span><span class="mx-ledger__match"><b>Control Resonant</b> · Remedy, sharing the date with <b>Silent Hill: Townfall</b></span><span class="mx-ledger__result">&#215;2</span></div>
+      <div class="mx-ledger__row"><span class="mx-ledger__date">25 SEP</span><span class="mx-ledger__match"><b>Onimusha: Way of the Sword</b> · Capcom</span><span class="mx-ledger__result">&mdash;</span><span class="mx-ledger__note">Four marquee releases inside eleven days, 15&ndash;25 September.</span></div>
+    </div>
+  </section>
+
+  <div class="band" data-band="screen_sound">
+    <div class="bandhead">
+      <span class="mono code">BAND 08 — <b>SCREEN &amp; SOUND</b></span>
+      <span class="mono runtime">WATCH &amp; LISTEN · + RELEASE RADAR</span>
+    </div>
+  </div>
+  <section class="round">
+    <div data-mx-event="figure" class="plate-img lead" data-shows="product_shot" data-capture-year="2026" data-licence="PRESS-KIT-EDITORIAL" data-allows-derivatives="false">
+      <img src="/assets/cached/a79db6342437.jpg" alt="The Google Pixel 11 line shown officially, several handsets in a row, built on the 2nm Tensor G6" loading="lazy">
+      <div class="plate-cap"><span class="mono fig">FIG.</span><span class="txt">This year's Made by Google hardware: the Pixel 11 line on the 2nm Tensor G6, opening at $1,099 for the Pro — launched alongside the health-heavy Pixel Watch 5 from $399.<span class="credit">Google · press image via GSMArena · PRESS-KIT-EDITORIAL</span></span></div>
+    </div>
+
+    <div class="with-rail">
+      <ul class="items" style="margin-top:0;">
+        <li data-resolves-loop="loop_2026-08-12_made-by-google">
+          <span class="freq">106.0</span>
+          <div>
+            <h3>Made by Google leads with the wrist, not the phone</h3>
+            <p>The 12 August event in New York closed out the week's biggest hardware loop, and the headline turned out to be the watch. The <b>Pixel Watch 5</b> starts at $399 for the 41mm case and $429 for the 45mm, and reaches shops on 20 August. Google has loaded it with clinic-adjacent kit: a daily Readiness Score, blood-pressure-pattern tracking, an insulin-resistance trend read, breathing-emergency alerts and day-one loss-of-pulse detection, plus an offline Gemini on the wrist. It is a straight move onto the recovery-scoring turf Whoop and Garmin have held, and it pushes the wearable a step closer to the clinic — whether the morning number can actually call your recovery is a separate question, and the one the Long Read takes up. As hardware, the pitch is plain: the medical-grade framing that used to justify a $600 band now arrives at $399. <a href="https://www.droid-life.com/2026/08/12/pixel-watch-5-official-at-399-with-huge-health-upgrades/">The full spec sheet</a>.</p>
+          </div>
+        </li>
+        <li>
+          <span class="freq">106.7</span>
+          <div>
+            <h3>The phones ride 2nm silicon</h3>
+            <p>The Pixel 11 line launched alongside the watch on the new <b>2nm Tensor G6</b>. The Pixel 11 Pro opens at $1,099, the Pro XL at $1,299 and the Pro Fold at $1,899, all with 256GB as the entry tier and displays that push to 3,600 nits. The pricing holds the line rather than chasing it — the Pro sits where last year's did, and the jump to the Fold is where Google now asks for the premium. The generational story is the process node: a smaller, cooler chip is what buys the on-device Gemini features that ran through the rest of the keynote, on the phone and, newly, on the watch beside it. Two years ago that AI layer needed a data centre; the pitch this year is that it runs in your pocket, offline, on silicon a third smaller than the chip it replaces. <a href="https://www.androidcentral.com/phones/live/made-by-google-2026-launch-live-pixel-11-pixel-11-pro-fold-pixel-watch-5-gemini-and-all-the-news">Everything announced</a>.</p>
+          </div>
+        </li>
+        <li>
+          <span class="freq">107.3</span>
+          <div>
+            <h3>Ted Lasso comes back, and splits the room</h3>
+            <p>Apple TV+'s <b>Ted Lasso</b> returned for a fourth season — relocating Ted to coach Richmond's women's side — to the franchise's most divided reception yet. The reviews pull hard in opposite directions: 90% on Rotten Tomatoes against a series-low <b>62 on Metacritic</b>, eleven points below the show's previous floor. The audience turned up regardless: the premiere logged 296.6 million viewing minutes, the most-watched season opener in the service's history. Variety's review put the whole split into five words: <figure class="mx-quote" data-mx-event="quote" style="margin:20px 0;">
+              <blockquote>Promising as Reboot, Tedious as Sequel</blockquote>
+              <figcaption>— <cite><b>Variety</b></cite> · review headline, Ted Lasso season 4</figcaption>
+            </figure> A record premiere on the weakest notices the show has drawn is the shape of a hit that reopened without a clear reason to — proof the loyalty is intact, and doubt about whether the story needed a fourth act. The reboot half of that verdict is the interesting one: the women's-team setting is a genuine reset, and the critics who warmed to it did so on the strength of the new premise rather than the old comfort. Whether that carries a full season, or whether the goodwill runs out once the novelty does, is what the back half will settle. <a href="https://www.goldderby.com/tv/2026/ted-lasso-season-4-series-low-reviews/">The reviews, side by side</a>.</p>
+          </div>
+        </li>
+      </ul>
+
+
+      <aside class="rail" data-role="release-radar" data-mx-event="ledger" aria-label="Release Radar">
+        <div class="rail__label">
+          <span class="mono t">RELEASE RADAR</span>
+          <span class="mono">DATED</span>
+        </div>
+        <div class="rail-item">
+          <span class="when">OUT NOW · 12 AUG</span>
+          <span class="what"><b>Reacher — Season 4</b><i>tv · Prime Video</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 20 AUG</span>
+          <span class="what"><b>Outer Banks — Season 5 (final)</b><i>tv · Netflix</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 20 AUG</span>
+          <span class="what"><b>Pixel Watch 5</b><i>tech · on sale</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 27 AUG</span>
+          <span class="what"><b>GTA VI: An Extended Look</b><i>tv · Netflix special</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 28 AUG</span>
+          <span class="what"><b>The Whisper Man</b><i>film · Netflix</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 28 AUG</span>
+          <span class="what"><b>Elden Ring: Tarnished Edition</b><i>game · Switch 2</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 29 AUG</span>
+          <span class="what"><b>LEGO Harry Potter 76476 Ministry of Magic</b><i>lego · set</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 1 SEP</span>
+          <span class="what"><b>LEGO Nike Air Force 1</b><i>lego · set</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 1 SEP</span>
+          <span class="what"><b>Scion</b><i>book · James Islington</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 8 SEP</span>
+          <span class="what"><b>Massif</b><i>book · Garth Nix</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 8 SEP</span>
+          <span class="what"><b>The Passing of the Dragon and Other Stories</b><i>book · Ken Liu</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 15 SEP</span>
+          <span class="what"><b>Marvel's Wolverine</b><i>game · PS5</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 16 SEP</span>
+          <span class="what"><b>Slow Horses — New Season</b><i>tv · Apple TV+</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 16 SEP</span>
+          <span class="what"><b>Neagley</b><i>tv · Reacher spin-off, Prime Video</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 18 SEP</span>
+          <span class="what"><b>Signs</b><i>music · Luke Bryan album</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 24 SEP</span>
+          <span class="what"><b>Control Resonant</b><i>game · Remedy</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 24 SEP</span>
+          <span class="what"><b>Silent Hill: Townfall</b><i>game · Konami</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 25 SEP</span>
+          <span class="what"><b>Onimusha: Way of the Sword</b><i>game · Capcom</i></span>
+        </div>
+        <div class="rail-item">
+          <span class="when">SOON · 19 NOV</span>
+          <span class="what"><b>Grand Theft Auto VI</b><i>game · PS5 / Xbox Series X|S</i></span>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <div class="band" data-band="bookmark">
+    <div class="bandhead">
+      <span class="mono code">BAND 09 — <b>BOOKMARK</b></span>
+      <span class="mono runtime">BOOKS · ON THE NIGHTSTAND</span>
+    </div>
+  </div>
+  <section class="round">
+    <div class="mx-ledger" data-mx-event="ledger" style="margin-bottom:16px;">
+      <div class="mx-ledger__caption">The Reading Queue · September, dated</div>
+      <div class="mx-ledger__row"><span class="mx-ledger__date">1 SEP</span><span class="mx-ledger__match"><b>Scion</b> · James Islington</span><span class="mx-ledger__result">Cyberpunk</span></div>
+      <div class="mx-ledger__row"><span class="mx-ledger__date">8 SEP</span><span class="mx-ledger__match"><b>The Passing of the Dragon</b> · Ken Liu</span><span class="mx-ledger__result">Short fiction</span></div>
+      <div class="mx-ledger__row"><span class="mx-ledger__date">8 SEP</span><span class="mx-ledger__match"><b>Massif</b> · Garth Nix</span><span class="mx-ledger__result">Space opera</span></div>
+    </div>
+
+    <ul class="picks">
+      <li style="grid-template-columns:8px 1fr">
+        <span class="spine" aria-hidden="true"></span>
+        <div>
+          <h3><a href="https://reactormag.com/30-more-sff-titles-to-look-forward-to-in-2026/">Scion</a></h3>
+          <p class="meta">Cyberpunk thriller · James Islington · out 1 September</p>
+          <p>James Islington spent two long series — the Licanius Trilogy and then The Will of the Many — building a readership that treats each release as an event, and Scion is his first swing at cyberpunk: a near-future thriller due 1 September. The appeal is the swerve. A writer known for intricate, patiently assembled secondary worlds is folding that same machinery into a leaner, contemporary-feeling form, and the early billing frames it as a self-contained thriller rather than the opening of another multi-book commitment. That makes it an easy yes for anyone wary of starting a saga that won't resolve for years. It is also first out of the gate — 1 September, ahead of the busier weeks that follow — so it has a clear run before the autumn release stack competes for the same shelf and the same reading hours.</p>
+        </div>
+      </li>
+      <li style="grid-template-columns:8px 1fr">
+        <span class="spine" aria-hidden="true"></span>
+        <div>
+          <h3><a href="https://reactormag.com/30-more-sff-titles-to-look-forward-to-in-2026/">The Passing of the Dragon and Other Stories</a></h3>
+          <p class="meta">Short fiction · Ken Liu · out 8 September</p>
+          <p>Ken Liu, a Hugo and Nebula winner, has a new collection out 8 September: The Passing of the Dragon and Other Stories, from Saga. Short fiction is the most efficient way into a major writer — one sitting per story, no five-book investment, and a collection puts a writer's full range on the table in a way a single novel never can, from the quietly domestic to the cosmic. Short-form literary SF and fantasy sits slightly to the side of the doorstop-fantasy default, and it asks for a spare hour rather than a spare month. If the to-read pile has tipped into the intimidating, a collection is the reset — dip in, finish something the same evening, and come away with a map of a writer worth following into longer work.</p>
+        </div>
+      </li>
+      <li style="grid-template-columns:8px 1fr">
+        <span class="spine" aria-hidden="true"></span>
+        <div>
+          <h3><a href="https://reactormag.com/30-more-sff-titles-to-look-forward-to-in-2026/">Massif</a></h3>
+          <p class="meta">Space opera · Garth Nix · out 8 September</p>
+          <p>Garth Nix is a genre mainstay, with decades of well-regarded fantasy behind him, and Massif is a deliberate step onto new ground: an adult space opera, out 8 September from Harper Voyager. The register change is the reason to note it. A veteran novelist moving into big-canvas far-future SF tends to bring structural discipline rather than spectacle for its own sake, and an author this established rarely switches lanes without something specific to do there. It lands the same day as the Ken Liu collection, which makes 8 September the week to watch: one short-form literary release and one wide-screen space opera from two writers with nothing left to prove. Between the two — and Islington's thriller the week before — the first fortnight of September is where the autumn's reading properly begins, worth a pre-order now rather than a scramble later.</p>
+        </div>
+      </li>
+    </ul>
+
+    <div class="mx-ticket" data-mx-event="ephemera" style="margin-top:16px;">
+      <div class="mx-ticket__main">
+        <span class="mx-ticket__meta">Reactor · Autumn SFF Preview</span>
+        <span class="mx-ticket__event">Pre-order: Scion</span>
+        <span class="mx-ticket__meta mx-ticket__row"><span>Author</span><span>James Islington</span></span>
+        <span class="mx-ticket__meta mx-ticket__row"><span>Out</span><span>1 Sep 2026</span></span>
+      </div>
+      <div class="mx-ticket__stub"><div class="mx-stamp"><span>SFF</span><b>QUEUED</b><span>&#8470; 01</span></div></div>
+    </div>
+  </section>
+
+  <div class="band" data-band="the_desk">
+    <div class="bandhead">
+      <span class="mono code">BAND 10 — <b>THE DESK</b></span>
+      <span class="mono runtime">SERVICE</span>
+    </div>
+  </div>
+  <section class="round" data-role="desk">
+    <div class="desk">
+      <div class="deskcol" data-desk-column>
+        <h3>The Session</h3>
+        <span class="mono sub">FITNESS · BLOCK 3, VOLUME</span>
+        <p>A hypertrophy block lives or dies on accumulated hard sets — the working target is roughly <b>10–20 hard sets per muscle per week</b>, and the muscle is built by adding that work back consistently, not by winning any single morning. The temptation with a wrist-worn readiness or recovery score — the daily number a Whoop, a Garmin, or the new Pixel Watch 5 all now hand out, weighing recent sleep and exertion into one figure — is to let a red reading cancel the day's planned volume. Land the caveat plainly: a <b>2026 study</b> found that wearable-derived HRV and how people actually report feeling often <b>disconnect</b>, and warned against acting on HRV-based recommendations to steer health decisions. The single-morning number and a lifter's own sense of readiness frequently disagree — and on the evidence, neither is a reliable veto on the week's planned load.</p>
+        <div class="mx-ledger" data-mx-event="ledger" style="margin:12px 0;">
+          <div class="mx-ledger__caption">The Session · How to Read the Score</div>
+          <div class="mx-ledger__row"><span class="mx-ledger__date">TARGET</span><span class="mx-ledger__match">Hard sets per muscle, per week</span><span class="mx-ledger__result">10–20</span></div>
+          <div class="mx-ledger__row"><span class="mx-ledger__date">ONE LOW</span><span class="mx-ledger__match">A single red morning inside a block</span><span class="mx-ledger__result">NOISE</span></div>
+          <div class="mx-ledger__row"><span class="mx-ledger__date">A RUN</span><span class="mx-ledger__match">Several low days with heavy legs or broken sleep</span><span class="mx-ledger__result">DELOAD</span></div>
+          <div class="mx-ledger__row"><span class="mx-ledger__date">DISAGREES</span><span class="mx-ledger__match">Metric versus how the working set actually moved</span><span class="mx-ledger__result">BODY</span></div>
+        </div>
+        <p>So use the score the way the research supports: as a <b>trend, not a traffic light</b>. One low reading inside a volume block is noise; a run of them across several days, lining up with genuinely heavy legs or broken sleep, is signal worth a small deload — trimming a set or two per exercise rather than binning the session. Because the adaptation is driven by the total work across the week, protecting the weekly set count matters more than hitting every session on a green light. And when the metric and the body disagree, the body's read on whether a working set moved cleanly is the one to weight; the wrist score is context around that decision, not the instruction that makes it.</p>
+        <div class="pin">
+          <div class="pinlbl mono">DO THIS WEEK · <b>THE SESSION</b></div>
+          <p class="act">Set the week's hard-set target first — around 10–20 per muscle — and read the morning readiness score as a trend across several days, never as a single-day verdict that cancels the plan.</p>
+          <p class="why">Volume drives the hypertrophy adaptation, and the science shows one morning's HRV reading and how recovered a body actually is often disagree — so a run of low readings earns a small deload, a single one earns nothing.</p>
+        </div>
+      </div>
+
+
+      <div class="deskcol" data-desk-column>
+        <h3>The Ledger</h3>
+        <span class="mono sub">MONEY · RATES &amp; BILLS</span>
+        <div class="mx-scorecard deskcol__card" data-mx-event="ledger">
+          <h4 class="mx-scorecard__title">The Autumn Ledger · As of 16 Aug</h4>
+          <table>
+            <tr class="is-lead"><td>BoE Bank Rate</td><td class="mx-scorecard__gap">3.75%</td></tr>
+            <tr><td>Next MPC decision</td><td class="mx-scorecard__gap">17 SEP</td></tr>
+            <tr><td>Expected move</td><td class="mx-scorecard__gap">HOLD</td></tr>
+            <tr><td>Electricity VAT, 1 Oct</td><td class="mx-scorecard__gap">5% → 0%</td></tr>
+          </table>
+        </div>
+        <p>The Bank of England is holding Bank Rate at <b>3.75%</b>, and markets expect another hold when the Monetary Policy Committee next meets on <b>17 September</b> — so there is no near-term cut to wait for. Land what that means plainly: the one dated, certain change to household bills this autumn is not a Bank move at all. Under the Burnham government's cost-of-living package, <b>VAT on domestic electricity falls from 5% to 0% on 1 October</b>, a straight cut to the unit price every home pays, and it lands automatically — nothing needs to be claimed.</p>
+        <p>That distinction sets the timing for any fixed-rate decision. With no cut expected before mid-September, the pricing on mortgages and savings today isn't waiting on an easing the Committee is tipped to withhold — there is no imminent Bank move to hold out for. A held rate is the one the market has already priced in, so a deal quoted today reflects that expectation rather than betting against it — waiting on the 17 September meeting to change the maths only makes sense if the Committee surprises, which it is not expected to. The two dates that actually matter for household money this autumn are the <b>17 September</b> decision, when the Bank reports, and <b>1 October</b>, when the electricity bill drops; everything else is a wait for a cut the market doesn't expect.</p>
+        <div class="pin">
+          <div class="pinlbl mono">DO THIS WEEK · <b>THE LEDGER</b></div>
+          <p class="act">Diarise 17 September and 1 October, and don't hold a fixed-rate mortgage or savings decision hostage to a rate cut — the Bank is expected to hold, so the deal worth taking is the one on the table now.</p>
+          <p class="why">The only change certain to land this autumn is VAT coming off electricity on 1 October; the 17 September decision is expected to be a hold, so there is no easing to time a fix around.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div class="wave wave--ink" aria-hidden="true" style="margin-top:26px;color:var(--signal);">
+    <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+      <path d="M0 13 H60 l6 -10 6 20 6 -20 6 20 6 -20 6 10 H160 l5 -8 5 16 5 -16 5 16 5 -8 H280 l7 -12 7 24 7 -24 7 24 7 -12 H420 l4 -6 4 12 4 -12 4 12 4 -6 H540 l6 -11 6 22 6 -22 6 22 6 -11 H680 l5 -7 5 14 5 -14 5 14 5 -7 H800" fill="none" stroke="currentColor" stroke-width="2.0"/>
+    </svg>
+  </div>
+
+  <!-- MOVEMENT IV · THE CLOSE -->
+  <div class="movement" data-movement="close">
+    <div class="movement__rule">
+      <span class="movement__no">IV</span>
+      <span class="movement__name">The Close</span>
+      <span class="mono movement__meta">THREADS · RABBIT HOLE · RADAR</span>
+    </div>
+  </div>
+
+  <div class="band" data-band="the_threads">
+    <div class="bandhead">
+      <span class="mono code">BAND 11 — <b>THE THREADS</b></span>
+      <span class="mono runtime">PREVIOUSLY ON · STILL RUNNING</span>
+    </div>
+  </div>
+  <section>
+
+    <div class="mx-ledger" data-mx-event="ledger" data-role="demoted-lead">
+      <div class="mx-ledger__caption">Off The Cover · Hormuz, The Record</div>
+      <div class="mx-ledger__row"><span class="mx-ledger__date">MOVED</span><span class="mx-ledger__match"><b>ADNOC tankers hit on the Omani route</b> — two vessels struck 13 Aug, a third on the 14th, no casualties</span><span class="mx-ledger__result">STRUCK</span></div>
+      <div class="mx-ledger__row"><span class="mx-ledger__date">TALKS</span><span class="mx-ledger__match"><b>An Iran–Oman shipping framework</b> reported near — but officials caution it would not automatically reopen the strait</span><span class="mx-ledger__result">NEAR</span></div>
+      <div class="mx-ledger__row"><span class="mx-ledger__date">WAITS</span><span class="mx-ledger__match"><b>The reopening itself</b> — waterway shut since late February; the IEA warns stockpiles are draining and the case for reopening is hardening</span><span class="mx-ledger__result">HELD</span></div>
+    </div>
+
+    <div class="threads">
+      <div class="thread">
+        <span class="ep">SAGA · THE GULF</span>
+        <div>
+          <h3>The strait that won't reopen</h3>
+          <p class="prev">Previously: Hormuz led last week's cover — a chokepoint Tehran has kept effectively shut since late February, traffic squeezed, no route back open.</p>
+          <p>It moved this week, but not toward reopening. The UAE said Iran attacked two ADNOC-affiliated vessels transiting the strait on 13 August, with a further ship hit on the evening of the 14th and no casualties — strikes on the Omani routing that had been carrying most of what traffic remained. Iran and Oman were reported close to a framework for commercial shipping, though officials cautioned it would not automatically reopen the waterway. The IEA warned reopening is becoming more pressing as the world burns through oil stockpiles. <b>Next:</b> whether the framework converts into open lanes, or the strikes leave the Omani route as unsafe as the strait it was meant to skirt.</p>
+          <div data-mx-event="figure" class="plate-img" style="margin:24px 0 6px;max-width:600px;" data-shows="map" data-capture-year="2018" data-licence="PUBLIC-DOMAIN" data-allows-derivatives="true">
+            <img src="/assets/cached/810545771758.jpg" alt="A NASA MODIS satellite view of the Strait of Hormuz, the mountainous Musandam Peninsula of Oman jutting north into the Gulf, with Iran's coast opposite and the narrow shipping channel between them" loading="lazy">
+            <div class="plate-cap">
+              <span class="mono fig">FIG.</span>
+              <span class="txt">The Strait of Hormuz and Oman's Musandam Peninsula from orbit, in a 2018 NASA MODIS pass — the choke-point the strikes and the shipping squeeze both turn on, the navigable water pinched to a few miles.<span class="credit">NASA MODIS · Jeff Schmaltz · public domain · via Wikimedia Commons</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="thread">
+        <span class="ep">SAGA · THE LEVANT</span>
+        <div>
+          <h3>The verifier no one has named</h3>
+          <p class="prev">Previously: Israel and Lebanon inched toward a disarmament framework, with a step back from the southern border in prospect.</p>
+          <p>The verifier question has stalled it. A Lebanese official said on 13 August that Lebanon had not agreed a shortlist of countries that could send troops to verify Hezbollah's disarmament, disputing earlier reports of a deal reached in Rome. Israel's defence minister reiterated that Israel will not withdraw from southern Lebanon until Hezbollah is disarmed — days after remarks that drew US criticism. No withdrawal without disarmament, no disarmament without a monitor both sides accept. <b>Next:</b> whether a verifier list acceptable to both can be assembled, or the pull-back stays hostage to it.</p>
+        </div>
+      </div>
+      <div class="thread">
+        <span class="ep">SAGA · WESTMINSTER</span>
+        <div>
+          <h3>The unelected premier's ledger</h3>
+          <p class="prev">Previously: Andy Burnham took office on 20 July, the UK's seventh prime minister in a decade, appointed without a general election.</p>
+          <p>His cost-of-living package is firming: VAT on domestic electricity falls from 5% to zero on 1 October, alongside £100m for bus travel, while the Bank of England is expected to hold Bank Rate on the path to its 17 September decision. Burnham has given no sign of going to the country before 2029, pledging to "regain our stability". <b>Next:</b> the September rate call, then whether the October cuts land as promised.</p>
+        </div>
+      </div>
+      <div class="thread">
+        <span class="ep">SAGA · THE GRID</span>
+        <div>
+          <h3>Fifty points and a teenager in front</h3>
+          <p class="prev">Previously: the F1 title race ran into the summer break with Mercedes' Kimi Antonelli, 19, out ahead of the field.</p>
+          <p>He resumes on 219 points, +50 over Lewis Hamilton (Ferrari, 169), with George Russell third on 160 and Lando Norris fifth on 128 after his Hungarian win — the youngest championship leader the sport has had. Racing restarts at the Dutch Grand Prix at Zandvoort on 23 August, a Sprint weekend and the last running of the race under its current contract. <b>Next:</b> whether a 50-point cushion survives nine remaining rounds, beginning on a circuit that rewards nerve over margin.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="band" data-band="rabbit_hole">
+    <div class="bandhead">
+      <span class="mono code">BAND 12 — <b>DOWN THE RABBIT HOLE</b></span>
+      <span class="mono runtime">CURIOSITY · SIGNAL FAINT, FOLLOW IT</span>
+    </div>
+  </div>
+  <section>
+    <div class="rabbit">
+      <span class="mono lbl">AS THE SEASON REOPENS → TUMBLE INTO</span>
+      <div class="chain">
+        <div class="node">
+          <span class="mono cap">AS THE SEASON REOPENS</span>
+          <span class="nm serif">A studio filling back up with pundits</span>
+        </div>
+        <div class="arrow" aria-hidden="true">→</div>
+        <div class="node">
+          <span class="mono cap">TUMBLE INTO</span>
+          <span class="nm serif">A Sanskrit scholar in a colonial courtroom</span>
+        </div>
+      </div>
+
+      <div class="mx-ledger" data-mx-event="ledger">
+        <div class="mx-ledger__caption">The Word's Descent · Scholar to Studio</div>
+        <div class="mx-ledger__row"><span class="mx-ledger__date">Sanskrit</span><span class="mx-ledger__match"><b>paṇḍita</b> — a learned man, someone who has mastered a body of knowledge</span><span class="mx-ledger__result">SCHOLAR</span></div>
+        <div class="mx-ledger__row"><span class="mx-ledger__date">—</span><span class="mx-ledger__match">carried down into Hindi and Urdu as <b>paṇḍit</b></span><span class="mx-ledger__result">paṇḍit</span></div>
+        <div class="mx-ledger__row"><span class="mx-ledger__date">late 1600s</span><span class="mx-ledger__match">enters English for a scholar of Sanskrit law advising colonial judges</span><span class="mx-ledger__result">"pundit"</span></div>
+        <div class="mx-ledger__row"><span class="mx-ledger__date">1816</span><span class="mx-ledger__match">breaks loose from the law — any learned expert or commentator</span><span class="mx-ledger__result">PUNDIT</span></div>
+      </div>
+
+      <p>Every August the television studios refill with pundits — the ex-professionals and touchline theorists who hand down verdicts on a season that has barely kicked off. The word arrives so worn by the sports desk that it feels as though it were coined for it. It wasn't. Strip <em>pundit</em> back to its root and you find not a retired centre-half but a Sanskrit scholar, and a word that once carried real authority rather than the confident guesswork we hang on it now.</p>
+
+      <p>It began as <em>paṇḍita</em>, a Sanskrit word for a learned man — a scholar, someone who had genuinely mastered a subject. Sanskrit passed it down into Hindi and Urdu as <em>paṇḍit</em>, and it was in that form that English reached out and took it in the late 1600s. The first English pundit was no broadcaster. He was a scholar of Sanskrit law, brought into the colonial courtroom to advise English judges who could not read the texts they were expected to rule on. Their whole proceeding leaned on him: the pundit was the man who actually knew, the indispensable expert without whom the bench was blind.</p>
+
+      <p>That is the quiet irony now fossilised in everyday use. A pundit today is someone who talks with authority whether or not the knowledge is there to back it up; the original pundit was defined by exactly the depth of learning everyone around him lacked. And the slide happened surprisingly fast. By 1816 the word had already broken loose from the courtroom and the law, broadening to mean any learned expert or commentator — anyone who might be called on for a view. Once a word means "a person whose opinion is worth hearing," it is only a short walk to the person with an opinion, full stop.</p>
+
+      <p>So when the panel settles onto the sofa this weekend to pronounce on who will go up and who will go down, the label they wear is a fossil of somewhere much further east. It travelled from a Sanskrit manuscript to a Hindi honorific to a colonial law bench and, three centuries on, to a studio under stage lights — shedding its scholarship somewhere along the road, but keeping the one thing that always made it useful: the promise, sincere or not, that the person speaking knows more than the rest of us do.</p>
+    </div>
+  </section>
+
+  <div class="band" data-band="on_the_radar">
+    <div class="bandhead">
+      <span class="mono code">BAND 13 — <b>ON THE RADAR</b></span>
+      <span class="mono runtime">FORWARD CALENDAR · WHAT&#x27;S COMING</span>
+    </div>
+  </div>
+  <section>
+    <div data-mx-event="figure" class="plate-img" style="margin:0 0 14px;max-width:600px;" data-shows="event_photo" data-capture-year="2016" data-licence="CC-BY-2.0" data-allows-derivatives="true">
+      <img src="/assets/cached/3f8d5be5a228.jpg" alt="The Principality Stadium in Cardiff, a large closed-roof arena beside the River Taff, seen from across the water" loading="lazy">
+      <div class="plate-cap"><span class="mono fig">FIG.</span><span class="txt">The Principality Stadium, Cardiff, pictured in 2016 — it hosts today's Community Shield, the fixture's first return to the city in 20 years while Wembley is given over to concerts.<span class="credit">Clint Budd · CC BY 2.0 · via Wikimedia Commons</span></span></div>
+    </div>
+    <ul class="radar" data-mx-event="ledger">
+      <li data-resolves-loop="loop_2026-08-16_community-shield">
+        <span class="date">SUN · 16 AUG</span>
+        <span class="ev"><b><a href="https://en.wikipedia.org/wiki/2026_FA_Community_Shield">FA Community Shield</a></b> — Arsenal, last season's Premier League champions, meet Manchester City at the Principality Stadium, Cardiff, 15:00 BST today. The season's curtain-raiser returns to Cardiff for the first time in 20 years, with Wembley given over to pre-planned concerts. Both sides are back in league action inside the week. Kick-off falls after this issue's research cut, so the result is not knowable here — it carries to next week.</span>
+      </li>
+      <li>
+        <span class="date">FRI · 21 AUG</span>
+        <span class="ev"><b><a href="https://www.premierleague.com/en/news/4468487/dates-for-202627-premier-league-season-confirmed">Premier League returns</a></b> — the 2026-27 season opens with defending champions Arsenal at home to newly promoted Coventry City, 20:00. The first weekend runs through Monday 24 August (Fulham v Chelsea) and takes in Manchester City v Bournemouth and Newcastle v Liverpool on the Sunday — the start of the nine-month grind to next May.</span>
+      </li>
+      <li>
+        <span class="date">FRI–SUN · 21–23 AUG</span>
+        <span class="ev"><b><a href="https://en.wikipedia.org/wiki/2026_Dutch_Grand_Prix">Dutch Grand Prix</a></b> — F1 resumes from the summer break at Zandvoort, race 15:00 local on Sunday over 72 laps. The weekend is a Sprint round, the first in the race's history, and the last running under the circuit's current contract. It is the point where the title race, frozen since the Hungarian round, restarts for the run to the end of the season.</span>
+      </li>
+      <li>
+        <span class="date">SUN · 23 AUG</span>
+        <span class="ev"><b><a href="https://onefootball.com/en/news/official-serie-a-2026-27-dates-confirmed-as-new-season-kicks-off-in-late-august-41854297">Serie A opens</a></b> — Italy's 2026-27 campaign gets going two days after the Premier League, the first matches on Saturday 22 August (Inter v Monza, Udinese v Como). Juventus begin away at newly promoted Frosinone on the Sunday, with Torino v Milan alongside; the season runs to 30 May 2027.</span>
+      </li>
+      <li>
+        <span class="date">FRI · 28 AUG</span>
+        <span class="ev"><b><a href="https://www.shanethegamer.com/nintendo/elden-ring-tarnished-edition-confirmed-for-switch-2-on-august-28-2026-at-79-99/">Elden Ring: Tarnished Edition</a></b> — FromSoftware's open world arrives on Nintendo Switch 2 at $79.99, bundling Shadow of the Erdtree with two new starting classes — the strength-focused Heavy Knight and the shield-carrying Idus Knight — plus new armour and Torrent customisation. Owners on other platforms can buy the new content as a $4.99 Tarnished Pack the same day.</span>
+      </li>
+    </ul>
+  </section>
+
+  <div class="band" data-band="do_this_week">
+    <div class="bandhead">
+      <span class="mono code">BAND 14 — <b>DO THIS WEEK</b></span>
+      <span class="mono runtime">THE ONE THING · PINNED</span>
+    </div>
+  </div>
+  <section>
+    <div class="closepin">
+      <p class="callback" data-resolves-loop="loop_2026-08-13_perseids">Last week's dark-sky gamble paid off: the Perseids peaked moonless overnight 12-13 August — new moon the same day — throwing roughly 50-100 an hour past midnight, the best conditions the shower will get until 2045.</p>
+
+      <div data-mx-event="figure" class="plate-img" data-shows="event_photo" data-capture-year="2021"
+           data-licence="PUBLIC-DOMAIN" data-allows-derivatives="true">
+        <img src="/assets/cached/244c854a7896.jpg" alt="A NASA long-exposure of Perseid meteors streaking in bright lines across a dark-sky landscape at night." loading="lazy">
+        <div class="plate-cap">
+          <span class="mono fig">FIG. 01</span>
+          <span class="txt">A 2021 NASA long-exposure of the shower under dark skies — the payoff for staying up.<span class="credit">NASA / Bill Ingalls · public domain</span></span>
+        </div>
+      </div>
+
+      <div class="pinlbl mono">THE STRONGEST ACTION · <b>PIN IT TO THE FRIDGE</b></div>
+      <p class="act">Block the season openers into the calendar this week.</p>
+      <p class="why">The Premier League returns Friday 21 August with Arsenal v Coventry, and Serie A follows — Juventus start away at Frosinone on Sunday 23 August. The long pre-season quiet is over. Clear the sofa and let it back in.</p>
+    </div>
+
+    <div class="mx-shelf" style="margin:24px 0 8px;">
+      <div class="mx-ticket" data-mx-event="ephemera">
+        <div class="mx-ticket__main">
+          <span class="mx-ticket__meta">The One Thing · Pin to the fridge</span>
+          <span class="mx-ticket__event">Set the season alarm</span>
+          <span class="mx-ticket__meta mx-ticket__row"><span>PL opens</span><span>Fri 21 Aug</span></span>
+          <span class="mx-ticket__meta mx-ticket__row"><span>Serie A</span><span>Sun 23 Aug</span></span>
+          <span class="mx-ticket__meta mx-ticket__row"><span>Do</span><span>Diarise it now</span></span>
+        </div>
+        <div class="mx-ticket__stub"><div class="mx-stamp"><span>Do</span><b>THIS<br>WEEK</b><span>5 min</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="band" data-band="colophon">
+    <div class="bandhead">
+      <span class="mono code">BAND 15 — <b>COLOPHON</b></span>
+      <span class="mono runtime">THE ISSUE, ACCOUNTED FOR</span>
+    </div>
+  </div>
+  <section>
+    <div class="endnumbers" data-mx-event="statband">
+      <div class="cell">
+        <span class="mono k">ISSUE IN NUMBERS</span>
+        <span class="v serif">No. <em>21</em> · 4 movements</span>
+      </div>
+      <div class="cell">
+        <span class="mono k">WORDS SET</span>
+        <span class="v serif">7,090 <em>words</em> · one sitting</span>
+      </div>
+      <div class="cell">
+        <span class="mono k">READING TIME</span>
+        <span class="v serif">34 <em>min</em> · with coffee</span>
+      </div>
+      <div class="cell">
+        <span class="mono k">IN THE FRAME</span>
+        <span class="v serif">7 <em>images</em> · all sourced</span>
+      </div>
+      <div class="cell">
+        <span class="mono k">A FACT</span>
+        <span class="v serif">Cardiff's Principality Stadium was the UK's first with a <em>fully retractable roof</em>, and stood in for Wembley through six FA Cup finals during the 2001–2006 rebuild</span>
+      </div>
+      <div class="cell">
+        <span class="mono k">NEXT WEEK · №022</span>
+        <span class="v serif">Another <em>Sunday</em>, composed</span>
+      </div>
+    </div>
+  </section>
+  <div class="wave wave--ink" aria-hidden="true" style="margin-top:30px;color:var(--signal);">
+    <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+      <path d="M0 13 H40 l5 -9 5 18 5 -18 5 18 5 -9 H120 l7 -13 7 26 7 -26 7 26 7 -13 H260 l4 -6 4 12 4 -12 4 12 4 -6 H360 l6 -11 6 22 6 -22 6 22 6 -11 H500 l5 -8 5 16 5 -16 5 16 5 -8 H620 l7 -13 7 26 7 -26 7 26 7 -13 H800" fill="none" stroke="currentColor" stroke-width="2.0"/>
+    </svg>
+  </div>
+
+  <div class="colophon">
+    <span class="serif">The <em>Signal</em></span>
+    <span class="mono">END OF TRANSMISSION №021 · UNTIL NEXT SUNDAY</span>
+  </div>
+
+  <div class="signoff-line">
+  <div class="wave wave--blue" aria-hidden="true" style="max-width:200px;margin:0 auto;">
+    <svg viewBox="0 0 800 26" preserveAspectRatio="none">
+      <path d="M0 13 H50 l6 -11 6 22 6 -22 6 22 6 -11 H160 l5 -9 5 18 5 -18 5 18 5 -9 H280 l7 -12 7 24 7 -24 7 24 7 -12 H420 l4 -7 4 14 4 -14 4 14 4 -7 H540 l6 -11 6 22 6 -22 6 22 6 -11 H680 l5 -8 5 16 5 -16 5 16 5 -8 H800" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    </svg>
+  </div>
+
+    <p class="big">Until next Sunday — the week will <em>keep</em>.</p>
+    <p class="mono stamp">SET IN INSTRUMENT SERIF, NEWSREADER &amp; JETBRAINS MONO · FILED 16 AUG 2026 · FOR ONE READER</p>
+  </div>
+
+</div>
+<script>
+/* The Signal — weekly (Transmission) JavaScript bundle.
+ *
+ * The weekly is a PAPER OBJECT: it renders complete and beautiful with
+ * JavaScript OFF (the paper-and-ink contract). No progress rails, no
+ * scroll-triggered reveals, no motion, no bead rail — the reference issue
+ * (docs/mockups/reference-issue-transmission.html) proves none are needed.
+ *
+ * The ONLY script the weekly ships is a defensive, invisible image-error
+ * fallback: if a fabricated or expired image URL fails to load, hide the
+ * broken <img> (and its caption/figure) so a bad asset never renders a
+ * broken-image icon. This is progressive enhancement — with JS off, a
+ * broken image is the browser's problem, not a layout break, because the
+ * Transmission layout never depends on an image being present.
+ */
+(function () {
+  document.addEventListener(
+    'error',
+    function (e) {
+      var t = e.target;
+      if (!t || t.tagName !== 'IMG') return;
+      t.style.display = 'none';
+      var p = t.parentElement;
+      if (!p) return;
+      var next = t.nextElementSibling;
+      if (next && next.classList && next.classList.contains('plate-cap')) {
+        next.style.display = 'none';
+      }
+      if (p.classList && p.classList.contains('plate-img')) {
+        p.style.display = 'none';
+      }
+      if (p.tagName === 'FIGURE') {
+        p.style.display = 'none';
+      }
+    },
+    true
+  );
+})();
+
+/* mx-motion.js — WP-5 motion controller (Law 5). data-mx issues only; the
+   stitcher swaps it in for legacy script.js on the mx path. JS-off = 100%
+   content (initial-hidden CSS is gated on [data-mx-motion-ready], stamped
+   only here); reduced-motion → no-op (CSS gate is belt #2); IO reveals add
+   .is-in + data-mx-inview, stagger via --mx-i; no scroll-jacking; motion
+   attaches to furniture, never prose. */
+(function () {
+  'use strict';
+  var d = document, root = d.documentElement, rm = null;
+
+  function $$(sel, ctx) {
+    return Array.prototype.slice.call((ctx || d).querySelectorAll(sel));
+  }
+  function reduced() { return rm ? rm.matches : false; }
+
+  function init() {
+    var body = d.body;
+    if (!body || !body.hasAttribute('data-mx')) return;
+    var tier = body.getAttribute('data-motion');
+    if (tier !== 'tier0' && tier !== 'tier1' && tier !== 'tier2') return;
+    rm = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+    if (reduced()) return;
+    if (rm && rm.addEventListener) {
+      rm.addEventListener('change', function (e) {
+        if (e.matches) root.removeAttribute('data-mx-motion-ready');
+      });
+    }
+    if (!('IntersectionObserver' in window)) return;
+
+    var CHROME = '.mx-mast, .mx-footer, .mx-colophon, nav';
+    var pending = [], scrollFns = [];
+
+    function reveal(el) {
+      el.classList.add('is-in');
+      el.setAttribute('data-mx-inview', '');
+      var i = pending.indexOf(el);
+      if (i >= 0) pending.splice(i, 1);
+    }
+    var io = new IntersectionObserver(function (entries) {
+      for (var i = 0; i < entries.length; i++) {
+        if (entries[i].isIntersecting) {
+          reveal(entries[i].target);
+          io.unobserve(entries[i].target);
+        }
+      }
+    }, { rootMargin: '0px 0px -9% 0px', threshold: 0.04 });
+
+    function watch(el, cls) {
+      if (el.closest && el.closest(CHROME)) return;
+      if (cls) el.classList.add(cls);
+      pending.push(el);
+      io.observe(el);
+    }
+    function stagger(el) { /* index among animated siblings → CSS delay */
+      var p = el.parentNode;
+      if (p) { p.__mxn = p.__mxn || 0; el.style.setProperty('--mx-i', '' + p.__mxn++); }
+    }
+
+    if (tier === 'tier0') {
+      /* tier0: hairline draw-ins + ghost parallax ONLY */
+      $$('.mx-plate, .mx-actopen, .mx-pull, .mx-ledger, .mx-numbers, .mx-quote, .mx-sources')
+        .forEach(function (el) { watch(el, 'mx-draw'); });
+      var plates = $$('.mx-plate');
+      scrollFns.push(function (vh) {
+        for (var i = 0; i < plates.length; i++) {
+          var r = plates[i].getBoundingClientRect();
+          if (r.bottom < -120 || r.top > vh + 120) continue;
+          var p = ((vh / 2) - (r.top + r.height / 2)) / vh;
+          if (p > 1) p = 1; else if (p < -1) p = -1;
+          plates[i].style.setProperty('--mx-par', p.toFixed(3));
+        }
+      });
+    } else {
+      /* tier1/tier2: rise-on-scroll + object settles */
+      $$('.mx-card, .mx-ticket, .mx-coaster, .mx-note' + (tier === 'tier1' ? ', .mx-stamp' : ''))
+        .forEach(function (el) { stagger(el); watch(el, 'mx-settle'); });
+      $$('.mx-quote, .mx-pull, .mx-anchor, .mx-plate, .mx-actopen, .mx-zig__entry, .mx-chart')
+        .forEach(function (el) { stagger(el); watch(el, 'mx-rise'); });
+      if (tier === 'tier2') {
+        $$('.mx-stamp').forEach(function (el) { stagger(el); watch(el, 'mx-slam'); });
+      }
+      $$('.mx-sig-stamp-slam').forEach(function (el) { watch(el, 'mx-slam'); });
+      /* weekly signature: the radio dial's needle sweeps on band entry
+         (the CSS keys the sweep off .mx-sig-dial-sweep.is-in). Additive —
+         no other tier uses this hook. */
+      $$('.mx-sig-dial-sweep').forEach(function (el) { watch(el); });
+
+      /* sequences: rows tick in order */
+      [['.mx-ranked', '.mx-ranked__entry'],
+       ['.mx-scorecard', 'tr'],
+       ['.mx-numbers', '.mx-numbers__cell'],
+       ['.figures-frame', '.fig-row'],
+       ['.mx-cheat', '.mx-cheat__col'],
+       ['.mx-dontmiss', 'li'],
+       ['.mx-countdown', '.mx-countdown__cell'],
+       ['.mx-sig-rows-climb', 'tr, li, .mx-ranked__entry'],
+       ['.mx-sig-cols-reveal', '.mx-cheat__col, .mx-col']
+      ].forEach(function (pair) {
+        $$(pair[0]).forEach(function (c) {
+          if (c.classList.contains('mx-seq')) return;
+          var rows = $$(pair[1], c).filter(function (r) { return r.closest(pair[0]) === c; });
+          if (!rows.length) return;
+          for (var i = 0; i < rows.length; i++) {
+            rows[i].classList.add('mx-row');
+            rows[i].style.setProperty('--mx-i', String(i));
+          }
+          watch(c, 'mx-seq');
+        });
+      });
+      /* facts ledgers: dt+dd pairs share one index */
+      $$('.mx-ledger').forEach(function (c) {
+        var kids = $$('dl > dt, dl > dd', c), n = -1;
+        if (!kids.length) return;
+        for (var i = 0; i < kids.length; i++) {
+          if (kids[i].tagName === 'DT') n++;
+          kids[i].classList.add('mx-row');
+          kids[i].style.setProperty('--mx-i', String(Math.max(0, n)));
+        }
+        watch(c, 'mx-seq');
+      });
+
+      if (tier === 'tier2') {
+        /* act crossfade at transit seams (endpoint colors = act tokens) */
+        var seams = [];
+        $$('.mx-transit').forEach(function (t) {
+          function seamEl(host, dir) {
+            if (!host || !host.hasAttribute || !host.hasAttribute('data-act')) return null;
+            if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
+            var s = d.createElement('div');
+            s.className = 'mx-seam mx-seam--' + dir;
+            s.setAttribute('aria-hidden', 'true');
+            host.appendChild(s);
+            return s;
+          }
+          seams.push({ t: t, a: seamEl(t.previousElementSibling, 'out'), b: seamEl(t.nextElementSibling, 'in') });
+        });
+        if (seams.length) {
+          scrollFns.push(function (vh) {
+            for (var i = 0; i < seams.length; i++) {
+              var r = seams[i].t.getBoundingClientRect();
+              var p = 1 - Math.abs(r.top + r.height / 2 - vh / 2) / (vh * 1.15);
+              if (p < 0) p = 0; else if (p > 1) p = 1;
+              var v = p.toFixed(3);
+              if (seams[i].a) seams[i].a.style.setProperty('--mx-seam', v);
+              if (seams[i].b) seams[i].b.style.setProperty('--mx-seam', v);
+            }
+          });
+        }
+        $$('.mx-countdown[data-mx-target]').forEach(bindCountdown);
+      }
+    }
+
+    /* activate: only now may CSS hold start states */
+    root.setAttribute('data-mx-motion-ready', '');
+
+    /* safety reveal: pending-but-on-screen can never stay blank */
+    scrollFns.push(function (vh) {
+      for (var i = pending.length - 1; i >= 0; i--) {
+        var r = pending[i].getBoundingClientRect();
+        if (r.top < vh * 0.94 && r.bottom > 0) {
+          io.unobserve(pending[i]);
+          reveal(pending[i]);
+        }
+      }
+    });
+    var ticking = false;
+    function onScroll() {
+      if (ticking || reduced()) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        ticking = false;
+        var vh = window.innerHeight;
+        for (var i = 0; i < scrollFns.length; i++) scrollFns[i](vh);
+      });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    onScroll();
+    setTimeout(onScroll, 2500);
+  }
+
+  /* opt-in live countdown; numerals re-flip on change */
+  function bindCountdown(box) {
+    var target = Date.parse(box.getAttribute('data-mx-target'));
+    if (isNaN(target)) return;
+    var cells = {};
+    $$('[data-cd]', box).forEach(function (el) { cells[el.getAttribute('data-cd')] = el; });
+    function pad(n) { return n < 10 ? '0' + n : String(n); }
+    function set(el, v) {
+      if (!el || el.textContent === v) return;
+      el.textContent = v;
+      el.classList.remove('mx-flip-tick');
+      void el.offsetWidth;
+      el.classList.add('mx-flip-tick');
+    }
+    function tick() {
+      var ms = target - Date.now();
+      if (ms < 0) ms = 0;
+      var s = Math.floor(ms / 1000);
+      set(cells.days, pad(Math.floor(s / 86400)));
+      set(cells.hours, pad(Math.floor(s / 3600) % 24));
+      set(cells.mins, pad(Math.floor(s / 60) % 60));
+      set(cells.secs, pad(s % 60));
+      if (ms > 0 && !reduced()) setTimeout(tick, 1000);
+    }
+    tick();
+  }
+
+  if (d.readyState === 'loading') d.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+
+</script>
+</body>
+</html>

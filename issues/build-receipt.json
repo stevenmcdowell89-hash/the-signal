@@ -1,0 +1,30 @@
+{
+  "issue_id": "weekly-2026-08-16",
+  "format": "weekly",
+  "issue_file": "/tmp/the-signal/issues/signal_weekly_2026-08-16.html",
+  "verdict": "red",
+  "gates": [
+    {
+      "name": "validate-issue",
+      "exit": 0,
+      "status": "pass"
+    },
+    {
+      "name": "image-diversity",
+      "exit": 0,
+      "status": "pass"
+    },
+    {
+      "name": "rendered-measure",
+      "exit": 0,
+      "status": "pass"
+    },
+    {
+      "name": "rendered-metrics",
+      "exit": 1,
+      "status": "FAIL"
+    }
+  ],
+  "publishable": false,
+  "note": "Machine-checkable ship receipt. The publish step must refuse to publish unless verdict=='green'. Reliability design Pillar F."
+}
