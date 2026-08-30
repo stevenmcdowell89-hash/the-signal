@@ -1,8 +1,8 @@
 {
-  "issue_id": "weekly-2026-08-23",
+  "issue_id": "weekly-2026-08-30",
   "format": "weekly",
-  "issue_file": "issues/signal_weekly_2026-08-23.html",
-  "verdict": "red",
+  "issue_file": "issues/signal_weekly_2026-08-30.html",
+  "verdict": "green",
   "gates": [
     {
       "name": "validate-issue",
@@ -21,10 +21,10 @@
     },
     {
       "name": "rendered-metrics",
-      "exit": 1,
-      "status": "FAIL"
+      "exit": 0,
+      "status": "pass"
     }
   ],
-  "publishable": false,
+  "publishable": true,
   "note": "Machine-checkable ship receipt. The publish step must refuse to publish unless verdict=='green'. Reliability design Pillar F."
 }
