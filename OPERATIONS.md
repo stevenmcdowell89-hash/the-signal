@@ -220,20 +220,27 @@ Deploy (`git push` to `main` triggers Workers Builds, or `npx wrangler deploy`).
 ### D1 cost (Sep 2026)
 
 The daily's D1 usage was ~4bn rows read/day (≈$4/day, most of the Cloudflare
-invoice) from four queries that scanned `story_log` (~8M rows) or
-`source_samples` (~4M rows) every 10-min tick. Fixed in `functions/daily/`:
+invoice) from three queries that scanned `story_log` (~8M rows) or
+`source_samples` (~4M rows) every 10-min tick. Fixed in `functions/daily/`
+with no change to what the reader sees:
 
-- `story_latest` (one row per cluster, maintained on write) answers the per-tick
-  "previous story point" lookup instead of a full scan of `story_log`. Backfilled
-  automatically on the first run after deploy (one full pass, then never again).
-- `source_baselines` caches each source's 85th-percentile cut for 6h (1h while a
-  source is too thin to have one).
-- Retention prune runs once a day (KV `last_prune_ts`), and builds
-  `idx_story_ts` / `idx_samples_ts` on its first pass so the range deletes stop
-  scanning. If that first index build ever exceeds D1's per-query limit it is
-  simply retried on the next day's prune.
-- Items already in the window are re-upserted only when something changed or
-  after an hour (D1 charges ~1000× more per row written than read).
+- `story_latest` (one row per cluster, maintained alongside every `story_log`
+  write) answers the per-tick "previous story point" lookup instead of a full
+  scan of `story_log`. It is backfilled once from `story_log` on the first run
+  after deploy; until that backfill has succeeded (`engine_meta` →
+  `story_latest_ready`) the original query keeps running, so a cut-off backfill
+  changes nothing and is retried next tick.
+- `source_baselines` caches each source's 85th-percentile cut for 3h (1h while a
+  source is too thin to have one). Over a 30-day window of ~80k samples the
+  ~18 samples a source adds per tick cannot move the cut measurably.
+- Retention prune runs once a day (KV `last_prune_ts`) instead of every tick —
+  retention is 14/30/60 *days* — and builds `idx_story_ts` / `idx_samples_ts`
+  on its first pass so the range deletes stop scanning. If that first index
+  build ever exceeds D1's per-query limit it is retried on the next day's prune.
+
+Row *writes* (every clustered entry is still upserted every tick, ~$0.85/day)
+were deliberately left alone: skipping unchanged items would let a source's
+`last_seen` in the feed-health card lag.
 
 Check with Cloudflare's GraphQL `d1AnalyticsAdaptiveGroups` (rowsRead /
 rowsWritten by databaseId) or the dashboard → D1 → the-signal-daily → Metrics.

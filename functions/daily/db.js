@@ -69,6 +69,9 @@ export async function initSchema(db) {
       source_count INTEGER DEFAULT 1
     )`),
     db.prepare(`CREATE INDEX IF NOT EXISTS idx_story_latest_ts ON story_latest(ts)`),
+    // Small key/value table for engine bookkeeping (e.g. whether story_latest has
+    // been fully backfilled — until it has, reads fall back to the old query).
+    db.prepare(`CREATE TABLE IF NOT EXISTS engine_meta (key TEXT PRIMARY KEY, value TEXT)`),
     // Cached per-source baseline cut (85th percentile over the trailing 30 days).
     // The cut moves negligibly tick to tick, but recomputing it read ~80k samples
     // per source per tick (48 sources → ~4M rows every 10 min). Cached with a TTL.
@@ -270,11 +273,12 @@ export async function bulkLogStories(db, rows) {
 // Trailing baseline cut: the score at the ~85th percentile over the window,
 // i.e. "significant for this source" (§3.3, default top ~15% over 14–30 days).
 //
-// Cached: the cut is a percentile over a 30-day window, so it barely moves from
-// one 10-min tick to the next, yet computing it reads every sample for the source
-// (~80k rows). Recompute at most every BASELINE_TTL_MS (sooner while a source is
-// still too thin to have a cut, so a new feed gets its baseline within the hour).
-export const BASELINE_TTL_MS = 6 * 60 * 60 * 1000;
+// Cached: the cut is a percentile over a 30-day window (~80k samples per source),
+// so the ~18 samples a source adds per tick can't move it measurably — yet
+// computing it reads every one of those rows. Recompute at most every
+// BASELINE_TTL_MS (sooner while a source is still too thin to have a cut, so a
+// new feed gets its baseline within the hour).
+export const BASELINE_TTL_MS = 3 * 60 * 60 * 1000;
 const BASELINE_THIN_TTL_MS = 60 * 60 * 1000;
 
 export async function sourceBaselineCut(db, source, sinceMs, now = Date.now()) {
@@ -322,48 +326,92 @@ export async function lastStoryPoint(db, clusterId, beforeTs) {
     .first();
 }
 
-// One-time backfill of story_latest from story_log, for a database that predates
-// the table. Runs only when story_latest is empty and story_log is not — one full
-// pass over story_log (the same query that used to run every tick), then never
-// again. On an OLD story_log without the `signal` column, fall back to the
-// always-present columns.
-export async function backfillStoryLatest(db) {
-  const has = await db.prepare(`SELECT 1 AS x FROM story_latest LIMIT 1`).first();
-  if (has) return false;
-  const any = await db.prepare(`SELECT 1 AS x FROM story_log LIMIT 1`).first();
-  if (!any) return false;
-  const join = `FROM story_log s
-         JOIN (SELECT cluster_id, MAX(ts) AS mt FROM story_log GROUP BY cluster_id) m
-           ON s.cluster_id = m.cluster_id AND s.ts = m.mt`;
+const STORY_LATEST_READY_KEY = "story_latest_ready";
+
+async function storyLatestReady(db) {
   try {
-    await db
-      .prepare(`INSERT OR REPLACE INTO story_latest (cluster_id, ts, score, headline, signal, source_count)
-                SELECT s.cluster_id, s.ts, s.score, s.headline, s.signal, COALESCE(s.source_count, 1) ${join}`)
-      .run();
+    const r = await db.prepare(`SELECT value FROM engine_meta WHERE key=?`).bind(STORY_LATEST_READY_KEY).first();
+    return !!(r && r.value === "1");
   } catch (_) {
-    await db
-      .prepare(`INSERT OR REPLACE INTO story_latest (cluster_id, ts, score, headline, signal, source_count)
-                SELECT s.cluster_id, s.ts, s.score, s.headline, NULL, 1 ${join}`)
-      .run();
+    return false;
   }
+}
+
+// One-time backfill of story_latest from story_log, for a database that predates
+// the table: one full pass over story_log (the same query that used to run every
+// tick — it fits D1's limits because it already ran 144×/day), then the ready flag
+// is set and it never runs again. Until the flag is set, getLastStoryPoints keeps
+// using the old query, so a backfill that fails or is cut off changes nothing —
+// it is simply retried next tick. On an OLD story_log without the `signal`
+// column, fall back to the always-present columns.
+export async function backfillStoryLatest(db) {
+  if (await storyLatestReady(db)) return false;
+  const any = await db.prepare(`SELECT 1 AS x FROM story_log LIMIT 1`).first();
+  if (any) {
+    const join = `FROM story_log s
+           JOIN (SELECT cluster_id, MAX(ts) AS mt FROM story_log GROUP BY cluster_id) m
+             ON s.cluster_id = m.cluster_id AND s.ts = m.mt`;
+    try {
+      await db
+        .prepare(`INSERT OR REPLACE INTO story_latest (cluster_id, ts, score, headline, signal, source_count)
+                  SELECT s.cluster_id, s.ts, s.score, s.headline, s.signal, COALESCE(s.source_count, 1) ${join}`)
+        .run();
+    } catch (_) {
+      await db
+        .prepare(`INSERT OR REPLACE INTO story_latest (cluster_id, ts, score, headline, signal, source_count)
+                  SELECT s.cluster_id, s.ts, s.score, s.headline, NULL, 1 ${join}`)
+        .run();
+    }
+  }
+  await db
+    .prepare(`INSERT OR REPLACE INTO engine_meta (key, value) VALUES (?, '1')`)
+    .bind(STORY_LATEST_READY_KEY)
+    .run();
   return true;
 }
 
 // The most recent story point per cluster, in ONE query → Map(cluster_id ->
-// {ts, score, headline, signal, source_count}). Reads story_latest (~30k rows,
-// maintained on every write) instead of deriving it from the 8M-row story_log —
-// same answer, ~250× fewer rows read per tick. One deliberate difference: only the
-// LATEST point per cluster is kept, so `beforeTs` can exclude a cluster outright
-// rather than fall back to an older point. The pipeline always asks with
-// beforeTs = this tick's `now`, before it logs this tick's rows, so in practice
-// nothing is ever excluded.
+// {ts, score, headline, signal, source_count}).
+//
+// Once story_latest is backfilled this reads it (~30k rows, maintained on every
+// write) instead of deriving the answer from the 8M-row story_log — same result,
+// ~250× fewer rows read per tick. Until the backfill has succeeded it runs the
+// original derivation, so the switch can never degrade a poll. One theoretical
+// difference on the fast path: only the LATEST point per cluster is kept, so
+// `beforeTs` can exclude a cluster outright rather than fall back to an older
+// point; the pipeline always asks with beforeTs = this tick's `now`, before it
+// logs this tick's rows, so nothing is ever excluded in practice.
 export async function getLastStoryPoints(db, beforeTs) {
-  try { await backfillStoryLatest(db); } catch (_) { /* best-effort; table may be filling */ }
-  const { results } = await db
-    .prepare(`SELECT cluster_id, ts, score, headline, signal, source_count
-                FROM story_latest WHERE ts < ?`)
-    .bind(beforeTs)
-    .all();
+  let ready = false;
+  try { await backfillStoryLatest(db); ready = await storyLatestReady(db); } catch (_) { ready = false; }
+  let results;
+  if (ready) {
+    ({ results } = await db
+      .prepare(`SELECT cluster_id, ts, score, headline, signal, source_count
+                  FROM story_latest WHERE ts < ?`)
+      .bind(beforeTs)
+      .all());
+  } else {
+    // Original derivation (kept verbatim as the fallback). On an OLD database
+    // whose story_log predates the `signal` column, fall back to the columns that
+    // always exist so a missing column degrades gracefully.
+    const join = `FROM story_log s
+           JOIN (SELECT cluster_id, MAX(ts) AS mt FROM story_log WHERE ts < ? GROUP BY cluster_id) m
+             ON s.cluster_id = m.cluster_id AND s.ts = m.mt`;
+    try {
+      ({ results } = await db
+        .prepare(`SELECT s.cluster_id AS cluster_id, s.ts AS ts, s.score AS score,
+                         s.headline AS headline, s.signal AS signal,
+                         s.source_count AS source_count ${join}`)
+        .bind(beforeTs)
+        .all());
+    } catch (_) {
+      ({ results } = await db
+        .prepare(`SELECT s.cluster_id AS cluster_id, s.ts AS ts, s.score AS score ${join}`)
+        .bind(beforeTs)
+        .all());
+    }
+  }
   const map = new Map();
   for (const r of results || [])
     map.set(r.cluster_id, {
@@ -439,6 +487,7 @@ export async function resetEngine(db) {
     db.prepare(`DELETE FROM story_log`),
     db.prepare(`DELETE FROM story_latest`),
     db.prepare(`DELETE FROM source_baselines`),
+    db.prepare(`DELETE FROM engine_meta`),
     db.prepare(`DELETE FROM runs`),
   ]);
 }

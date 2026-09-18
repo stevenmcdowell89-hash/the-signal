@@ -34,29 +34,12 @@ const REDDIT_SLICE = 6; // subreddits per batch
 const REDDIT_MAX_ATTEMPTS = 3; // re-attempts of a batch's failures before advancing (~30 min at a 10-min cron)
 const REDDIT_DEBOUNCE_MS = 5 * 60 * 1000; // manual "Run now" won't re-roll reddit inside this window
 
-// D1 cost controls (Sep 2026: the daily was reading ~4bn rows/day → ~$4/day).
-// - An item already in the window is re-upserted only when something about it
-//   changed, or its last_seen is older than ITEM_REFRESH_MS. Every upsert is a row
-//   write plus index writes ($1/M), and most of a tick's ~1,900 upserts were
-//   RSS items with nothing new. last_seen therefore lags by at most an hour,
-//   which is invisible against a 2-day score window and a 14-day prune.
-// - Retention prune runs once a day, not every tick (retention is in days).
-const ITEM_REFRESH_MS = 60 * 60 * 1000;
+// D1 cost control (Sep 2026: the daily was reading ~4bn rows/day → ~$4/day):
+// the retention prune runs once a day, not every tick. Retention is measured in
+// days (14/30/60), so a daily pass changes nothing the reader can see; per tick
+// it was two full-table scans (story_log ~8M rows, source_samples ~4M).
 const PRUNE_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const LAST_PRUNE_KEY = "last_prune_ts";
-
-// Does this tick's clustered entry carry anything the stored row doesn't?
-export function itemChanged(it, row, now) {
-  if (!row) return true;
-  if (now - (row.last_seen || 0) >= ITEM_REFRESH_MS) return true;
-  if ((it.rawScore || 0) > (row.raw_score || 0)) return true;
-  const sc = it.memberSources ? it.memberSources.length : 1;
-  if (sc > (row.source_count || 1)) return true;
-  if ((it.title || "") !== (row.title || "")) return true;
-  if (JSON.stringify(it.links || []) !== (row.links || "[]")) return true;
-  if ((it.summary || "") && !(row.summary || "")) return true;
-  return false;
-}
 
 // Pick this tick's reddit subs as a RETRY-AWARE rotating batch. A batch is a slice
 // of ~6 subs; each tick re-attempts only the ones in the batch that are STILL
@@ -228,17 +211,9 @@ export async function run(env, { trigger } = {}) {
   // 3) Persist — union across polls (one batched upsert, not N awaits). New
   //    clusters insert; repeats refresh last_seen and keep the max raw_score so
   //    an early spike survives a later lull.
-  //    Only rows that actually changed (or haven't been touched for an hour) are
-  //    written — see itemChanged. Reads are ~1000× cheaper than writes on D1, so
-  //    reading the window first to skip no-op upserts is a clear win.
-  const windowDays = (config.recency && config.recency.score_window_days) || DEFAULT_SCORE_WINDOW_DAYS;
-  const sinceMs = now - 1000 * 60 * 60 * 24 * windowDays;
-  const priorRows = await getWindowItems(db, sinceMs);
-  const priorById = new Map(priorRows.map((r) => [r.id, r]));
-  const changed = clustered.filter((it) => itemChanged(it, priorById.get(it.id), now));
   await bulkUpsertItems(
     db,
-    changed.map((it) => ({
+    clustered.map((it) => ({
       id: it.id,
       canonical_url: it.canonical_url,
       title: it.title,
@@ -264,8 +239,9 @@ export async function run(env, { trigger } = {}) {
   for (const s of config.sources || []) { weightBySource.set(s.id, s.weight); domainBySource.set(s.id, s.domain); if (Number.isFinite(s.cap)) capBySource.set(s.id, s.cap); }
   for (const b of config.bluesky || []) { weightBySource.set(b.id, b.weight); domainBySource.set(b.id, b.domain); if (Number.isFinite(b.cap)) capBySource.set(b.id, b.cap); }
 
-  // Nothing upserted → the pre-upsert read is already the current window.
-  const rows = changed.length ? await getWindowItems(db, sinceMs) : priorRows;
+  const windowDays = (config.recency && config.recency.score_window_days) || DEFAULT_SCORE_WINDOW_DAYS;
+  const sinceMs = now - 1000 * 60 * 60 * 24 * windowDays;
+  const rows = await getWindowItems(db, sinceMs);
   const items = rows.map((r) => {
     const it = rowToItem(r, weightBySource);
     it.feed_domain = domainBySource.get(r.source) || it.domain; // authoritative
