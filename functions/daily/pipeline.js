@@ -34,6 +34,13 @@ const REDDIT_SLICE = 6; // subreddits per batch
 const REDDIT_MAX_ATTEMPTS = 3; // re-attempts of a batch's failures before advancing (~30 min at a 10-min cron)
 const REDDIT_DEBOUNCE_MS = 5 * 60 * 1000; // manual "Run now" won't re-roll reddit inside this window
 
+// D1 cost control (Sep 2026: the daily was reading ~4bn rows/day → ~$4/day):
+// the retention prune runs once a day, not every tick. Retention is measured in
+// days (14/30/60), so a daily pass changes nothing the reader can see; per tick
+// it was two full-table scans (story_log ~8M rows, source_samples ~4M).
+const PRUNE_INTERVAL_MS = 24 * 60 * 60 * 1000;
+const LAST_PRUNE_KEY = "last_prune_ts";
+
 // Pick this tick's reddit subs as a RETRY-AWARE rotating batch. A batch is a slice
 // of ~6 subs; each tick re-attempts only the ones in the batch that are STILL
 // failing, for up to REDDIT_MAX_ATTEMPTS ticks (~30 min at a 10-min cron), then
@@ -282,8 +289,13 @@ export async function run(env, { trigger } = {}) {
   await env.DAILY_STATE.put(STATE_KEY, JSON.stringify(state));
   setProgress(env, "done", 1, 1);
 
-  // 7) Prune the window + log the run.
-  await prune(db, now);
+  // 7) Prune the window (once a day — see PRUNE_INTERVAL_MS) + log the run.
+  let lastPrune = 0;
+  try { lastPrune = parseInt((await env.DAILY_STATE.get(LAST_PRUNE_KEY)) || "0", 10) || 0; } catch (_) {}
+  if (now - lastPrune >= PRUNE_INTERVAL_MS) {
+    await prune(db, now);
+    try { await env.DAILY_STATE.put(LAST_PRUNE_KEY, String(now)); } catch (_) {}
+  }
   await logRun(db, {
     ts: now,
     scanned,
