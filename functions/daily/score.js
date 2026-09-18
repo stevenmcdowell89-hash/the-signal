@@ -202,7 +202,7 @@ export async function scoreBatch(db, items, config, now, capBySource = new Map()
   // uses the recency fallback. Compute each such source's trailing cut once.
   const cuts = new Map();
   const discSources = [...new Set(items.filter((i) => DISCUSSION.has(i.source_type)).map((i) => i.source))];
-  for (const s of discSources) cuts.set(s, await sourceBaselineCut(db, s, baselineWindow));
+  for (const s of discSources) cuts.set(s, await sourceBaselineCut(db, s, baselineWindow, now));
 
   // One query for every cluster's previous story point (velocity).
   const lastPoints = await getLastStoryPoints(db, now);

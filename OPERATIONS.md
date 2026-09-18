@@ -216,6 +216,28 @@ npx wrangler secret put ANTHROPIC_API_KEY
 ```
 
 Deploy (`git push` to `main` triggers Workers Builds, or `npx wrangler deploy`).
+
+### D1 cost (Sep 2026)
+
+The daily's D1 usage was ~4bn rows read/day (≈$4/day, most of the Cloudflare
+invoice) from four queries that scanned `story_log` (~8M rows) or
+`source_samples` (~4M rows) every 10-min tick. Fixed in `functions/daily/`:
+
+- `story_latest` (one row per cluster, maintained on write) answers the per-tick
+  "previous story point" lookup instead of a full scan of `story_log`. Backfilled
+  automatically on the first run after deploy (one full pass, then never again).
+- `source_baselines` caches each source's 85th-percentile cut for 6h (1h while a
+  source is too thin to have one).
+- Retention prune runs once a day (KV `last_prune_ts`), and builds
+  `idx_story_ts` / `idx_samples_ts` on its first pass so the range deletes stop
+  scanning. If that first index build ever exceeds D1's per-query limit it is
+  simply retried on the next day's prune.
+- Items already in the window are re-upserted only when something changed or
+  after an hour (D1 charges ~1000× more per row written than read).
+
+Check with Cloudflare's GraphQL `d1AnalyticsAdaptiveGroups` (rowsRead /
+rowsWritten by databaseId) or the dashboard → D1 → the-signal-daily → Metrics.
+Expected after the fix: tens of millions of rows read per day, not billions.
 On the first cron fire — or a manual **Run now** in Settings — the brief
 populates. To fire it by hand without waiting:
 
